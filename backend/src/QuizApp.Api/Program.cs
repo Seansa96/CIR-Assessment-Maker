@@ -1,0 +1,187 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using QuizApp.Api.Contracts;
+using QuizApp.Core.Domain;
+using QuizApp.Core.Repositories;
+using QuizApp.Core.Services;
+using QuizApp.Infrastructure.Files;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+});
+
+var dataRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../..", "data"));
+builder.Services.AddSingleton<AssessmentValidator>();
+builder.Services.AddSingleton<ScoringService>();
+builder.Services.AddSingleton<AttemptService>();
+builder.Services.AddSingleton<GradeLogService>();
+builder.Services.AddSingleton(new FileStorageOptions { DataRoot = dataRoot });
+builder.Services.AddSingleton<ISettingsRepository, FileSettingsRepository>();
+builder.Services.AddSingleton<ICategoryRepository, FileCategoryRepository>();
+builder.Services.AddSingleton<IAssessmentRepository, FileAssessmentRepository>();
+builder.Services.AddSingleton<IAttemptRepository, FileAttemptRepository>();
+builder.Services.AddSingleton<IGradeLogRepository, FileGradeLogRepository>();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("LocalFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:4321", "http://127.0.0.1:4321")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseCors("LocalFrontend");
+
+var api = app.MapGroup("/api");
+
+api.MapGet("/settings", async (ISettingsRepository repository, CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await repository.GetAsync(cancellationToken));
+});
+
+api.MapPut("/settings", async (AppSettings settings, ISettingsRepository repository, CancellationToken cancellationToken) =>
+{
+    if (settings.DefaultQuizLength is <= 0 or > AssessmentValidator.QuizMaxQuestions)
+    {
+        return Results.BadRequest(ApiError("INVALID_DEFAULT_QUIZ_LENGTH", "Default quiz length must be between 1 and 50."));
+    }
+
+    if (settings.DefaultTestLength is <= 0 or > AssessmentValidator.TestMaxQuestions)
+    {
+        return Results.BadRequest(ApiError("INVALID_DEFAULT_TEST_LENGTH", "Default test length must be between 1 and 200."));
+    }
+
+    if (settings.QuestionTimerSeconds is < 0 || settings.AssessmentTimerSeconds is < 0)
+    {
+        return Results.BadRequest(ApiError("INVALID_TIMER", "Timers must be null or non-negative seconds."));
+    }
+
+    await repository.SaveAsync(settings, cancellationToken);
+    return Results.Ok(settings);
+});
+
+api.MapGet("/categories", async (ICategoryRepository repository, CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await repository.ListAsync(cancellationToken));
+});
+
+api.MapGet("/assessments", async (string categoryId, IAssessmentRepository repository, CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await repository.ListByCategoryAsync(categoryId, cancellationToken));
+});
+
+api.MapGet("/assessments/{assessmentId}", async (string assessmentId, IAssessmentRepository repository, CancellationToken cancellationToken) =>
+{
+    var assessment = await repository.GetByIdAsync(assessmentId, cancellationToken);
+    return assessment is null
+        ? Results.NotFound(ApiError("ASSESSMENT_NOT_FOUND", $"Assessment '{assessmentId}' was not found."))
+        : Results.Ok(assessment);
+});
+
+api.MapPost("/assessments/validate", async (ValidateAssessmentFileRequest request, IAssessmentRepository repository, CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await repository.ValidateFileAsync(request.FileName, cancellationToken));
+});
+
+api.MapPost("/attempts", async (StartAttemptRequest request, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.StartAsync(request.AssessmentId, request.Mode, cancellationToken);
+        return Results.Created($"/api/attempts/{attempt.Id}/results", attempt);
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ATTEMPT_START_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/answers", async (string attemptId, SubmitAnswerRequest request, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await attemptService.SubmitAnswerAsync(attemptId, request.ToDomain(), cancellationToken));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ANSWER_SUBMIT_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/complete", async (
+    string attemptId,
+    AttemptService attemptService,
+    GradeLogService gradeLogService,
+    ISettingsRepository settingsRepository,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var results = await attemptService.CompleteAsync(attemptId, cancellationToken);
+        var settings = await settingsRepository.GetAsync(cancellationToken);
+        GradeLogEntry? committedGrade = null;
+
+        if (results.Mode is AssessmentMode.Scored && settings.CommitScoredAttemptsAutomatically)
+        {
+            committedGrade = await gradeLogService.CommitAttemptAsync(attemptId, cancellationToken);
+        }
+
+        return Results.Ok(new { results, committedGrade });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ATTEMPT_COMPLETE_FAILED", ex.Message));
+    }
+});
+
+api.MapGet("/attempts/{attemptId}/results", async (string attemptId, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await attemptService.GetResultsAsync(attemptId, cancellationToken));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(ApiError("ATTEMPT_NOT_FOUND", ex.Message));
+    }
+});
+
+api.MapPost("/grades/commit", async (CommitGradeRequest request, GradeLogService gradeLogService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await gradeLogService.CommitAttemptAsync(request.AttemptId, cancellationToken));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("GRADE_COMMIT_FAILED", ex.Message));
+    }
+});
+
+api.MapGet("/grades/summary", async (GradeLogService gradeLogService, CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await gradeLogService.GetSummaryAsync(cancellationToken));
+});
+
+app.Run();
+
+static object ApiError(string code, string message)
+{
+    return new { error = new { code, message } };
+}

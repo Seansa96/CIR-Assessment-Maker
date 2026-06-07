@@ -1,0 +1,539 @@
+---
+import "../styles/global.css";
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CIR Assessment Maker</title>
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Local STEM assessment loop</p>
+          <h1>CIR Assessment Maker</h1>
+        </div>
+        <div class="api-status" id="api-status" role="status">Connecting</div>
+      </header>
+
+      <nav class="tabs" aria-label="Primary">
+        <button class="tab active" data-tab="load">Load Quiz/Test</button>
+        <button class="tab" data-tab="create">Create Quiz/Test</button>
+        <button class="tab" data-tab="settings">Settings</button>
+        <button class="tab" data-tab="grades">Grade Log</button>
+      </nav>
+
+      <section class="view active" id="view-load" aria-labelledby="load-title">
+        <div class="flow-grid">
+          <section class="panel">
+            <h2 id="load-title">Load Quiz/Test</h2>
+            <div class="field">
+              <label for="category-select">Category</label>
+              <select id="category-select"></select>
+            </div>
+            <div class="field">
+              <label for="assessment-select">Assessment</label>
+              <select id="assessment-select"></select>
+            </div>
+            <fieldset class="segmented">
+              <legend>Mode</legend>
+              <label><input type="radio" name="mode" value="practice" checked /> Practice</label>
+              <label><input type="radio" name="mode" value="scored" /> Scored</label>
+            </fieldset>
+            <button class="primary" id="start-attempt">Start Attempt</button>
+          </section>
+
+          <section class="panel workspace" id="attempt-panel">
+            <h2>Attempt</h2>
+            <div id="attempt-content" class="empty-state">Choose an assessment to begin.</div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-create" aria-labelledby="create-title">
+        <section class="panel">
+          <h2 id="create-title">Create Quiz/Test</h2>
+          <p class="muted">Assessment creation is planned after the core load, attempt, review, and grade-log loop is stable.</p>
+        </section>
+      </section>
+
+      <section class="view" id="view-settings" aria-labelledby="settings-title">
+        <section class="panel">
+          <h2 id="settings-title">Settings</h2>
+          <form id="settings-form" class="settings-grid">
+            <div class="field">
+              <label for="default-mode">Default mode</label>
+              <select id="default-mode" name="defaultMode">
+                <option value="practice">Practice</option>
+                <option value="scored">Scored</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="default-question-order">Question order</label>
+              <select id="default-question-order" name="defaultQuestionOrder">
+                <option value="randomized">Randomized</option>
+                <option value="static">Static</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="default-quiz-length">Default quiz length</label>
+              <input id="default-quiz-length" name="defaultQuizLength" type="number" min="1" max="50" />
+            </div>
+            <div class="field">
+              <label for="default-test-length">Default test length</label>
+              <input id="default-test-length" name="defaultTestLength" type="number" min="1" max="200" />
+            </div>
+            <div class="field">
+              <label for="question-timer">Question timer seconds</label>
+              <input id="question-timer" name="questionTimerSeconds" type="number" min="0" placeholder="None" />
+            </div>
+            <div class="field">
+              <label for="assessment-timer">Assessment timer seconds</label>
+              <input id="assessment-timer" name="assessmentTimerSeconds" type="number" min="0" placeholder="None" />
+            </div>
+            <label class="checkbox-line">
+              <input id="commit-scored" name="commitScoredAttemptsAutomatically" type="checkbox" />
+              Commit scored attempts automatically
+            </label>
+            <button class="primary" type="submit">Save Settings</button>
+          </form>
+          <p id="settings-status" class="muted" role="status"></p>
+        </section>
+      </section>
+
+      <section class="view" id="view-grades" aria-labelledby="grades-title">
+        <section class="panel">
+          <div class="section-header">
+            <h2 id="grades-title">Grade Log</h2>
+            <button id="refresh-grades">Refresh</button>
+          </div>
+          <div id="grade-summary" class="empty-state">No grade entries loaded yet.</div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      type AssessmentMode = "practice" | "scored";
+      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse";
+
+      interface AppSettings {
+        schemaVersion: number;
+        defaultMode: AssessmentMode;
+        defaultQuestionOrder: "randomized" | "static";
+        defaultQuizLength: number;
+        defaultTestLength: number;
+        questionTimerSeconds: number | null;
+        assessmentTimerSeconds: number | null;
+        commitScoredAttemptsAutomatically: boolean;
+      }
+
+      interface Category {
+        id: string;
+        title: string;
+      }
+
+      interface AssessmentSummary {
+        id: string;
+        title: string;
+        assessmentType: "quiz" | "test";
+        questionCount: number;
+      }
+
+      interface ChoiceOption {
+        id: string;
+        text: string;
+      }
+
+      interface Question {
+        id: string;
+        type: QuestionType;
+        prompt: string;
+        choices: ChoiceOption[];
+      }
+
+      interface Assessment {
+        id: string;
+        title: string;
+        questions: Question[];
+      }
+
+      interface Attempt {
+        id: string;
+        assessmentId: string;
+        mode: AssessmentMode;
+        questionOrder: string[];
+      }
+
+      interface QuestionResult {
+        questionId: string;
+        prompt: string;
+        type: QuestionType;
+        isCorrect: boolean | null;
+        explanation: string | null;
+        expectedAnswer: string | null;
+      }
+
+      interface AttemptResults {
+        attemptId: string;
+        assessmentTitle: string;
+        mode: AssessmentMode;
+        correctCount: number;
+        totalQuestions: number;
+        percentScore: number;
+        isComplete: boolean;
+        questions: QuestionResult[];
+      }
+
+      const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
+
+      const state: {
+        settings: AppSettings | null;
+        categories: Category[];
+        assessments: AssessmentSummary[];
+        assessment: Assessment | null;
+        attempt: Attempt | null;
+        currentIndex: number;
+        latestResults: AttemptResults | null;
+      } = {
+        settings: null,
+        categories: [],
+        assessments: [],
+        assessment: null,
+        attempt: null,
+        currentIndex: 0,
+        latestResults: null
+      };
+
+      const apiStatus = document.querySelector<HTMLDivElement>("#api-status")!;
+      const categorySelect = document.querySelector<HTMLSelectElement>("#category-select")!;
+      const assessmentSelect = document.querySelector<HTMLSelectElement>("#assessment-select")!;
+      const attemptContent = document.querySelector<HTMLDivElement>("#attempt-content")!;
+      const settingsForm = document.querySelector<HTMLFormElement>("#settings-form")!;
+      const settingsStatus = document.querySelector<HTMLParagraphElement>("#settings-status")!;
+      const gradeSummary = document.querySelector<HTMLDivElement>("#grade-summary")!;
+
+      document.querySelectorAll<HTMLButtonElement>(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
+          document.querySelectorAll(".view").forEach((item) => item.classList.remove("active"));
+          tab.classList.add("active");
+          document.querySelector(`#view-${tab.dataset.tab}`)?.classList.add("active");
+        });
+      });
+
+      categorySelect.addEventListener("change", () => loadAssessments(categorySelect.value));
+      document.querySelector<HTMLButtonElement>("#start-attempt")!.addEventListener("click", startAttempt);
+      document.querySelector<HTMLButtonElement>("#refresh-grades")!.addEventListener("click", loadGrades);
+      settingsForm.addEventListener("submit", saveSettings);
+
+      await initialize();
+
+      async function initialize() {
+        try {
+          state.settings = await api<AppSettings>("/settings");
+          state.categories = await api<Category[]>("/categories");
+          fillSettingsForm(state.settings);
+          renderCategories();
+          await loadAssessments(categorySelect.value);
+          await loadGrades();
+          setApiStatus("Connected", "ok");
+        } catch (error) {
+          setApiStatus("Backend offline", "error");
+          attemptContent.textContent = readableError(error);
+        }
+      }
+
+      async function loadAssessments(categoryId: string) {
+        if (!categoryId) {
+          state.assessments = [];
+          renderAssessmentOptions();
+          return;
+        }
+
+        state.assessments = await api<AssessmentSummary[]>(`/assessments?categoryId=${encodeURIComponent(categoryId)}`);
+        renderAssessmentOptions();
+      }
+
+      async function startAttempt() {
+        const assessmentId = assessmentSelect.value;
+        if (!assessmentId) return;
+
+        const mode = document.querySelector<HTMLInputElement>("input[name='mode']:checked")!.value as AssessmentMode;
+        state.assessment = await api<Assessment>(`/assessments/${encodeURIComponent(assessmentId)}`);
+        state.attempt = await api<Attempt>("/attempts", {
+          method: "POST",
+          body: JSON.stringify({ assessmentId, mode })
+        });
+        state.currentIndex = 0;
+        state.latestResults = null;
+        renderCurrentQuestion();
+      }
+
+      async function submitCurrentAnswer() {
+        if (!state.attempt || !state.assessment) return;
+        const question = getCurrentQuestion();
+        const payload = readAnswer(question);
+
+        await api(`/attempts/${state.attempt.id}/answers`, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
+        if (state.attempt.mode === "practice") {
+          state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+        }
+
+        renderCurrentQuestion();
+      }
+
+      async function completeAttempt() {
+        if (!state.attempt) return;
+        const response = await api<{ results: AttemptResults; committedGrade: unknown | null }>(`/attempts/${state.attempt.id}/complete`, {
+          method: "POST"
+        });
+        state.latestResults = response.results;
+        renderResults(response.committedGrade !== null);
+        await loadGrades();
+      }
+
+      async function commitGrade() {
+        if (!state.attempt) return;
+        await api("/grades/commit", {
+          method: "POST",
+          body: JSON.stringify({ attemptId: state.attempt.id })
+        });
+        await loadGrades();
+        if (state.latestResults) renderResults(true);
+      }
+
+      async function saveSettings(event: Event) {
+        event.preventDefault();
+        const form = new FormData(settingsForm);
+        const settings: AppSettings = {
+          schemaVersion: state.settings?.schemaVersion ?? 1,
+          defaultMode: String(form.get("defaultMode")) as AssessmentMode,
+          defaultQuestionOrder: String(form.get("defaultQuestionOrder")) as "randomized" | "static",
+          defaultQuizLength: Number(form.get("defaultQuizLength")),
+          defaultTestLength: Number(form.get("defaultTestLength")),
+          questionTimerSeconds: nullableNumber(form.get("questionTimerSeconds")),
+          assessmentTimerSeconds: nullableNumber(form.get("assessmentTimerSeconds")),
+          commitScoredAttemptsAutomatically: form.get("commitScoredAttemptsAutomatically") === "on"
+        };
+
+        state.settings = await api<AppSettings>("/settings", {
+          method: "PUT",
+          body: JSON.stringify(settings)
+        });
+        settingsStatus.textContent = "Settings saved.";
+      }
+
+      async function loadGrades() {
+        const summary = await api<{ entryCount: number; averagePercentScore: number | null; entries: any[] }>("/grades/summary");
+
+        if (summary.entryCount === 0) {
+          gradeSummary.innerHTML = `<div class="empty-state">No committed scores yet.</div>`;
+          return;
+        }
+
+        gradeSummary.innerHTML = `
+          <div class="metric-row">
+            <div><span>${summary.entryCount}</span><small>Entries</small></div>
+            <div><span>${summary.averagePercentScore ?? 0}%</span><small>Average</small></div>
+          </div>
+          <table>
+            <thead><tr><th>Assessment</th><th>Mode</th><th>Score</th><th>Committed</th></tr></thead>
+            <tbody>
+              ${summary.entries.map((entry) => `
+                <tr>
+                  <td>${escapeHtml(entry.assessmentTitle)}</td>
+                  <td>${escapeHtml(entry.mode)}</td>
+                  <td>${entry.correctCount}/${entry.totalQuestions} (${entry.percentScore}%)</td>
+                  <td>${new Date(entry.committedAt).toLocaleString()}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+      }
+
+      function renderCategories() {
+        categorySelect.innerHTML = state.categories
+          .map((category) => `<option value="${escapeHtml(category.id)}">${escapeHtml(category.title)}</option>`)
+          .join("");
+      }
+
+      function renderAssessmentOptions() {
+        assessmentSelect.innerHTML = state.assessments
+          .map((assessment) => `<option value="${escapeHtml(assessment.id)}">${escapeHtml(assessment.title)} (${assessment.questionCount})</option>`)
+          .join("");
+      }
+
+      function renderCurrentQuestion() {
+        if (!state.attempt || !state.assessment) return;
+
+        const question = getCurrentQuestion();
+        const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
+        const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
+        const feedback = results?.isCorrect === null || results?.isCorrect === undefined
+          ? ""
+          : `<div class="feedback ${results.isCorrect ? "correct" : "incorrect"}">
+              ${results.isCorrect ? "Correct" : "Needs review"}
+              ${results.explanation ? `<details><summary>Explanation</summary><p>${escapeHtml(results.explanation)}</p></details>` : ""}
+            </div>`;
+
+        attemptContent.innerHTML = `
+          <div class="question-header">
+            <span>${progress}</span>
+            <strong>${escapeHtml(state.assessment.title)}</strong>
+          </div>
+          <h3>${escapeHtml(question.prompt)}</h3>
+          <form id="answer-form" class="answer-form">
+            ${renderAnswerInput(question)}
+            <div class="button-row">
+              <button class="primary" type="submit">Submit Answer</button>
+              <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
+              <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
+              <button type="button" id="complete-attempt">Complete</button>
+            </div>
+          </form>
+          ${feedback}
+        `;
+
+        document.querySelector<HTMLFormElement>("#answer-form")!.addEventListener("submit", (event) => {
+          event.preventDefault();
+          submitCurrentAnswer();
+        });
+        document.querySelector<HTMLButtonElement>("#previous-question")!.addEventListener("click", () => {
+          state.currentIndex -= 1;
+          renderCurrentQuestion();
+        });
+        document.querySelector<HTMLButtonElement>("#next-question")!.addEventListener("click", () => {
+          state.currentIndex += 1;
+          renderCurrentQuestion();
+        });
+        document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
+      }
+
+      function renderResults(alreadyCommitted: boolean) {
+        if (!state.latestResults) return;
+        const results = state.latestResults;
+        attemptContent.innerHTML = `
+          <div class="results-header">
+            <h2>${escapeHtml(results.assessmentTitle)}</h2>
+            <div class="score-badge">${results.percentScore}%</div>
+          </div>
+          <p class="muted">${results.correctCount} correct out of ${results.totalQuestions} questions.</p>
+          <div class="result-list">
+            ${results.questions.map((question) => `
+              <article class="result-item ${question.isCorrect ? "correct" : "incorrect"}">
+                <h3>${escapeHtml(question.prompt)}</h3>
+                <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
+                ${question.expectedAnswer ? `<p>Expected: ${escapeHtml(question.expectedAnswer)}</p>` : ""}
+                ${question.explanation ? `<details open><summary>Explanation</summary><p>${escapeHtml(question.explanation)}</p></details>` : ""}
+              </article>
+            `).join("")}
+          </div>
+          ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : `<button class="primary" id="commit-grade">Commit Score</button>`}
+        `;
+
+        document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
+      }
+
+      function renderAnswerInput(question: Question) {
+        if (question.type === "multipleChoice") {
+          return question.choices.map((choice) => `
+            <label class="choice-line">
+              <input type="radio" name="choiceId" value="${escapeHtml(choice.id)}" required />
+              ${escapeHtml(choice.text)}
+            </label>
+          `).join("");
+        }
+
+        if (question.type === "selectAll") {
+          return question.choices.map((choice) => `
+            <label class="choice-line">
+              <input type="checkbox" name="choiceIds" value="${escapeHtml(choice.id)}" />
+              ${escapeHtml(choice.text)}
+            </label>
+          `).join("");
+        }
+
+        return `
+          <div class="field">
+            <label for="free-response">Your response</label>
+            <textarea id="free-response" name="freeResponseText" rows="5"></textarea>
+          </div>
+          <label class="checkbox-line">
+            <input type="checkbox" name="selfCheckCorrect" />
+            My response matches the expected idea
+          </label>
+        `;
+      }
+
+      function readAnswer(question: Question) {
+        const form = new FormData(document.querySelector<HTMLFormElement>("#answer-form")!);
+        return {
+          questionId: question.id,
+          choiceId: form.get("choiceId"),
+          choiceIds: form.getAll("choiceIds"),
+          freeResponseText: form.get("freeResponseText"),
+          selfCheckCorrect: form.get("selfCheckCorrect") === "on"
+        };
+      }
+
+      function getCurrentQuestion() {
+        const questionId = state.attempt!.questionOrder[state.currentIndex];
+        return state.assessment!.questions.find((question) => question.id === questionId)!;
+      }
+
+      function fillSettingsForm(settings: AppSettings) {
+        settingsForm.defaultMode.value = settings.defaultMode;
+        settingsForm.defaultQuestionOrder.value = settings.defaultQuestionOrder;
+        settingsForm.defaultQuizLength.value = String(settings.defaultQuizLength);
+        settingsForm.defaultTestLength.value = String(settings.defaultTestLength);
+        settingsForm.questionTimerSeconds.value = settings.questionTimerSeconds?.toString() ?? "";
+        settingsForm.assessmentTimerSeconds.value = settings.assessmentTimerSeconds?.toString() ?? "";
+        settingsForm.commitScoredAttemptsAutomatically.checked = settings.commitScoredAttemptsAutomatically;
+      }
+
+      async function api<T>(path: string, init?: RequestInit): Promise<T> {
+        const response = await fetch(`${API_BASE}${path}`, {
+          headers: { "Content-Type": "application/json" },
+          ...init
+        });
+
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        return response.json();
+      }
+
+      function nullableNumber(value: FormDataEntryValue | null) {
+        const text = String(value ?? "").trim();
+        return text === "" ? null : Number(text);
+      }
+
+      function setApiStatus(text: string, tone: "ok" | "error") {
+        apiStatus.textContent = text;
+        apiStatus.dataset.tone = tone;
+      }
+
+      function readableError(error: unknown) {
+        return error instanceof Error ? error.message : "Something went wrong.";
+      }
+
+      function escapeHtml(value: string) {
+        return value.replace(/[&<>"']/g, (character) => ({
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          "\"": "&quot;",
+          "'": "&#039;"
+        }[character]!));
+      }
+    </script>
+  </body>
+</html>

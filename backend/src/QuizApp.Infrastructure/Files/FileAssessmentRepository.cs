@@ -1,0 +1,105 @@
+using QuizApp.Core.Domain;
+using QuizApp.Core.Repositories;
+using QuizApp.Core.Services;
+
+namespace QuizApp.Infrastructure.Files;
+
+public sealed class FileAssessmentRepository : IAssessmentRepository
+{
+    private readonly FileStorageOptions options;
+    private readonly AssessmentValidator validator;
+
+    public FileAssessmentRepository(FileStorageOptions options, AssessmentValidator validator)
+    {
+        this.options = options;
+        this.validator = validator;
+    }
+
+    public async Task<IReadOnlyList<AssessmentSummary>> ListByCategoryAsync(string categoryId, CancellationToken cancellationToken = default)
+    {
+        var assessments = await LoadAllAsync(cancellationToken);
+        return assessments
+            .Where(assessment => string.Equals(assessment.CategoryId, categoryId, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(assessment => assessment.Title)
+            .Select(assessment => new AssessmentSummary(
+                assessment.Id,
+                assessment.Title,
+                assessment.AssessmentType,
+                assessment.CategoryId,
+                assessment.SubcategoryIds,
+                assessment.Questions.Count))
+            .ToList();
+    }
+
+    public async Task<AssessmentDefinition?> GetByIdAsync(string assessmentId, CancellationToken cancellationToken = default)
+    {
+        var assessments = await LoadAllAsync(cancellationToken);
+        return assessments.FirstOrDefault(assessment => string.Equals(assessment.Id, assessmentId, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public async Task<AssessmentValidationResult> ValidateFileAsync(string fileName, CancellationToken cancellationToken = default)
+    {
+        var path = ResolveAssessmentFile(fileName);
+        if (path is null)
+        {
+            return new AssessmentValidationResult(new[] { new ValidationIssue("FILE_NOT_FOUND", $"Assessment file '{fileName}' was not found.") });
+        }
+
+        var assessment = await LoadFileAsync(path, cancellationToken);
+        if (assessment is null)
+        {
+            return new AssessmentValidationResult(new[] { new ValidationIssue("FILE_NOT_READABLE", $"Assessment file '{fileName}' could not be read.") });
+        }
+
+        return validator.Validate(assessment);
+    }
+
+    private async Task<IReadOnlyList<AssessmentDefinition>> LoadAllAsync(CancellationToken cancellationToken)
+    {
+        Directory.CreateDirectory(options.AssessmentsPath);
+        Directory.CreateDirectory(options.SamplesPath);
+        var assessments = new List<AssessmentDefinition>();
+
+        foreach (var path in EnumerateAssessmentFiles())
+        {
+            var assessment = await LoadFileAsync(path, cancellationToken);
+            if (assessment is not null)
+            {
+                assessments.Add(assessment);
+            }
+        }
+
+        return assessments;
+    }
+
+    private async Task<AssessmentDefinition?> LoadFileAsync(string path, CancellationToken cancellationToken)
+    {
+        var dto = await FileFormat.ReadAsync<AssessmentFileDto>(path, cancellationToken);
+        return dto?.ToDomain();
+    }
+
+    private string? ResolveAssessmentFile(string fileName)
+    {
+        var safeFileName = Path.GetFileName(fileName);
+        return EnumerateAssessmentFiles()
+            .FirstOrDefault(path => string.Equals(Path.GetFileName(path), safeFileName, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private IEnumerable<string> EnumerateAssessmentFiles()
+    {
+        return EnumerateDataFiles(options.AssessmentsPath).Concat(EnumerateDataFiles(options.SamplesPath));
+    }
+
+    private static IEnumerable<string> EnumerateDataFiles(string directory)
+    {
+        if (!Directory.Exists(directory))
+        {
+            return Array.Empty<string>();
+        }
+
+        return Directory.EnumerateFiles(directory, "*.*")
+            .Where(path => path.EndsWith(".yaml", StringComparison.OrdinalIgnoreCase)
+                || path.EndsWith(".yml", StringComparison.OrdinalIgnoreCase)
+                || path.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
+    }
+}
