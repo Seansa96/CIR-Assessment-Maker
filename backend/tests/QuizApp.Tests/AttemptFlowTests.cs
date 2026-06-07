@@ -66,6 +66,21 @@ public sealed class AttemptFlowTests
         Assert.Equal(100m, summary.AveragePercentScore);
     }
 
+    [Fact]
+    public async Task ListResultsAsync_returns_saved_attempt_results()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
+        var attempts = new InMemoryAttemptRepository();
+        var service = CreateAttemptService(assessment, attempts);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null));
+
+        var results = await service.ListResultsAsync();
+
+        Assert.Contains(results, result => result.AttemptId == attempt.Id && result.PercentScore == 100m);
+    }
+
     private static AttemptService CreateAttemptService(AssessmentDefinition assessment, InMemoryAttemptRepository? attempts = null)
     {
         return new AttemptService(
@@ -177,6 +192,11 @@ internal sealed class InMemoryAssessmentRepository : IAssessmentRepository
         return Task.FromResult<AssessmentDefinition?>(assessment);
     }
 
+    public Task SaveAsync(AssessmentDefinition assessment, CancellationToken cancellationToken = default)
+    {
+        return Task.CompletedTask;
+    }
+
     public Task<AssessmentValidationResult> ValidateFileAsync(string fileName, CancellationToken cancellationToken = default)
     {
         return Task.FromResult(new AssessmentValidationResult(Array.Empty<ValidationIssue>()));
@@ -186,6 +206,11 @@ internal sealed class InMemoryAssessmentRepository : IAssessmentRepository
 internal sealed class InMemoryAttemptRepository : IAttemptRepository
 {
     private readonly Dictionary<string, Attempt> attempts = new(StringComparer.OrdinalIgnoreCase);
+
+    public Task<IReadOnlyList<Attempt>> ListAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<IReadOnlyList<Attempt>>(attempts.Values.OrderByDescending(attempt => attempt.StartedAt).ToList());
+    }
 
     public Task<Attempt?> GetByIdAsync(string attemptId, CancellationToken cancellationToken = default)
     {

@@ -25,3 +25,32 @@ public sealed record SubmitAnswerRequest(
 }
 
 public sealed record CommitGradeRequest(string AttemptId);
+
+public sealed record SaveAssessmentRequest(
+    string Id,
+    string Title,
+    AssessmentType AssessmentType,
+    string CategoryId,
+    IReadOnlyList<string>? SubcategoryIds,
+    AssessmentMode ModeDefault,
+    bool RandomizeQuestions,
+    int? QuestionTimerSeconds,
+    int? AssessmentTimerSeconds,
+    IReadOnlyList<QuestionDefinition>? Questions)
+{
+    public AssessmentDefinition ToDomain()
+    {
+        return new AssessmentDefinition(
+            1,
+            Id.Trim(),
+            Title.Trim(),
+            AssessmentType,
+            CategoryId.Trim(),
+            SubcategoryIds ?? Array.Empty<string>(),
+            ModeDefault,
+            RandomizeQuestions,
+            QuestionTimerSeconds,
+            AssessmentTimerSeconds,
+            Questions ?? Array.Empty<QuestionDefinition>());
+    }
+}

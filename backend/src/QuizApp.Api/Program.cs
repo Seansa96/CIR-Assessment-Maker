@@ -94,6 +94,41 @@ api.MapGet("/assessments/{assessmentId}", async (string assessmentId, IAssessmen
         : Results.Ok(assessment);
 });
 
+api.MapPost("/assessments", async (
+    SaveAssessmentRequest request,
+    IAssessmentRepository repository,
+    AssessmentValidator validator,
+    CancellationToken cancellationToken) =>
+{
+    var assessment = request.ToDomain();
+    var validation = validator.Validate(assessment);
+    if (!validation.IsValid)
+    {
+        return Results.BadRequest(new { error = new { code = "ASSESSMENT_INVALID", message = "Assessment validation failed.", details = validation.Issues } });
+    }
+
+    await repository.SaveAsync(assessment, cancellationToken);
+    return Results.Created($"/api/assessments/{assessment.Id}", assessment);
+});
+
+api.MapPut("/assessments/{assessmentId}", async (
+    string assessmentId,
+    SaveAssessmentRequest request,
+    IAssessmentRepository repository,
+    AssessmentValidator validator,
+    CancellationToken cancellationToken) =>
+{
+    var assessment = request.ToDomain() with { Id = assessmentId.Trim() };
+    var validation = validator.Validate(assessment);
+    if (!validation.IsValid)
+    {
+        return Results.BadRequest(new { error = new { code = "ASSESSMENT_INVALID", message = "Assessment validation failed.", details = validation.Issues } });
+    }
+
+    await repository.SaveAsync(assessment, cancellationToken);
+    return Results.Ok(assessment);
+});
+
 api.MapPost("/assessments/validate", async (ValidateAssessmentFileRequest request, IAssessmentRepository repository, CancellationToken cancellationToken) =>
 {
     return Results.Ok(await repository.ValidateFileAsync(request.FileName, cancellationToken));
@@ -110,6 +145,11 @@ api.MapPost("/attempts", async (StartAttemptRequest request, AttemptService atte
     {
         return Results.BadRequest(ApiError("ATTEMPT_START_FAILED", ex.Message));
     }
+});
+
+api.MapGet("/attempts", async (AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await attemptService.ListResultsAsync(cancellationToken));
 });
 
 api.MapPost("/attempts/{attemptId}/answers", async (string attemptId, SubmitAnswerRequest request, AttemptService attemptService, CancellationToken cancellationToken) =>

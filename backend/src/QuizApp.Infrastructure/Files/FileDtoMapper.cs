@@ -59,6 +59,24 @@ internal static class FileDtoMapper
             (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList());
     }
 
+    public static AssessmentFileDto ToDto(this AssessmentDefinition assessment)
+    {
+        return new AssessmentFileDto
+        {
+            SchemaVersion = assessment.SchemaVersion,
+            Id = assessment.Id,
+            Title = assessment.Title,
+            AssessmentType = ToWireValue(assessment.AssessmentType),
+            CategoryId = assessment.CategoryId,
+            SubcategoryIds = assessment.SubcategoryIds.ToList(),
+            ModeDefault = ToWireValue(assessment.ModeDefault),
+            RandomizeQuestions = assessment.RandomizeQuestions,
+            QuestionTimerSeconds = assessment.QuestionTimerSeconds,
+            AssessmentTimerSeconds = assessment.AssessmentTimerSeconds,
+            Questions = assessment.Questions.Select(ToDto).ToList()
+        };
+    }
+
     private static QuestionDefinition ToDomain(QuestionFileDto dto)
     {
         return new QuestionDefinition(
@@ -74,6 +92,25 @@ internal static class FileDtoMapper
                 dto.Answer?.Expected,
                 dto.Answer?.GradingMode),
             dto.Explanation);
+    }
+
+    private static QuestionFileDto ToDto(QuestionDefinition question)
+    {
+        return new QuestionFileDto
+        {
+            Id = question.Id,
+            Type = ToWireValue(question.Type),
+            Prompt = question.Prompt,
+            Choices = question.Choices.Select(choice => new ChoiceFileDto { Id = choice.Id, Text = choice.Text }).ToList(),
+            Answer = new AnswerFileDto
+            {
+                ChoiceId = question.Answer.ChoiceId,
+                ChoiceIds = question.Answer.ChoiceIds.ToList(),
+                Expected = question.Answer.Expected,
+                GradingMode = question.Answer.GradingMode
+            },
+            Explanation = question.Explanation
+        };
     }
 
     private static AssessmentType ParseAssessmentType(string? value)
@@ -119,6 +156,21 @@ internal static class FileDtoMapper
     private static string ToWireValue(AssessmentMode mode)
     {
         return mode is AssessmentMode.Scored ? "scored" : "practice";
+    }
+
+    private static string ToWireValue(AssessmentType assessmentType)
+    {
+        return assessmentType is AssessmentType.Test ? "test" : "quiz";
+    }
+
+    private static string ToWireValue(QuestionType questionType)
+    {
+        return questionType switch
+        {
+            QuestionType.SelectAll => "selectAll",
+            QuestionType.FreeResponse => "freeResponse",
+            _ => "multipleChoice"
+        };
     }
 
     private static string Normalize(string? value)

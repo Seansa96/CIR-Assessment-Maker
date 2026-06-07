@@ -92,6 +92,23 @@ public sealed class AttemptService
         return scoringService.BuildResults(assessment, attempt);
     }
 
+    public async Task<IReadOnlyList<AttemptResults>> ListResultsAsync(CancellationToken cancellationToken = default)
+    {
+        var attempts = await attemptRepository.ListAsync(cancellationToken);
+        var results = new List<AttemptResults>();
+
+        foreach (var attempt in attempts)
+        {
+            var assessment = await assessmentRepository.GetByIdAsync(attempt.AssessmentId, cancellationToken);
+            if (assessment is not null)
+            {
+                results.Add(scoringService.BuildResults(assessment, attempt));
+            }
+        }
+
+        return results;
+    }
+
     private async Task<AssessmentDefinition> GetValidAssessmentAsync(string assessmentId, CancellationToken cancellationToken)
     {
         var assessment = await assessmentRepository.GetByIdAsync(assessmentId, cancellationToken)

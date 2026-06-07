@@ -37,6 +37,18 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
         return assessments.FirstOrDefault(assessment => string.Equals(assessment.Id, assessmentId, StringComparison.OrdinalIgnoreCase));
     }
 
+    public async Task SaveAsync(AssessmentDefinition assessment, CancellationToken cancellationToken = default)
+    {
+        var validation = validator.Validate(assessment);
+        if (!validation.IsValid)
+        {
+            throw new InvalidOperationException($"Assessment '{assessment.Id}' is invalid: {string.Join("; ", validation.Issues.Select(issue => issue.Message))}");
+        }
+
+        var path = Path.Combine(options.AssessmentsPath, $"{ToSafeFileName(assessment.Id)}.yaml");
+        await FileFormat.WriteYamlAsync(path, assessment.ToDto(), cancellationToken);
+    }
+
     public async Task<AssessmentValidationResult> ValidateFileAsync(string fileName, CancellationToken cancellationToken = default)
     {
         var path = ResolveAssessmentFile(fileName);
@@ -101,5 +113,14 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             .Where(path => path.EndsWith(".yaml", StringComparison.OrdinalIgnoreCase)
                 || path.EndsWith(".yml", StringComparison.OrdinalIgnoreCase)
                 || path.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string ToSafeFileName(string value)
+    {
+        var safeCharacters = value
+            .Select(character => char.IsLetterOrDigit(character) || character is '-' or '_' ? character : '-')
+            .ToArray();
+
+        return new string(safeCharacters).Trim('-').ToLowerInvariant();
     }
 }
