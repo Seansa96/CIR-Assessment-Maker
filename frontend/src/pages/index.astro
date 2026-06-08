@@ -200,6 +200,7 @@ import "../styles/global.css";
 
       type AssessmentMode = "practice" | "scored";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse";
+      type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
 
       interface AppSettings {
         schemaVersion: number;
@@ -271,7 +272,17 @@ import "../styles/global.css";
         id: string;
         assessmentId: string;
         mode: AssessmentMode;
+        status: AttemptStatus;
         questionOrder: string[];
+      }
+
+      interface SubmittedAnswer {
+        questionId: string;
+        choiceId: string | null;
+        choiceIds: string[];
+        freeResponseText: string | null;
+        selfCheckCorrect: boolean | null;
+        numericValue: number | null;
       }
 
       interface QuestionResult {
@@ -279,6 +290,7 @@ import "../styles/global.css";
         prompt: string;
         type: QuestionType;
         media?: MediaAsset[];
+        submittedAnswer: SubmittedAnswer | null;
         isCorrect: boolean | null;
         explanation: string | null;
         expectedAnswer: string | null;
@@ -293,6 +305,22 @@ import "../styles/global.css";
         percentScore: number;
         isComplete: boolean;
         questions: QuestionResult[];
+      }
+
+      interface AttemptSessionResponse {
+        attempt: Attempt;
+        assessment: Assessment;
+        results: AttemptResults;
+      }
+
+      interface GradeLogEntry {
+        attemptId: string;
+        assessmentTitle: string;
+        mode: AssessmentMode;
+        correctCount: number;
+        totalQuestions: number;
+        percentScore: number;
+        committedAt: string;
       }
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
@@ -311,6 +339,7 @@ import "../styles/global.css";
         attempt: Attempt | null;
         currentIndex: number;
         latestResults: AttemptResults | null;
+        committedAttemptIds: Set<string>;
         draftQuestions: Question[];
       } = {
         settings: null,
@@ -320,6 +349,7 @@ import "../styles/global.css";
         attempt: null,
         currentIndex: 0,
         latestResults: null,
+        committedAttemptIds: new Set(),
         draftQuestions: []
       };
 
@@ -343,10 +373,7 @@ import "../styles/global.css";
 
       document.querySelectorAll<HTMLButtonElement>(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
-          document.querySelectorAll(".tab").forEach((item) => item.classList.remove("active"));
-          document.querySelectorAll(".view").forEach((item) => item.classList.remove("active"));
-          tab.classList.add("active");
-          document.querySelector(`#view-${tab.dataset.tab}`)?.classList.add("active");
+          activateTab(tab.dataset.tab ?? "load");
         });
       });
 
@@ -442,7 +469,7 @@ import "../styles/global.css";
         if (submitButton) setBusy(submitButton, "Saving");
 
         try {
-          await api(`/attempts/${state.attempt.id}/answers`, {
+          state.attempt = await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
             method: "POST",
             body: JSON.stringify(payload)
           });
@@ -455,6 +482,90 @@ import "../styles/global.css";
         } finally {
           if (submitButton) clearBusy(submitButton, "Submit Answer");
         }
+      }
+
+      async function resumeAttemptSession(attemptId: string) {
+        const session = await api<AttemptSessionResponse>(`/attempts/${encodeURIComponent(attemptId)}/resume`, {
+          method: "POST"
+        });
+        await loadSession(session, true);
+      }
+
+      async function reviewAttemptSession(attemptId: string) {
+        const session = await api<AttemptSessionResponse>(`/attempts/${encodeURIComponent(attemptId)}/session`);
+        await loadSession(session, false);
+      }
+
+      async function loadSession(session: AttemptSessionResponse, preferFirstUnanswered: boolean) {
+        state.assessment = session.assessment;
+        state.attempt = session.attempt;
+        state.latestResults = session.results;
+        state.currentIndex = preferFirstUnanswered ? firstUnansweredIndex(session.results, session.attempt) : 0;
+        updateActiveAttemptChip(statusLabel(session.attempt.status));
+        activateTab("load");
+
+        if (session.attempt.status === "completed" || session.attempt.status === "abandoned") {
+          await renderResults(isAttemptCommitted(session.attempt.id));
+          return;
+        }
+
+        await renderCurrentQuestion();
+      }
+
+      async function pauseAttempt() {
+        if (!state.attempt) return;
+        const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${state.attempt.id}/pause`, {
+          method: "POST"
+        });
+        state.attempt = response.attempt;
+        state.latestResults = response.results;
+        updateActiveAttemptChip("Paused");
+        attemptContent.innerHTML = `
+          <div class="empty-state">
+            Progress saved. This attempt is paused and can be continued from Attempt Sessions.
+          </div>
+        `;
+        await loadGrades();
+      }
+
+      async function abandonAttempt() {
+        if (!state.attempt) return;
+        if (!confirm("Quit this attempt early? It will be kept for review but cannot be committed to the grade log.")) return;
+
+        const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${state.attempt.id}/abandon`, {
+          method: "POST"
+        });
+        state.attempt = response.attempt;
+        state.latestResults = response.results;
+        updateActiveAttemptChip("Abandoned");
+        await renderResults(false);
+        await loadGrades();
+      }
+
+      async function deleteAttempt(attemptId: string) {
+        if (!confirm("Delete this attempt and any linked grade entry? This cannot be undone.")) return;
+        await api(`/attempts/${encodeURIComponent(attemptId)}`, { method: "DELETE" });
+        if (state.attempt?.id === attemptId) {
+          state.attempt = null;
+          state.assessment = null;
+          state.latestResults = null;
+          updateActiveAttemptChip();
+          attemptContent.innerHTML = `<div class="empty-state">Attempt deleted.</div>`;
+        }
+        await loadGrades();
+      }
+
+      async function deleteGrade(attemptId: string) {
+        if (!confirm("Delete this grade entry and its linked attempt? This cannot be undone.")) return;
+        await api(`/grades/${encodeURIComponent(attemptId)}`, { method: "DELETE" });
+        if (state.attempt?.id === attemptId) {
+          state.attempt = null;
+          state.assessment = null;
+          state.latestResults = null;
+          updateActiveAttemptChip();
+          attemptContent.innerHTML = `<div class="empty-state">Grade and linked attempt deleted.</div>`;
+        }
+        await loadGrades();
       }
 
       async function completeAttempt() {
@@ -508,8 +619,9 @@ import "../styles/global.css";
       }
 
       async function loadGrades() {
-        const summary = await api<{ entryCount: number; averagePercentScore: number | null; entries: any[] }>("/grades/summary");
+        const summary = await api<{ entryCount: number; averagePercentScore: number | null; entries: GradeLogEntry[] }>("/grades/summary");
         const attempts = await api<AttemptResults[]>("/attempts");
+        state.committedAttemptIds = new Set(summary.entries.map((entry) => entry.attemptId));
 
         if (summary.entryCount === 0) {
           gradeSummary.innerHTML = `<div class="empty-state">No committed scores yet.</div>`;
@@ -520,7 +632,7 @@ import "../styles/global.css";
               <div><span>${summary.averagePercentScore ?? 0}%</span><small>Average</small></div>
             </div>
             <table>
-              <thead><tr><th>Assessment</th><th>Mode</th><th>Score</th><th>Committed</th></tr></thead>
+              <thead><tr><th>Assessment</th><th>Mode</th><th>Score</th><th>Committed</th><th>Actions</th></tr></thead>
               <tbody>
                 ${summary.entries.map((entry) => `
                   <tr>
@@ -528,6 +640,7 @@ import "../styles/global.css";
                     <td>${escapeHtml(entry.mode)}</td>
                     <td>${entry.correctCount}/${entry.totalQuestions} (${entry.percentScore}%)</td>
                     <td>${new Date(entry.committedAt).toLocaleString()}</td>
+                    <td><button type="button" data-delete-grade="${escapeHtml(entry.attemptId)}">Delete Grade</button></td>
                   </tr>
                 `).join("")}
               </tbody>
@@ -542,19 +655,121 @@ import "../styles/global.css";
 
         attemptHistory.innerHTML = `
           <table>
-            <thead><tr><th>Assessment</th><th>Mode</th><th>Status</th><th>Score</th></tr></thead>
+            <thead><tr><th>Assessment</th><th>Mode</th><th>Status</th><th>Progress</th><th>Score</th><th>Actions</th></tr></thead>
             <tbody>
               ${attempts.map((attempt) => `
                 <tr>
                   <td>${escapeHtml(attempt.assessmentTitle)}</td>
                   <td>${escapeHtml(attempt.mode)}</td>
-                  <td>${attempt.isComplete ? "Complete" : "In progress"}</td>
+                  <td>${escapeHtml(statusLabel(attempt.status))}</td>
+                  <td>${answeredCount(attempt)}/${attempt.totalQuestions}</td>
                   <td>${attempt.correctCount}/${attempt.totalQuestions} (${attempt.percentScore}%)</td>
+                  <td class="table-actions">${renderAttemptActions(attempt)}</td>
                 </tr>
               `).join("")}
             </tbody>
           </table>
         `;
+
+        gradeSummary.querySelectorAll<HTMLButtonElement>("[data-delete-grade]").forEach((button) => {
+          button.addEventListener("click", () => deleteGrade(button.dataset.deleteGrade ?? ""));
+        });
+        attemptHistory.querySelectorAll<HTMLButtonElement>("[data-attempt-action]").forEach((button) => {
+          button.addEventListener("click", () => handleAttemptAction(button.dataset.attemptAction ?? "", button.dataset.attemptId ?? ""));
+        });
+      }
+
+      function renderAttemptActions(attempt: AttemptResults) {
+        const id = escapeHtml(attempt.attemptId);
+        const actions: string[] = [];
+
+        if (attempt.status === "inProgress" || attempt.status === "paused") {
+          actions.push(`<button type="button" data-attempt-action="continue" data-attempt-id="${id}">Continue</button>`);
+        }
+
+        if (attempt.status === "inProgress") {
+          actions.push(`<button type="button" data-attempt-action="pause" data-attempt-id="${id}">Save and Quit</button>`);
+        }
+
+        if (attempt.status === "inProgress" || attempt.status === "paused") {
+          actions.push(`<button type="button" data-attempt-action="abandon" data-attempt-id="${id}">Quit Early</button>`);
+        }
+
+        if (attempt.status === "completed" || attempt.status === "abandoned") {
+          actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
+        }
+
+        if (attempt.status === "completed" && !isAttemptCommitted(attempt.attemptId)) {
+          actions.push(`<button type="button" data-attempt-action="commit" data-attempt-id="${id}">Commit</button>`);
+        }
+
+        actions.push(`<button type="button" data-attempt-action="delete" data-attempt-id="${id}">Delete</button>`);
+        return actions.join(" ");
+      }
+
+      async function handleAttemptAction(action: string, attemptId: string) {
+        if (!attemptId) return;
+
+        if (action === "continue") {
+          await resumeAttemptSession(attemptId);
+        } else if (action === "review") {
+          await reviewAttemptSession(attemptId);
+        } else if (action === "pause") {
+          const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${encodeURIComponent(attemptId)}/pause`, { method: "POST" });
+          if (state.attempt?.id === attemptId) {
+            state.attempt = response.attempt;
+            state.latestResults = response.results;
+            updateActiveAttemptChip("Paused");
+          }
+          await loadGrades();
+        } else if (action === "abandon") {
+          if (!confirm("Quit this attempt early? It will be kept for review but cannot be committed to the grade log.")) return;
+          const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${encodeURIComponent(attemptId)}/abandon`, { method: "POST" });
+          if (state.attempt?.id === attemptId) {
+            state.attempt = response.attempt;
+            state.latestResults = response.results;
+            updateActiveAttemptChip("Abandoned");
+          }
+          await loadGrades();
+        } else if (action === "commit") {
+          await api("/grades/commit", {
+            method: "POST",
+            body: JSON.stringify({ attemptId })
+          });
+          await loadGrades();
+        } else if (action === "delete") {
+          await deleteAttempt(attemptId);
+        }
+      }
+
+      function firstUnansweredIndex(results: AttemptResults, attempt: Attempt) {
+        const firstUnansweredQuestion = results.questions.find((question) => !question.submittedAnswer);
+        if (!firstUnansweredQuestion) return 0;
+        const index = attempt.questionOrder.findIndex((questionId) => questionId === firstUnansweredQuestion.questionId);
+        return index < 0 ? 0 : index;
+      }
+
+      function answeredCount(attempt: AttemptResults) {
+        return attempt.questions.filter((question) => question.submittedAnswer).length;
+      }
+
+      function statusLabel(status: AttemptStatus) {
+        return {
+          inProgress: "In progress",
+          paused: "Paused",
+          completed: "Complete",
+          abandoned: "Abandoned"
+        }[status] ?? "In progress";
+      }
+
+      function isAttemptCommitted(attemptId: string) {
+        return state.committedAttemptIds.has(attemptId);
+      }
+
+      function activateTab(tabName: string) {
+        document.querySelectorAll(".tab").forEach((item) => item.classList.toggle("active", (item as HTMLButtonElement).dataset.tab === tabName));
+        document.querySelectorAll(".view").forEach((item) => item.classList.remove("active"));
+        document.querySelector(`#view-${tabName}`)?.classList.add("active");
       }
 
       function renderCategories() {
@@ -847,6 +1062,10 @@ import "../styles/global.css";
 
       async function renderCurrentQuestion() {
         if (!state.attempt || !state.assessment) return;
+        if (state.attempt.status !== "inProgress") {
+          attemptContent.innerHTML = `<div class="empty-state">This attempt is ${escapeHtml(statusLabel(state.attempt.status).toLowerCase())}. Continue it from Attempt Sessions to make changes.</div>`;
+          return;
+        }
 
         const question = getCurrentQuestion();
         const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
@@ -870,12 +1089,14 @@ import "../styles/global.css";
             ${renderMedia(question.media ?? [])}
           </div>
           <form id="answer-form" class="answer-form">
-            ${await renderAnswerInput(question)}
+            ${await renderAnswerInput(question, results?.submittedAnswer ?? null)}
             <div class="button-row">
               <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
               <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
               <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
               <button class="chunky secondary-action" type="button" id="complete-attempt">Complete</button>
+              <button type="button" id="pause-attempt">Save and Quit</button>
+              <button type="button" id="abandon-attempt">Quit Early</button>
             </div>
           </form>
           ${feedback}
@@ -894,6 +1115,8 @@ import "../styles/global.css";
           void renderCurrentQuestion();
         });
         document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
+        document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
+        document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupChoiceCards(question);
       }
 
@@ -921,19 +1144,20 @@ import "../styles/global.css";
             <h2>${escapeHtml(results.assessmentTitle)}</h2>
             <div class="score-badge">${results.percentScore}%</div>
           </div>
-          <p class="muted">${results.correctCount} correct out of ${results.totalQuestions} questions.</p>
+          <p class="muted">${results.correctCount} correct out of ${results.totalQuestions} questions. Status: ${escapeHtml(statusLabel(results.status))}.</p>
           <div class="result-list">
             ${questionHtml.join("")}
           </div>
-          ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : `<button class="primary chunky" id="commit-grade">Commit Score</button>`}
+          ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
+          ${!alreadyCommitted && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
         `;
 
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
       }
 
-      async function renderAnswerInput(question: Question) {
+      async function renderAnswerInput(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
         if (question.type === "multipleChoice") {
-          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "radio")));
+          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "radio", submittedAnswer)));
           return `
             <div class="choice-card-list" role="radiogroup" aria-label="Answer choices">
               ${choices.join("")}
@@ -942,7 +1166,7 @@ import "../styles/global.css";
         }
 
         if (question.type === "selectAll") {
-          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "checkbox")));
+          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "checkbox", submittedAnswer)));
           return `
             <div class="choice-card-list" role="group" aria-label="Select all that apply">
               ${choices.join("")}
@@ -954,7 +1178,7 @@ import "../styles/global.css";
           return `
             <div class="field numeric-response-field">
               <label for="numeric-response">Numeric response</label>
-              <input id="numeric-response" name="numericValue" type="number" step="any" inputmode="decimal" />
+              <input id="numeric-response" name="numericValue" type="number" step="any" inputmode="decimal" value="${escapeHtml(String(submittedAnswer?.numericValue ?? ""))}" />
             </div>
           `;
         }
@@ -962,26 +1186,29 @@ import "../styles/global.css";
         return `
           <div class="field">
             <label for="free-response">Your response</label>
-            <textarea id="free-response" name="freeResponseText" rows="5"></textarea>
+            <textarea id="free-response" name="freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
           </div>
           <label class="checkbox-line">
-            <input type="checkbox" name="selfCheckCorrect" />
+            <input type="checkbox" name="selfCheckCorrect" ${submittedAnswer?.selfCheckCorrect ? "checked" : ""} />
             My response matches the expected idea
           </label>
         `;
       }
 
-      async function renderChoiceCard(choice: ChoiceOption, index: number, role: "radio" | "checkbox") {
+      async function renderChoiceCard(choice: ChoiceOption, index: number, role: "radio" | "checkbox", submittedAnswer: SubmittedAnswer | null) {
         const isSelectAll = role === "checkbox";
         const shortcut = choiceShortcut(index);
         const choiceHtml = await renderMarkdown(choice.text);
+        const selected = isSelectAll
+          ? submittedAnswer?.choiceIds?.includes(choice.id) == true
+          : submittedAnswer?.choiceId === choice.id;
 
         return `
           <button
             type="button"
-            class="choice-card ${isSelectAll ? "select-card" : ""}"
+            class="choice-card ${isSelectAll ? "select-card" : ""} ${selected ? "selected" : ""}"
             role="${role}"
-            aria-checked="false"
+            aria-checked="${selected}"
             data-choice-id="${escapeHtml(choice.id)}"
             data-shortcut="${shortcut}"
           >
@@ -1126,7 +1353,12 @@ import "../styles/global.css";
           throw new Error(await response.text());
         }
 
-        return response.json();
+        if (response.status === 204) {
+          return undefined as T;
+        }
+
+        const text = await response.text();
+        return text ? JSON.parse(text) : undefined as T;
       }
 
       function nullableNumber(value: FormDataEntryValue | null) {

@@ -25,6 +25,14 @@ public sealed class FileGradeLogRepository : IGradeLogRepository
         await FileFormat.WriteJsonAsync(GetLogPath(), entries, cancellationToken);
     }
 
+    public async Task RemoveByAttemptIdAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        var entries = (await ListAsync(cancellationToken))
+            .Where(entry => !string.Equals(entry.AttemptId, attemptId, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        await FileFormat.WriteJsonAsync(GetLogPath(), entries, cancellationToken);
+    }
+
     private string GetLogPath()
     {
         return Path.Combine(options.GradesPath, "grade-log.json");

@@ -54,10 +54,11 @@ public sealed class ScoringService
             assessment.Id,
             assessment.Title,
             attempt.Mode,
+            attempt.Status,
             correctCount,
             totalQuestions,
             percentScore,
-            attempt.CompletedAt is not null,
+            attempt.Status is AttemptStatus.Completed,
             questionResults);
     }
 

@@ -31,7 +31,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("LocalFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:4321", "http://127.0.0.1:4321")
+        policy.WithOrigins("http://localhost:4321", "http://127.0.0.1:4321", "http://localhost:3000", "http://127.0.0.1:3000")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -152,6 +152,84 @@ api.MapGet("/attempts", async (AttemptService attemptService, CancellationToken 
     return Results.Ok(await attemptService.ListResultsAsync(cancellationToken));
 });
 
+api.MapGet("/attempts/{attemptId}/session", async (
+    string attemptId,
+    AttemptService attemptService,
+    IAssessmentRepository assessmentRepository,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        var attempt = await attemptService.GetAsync(attemptId, cancellationToken);
+        var assessment = await assessmentRepository.GetByIdAsync(attempt.AssessmentId, cancellationToken);
+
+        return assessment is null
+            ? Results.NotFound(ApiError("ASSESSMENT_NOT_FOUND", $"Assessment '{attempt.AssessmentId}' was not found."))
+            : Results.Ok(new AttemptSessionResponse(attempt, assessment, results));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.NotFound(ApiError("ATTEMPT_NOT_FOUND", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/resume", async (
+    string attemptId,
+    AttemptService attemptService,
+    IAssessmentRepository assessmentRepository,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.ResumeAsync(attemptId, cancellationToken);
+        var assessment = await assessmentRepository.GetByIdAsync(attempt.AssessmentId, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+
+        return assessment is null
+            ? Results.NotFound(ApiError("ASSESSMENT_NOT_FOUND", $"Assessment '{attempt.AssessmentId}' was not found."))
+            : Results.Ok(new AttemptSessionResponse(attempt, assessment, results));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ATTEMPT_RESUME_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/pause", async (string attemptId, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.PauseAsync(attemptId, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ATTEMPT_PAUSE_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/abandon", async (string attemptId, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.AbandonAsync(attemptId, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ATTEMPT_ABANDON_FAILED", ex.Message));
+    }
+});
+
+api.MapDelete("/attempts/{attemptId}", async (string attemptId, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    await attemptService.DeleteAsync(attemptId, cancellationToken);
+    return Results.NoContent();
+});
+
 api.MapPost("/attempts/{attemptId}/answers", async (string attemptId, SubmitAnswerRequest request, AttemptService attemptService, CancellationToken cancellationToken) =>
 {
     try
@@ -200,6 +278,12 @@ api.MapGet("/attempts/{attemptId}/results", async (string attemptId, AttemptServ
     {
         return Results.NotFound(ApiError("ATTEMPT_NOT_FOUND", ex.Message));
     }
+});
+
+api.MapDelete("/grades/{attemptId}", async (string attemptId, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    await attemptService.DeleteAsync(attemptId, cancellationToken);
+    return Results.NoContent();
 });
 
 api.MapPost("/grades/commit", async (CommitGradeRequest request, GradeLogService gradeLogService, CancellationToken cancellationToken) =>

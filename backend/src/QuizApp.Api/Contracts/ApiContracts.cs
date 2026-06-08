@@ -6,6 +6,11 @@ public sealed record ValidateAssessmentFileRequest(string FileName);
 
 public sealed record StartAttemptRequest(string AssessmentId, AssessmentMode? Mode);
 
+public sealed record AttemptSessionResponse(
+    Attempt Attempt,
+    AssessmentDefinition Assessment,
+    AttemptResults Results);
+
 public sealed record SubmitAnswerRequest(
     string QuestionId,
     string? ChoiceId,

@@ -8,6 +8,7 @@ public sealed class AttemptService
 {
     private readonly IAssessmentRepository assessmentRepository;
     private readonly IAttemptRepository attemptRepository;
+    private readonly IGradeLogRepository gradeLogRepository;
     private readonly ISettingsRepository settingsRepository;
     private readonly AssessmentValidator validator;
     private readonly ScoringService scoringService;
@@ -15,12 +16,14 @@ public sealed class AttemptService
     public AttemptService(
         IAssessmentRepository assessmentRepository,
         IAttemptRepository attemptRepository,
+        IGradeLogRepository gradeLogRepository,
         ISettingsRepository settingsRepository,
         AssessmentValidator validator,
         ScoringService scoringService)
     {
         this.assessmentRepository = assessmentRepository;
         this.attemptRepository = attemptRepository;
+        this.gradeLogRepository = gradeLogRepository;
         this.settingsRepository = settingsRepository;
         this.validator = validator;
         this.scoringService = scoringService;
@@ -42,9 +45,12 @@ public sealed class AttemptService
             Guid.NewGuid().ToString("n"),
             assessment.Id,
             selectedMode,
+            AttemptStatus.InProgress,
             questionOrder,
             Array.Empty<AttemptAnswer>(),
             DateTimeOffset.UtcNow,
+            null,
+            null,
             null);
 
         await attemptRepository.SaveAsync(attempt, cancellationToken);
@@ -54,9 +60,9 @@ public sealed class AttemptService
     public async Task<Attempt> SubmitAnswerAsync(string attemptId, SubmittedAnswer submittedAnswer, CancellationToken cancellationToken = default)
     {
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
-        if (attempt.CompletedAt is not null)
+        if (attempt.Status is not AttemptStatus.InProgress)
         {
-            throw new InvalidOperationException("Cannot submit answers after an attempt is complete.");
+            throw new InvalidOperationException("Can only submit answers to an in-progress attempt.");
         }
 
         var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
@@ -74,15 +80,79 @@ public sealed class AttemptService
         return updatedAttempt;
     }
 
+    public async Task<Attempt> ResumeAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        if (attempt.Status is not AttemptStatus.InProgress and not AttemptStatus.Paused)
+        {
+            throw new InvalidOperationException("Only in-progress or paused attempts can be resumed.");
+        }
+
+        var updatedAttempt = attempt with
+        {
+            Status = AttemptStatus.InProgress,
+            PausedAt = null
+        };
+        await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
+    public async Task<Attempt> PauseAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        if (attempt.Status is not AttemptStatus.InProgress and not AttemptStatus.Paused)
+        {
+            throw new InvalidOperationException("Only in-progress or paused attempts can be saved and quit.");
+        }
+
+        var updatedAttempt = attempt with
+        {
+            Status = AttemptStatus.Paused,
+            PausedAt = DateTimeOffset.UtcNow
+        };
+        await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
+    public async Task<Attempt> AbandonAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        if (attempt.Status is AttemptStatus.Completed)
+        {
+            throw new InvalidOperationException("Completed attempts cannot be abandoned.");
+        }
+
+        var updatedAttempt = attempt with
+        {
+            Status = AttemptStatus.Abandoned,
+            AbandonedAt = DateTimeOffset.UtcNow,
+            PausedAt = null
+        };
+        await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
+        await gradeLogRepository.RemoveByAttemptIdAsync(attemptId, cancellationToken);
+        return updatedAttempt;
+    }
+
     public async Task<AttemptResults> CompleteAsync(string attemptId, CancellationToken cancellationToken = default)
     {
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
-        var completedAttempt = attempt.CompletedAt is null
-            ? attempt with { CompletedAt = DateTimeOffset.UtcNow }
+        if (attempt.Status is AttemptStatus.Abandoned)
+        {
+            throw new InvalidOperationException("Abandoned attempts cannot be completed.");
+        }
+
+        var completedAttempt = attempt.Status is not AttemptStatus.Completed
+            ? attempt with { Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt;
 
         await attemptRepository.SaveAsync(completedAttempt, cancellationToken);
         return await GetResultsAsync(completedAttempt.Id, cancellationToken);
+    }
+
+    public async Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        await gradeLogRepository.RemoveByAttemptIdAsync(attemptId, cancellationToken);
+        await attemptRepository.DeleteAsync(attemptId, cancellationToken);
     }
 
     public async Task<AttemptResults> GetResultsAsync(string attemptId, CancellationToken cancellationToken = default)
@@ -90,6 +160,11 @@ public sealed class AttemptService
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
         var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
         return scoringService.BuildResults(assessment, attempt);
+    }
+
+    public async Task<Attempt> GetAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        return await GetAttemptAsync(attemptId, cancellationToken);
     }
 
     public async Task<IReadOnlyList<AttemptResults>> ListResultsAsync(CancellationToken cancellationToken = default)

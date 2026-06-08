@@ -22,7 +22,7 @@ public sealed class FileAttemptRepository : IAttemptRepository
             var attempt = await FileFormat.ReadAsync<Attempt>(path, cancellationToken);
             if (attempt is not null)
             {
-                attempts.Add(attempt);
+                attempts.Add(NormalizeAttempt(attempt));
             }
         }
 
@@ -32,7 +32,8 @@ public sealed class FileAttemptRepository : IAttemptRepository
     public async Task<Attempt?> GetByIdAsync(string attemptId, CancellationToken cancellationToken = default)
     {
         var path = GetAttemptPath(attemptId);
-        return await FileFormat.ReadAsync<Attempt>(path, cancellationToken);
+        var attempt = await FileFormat.ReadAsync<Attempt>(path, cancellationToken);
+        return attempt is null ? null : NormalizeAttempt(attempt);
     }
 
     public async Task SaveAsync(Attempt attempt, CancellationToken cancellationToken = default)
@@ -40,8 +41,32 @@ public sealed class FileAttemptRepository : IAttemptRepository
         await FileFormat.WriteJsonAsync(GetAttemptPath(attempt.Id), attempt, cancellationToken);
     }
 
+    public Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        var path = GetAttemptPath(attemptId);
+        if (File.Exists(path))
+        {
+            File.Delete(path);
+        }
+
+        return Task.CompletedTask;
+    }
+
     private string GetAttemptPath(string attemptId)
     {
         return Path.Combine(options.AttemptsPath, $"{Path.GetFileName(attemptId)}.json");
+    }
+
+    private static Attempt NormalizeAttempt(Attempt attempt)
+    {
+        if (attempt.Status is not AttemptStatus.Unknown)
+        {
+            return attempt;
+        }
+
+        return attempt with
+        {
+            Status = attempt.CompletedAt is null ? AttemptStatus.InProgress : AttemptStatus.Completed
+        };
     }
 }

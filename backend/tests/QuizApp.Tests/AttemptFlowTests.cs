@@ -22,8 +22,80 @@ public sealed class AttemptFlowTests
         var savedAttempt = await attempts.GetByIdAsync(attempt.Id);
 
         Assert.NotNull(savedAttempt);
+        Assert.Equal(AttemptStatus.InProgress, savedAttempt.Status);
         Assert.Equal(attempt.QuestionOrder, savedAttempt.QuestionOrder);
         Assert.Equal(assessment.Questions.Count, savedAttempt.QuestionOrder.Count);
+    }
+
+    [Fact]
+    public async Task PauseAsync_marks_attempt_paused_without_losing_answers()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
+        var attempts = new InMemoryAttemptRepository();
+        var service = CreateAttemptService(assessment, attempts);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null));
+        var paused = await service.PauseAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.Paused, paused.Status);
+        Assert.NotNull(paused.PausedAt);
+        Assert.Single(paused.Answers);
+    }
+
+    [Fact]
+    public async Task ResumeAsync_marks_paused_attempt_in_progress_and_preserves_order()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.MultipleChoiceQuestion("q001"),
+            TestData.MultipleChoiceQuestion("q002")
+        });
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+        var originalOrder = attempt.QuestionOrder.ToList();
+
+        await service.PauseAsync(attempt.Id);
+        var resumed = await service.ResumeAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.InProgress, resumed.Status);
+        Assert.Equal(originalOrder, resumed.QuestionOrder);
+    }
+
+    [Fact]
+    public async Task AbandonAsync_rejects_future_answers_and_grade_commit()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
+        var attemptService = CreateAttemptService(assessment);
+        var gradeService = new GradeLogService(new InMemoryGradeLogRepository(), attemptService);
+        var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        var abandoned = await attemptService.AbandonAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.Abandoned, abandoned.Status);
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null)));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+    }
+
+    [Fact]
+    public async Task DeleteAsync_removes_attempt_and_linked_grade_entry()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
+        var attempts = new InMemoryAttemptRepository();
+        var grades = new InMemoryGradeLogRepository();
+        var attemptService = CreateAttemptService(assessment, attempts, grades);
+        var gradeService = new GradeLogService(grades, attemptService);
+        var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null));
+        await attemptService.CompleteAsync(attempt.Id);
+        await gradeService.CommitAttemptAsync(attempt.Id);
+
+        await attemptService.DeleteAsync(attempt.Id);
+
+        Assert.Null(await attempts.GetByIdAsync(attempt.Id));
+        Assert.Empty((await grades.ListAsync()).Where(entry => entry.AttemptId == attempt.Id));
     }
 
     [Fact]
@@ -81,11 +153,15 @@ public sealed class AttemptFlowTests
         Assert.Contains(results, result => result.AttemptId == attempt.Id && result.PercentScore == 100m);
     }
 
-    private static AttemptService CreateAttemptService(AssessmentDefinition assessment, InMemoryAttemptRepository? attempts = null)
+    private static AttemptService CreateAttemptService(
+        AssessmentDefinition assessment,
+        InMemoryAttemptRepository? attempts = null,
+        InMemoryGradeLogRepository? grades = null)
     {
         return new AttemptService(
             new InMemoryAssessmentRepository(assessment),
             attempts ?? new InMemoryAttemptRepository(),
+            grades ?? new InMemoryGradeLogRepository(),
             new InMemorySettingsRepository(),
             new AssessmentValidator(),
             new ScoringService());
@@ -238,6 +314,12 @@ internal sealed class InMemoryAttemptRepository : IAttemptRepository
         attempts[attempt.Id] = attempt;
         return Task.CompletedTask;
     }
+
+    public Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        attempts.Remove(attemptId);
+        return Task.CompletedTask;
+    }
 }
 
 internal sealed class InMemoryGradeLogRepository : IGradeLogRepository
@@ -252,6 +334,12 @@ internal sealed class InMemoryGradeLogRepository : IGradeLogRepository
     public Task AddAsync(GradeLogEntry entry, CancellationToken cancellationToken = default)
     {
         entries.Add(entry);
+        return Task.CompletedTask;
+    }
+
+    public Task RemoveByAttemptIdAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        entries.RemoveAll(entry => string.Equals(entry.AttemptId, attemptId, StringComparison.OrdinalIgnoreCase));
         return Task.CompletedTask;
     }
 }
