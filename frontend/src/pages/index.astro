@@ -1,4 +1,5 @@
 ---
+import "katex/dist/katex.min.css";
 import "../styles/global.css";
 ---
 
@@ -190,8 +191,15 @@ import "../styles/global.css";
     </main>
 
     <script>
+      import { unified } from "unified";
+      import remarkParse from "remark-parse";
+      import remarkMath from "remark-math";
+      import remarkRehype from "remark-rehype";
+      import rehypeKatex from "rehype-katex";
+      import rehypeStringify from "rehype-stringify";
+
       type AssessmentMode = "practice" | "scored";
-      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse";
+      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse";
 
       interface AppSettings {
         schemaVersion: number;
@@ -222,9 +230,17 @@ import "../styles/global.css";
         questionCount: number;
       }
 
+      interface MediaAsset {
+        type: "image";
+        src: string;
+        alt: string;
+        caption?: string | null;
+      }
+
       interface ChoiceOption {
         id: string;
         text: string;
+        media?: MediaAsset[];
       }
 
       interface Question {
@@ -232,11 +248,15 @@ import "../styles/global.css";
         type: QuestionType;
         prompt: string;
         choices: ChoiceOption[];
+        media?: MediaAsset[];
         answer?: {
           choiceId?: string;
           choiceIds?: string[];
           expected?: string;
           gradingMode?: string;
+          numericValue?: number | null;
+          numericTolerance?: number | null;
+          media?: MediaAsset[];
         };
         explanation?: string | null;
       }
@@ -258,6 +278,7 @@ import "../styles/global.css";
         questionId: string;
         prompt: string;
         type: QuestionType;
+        media?: MediaAsset[];
         isCorrect: boolean | null;
         explanation: string | null;
         expectedAnswer: string | null;
@@ -275,6 +296,12 @@ import "../styles/global.css";
       }
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
+      const markdownProcessor = unified()
+        .use(remarkParse)
+        .use(remarkMath)
+        .use(remarkRehype)
+        .use(rehypeKatex)
+        .use(rehypeStringify);
 
       const state: {
         settings: AppSettings | null;
@@ -400,7 +427,7 @@ import "../styles/global.css";
           state.currentIndex = 0;
           state.latestResults = null;
           updateActiveAttemptChip();
-          renderCurrentQuestion();
+          await renderCurrentQuestion();
         } finally {
           clearBusy(startButton, "Start Selected");
         }
@@ -424,7 +451,7 @@ import "../styles/global.css";
             state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
           }
 
-          renderCurrentQuestion();
+          await renderCurrentQuestion();
         } finally {
           if (submitButton) clearBusy(submitButton, "Submit Answer");
         }
@@ -442,7 +469,7 @@ import "../styles/global.css";
           });
           state.latestResults = response.results;
           updateActiveAttemptChip("Complete");
-          renderResults(response.committedGrade !== null);
+          await renderResults(response.committedGrade !== null);
           await loadGrades();
         } finally {
           if (completeButton) clearBusy(completeButton, "Complete");
@@ -456,7 +483,7 @@ import "../styles/global.css";
           body: JSON.stringify({ attemptId: state.attempt.id })
         });
         await loadGrades();
-        if (state.latestResults) renderResults(true);
+        if (state.latestResults) await renderResults(true);
       }
 
       async function saveSettings(event: Event) {
@@ -572,16 +599,29 @@ import "../styles/global.css";
             type,
             prompt: "",
             choices: [],
+            media: [],
             answer: { expected: "", gradingMode: "selfCheck" },
             explanation: ""
           };
         }
 
+        if (type === "numericResponse") {
+          return {
+            id,
+            type,
+            prompt: "",
+            choices: [],
+            media: [],
+            answer: { numericValue: 0, numericTolerance: 0 },
+            explanation: ""
+          };
+        }
+
         const choices = [
-          { id: "a", text: "" },
-          { id: "b", text: "" },
-          { id: "c", text: "" },
-          { id: "d", text: "" }
+          { id: "a", text: "", media: [] },
+          { id: "b", text: "", media: [] },
+          { id: "c", text: "", media: [] },
+          { id: "d", text: "", media: [] }
         ];
 
         return {
@@ -589,6 +629,7 @@ import "../styles/global.css";
           type,
           prompt: "",
           choices,
+          media: [],
           answer: type === "multipleChoice" ? { choiceId: "a" } : { choiceIds: [] },
           explanation: ""
         };
@@ -612,6 +653,7 @@ import "../styles/global.css";
                   <option value="multipleChoice" ${question.type === "multipleChoice" ? "selected" : ""}>Multiple choice</option>
                   <option value="selectAll" ${question.type === "selectAll" ? "selected" : ""}>Select all</option>
                   <option value="freeResponse" ${question.type === "freeResponse" ? "selected" : ""}>Free response</option>
+                  <option value="numericResponse" ${question.type === "numericResponse" ? "selected" : ""}>Numeric response</option>
                 </select>
               </div>
             </div>
@@ -658,6 +700,21 @@ import "../styles/global.css";
           `;
         }
 
+        if (question.type === "numericResponse") {
+          return `
+            <div class="settings-grid">
+              <div class="field">
+                <label for="question-numeric-value-${index}">Correct value</label>
+                <input id="question-numeric-value-${index}" data-question-field="numericValue" type="number" step="any" value="${escapeHtml(String(question.answer?.numericValue ?? 0))}" />
+              </div>
+              <div class="field">
+                <label for="question-numeric-tolerance-${index}">Tolerance</label>
+                <input id="question-numeric-tolerance-${index}" data-question-field="numericTolerance" type="number" step="any" min="0" value="${escapeHtml(String(question.answer?.numericTolerance ?? 0))}" />
+              </div>
+            </div>
+          `;
+        }
+
         return `
           <div class="choice-editor-grid">
             ${question.choices.map((choice) => `
@@ -686,7 +743,7 @@ import "../styles/global.css";
             id: editor.querySelector<HTMLInputElement>("[data-question-field='id']")!.value.trim(),
             type,
             prompt: editor.querySelector<HTMLTextAreaElement>("[data-question-field='prompt']")!.value.trim(),
-            choices: type === "freeResponse" ? [] : choices,
+            choices: type === "freeResponse" || type === "numericResponse" ? [] : choices,
             answer: buildDraftAnswer(type, answerValue, editor),
             explanation: editor.querySelector<HTMLTextAreaElement>("[data-question-field='explanation']")!.value.trim()
           };
@@ -707,6 +764,15 @@ import "../styles/global.css";
           return {
             choiceId: null,
             choiceIds: answerValue.split(",").map((value) => value.trim()).filter(Boolean)
+          };
+        }
+
+        if (type === "numericResponse") {
+          return {
+            choiceId: null,
+            choiceIds: [],
+            numericValue: nullableNumber(editor.querySelector<HTMLInputElement>("[data-question-field='numericValue']")?.value ?? ""),
+            numericTolerance: nullableNumber(editor.querySelector<HTMLInputElement>("[data-question-field='numericTolerance']")?.value ?? "")
           };
         }
 
@@ -742,6 +808,12 @@ import "../styles/global.css";
           if (questionIds.has(question.id)) errors.push(`Question ID '${question.id}' is duplicated.`);
           questionIds.add(question.id);
           if (!question.prompt) errors.push(`Question ${index + 1} needs a prompt.`);
+          if (question.type === "numericResponse" && (question.answer?.numericValue === null || question.answer?.numericValue === undefined)) {
+            errors.push(`Question ${index + 1} needs a numeric answer value.`);
+          }
+          if (question.type === "numericResponse" && ((question.answer?.numericTolerance ?? -1) < 0)) {
+            errors.push(`Question ${index + 1} needs a non-negative tolerance.`);
+          }
         });
 
         return errors;
@@ -773,17 +845,19 @@ import "../styles/global.css";
         await loadAssessments(categorySelect.value);
       }
 
-      function renderCurrentQuestion() {
+      async function renderCurrentQuestion() {
         if (!state.attempt || !state.assessment) return;
 
         const question = getCurrentQuestion();
         const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
+        const promptHtml = await renderMarkdown(question.prompt);
+        const feedbackExplanation = results?.explanation ? await renderMarkdown(results.explanation) : "";
         const feedback = results?.isCorrect === null || results?.isCorrect === undefined
           ? ""
           : `<div class="feedback ${results.isCorrect ? "correct" : "incorrect"}">
               ${results.isCorrect ? "Correct" : "Needs review"}
-              ${results.explanation ? `<details><summary>Explanation</summary><p>${escapeHtml(results.explanation)}</p></details>` : ""}
+              ${feedbackExplanation ? `<details><summary>Explanation</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
             </div>`;
 
         attemptContent.innerHTML = `
@@ -792,10 +866,11 @@ import "../styles/global.css";
               <span>${progress}</span>
               <strong>${escapeHtml(state.assessment.title)}</strong>
             </div>
-            <h3>${escapeHtml(question.prompt)}</h3>
+            <div class="question-prompt markdown">${promptHtml}</div>
+            ${renderMedia(question.media ?? [])}
           </div>
           <form id="answer-form" class="answer-form">
-            ${renderAnswerInput(question)}
+            ${await renderAnswerInput(question)}
             <div class="button-row">
               <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
               <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
@@ -812,19 +887,35 @@ import "../styles/global.css";
         });
         document.querySelector<HTMLButtonElement>("#previous-question")!.addEventListener("click", () => {
           state.currentIndex -= 1;
-          renderCurrentQuestion();
+          void renderCurrentQuestion();
         });
         document.querySelector<HTMLButtonElement>("#next-question")!.addEventListener("click", () => {
           state.currentIndex += 1;
-          renderCurrentQuestion();
+          void renderCurrentQuestion();
         });
         document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
         setupChoiceCards(question);
       }
 
-      function renderResults(alreadyCommitted: boolean) {
+      async function renderResults(alreadyCommitted: boolean) {
         if (!state.latestResults) return;
         const results = state.latestResults;
+        const questionHtml = await Promise.all(results.questions.map(async (question) => {
+          const promptHtml = await renderMarkdown(question.prompt);
+          const expectedHtml = question.expectedAnswer ? await renderMarkdown(question.expectedAnswer) : "";
+          const explanationHtml = question.explanation ? await renderMarkdown(question.explanation) : "";
+
+          return `
+            <article class="result-item ${question.isCorrect ? "correct" : "incorrect"}">
+              <div class="markdown">${promptHtml}</div>
+              ${renderMedia(question.media ?? [])}
+              <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
+              ${expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
+              ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
+            </article>
+          `;
+        }));
+
         attemptContent.innerHTML = `
           <div class="results-header">
             <h2>${escapeHtml(results.assessmentTitle)}</h2>
@@ -832,14 +923,7 @@ import "../styles/global.css";
           </div>
           <p class="muted">${results.correctCount} correct out of ${results.totalQuestions} questions.</p>
           <div class="result-list">
-            ${results.questions.map((question) => `
-              <article class="result-item ${question.isCorrect ? "correct" : "incorrect"}">
-                <h3>${escapeHtml(question.prompt)}</h3>
-                <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
-                ${question.expectedAnswer ? `<p>Expected: ${escapeHtml(question.expectedAnswer)}</p>` : ""}
-                ${question.explanation ? `<details open><summary>Explanation</summary><p>${escapeHtml(question.explanation)}</p></details>` : ""}
-              </article>
-            `).join("")}
+            ${questionHtml.join("")}
           </div>
           ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : `<button class="primary chunky" id="commit-grade">Commit Score</button>`}
         `;
@@ -847,44 +931,30 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
       }
 
-      function renderAnswerInput(question: Question) {
+      async function renderAnswerInput(question: Question) {
         if (question.type === "multipleChoice") {
+          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "radio")));
           return `
             <div class="choice-card-list" role="radiogroup" aria-label="Answer choices">
-              ${question.choices.map((choice, index) => `
-                <button
-                  type="button"
-                  class="choice-card"
-                  role="radio"
-                  aria-checked="false"
-                  data-choice-id="${escapeHtml(choice.id)}"
-                  data-shortcut="${choiceShortcut(index)}"
-                >
-                  <span class="choice-key" aria-hidden="true">${choiceShortcut(index)}</span>
-                  <span class="choice-text">${escapeHtml(choice.text)}</span>
-                </button>
-              `).join("")}
+              ${choices.join("")}
             </div>
           `;
         }
 
         if (question.type === "selectAll") {
+          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "checkbox")));
           return `
             <div class="choice-card-list" role="group" aria-label="Select all that apply">
-              ${question.choices.map((choice, index) => `
-                <button
-                  type="button"
-                  class="choice-card select-card"
-                  role="checkbox"
-                  aria-checked="false"
-                  data-choice-id="${escapeHtml(choice.id)}"
-                  data-shortcut="${choiceShortcut(index)}"
-                >
-                  <span class="choice-key" aria-hidden="true">${choiceShortcut(index)}</span>
-                  <span class="choice-text">${escapeHtml(choice.text)}</span>
-                  <span class="choice-check" aria-hidden="true">✓</span>
-                </button>
-              `).join("")}
+              ${choices.join("")}
+            </div>
+          `;
+        }
+
+        if (question.type === "numericResponse") {
+          return `
+            <div class="field numeric-response-field">
+              <label for="numeric-response">Numeric response</label>
+              <input id="numeric-response" name="numericValue" type="number" step="any" inputmode="decimal" />
             </div>
           `;
         }
@@ -901,6 +971,27 @@ import "../styles/global.css";
         `;
       }
 
+      async function renderChoiceCard(choice: ChoiceOption, index: number, role: "radio" | "checkbox") {
+        const isSelectAll = role === "checkbox";
+        const shortcut = choiceShortcut(index);
+        const choiceHtml = await renderMarkdown(choice.text);
+
+        return `
+          <button
+            type="button"
+            class="choice-card ${isSelectAll ? "select-card" : ""}"
+            role="${role}"
+            aria-checked="false"
+            data-choice-id="${escapeHtml(choice.id)}"
+            data-shortcut="${shortcut}"
+          >
+            <span class="choice-key" aria-hidden="true">${shortcut}</span>
+            <span class="choice-text markdown">${choiceHtml}${renderMedia(choice.media ?? [])}</span>
+            ${isSelectAll ? `<span class="choice-check" aria-hidden="true">&#10003;</span>` : ""}
+          </button>
+        `;
+      }
+
       function readAnswer(question: Question) {
         const form = new FormData(document.querySelector<HTMLFormElement>("#answer-form")!);
         const selectedCards = Array.from(document.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
@@ -910,7 +1001,8 @@ import "../styles/global.css";
           choiceId: question.type === "multipleChoice" ? selectedCards[0]?.dataset.choiceId ?? null : null,
           choiceIds: question.type === "selectAll" ? selectedCards.map((card) => card.dataset.choiceId ?? "") : [],
           freeResponseText: form.get("freeResponseText"),
-          selfCheckCorrect: form.get("selfCheckCorrect") === "on"
+          selfCheckCorrect: form.get("selfCheckCorrect") === "on",
+          numericValue: question.type === "numericResponse" ? nullableNumber(form.get("numericValue")) : null
         };
       }
 
@@ -1005,6 +1097,23 @@ import "../styles/global.css";
         button.disabled = false;
         button.textContent = button.dataset.originalLabel || fallback;
         button.classList.remove("is-busy");
+      }
+
+      async function renderMarkdown(value: string | null | undefined) {
+        const processed = await markdownProcessor.process(value ?? "");
+        return String(processed);
+      }
+
+      function renderMedia(media: MediaAsset[]) {
+        return media
+          .filter((item) => item.type === "image" && item.src)
+          .map((item) => `
+            <figure class="media-block">
+              <img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.alt ?? "")}" loading="lazy" />
+              ${item.caption ? `<figcaption>${escapeHtml(item.caption)}</figcaption>` : ""}
+            </figure>
+          `)
+          .join("");
       }
 
       async function api<T>(path: string, init?: RequestInit): Promise<T> {

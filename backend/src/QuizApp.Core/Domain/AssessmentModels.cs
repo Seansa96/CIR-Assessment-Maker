@@ -18,7 +18,8 @@ public enum QuestionType
     Unknown,
     MultipleChoice,
     SelectAll,
-    FreeResponse
+    FreeResponse,
+    NumericResponse
 }
 
 public enum QuestionOrderMode
@@ -64,22 +65,36 @@ public sealed record QuestionDefinition(
     string Prompt,
     IReadOnlyList<ChoiceOption> Choices,
     AnswerDefinition Answer,
-    string? Explanation);
+    string? Explanation,
+    IReadOnlyList<MediaAsset> Media);
 
-public sealed record ChoiceOption(string Id, string Text);
+public sealed record ChoiceOption(
+    string Id,
+    string Text,
+    IReadOnlyList<MediaAsset> Media);
 
 public sealed record AnswerDefinition(
     string? ChoiceId,
     IReadOnlyList<string> ChoiceIds,
     string? Expected,
-    string? GradingMode);
+    string? GradingMode,
+    decimal? NumericValue,
+    decimal? NumericTolerance,
+    IReadOnlyList<MediaAsset> Media);
+
+public sealed record MediaAsset(
+    string Type,
+    string Src,
+    string Alt,
+    string? Caption);
 
 public sealed record SubmittedAnswer(
     string QuestionId,
     string? ChoiceId,
     IReadOnlyList<string> ChoiceIds,
     string? FreeResponseText,
-    bool? SelfCheckCorrect);
+    bool? SelfCheckCorrect,
+    decimal? NumericValue);
 
 public sealed record AnswerEvaluation(
     string QuestionId,

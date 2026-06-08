@@ -35,7 +35,7 @@ public sealed class AttemptFlowTests
 
         await service.SubmitAnswerAsync(
             attempt.Id,
-            new SubmittedAnswer("q001", null, Array.Empty<string>(), "It sums upper minus lower.", true));
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), "It sums upper minus lower.", true, null));
 
         var results = await service.GetResultsAsync(attempt.Id);
 
@@ -54,7 +54,7 @@ public sealed class AttemptFlowTests
         var gradeService = new GradeLogService(gradeRepository, attemptService);
         var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Scored);
 
-        await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null));
+        await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null));
         await attemptService.CompleteAsync(attempt.Id);
 
         var firstCommit = await gradeService.CommitAttemptAsync(attempt.Id);
@@ -74,7 +74,7 @@ public sealed class AttemptFlowTests
         var service = CreateAttemptService(assessment, attempts);
         var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
 
-        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null));
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null));
 
         var results = await service.ListResultsAsync();
 
@@ -120,11 +120,12 @@ internal static class TestData
             "What does the area between two curves represent?",
             new[]
             {
-                new ChoiceOption("a", "The accumulated vertical difference between two functions over an interval"),
-                new ChoiceOption("b", "The slope of the upper function")
+                new ChoiceOption("a", "The accumulated vertical difference between two functions over an interval", Array.Empty<MediaAsset>()),
+                new ChoiceOption("b", "The slope of the upper function", Array.Empty<MediaAsset>())
             },
-            new AnswerDefinition("a", Array.Empty<string>(), null, null),
-            "Area between curves measures accumulated difference.");
+            new AnswerDefinition("a", Array.Empty<string>(), null, null, null, null, Array.Empty<MediaAsset>()),
+            "Area between curves measures accumulated difference.",
+            Array.Empty<MediaAsset>());
     }
 
     public static QuestionDefinition SelectAllQuestion(string id)
@@ -135,12 +136,13 @@ internal static class TestData
             "Which are valid setup steps?",
             new[]
             {
-                new ChoiceOption("a", "Identify the upper function"),
-                new ChoiceOption("b", "Identify the lower function"),
-                new ChoiceOption("c", "Subtract lower from upper")
+                new ChoiceOption("a", "Identify the upper function", Array.Empty<MediaAsset>()),
+                new ChoiceOption("b", "Identify the lower function", Array.Empty<MediaAsset>()),
+                new ChoiceOption("c", "Subtract lower from upper", Array.Empty<MediaAsset>())
             },
-            new AnswerDefinition(null, new[] { "a", "b", "c" }, null, null),
-            "Area between curves requires upper minus lower.");
+            new AnswerDefinition(null, new[] { "a", "b", "c" }, null, null, null, null, Array.Empty<MediaAsset>()),
+            "Area between curves requires upper minus lower.",
+            Array.Empty<MediaAsset>());
     }
 
     public static QuestionDefinition FreeResponseQuestion(string id)
@@ -150,8 +152,21 @@ internal static class TestData
             QuestionType.FreeResponse,
             "Explain what the integral represents.",
             Array.Empty<ChoiceOption>(),
-            new AnswerDefinition(null, Array.Empty<string>(), "The accumulated difference between upper and lower functions.", "selfCheck"),
-            "The integral sums vertical differences over the interval.");
+            new AnswerDefinition(null, Array.Empty<string>(), "The accumulated difference between upper and lower functions.", "selfCheck", null, null, Array.Empty<MediaAsset>()),
+            "The integral sums vertical differences over the interval.",
+            Array.Empty<MediaAsset>());
+    }
+
+    public static QuestionDefinition NumericResponseQuestion(string id)
+    {
+        return new QuestionDefinition(
+            id,
+            QuestionType.NumericResponse,
+            "Compute the volume to the nearest hundredth.",
+            Array.Empty<ChoiceOption>(),
+            new AnswerDefinition(null, Array.Empty<string>(), null, null, 8.38m, 0.01m, Array.Empty<MediaAsset>()),
+            "The exact value is 8 pi over 3.",
+            new[] { new MediaAsset("image", "/samples/volume-washer.svg", "Washer cross section diagram", null) });
     }
 }
 

@@ -84,14 +84,21 @@ internal static class FileDtoMapper
             ParseQuestionType(dto.Type),
             dto.Prompt ?? string.Empty,
             (dto.Choices ?? new List<ChoiceFileDto>())
-                .Select(choice => new ChoiceOption(choice.Id ?? string.Empty, choice.Text ?? string.Empty))
+                .Select(choice => new ChoiceOption(
+                    choice.Id ?? string.Empty,
+                    choice.Text ?? string.Empty,
+                    (choice.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()))
                 .ToList(),
             new AnswerDefinition(
                 dto.Answer?.ChoiceId,
                 dto.Answer?.ChoiceIds ?? new List<string>(),
                 dto.Answer?.Expected,
-                dto.Answer?.GradingMode),
-            dto.Explanation);
+                dto.Answer?.GradingMode,
+                dto.Answer?.Value,
+                dto.Answer?.Tolerance,
+                (dto.Answer?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()),
+            dto.Explanation,
+            (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList());
     }
 
     private static QuestionFileDto ToDto(QuestionDefinition question)
@@ -101,15 +108,44 @@ internal static class FileDtoMapper
             Id = question.Id,
             Type = ToWireValue(question.Type),
             Prompt = question.Prompt,
-            Choices = question.Choices.Select(choice => new ChoiceFileDto { Id = choice.Id, Text = choice.Text }).ToList(),
+            Choices = question.Choices.Select(choice => new ChoiceFileDto
+            {
+                Id = choice.Id,
+                Text = choice.Text,
+                Media = choice.Media.Select(ToDto).ToList()
+            }).ToList(),
             Answer = new AnswerFileDto
             {
                 ChoiceId = question.Answer.ChoiceId,
                 ChoiceIds = question.Answer.ChoiceIds.ToList(),
                 Expected = question.Answer.Expected,
-                GradingMode = question.Answer.GradingMode
+                GradingMode = question.Answer.GradingMode,
+                Value = question.Answer.NumericValue,
+                Tolerance = question.Answer.NumericTolerance,
+                Media = question.Answer.Media.Select(ToDto).ToList()
             },
-            Explanation = question.Explanation
+            Explanation = question.Explanation,
+            Media = question.Media.Select(ToDto).ToList()
+        };
+    }
+
+    private static MediaAsset ToDomain(MediaFileDto dto)
+    {
+        return new MediaAsset(
+            dto.Type ?? string.Empty,
+            dto.Src ?? string.Empty,
+            dto.Alt ?? string.Empty,
+            dto.Caption);
+    }
+
+    private static MediaFileDto ToDto(MediaAsset media)
+    {
+        return new MediaFileDto
+        {
+            Type = media.Type,
+            Src = media.Src,
+            Alt = media.Alt,
+            Caption = media.Caption
         };
     }
 
@@ -130,6 +166,7 @@ internal static class FileDtoMapper
             "multiplechoice" => QuestionType.MultipleChoice,
             "selectall" => QuestionType.SelectAll,
             "freeresponse" => QuestionType.FreeResponse,
+            "numericresponse" => QuestionType.NumericResponse,
             _ => QuestionType.Unknown
         };
     }
@@ -169,6 +206,7 @@ internal static class FileDtoMapper
         {
             QuestionType.SelectAll => "selectAll",
             QuestionType.FreeResponse => "freeResponse",
+            QuestionType.NumericResponse => "numericResponse",
             _ => "multipleChoice"
         };
     }

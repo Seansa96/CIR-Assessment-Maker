@@ -11,7 +11,8 @@ public sealed record SubmitAnswerRequest(
     string? ChoiceId,
     IReadOnlyList<string>? ChoiceIds,
     string? FreeResponseText,
-    bool? SelfCheckCorrect)
+    bool? SelfCheckCorrect,
+    decimal? NumericValue)
 {
     public SubmittedAnswer ToDomain()
     {
@@ -20,7 +21,8 @@ public sealed record SubmitAnswerRequest(
             ChoiceId,
             ChoiceIds ?? Array.Empty<string>(),
             FreeResponseText,
-            SelfCheckCorrect);
+            SelfCheckCorrect,
+            NumericValue);
     }
 }
 

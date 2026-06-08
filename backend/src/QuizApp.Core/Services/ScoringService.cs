@@ -11,6 +11,7 @@ public sealed class ScoringService
             QuestionType.MultipleChoice => string.Equals(question.Answer.ChoiceId, submittedAnswer.ChoiceId, StringComparison.OrdinalIgnoreCase),
             QuestionType.SelectAll => SameChoiceSet(question.Answer.ChoiceIds, submittedAnswer.ChoiceIds),
             QuestionType.FreeResponse => submittedAnswer.SelfCheckCorrect == true,
+            QuestionType.NumericResponse => IsNumericCorrect(question.Answer.NumericValue, submittedAnswer.NumericValue, question.Answer.NumericTolerance),
             _ => false
         };
 
@@ -37,6 +38,7 @@ public sealed class ScoringService
                 question.Id,
                 question.Prompt,
                 question.Type,
+                question.Media,
                 answer?.Answer,
                 showFeedback ? answer?.Evaluation?.IsCorrect : null,
                 showFeedback ? question.Explanation : null,
@@ -72,7 +74,18 @@ public sealed class ScoringService
             QuestionType.MultipleChoice => question.Answer.ChoiceId,
             QuestionType.SelectAll => string.Join(", ", question.Answer.ChoiceIds),
             QuestionType.FreeResponse => question.Answer.Expected,
+            QuestionType.NumericResponse => question.Answer.NumericValue?.ToString(),
             _ => null
         };
+    }
+
+    private static bool IsNumericCorrect(decimal? expected, decimal? actual, decimal? tolerance)
+    {
+        if (expected is null || actual is null || tolerance is null)
+        {
+            return false;
+        }
+
+        return Math.Abs(expected.Value - actual.Value) <= tolerance.Value;
     }
 }

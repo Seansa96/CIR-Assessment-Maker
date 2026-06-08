@@ -30,6 +30,7 @@ public sealed record QuestionResult(
     string QuestionId,
     string Prompt,
     QuestionType Type,
+    IReadOnlyList<MediaAsset> Media,
     SubmittedAnswer? SubmittedAnswer,
     bool? IsCorrect,
     string? Explanation,

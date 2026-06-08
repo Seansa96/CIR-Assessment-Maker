@@ -72,11 +72,17 @@ public sealed class AssessmentValidator
 
         if (question.Type is QuestionType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, or freeResponse.", question.Id));
+            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, or numericResponse.", question.Id));
             return;
         }
 
         var choiceIds = question.Choices.Select(choice => choice.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        ValidateMedia(question.Media, issues, question.Id);
+        foreach (var choice in question.Choices)
+        {
+            ValidateMedia(choice.Media, issues, question.Id);
+        }
+        ValidateMedia(question.Answer.Media, issues, question.Id);
 
         if (question.Type is QuestionType.MultipleChoice)
         {
@@ -112,6 +118,19 @@ public sealed class AssessmentValidator
                 issues.Add(new ValidationIssue("INVALID_FREE_RESPONSE_GRADING", "Free response questions must use selfCheck grading for the MVP.", question.Id));
             }
         }
+
+        if (question.Type is QuestionType.NumericResponse)
+        {
+            if (question.Answer.NumericValue is null)
+            {
+                issues.Add(new ValidationIssue("MISSING_NUMERIC_ANSWER", "Numeric response questions must include answer.value.", question.Id));
+            }
+
+            if (question.Answer.NumericTolerance is null or < 0)
+            {
+                issues.Add(new ValidationIssue("INVALID_NUMERIC_TOLERANCE", "Numeric response questions must include a non-negative answer.tolerance.", question.Id));
+            }
+        }
     }
 
     private static void RequireText(string? value, string code, string message, List<ValidationIssue> issues, string? questionId = null)
@@ -119,6 +138,27 @@ public sealed class AssessmentValidator
         if (string.IsNullOrWhiteSpace(value))
         {
             issues.Add(new ValidationIssue(code, message, questionId));
+        }
+    }
+
+    private static void ValidateMedia(IReadOnlyList<MediaAsset> media, List<ValidationIssue> issues, string? questionId)
+    {
+        foreach (var item in media)
+        {
+            if (!string.Equals(item.Type, "image", StringComparison.OrdinalIgnoreCase))
+            {
+                issues.Add(new ValidationIssue("INVALID_MEDIA_TYPE", "Only image media is supported for now.", questionId));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Src))
+            {
+                issues.Add(new ValidationIssue("MISSING_MEDIA_SRC", "Image media must include src.", questionId));
+            }
+
+            if (string.IsNullOrWhiteSpace(item.Alt))
+            {
+                issues.Add(new ValidationIssue("MISSING_MEDIA_ALT", "Image media must include alt text.", questionId));
+            }
         }
     }
 }

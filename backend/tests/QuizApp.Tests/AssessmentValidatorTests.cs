@@ -28,7 +28,7 @@ public sealed class AssessmentValidatorTests
         {
             TestData.MultipleChoiceQuestion("q001") with
             {
-                Answer = new AnswerDefinition("missing", Array.Empty<string>(), null, null)
+                Answer = new AnswerDefinition("missing", Array.Empty<string>(), null, null, null, null, Array.Empty<MediaAsset>())
             }
         });
 
@@ -44,7 +44,7 @@ public sealed class AssessmentValidatorTests
         {
             TestData.SelectAllQuestion("q001") with
             {
-                Answer = new AnswerDefinition(null, new[] { "a", "z" }, null, null)
+                Answer = new AnswerDefinition(null, new[] { "a", "z" }, null, null, null, null, Array.Empty<MediaAsset>())
             }
         });
 
@@ -65,5 +65,37 @@ public sealed class AssessmentValidatorTests
         var result = validator.Validate(assessment);
 
         Assert.Contains(result.Issues, issue => issue.Code == "QUIZ_TOO_LONG");
+    }
+
+    [Fact]
+    public void Validate_rejects_numeric_response_without_non_negative_tolerance()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.NumericResponseQuestion("q001") with
+            {
+                Answer = new AnswerDefinition(null, Array.Empty<string>(), null, null, 8.5m, -0.1m, Array.Empty<MediaAsset>())
+            }
+        });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_NUMERIC_TOLERANCE");
+    }
+
+    [Fact]
+    public void Validate_rejects_image_media_without_alt_text()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.MultipleChoiceQuestion("q001") with
+            {
+                Media = new[] { new MediaAsset("image", "/samples/washer.svg", "", null) }
+            }
+        });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_MEDIA_ALT");
     }
 }

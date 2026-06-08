@@ -49,12 +49,14 @@ internal sealed class QuestionFileDto
     public List<ChoiceFileDto>? Choices { get; set; }
     public AnswerFileDto? Answer { get; set; }
     public string? Explanation { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
 }
 
 internal sealed class ChoiceFileDto
 {
     public string? Id { get; set; }
     public string? Text { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
 }
 
 internal sealed class AnswerFileDto
@@ -63,4 +65,15 @@ internal sealed class AnswerFileDto
     public List<string>? ChoiceIds { get; set; }
     public string? Expected { get; set; }
     public string? GradingMode { get; set; }
+    public decimal? Value { get; set; }
+    public decimal? Tolerance { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
+}
+
+internal sealed class MediaFileDto
+{
+    public string? Type { get; set; }
+    public string? Src { get; set; }
+    public string? Alt { get; set; }
+    public string? Caption { get; set; }
 }
