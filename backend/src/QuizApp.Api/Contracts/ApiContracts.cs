@@ -18,7 +18,8 @@ public sealed record SubmitAnswerRequest(
     string? FreeResponseText,
     bool? SelfCheckCorrect,
     decimal? NumericValue,
-    string? CodeText)
+    string? CodeText,
+    string? SymbolicLatex)
 {
     public SubmittedAnswer ToDomain()
     {
@@ -30,7 +31,8 @@ public sealed record SubmitAnswerRequest(
             SelfCheckCorrect,
             NumericValue)
         {
-            CodeText = CodeText
+            CodeText = CodeText,
+            SymbolicLatex = SymbolicLatex
         };
     }
 }

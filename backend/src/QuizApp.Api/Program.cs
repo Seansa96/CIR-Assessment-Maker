@@ -6,6 +6,7 @@ using QuizApp.Core.Repositories;
 using QuizApp.Core.Services;
 using QuizApp.Infrastructure.CodeRunner;
 using QuizApp.Infrastructure.Files;
+using QuizApp.Infrastructure.SymbolicMath;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +22,8 @@ var dataRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath
 builder.Services.AddSingleton<AssessmentValidator>();
 builder.Services.AddSingleton<ScoringService>();
 builder.Services.AddSingleton<ICodeQuestionScorer, CodeQuestionScorer>();
+builder.Services.AddSingleton<ISymbolicExpressionScorer, SymbolicExpressionScorer>();
+builder.Services.AddSingleton<ISymbolicMathEngine, CortexSymbolicMathEngine>();
 builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();

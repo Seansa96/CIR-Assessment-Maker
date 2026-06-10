@@ -72,7 +72,7 @@ public sealed class AssessmentValidator
 
         if (question.Type is QuestionType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, numericResponse, or code.", question.Id));
+            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, numericResponse, code, or symbolicResponse.", question.Id));
             return;
         }
 
@@ -136,6 +136,11 @@ public sealed class AssessmentValidator
         {
             ValidateCodeQuestion(question, issues);
         }
+
+        if (question.Type is QuestionType.SymbolicResponse)
+        {
+            ValidateSymbolicQuestion(question, issues);
+        }
     }
 
     private static void RequireText(string? value, string code, string message, List<ValidationIssue> issues, string? questionId = null)
@@ -194,6 +199,33 @@ public sealed class AssessmentValidator
         {
             RequireText(test.Input, "MISSING_CODE_TEST_INPUT", "Code question tests must include input.", issues, question.Id);
             RequireText(test.Expected, "MISSING_CODE_TEST_EXPECTED", "Code question tests must include expected.", issues, question.Id);
+        }
+    }
+
+    private static void ValidateSymbolicQuestion(QuestionDefinition question, List<ValidationIssue> issues)
+    {
+        var expectedLatex = question.Answer.SymbolicExpectedLatex ?? question.Answer.ExpectedLatex;
+        var equivalenceMode = question.Answer.SymbolicEquivalenceMode ?? question.Answer.EquivalenceMode;
+        var variables = question.Answer.SymbolicVariables.Count > 0 ? question.Answer.SymbolicVariables : question.Answer.Variables;
+        var tolerance = question.Answer.SymbolicTolerance ?? question.Answer.Tolerance;
+
+        RequireText(expectedLatex, "MISSING_SYMBOLIC_EXPECTED_LATEX", "Symbolic response questions must include answer.expectedLatex.", issues, question.Id);
+
+        if (!string.Equals(equivalenceMode, "expression", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(equivalenceMode, "derivative", StringComparison.OrdinalIgnoreCase))
+        {
+            issues.Add(new ValidationIssue("INVALID_SYMBOLIC_EQUIVALENCE_MODE", "Symbolic response equivalenceMode must be expression or derivative.", question.Id));
+        }
+
+        if (string.Equals(equivalenceMode, "derivative", StringComparison.OrdinalIgnoreCase)
+            && variables.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_SYMBOLIC_VARIABLE", "Derivative equivalence requires at least one variable.", question.Id));
+        }
+
+        if (tolerance is null or < 0)
+        {
+            issues.Add(new ValidationIssue("INVALID_SYMBOLIC_TOLERANCE", "Symbolic response questions must include a non-negative answer.tolerance.", question.Id));
         }
     }
 }

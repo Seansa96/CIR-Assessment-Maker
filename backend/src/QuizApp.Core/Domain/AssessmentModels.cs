@@ -20,7 +20,8 @@ public enum QuestionType
     SelectAll,
     FreeResponse,
     NumericResponse,
-    Code
+    Code,
+    SymbolicResponse
 }
 
 public enum QuestionOrderMode
@@ -89,7 +90,17 @@ public sealed record AnswerDefinition(
     string? GradingMode,
     decimal? NumericValue,
     decimal? NumericTolerance,
-    IReadOnlyList<MediaAsset> Media);
+    IReadOnlyList<MediaAsset> Media)
+{
+    public string? ExpectedLatex { get; init; }
+    public string? EquivalenceMode { get; init; }
+    public IReadOnlyList<string> Variables { get; init; } = Array.Empty<string>();
+    public decimal? Tolerance { get; init; }
+    public string? SymbolicExpectedLatex { get; init; }
+    public string? SymbolicEquivalenceMode { get; init; }
+    public IReadOnlyList<string> SymbolicVariables { get; init; } = Array.Empty<string>();
+    public decimal? SymbolicTolerance { get; init; }
+}
 
 public sealed record MediaAsset(
     string Type,
@@ -116,6 +127,7 @@ public sealed record SubmittedAnswer(
     decimal? NumericValue)
 {
     public string? CodeText { get; init; }
+    public string? SymbolicLatex { get; init; }
 }
 
 public sealed record AnswerEvaluation(
@@ -125,6 +137,7 @@ public sealed record AnswerEvaluation(
     string? ExpectedAnswer)
 {
     public CodeFeedback? CodeFeedback { get; init; }
+    public SymbolicFeedback? SymbolicFeedback { get; init; }
 }
 
 public sealed record CodeFeedback(
@@ -139,6 +152,13 @@ public sealed record CodeTestResult(
     string Expected,
     string? Actual,
     bool Passed);
+
+public sealed record SymbolicFeedback(
+    bool ParseSucceeded,
+    string? NormalizedSubmitted,
+    string? NormalizedExpected,
+    string EquivalenceMode,
+    string? Reason);
 
 public sealed record AssessmentSummary(
     string Id,

@@ -13,6 +13,7 @@ public sealed class AttemptService
     private readonly AssessmentValidator validator;
     private readonly ScoringService scoringService;
     private readonly ICodeQuestionScorer codeQuestionScorer;
+    private readonly ISymbolicExpressionScorer symbolicExpressionScorer;
 
     public AttemptService(
         IAssessmentRepository assessmentRepository,
@@ -21,7 +22,8 @@ public sealed class AttemptService
         ISettingsRepository settingsRepository,
         AssessmentValidator validator,
         ScoringService scoringService,
-        ICodeQuestionScorer codeQuestionScorer)
+        ICodeQuestionScorer codeQuestionScorer,
+        ISymbolicExpressionScorer symbolicExpressionScorer)
     {
         this.assessmentRepository = assessmentRepository;
         this.attemptRepository = attemptRepository;
@@ -30,6 +32,7 @@ public sealed class AttemptService
         this.validator = validator;
         this.scoringService = scoringService;
         this.codeQuestionScorer = codeQuestionScorer;
+        this.symbolicExpressionScorer = symbolicExpressionScorer;
     }
 
     public async Task<Attempt> StartAsync(string assessmentId, AssessmentMode? mode, CancellationToken cancellationToken = default)
@@ -72,9 +75,13 @@ public sealed class AttemptService
         var question = assessment.Questions.FirstOrDefault(candidate => string.Equals(candidate.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Question '{submittedAnswer.QuestionId}' does not exist on this assessment.");
 
-        var evaluation = question.Type is QuestionType.Code
-            ? await codeQuestionScorer.ScoreAsync(question, submittedAnswer, await settingsRepository.GetAsync(cancellationToken), cancellationToken)
-            : scoringService.ScoreAnswer(question, submittedAnswer);
+        var settings = await settingsRepository.GetAsync(cancellationToken);
+        var evaluation = question.Type switch
+        {
+            QuestionType.Code => await codeQuestionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
+            QuestionType.SymbolicResponse => await symbolicExpressionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
+            _ => scoringService.ScoreAnswer(question, submittedAnswer)
+        };
         var answers = attempt.Answers
             .Where(answer => !string.Equals(answer.QuestionId, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
             .Append(new AttemptAnswer(submittedAnswer.QuestionId, submittedAnswer, evaluation, DateTimeOffset.UtcNow))

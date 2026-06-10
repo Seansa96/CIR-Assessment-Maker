@@ -209,9 +209,10 @@ import "../styles/global.css";
       import remarkRehype from "remark-rehype";
       import rehypeKatex from "rehype-katex";
       import rehypeStringify from "rehype-stringify";
+      import "mathlive";
 
       type AssessmentMode = "practice" | "scored";
-      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code";
+      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse";
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
 
       interface AppSettings {
@@ -272,6 +273,10 @@ import "../styles/global.css";
           gradingMode?: string;
           numericValue?: number | null;
           numericTolerance?: number | null;
+          expectedLatex?: string | null;
+          equivalenceMode?: "expression" | "derivative" | string | null;
+          variables?: string[];
+          tolerance?: number | null;
           media?: MediaAsset[];
         };
         language?: "python" | "cpp";
@@ -308,6 +313,7 @@ import "../styles/global.css";
         selfCheckCorrect: boolean | null;
         numericValue: number | null;
         codeText: string | null;
+        symbolicLatex: string | null;
       }
 
       interface CodeFeedback {
@@ -325,6 +331,14 @@ import "../styles/global.css";
         passed: boolean;
       }
 
+      interface SymbolicFeedback {
+        parseSucceeded: boolean;
+        normalizedSubmitted: string | null;
+        normalizedExpected: string | null;
+        equivalenceMode: string;
+        reason: string | null;
+      }
+
       interface QuestionResult {
         questionId: string;
         prompt: string;
@@ -335,6 +349,7 @@ import "../styles/global.css";
         explanation: string | null;
         expectedAnswer: string | null;
         codeFeedback: CodeFeedback | null;
+        symbolicFeedback: SymbolicFeedback | null;
       }
 
       interface AttemptResults {
@@ -876,6 +891,23 @@ import "../styles/global.css";
           };
         }
 
+        if (type === "symbolicResponse") {
+          return {
+            id,
+            type,
+            prompt: "",
+            choices: [],
+            media: [],
+            answer: {
+              expectedLatex: "",
+              equivalenceMode: "expression",
+              variables: ["x"],
+              tolerance: 0.000001
+            },
+            explanation: ""
+          };
+        }
+
         if (type === "code") {
           return {
             id,
@@ -929,6 +961,7 @@ import "../styles/global.css";
                   <option value="selectAll" ${question.type === "selectAll" ? "selected" : ""}>Select all</option>
                   <option value="freeResponse" ${question.type === "freeResponse" ? "selected" : ""}>Free response</option>
                   <option value="numericResponse" ${question.type === "numericResponse" ? "selected" : ""}>Numeric response</option>
+                  <option value="symbolicResponse" ${question.type === "symbolicResponse" ? "selected" : ""}>Symbolic response</option>
                   <option value="code" ${question.type === "code" ? "selected" : ""}>Code</option>
                 </select>
               </div>
@@ -1017,6 +1050,32 @@ import "../styles/global.css";
           `;
         }
 
+        if (question.type === "symbolicResponse") {
+          return `
+            <div class="field">
+              <label for="question-symbolic-expected-${index}">Expected LaTeX</label>
+              <textarea id="question-symbolic-expected-${index}" data-question-field="expectedLatex" rows="2">${escapeHtml(question.answer?.expectedLatex ?? "")}</textarea>
+            </div>
+            <div class="settings-grid">
+              <div class="field">
+                <label for="question-symbolic-mode-${index}">Equivalence mode</label>
+                <select id="question-symbolic-mode-${index}" data-question-field="equivalenceMode">
+                  <option value="expression" ${question.answer?.equivalenceMode === "expression" ? "selected" : ""}>Expression</option>
+                  <option value="derivative" ${question.answer?.equivalenceMode === "derivative" ? "selected" : ""}>Derivative</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="question-symbolic-variables-${index}">Variables</label>
+                <input id="question-symbolic-variables-${index}" data-question-field="variables" value="${escapeHtml((question.answer?.variables ?? ["x"]).join(", "))}" />
+              </div>
+              <div class="field">
+                <label for="question-symbolic-tolerance-${index}">Tolerance</label>
+                <input id="question-symbolic-tolerance-${index}" data-question-field="tolerance" type="number" step="any" min="0" value="${escapeHtml(String(question.answer?.tolerance ?? 0.000001))}" />
+              </div>
+            </div>
+          `;
+        }
+
         return `
           <div class="choice-editor-grid">
             ${question.choices.map((choice) => `
@@ -1045,7 +1104,7 @@ import "../styles/global.css";
             id: editor.querySelector<HTMLInputElement>("[data-question-field='id']")!.value.trim(),
             type,
             prompt: editor.querySelector<HTMLTextAreaElement>("[data-question-field='prompt']")!.value.trim(),
-            choices: type === "freeResponse" || type === "numericResponse" || type === "code" ? [] : choices,
+            choices: type === "freeResponse" || type === "numericResponse" || type === "code" || type === "symbolicResponse" ? [] : choices,
             answer: buildDraftAnswer(type, answerValue, editor),
             language: type === "code" ? editor.querySelector<HTMLSelectElement>("[data-question-field='language']")?.value as "python" | "cpp" : undefined,
             functionName: type === "code" ? editor.querySelector<HTMLInputElement>("[data-question-field='functionName']")?.value.trim() : undefined,
@@ -1086,6 +1145,20 @@ import "../styles/global.css";
           return {
             choiceId: null,
             choiceIds: []
+          };
+        }
+
+        if (type === "symbolicResponse") {
+          return {
+            choiceId: null,
+            choiceIds: [],
+            expectedLatex: editor.querySelector<HTMLTextAreaElement>("[data-question-field='expectedLatex']")?.value.trim() ?? "",
+            equivalenceMode: editor.querySelector<HTMLSelectElement>("[data-question-field='equivalenceMode']")?.value ?? "expression",
+            variables: (editor.querySelector<HTMLInputElement>("[data-question-field='variables']")?.value ?? "")
+              .split(",")
+              .map((value) => value.trim())
+              .filter(Boolean),
+            tolerance: nullableNumber(editor.querySelector<HTMLInputElement>("[data-question-field='tolerance']")?.value ?? "")
           };
         }
 
@@ -1144,6 +1217,12 @@ import "../styles/global.css";
             if (!question.starterCode) errors.push(`Question ${index + 1} needs starter code.`);
             if (!question.tests || question.tests.length === 0) errors.push(`Question ${index + 1} needs at least one code test.`);
           }
+          if (question.type === "symbolicResponse") {
+            if (!question.answer?.expectedLatex) errors.push(`Question ${index + 1} needs expected LaTeX.`);
+            if (!["expression", "derivative"].includes(String(question.answer?.equivalenceMode ?? ""))) errors.push(`Question ${index + 1} needs expression or derivative equivalence.`);
+            if (question.answer?.equivalenceMode === "derivative" && (question.answer?.variables ?? []).length === 0) errors.push(`Question ${index + 1} needs a variable for derivative equivalence.`);
+            if ((question.answer?.tolerance ?? -1) < 0) errors.push(`Question ${index + 1} needs a non-negative symbolic tolerance.`);
+          }
         });
 
         return errors;
@@ -1187,11 +1266,13 @@ import "../styles/global.css";
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
         const promptHtml = await renderMarkdown(question.prompt);
         const feedbackExplanation = results?.explanation ? await renderMarkdown(results.explanation) : "";
+        const symbolicFeedbackHtml = await renderSymbolicFeedback(results?.symbolicFeedback);
         const feedback = results?.isCorrect === null || results?.isCorrect === undefined
           ? ""
           : `<div class="feedback ${results.isCorrect ? "correct" : "incorrect"}">
               ${results.isCorrect ? "Correct" : "Needs review"}
               ${renderCodeFeedback(results.codeFeedback)}
+              ${symbolicFeedbackHtml}
               ${feedbackExplanation ? `<details><summary>Explanation</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
             </div>`;
 
@@ -1241,8 +1322,9 @@ import "../styles/global.css";
         const results = state.latestResults;
         const questionHtml = await Promise.all(results.questions.map(async (question) => {
           const promptHtml = await renderMarkdown(question.prompt);
-          const expectedHtml = question.expectedAnswer ? await renderMarkdown(question.expectedAnswer) : "";
+          const expectedHtml = question.expectedAnswer ? await renderMarkdown(question.type === "symbolicResponse" ? `$${question.expectedAnswer}$` : question.expectedAnswer) : "";
           const explanationHtml = question.explanation ? await renderMarkdown(question.explanation) : "";
+          const symbolicFeedbackHtml = await renderSymbolicFeedback(question.symbolicFeedback);
 
           return `
             <article class="result-item ${question.isCorrect ? "correct" : "incorrect"}">
@@ -1250,6 +1332,7 @@ import "../styles/global.css";
               ${renderMedia(question.media ?? [])}
               <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
               ${renderCodeFeedback(question.codeFeedback)}
+              ${symbolicFeedbackHtml}
               ${expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
               ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
             </article>
@@ -1305,6 +1388,15 @@ import "../styles/global.css";
             <div class="field code-response-field">
               <label for="code-response">${escapeHtml((question.language ?? "code").toUpperCase())} response</label>
               <textarea id="code-response" name="codeText" rows="10" spellcheck="false">${escapeHtml(submittedAnswer?.codeText ?? question.starterCode ?? "")}</textarea>
+            </div>
+          `;
+        }
+
+        if (question.type === "symbolicResponse") {
+          return `
+            <div class="field symbolic-response-field">
+              <label for="symbolic-response">Symbolic response</label>
+              <math-field id="symbolic-response">${escapeHtml(submittedAnswer?.symbolicLatex ?? "")}</math-field>
             </div>
           `;
         }
@@ -1371,6 +1463,23 @@ import "../styles/global.css";
         `;
       }
 
+      async function renderSymbolicFeedback(feedback: SymbolicFeedback | null | undefined) {
+        if (!feedback) return "";
+        const submittedHtml = feedback.normalizedSubmitted ? await renderMarkdown(`$${feedback.normalizedSubmitted}$`) : "";
+        const expectedHtml = feedback.normalizedExpected ? await renderMarkdown(`$${feedback.normalizedExpected}$`) : "";
+
+        return `
+          <div class="symbolic-feedback">
+            <p><strong>${feedback.parseSucceeded ? "Equivalence check" : "Parse check"}:</strong> ${escapeHtml(feedback.reason ?? "No details returned.")}</p>
+            <dl>
+              <div><dt>Mode</dt><dd>${escapeHtml(feedback.equivalenceMode)}</dd></div>
+              ${submittedHtml ? `<div><dt>Your answer</dt><dd class="markdown">${submittedHtml}</dd></div>` : ""}
+              ${expectedHtml ? `<div><dt>Expected</dt><dd class="markdown">${expectedHtml}</dd></div>` : ""}
+            </dl>
+          </div>
+        `;
+      }
+
       function readAnswer(question: Question) {
         const form = new FormData(document.querySelector<HTMLFormElement>("#answer-form")!);
         const selectedCards = Array.from(document.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
@@ -1382,8 +1491,14 @@ import "../styles/global.css";
           freeResponseText: form.get("freeResponseText"),
           selfCheckCorrect: form.get("selfCheckCorrect") === "on",
           numericValue: question.type === "numericResponse" ? nullableNumber(form.get("numericValue")) : null,
-          codeText: question.type === "code" ? String(form.get("codeText") ?? "") : null
+          codeText: question.type === "code" ? String(form.get("codeText") ?? "") : null,
+          symbolicLatex: question.type === "symbolicResponse" ? readSymbolicLatex() : null
         };
+      }
+
+      function readSymbolicLatex() {
+        const mathField = document.querySelector<HTMLElement & { value?: string }>("#symbolic-response");
+        return mathField?.value ?? mathField?.textContent ?? "";
       }
 
       function setupChoiceCards(question: Question) {
@@ -1408,7 +1523,7 @@ import "../styles/global.css";
         if (!state.attempt || !state.assessment) return;
 
         const target = event.target as HTMLElement;
-        if (target.matches("input, textarea, select")) return;
+        if (target.matches("input, textarea, select, math-field")) return;
 
         const question = getCurrentQuestion();
         if (question.type !== "multipleChoice" && question.type !== "selectAll") return;

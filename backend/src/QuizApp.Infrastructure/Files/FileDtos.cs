@@ -72,6 +72,9 @@ internal sealed class AnswerFileDto
     public List<string>? ChoiceIds { get; set; }
     public string? Expected { get; set; }
     public string? GradingMode { get; set; }
+    public string? ExpectedLatex { get; set; }
+    public string? EquivalenceMode { get; set; }
+    public List<string>? Variables { get; set; }
     public decimal? Value { get; set; }
     public decimal? Tolerance { get; set; }
     public List<MediaFileDto>? Media { get; set; }

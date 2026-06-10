@@ -43,7 +43,8 @@ public sealed class ScoringService
                 showFeedback ? answer?.Evaluation?.IsCorrect : null,
                 showFeedback ? question.Explanation : null,
                 showFeedback ? DescribeExpectedAnswer(question) : null,
-                showFeedback ? answer?.Evaluation?.CodeFeedback : null);
+                showFeedback ? answer?.Evaluation?.CodeFeedback : null,
+                showFeedback ? answer?.Evaluation?.SymbolicFeedback : null);
         }).ToList();
 
         var correctCount = attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
@@ -78,6 +79,7 @@ public sealed class ScoringService
             QuestionType.FreeResponse => question.Answer.Expected,
             QuestionType.NumericResponse => question.Answer.NumericValue?.ToString(),
             QuestionType.Code => "All code tests pass",
+            QuestionType.SymbolicResponse => question.Answer.SymbolicExpectedLatex ?? question.Answer.ExpectedLatex,
             _ => null
         };
     }

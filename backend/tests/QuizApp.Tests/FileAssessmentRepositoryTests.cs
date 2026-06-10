@@ -90,6 +90,30 @@ public sealed class FileAssessmentRepositoryTests
         Assert.Equal("9", Assert.Single(question.CodeQuestion!.Tests).Expected);
     }
 
+    [Fact]
+    public async Task SaveAsync_round_trips_symbolic_response_fields()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.Assessment(questions: new[] { TestData.SymbolicResponseQuestion("q001", "derivative") }) with
+        {
+            Id = "symbolic-response-quiz"
+        };
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync("symbolic-response-quiz");
+
+        Assert.NotNull(loaded);
+        var question = Assert.Single(loaded.Questions);
+        Assert.Equal(QuestionType.SymbolicResponse, question.Type);
+        Assert.Equal("(x+1)^2", question.Answer.SymbolicExpectedLatex);
+        Assert.Equal("derivative", question.Answer.SymbolicEquivalenceMode);
+        Assert.Equal("x", Assert.Single(question.Answer.SymbolicVariables));
+        Assert.Equal(0.000001m, question.Answer.SymbolicTolerance);
+    }
+
     private static string CreateDataRoot()
     {
         var dataRoot = Path.Combine(AppContext.BaseDirectory, "file-repository-tests", Guid.NewGuid().ToString("n"));

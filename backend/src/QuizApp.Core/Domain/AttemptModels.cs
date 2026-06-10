@@ -48,7 +48,8 @@ public sealed record QuestionResult(
     bool? IsCorrect,
     string? Explanation,
     string? ExpectedAnswer,
-    CodeFeedback? CodeFeedback);
+    CodeFeedback? CodeFeedback,
+    SymbolicFeedback? SymbolicFeedback);
 
 public sealed record GradeLogEntry(
     string Id,

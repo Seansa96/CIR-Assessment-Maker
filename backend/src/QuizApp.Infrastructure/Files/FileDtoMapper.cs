@@ -104,7 +104,17 @@ internal static class FileDtoMapper
                 dto.Answer?.GradingMode,
                 dto.Answer?.Value,
                 dto.Answer?.Tolerance,
-                (dto.Answer?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()),
+                (dto.Answer?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
+            {
+                ExpectedLatex = dto.Answer?.ExpectedLatex,
+                EquivalenceMode = dto.Answer?.EquivalenceMode,
+                Variables = dto.Answer?.Variables ?? new List<string>(),
+                Tolerance = dto.Answer?.Tolerance,
+                SymbolicExpectedLatex = dto.Answer?.ExpectedLatex,
+                SymbolicEquivalenceMode = dto.Answer?.EquivalenceMode,
+                SymbolicVariables = dto.Answer?.Variables ?? new List<string>(),
+                SymbolicTolerance = dto.Answer?.Tolerance
+            },
             dto.Explanation,
             (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
         {
@@ -131,8 +141,11 @@ internal static class FileDtoMapper
                 ChoiceIds = question.Answer.ChoiceIds.ToList(),
                 Expected = question.Answer.Expected,
                 GradingMode = question.Answer.GradingMode,
+                ExpectedLatex = question.Answer.SymbolicExpectedLatex ?? question.Answer.ExpectedLatex,
+                EquivalenceMode = question.Answer.SymbolicEquivalenceMode ?? question.Answer.EquivalenceMode,
+                Variables = (question.Answer.SymbolicVariables.Count > 0 ? question.Answer.SymbolicVariables : question.Answer.Variables).ToList(),
                 Value = question.Answer.NumericValue,
-                Tolerance = question.Answer.NumericTolerance,
+                Tolerance = question.Answer.NumericTolerance ?? question.Answer.SymbolicTolerance ?? question.Answer.Tolerance,
                 Media = question.Answer.Media.Select(ToDto).ToList()
             },
             Explanation = question.Explanation,
@@ -203,6 +216,7 @@ internal static class FileDtoMapper
             "freeresponse" => QuestionType.FreeResponse,
             "numericresponse" => QuestionType.NumericResponse,
             "code" => QuestionType.Code,
+            "symbolicresponse" => QuestionType.SymbolicResponse,
             _ => QuestionType.Unknown
         };
     }
@@ -244,6 +258,7 @@ internal static class FileDtoMapper
             QuestionType.FreeResponse => "freeResponse",
             QuestionType.NumericResponse => "numericResponse",
             QuestionType.Code => "code",
+            QuestionType.SymbolicResponse => "symbolicResponse",
             _ => "multipleChoice"
         };
     }

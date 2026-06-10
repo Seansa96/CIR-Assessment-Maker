@@ -134,4 +134,78 @@ public sealed class AssessmentValidatorTests
 
         Assert.Contains(result.Issues, issue => issue.Code == "MISSING_CODE_TESTS");
     }
+
+    [Fact]
+    public void Validate_accepts_valid_symbolic_response()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.SymbolicResponseQuestion("q001") });
+
+        var result = validator.Validate(assessment);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_rejects_symbolic_response_without_expected_latex()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.SymbolicResponseQuestion("q001") with
+            {
+                Answer = TestData.SymbolicResponseQuestion("q001").Answer with { SymbolicExpectedLatex = null }
+            }
+        });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_SYMBOLIC_EXPECTED_LATEX");
+    }
+
+    [Fact]
+    public void Validate_rejects_symbolic_response_with_invalid_equivalence_mode()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.SymbolicResponseQuestion("q001") with
+            {
+                Answer = TestData.SymbolicResponseQuestion("q001").Answer with { SymbolicEquivalenceMode = "rubric" }
+            }
+        });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_SYMBOLIC_EQUIVALENCE_MODE");
+    }
+
+    [Fact]
+    public void Validate_rejects_derivative_symbolic_response_without_variables()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.SymbolicResponseQuestion("q001", "derivative") with
+            {
+                Answer = TestData.SymbolicResponseQuestion("q001", "derivative").Answer with { SymbolicVariables = Array.Empty<string>() }
+            }
+        });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_SYMBOLIC_VARIABLE");
+    }
+
+    [Fact]
+    public void Validate_rejects_symbolic_response_with_negative_tolerance()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.SymbolicResponseQuestion("q001") with
+            {
+                Answer = TestData.SymbolicResponseQuestion("q001").Answer with { SymbolicTolerance = -0.1m }
+            }
+        });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_SYMBOLIC_TOLERANCE");
+    }
 }

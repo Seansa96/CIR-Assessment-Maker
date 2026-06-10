@@ -118,6 +118,27 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
+    public async Task Symbolic_response_scores_and_shows_feedback_in_practice_mode()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.SymbolicResponseQuestion("q001") });
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), null, null, null)
+            {
+                SymbolicLatex = "x^2+2x+1"
+            });
+
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        Assert.True(results.Questions.Single().IsCorrect);
+        Assert.NotNull(results.Questions.Single().SymbolicFeedback);
+    }
+
+
+    [Fact]
     public async Task Grade_log_commit_records_completed_attempt_once()
     {
         var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
@@ -165,7 +186,8 @@ public sealed class AttemptFlowTests
             new InMemorySettingsRepository(),
             new AssessmentValidator(),
             new ScoringService(),
-            new FakeCodeQuestionScorer());
+            new FakeCodeQuestionScorer(),
+            new FakeSymbolicExpressionScorer());
     }
 }
 
@@ -265,6 +287,24 @@ internal static class TestData
                     : "def square(n):\n    return n * n",
                 new[] { new CodeQuestionTest("3", "9") })
         };
+    }
+
+    public static QuestionDefinition SymbolicResponseQuestion(string id, string mode = "expression")
+    {
+        return new QuestionDefinition(
+            id,
+            QuestionType.SymbolicResponse,
+            "Simplify $x^2 + 2x + 1$.",
+            Array.Empty<ChoiceOption>(),
+            new AnswerDefinition(null, Array.Empty<string>(), null, null, null, null, Array.Empty<MediaAsset>())
+            {
+                SymbolicExpectedLatex = "(x+1)^2",
+                SymbolicEquivalenceMode = mode,
+                SymbolicVariables = new[] { "x" },
+                SymbolicTolerance = 0.000001m
+            },
+            "The expression factors as $(x+1)^2$.",
+            Array.Empty<MediaAsset>());
     }
 }
 
@@ -381,6 +421,26 @@ internal sealed class FakeCodeQuestionScorer : ICodeQuestionScorer
                 null,
                 "9",
                 null)
+        });
+    }
+}
+
+internal sealed class FakeSymbolicExpressionScorer : ISymbolicExpressionScorer
+{
+    public Task<AnswerEvaluation> ScoreAsync(
+        QuestionDefinition question,
+        SubmittedAnswer submittedAnswer,
+        AppSettings settings,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(new AnswerEvaluation(question.Id, true, question.Explanation, question.Answer.SymbolicExpectedLatex)
+        {
+            SymbolicFeedback = new SymbolicFeedback(
+                true,
+                submittedAnswer.SymbolicLatex,
+                question.Answer.SymbolicExpectedLatex ?? question.Answer.ExpectedLatex,
+                question.Answer.SymbolicEquivalenceMode ?? question.Answer.EquivalenceMode ?? "expression",
+                "Expressions matched.")
         });
     }
 }
