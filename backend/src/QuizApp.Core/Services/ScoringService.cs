@@ -32,7 +32,7 @@ public sealed class ScoringService
         var questionResults = orderedQuestions.Select(question =>
         {
             answersByQuestion.TryGetValue(question.Id, out var answer);
-            var showFeedback = attempt.CompletedAt is not null || attempt.Mode is AssessmentMode.Practice;
+            var showFeedback = attempt.Status is AttemptStatus.Completed or AttemptStatus.Abandoned || attempt.Mode is AssessmentMode.Practice;
 
             return new QuestionResult(
                 question.Id,
@@ -42,7 +42,8 @@ public sealed class ScoringService
                 answer?.Answer,
                 showFeedback ? answer?.Evaluation?.IsCorrect : null,
                 showFeedback ? question.Explanation : null,
-                showFeedback ? DescribeExpectedAnswer(question) : null);
+                showFeedback ? DescribeExpectedAnswer(question) : null,
+                showFeedback ? answer?.Evaluation?.CodeFeedback : null);
         }).ToList();
 
         var correctCount = attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
@@ -76,6 +77,7 @@ public sealed class ScoringService
             QuestionType.SelectAll => string.Join(", ", question.Answer.ChoiceIds),
             QuestionType.FreeResponse => question.Answer.Expected,
             QuestionType.NumericResponse => question.Answer.NumericValue?.ToString(),
+            QuestionType.Code => "All code tests pass",
             _ => null
         };
     }

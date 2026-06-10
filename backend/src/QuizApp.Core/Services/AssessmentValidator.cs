@@ -72,7 +72,7 @@ public sealed class AssessmentValidator
 
         if (question.Type is QuestionType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, or numericResponse.", question.Id));
+            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, numericResponse, or code.", question.Id));
             return;
         }
 
@@ -131,6 +131,11 @@ public sealed class AssessmentValidator
                 issues.Add(new ValidationIssue("INVALID_NUMERIC_TOLERANCE", "Numeric response questions must include a non-negative answer.tolerance.", question.Id));
             }
         }
+
+        if (question.Type is QuestionType.Code)
+        {
+            ValidateCodeQuestion(question, issues);
+        }
     }
 
     private static void RequireText(string? value, string code, string message, List<ValidationIssue> issues, string? questionId = null)
@@ -159,6 +164,36 @@ public sealed class AssessmentValidator
             {
                 issues.Add(new ValidationIssue("MISSING_MEDIA_ALT", "Image media must include alt text.", questionId));
             }
+        }
+    }
+
+    private static void ValidateCodeQuestion(QuestionDefinition question, List<ValidationIssue> issues)
+    {
+        var codeQuestion = question.CodeQuestion;
+        if (codeQuestion is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_CODE_DEFINITION", "Code questions must include language, functionName, starterCode, and tests.", question.Id));
+            return;
+        }
+
+        if (!string.Equals(codeQuestion.Language, "python", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(codeQuestion.Language, "cpp", StringComparison.OrdinalIgnoreCase))
+        {
+            issues.Add(new ValidationIssue("INVALID_CODE_LANGUAGE", "Code question language must be python or cpp.", question.Id));
+        }
+
+        RequireText(codeQuestion.FunctionName, "MISSING_CODE_FUNCTION_NAME", "Code questions must include functionName.", issues, question.Id);
+        RequireText(codeQuestion.StarterCode, "MISSING_STARTER_CODE", "Code questions must include starterCode.", issues, question.Id);
+
+        if (codeQuestion.Tests.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_CODE_TESTS", "Code questions must include at least one test.", question.Id));
+        }
+
+        foreach (var test in codeQuestion.Tests)
+        {
+            RequireText(test.Input, "MISSING_CODE_TEST_INPUT", "Code question tests must include input.", issues, question.Id);
+            RequireText(test.Expected, "MISSING_CODE_TEST_EXPECTED", "Code question tests must include expected.", issues, question.Id);
         }
     }
 }

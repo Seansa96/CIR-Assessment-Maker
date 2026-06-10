@@ -17,7 +17,8 @@ public sealed record SubmitAnswerRequest(
     IReadOnlyList<string>? ChoiceIds,
     string? FreeResponseText,
     bool? SelfCheckCorrect,
-    decimal? NumericValue)
+    decimal? NumericValue,
+    string? CodeText)
 {
     public SubmittedAnswer ToDomain()
     {
@@ -27,7 +28,10 @@ public sealed record SubmitAnswerRequest(
             ChoiceIds ?? Array.Empty<string>(),
             FreeResponseText,
             SelfCheckCorrect,
-            NumericValue);
+            NumericValue)
+        {
+            CodeText = CodeText
+        };
     }
 }
 

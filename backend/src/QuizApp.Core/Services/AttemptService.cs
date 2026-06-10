@@ -12,6 +12,7 @@ public sealed class AttemptService
     private readonly ISettingsRepository settingsRepository;
     private readonly AssessmentValidator validator;
     private readonly ScoringService scoringService;
+    private readonly ICodeQuestionScorer codeQuestionScorer;
 
     public AttemptService(
         IAssessmentRepository assessmentRepository,
@@ -19,7 +20,8 @@ public sealed class AttemptService
         IGradeLogRepository gradeLogRepository,
         ISettingsRepository settingsRepository,
         AssessmentValidator validator,
-        ScoringService scoringService)
+        ScoringService scoringService,
+        ICodeQuestionScorer codeQuestionScorer)
     {
         this.assessmentRepository = assessmentRepository;
         this.attemptRepository = attemptRepository;
@@ -27,6 +29,7 @@ public sealed class AttemptService
         this.settingsRepository = settingsRepository;
         this.validator = validator;
         this.scoringService = scoringService;
+        this.codeQuestionScorer = codeQuestionScorer;
     }
 
     public async Task<Attempt> StartAsync(string assessmentId, AssessmentMode? mode, CancellationToken cancellationToken = default)
@@ -69,7 +72,9 @@ public sealed class AttemptService
         var question = assessment.Questions.FirstOrDefault(candidate => string.Equals(candidate.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Question '{submittedAnswer.QuestionId}' does not exist on this assessment.");
 
-        var evaluation = scoringService.ScoreAnswer(question, submittedAnswer);
+        var evaluation = question.Type is QuestionType.Code
+            ? await codeQuestionScorer.ScoreAsync(question, submittedAnswer, await settingsRepository.GetAsync(cancellationToken), cancellationToken)
+            : scoringService.ScoreAnswer(question, submittedAnswer);
         var answers = attempt.Answers
             .Where(answer => !string.Equals(answer.QuestionId, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
             .Append(new AttemptAnswer(submittedAnswer.QuestionId, submittedAnswer, evaluation, DateTimeOffset.UtcNow))

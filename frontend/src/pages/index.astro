@@ -165,6 +165,18 @@ import "../styles/global.css";
               <label for="assessment-timer">Assessment timer seconds</label>
               <input id="assessment-timer" name="assessmentTimerSeconds" type="number" min="0" placeholder="None" />
             </div>
+            <div class="field">
+              <label for="code-runner-base-url">Code runner URL</label>
+              <input id="code-runner-base-url" name="codeRunnerBaseUrl" placeholder="http://localhost:2000/api/v2" />
+            </div>
+            <div class="field">
+              <label for="code-runner-compile-timeout">Compile timeout ms</label>
+              <input id="code-runner-compile-timeout" name="codeRunnerCompileTimeoutMs" type="number" min="1" />
+            </div>
+            <div class="field">
+              <label for="code-runner-run-timeout">Run timeout ms</label>
+              <input id="code-runner-run-timeout" name="codeRunnerRunTimeoutMs" type="number" min="1" />
+            </div>
             <label class="checkbox-line">
               <input id="commit-scored" name="commitScoredAttemptsAutomatically" type="checkbox" />
               Commit scored attempts automatically
@@ -199,7 +211,7 @@ import "../styles/global.css";
       import rehypeStringify from "rehype-stringify";
 
       type AssessmentMode = "practice" | "scored";
-      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse";
+      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code";
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
 
       interface AppSettings {
@@ -211,6 +223,9 @@ import "../styles/global.css";
         questionTimerSeconds: number | null;
         assessmentTimerSeconds: number | null;
         commitScoredAttemptsAutomatically: boolean;
+        codeRunnerBaseUrl: string;
+        codeRunnerCompileTimeoutMs: number;
+        codeRunnerRunTimeoutMs: number;
       }
 
       interface Category {
@@ -259,7 +274,16 @@ import "../styles/global.css";
           numericTolerance?: number | null;
           media?: MediaAsset[];
         };
+        language?: "python" | "cpp";
+        functionName?: string;
+        starterCode?: string;
+        tests?: CodeQuestionTest[];
         explanation?: string | null;
+      }
+
+      interface CodeQuestionTest {
+        input: string;
+        expected: string;
       }
 
       interface Assessment {
@@ -283,6 +307,22 @@ import "../styles/global.css";
         freeResponseText: string | null;
         selfCheckCorrect: boolean | null;
         numericValue: number | null;
+        codeText: string | null;
+      }
+
+      interface CodeFeedback {
+        tests: CodeFeedbackTest[];
+        compileOutput: string | null;
+        runOutput: string | null;
+        error: string | null;
+      }
+
+      interface CodeFeedbackTest {
+        index: number;
+        input: string;
+        expected: string;
+        actual: string | null;
+        passed: boolean;
       }
 
       interface QuestionResult {
@@ -294,6 +334,7 @@ import "../styles/global.css";
         isCorrect: boolean | null;
         explanation: string | null;
         expectedAnswer: string | null;
+        codeFeedback: CodeFeedback | null;
       }
 
       interface AttemptResults {
@@ -608,7 +649,10 @@ import "../styles/global.css";
           defaultTestLength: Number(form.get("defaultTestLength")),
           questionTimerSeconds: nullableNumber(form.get("questionTimerSeconds")),
           assessmentTimerSeconds: nullableNumber(form.get("assessmentTimerSeconds")),
-          commitScoredAttemptsAutomatically: form.get("commitScoredAttemptsAutomatically") === "on"
+          commitScoredAttemptsAutomatically: form.get("commitScoredAttemptsAutomatically") === "on",
+          codeRunnerBaseUrl: String(form.get("codeRunnerBaseUrl") ?? "http://localhost:2000/api/v2").trim(),
+          codeRunnerCompileTimeoutMs: Number(form.get("codeRunnerCompileTimeoutMs") ?? 10000),
+          codeRunnerRunTimeoutMs: Number(form.get("codeRunnerRunTimeoutMs") ?? 3000)
         };
 
         state.settings = await api<AppSettings>("/settings", {
@@ -832,6 +876,22 @@ import "../styles/global.css";
           };
         }
 
+        if (type === "code") {
+          return {
+            id,
+            type,
+            prompt: "",
+            choices: [],
+            media: [],
+            answer: { choiceId: null, choiceIds: [] },
+            language: "python",
+            functionName: "square",
+            starterCode: "def square(n):\n    return n * n",
+            tests: [{ input: "3", expected: "9" }],
+            explanation: ""
+          };
+        }
+
         const choices = [
           { id: "a", text: "", media: [] },
           { id: "b", text: "", media: [] },
@@ -869,6 +929,7 @@ import "../styles/global.css";
                   <option value="selectAll" ${question.type === "selectAll" ? "selected" : ""}>Select all</option>
                   <option value="freeResponse" ${question.type === "freeResponse" ? "selected" : ""}>Free response</option>
                   <option value="numericResponse" ${question.type === "numericResponse" ? "selected" : ""}>Numeric response</option>
+                  <option value="code" ${question.type === "code" ? "selected" : ""}>Code</option>
                 </select>
               </div>
             </div>
@@ -930,6 +991,32 @@ import "../styles/global.css";
           `;
         }
 
+        if (question.type === "code") {
+          return `
+            <div class="settings-grid">
+              <div class="field">
+                <label for="question-code-language-${index}">Language</label>
+                <select id="question-code-language-${index}" data-question-field="language">
+                  <option value="python" ${question.language === "python" ? "selected" : ""}>Python</option>
+                  <option value="cpp" ${question.language === "cpp" ? "selected" : ""}>C++</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="question-code-function-${index}">Function name</label>
+                <input id="question-code-function-${index}" data-question-field="functionName" value="${escapeHtml(question.functionName ?? "")}" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="question-code-starter-${index}">Starter code</label>
+              <textarea id="question-code-starter-${index}" data-question-field="starterCode" rows="6">${escapeHtml(question.starterCode ?? "")}</textarea>
+            </div>
+            <div class="field">
+              <label for="question-code-tests-${index}">Tests JSON</label>
+              <textarea id="question-code-tests-${index}" data-question-field="tests" rows="4">${escapeHtml(JSON.stringify(question.tests ?? [], null, 2))}</textarea>
+            </div>
+          `;
+        }
+
         return `
           <div class="choice-editor-grid">
             ${question.choices.map((choice) => `
@@ -958,8 +1045,12 @@ import "../styles/global.css";
             id: editor.querySelector<HTMLInputElement>("[data-question-field='id']")!.value.trim(),
             type,
             prompt: editor.querySelector<HTMLTextAreaElement>("[data-question-field='prompt']")!.value.trim(),
-            choices: type === "freeResponse" || type === "numericResponse" ? [] : choices,
+            choices: type === "freeResponse" || type === "numericResponse" || type === "code" ? [] : choices,
             answer: buildDraftAnswer(type, answerValue, editor),
+            language: type === "code" ? editor.querySelector<HTMLSelectElement>("[data-question-field='language']")?.value as "python" | "cpp" : undefined,
+            functionName: type === "code" ? editor.querySelector<HTMLInputElement>("[data-question-field='functionName']")?.value.trim() : undefined,
+            starterCode: type === "code" ? editor.querySelector<HTMLTextAreaElement>("[data-question-field='starterCode']")?.value : undefined,
+            tests: type === "code" ? parseCodeTests(editor.querySelector<HTMLTextAreaElement>("[data-question-field='tests']")?.value ?? "[]") : undefined,
             explanation: editor.querySelector<HTMLTextAreaElement>("[data-question-field='explanation']")!.value.trim()
           };
         });
@@ -991,7 +1082,25 @@ import "../styles/global.css";
           };
         }
 
+        if (type === "code") {
+          return {
+            choiceId: null,
+            choiceIds: []
+          };
+        }
+
         return { choiceId: answerValue.trim(), choiceIds: [] };
+      }
+
+      function parseCodeTests(value: string): CodeQuestionTest[] {
+        try {
+          const parsed = JSON.parse(value);
+          return Array.isArray(parsed)
+            ? parsed.map((test) => ({ input: String(test.input ?? ""), expected: String(test.expected ?? "") }))
+            : [];
+        } catch {
+          return [];
+        }
       }
 
       function buildDraftAssessment() {
@@ -1028,6 +1137,12 @@ import "../styles/global.css";
           }
           if (question.type === "numericResponse" && ((question.answer?.numericTolerance ?? -1) < 0)) {
             errors.push(`Question ${index + 1} needs a non-negative tolerance.`);
+          }
+          if (question.type === "code") {
+            if (!question.language || !["python", "cpp"].includes(question.language)) errors.push(`Question ${index + 1} needs Python or C++.`);
+            if (!question.functionName) errors.push(`Question ${index + 1} needs a function name.`);
+            if (!question.starterCode) errors.push(`Question ${index + 1} needs starter code.`);
+            if (!question.tests || question.tests.length === 0) errors.push(`Question ${index + 1} needs at least one code test.`);
           }
         });
 
@@ -1076,6 +1191,7 @@ import "../styles/global.css";
           ? ""
           : `<div class="feedback ${results.isCorrect ? "correct" : "incorrect"}">
               ${results.isCorrect ? "Correct" : "Needs review"}
+              ${renderCodeFeedback(results.codeFeedback)}
               ${feedbackExplanation ? `<details><summary>Explanation</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
             </div>`;
 
@@ -1133,6 +1249,7 @@ import "../styles/global.css";
               <div class="markdown">${promptHtml}</div>
               ${renderMedia(question.media ?? [])}
               <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
+              ${renderCodeFeedback(question.codeFeedback)}
               ${expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
               ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
             </article>
@@ -1183,6 +1300,15 @@ import "../styles/global.css";
           `;
         }
 
+        if (question.type === "code") {
+          return `
+            <div class="field code-response-field">
+              <label for="code-response">${escapeHtml((question.language ?? "code").toUpperCase())} response</label>
+              <textarea id="code-response" name="codeText" rows="10" spellcheck="false">${escapeHtml(submittedAnswer?.codeText ?? question.starterCode ?? "")}</textarea>
+            </div>
+          `;
+        }
+
         return `
           <div class="field">
             <label for="free-response">Your response</label>
@@ -1219,6 +1345,32 @@ import "../styles/global.css";
         `;
       }
 
+      function renderCodeFeedback(feedback: CodeFeedback | null | undefined) {
+        if (!feedback) return "";
+
+        const testRows = feedback.tests.map((test) => `
+          <tr>
+            <td>${test.index}</td>
+            <td>${escapeHtml(test.input)}</td>
+            <td>${escapeHtml(test.expected)}</td>
+            <td>${escapeHtml(test.actual ?? "")}</td>
+            <td>${test.passed ? "Pass" : "Fail"}</td>
+          </tr>
+        `).join("");
+
+        return `
+          <div class="code-feedback">
+            <table>
+              <thead><tr><th>#</th><th>Input</th><th>Expected</th><th>Actual</th><th>Result</th></tr></thead>
+              <tbody>${testRows}</tbody>
+            </table>
+            ${feedback.compileOutput ? `<pre>${escapeHtml(feedback.compileOutput)}</pre>` : ""}
+            ${feedback.runOutput && feedback.tests.some((test) => !test.passed) ? `<pre>${escapeHtml(feedback.runOutput)}</pre>` : ""}
+            ${feedback.error ? `<pre>${escapeHtml(feedback.error)}</pre>` : ""}
+          </div>
+        `;
+      }
+
       function readAnswer(question: Question) {
         const form = new FormData(document.querySelector<HTMLFormElement>("#answer-form")!);
         const selectedCards = Array.from(document.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
@@ -1229,7 +1381,8 @@ import "../styles/global.css";
           choiceIds: question.type === "selectAll" ? selectedCards.map((card) => card.dataset.choiceId ?? "") : [],
           freeResponseText: form.get("freeResponseText"),
           selfCheckCorrect: form.get("selfCheckCorrect") === "on",
-          numericValue: question.type === "numericResponse" ? nullableNumber(form.get("numericValue")) : null
+          numericValue: question.type === "numericResponse" ? nullableNumber(form.get("numericValue")) : null,
+          codeText: question.type === "code" ? String(form.get("codeText") ?? "") : null
         };
       }
 
@@ -1299,6 +1452,9 @@ import "../styles/global.css";
         settingsForm.defaultTestLength.value = String(settings.defaultTestLength);
         settingsForm.questionTimerSeconds.value = settings.questionTimerSeconds?.toString() ?? "";
         settingsForm.assessmentTimerSeconds.value = settings.assessmentTimerSeconds?.toString() ?? "";
+        settingsForm.codeRunnerBaseUrl.value = settings.codeRunnerBaseUrl ?? "http://localhost:2000/api/v2";
+        settingsForm.codeRunnerCompileTimeoutMs.value = String(settings.codeRunnerCompileTimeoutMs ?? 10000);
+        settingsForm.codeRunnerRunTimeoutMs.value = String(settings.codeRunnerRunTimeoutMs ?? 3000);
         settingsForm.commitScoredAttemptsAutomatically.checked = settings.commitScoredAttemptsAutomatically;
       }
 

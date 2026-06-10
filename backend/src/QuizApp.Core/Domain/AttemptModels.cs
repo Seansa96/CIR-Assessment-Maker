@@ -47,7 +47,8 @@ public sealed record QuestionResult(
     SubmittedAnswer? SubmittedAnswer,
     bool? IsCorrect,
     string? Explanation,
-    string? ExpectedAnswer);
+    string? ExpectedAnswer,
+    CodeFeedback? CodeFeedback);
 
 public sealed record GradeLogEntry(
     string Id,

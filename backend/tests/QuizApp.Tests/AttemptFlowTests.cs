@@ -164,7 +164,8 @@ public sealed class AttemptFlowTests
             grades ?? new InMemoryGradeLogRepository(),
             new InMemorySettingsRepository(),
             new AssessmentValidator(),
-            new ScoringService());
+            new ScoringService(),
+            new FakeCodeQuestionScorer());
     }
 }
 
@@ -243,6 +244,27 @@ internal static class TestData
             new AnswerDefinition(null, Array.Empty<string>(), null, null, 8.38m, 0.01m, Array.Empty<MediaAsset>()),
             "The exact value is 8 pi over 3.",
             new[] { new MediaAsset("image", "/samples/volume-washer.svg", "Washer cross section diagram", null) });
+    }
+
+    public static QuestionDefinition CodeQuestion(string id, string language)
+    {
+        return new QuestionDefinition(
+            id,
+            QuestionType.Code,
+            "Write a function that squares an integer.",
+            Array.Empty<ChoiceOption>(),
+            new AnswerDefinition(null, Array.Empty<string>(), null, null, null, null, Array.Empty<MediaAsset>()),
+            "A square multiplies the value by itself.",
+            Array.Empty<MediaAsset>())
+        {
+            CodeQuestion = new CodeQuestionDefinition(
+                language,
+                "square",
+                language.Equals("cpp", StringComparison.OrdinalIgnoreCase)
+                    ? "int square(int n)\n{\n    return n * n;\n}"
+                    : "def square(n):\n    return n * n",
+                new[] { new CodeQuestionTest("3", "9") })
+        };
     }
 }
 
@@ -341,5 +363,24 @@ internal sealed class InMemoryGradeLogRepository : IGradeLogRepository
     {
         entries.RemoveAll(entry => string.Equals(entry.AttemptId, attemptId, StringComparison.OrdinalIgnoreCase));
         return Task.CompletedTask;
+    }
+}
+
+internal sealed class FakeCodeQuestionScorer : ICodeQuestionScorer
+{
+    public Task<AnswerEvaluation> ScoreAsync(
+        QuestionDefinition question,
+        SubmittedAnswer submittedAnswer,
+        AppSettings settings,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(new AnswerEvaluation(question.Id, true, question.Explanation, "All code tests pass")
+        {
+            CodeFeedback = new CodeFeedback(
+                new[] { new CodeTestResult(1, "3", "9", "9", true) },
+                null,
+                "9",
+                null)
+        });
     }
 }

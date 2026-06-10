@@ -25,7 +25,12 @@ internal static class FileDtoMapper
             dto.DefaultTestLength <= 0 ? 25 : dto.DefaultTestLength,
             dto.QuestionTimerSeconds,
             dto.AssessmentTimerSeconds,
-            dto.CommitScoredAttemptsAutomatically);
+            dto.CommitScoredAttemptsAutomatically)
+        {
+            CodeRunnerBaseUrl = string.IsNullOrWhiteSpace(dto.CodeRunnerBaseUrl) ? "http://localhost:2000/api/v2" : dto.CodeRunnerBaseUrl,
+            CodeRunnerCompileTimeoutMs = dto.CodeRunnerCompileTimeoutMs is > 0 ? dto.CodeRunnerCompileTimeoutMs.Value : 10000,
+            CodeRunnerRunTimeoutMs = dto.CodeRunnerRunTimeoutMs is > 0 ? dto.CodeRunnerRunTimeoutMs.Value : 3000
+        };
     }
 
     public static SettingsFileDto ToDto(this AppSettings settings)
@@ -39,7 +44,10 @@ internal static class FileDtoMapper
             DefaultTestLength = settings.DefaultTestLength,
             QuestionTimerSeconds = settings.QuestionTimerSeconds,
             AssessmentTimerSeconds = settings.AssessmentTimerSeconds,
-            CommitScoredAttemptsAutomatically = settings.CommitScoredAttemptsAutomatically
+            CommitScoredAttemptsAutomatically = settings.CommitScoredAttemptsAutomatically,
+            CodeRunnerBaseUrl = settings.CodeRunnerBaseUrl,
+            CodeRunnerCompileTimeoutMs = settings.CodeRunnerCompileTimeoutMs,
+            CodeRunnerRunTimeoutMs = settings.CodeRunnerRunTimeoutMs
         };
     }
 
@@ -98,7 +106,10 @@ internal static class FileDtoMapper
                 dto.Answer?.Tolerance,
                 (dto.Answer?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()),
             dto.Explanation,
-            (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList());
+            (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
+        {
+            CodeQuestion = ToCodeQuestion(dto)
+        };
     }
 
     private static QuestionFileDto ToDto(QuestionDefinition question)
@@ -125,8 +136,32 @@ internal static class FileDtoMapper
                 Media = question.Answer.Media.Select(ToDto).ToList()
             },
             Explanation = question.Explanation,
-            Media = question.Media.Select(ToDto).ToList()
+            Media = question.Media.Select(ToDto).ToList(),
+            Language = question.CodeQuestion?.Language,
+            FunctionName = question.CodeQuestion?.FunctionName,
+            StarterCode = question.CodeQuestion?.StarterCode,
+            Tests = question.CodeQuestion?.Tests.Select(test => new CodeQuestionTestFileDto
+            {
+                Input = test.Input,
+                Expected = test.Expected
+            }).ToList()
         };
+    }
+
+    private static CodeQuestionDefinition? ToCodeQuestion(QuestionFileDto dto)
+    {
+        if (ParseQuestionType(dto.Type) is not QuestionType.Code)
+        {
+            return null;
+        }
+
+        return new CodeQuestionDefinition(
+            dto.Language ?? string.Empty,
+            dto.FunctionName ?? string.Empty,
+            dto.StarterCode ?? string.Empty,
+            (dto.Tests ?? new List<CodeQuestionTestFileDto>())
+                .Select(test => new CodeQuestionTest(test.Input ?? string.Empty, test.Expected ?? string.Empty))
+                .ToList());
     }
 
     private static MediaAsset ToDomain(MediaFileDto dto)
@@ -167,6 +202,7 @@ internal static class FileDtoMapper
             "selectall" => QuestionType.SelectAll,
             "freeresponse" => QuestionType.FreeResponse,
             "numericresponse" => QuestionType.NumericResponse,
+            "code" => QuestionType.Code,
             _ => QuestionType.Unknown
         };
     }
@@ -207,6 +243,7 @@ internal static class FileDtoMapper
             QuestionType.SelectAll => "selectAll",
             QuestionType.FreeResponse => "freeResponse",
             QuestionType.NumericResponse => "numericResponse",
+            QuestionType.Code => "code",
             _ => "multipleChoice"
         };
     }

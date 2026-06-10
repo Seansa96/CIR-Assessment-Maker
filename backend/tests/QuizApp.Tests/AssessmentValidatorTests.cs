@@ -98,4 +98,40 @@ public sealed class AssessmentValidatorTests
 
         Assert.Contains(result.Issues, issue => issue.Code == "MISSING_MEDIA_ALT");
     }
+
+    [Fact]
+    public void Validate_accepts_valid_code_question()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.CodeQuestion("q001", "python") });
+
+        var result = validator.Validate(assessment);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_rejects_code_question_with_unsupported_language()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.CodeQuestion("q001", "javascript") });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_CODE_LANGUAGE");
+    }
+
+    [Fact]
+    public void Validate_rejects_code_question_without_tests()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.CodeQuestion("q001", "cpp") with
+            {
+                CodeQuestion = new CodeQuestionDefinition("cpp", "square", "int square(int n) { return n * n; }", Array.Empty<CodeQuestionTest>())
+            }
+        });
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_CODE_TESTS");
+    }
 }

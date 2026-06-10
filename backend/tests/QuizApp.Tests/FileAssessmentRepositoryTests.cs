@@ -67,6 +67,29 @@ public sealed class FileAssessmentRepositoryTests
         Assert.Equal("/samples/volume-washer.svg", Assert.Single(question.Media).Src);
     }
 
+    [Fact]
+    public async Task SaveAsync_round_trips_code_question_fields()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.Assessment(questions: new[] { TestData.CodeQuestion("q001", "cpp") }) with
+        {
+            Id = "code-question-quiz"
+        };
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync("code-question-quiz");
+
+        Assert.NotNull(loaded);
+        var question = Assert.Single(loaded.Questions);
+        Assert.Equal(QuestionType.Code, question.Type);
+        Assert.Equal("cpp", question.CodeQuestion?.Language);
+        Assert.Equal("square", question.CodeQuestion?.FunctionName);
+        Assert.Equal("9", Assert.Single(question.CodeQuestion!.Tests).Expected);
+    }
+
     private static string CreateDataRoot()
     {
         var dataRoot = Path.Combine(AppContext.BaseDirectory, "file-repository-tests", Guid.NewGuid().ToString("n"));

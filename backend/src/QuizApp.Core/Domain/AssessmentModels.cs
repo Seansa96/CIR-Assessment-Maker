@@ -19,7 +19,8 @@ public enum QuestionType
     MultipleChoice,
     SelectAll,
     FreeResponse,
-    NumericResponse
+    NumericResponse,
+    Code
 }
 
 public enum QuestionOrderMode
@@ -44,7 +45,12 @@ public sealed record AppSettings(
     int DefaultTestLength,
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
-    bool CommitScoredAttemptsAutomatically);
+    bool CommitScoredAttemptsAutomatically)
+{
+    public string CodeRunnerBaseUrl { get; init; } = "http://localhost:2000/api/v2";
+    public int CodeRunnerCompileTimeoutMs { get; init; } = 10000;
+    public int CodeRunnerRunTimeoutMs { get; init; } = 3000;
+}
 
 public sealed record AssessmentDefinition(
     int SchemaVersion,
@@ -66,7 +72,10 @@ public sealed record QuestionDefinition(
     IReadOnlyList<ChoiceOption> Choices,
     AnswerDefinition Answer,
     string? Explanation,
-    IReadOnlyList<MediaAsset> Media);
+    IReadOnlyList<MediaAsset> Media)
+{
+    public CodeQuestionDefinition? CodeQuestion { get; init; }
+}
 
 public sealed record ChoiceOption(
     string Id,
@@ -88,19 +97,48 @@ public sealed record MediaAsset(
     string Alt,
     string? Caption);
 
+public sealed record CodeQuestionDefinition(
+    string Language,
+    string FunctionName,
+    string StarterCode,
+    IReadOnlyList<CodeQuestionTest> Tests);
+
+public sealed record CodeQuestionTest(
+    string Input,
+    string Expected);
+
 public sealed record SubmittedAnswer(
     string QuestionId,
     string? ChoiceId,
     IReadOnlyList<string> ChoiceIds,
     string? FreeResponseText,
     bool? SelfCheckCorrect,
-    decimal? NumericValue);
+    decimal? NumericValue)
+{
+    public string? CodeText { get; init; }
+}
 
 public sealed record AnswerEvaluation(
     string QuestionId,
     bool IsCorrect,
     string? Explanation,
-    string? ExpectedAnswer);
+    string? ExpectedAnswer)
+{
+    public CodeFeedback? CodeFeedback { get; init; }
+}
+
+public sealed record CodeFeedback(
+    IReadOnlyList<CodeTestResult> Tests,
+    string? CompileOutput,
+    string? RunOutput,
+    string? Error);
+
+public sealed record CodeTestResult(
+    int Index,
+    string Input,
+    string Expected,
+    string? Actual,
+    bool Passed);
 
 public sealed record AssessmentSummary(
     string Id,

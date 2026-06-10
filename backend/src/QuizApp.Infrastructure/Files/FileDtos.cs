@@ -24,6 +24,9 @@ internal sealed class SettingsFileDto
     public int? QuestionTimerSeconds { get; set; }
     public int? AssessmentTimerSeconds { get; set; }
     public bool CommitScoredAttemptsAutomatically { get; set; }
+    public string? CodeRunnerBaseUrl { get; set; }
+    public int? CodeRunnerCompileTimeoutMs { get; set; }
+    public int? CodeRunnerRunTimeoutMs { get; set; }
 }
 
 internal sealed class AssessmentFileDto
@@ -50,6 +53,10 @@ internal sealed class QuestionFileDto
     public AnswerFileDto? Answer { get; set; }
     public string? Explanation { get; set; }
     public List<MediaFileDto>? Media { get; set; }
+    public string? Language { get; set; }
+    public string? FunctionName { get; set; }
+    public string? StarterCode { get; set; }
+    public List<CodeQuestionTestFileDto>? Tests { get; set; }
 }
 
 internal sealed class ChoiceFileDto
@@ -76,4 +83,10 @@ internal sealed class MediaFileDto
     public string? Src { get; set; }
     public string? Alt { get; set; }
     public string? Caption { get; set; }
+}
+
+internal sealed class CodeQuestionTestFileDto
+{
+    public string? Input { get; set; }
+    public string? Expected { get; set; }
 }

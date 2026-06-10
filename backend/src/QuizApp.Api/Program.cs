@@ -4,6 +4,7 @@ using QuizApp.Api.Contracts;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
 using QuizApp.Core.Services;
+using QuizApp.Infrastructure.CodeRunner;
 using QuizApp.Infrastructure.Files;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 var dataRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../..", "data"));
 builder.Services.AddSingleton<AssessmentValidator>();
 builder.Services.AddSingleton<ScoringService>();
+builder.Services.AddSingleton<ICodeQuestionScorer, CodeQuestionScorer>();
+builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
 builder.Services.AddSingleton(new FileStorageOptions { DataRoot = dataRoot });
@@ -70,6 +73,16 @@ api.MapPut("/settings", async (AppSettings settings, ISettingsRepository reposit
     if (settings.QuestionTimerSeconds is < 0 || settings.AssessmentTimerSeconds is < 0)
     {
         return Results.BadRequest(ApiError("INVALID_TIMER", "Timers must be null or non-negative seconds."));
+    }
+
+    if (!Uri.TryCreate(settings.CodeRunnerBaseUrl, UriKind.Absolute, out _))
+    {
+        return Results.BadRequest(ApiError("INVALID_CODE_RUNNER_URL", "Code runner base URL must be an absolute URL."));
+    }
+
+    if (settings.CodeRunnerCompileTimeoutMs <= 0 || settings.CodeRunnerRunTimeoutMs <= 0)
+    {
+        return Results.BadRequest(ApiError("INVALID_CODE_RUNNER_TIMEOUT", "Code runner timeouts must be positive."));
     }
 
     await repository.SaveAsync(settings, cancellationToken);
