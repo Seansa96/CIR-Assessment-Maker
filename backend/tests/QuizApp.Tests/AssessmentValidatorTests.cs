@@ -208,4 +208,77 @@ public sealed class AssessmentValidatorTests
 
         Assert.Contains(result.Issues, issue => issue.Code == "INVALID_SYMBOLIC_TOLERANCE");
     }
+
+    [Fact]
+    public void Validate_accepts_valid_worked_example()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+
+        var result = validator.Validate(assessment);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_rejects_worked_example_without_examples()
+    {
+        var assessment = TestData.WorkedExampleAssessment() with { WorkedExamples = Array.Empty<WorkedExampleDefinition>() };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_WORKED_EXAMPLES");
+    }
+
+    [Fact]
+    public void Validate_rejects_worked_example_without_steps()
+    {
+        var assessment = TestData.WorkedExampleAssessment() with
+        {
+            WorkedExamples = new[]
+            {
+                new WorkedExampleDefinition("we001", "Linear substitution", "Evaluate the integral.", Array.Empty<WorkedExampleStepDefinition>())
+            }
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_WORKED_EXAMPLE_STEPS");
+    }
+
+    [Fact]
+    public void Validate_rejects_duplicate_worked_example_step_ids()
+    {
+        var step = TestData.WorkedExampleStep("s001");
+        var assessment = TestData.WorkedExampleAssessment() with
+        {
+            WorkedExamples = new[]
+            {
+                new WorkedExampleDefinition("we001", "Linear substitution", "Evaluate the integral.", new[] { step, step })
+            }
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "DUPLICATE_WORKED_EXAMPLE_STEP_ID");
+    }
+
+    [Fact]
+    public void Validate_reuses_question_validation_for_worked_example_steps()
+    {
+        var invalidStep = TestData.WorkedExampleStep("s001") with
+        {
+            Question = TestData.WorkedExampleStep("s001").Question with { Prompt = "" }
+        };
+        var assessment = TestData.WorkedExampleAssessment() with
+        {
+            WorkedExamples = new[]
+            {
+                new WorkedExampleDefinition("we001", "Linear substitution", "Evaluate the integral.", new[] { invalidStep })
+            }
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_PROMPT");
+    }
 }

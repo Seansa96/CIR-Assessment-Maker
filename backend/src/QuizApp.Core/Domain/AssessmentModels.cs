@@ -4,7 +4,8 @@ public enum AssessmentType
 {
     Unknown,
     Quiz,
-    Test
+    Test,
+    WorkedExample
 }
 
 public enum AssessmentMode
@@ -64,7 +65,23 @@ public sealed record AssessmentDefinition(
     bool RandomizeQuestions,
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
-    IReadOnlyList<QuestionDefinition> Questions);
+    IReadOnlyList<QuestionDefinition> Questions)
+{
+    public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
+}
+
+public sealed record WorkedExampleDefinition(
+    string Id,
+    string Title,
+    string Problem,
+    IReadOnlyList<WorkedExampleStepDefinition> Steps);
+
+public sealed record WorkedExampleStepDefinition(
+    string Id,
+    string Title,
+    string Instruction,
+    string? Hint,
+    QuestionDefinition Question);
 
 public sealed record QuestionDefinition(
     string Id,

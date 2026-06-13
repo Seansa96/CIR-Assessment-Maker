@@ -20,7 +20,7 @@ import "../styles/global.css";
       </header>
 
       <nav class="tabs" aria-label="Primary">
-        <button class="tab active" data-tab="load">Load Quiz/Test</button>
+        <button class="tab active" data-tab="load">Load Assessment</button>
         <button class="tab" data-tab="create">Create Quiz/Test</button>
         <button class="tab" data-tab="settings">Settings</button>
         <button class="tab" data-tab="grades">Grade Log</button>
@@ -30,7 +30,7 @@ import "../styles/global.css";
         <section class="switcher" aria-labelledby="load-title">
           <div class="switcher-heading">
             <div>
-              <h2 id="load-title">Load Quiz/Test</h2>
+              <h2 id="load-title">Load Assessment</h2>
               <p class="quiet-hint">Switch assessments whenever you need a different path.</p>
             </div>
             <div class="attempt-chip" id="active-attempt-chip">No active attempt</div>
@@ -70,6 +70,7 @@ import "../styles/global.css";
       <section class="view" id="view-create" aria-labelledby="create-title">
         <section class="panel">
           <h2 id="create-title">Create Quiz/Test</h2>
+          <p class="muted">Worked Examples are schema-only for now. Create them in YAML/JSON using the project documentation once that section is added.</p>
           <form id="create-form" class="authoring-grid">
             <div class="field">
               <label for="create-title-input">Title</label>
@@ -212,6 +213,7 @@ import "../styles/global.css";
       import "mathlive";
 
       type AssessmentMode = "practice" | "scored";
+      type AssessmentType = "quiz" | "test" | "workedExample";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse";
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
 
@@ -243,7 +245,7 @@ import "../styles/global.css";
       interface AssessmentSummary {
         id: string;
         title: string;
-        assessmentType: "quiz" | "test";
+        assessmentType: AssessmentType;
         questionCount: number;
       }
 
@@ -291,10 +293,37 @@ import "../styles/global.css";
         expected: string;
       }
 
+      interface WorkedExample {
+        id: string;
+        title: string;
+        problem: string;
+        steps: WorkedExampleStep[];
+      }
+
+      interface WorkedExampleStep {
+        id: string;
+        title: string;
+        instruction: string;
+        hint: string | null;
+        question?: Question;
+        type?: QuestionType;
+        prompt?: string;
+        choices?: ChoiceOption[];
+        media?: MediaAsset[];
+        answer?: Question["answer"];
+        language?: "python" | "cpp";
+        functionName?: string;
+        starterCode?: string;
+        tests?: CodeQuestionTest[];
+        explanation?: string | null;
+      }
+
       interface Assessment {
         id: string;
         title: string;
+        assessmentType: AssessmentType;
         questions: Question[];
+        workedExamples?: WorkedExample[];
       }
 
       interface Attempt {
@@ -350,12 +379,20 @@ import "../styles/global.css";
         expectedAnswer: string | null;
         codeFeedback: CodeFeedback | null;
         symbolicFeedback: SymbolicFeedback | null;
+        title: string | null;
+        instruction: string | null;
+        hint: string | null;
+        exampleId: string | null;
+        exampleTitle: string | null;
+        problem: string | null;
       }
 
       interface AttemptResults {
         attemptId: string;
         assessmentTitle: string;
+        assessmentType: AssessmentType;
         mode: AssessmentMode;
+        status: AttemptStatus;
         correctCount: number;
         totalQuestions: number;
         percentScore: number;
@@ -532,6 +569,19 @@ import "../styles/global.css";
 
           if (state.attempt.mode === "practice") {
             state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+            if (state.latestResults.assessmentType === "workedExample") {
+              state.currentIndex = firstUnansweredIndex(state.latestResults, state.attempt);
+            }
+          }
+
+          if (state.attempt.status === "completed") {
+            if (!state.latestResults) {
+              state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+            }
+            updateActiveAttemptChip("Complete");
+            await renderResults(false);
+            await loadGrades();
+            return;
           }
 
           await renderCurrentQuestion();
@@ -644,7 +694,7 @@ import "../styles/global.css";
       }
 
       async function commitGrade() {
-        if (!state.attempt) return;
+        if (!state.attempt || state.latestResults?.assessmentType === "workedExample") return;
         await api("/grades/commit", {
           method: "POST",
           body: JSON.stringify({ attemptId: state.attempt.id })
@@ -758,7 +808,7 @@ import "../styles/global.css";
           actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
         }
 
-        if (attempt.status === "completed" && !isAttemptCommitted(attempt.attemptId)) {
+        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && !isAttemptCommitted(attempt.attemptId)) {
           actions.push(`<button type="button" data-attempt-action="commit" data-attempt-id="${id}">Commit</button>`);
         }
 
@@ -802,7 +852,9 @@ import "../styles/global.css";
       }
 
       function firstUnansweredIndex(results: AttemptResults, attempt: Attempt) {
-        const firstUnansweredQuestion = results.questions.find((question) => !question.submittedAnswer);
+        const firstUnansweredQuestion = results.assessmentType === "workedExample"
+          ? results.questions.find((question) => question.isCorrect !== true)
+          : results.questions.find((question) => !question.submittedAnswer);
         if (!firstUnansweredQuestion) return 0;
         const index = attempt.questionOrder.findIndex((questionId) => questionId === firstUnansweredQuestion.questionId);
         return index < 0 ? 0 : index;
@@ -839,7 +891,7 @@ import "../styles/global.css";
 
       function renderAssessmentOptions() {
         assessmentSelect.innerHTML = state.assessments
-          .map((assessment) => `<option value="${escapeHtml(assessment.id)}">${escapeHtml(assessment.title)} (${assessment.questionCount})</option>`)
+          .map((assessment) => `<option value="${escapeHtml(assessment.id)}">${escapeHtml(assessment.title)} - ${assessmentTypeLabel(assessment.assessmentType)} (${assessment.questionCount})</option>`)
           .join("");
       }
 
@@ -1261,6 +1313,11 @@ import "../styles/global.css";
           return;
         }
 
+        if (state.assessment.assessmentType === "workedExample") {
+          await renderCurrentWorkedExampleStep();
+          return;
+        }
+
         const question = getCurrentQuestion();
         const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
@@ -1317,23 +1374,98 @@ import "../styles/global.css";
         setupChoiceCards(question);
       }
 
+      async function renderCurrentWorkedExampleStep() {
+        if (!state.attempt || !state.assessment) return;
+
+        const steps = getWorkedExampleSteps();
+        const step = steps.find((candidate) => candidate.id === state.attempt!.questionOrder[state.currentIndex]) ?? steps[0];
+        const question = workedStepToQuestion(step);
+        const result = state.latestResults?.questions.find((candidate) => candidate.questionId === step.id);
+        const example = getWorkedExampleForStep(step.id);
+        const problemHtml = await renderMarkdown(example?.problem ?? "");
+        const instructionHtml = await renderMarkdown(step.instruction);
+        const promptHtml = await renderMarkdown(question.prompt);
+        const feedbackExplanation = result?.explanation ? await renderMarkdown(result.explanation) : "";
+        const symbolicFeedbackHtml = await renderSymbolicFeedback(result?.symbolicFeedback);
+        const feedback = result?.isCorrect === null || result?.isCorrect === undefined
+          ? ""
+          : `<div class="feedback ${result.isCorrect ? "correct" : "incorrect"}">
+              ${result.isCorrect ? "Step complete" : "Try this step again"}
+              ${renderCodeFeedback(result.codeFeedback)}
+              ${symbolicFeedbackHtml}
+              ${feedbackExplanation ? `<details open><summary>Feedback</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
+            </div>`;
+
+        attemptContent.innerHTML = `
+          <div class="worked-example-shell">
+            <aside class="worked-progress" aria-label="Worked example steps">
+              <p class="eyebrow">${escapeHtml(state.assessment.title)}</p>
+              <ol>
+                ${steps.map((candidate, index) => {
+                  const completed = state.latestResults?.questions.find((question) => question.questionId === candidate.id)?.isCorrect === true;
+                  const current = candidate.id === step.id;
+                  return `<li class="${completed ? "complete" : ""} ${current ? "current" : ""}"><span>${index + 1}</span>${escapeHtml(current || completed ? candidate.title : "Locked step")}</li>`;
+                }).join("")}
+              </ol>
+            </aside>
+            <section class="worked-step">
+              <div class="worked-context">
+                <span>${state.currentIndex + 1} of ${state.attempt.questionOrder.length}</span>
+                <h2>${escapeHtml(example?.title ?? state.assessment.title)}</h2>
+                <div class="markdown">${problemHtml}</div>
+              </div>
+              <article class="worked-card">
+                <h3>${escapeHtml(step.title)}</h3>
+                <div class="worked-instruction markdown">${instructionHtml}</div>
+                ${step.hint ? `<details class="hint-box"><summary>Hint</summary><div class="markdown">${await renderMarkdown(step.hint)}</div></details>` : ""}
+                <div class="question-prompt markdown">${promptHtml}</div>
+                ${renderMedia(question.media ?? [])}
+                <form id="answer-form" class="answer-form">
+                  ${await renderAnswerInput(question, result?.submittedAnswer ?? null)}
+                  <div class="button-row">
+                    <button class="primary chunky" id="submit-answer" type="submit">${result?.isCorrect ? "Continue" : "Check Step"}</button>
+                    <button type="button" id="pause-attempt">Save and Quit</button>
+                    <button type="button" id="abandon-attempt">Quit Early</button>
+                  </div>
+                </form>
+                ${feedback}
+              </article>
+            </section>
+          </div>
+        `;
+
+        document.querySelector<HTMLFormElement>("#answer-form")!.addEventListener("submit", (event) => {
+          event.preventDefault();
+          submitCurrentAnswer();
+        });
+        document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
+        document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
+        setupChoiceCards(question);
+      }
+
       async function renderResults(alreadyCommitted: boolean) {
         if (!state.latestResults) return;
         const results = state.latestResults;
+        const isWorkedExample = results.assessmentType === "workedExample";
         const questionHtml = await Promise.all(results.questions.map(async (question) => {
           const promptHtml = await renderMarkdown(question.prompt);
           const expectedHtml = question.expectedAnswer ? await renderMarkdown(question.type === "symbolicResponse" ? `$${question.expectedAnswer}$` : question.expectedAnswer) : "";
           const explanationHtml = question.explanation ? await renderMarkdown(question.explanation) : "";
+          const instructionHtml = question.instruction ? await renderMarkdown(question.instruction) : "";
+          const hintHtml = question.hint ? await renderMarkdown(question.hint) : "";
           const symbolicFeedbackHtml = await renderSymbolicFeedback(question.symbolicFeedback);
 
           return `
             <article class="result-item ${question.isCorrect ? "correct" : "incorrect"}">
+              ${question.title ? `<h3>${escapeHtml(question.title)}</h3>` : ""}
+              ${instructionHtml ? `<div class="result-detail"><strong>Step:</strong><div class="markdown">${instructionHtml}</div></div>` : ""}
               <div class="markdown">${promptHtml}</div>
               ${renderMedia(question.media ?? [])}
               <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
               ${renderCodeFeedback(question.codeFeedback)}
               ${symbolicFeedbackHtml}
               ${expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
+              ${hintHtml ? `<details><summary>Hint used for this step</summary><div class="markdown">${hintHtml}</div></details>` : ""}
               ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
             </article>
           `;
@@ -1342,14 +1474,14 @@ import "../styles/global.css";
         attemptContent.innerHTML = `
           <div class="results-header">
             <h2>${escapeHtml(results.assessmentTitle)}</h2>
-            <div class="score-badge">${results.percentScore}%</div>
+            <div class="score-badge">${isWorkedExample ? "Complete" : `${results.percentScore}%`}</div>
           </div>
-          <p class="muted">${results.correctCount} correct out of ${results.totalQuestions} questions. Status: ${escapeHtml(statusLabel(results.status))}.</p>
+          <p class="muted">${isWorkedExample ? "Worked Example" : `${results.correctCount} correct out of ${results.totalQuestions} questions`}. Status: ${escapeHtml(statusLabel(results.status))}.</p>
           <div class="result-list">
             ${questionHtml.join("")}
           </div>
           ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
-          ${!alreadyCommitted && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+          ${!alreadyCommitted && !isWorkedExample && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
         `;
 
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
@@ -1557,7 +1689,46 @@ import "../styles/global.css";
 
       function getCurrentQuestion() {
         const questionId = state.attempt!.questionOrder[state.currentIndex];
+        if (state.assessment?.assessmentType === "workedExample") {
+          const step = getWorkedExampleSteps().find((candidate) => candidate.id === questionId)!;
+          return workedStepToQuestion(step);
+        }
+
         return state.assessment!.questions.find((question) => question.id === questionId)!;
+      }
+
+      function workedStepToQuestion(step: WorkedExampleStep): Question {
+        const question = step.question;
+        return {
+          id: step.id,
+          type: question?.type ?? step.type ?? "freeResponse",
+          prompt: question?.prompt ?? step.prompt ?? "",
+          choices: question?.choices ?? step.choices ?? [],
+          media: question?.media ?? step.media ?? [],
+          answer: question?.answer ?? step.answer,
+          language: question?.language ?? step.language,
+          functionName: question?.functionName ?? step.functionName,
+          starterCode: question?.starterCode ?? step.starterCode,
+          tests: question?.tests ?? step.tests,
+          explanation: question?.explanation ?? step.explanation
+        };
+      }
+
+      function getWorkedExampleSteps() {
+        return (state.assessment?.workedExamples ?? []).flatMap((example) => example.steps);
+      }
+
+      function getWorkedExampleForStep(stepId: string) {
+        return (state.assessment?.workedExamples ?? []).find((example) =>
+          example.steps.some((step) => step.id === stepId));
+      }
+
+      function assessmentTypeLabel(type: AssessmentType) {
+        return {
+          quiz: "Quiz",
+          test: "Test",
+          workedExample: "Worked Example"
+        }[type] ?? "Assessment";
       }
 
       function fillSettingsForm(settings: AppSettings) {

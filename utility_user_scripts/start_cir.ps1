@@ -1,4 +1,4 @@
-$ProjectRoot = "C:\Users\Shawnzx\Downloads\cir_app\CIR-Assessment-Maker"
+$ProjectRoot = "C:\Users\SeanS\Downloads\cir_app"
 
 Write-Host "Starting backend..."
 

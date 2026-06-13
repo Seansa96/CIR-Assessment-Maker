@@ -49,7 +49,8 @@ public sealed record SaveAssessmentRequest(
     bool RandomizeQuestions,
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
-    IReadOnlyList<QuestionDefinition>? Questions)
+    IReadOnlyList<QuestionDefinition>? Questions,
+    IReadOnlyList<WorkedExampleDefinition>? WorkedExamples)
 {
     public AssessmentDefinition ToDomain()
     {
@@ -64,6 +65,9 @@ public sealed record SaveAssessmentRequest(
             RandomizeQuestions,
             QuestionTimerSeconds,
             AssessmentTimerSeconds,
-            Questions ?? Array.Empty<QuestionDefinition>());
+            Questions ?? Array.Empty<QuestionDefinition>())
+        {
+            WorkedExamples = WorkedExamples ?? Array.Empty<WorkedExampleDefinition>()
+        };
     }
 }

@@ -174,6 +174,70 @@ public sealed class AttemptFlowTests
         Assert.Contains(results, result => result.AttemptId == attempt.Id && result.PercentScore == 100m);
     }
 
+    [Fact]
+    public async Task Worked_example_start_uses_authored_step_order()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+        var service = CreateAttemptService(assessment);
+
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        Assert.Equal(AssessmentMode.Practice, attempt.Mode);
+        Assert.Equal(new[] { "s001", "s002" }, attempt.QuestionOrder);
+    }
+
+    [Fact]
+    public async Task Worked_example_wrong_answer_keeps_current_step()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s001", "yes", Array.Empty<string>(), null, null, null));
+
+        var results = await service.GetResultsAsync(attempt.Id);
+        Assert.False(results.IsComplete);
+        Assert.False(results.Questions.First().IsCorrect);
+        Assert.Equal("Try checking whether an inner expression has a constant derivative.", results.Questions.First().Hint);
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s002", null, Array.Empty<string>(), "u = 3x + 1", true, null)));
+    }
+
+    [Fact]
+    public async Task Worked_example_correct_answers_unlock_and_complete()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s001", "no", Array.Empty<string>(), null, null, null));
+        var afterFirstStep = await service.GetResultsAsync(attempt.Id);
+        Assert.False(afterFirstStep.IsComplete);
+
+        var completed = await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s002", null, Array.Empty<string>(), "u = 3x + 1", true, null));
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.Completed, completed.Status);
+        Assert.True(results.IsComplete);
+        Assert.Equal(2, results.CorrectCount);
+        Assert.Equal(AssessmentType.WorkedExample, results.AssessmentType);
+        Assert.Equal("Define the substitution", results.Questions[1].Title);
+    }
+
+    [Fact]
+    public async Task Worked_example_cannot_be_committed_to_grade_log()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+        var attemptService = CreateAttemptService(assessment);
+        var gradeService = new GradeLogService(new InMemoryGradeLogRepository(), attemptService);
+        var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s001", "no", Array.Empty<string>(), null, null, null));
+        await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s002", null, Array.Empty<string>(), "u = 3x + 1", true, null));
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+    }
+
     private static AttemptService CreateAttemptService(
         AssessmentDefinition assessment,
         InMemoryAttemptRepository? attempts = null,
@@ -209,6 +273,56 @@ internal static class TestData
             null,
             null,
             questions ?? new[] { MultipleChoiceQuestion("q001") });
+    }
+
+    public static AssessmentDefinition WorkedExampleAssessment()
+    {
+        return Assessment(AssessmentType.WorkedExample, Array.Empty<QuestionDefinition>()) with
+        {
+            Id = "linear-substitution-worked-example",
+            Title = "Linear Substitution Worked Example",
+            WorkedExamples = new[]
+            {
+                new WorkedExampleDefinition(
+                    "we001",
+                    "Solving an integral with linear substitution",
+                    "Evaluate $\\int 2(3x+1)^4 dx$.",
+                    new[]
+                    {
+                        WorkedExampleStep("s001"),
+                        new WorkedExampleStepDefinition(
+                            "s002",
+                            "Define the substitution",
+                            "Choose the inner expression so the integral becomes easier to read.",
+                            "Use the expression inside the power.",
+                            FreeResponseQuestion("s002") with
+                            {
+                                Prompt = "What should $u$ equal?",
+                                Explanation = "Set $u=3x+1$ so $du=3dx$ and the remaining constant can be adjusted."
+                            })
+                    })
+            }
+        };
+    }
+
+    public static WorkedExampleStepDefinition WorkedExampleStep(string id)
+    {
+        return new WorkedExampleStepDefinition(
+            id,
+            "Check direct integration",
+            "Decide whether this can be solved by a direct antiderivative before choosing substitution.",
+            "Try checking whether an inner expression has a constant derivative.",
+            MultipleChoiceQuestion(id) with
+            {
+                Prompt = "Can this integral be solved cleanly by direct integration?",
+                Choices = new[]
+                {
+                    new ChoiceOption("yes", "Yes", Array.Empty<MediaAsset>()),
+                    new ChoiceOption("no", "No", Array.Empty<MediaAsset>())
+                },
+                Answer = new AnswerDefinition("no", Array.Empty<string>(), null, null, null, null, Array.Empty<MediaAsset>()),
+                Explanation = "The composed factor suggests substitution because the derivative of $3x+1$ is constant."
+            });
     }
 
     public static QuestionDefinition MultipleChoiceQuestion(string id)
@@ -334,7 +448,15 @@ internal sealed class InMemoryAssessmentRepository : IAssessmentRepository
     {
         IReadOnlyList<AssessmentSummary> summaries = new[]
         {
-            new AssessmentSummary(assessment.Id, assessment.Title, assessment.AssessmentType, assessment.CategoryId, assessment.SubcategoryIds, assessment.Questions.Count)
+            new AssessmentSummary(
+                assessment.Id,
+                assessment.Title,
+                assessment.AssessmentType,
+                assessment.CategoryId,
+                assessment.SubcategoryIds,
+                assessment.AssessmentType is AssessmentType.WorkedExample
+                    ? assessment.WorkedExamples.Sum(example => example.Steps.Count)
+                    : assessment.Questions.Count)
         };
 
         return Task.FromResult(summaries);

@@ -22,6 +22,11 @@ public sealed class GradeLogService
             throw new InvalidOperationException("Only completed attempts can be committed to the grade log.");
         }
 
+        if (results.AssessmentType is AssessmentType.WorkedExample)
+        {
+            throw new InvalidOperationException("Worked examples are instructional sessions and cannot be committed to the grade log.");
+        }
+
         var existingEntries = await gradeLogRepository.ListAsync(cancellationToken);
         var existingEntry = existingEntries.FirstOrDefault(entry => string.Equals(entry.AttemptId, attemptId, StringComparison.OrdinalIgnoreCase));
         if (existingEntry is not null)

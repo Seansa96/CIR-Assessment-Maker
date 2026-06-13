@@ -37,7 +37,10 @@ public sealed record AttemptResults(
     int TotalQuestions,
     decimal PercentScore,
     bool IsComplete,
-    IReadOnlyList<QuestionResult> Questions);
+    IReadOnlyList<QuestionResult> Questions)
+{
+    public AssessmentType AssessmentType { get; init; } = AssessmentType.Unknown;
+}
 
 public sealed record QuestionResult(
     string QuestionId,
@@ -49,7 +52,15 @@ public sealed record QuestionResult(
     string? Explanation,
     string? ExpectedAnswer,
     CodeFeedback? CodeFeedback,
-    SymbolicFeedback? SymbolicFeedback);
+    SymbolicFeedback? SymbolicFeedback)
+{
+    public string? Title { get; init; }
+    public string? Instruction { get; init; }
+    public string? Hint { get; init; }
+    public string? ExampleId { get; init; }
+    public string? ExampleTitle { get; init; }
+    public string? Problem { get; init; }
+}
 
 public sealed record GradeLogEntry(
     string Id,

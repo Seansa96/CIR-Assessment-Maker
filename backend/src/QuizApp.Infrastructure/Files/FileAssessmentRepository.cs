@@ -27,7 +27,7 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
                 assessment.AssessmentType,
                 assessment.CategoryId,
                 assessment.SubcategoryIds,
-                assessment.Questions.Count))
+                CountAssessmentItems(assessment)))
             .ToList();
     }
 
@@ -122,5 +122,12 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             .ToArray();
 
         return new string(safeCharacters).Trim('-').ToLowerInvariant();
+    }
+
+    private static int CountAssessmentItems(AssessmentDefinition assessment)
+    {
+        return assessment.AssessmentType is AssessmentType.WorkedExample
+            ? assessment.WorkedExamples.Sum(example => example.Steps.Count)
+            : assessment.Questions.Count;
     }
 }

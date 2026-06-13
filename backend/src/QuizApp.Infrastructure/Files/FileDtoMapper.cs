@@ -64,7 +64,10 @@ internal static class FileDtoMapper
             dto.RandomizeQuestions ?? true,
             dto.QuestionTimerSeconds,
             dto.AssessmentTimerSeconds,
-            (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList());
+            (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList())
+        {
+            WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList()
+        };
     }
 
     public static AssessmentFileDto ToDto(this AssessmentDefinition assessment)
@@ -81,7 +84,75 @@ internal static class FileDtoMapper
             RandomizeQuestions = assessment.RandomizeQuestions,
             QuestionTimerSeconds = assessment.QuestionTimerSeconds,
             AssessmentTimerSeconds = assessment.AssessmentTimerSeconds,
-            Questions = assessment.Questions.Select(ToDto).ToList()
+            Questions = assessment.Questions.Select(ToDto).ToList(),
+            WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList()
+        };
+    }
+
+    private static WorkedExampleDefinition ToDomain(WorkedExampleFileDto dto)
+    {
+        return new WorkedExampleDefinition(
+            dto.Id ?? string.Empty,
+            dto.Title ?? string.Empty,
+            dto.Problem ?? string.Empty,
+            (dto.Steps ?? new List<WorkedExampleStepFileDto>()).Select(ToDomain).ToList());
+    }
+
+    private static WorkedExampleFileDto ToDto(WorkedExampleDefinition workedExample)
+    {
+        return new WorkedExampleFileDto
+        {
+            Id = workedExample.Id,
+            Title = workedExample.Title,
+            Problem = workedExample.Problem,
+            Steps = workedExample.Steps.Select(ToDto).ToList()
+        };
+    }
+
+    private static WorkedExampleStepDefinition ToDomain(WorkedExampleStepFileDto dto)
+    {
+        var question = ToDomain(new QuestionFileDto
+        {
+            Id = dto.Id,
+            Type = dto.Type,
+            Prompt = dto.Prompt,
+            Choices = dto.Choices,
+            Answer = dto.Answer,
+            Explanation = dto.Explanation,
+            Media = dto.Media,
+            Language = dto.Language,
+            FunctionName = dto.FunctionName,
+            StarterCode = dto.StarterCode,
+            Tests = dto.Tests
+        });
+
+        return new WorkedExampleStepDefinition(
+            dto.Id ?? string.Empty,
+            dto.Title ?? string.Empty,
+            dto.Instruction ?? string.Empty,
+            dto.Hint,
+            question);
+    }
+
+    private static WorkedExampleStepFileDto ToDto(WorkedExampleStepDefinition step)
+    {
+        var question = ToDto(step.Question);
+        return new WorkedExampleStepFileDto
+        {
+            Id = step.Id,
+            Title = step.Title,
+            Instruction = step.Instruction,
+            Hint = step.Hint,
+            Type = question.Type,
+            Prompt = question.Prompt,
+            Choices = question.Choices,
+            Answer = question.Answer,
+            Explanation = question.Explanation,
+            Media = question.Media,
+            Language = question.Language,
+            FunctionName = question.FunctionName,
+            StarterCode = question.StarterCode,
+            Tests = question.Tests
         };
     }
 
@@ -203,6 +274,7 @@ internal static class FileDtoMapper
         {
             "quiz" => AssessmentType.Quiz,
             "test" => AssessmentType.Test,
+            "workedexample" => AssessmentType.WorkedExample,
             _ => AssessmentType.Unknown
         };
     }
@@ -247,7 +319,12 @@ internal static class FileDtoMapper
 
     private static string ToWireValue(AssessmentType assessmentType)
     {
-        return assessmentType is AssessmentType.Test ? "test" : "quiz";
+        return assessmentType switch
+        {
+            AssessmentType.Test => "test",
+            AssessmentType.WorkedExample => "workedExample",
+            _ => "quiz"
+        };
     }
 
     private static string ToWireValue(QuestionType questionType)

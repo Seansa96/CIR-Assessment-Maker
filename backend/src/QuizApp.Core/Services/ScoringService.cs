@@ -25,12 +25,14 @@ public sealed class ScoringService
     public AttemptResults BuildResults(AssessmentDefinition assessment, Attempt attempt)
     {
         var answersByQuestion = attempt.Answers.ToDictionary(answer => answer.QuestionId, StringComparer.OrdinalIgnoreCase);
+        var assessmentItems = GetAssessmentItems(assessment);
         var orderedQuestions = attempt.QuestionOrder
-            .Select(questionId => assessment.Questions.First(question => string.Equals(question.Id, questionId, StringComparison.OrdinalIgnoreCase)))
+            .Select(questionId => assessmentItems.First(item => string.Equals(item.Question.Id, questionId, StringComparison.OrdinalIgnoreCase)))
             .ToList();
 
-        var questionResults = orderedQuestions.Select(question =>
+        var questionResults = orderedQuestions.Select(item =>
         {
+            var question = item.Question;
             answersByQuestion.TryGetValue(question.Id, out var answer);
             var showFeedback = attempt.Status is AttemptStatus.Completed or AttemptStatus.Abandoned || attempt.Mode is AssessmentMode.Practice;
 
@@ -44,7 +46,15 @@ public sealed class ScoringService
                 showFeedback ? question.Explanation : null,
                 showFeedback ? DescribeExpectedAnswer(question) : null,
                 showFeedback ? answer?.Evaluation?.CodeFeedback : null,
-                showFeedback ? answer?.Evaluation?.SymbolicFeedback : null);
+                showFeedback ? answer?.Evaluation?.SymbolicFeedback : null)
+            {
+                Title = item.Step?.Title,
+                Instruction = item.Step?.Instruction,
+                Hint = item.Step?.Hint,
+                ExampleId = item.Example?.Id,
+                ExampleTitle = item.Example?.Title,
+                Problem = item.Example?.Problem
+            };
         }).ToList();
 
         var correctCount = attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
@@ -61,7 +71,15 @@ public sealed class ScoringService
             totalQuestions,
             percentScore,
             attempt.Status is AttemptStatus.Completed,
-            questionResults);
+            questionResults)
+        {
+            AssessmentType = assessment.AssessmentType
+        };
+    }
+
+    public IReadOnlyList<QuestionDefinition> GetAttemptQuestions(AssessmentDefinition assessment)
+    {
+        return GetAssessmentItems(assessment).Select(item => item.Question).ToList();
     }
 
     private static bool SameChoiceSet(IReadOnlyList<string> expected, IReadOnlyList<string> actual)
@@ -93,4 +111,21 @@ public sealed class ScoringService
 
         return Math.Abs(expected.Value - actual.Value) <= tolerance.Value;
     }
+
+    private static IReadOnlyList<AssessmentItem> GetAssessmentItems(AssessmentDefinition assessment)
+    {
+        if (assessment.AssessmentType is not AssessmentType.WorkedExample)
+        {
+            return assessment.Questions.Select(question => new AssessmentItem(question, null, null)).ToList();
+        }
+
+        return assessment.WorkedExamples
+            .SelectMany(example => example.Steps.Select(step => new AssessmentItem(step.Question with { Id = step.Id }, example, step)))
+            .ToList();
+    }
+
+    private sealed record AssessmentItem(
+        QuestionDefinition Question,
+        WorkedExampleDefinition? Example,
+        WorkedExampleStepDefinition? Step);
 }

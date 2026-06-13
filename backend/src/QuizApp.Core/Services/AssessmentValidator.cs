@@ -22,7 +22,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz or test."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, or workedExample."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -35,6 +35,14 @@ public sealed class AssessmentValidator
             issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TIMER", "Assessment timer must be null or a non-negative number of seconds."));
         }
 
+        if (assessment.AssessmentType is AssessmentType.WorkedExample)
+        {
+            ValidateWorkedExamples(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        ValidateQuestions(assessment.Questions, issues);
+
         var questionCount = assessment.Questions.Count;
         if (assessment.AssessmentType is AssessmentType.Quiz && questionCount > QuizMaxQuestions)
         {
@@ -46,7 +54,12 @@ public sealed class AssessmentValidator
             issues.Add(new ValidationIssue("TEST_TOO_LONG", $"Test assessments cannot exceed {TestMaxQuestions} questions."));
         }
 
-        var duplicateQuestionIds = assessment.Questions
+        return new AssessmentValidationResult(issues);
+    }
+
+    private static void ValidateQuestions(IReadOnlyList<QuestionDefinition> questions, List<ValidationIssue> issues)
+    {
+        var duplicateQuestionIds = questions
             .Where(q => !string.IsNullOrWhiteSpace(q.Id))
             .GroupBy(q => q.Id, StringComparer.OrdinalIgnoreCase)
             .Where(group => group.Count() > 1)
@@ -57,12 +70,10 @@ public sealed class AssessmentValidator
             issues.Add(new ValidationIssue("DUPLICATE_QUESTION_ID", $"Question id '{duplicateId}' is duplicated.", duplicateId));
         }
 
-        foreach (var question in assessment.Questions)
+        foreach (var question in questions)
         {
             ValidateQuestion(question, issues);
         }
-
-        return new AssessmentValidationResult(issues);
     }
 
     private static void ValidateQuestion(QuestionDefinition question, List<ValidationIssue> issues)
@@ -140,6 +151,48 @@ public sealed class AssessmentValidator
         if (question.Type is QuestionType.SymbolicResponse)
         {
             ValidateSymbolicQuestion(question, issues);
+        }
+    }
+
+    private static void ValidateWorkedExamples(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        if (assessment.WorkedExamples.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_WORKED_EXAMPLES", "Worked example assessments must include workedExamples."));
+            return;
+        }
+
+        var stepIds = new List<string>();
+        foreach (var workedExample in assessment.WorkedExamples)
+        {
+            RequireText(workedExample.Id, "MISSING_WORKED_EXAMPLE_ID", "Worked examples must include an id.", issues);
+            RequireText(workedExample.Title, "MISSING_WORKED_EXAMPLE_TITLE", "Worked examples must include a title.", issues);
+            RequireText(workedExample.Problem, "MISSING_WORKED_EXAMPLE_PROBLEM", "Worked examples must include a problem.", issues);
+
+            if (workedExample.Steps.Count == 0)
+            {
+                issues.Add(new ValidationIssue("MISSING_WORKED_EXAMPLE_STEPS", "Worked examples must include at least one step.", workedExample.Id));
+            }
+
+            foreach (var step in workedExample.Steps)
+            {
+                RequireText(step.Id, "MISSING_WORKED_EXAMPLE_STEP_ID", "Worked example steps must include an id.", issues, step.Id);
+                RequireText(step.Title, "MISSING_WORKED_EXAMPLE_STEP_TITLE", "Worked example steps must include a title.", issues, step.Id);
+                RequireText(step.Instruction, "MISSING_WORKED_EXAMPLE_STEP_INSTRUCTION", "Worked example steps must include instruction.", issues, step.Id);
+                stepIds.Add(step.Id);
+                ValidateQuestion(step.Question with { Id = step.Id }, issues);
+            }
+        }
+
+        var duplicateStepIds = stepIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .GroupBy(id => id, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key);
+
+        foreach (var duplicateId in duplicateStepIds)
+        {
+            issues.Add(new ValidationIssue("DUPLICATE_WORKED_EXAMPLE_STEP_ID", $"Worked example step id '{duplicateId}' is duplicated.", duplicateId));
         }
     }
 

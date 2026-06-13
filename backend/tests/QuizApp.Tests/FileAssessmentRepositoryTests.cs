@@ -114,6 +114,27 @@ public sealed class FileAssessmentRepositoryTests
         Assert.Equal(0.000001m, question.Answer.SymbolicTolerance);
     }
 
+    [Fact]
+    public async Task SaveAsync_round_trips_worked_examples()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.WorkedExampleAssessment();
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync(assessment.Id);
+        var summaries = await repository.ListByCategoryAsync(assessment.CategoryId);
+
+        Assert.NotNull(loaded);
+        Assert.Equal(AssessmentType.WorkedExample, loaded.AssessmentType);
+        var example = Assert.Single(loaded.WorkedExamples);
+        Assert.Equal("Solving an integral with linear substitution", example.Title);
+        Assert.Equal("s001", Assert.Single(example.Steps.Take(1)).Id);
+        Assert.Contains(summaries, summary => summary.Id == assessment.Id && summary.QuestionCount == 2);
+    }
+
     private static string CreateDataRoot()
     {
         var dataRoot = Path.Combine(AppContext.BaseDirectory, "file-repository-tests", Guid.NewGuid().ToString("n"));

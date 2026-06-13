@@ -39,10 +39,14 @@ public sealed class AttemptService
     {
         var assessment = await GetValidAssessmentAsync(assessmentId, cancellationToken);
         var settings = await settingsRepository.GetAsync(cancellationToken);
-        var selectedMode = mode ?? assessment.ModeDefault;
-        var questionOrder = assessment.Questions.Select(question => question.Id).ToList();
+        var selectedMode = assessment.AssessmentType is AssessmentType.WorkedExample
+            ? AssessmentMode.Practice
+            : mode ?? assessment.ModeDefault;
+        var questionOrder = scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList();
 
-        if (assessment.RandomizeQuestions && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized)
+        if (assessment.AssessmentType is not AssessmentType.WorkedExample
+            && assessment.RandomizeQuestions
+            && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized)
         {
             Shuffle(questionOrder);
         }
@@ -72,8 +76,18 @@ public sealed class AttemptService
         }
 
         var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
-        var question = assessment.Questions.FirstOrDefault(candidate => string.Equals(candidate.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
+        var questions = scoringService.GetAttemptQuestions(assessment);
+        var question = questions.FirstOrDefault(candidate => string.Equals(candidate.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Question '{submittedAnswer.QuestionId}' does not exist on this assessment.");
+
+        if (assessment.AssessmentType is AssessmentType.WorkedExample)
+        {
+            var currentStepId = GetCurrentWorkedExampleStepId(attempt);
+            if (!string.Equals(currentStepId, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Worked example steps must be completed in order.");
+            }
+        }
 
         var settings = await settingsRepository.GetAsync(cancellationToken);
         var evaluation = question.Type switch
@@ -87,7 +101,14 @@ public sealed class AttemptService
             .Append(new AttemptAnswer(submittedAnswer.QuestionId, submittedAnswer, evaluation, DateTimeOffset.UtcNow))
             .ToList();
 
-        var updatedAttempt = attempt with { Answers = answers };
+        var shouldCompleteWorkedExample = assessment.AssessmentType is AssessmentType.WorkedExample
+            && evaluation.IsCorrect
+            && attempt.QuestionOrder.All(questionId => answers.Any(answer =>
+                string.Equals(answer.QuestionId, questionId, StringComparison.OrdinalIgnoreCase)
+                && answer.Evaluation?.IsCorrect == true));
+        var updatedAttempt = shouldCompleteWorkedExample
+            ? attempt with { Answers = answers, Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
+            : attempt with { Answers = answers };
         await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
         return updatedAttempt;
     }
@@ -153,6 +174,15 @@ public sealed class AttemptService
             throw new InvalidOperationException("Abandoned attempts cannot be completed.");
         }
 
+        var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+        if (assessment.AssessmentType is AssessmentType.WorkedExample
+            && !attempt.QuestionOrder.All(questionId => attempt.Answers.Any(answer =>
+                string.Equals(answer.QuestionId, questionId, StringComparison.OrdinalIgnoreCase)
+                && answer.Evaluation?.IsCorrect == true)))
+        {
+            throw new InvalidOperationException("Worked examples can only be completed after every step is correct.");
+        }
+
         var completedAttempt = attempt.Status is not AttemptStatus.Completed
             ? attempt with { Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt;
@@ -214,6 +244,20 @@ public sealed class AttemptService
     {
         return await attemptRepository.GetByIdAsync(attemptId, cancellationToken)
             ?? throw new InvalidOperationException($"Attempt '{attemptId}' was not found.");
+    }
+
+    private static string? GetCurrentWorkedExampleStepId(Attempt attempt)
+    {
+        foreach (var questionId in attempt.QuestionOrder)
+        {
+            var answer = attempt.Answers.LastOrDefault(candidate => string.Equals(candidate.QuestionId, questionId, StringComparison.OrdinalIgnoreCase));
+            if (answer?.Evaluation?.IsCorrect != true)
+            {
+                return questionId;
+            }
+        }
+
+        return attempt.QuestionOrder.LastOrDefault();
     }
 
     private static void Shuffle<T>(IList<T> values)

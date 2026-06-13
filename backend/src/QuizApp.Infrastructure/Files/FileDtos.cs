@@ -42,6 +42,33 @@ internal sealed class AssessmentFileDto
     public int? QuestionTimerSeconds { get; set; }
     public int? AssessmentTimerSeconds { get; set; }
     public List<QuestionFileDto>? Questions { get; set; }
+    public List<WorkedExampleFileDto>? WorkedExamples { get; set; }
+}
+
+internal sealed class WorkedExampleFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public string? Problem { get; set; }
+    public List<WorkedExampleStepFileDto>? Steps { get; set; }
+}
+
+internal sealed class WorkedExampleStepFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public string? Instruction { get; set; }
+    public string? Hint { get; set; }
+    public string? Type { get; set; }
+    public string? Prompt { get; set; }
+    public List<ChoiceFileDto>? Choices { get; set; }
+    public AnswerFileDto? Answer { get; set; }
+    public string? Explanation { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
+    public string? Language { get; set; }
+    public string? FunctionName { get; set; }
+    public string? StarterCode { get; set; }
+    public List<CodeQuestionTestFileDto>? Tests { get; set; }
 }
 
 internal sealed class QuestionFileDto
