@@ -1,0 +1,139 @@
+schemaVersion: 1
+id: integration-by-parts-patterns-worked-example
+title: Integration by Parts Pattern Selection Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Recognizing the major integration by parts situations
+    problem: "Decide when integration by parts is the right organizing tool, and choose $u$ based on structure."
+    steps:
+      - id: s001
+        title: Recognize the product structure
+        instruction: "Integration by parts is usually considered when the integrand is a product and one factor becomes simpler when differentiated."
+        type: selectAll
+        prompt: "Which integrals have the strongest integration-by-parts signal?"
+        choices:
+          - id: a
+            text: "$\\int x e^x\\,dx$"
+          - id: b
+            text: "$\\int x\\cos x\\,dx$"
+          - id: c
+            text: "$\\int \\frac{2x}{x^2+1}\\,dx$"
+          - id: d
+            text: "$\\int \\ln x\\,dx$"
+        answer:
+          choiceIds: [a, b, d]
+        hint: "Look for a product, or a lone function that becomes a product if multiplied by $1$."
+        explanation: |
+          $x e^x$ and $x\cos x$ are products where the algebraic factor becomes simpler. $\\ln x$ is treated as $\\ln x\\cdot 1$, because differentiating $\\ln x$ gives $1/x$.
+
+          Related topic: Integration by parts trigger; look for products, or lone log/inverse trig functions paired with $dv=dx$.
+      - id: s002
+        title: Choose u for algebraic times exponential/trig
+        instruction: "For products like polynomial times exponential or trig, choose the factor that simplifies under differentiation as $u$."
+        type: multipleChoice
+        prompt: "For $\\int x^2 e^{3x}\\,dx$, what is the best first choice for $u$?"
+        choices:
+          - id: a
+            text: "$u=x^2$"
+          - id: b
+            text: "$u=e^{3x}$"
+          - id: c
+            text: "$u=3x$"
+          - id: d
+            text: "$u=dx$"
+        answer:
+          choiceId: a
+        hint: "Differentiate the polynomial repeatedly and it eventually disappears."
+        explanation: |
+          Choose $u=x^2$ because differentiating it gives $2x$, then $2$, then $0$. Let $dv=e^{3x}\\,dx$ because exponentials integrate cleanly.
+
+          Related topic: LIATE-style priority; algebraic factors often become $u$ when multiplied by exponential or trig factors.
+      - id: s003
+        title: Handle logarithms and inverse trig
+        instruction: "A lone logarithm or inverse trig function often uses $dv=dx$."
+        type: multipleChoice
+        prompt: "For $\\int \\arctan x\\,dx$, which setup best matches integration by parts?"
+        choices:
+          - id: a
+            text: "$u=\\arctan x$, $dv=dx$"
+          - id: b
+            text: "$u=1$, $dv=\\arctan x\\,dx$"
+          - id: c
+            text: "$u=x$, $dv=\\arctan x\\,dx$"
+          - id: d
+            text: "$u=dx$, $dv=\\arctan x$"
+        answer:
+          choiceId: a
+        hint: "Differentiate inverse tangent; integrate $1\\,dx$."
+        explanation: |
+          Treat the integrand as $\\arctan x\\cdot 1$. Choose $u=\\arctan x$ so $du=\\frac{1}{1+x^2}\\,dx$, and choose $dv=dx$ so $v=x$.
+
+          Related topic: Lone log/inverse trig pattern; multiply by $1$ and choose the difficult function as $u$.
+      - id: s004
+        title: Notice repeated integration by parts
+        instruction: "Products of a polynomial with exponential or trig may require repeated integration by parts."
+        type: multipleChoice
+        prompt: "Why does $\\int x^3\\sin x\\,dx$ usually require repeated integration by parts?"
+        choices:
+          - id: a
+            text: "Each differentiation reduces the power of $x$ by one."
+          - id: b
+            text: "$\\sin x$ cannot be integrated."
+          - id: c
+            text: "The integral has no product structure."
+          - id: d
+            text: "The variable must be changed to polar form."
+        answer:
+          choiceId: a
+        hint: "The polynomial gets simpler one degree at a time."
+        explanation: |
+          Choosing $u=x^3$ reduces the algebraic factor to $3x^2$, then $6x$, then $6$. You repeat until the polynomial is gone.
+
+          Related topic: Tabular integration by parts; repeated parts is efficient when $u$ differentiates to zero.
+      - id: s005
+        title: Identify cyclic integration by parts
+        instruction: "Some products return to a multiple of the original integral after two rounds."
+        type: multipleChoice
+        prompt: "Which integral has a cyclic integration-by-parts structure?"
+        choices:
+          - id: a
+            text: "$\\int e^x\\cos x\\,dx$"
+          - id: b
+            text: "$\\int x^4\\,dx$"
+          - id: c
+            text: "$\\int \\frac{1}{x}\\,dx$"
+          - id: d
+            text: "$\\int \\frac{2x}{x^2+1}\\,dx$"
+        answer:
+          choiceId: a
+        hint: "Exponential and trig functions repeat under differentiation/integration."
+        explanation: |
+          In $\\int e^x\\cos x\\,dx$, differentiating/integrating $e^x$, $\\sin x$, and $\\cos x$ cycles back to the original integral. After two rounds, solve algebraically for the original integral.
+
+          Related topic: Cyclic integration by parts; when the original integral reappears, move it to one side and solve.
+      - id: s006
+        title: Summarize the decision rule
+        instruction: "Turn the patterns into a reusable checklist."
+        type: freeResponse
+        prompt: "Summarize when to try integration by parts and how to choose $u$."
+        answer:
+          expected: |
+            Try integration by parts for products where one factor simplifies when differentiated, for lone log or inverse trig functions paired with $dv=dx$, for repeated polynomial times trig/exponential patterns, and for cyclic exponential-trig products. Choose $u$ as the factor that becomes simpler or more useful when differentiated.
+          gradingMode: selfCheck
+          keyPoints:
+            - "Look for product structure."
+            - "Choose $u$ to simplify under differentiation."
+            - "Use $dv=dx$ for lone log or inverse trig functions."
+            - "Use repeated/tabular parts for polynomial times trig/exponential."
+            - "Solve algebraically when the original integral cycles back."
+        hint: "Name product structure, simplification under derivative, lone logs/inverse trig, repeated parts, and cyclic parts."
+        explanation: |
+          The fast lookup path is: review the formula $\\int u\\,dv=uv-\\int v\\,du$, LIATE priority, tabular integration by parts, and cyclic integration by parts.
+
+          Related topic: Integration by parts strategy; choose $u$ by asking which factor becomes simpler when differentiated and which remaining factor is easy to integrate.

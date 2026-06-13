@@ -1,0 +1,150 @@
+schemaVersion: 1
+id: cpp-sockets-basic-usage-worked-example
+title: C++ Sockets Basic Usage Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryIds:
+  - c++-networking
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Planning a simple TCP client in C++
+    problem: "Think through the steps for hooking up a C++ TCP client socket."
+    steps:
+      - id: s001
+        title: Choose the API layer
+        instruction: "C++ socket setup starts by choosing the platform API or a library."
+        type: multipleChoice
+        prompt: "For beginner cross-platform C++ networking, which option commonly avoids writing separate POSIX and Winsock code?"
+        choices:
+          - id: a
+            text: "Use a library such as Boost.Asio."
+          - id: b
+            text: "Use only `<fstream>`."
+          - id: c
+            text: "Use only `std::cout`."
+          - id: d
+            text: "Use `std::thread` without any socket API."
+        answer:
+          choiceId: a
+        hint: "A library can wrap platform-specific socket details."
+        explanation: |
+          C++ has no single standard socket API, so Boost.Asio or a similar library can make networking code more portable.
+
+          Related topic: Networking API selection; decide whether to use POSIX sockets, Winsock, or an abstraction library before coding.
+      - id: s002
+        title: Create the socket
+        instruction: "Regardless of API, a client needs a socket object or descriptor before it can connect."
+        type: multipleChoice
+        prompt: "In a basic client flow, what comes before sending data?"
+        choices:
+          - id: a
+            text: "Create/open the socket and connect it to the server."
+          - id: b
+            text: "Send bytes before choosing any server address."
+          - id: c
+            text: "Call `accept` on the client before creating a socket."
+          - id: d
+            text: "Read a file stream instead of connecting."
+        answer:
+          choiceId: a
+        hint: "You need an endpoint and a connection before communication."
+        explanation: |
+          A client first creates a socket, identifies the remote host/port, and connects. Only then can it send and receive data.
+
+          Related topic: Client socket lifecycle; create, connect, communicate, close.
+      - id: s003
+        title: Connect to host and port
+        instruction: "The client needs the server's address."
+        type: multipleChoice
+        prompt: "Which information does a TCP client need in order to connect?"
+        choices:
+          - id: a
+            text: "The server host/IP and port."
+          - id: b
+            text: "Only the client's variable name."
+          - id: c
+            text: "Only the number of bytes it might receive."
+          - id: d
+            text: "Only a C++ class name."
+        answer:
+          choiceId: a
+        hint: "Connect to where?"
+        explanation: |
+          The host/IP identifies the machine or interface. The port identifies the service endpoint on that host.
+
+          Related topic: Remote endpoint selection; combine host and port before calling connect.
+      - id: s004
+        title: Send and receive bytes
+        instruction: "Network APIs transmit bytes, so text must be encoded or represented as bytes."
+        type: selectAll
+        prompt: "Which ideas belong in the communication part of a basic socket client?"
+        choices:
+          - id: a
+            text: "Send a byte buffer or string data through the connected socket."
+          - id: b
+            text: "Receive bytes into a buffer."
+          - id: c
+            text: "Handle partial reads/writes in more serious programs."
+          - id: d
+            text: "Assume every network message arrives as a complete C++ object automatically."
+        answer:
+          choiceIds: [a, b, c]
+        hint: "Sockets move bytes; protocols decide what those bytes mean."
+        explanation: |
+          Connected sockets send and receive bytes. Real applications need to think about encoding, buffering, message boundaries, and partial operations.
+
+          Related topic: Byte-stream communication; define a protocol so both sides know how to interpret the bytes.
+      - id: s005
+        title: Clean up resources
+        instruction: "Sockets are OS resources and should be closed when finished."
+        type: multipleChoice
+        prompt: "Why should a socket be closed or managed by RAII when the program is done with it?"
+        choices:
+          - id: a
+            text: "To release the underlying operating-system resource."
+          - id: b
+            text: "To convert the socket into a thread."
+          - id: c
+            text: "To make the port number larger."
+          - id: d
+            text: "To erase all C++ headers."
+        answer:
+          choiceId: a
+        hint: "Sockets are resources like files."
+        explanation: |
+          Sockets use operating-system resources. Closing them, or wrapping them in an RAII object that closes automatically, prevents leaks and stale connections.
+
+          Related topic: Resource management; use explicit close calls or RAII wrappers depending on the API/library.
+      - id: s006
+        title: Sketch the client flow
+        instruction: "Write the thought process rather than platform-specific syntax."
+        type: freeResponse
+        prompt: "Describe the basic steps for hooking up a C++ TCP client socket to a server and exchanging one message."
+        answer:
+          expected: |
+            Choose a socket API or library, create a TCP socket, resolve or specify the server host and port, connect to the server, send bytes, receive bytes, then close or let an RAII wrapper clean up the socket.
+          gradingMode: selfCheck
+          keyPoints:
+            - "Choose POSIX, Winsock, or a library such as Boost.Asio."
+            - "Create a TCP socket."
+            - "Use host/IP and port for the remote endpoint."
+            - "Connect before sending."
+            - "Send and receive bytes."
+            - "Close or rely on RAII cleanup."
+        hint: "The lifecycle is choose API, create, connect, communicate, clean up."
+        explanation: |
+          The conceptual client flow is:
+
+          ```txt
+          choose API/library
+          create TCP socket
+          identify host and port
+          connect
+          send bytes
+          receive bytes
+          close/cleanup
+          ```
+
+          Related topic: TCP client lifecycle; separate the platform-independent plan from the exact API calls used by POSIX, Winsock, or Boost.Asio.

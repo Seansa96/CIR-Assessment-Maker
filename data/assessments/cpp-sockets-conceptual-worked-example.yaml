@@ -1,0 +1,118 @@
+schemaVersion: 1
+id: cpp-sockets-conceptual-worked-example
+title: C++ Sockets Conceptual Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryIds:
+  - c++-networking
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Identifying sockets and their roles in C++
+    problem: "Understand the socket model before writing platform-specific C++ networking code."
+    steps:
+      - id: s001
+        title: Define a socket
+        instruction: "Start with the network programming model, not the C++ syntax."
+        type: multipleChoice
+        prompt: "What is a socket in network programming?"
+        choices:
+          - id: a
+            text: "An endpoint a program uses to send or receive data over a network."
+          - id: b
+            text: "A C++ template parameter."
+          - id: c
+            text: "A loop condition for file streams."
+          - id: d
+            text: "A replacement for `main()`."
+        answer:
+          choiceId: a
+        hint: "Think endpoint."
+        explanation: |
+          A socket is one endpoint of communication. A C++ program uses socket APIs to connect, listen, send, and receive bytes.
+
+          Related topic: Socket endpoint model; identify the local endpoint and remote endpoint before choosing API calls.
+      - id: s002
+        title: Recognize platform differences
+        instruction: "C++ does not have a single standard-library socket API."
+        type: multipleChoice
+        prompt: "Which statement is true about basic sockets in portable C++?"
+        choices:
+          - id: a
+            text: "The C++ standard library does not currently provide one universal socket API."
+          - id: b
+            text: "Every C++ socket program must use `std::vector` only."
+          - id: c
+            text: "Sockets are part of `<iostream>`."
+          - id: d
+            text: "Sockets only work inside classes."
+        answer:
+          choiceId: a
+        hint: "On real systems you usually choose POSIX sockets, Winsock, or a networking library."
+        explanation: |
+          Basic C++ socket code is usually platform-specific: POSIX sockets on Linux/macOS, Winsock on Windows, or a library such as Boost.Asio for abstraction.
+
+          Related topic: API selection; choose the platform/library before writing the exact socket calls.
+      - id: s003
+        title: Identify client and server roles
+        instruction: "Most beginner examples use a client/server split."
+        type: multipleChoice
+        prompt: "What does a server socket usually do?"
+        choices:
+          - id: a
+            text: "Bind to an address, listen, and accept incoming connections."
+          - id: b
+            text: "Always call `connect` before any client exists."
+          - id: c
+            text: "Replace all file streams."
+          - id: d
+            text: "Compile the client program remotely."
+        answer:
+          choiceId: a
+        hint: "Server waits; client initiates."
+        explanation: |
+          A server usually binds to a host/port, listens for connection attempts, and accepts a client connection.
+
+          Related topic: Client/server roles; server bind/listen/accept, client connect.
+      - id: s004
+        title: Identify the address pieces
+        instruction: "A socket connection needs an address and a port."
+        type: selectAll
+        prompt: "Which pieces commonly identify a TCP endpoint?"
+        choices:
+          - id: a
+            text: "IP address or hostname"
+          - id: b
+            text: "Port number"
+          - id: c
+            text: "Protocol/address family such as IPv4"
+          - id: d
+            text: "C++ access specifier such as `private`"
+        answer:
+          choiceIds: [a, b, c]
+        hint: "Think where, which door, and which protocol family."
+        explanation: |
+          TCP endpoints are described by an address, a port, and protocol details such as IPv4/IPv6 and stream socket type.
+
+          Related topic: Socket addressing; choose host/IP, port, family, and stream/datagram type.
+      - id: s005
+        title: Explain the model
+        instruction: "Summarize the concept without getting trapped in OS-specific function names."
+        type: freeResponse
+        prompt: "Explain the difference between a client socket and a server socket in a simple TCP program."
+        answer:
+          expected: |
+            The server creates a listening socket, binds it to an address and port, listens, and accepts clients. The client creates a socket and connects to the server's address and port. After connection, both sides exchange bytes.
+          gradingMode: selfCheck
+          keyPoints:
+            - "Server binds/listens/accepts."
+            - "Client connects."
+            - "The endpoint is identified by address and port."
+            - "Connected sockets exchange bytes."
+            - "Exact C++ calls depend on platform or library."
+        hint: "Use bind, listen, accept, connect, and bytes."
+        explanation: |
+          The conceptual model is platform independent even though the C++ API is not. One side waits for connections; the other initiates a connection; after that they exchange byte data.
+
+          Related topic: TCP socket roles; separate the mental model from the specific platform API.

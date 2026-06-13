@@ -210,6 +210,11 @@ import "../styles/global.css";
       import remarkRehype from "remark-rehype";
       import rehypeKatex from "rehype-katex";
       import rehypeStringify from "rehype-stringify";
+      import { EditorView, basicSetup } from "codemirror";
+      import { keymap } from "@codemirror/view";
+      import { indentWithTab } from "@codemirror/commands";
+      import { python } from "@codemirror/lang-python";
+      import { cpp } from "@codemirror/lang-cpp";
       import "mathlive";
 
       type AssessmentMode = "practice" | "scored";
@@ -501,6 +506,7 @@ import "../styles/global.css";
       }
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
+      let currentCodeEditor: EditorView | null = null;
       const markdownProcessor = unified()
         .use(remarkParse)
         .use(remarkMath)
@@ -1831,6 +1837,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupQuestionNavigator();
         setupChoiceCards(question);
+        setupCodeEditor(question);
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
       }
@@ -1935,6 +1942,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupChoiceCards(question);
+        setupCodeEditor(question);
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
       }
@@ -2016,10 +2024,13 @@ import "../styles/global.css";
         }
 
         if (question.type === "code") {
+          const codeValue = submittedAnswer?.codeText ?? question.starterCode ?? "";
           return `
             <div class="field code-response-field">
               <label for="code-response">${escapeHtml((question.language ?? "code").toUpperCase())} response</label>
-              <textarea id="code-response" name="codeText" rows="10" spellcheck="false">${escapeHtml(submittedAnswer?.codeText ?? question.starterCode ?? "")}</textarea>
+              <div id="code-response-editor" class="code-editor-shell" data-language="${escapeHtml(question.language ?? "python")}" data-code="${escapeHtml(codeValue)}"></div>
+              <input id="code-response" name="codeText" type="hidden" value="${escapeHtml(codeValue)}" />
+              <p class="input-help">Submit the complete function definition. Tab indents inside the editor; the test runner calls the named function automatically.</p>
             </div>
           `;
         }
@@ -2178,9 +2189,13 @@ import "../styles/global.css";
           freeResponseText: question.type === "freeResponse" ? String(form.get("freeResponseText") ?? "") : null,
           selfCheckCorrect: null,
           numericValue: question.type === "numericResponse" ? nullableNumber(form.get("numericValue")) : null,
-          codeText: question.type === "code" ? String(form.get("codeText") ?? "") : null,
+          codeText: question.type === "code" ? readCodeText(form) : null,
           symbolicLatex: question.type === "symbolicResponse" ? readSymbolicLatex() : null
         };
+      }
+
+      function readCodeText(form: FormData) {
+        return currentCodeEditor?.state.doc.toString() ?? String(form.get("codeText") ?? "");
       }
 
       function setupSelfCheckButtons() {
@@ -2286,6 +2301,37 @@ import "../styles/global.css";
 
             toggleChoiceCard(card);
           });
+        });
+      }
+
+      function setupCodeEditor(question: Question) {
+        currentCodeEditor?.destroy();
+        currentCodeEditor = null;
+
+        if (question.type !== "code") return;
+
+        const mount = document.querySelector<HTMLDivElement>("#code-response-editor");
+        const hiddenInput = document.querySelector<HTMLInputElement>("#code-response");
+        if (!mount || !hiddenInput) return;
+
+        const initialCode = mount.dataset.code ?? hiddenInput.value ?? "";
+        hiddenInput.value = initialCode;
+        const languageExtension = question.language === "cpp" ? cpp() : python();
+
+        currentCodeEditor = new EditorView({
+          doc: initialCode,
+          parent: mount,
+          extensions: [
+            keymap.of([indentWithTab]),
+            basicSetup,
+            languageExtension,
+            EditorView.lineWrapping,
+            EditorView.updateListener.of((update) => {
+              if (update.docChanged) {
+                hiddenInput.value = update.state.doc.toString();
+              }
+            })
+          ]
         });
       }
 
