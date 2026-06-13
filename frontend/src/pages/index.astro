@@ -2225,52 +2225,60 @@ import "../styles/global.css";
           .map((question) => question.questionId));
 
         return `
-          <details class="question-navigator" ${state.questionNavigatorOpen ? "open" : ""}>
-            <summary>
+          <div class="question-navigator ${state.questionNavigatorOpen ? "open" : ""}">
+            <button
+              type="button"
+              class="question-navigator-toggle"
+              aria-expanded="${state.questionNavigatorOpen ? "true" : "false"}"
+              aria-controls="question-jump-panel"
+            >
               <span>Jump to question</span>
               <strong>${state.currentIndex + 1}/${state.attempt.questionOrder.length}</strong>
-            </summary>
-            <div class="question-jump-grid">
-              ${state.attempt.questionOrder.map((questionId, index) => {
-                const stateClass = pending.has(questionId)
-                  ? "pending"
-                  : correct.has(questionId)
-                    ? "correct"
-                    : needsReview.has(questionId)
-                      ? "needs-review"
-                      : answered.has(questionId)
-                        ? "answered"
-                        : "unanswered";
-                const stateLabel = {
-                  pending: "awaiting self-check",
-                  correct: "correct",
-                  "needs-review": "needs review",
-                  answered: "answered",
-                  unanswered: "unanswered"
-                }[stateClass];
-                return `
-                  <button
-                    type="button"
-                    class="question-jump ${stateClass} ${index === state.currentIndex ? "current" : ""}"
-                    data-question-index="${index}"
-                    aria-current="${index === state.currentIndex ? "step" : "false"}"
-                    aria-label="Jump to question ${index + 1}, ${stateLabel}"
-                  ><span>${index + 1}</span></button>
-                `;
-              }).join("")}
+            </button>
+            <div class="question-navigator-panel" id="question-jump-panel">
+              <div class="question-jump-grid">
+                ${state.attempt.questionOrder.map((questionId, index) => {
+                  const stateClass = pending.has(questionId)
+                    ? "pending"
+                    : correct.has(questionId)
+                      ? "correct"
+                      : needsReview.has(questionId)
+                        ? "needs-review"
+                        : answered.has(questionId)
+                          ? "answered"
+                          : "unanswered";
+                  const stateLabel = {
+                    pending: "awaiting self-check",
+                    correct: "correct",
+                    "needs-review": "needs review",
+                    answered: "answered",
+                    unanswered: "unanswered"
+                  }[stateClass];
+                  return `
+                    <button
+                      type="button"
+                      class="question-jump ${stateClass} ${index === state.currentIndex ? "current" : ""}"
+                      data-question-index="${index}"
+                      aria-current="${index === state.currentIndex ? "step" : "false"}"
+                      aria-label="Jump to question ${index + 1}, ${stateLabel}"
+                    ><span>${index + 1}</span></button>
+                  `;
+                }).join("")}
+              </div>
+              <div class="question-jump-legend">
+                <span>Plain: unanswered</span>
+                <span>Marked: answered/reviewed</span>
+                <span>Current has a heavier border</span>
+              </div>
             </div>
-            <div class="question-jump-legend">
-              <span>Plain: unanswered</span>
-              <span>Marked: answered/reviewed</span>
-              <span>Current has a heavier border</span>
-            </div>
-          </details>
+          </div>
         `;
       }
 
       function setupQuestionNavigator() {
-        document.querySelector<HTMLDetailsElement>(".question-navigator")?.addEventListener("toggle", (event) => {
-          state.questionNavigatorOpen = (event.currentTarget as HTMLDetailsElement).open;
+        document.querySelector<HTMLButtonElement>(".question-navigator-toggle")?.addEventListener("click", () => {
+          state.questionNavigatorOpen = !state.questionNavigatorOpen;
+          void renderCurrentQuestion();
         });
         document.querySelectorAll<HTMLButtonElement>("[data-question-index]").forEach((button) => {
           button.addEventListener("click", () => {

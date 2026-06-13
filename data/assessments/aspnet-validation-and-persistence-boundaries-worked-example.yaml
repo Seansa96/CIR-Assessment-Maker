@@ -1,0 +1,121 @@
+schemaVersion: 1
+id: aspnet-validation-and-persistence-boundaries-worked-example
+title: ASP.NET Validation and Persistence Boundaries Worked Example
+assessmentType: workedExample
+categoryId: aspnet
+subcategoryIds:
+  - aspnet-validation-persistence
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Protecting the system before saving data
+    problem: "A user submits an answer. Decide what should be validated, what should be persisted, and what should remain an internal object."
+    steps:
+      - id: s001
+        title: Validate at the boundary
+        instruction: "Any data crossing from the browser into the backend is untrusted until the backend checks it."
+        type: multipleChoice
+        prompt: "Why should the backend validate a submitted answer even if the frontend already validates it?"
+        choices:
+          - id: a
+            text: "The frontend can be bypassed, stale, or buggy, so backend validation protects the system."
+          - id: b
+            text: "Backend validation makes frontend validation unnecessary for user experience."
+          - id: c
+            text: "Validation is only needed when using cloud hosting."
+          - id: d
+            text: "SQLite automatically understands all quiz rules."
+        answer:
+          choiceId: a
+        hint: "The frontend helps the user; the backend protects correctness."
+        explanation: |
+          Frontend validation improves responsiveness, but backend validation is authoritative. The backend must reject invalid question IDs, invalid answer shapes, and illegal attempt status transitions.
+
+          Related topic: trust boundaries. Look up "server-side validation web applications."
+
+      - id: s002
+        title: Separate DTOs from domain objects
+        instruction: "Request DTOs describe incoming JSON. Domain objects describe what the app believes after validation."
+        type: multipleChoice
+        prompt: "Why use request DTOs instead of binding browser JSON directly into every domain object?"
+        choices:
+          - id: a
+            text: "DTOs let the API shape differ from internal models and make validation explicit."
+          - id: b
+            text: "DTOs make validation impossible."
+          - id: c
+            text: "DTOs are only useful in JavaScript."
+          - id: d
+            text: "DTOs require the database to be public."
+        answer:
+          choiceId: a
+        hint: "The API contract and the internal object model do not have to be identical."
+        explanation: |
+          DTOs are boundary objects. They can be small, stable, and shaped for the API while domain objects stay shaped for rules and behavior.
+
+          Related topic: DTOs and model binding. Search "ASP.NET request DTO validation."
+
+      - id: s003
+        title: Persist only durable facts
+        instruction: "Not every runtime object needs to be stored forever."
+        type: multipleChoice
+        prompt: "Which item should usually be durable after a completed attempt?"
+        choices:
+          - id: a
+            text: "The attempt ID, assessment ID, answers, evaluations, status, and timestamps"
+          - id: b
+            text: "The exact frontend button hover state"
+          - id: c
+            text: "The current browser scroll position as the source of truth"
+          - id: d
+            text: "The temporary local variable names used inside one endpoint"
+        answer:
+          choiceId: a
+        hint: "Persist facts needed for review, analytics, or resuming."
+        explanation: |
+          Durable storage should preserve facts needed to reconstruct the learning session. UI-only details and temporary variables are runtime concerns.
+
+          Related topic: persistence boundaries. Look up "what data should be persisted application design."
+
+      - id: s004
+        title: Keep storage behind repositories
+        instruction: "Persistence can change from files to SQLite without changing domain rules if storage is behind an interface."
+        type: multipleChoice
+        prompt: "What is the main benefit of hiding SQLite behind a repository interface?"
+        choices:
+          - id: a
+            text: "Services can work with attempts as objects while Infrastructure handles SQL details."
+          - id: b
+            text: "The frontend can skip the backend."
+          - id: c
+            text: "The database schema becomes the API contract."
+          - id: d
+            text: "Validation can be deleted."
+        answer:
+          choiceId: a
+        hint: "The service should not care whether storage is JSON, SQLite, or a test fake."
+        explanation: |
+          Repositories let application services stay focused on use cases and domain rules. Infrastructure handles serialization, SQL, files, or any future storage provider.
+
+          Related topic: repository pattern. Review "application layer repository interface infrastructure implementation."
+
+      - id: s005
+        title: Summarize validation and persistence boundaries
+        instruction: "Connect the ideas into one design rule."
+        type: freeResponse
+        prompt: "How should a web app decide what to validate and what to persist?"
+        answer:
+          expected: "Validate all input that crosses into the backend, convert request DTOs into domain objects only after checking them, persist durable facts needed for resume/review/analytics, and keep storage details behind repository interfaces."
+          gradingMode: selfCheck
+          keyPoints:
+            - "Validate untrusted input at the backend boundary."
+            - "Use DTOs for API input/output shapes."
+            - "Convert into domain objects after validation."
+            - "Persist durable facts, not temporary UI state."
+            - "Hide storage details behind repositories."
+        hint: "Think: untrusted input, checked DTO, domain object, durable fact, repository."
+        explanation: |
+          This design keeps the system predictable. The backend decides what is valid, the domain model expresses trusted state, and persistence stores the facts needed later.
+
+          Related topic: application boundaries. Search "clean architecture validation persistence boundary."

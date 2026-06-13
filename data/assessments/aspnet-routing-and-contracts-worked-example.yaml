@@ -1,0 +1,121 @@
+schemaVersion: 1
+id: aspnet-routing-and-contracts-worked-example
+title: ASP.NET Routing and API Contracts Worked Example
+assessmentType: workedExample
+categoryId: aspnet
+subcategoryIds:
+  - aspnet-routing-contracts
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Designing a route as a stable public contract
+    problem: "Design a small API route for loading attempts without making the frontend depend on backend implementation details."
+    steps:
+      - id: s001
+        title: Treat the route as a promise
+        instruction: "A route is not just a URL. It is a contract the frontend can rely on."
+        type: multipleChoice
+        prompt: "Which route best communicates that the frontend is loading one attempt session by ID?"
+        choices:
+          - id: a
+            text: "`GET /api/attempts/{attemptId}/session`"
+          - id: b
+            text: "`GET /api/doThing`"
+          - id: c
+            text: "`POST /api/loadEverything`"
+          - id: d
+            text: "`GET /api/sqlite/attempts/raw-table-row`"
+        answer:
+          choiceId: a
+        hint: "Prefer resource-oriented names that do not expose storage details."
+        explanation: |
+          `GET /api/attempts/{attemptId}/session` describes the resource the caller wants. It hides whether the backend uses files, SQLite, memory, or something else.
+
+          Related topic: REST-style route design. Look up "resource-oriented API design."
+
+      - id: s002
+        title: Match HTTP method to intent
+        instruction: "The HTTP method should communicate whether the request reads, creates, updates, or deletes."
+        type: multipleChoice
+        prompt: "Which method is most appropriate for deleting an attempt?"
+        choices:
+          - id: a
+            text: "`DELETE /api/attempts/{attemptId}`"
+          - id: b
+            text: "`GET /api/attempts/{attemptId}/delete`"
+          - id: c
+            text: "`GET /api/delete-attempt`"
+          - id: d
+            text: "`PATCH /api/categories/{categoryId}`"
+        answer:
+          choiceId: a
+        hint: "Use the method that matches the action."
+        explanation: |
+          `DELETE` communicates a destructive action. A `GET` request should not delete data because browsers, caches, and crawlers may assume GET is safe to repeat.
+
+          Related topic: HTTP method semantics. Review GET, POST, PUT/PATCH, and DELETE.
+
+      - id: s003
+        title: Keep response shapes stable
+        instruction: "A contract includes the JSON shape returned to the frontend."
+        type: multipleChoice
+        prompt: "Which response design is easiest for a frontend to consume over time?"
+        choices:
+          - id: a
+            text: "A stable JSON object with named fields like `attempt`, `assessment`, and `results`"
+          - id: b
+            text: "A plain English sentence that changes whenever the backend message changes"
+          - id: c
+            text: "A database table dump with internal column names"
+          - id: d
+            text: "A random order array whose meaning depends on position"
+        answer:
+          choiceId: a
+        hint: "Named fields are easier to evolve than positional or raw storage formats."
+        explanation: |
+          Stable response DTOs decouple the frontend from backend internals. You can change repositories without changing the public shape.
+
+          Related topic: API DTOs. Look up "DTO API response contract."
+
+      - id: s004
+        title: Separate route parameters from query filters
+        instruction: "Path parameters usually identify a resource. Query parameters usually filter or sort a collection."
+        type: multipleChoice
+        prompt: "Which API design best expresses filtering grade analytics by category?"
+        choices:
+          - id: a
+            text: "`GET /api/analytics/grades?categoryId=physics-1`"
+          - id: b
+            text: "`GET /api/analytics/grades/physics-1/delete`"
+          - id: c
+            text: "`POST /api/analytics/grades` with no body and hidden global state"
+          - id: d
+            text: "`GET /api/physics-1/analytics/grades/everything/all-columns`"
+        answer:
+          choiceId: a
+        hint: "Filtering a list usually belongs in the query string."
+        explanation: |
+          A query parameter communicates that the caller is narrowing a collection. This keeps the base route stable while filters remain additive.
+
+          Related topic: route versus query parameters. Review when to use `/resources/{id}` versus `?filter=value`.
+
+      - id: s005
+        title: Summarize route contract design
+        instruction: "Lock in the design habit."
+        type: freeResponse
+        prompt: "What makes an API route a good contract between the frontend and backend?"
+        answer:
+          expected: "A good route uses the HTTP method for intent, names resources clearly, hides storage details, returns stable JSON DTOs, and uses route parameters for resource identity while using query parameters for filters."
+          gradingMode: selfCheck
+          keyPoints:
+            - "Use HTTP methods intentionally."
+            - "Name resources clearly."
+            - "Hide storage and implementation details."
+            - "Return stable JSON response shapes."
+            - "Use query parameters for filters."
+        hint: "Think: method, resource, DTO, filters, no storage leakage."
+        explanation: |
+          Routes become hard to change once the frontend depends on them. Design them as durable agreements, not shortcuts to current implementation details.
+
+          Related topic: API contract design. Look up "backward compatible API design."

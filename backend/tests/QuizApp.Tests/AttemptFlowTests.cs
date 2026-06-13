@@ -100,6 +100,35 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
+    public async Task ResumeAsync_keeps_previous_durable_checkpoint_until_next_explicit_save()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.MultipleChoiceQuestion("q001"),
+            TestData.MultipleChoiceQuestion("q002")
+        });
+        var attempts = new InMemoryAttemptRepository();
+        var sessions = new InMemoryAttemptSessionStore();
+        var service = CreateAttemptService(assessment, attempts, sessions);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null));
+        await service.PauseAsync(attempt.Id);
+        await service.ResumeAsync(attempt.Id);
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q002", "a", Array.Empty<string>(), null, null, null));
+
+        var checkpoint = await attempts.GetByIdAsync(attempt.Id);
+        var active = await sessions.GetByIdAsync(attempt.Id);
+
+        Assert.NotNull(checkpoint);
+        Assert.Equal(AttemptStatus.Paused, checkpoint.Status);
+        Assert.Single(checkpoint.Answers);
+        Assert.NotNull(active);
+        Assert.Equal(AttemptStatus.InProgress, active.Status);
+        Assert.Equal(2, active.Answers.Count);
+    }
+
+    [Fact]
     public async Task AbandonAsync_rejects_future_answers_and_grade_commit()
     {
         var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });

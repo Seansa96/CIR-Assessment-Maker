@@ -6,6 +6,7 @@ using QuizApp.Core.Repositories;
 using QuizApp.Core.Services;
 using QuizApp.Infrastructure.CodeRunner;
 using QuizApp.Infrastructure.Files;
+using QuizApp.Infrastructure.Retention;
 using QuizApp.Infrastructure.SymbolicMath;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,12 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 });
 
 var dataRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../..", "data"));
+var configuredSqlitePath = builder.Configuration["Retention:SqlitePath"];
+var sqlitePath = string.IsNullOrWhiteSpace(configuredSqlitePath)
+    ? Path.Combine(dataRoot, "retention", "quizapp.db")
+    : Path.IsPathRooted(configuredSqlitePath)
+        ? configuredSqlitePath
+        : Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, configuredSqlitePath));
 builder.Services.AddSingleton<AssessmentValidator>();
 builder.Services.AddSingleton<ScoringService>();
 builder.Services.AddSingleton<ICodeQuestionScorer, CodeQuestionScorer>();
@@ -29,12 +36,17 @@ builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
 builder.Services.AddSingleton<GradeAnalyticsService>();
 builder.Services.AddSingleton(new FileStorageOptions { DataRoot = dataRoot });
+builder.Services.AddSingleton(new SqliteRetentionOptions { DatabasePath = sqlitePath });
+builder.Services.AddSingleton<SqliteRetentionInitializer>();
+builder.Services.AddSingleton<SqliteAttemptRepository>();
+builder.Services.AddSingleton<SqliteGradeLogRepository>();
+builder.Services.AddSingleton<LegacyRetentionMigrationService>();
 builder.Services.AddSingleton<ISettingsRepository, FileSettingsRepository>();
 builder.Services.AddSingleton<ICategoryRepository, FileCategoryRepository>();
 builder.Services.AddSingleton<IAssessmentRepository, FileAssessmentRepository>();
-builder.Services.AddSingleton<IAttemptRepository, FileAttemptRepository>();
+builder.Services.AddSingleton<IAttemptRepository>(provider => provider.GetRequiredService<SqliteAttemptRepository>());
 builder.Services.AddSingleton<IAttemptSessionStore, InMemoryAttemptSessionStore>();
-builder.Services.AddSingleton<IGradeLogRepository, FileGradeLogRepository>();
+builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequiredService<SqliteGradeLogRepository>());
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
 builder.Services.AddCors(options =>
 {
@@ -47,6 +59,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+await app.Services.GetRequiredService<LegacyRetentionMigrationService>().MigrateAsync();
 
 if (app.Environment.IsDevelopment())
 {

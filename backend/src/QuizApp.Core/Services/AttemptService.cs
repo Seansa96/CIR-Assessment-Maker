@@ -283,7 +283,6 @@ public sealed class AttemptService
         if (attempt.Status is AttemptStatus.InProgress)
         {
             await attemptSessionStore.SaveAsync(attempt, cancellationToken);
-            await attemptRepository.DeleteAsync(attempt.Id, cancellationToken);
             return;
         }
 
