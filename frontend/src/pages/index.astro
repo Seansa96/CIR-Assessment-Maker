@@ -280,6 +280,7 @@ import "../styles/global.css";
           variables?: string[];
           tolerance?: number | null;
           media?: MediaAsset[];
+          keyPoints?: string[];
         };
         language?: "python" | "cpp";
         functionName?: string;
@@ -385,6 +386,8 @@ import "../styles/global.css";
         exampleId: string | null;
         exampleTitle: string | null;
         problem: string | null;
+        keyPoints: string[];
+        isPendingSelfCheck: boolean;
       }
 
       interface AttemptResults {
@@ -397,6 +400,7 @@ import "../styles/global.css";
         totalQuestions: number;
         percentScore: number;
         isComplete: boolean;
+        hasPendingSelfChecks: boolean;
         questions: QuestionResult[];
       }
 
@@ -408,12 +412,92 @@ import "../styles/global.css";
 
       interface GradeLogEntry {
         attemptId: string;
+        assessmentId: string;
         assessmentTitle: string;
         mode: AssessmentMode;
         correctCount: number;
         totalQuestions: number;
         percentScore: number;
         committedAt: string;
+      }
+
+      interface AnalyticsFocus {
+        id: string;
+        title: string;
+        attemptCount: number;
+        averagePercent: number;
+      }
+
+      interface CategoryGradeAnalytics {
+        categoryId: string;
+        categoryTitle: string;
+        attemptCount: number;
+        averagePercent: number;
+        lastPercent: number | null;
+      }
+
+      interface AreaGradeAnalytics {
+        areaId: string;
+        areaTitle: string;
+        attemptCount: number;
+        averagePercent: number;
+        weakestSubcategoryId: string | null;
+        weakestSubcategoryTitle: string | null;
+      }
+
+      interface QuestionTypePerformance {
+        questionType: QuestionType;
+        answeredCount: number;
+        correctCount: number;
+        needsReviewCount: number;
+        correctPercent: number;
+      }
+
+      interface WeakFocusSummary {
+        id: string;
+        title: string;
+        focusType: string;
+        attemptCount: number;
+        averagePercent: number;
+        message: string;
+      }
+
+      interface AttemptHistoryRow {
+        attemptId: string;
+        assessmentId: string;
+        assessmentTitle: string;
+        assessmentType: AssessmentType;
+        mode: AssessmentMode;
+        status: AttemptStatus;
+        categoryId: string;
+        categoryTitle: string;
+        subcategoryIds: string[];
+        subcategoryTitles: string[];
+        areaIds: string[];
+        areaTitles: string[];
+        questionTypes: QuestionType[];
+        correctCount: number;
+        totalQuestions: number;
+        percentScore: number;
+        answeredCount: number;
+        hasPendingSelfChecks: boolean;
+        isCommitted: boolean;
+        startedAt: string;
+        completedAt: string | null;
+        lastActivityAt: string | null;
+      }
+
+      interface GradeAnalyticsSummary {
+        committedEntryCount: number;
+        overallCommittedAverage: number | null;
+        weakestCategory: AnalyticsFocus | null;
+        weakestArea: AnalyticsFocus | null;
+        weakestQuestionType: QuestionTypePerformance | null;
+        categories: CategoryGradeAnalytics[];
+        areas: AreaGradeAnalytics[];
+        questionTypes: QuestionTypePerformance[];
+        weakAreas: WeakFocusSummary[];
+        attempts: AttemptHistoryRow[];
       }
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
@@ -433,6 +517,19 @@ import "../styles/global.css";
         currentIndex: number;
         latestResults: AttemptResults | null;
         committedAttemptIds: Set<string>;
+        analytics: GradeAnalyticsSummary | null;
+        historyFilters: {
+          status: string;
+          mode: string;
+          assessmentType: string;
+          categoryId: string;
+          areaId: string;
+          questionType: string;
+          committed: string;
+          score: string;
+        };
+        historySort: { key: string; direction: "asc" | "desc" };
+        selectedAttemptIds: Set<string>;
         draftQuestions: Question[];
       } = {
         settings: null,
@@ -443,6 +540,19 @@ import "../styles/global.css";
         currentIndex: 0,
         latestResults: null,
         committedAttemptIds: new Set(),
+        analytics: null,
+        historyFilters: {
+          status: "",
+          mode: "",
+          assessmentType: "",
+          categoryId: "",
+          areaId: "",
+          questionType: "",
+          committed: "",
+          score: ""
+        },
+        historySort: { key: "lastActivityAt", direction: "desc" },
+        selectedAttemptIds: new Set(),
         draftQuestions: []
       };
 
@@ -463,6 +573,7 @@ import "../styles/global.css";
       const settingsStatus = document.querySelector<HTMLParagraphElement>("#settings-status")!;
       const gradeSummary = document.querySelector<HTMLDivElement>("#grade-summary")!;
       const attemptHistory = document.querySelector<HTMLDivElement>("#attempt-history")!;
+      const modeInputs = Array.from(document.querySelectorAll<HTMLInputElement>("input[name='mode']"));
 
       document.querySelectorAll<HTMLButtonElement>(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -547,6 +658,7 @@ import "../styles/global.css";
           state.currentIndex = 0;
           state.latestResults = null;
           updateActiveAttemptChip();
+          updateModeControlLock();
           await renderCurrentQuestion();
         } finally {
           clearBusy(startButton, "Start Selected");
@@ -567,18 +679,14 @@ import "../styles/global.css";
             body: JSON.stringify(payload)
           });
 
-          if (state.attempt.mode === "practice") {
-            state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
-            if (state.latestResults.assessmentType === "workedExample") {
-              state.currentIndex = firstUnansweredIndex(state.latestResults, state.attempt);
-            }
+          state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+          if (state.latestResults.assessmentType === "workedExample") {
+            state.currentIndex = firstUnansweredIndex(state.latestResults, state.attempt);
           }
 
           if (state.attempt.status === "completed") {
-            if (!state.latestResults) {
-              state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
-            }
             updateActiveAttemptChip("Complete");
+            updateModeControlLock();
             await renderResults(false);
             await loadGrades();
             return;
@@ -588,6 +696,31 @@ import "../styles/global.css";
         } finally {
           if (submitButton) clearBusy(submitButton, "Submit Answer");
         }
+      }
+
+      async function markFreeResponseSelfCheck(questionId: string, isCorrect: boolean) {
+        if (!state.attempt || !state.latestResults) return;
+        const result = state.latestResults.questions.find((candidate) => candidate.questionId === questionId);
+        if (!result?.submittedAnswer?.freeResponseText) return;
+
+        await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
+          method: "POST",
+          body: JSON.stringify({
+            questionId,
+            choiceIds: [],
+            freeResponseText: result.submittedAnswer.freeResponseText,
+            selfCheckCorrect: isCorrect
+          })
+        });
+        state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+
+        if (state.latestResults.status === "completed" || state.latestResults.status === "abandoned") {
+          await renderResults(isAttemptCommitted(state.attempt.id));
+        } else {
+          await renderCurrentQuestion();
+        }
+
+        await loadGrades();
       }
 
       async function resumeAttemptSession(attemptId: string) {
@@ -608,6 +741,8 @@ import "../styles/global.css";
         state.latestResults = session.results;
         state.currentIndex = preferFirstUnanswered ? firstUnansweredIndex(session.results, session.attempt) : 0;
         updateActiveAttemptChip(statusLabel(session.attempt.status));
+        syncModeControlToAttempt();
+        updateModeControlLock();
         activateTab("load");
 
         if (session.attempt.status === "completed" || session.attempt.status === "abandoned") {
@@ -626,6 +761,7 @@ import "../styles/global.css";
         state.attempt = response.attempt;
         state.latestResults = response.results;
         updateActiveAttemptChip("Paused");
+        updateModeControlLock();
         attemptContent.innerHTML = `
           <div class="empty-state">
             Progress saved. This attempt is paused and can be continued from Attempt Sessions.
@@ -644,6 +780,7 @@ import "../styles/global.css";
         state.attempt = response.attempt;
         state.latestResults = response.results;
         updateActiveAttemptChip("Abandoned");
+        updateModeControlLock();
         await renderResults(false);
         await loadGrades();
       }
@@ -656,6 +793,7 @@ import "../styles/global.css";
           state.assessment = null;
           state.latestResults = null;
           updateActiveAttemptChip();
+          updateModeControlLock();
           attemptContent.innerHTML = `<div class="empty-state">Attempt deleted.</div>`;
         }
         await loadGrades();
@@ -669,6 +807,7 @@ import "../styles/global.css";
           state.assessment = null;
           state.latestResults = null;
           updateActiveAttemptChip();
+          updateModeControlLock();
           attemptContent.innerHTML = `<div class="empty-state">Grade and linked attempt deleted.</div>`;
         }
         await loadGrades();
@@ -686,6 +825,7 @@ import "../styles/global.css";
           });
           state.latestResults = response.results;
           updateActiveAttemptChip("Complete");
+          updateModeControlLock();
           await renderResults(response.committedGrade !== null);
           await loadGrades();
         } finally {
@@ -728,67 +868,257 @@ import "../styles/global.css";
       }
 
       async function loadGrades() {
-        const summary = await api<{ entryCount: number; averagePercentScore: number | null; entries: GradeLogEntry[] }>("/grades/summary");
-        const attempts = await api<AttemptResults[]>("/attempts");
+        const [summary, analytics] = await Promise.all([
+          api<{ entryCount: number; averagePercentScore: number | null; entries: GradeLogEntry[] }>("/grades/summary"),
+          api<GradeAnalyticsSummary>("/analytics/grades")
+        ]);
+        state.analytics = analytics;
         state.committedAttemptIds = new Set(summary.entries.map((entry) => entry.attemptId));
+        const currentAttemptIds = new Set(analytics.attempts.map((attempt) => attempt.attemptId));
+        state.selectedAttemptIds.forEach((attemptId) => {
+          if (!currentAttemptIds.has(attemptId)) state.selectedAttemptIds.delete(attemptId);
+        });
 
-        if (summary.entryCount === 0) {
-          gradeSummary.innerHTML = `<div class="empty-state">No committed scores yet.</div>`;
-        } else {
-          gradeSummary.innerHTML = `
-            <div class="metric-row">
-              <div><span>${summary.entryCount}</span><small>Entries</small></div>
-              <div><span>${summary.averagePercentScore ?? 0}%</span><small>Average</small></div>
+        gradeSummary.innerHTML = renderAnalyticsDashboard(analytics, summary.entries);
+        renderAttemptHistory();
+        setupGradeLogInteractions();
+      }
+
+      function renderAnalyticsDashboard(analytics: GradeAnalyticsSummary, entries: GradeLogEntry[]) {
+        const weakestCategory = analytics.weakestCategory ? `${analytics.weakestCategory.title} (${analytics.weakestCategory.averagePercent}%)` : "Not enough data";
+        const weakestArea = analytics.weakestArea ? `${analytics.weakestArea.title} (${analytics.weakestArea.averagePercent}%)` : "Not enough data";
+        const weakestQuestionType = analytics.weakestQuestionType ? `${questionTypeLabel(analytics.weakestQuestionType.questionType)} (${analytics.weakestQuestionType.correctPercent}%)` : "Not enough data";
+
+        return `
+          <section class="analytics-dashboard">
+            <div class="metric-row analytics-metrics">
+              <div><span>${analytics.committedEntryCount}</span><small>Committed scores</small></div>
+              <div><span>${analytics.overallCommittedAverage ?? 0}%</span><small>Overall average</small></div>
+              <div><span>${analytics.attempts.length}</span><small>Attempt sessions</small></div>
+              <div><span>${analytics.weakAreas.length}</span><small>Focus signals</small></div>
             </div>
+            <div class="analytics-focus-grid">
+              <article><small>Weakest category</small><strong>${escapeHtml(weakestCategory)}</strong></article>
+              <article><small>Weakest area</small><strong>${escapeHtml(weakestArea)}</strong></article>
+              <article><small>Weakest question type</small><strong>${escapeHtml(weakestQuestionType)}</strong></article>
+            </div>
+            ${analytics.weakAreas.length > 0 ? `
+              <div class="focus-callout">
+                ${analytics.weakAreas.map((weak) => `<p>${escapeHtml(weak.message)}</p>`).join("")}
+              </div>
+            ` : `<div class="empty-state">Commit a few completed attempts to start surfacing weak topics.</div>`}
+            <div class="analytics-table-grid">
+              ${renderCategoryAnalyticsTable(analytics.categories)}
+              ${renderAreaAnalyticsTable(analytics.areas)}
+              ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
+            </div>
+            ${renderCommittedEntries(entries)}
+          </section>
+        `;
+      }
+
+      function renderCommittedEntries(entries: GradeLogEntry[]) {
+        if (entries.length === 0) {
+          return `<section class="analytics-section"><h3>Committed Scores</h3><div class="empty-state">No committed scores yet.</div></section>`;
+        }
+
+        return `
+          <section class="analytics-section">
+            <h3>Committed Scores</h3>
             <table>
               <thead><tr><th>Assessment</th><th>Mode</th><th>Score</th><th>Committed</th><th>Actions</th></tr></thead>
               <tbody>
-                ${summary.entries.map((entry) => `
+                ${entries.map((entry) => `
                   <tr>
                     <td>${escapeHtml(entry.assessmentTitle)}</td>
-                    <td>${escapeHtml(entry.mode)}</td>
+                    <td>${escapeHtml(modeLabel(entry.mode))}</td>
                     <td>${entry.correctCount}/${entry.totalQuestions} (${entry.percentScore}%)</td>
                     <td>${new Date(entry.committedAt).toLocaleString()}</td>
-                    <td><button type="button" data-delete-grade="${escapeHtml(entry.attemptId)}">Delete Grade</button></td>
+                    <td><button type="button" class="danger-light" data-delete-grade="${escapeHtml(entry.attemptId)}">Delete Grade</button></td>
                   </tr>
                 `).join("")}
               </tbody>
             </table>
-          `;
-        }
+          </section>
+        `;
+      }
 
-        if (attempts.length === 0) {
+      function renderCategoryAnalyticsTable(categories: CategoryGradeAnalytics[]) {
+        return renderMiniAnalyticsTable(
+          "Category Averages",
+          ["Category", "Attempts", "Average", "Last"],
+          categories.map((category) => [
+            category.categoryTitle,
+            String(category.attemptCount),
+            `${category.averagePercent}%`,
+            category.lastPercent === null ? "-" : `${category.lastPercent}%`
+          ]),
+          "No category grade data yet.");
+      }
+
+      function renderAreaAnalyticsTable(areas: AreaGradeAnalytics[]) {
+        return renderMiniAnalyticsTable(
+          "Area Averages",
+          ["Area", "Attempts", "Average", "Weakest subtopic"],
+          areas.map((area) => [
+            area.areaTitle,
+            String(area.attemptCount),
+            `${area.averagePercent}%`,
+            area.weakestSubcategoryTitle ?? "-"
+          ]),
+          "No area mappings have committed scores yet.");
+      }
+
+      function renderQuestionTypeAnalyticsTable(questionTypes: QuestionTypePerformance[]) {
+        return renderMiniAnalyticsTable(
+          "Question Types",
+          ["Type", "Answered", "Correct", "Needs review"],
+          questionTypes.map((type) => [
+            questionTypeLabel(type.questionType),
+            String(type.answeredCount),
+            `${type.correctPercent}%`,
+            String(type.needsReviewCount)
+          ]),
+          "No completed question results yet.");
+      }
+
+      function renderMiniAnalyticsTable(title: string, headers: string[], rows: string[][], emptyText: string) {
+        return `
+          <section class="analytics-card">
+            <h3>${escapeHtml(title)}</h3>
+            ${rows.length === 0 ? `<div class="empty-state compact">${escapeHtml(emptyText)}</div>` : `
+              <table class="compact-table">
+                <thead><tr>${headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("")}</tr></thead>
+                <tbody>
+                  ${rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join("")}</tr>`).join("")}
+                </tbody>
+              </table>
+            `}
+          </section>
+        `;
+      }
+
+      function renderAttemptHistory() {
+        const analytics = state.analytics;
+        if (!analytics || analytics.attempts.length === 0) {
           attemptHistory.innerHTML = `<div class="empty-state">No attempts recorded yet.</div>`;
           return;
         }
+        const rows = sortHistoryRows(filteredHistoryRows(analytics.attempts));
+        const allVisibleSelected = rows.length > 0 && rows.every((row) => state.selectedAttemptIds.has(row.attemptId));
 
         attemptHistory.innerHTML = `
-          <table>
-            <thead><tr><th>Assessment</th><th>Mode</th><th>Status</th><th>Progress</th><th>Score</th><th>Actions</th></tr></thead>
-            <tbody>
-              ${attempts.map((attempt) => `
+          <div class="history-toolbar">
+            <details class="history-filters">
+              <summary>Filters <span>${rows.length}/${analytics.attempts.length}</span></summary>
+              <div class="history-filter-grid">
+                ${renderHistorySelect("status", "Status", [["", "Any"], ["inProgress", "In progress"], ["paused", "Paused"], ["completed", "Complete"], ["abandoned", "Abandoned"]])}
+                ${renderHistorySelect("mode", "Mode", [["", "Any"], ["practice", "Practice"], ["scored", "Scored"]])}
+                ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"]])}
+                ${renderHistorySelect("categoryId", "Category", [["", "Any"], ...uniqueOptions(analytics.attempts.map((row) => [row.categoryId, row.categoryTitle]))])}
+                ${renderHistorySelect("areaId", "Area", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.areaIds.map((areaId, index) => [areaId, row.areaTitles[index] ?? areaId])))])}
+                ${renderHistorySelect("questionType", "Question Type", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.questionTypes.map((type) => [type, questionTypeLabel(type)] as [string, string])))])}
+                ${renderHistorySelect("committed", "Committed", [["", "Any"], ["yes", "Committed"], ["no", "Uncommitted"]])}
+                ${renderHistorySelect("score", "Score", [["", "Any"], ["lt70", "Below 70%"], ["70to89", "70-89%"], ["gte90", "90%+"]])}
+              </div>
+            </details>
+            <button type="button" class="danger-light" id="bulk-delete-attempts" ${state.selectedAttemptIds.size === 0 ? "disabled" : ""}>Delete Selected (${state.selectedAttemptIds.size})</button>
+          </div>
+          ${rows.length === 0 ? `<div class="empty-state">No attempts match the current filters.</div>` : `
+            <table class="history-table">
+              <thead>
                 <tr>
-                  <td>${escapeHtml(attempt.assessmentTitle)}</td>
-                  <td>${escapeHtml(attempt.mode)}</td>
-                  <td>${escapeHtml(statusLabel(attempt.status))}</td>
-                  <td>${answeredCount(attempt)}/${attempt.totalQuestions}</td>
-                  <td>${attempt.correctCount}/${attempt.totalQuestions} (${attempt.percentScore}%)</td>
-                  <td class="table-actions">${renderAttemptActions(attempt)}</td>
+                  <th><input type="checkbox" data-select-all-attempts ${allVisibleSelected ? "checked" : ""} aria-label="Select all visible attempts" /></th>
+                  ${renderSortableHeader("assessmentTitle", "Assessment")}
+                  ${renderSortableHeader("categoryTitle", "Category")}
+                  ${renderSortableHeader("mode", "Mode")}
+                  ${renderSortableHeader("status", "Status")}
+                  ${renderSortableHeader("percentScore", "Score")}
+                  ${renderSortableHeader("lastActivityAt", "Last activity")}
+                  <th>Actions</th>
                 </tr>
-              `).join("")}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                ${rows.map((attempt) => `
+                  <tr>
+                    <td><input type="checkbox" data-select-attempt="${escapeHtml(attempt.attemptId)}" ${state.selectedAttemptIds.has(attempt.attemptId) ? "checked" : ""} aria-label="Select ${escapeHtml(attempt.assessmentTitle)}" /></td>
+                    <td>
+                      <strong>${escapeHtml(attempt.assessmentTitle)}</strong>
+                      <small>${escapeHtml(assessmentTypeLabel(attempt.assessmentType))}${attempt.isCommitted ? " · committed" : ""}</small>
+                    </td>
+                    <td>
+                      ${escapeHtml(attempt.categoryTitle)}
+                      ${attempt.areaTitles.length > 0 ? `<small>${attempt.areaTitles.map(escapeHtml).join(", ")}</small>` : ""}
+                    </td>
+                    <td>${escapeHtml(modeLabel(attempt.mode))}</td>
+                    <td>${escapeHtml(statusLabel(attempt.status))}</td>
+                    <td>${attempt.correctCount}/${attempt.totalQuestions} (${attempt.percentScore}%)<small>${attempt.answeredCount}/${attempt.totalQuestions} answered</small></td>
+                    <td>${formatDate(attempt.lastActivityAt ?? attempt.startedAt)}</td>
+                    <td class="table-actions">${renderAttemptActions(attempt)}</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          `}
         `;
+      }
 
+      function setupGradeLogInteractions() {
         gradeSummary.querySelectorAll<HTMLButtonElement>("[data-delete-grade]").forEach((button) => {
           button.addEventListener("click", () => deleteGrade(button.dataset.deleteGrade ?? ""));
         });
         attemptHistory.querySelectorAll<HTMLButtonElement>("[data-attempt-action]").forEach((button) => {
           button.addEventListener("click", () => handleAttemptAction(button.dataset.attemptAction ?? "", button.dataset.attemptId ?? ""));
         });
+        attemptHistory.querySelectorAll<HTMLSelectElement>("[data-history-filter]").forEach((select) => {
+          select.addEventListener("change", () => {
+            const key = select.dataset.historyFilter as keyof typeof state.historyFilters;
+            state.historyFilters[key] = select.value;
+            state.selectedAttemptIds.clear();
+            renderAttemptHistory();
+            setupGradeLogInteractions();
+          });
+        });
+        attemptHistory.querySelectorAll<HTMLButtonElement>("[data-sort-history]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const key = button.dataset.sortHistory ?? "lastActivityAt";
+            state.historySort = {
+              key,
+              direction: state.historySort.key === key && state.historySort.direction === "asc" ? "desc" : "asc"
+            };
+            renderAttemptHistory();
+            setupGradeLogInteractions();
+          });
+        });
+        attemptHistory.querySelectorAll<HTMLInputElement>("[data-select-attempt]").forEach((checkbox) => {
+          checkbox.addEventListener("change", () => {
+            const attemptId = checkbox.dataset.selectAttempt ?? "";
+            if (checkbox.checked) {
+              state.selectedAttemptIds.add(attemptId);
+            } else {
+              state.selectedAttemptIds.delete(attemptId);
+            }
+            renderAttemptHistory();
+            setupGradeLogInteractions();
+          });
+        });
+        attemptHistory.querySelector<HTMLInputElement>("[data-select-all-attempts]")?.addEventListener("change", (event) => {
+          const checked = (event.target as HTMLInputElement).checked;
+          const rows = state.analytics ? filteredHistoryRows(state.analytics.attempts) : [];
+          rows.forEach((row) => {
+            if (checked) {
+              state.selectedAttemptIds.add(row.attemptId);
+            } else {
+              state.selectedAttemptIds.delete(row.attemptId);
+            }
+          });
+          renderAttemptHistory();
+          setupGradeLogInteractions();
+        });
+        attemptHistory.querySelector<HTMLButtonElement>("#bulk-delete-attempts")?.addEventListener("click", bulkDeleteSelectedAttempts);
       }
 
-      function renderAttemptActions(attempt: AttemptResults) {
+      function renderAttemptActions(attempt: AttemptResults | AttemptHistoryRow) {
         const id = escapeHtml(attempt.attemptId);
         const actions: string[] = [];
 
@@ -808,7 +1138,7 @@ import "../styles/global.css";
           actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
         }
 
-        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && !isAttemptCommitted(attempt.attemptId)) {
+        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
           actions.push(`<button type="button" data-attempt-action="commit" data-attempt-id="${id}">Commit</button>`);
         }
 
@@ -877,6 +1207,113 @@ import "../styles/global.css";
         return state.committedAttemptIds.has(attemptId);
       }
 
+      async function bulkDeleteSelectedAttempts() {
+        const attemptIds = Array.from(state.selectedAttemptIds);
+        if (attemptIds.length === 0) return;
+        if (!confirm(`Delete ${attemptIds.length} selected attempt(s) and any linked grade entries? This cannot be undone.`)) return;
+
+        await api("/attempts/bulk-delete", {
+          method: "POST",
+          body: JSON.stringify({ attemptIds })
+        });
+
+        if (state.attempt && state.selectedAttemptIds.has(state.attempt.id)) {
+          state.attempt = null;
+          state.assessment = null;
+          state.latestResults = null;
+          updateActiveAttemptChip();
+          updateModeControlLock();
+          attemptContent.innerHTML = `<div class="empty-state">Selected attempt deleted.</div>`;
+        }
+
+        state.selectedAttemptIds.clear();
+        await loadGrades();
+      }
+
+      function filteredHistoryRows(rows: AttemptHistoryRow[]) {
+        const filters = state.historyFilters;
+        return rows.filter((row) => {
+          if (filters.status && row.status !== filters.status) return false;
+          if (filters.mode && row.mode !== filters.mode) return false;
+          if (filters.assessmentType && row.assessmentType !== filters.assessmentType) return false;
+          if (filters.categoryId && row.categoryId !== filters.categoryId) return false;
+          if (filters.areaId && !row.areaIds.includes(filters.areaId)) return false;
+          if (filters.questionType && !row.questionTypes.includes(filters.questionType as QuestionType)) return false;
+          if (filters.committed === "yes" && !row.isCommitted) return false;
+          if (filters.committed === "no" && row.isCommitted) return false;
+          if (filters.score === "lt70" && row.percentScore >= 70) return false;
+          if (filters.score === "70to89" && (row.percentScore < 70 || row.percentScore >= 90)) return false;
+          if (filters.score === "gte90" && row.percentScore < 90) return false;
+          return true;
+        });
+      }
+
+      function sortHistoryRows(rows: AttemptHistoryRow[]) {
+        const { key, direction } = state.historySort;
+        return [...rows].sort((a, b) => {
+          const left = historySortValue(a, key);
+          const right = historySortValue(b, key);
+          const comparison = typeof left === "number" && typeof right === "number"
+            ? left - right
+            : String(left).localeCompare(String(right));
+          return direction === "asc" ? comparison : -comparison;
+        });
+      }
+
+      function historySortValue(row: AttemptHistoryRow, key: string) {
+        if (key === "lastActivityAt") return new Date(row.lastActivityAt ?? row.startedAt).getTime();
+        if (key === "percentScore") return row.percentScore;
+        return String((row as unknown as Record<string, unknown>)[key] ?? "");
+      }
+
+      function renderSortableHeader(key: string, label: string) {
+        const active = state.historySort.key === key;
+        const direction = active ? (state.historySort.direction === "asc" ? "up" : "down") : "";
+        return `<th><button type="button" class="sort-button ${active ? "active" : ""}" data-sort-history="${escapeHtml(key)}">${escapeHtml(label)}${direction ? ` ${direction}` : ""}</button></th>`;
+      }
+
+      function renderHistorySelect(name: keyof typeof state.historyFilters, label: string, options: [string, string][]) {
+        return `
+          <label class="field compact">
+            <span>${escapeHtml(label)}</span>
+            <select data-history-filter="${escapeHtml(name)}">
+              ${options.map(([value, text]) => `<option value="${escapeHtml(value)}" ${state.historyFilters[name] === value ? "selected" : ""}>${escapeHtml(text)}</option>`).join("")}
+            </select>
+          </label>
+        `;
+      }
+
+      function uniqueOptions(options: [string, string][]) {
+        const seen = new Set<string>();
+        return options.filter(([value]) => {
+          if (!value || seen.has(value)) return false;
+          seen.add(value);
+          return true;
+        }).sort((left, right) => left[1].localeCompare(right[1]));
+      }
+
+      function modeLabel(mode: AssessmentMode) {
+        return {
+          practice: "Practice",
+          scored: "Scored"
+        }[mode] ?? mode;
+      }
+
+      function questionTypeLabel(type: QuestionType) {
+        return {
+          multipleChoice: "Multiple choice",
+          selectAll: "Select all",
+          freeResponse: "Free response",
+          numericResponse: "Numeric response",
+          code: "Code",
+          symbolicResponse: "Symbolic response"
+        }[type] ?? type;
+      }
+
+      function formatDate(value: string | null | undefined) {
+        return value ? new Date(value).toLocaleString() : "-";
+      }
+
       function activateTab(tabName: string) {
         document.querySelectorAll(".tab").forEach((item) => item.classList.toggle("active", (item as HTMLButtonElement).dataset.tab === tabName));
         document.querySelectorAll(".view").forEach((item) => item.classList.remove("active"));
@@ -926,7 +1363,7 @@ import "../styles/global.css";
             prompt: "",
             choices: [],
             media: [],
-            answer: { expected: "", gradingMode: "selfCheck" },
+            answer: { expected: "", gradingMode: "selfCheck", keyPoints: [] },
             explanation: ""
           };
         }
@@ -1058,6 +1495,10 @@ import "../styles/global.css";
               <label for="question-expected-${index}">Expected answer</label>
               <textarea id="question-expected-${index}" data-question-field="expected" rows="2">${escapeHtml(question.answer?.expected ?? "")}</textarea>
             </div>
+            <div class="field">
+              <label for="question-key-points-${index}">Key points</label>
+              <textarea id="question-key-points-${index}" data-question-field="keyPoints" rows="3" placeholder="One rubric point per line">${escapeHtml((question.answer?.keyPoints ?? []).join("\n"))}</textarea>
+            </div>
           `;
         }
 
@@ -1173,7 +1614,11 @@ import "../styles/global.css";
             choiceId: null,
             choiceIds: [],
             expected: editor.querySelector<HTMLTextAreaElement>("[data-question-field='expected']")?.value.trim() ?? "",
-            gradingMode: "selfCheck"
+            gradingMode: "selfCheck",
+            keyPoints: (editor.querySelector<HTMLTextAreaElement>("[data-question-field='keyPoints']")?.value ?? "")
+              .split("\n")
+              .map((value) => value.trim())
+              .filter(Boolean)
           };
         }
 
@@ -1322,9 +1767,11 @@ import "../styles/global.css";
         const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
         const promptHtml = await renderMarkdown(question.prompt);
+        const navigatorHtml = renderQuestionNavigator();
         const feedbackExplanation = results?.explanation ? await renderMarkdown(results.explanation) : "";
         const symbolicFeedbackHtml = await renderSymbolicFeedback(results?.symbolicFeedback);
-        const feedback = results?.isCorrect === null || results?.isCorrect === undefined
+        const selfCheckHtml = await renderFreeResponseSelfCheck(results, state.attempt.mode === "practice");
+        const feedback = question.type === "freeResponse" || results?.isCorrect === null || results?.isCorrect === undefined
           ? ""
           : `<div class="feedback ${results.isCorrect ? "correct" : "incorrect"}">
               ${results.isCorrect ? "Correct" : "Needs review"}
@@ -1343,16 +1790,22 @@ import "../styles/global.css";
             ${renderMedia(question.media ?? [])}
           </div>
           <form id="answer-form" class="answer-form">
+            ${navigatorHtml}
             ${await renderAnswerInput(question, results?.submittedAnswer ?? null)}
-            <div class="button-row">
-              <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
-              <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
-              <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
-              <button class="chunky secondary-action" type="button" id="complete-attempt">Complete</button>
-              <button type="button" id="pause-attempt">Save and Quit</button>
-              <button type="button" id="abandon-attempt">Quit Early</button>
+            <div class="assessment-control-bar">
+              <div class="button-row">
+                <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
+                <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
+                <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
+                <button type="button" id="pause-attempt">Save and Quit</button>
+              </div>
+              <div class="button-row terminal-actions" aria-label="Assessment ending actions">
+                <button class="chunky complete-action" type="button" id="complete-attempt">Complete Quiz</button>
+                <button class="chunky danger-action" type="button" id="abandon-attempt">Quit Early</button>
+              </div>
             </div>
           </form>
+          ${selfCheckHtml}
           ${feedback}
         `;
 
@@ -1371,7 +1824,9 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
+        setupQuestionNavigator();
         setupChoiceCards(question);
+        setupSelfCheckButtons();
       }
 
       async function renderCurrentWorkedExampleStep() {
@@ -1387,7 +1842,8 @@ import "../styles/global.css";
         const promptHtml = await renderMarkdown(question.prompt);
         const feedbackExplanation = result?.explanation ? await renderMarkdown(result.explanation) : "";
         const symbolicFeedbackHtml = await renderSymbolicFeedback(result?.symbolicFeedback);
-        const feedback = result?.isCorrect === null || result?.isCorrect === undefined
+        const selfCheckHtml = await renderFreeResponseSelfCheck(result, state.attempt.mode === "practice");
+        const feedback = question.type === "freeResponse" || result?.isCorrect === null || result?.isCorrect === undefined
           ? ""
           : `<div class="feedback ${result.isCorrect ? "correct" : "incorrect"}">
               ${result.isCorrect ? "Step complete" : "Try this step again"}
@@ -1422,12 +1878,17 @@ import "../styles/global.css";
                 ${renderMedia(question.media ?? [])}
                 <form id="answer-form" class="answer-form">
                   ${await renderAnswerInput(question, result?.submittedAnswer ?? null)}
-                  <div class="button-row">
-                    <button class="primary chunky" id="submit-answer" type="submit">${result?.isCorrect ? "Continue" : "Check Step"}</button>
-                    <button type="button" id="pause-attempt">Save and Quit</button>
-                    <button type="button" id="abandon-attempt">Quit Early</button>
+                  <div class="assessment-control-bar">
+                    <div class="button-row">
+                      <button class="primary chunky" id="submit-answer" type="submit">${result?.isCorrect ? "Continue" : "Check Step"}</button>
+                      <button type="button" id="pause-attempt">Save and Quit</button>
+                    </div>
+                    <div class="button-row terminal-actions" aria-label="Assessment ending actions">
+                      <button class="chunky danger-action" type="button" id="abandon-attempt">Quit Early</button>
+                    </div>
                   </div>
                 </form>
+                ${selfCheckHtml}
                 ${feedback}
               </article>
             </section>
@@ -1441,6 +1902,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupChoiceCards(question);
+        setupSelfCheckButtons();
       }
 
       async function renderResults(alreadyCommitted: boolean) {
@@ -1454,6 +1916,7 @@ import "../styles/global.css";
           const instructionHtml = question.instruction ? await renderMarkdown(question.instruction) : "";
           const hintHtml = question.hint ? await renderMarkdown(question.hint) : "";
           const symbolicFeedbackHtml = await renderSymbolicFeedback(question.symbolicFeedback);
+          const selfCheckHtml = await renderFreeResponseSelfCheck(question, true);
 
           return `
             <article class="result-item ${question.isCorrect ? "correct" : "incorrect"}">
@@ -1464,9 +1927,10 @@ import "../styles/global.css";
               <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
               ${renderCodeFeedback(question.codeFeedback)}
               ${symbolicFeedbackHtml}
-              ${expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
+              ${question.type === "freeResponse" ? selfCheckHtml : ""}
+              ${question.type !== "freeResponse" && expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
               ${hintHtml ? `<details><summary>Hint used for this step</summary><div class="markdown">${hintHtml}</div></details>` : ""}
-              ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
+              ${question.type !== "freeResponse" && explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
             </article>
           `;
         }));
@@ -1480,11 +1944,13 @@ import "../styles/global.css";
           <div class="result-list">
             ${questionHtml.join("")}
           </div>
+          ${results.hasPendingSelfChecks ? `<p class="feedback incorrect">Resolve pending free-response self-checks before committing this score.</p>` : ""}
           ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
-          ${!alreadyCommitted && !isWorkedExample && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+          ${!alreadyCommitted && !isWorkedExample && !results.hasPendingSelfChecks && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
         `;
 
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
+        setupSelfCheckButtons();
       }
 
       async function renderAnswerInput(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
@@ -1533,15 +1999,29 @@ import "../styles/global.css";
           `;
         }
 
+        if (question.type === "freeResponse") {
+          if (submittedAnswer?.freeResponseText !== null && submittedAnswer?.freeResponseText !== undefined) {
+            return `
+              <div class="locked-response">
+                <strong>Your locked response</strong>
+                <p>${escapeHtml(submittedAnswer.freeResponseText)}</p>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="field">
+              <label for="free-response">Your response</label>
+              <textarea id="free-response" name="freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
+            </div>
+          `;
+        }
+
         return `
           <div class="field">
             <label for="free-response">Your response</label>
             <textarea id="free-response" name="freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
           </div>
-          <label class="checkbox-line">
-            <input type="checkbox" name="selfCheckCorrect" ${submittedAnswer?.selfCheckCorrect ? "checked" : ""} />
-            My response matches the expected idea
-          </label>
         `;
       }
 
@@ -1612,6 +2092,46 @@ import "../styles/global.css";
         `;
       }
 
+      async function renderFreeResponseSelfCheck(result: QuestionResult | null | undefined, allowSelfCheck: boolean) {
+        if (!allowSelfCheck || !result || result.type !== "freeResponse" || !result.submittedAnswer?.freeResponseText) return "";
+
+        const expectedHtml = result.expectedAnswer ? await renderMarkdown(result.expectedAnswer) : "";
+        const explanationHtml = result.explanation ? await renderMarkdown(result.explanation) : "";
+        const keyPoints = result.keyPoints ?? [];
+        const status = result.isPendingSelfCheck
+          ? "Awaiting self-check"
+          : result.isCorrect ? "Marked correct" : "Marked needs review";
+
+        return `
+          <div class="self-check-panel ${result.isPendingSelfCheck ? "pending" : result.isCorrect ? "correct" : "incorrect"}">
+            <div class="section-header">
+              <h3>Self-check</h3>
+              <span>${status}</span>
+            </div>
+            <div class="result-detail">
+              <strong>Your response:</strong>
+              <p>${escapeHtml(result.submittedAnswer.freeResponseText)}</p>
+            </div>
+            ${expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
+            ${keyPoints.length > 0 ? `
+              <div class="result-detail">
+                <strong>Key points:</strong>
+                <ul class="key-point-list">
+                  ${keyPoints.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}
+                </ul>
+              </div>
+            ` : ""}
+            ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
+            ${result.isPendingSelfCheck ? `
+              <div class="button-row">
+                <button class="primary chunky" type="button" data-self-check="true" data-question-id="${escapeHtml(result.questionId)}">Mark Correct</button>
+                <button class="chunky secondary-action" type="button" data-self-check="false" data-question-id="${escapeHtml(result.questionId)}">Mark Needs Review</button>
+              </div>
+            ` : ""}
+          </div>
+        `;
+      }
+
       function readAnswer(question: Question) {
         const form = new FormData(document.querySelector<HTMLFormElement>("#answer-form")!);
         const selectedCards = Array.from(document.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
@@ -1620,12 +2140,91 @@ import "../styles/global.css";
           questionId: question.id,
           choiceId: question.type === "multipleChoice" ? selectedCards[0]?.dataset.choiceId ?? null : null,
           choiceIds: question.type === "selectAll" ? selectedCards.map((card) => card.dataset.choiceId ?? "") : [],
-          freeResponseText: form.get("freeResponseText"),
-          selfCheckCorrect: form.get("selfCheckCorrect") === "on",
+          freeResponseText: question.type === "freeResponse" ? String(form.get("freeResponseText") ?? "") : null,
+          selfCheckCorrect: null,
           numericValue: question.type === "numericResponse" ? nullableNumber(form.get("numericValue")) : null,
           codeText: question.type === "code" ? String(form.get("codeText") ?? "") : null,
           symbolicLatex: question.type === "symbolicResponse" ? readSymbolicLatex() : null
         };
+      }
+
+      function setupSelfCheckButtons() {
+        document.querySelectorAll<HTMLButtonElement>("[data-self-check]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const questionId = button.dataset.questionId ?? "";
+            const isCorrect = button.dataset.selfCheck === "true";
+            void markFreeResponseSelfCheck(questionId, isCorrect);
+          });
+        });
+      }
+
+      function renderQuestionNavigator() {
+        if (!state.attempt) return "";
+
+        const answered = new Set((state.latestResults?.questions ?? [])
+          .filter((question) => question.submittedAnswer)
+          .map((question) => question.questionId));
+        const pending = new Set((state.latestResults?.questions ?? [])
+          .filter((question) => question.isPendingSelfCheck)
+          .map((question) => question.questionId));
+        const correct = new Set((state.latestResults?.questions ?? [])
+          .filter((question) => question.isCorrect === true)
+          .map((question) => question.questionId));
+        const needsReview = new Set((state.latestResults?.questions ?? [])
+          .filter((question) => question.isCorrect === false && question.submittedAnswer)
+          .map((question) => question.questionId));
+
+        return `
+          <details class="question-navigator">
+            <summary>
+              <span>Jump to question</span>
+              <strong>${state.currentIndex + 1}/${state.attempt.questionOrder.length}</strong>
+            </summary>
+            <div class="question-jump-grid">
+              ${state.attempt.questionOrder.map((questionId, index) => {
+                const stateClass = pending.has(questionId)
+                  ? "pending"
+                  : correct.has(questionId)
+                    ? "correct"
+                    : needsReview.has(questionId)
+                      ? "needs-review"
+                      : answered.has(questionId)
+                        ? "answered"
+                        : "unanswered";
+                const stateLabel = {
+                  pending: "awaiting self-check",
+                  correct: "correct",
+                  "needs-review": "needs review",
+                  answered: "answered",
+                  unanswered: "unanswered"
+                }[stateClass];
+                return `
+                  <button
+                    type="button"
+                    class="question-jump ${stateClass} ${index === state.currentIndex ? "current" : ""}"
+                    data-question-index="${index}"
+                    aria-current="${index === state.currentIndex ? "step" : "false"}"
+                    aria-label="Jump to question ${index + 1}, ${stateLabel}"
+                  >${index + 1}</button>
+                `;
+              }).join("")}
+            </div>
+            <div class="question-jump-legend">
+              <span>Plain: unanswered</span>
+              <span>Marked: answered/reviewed</span>
+              <span>Current has a heavier border</span>
+            </div>
+          </details>
+        `;
+      }
+
+      function setupQuestionNavigator() {
+        document.querySelectorAll<HTMLButtonElement>("[data-question-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.currentIndex = Number(button.dataset.questionIndex ?? state.currentIndex);
+            void renderCurrentQuestion();
+          });
+        });
       }
 
       function readSymbolicLatex() {
@@ -1742,6 +2341,44 @@ import "../styles/global.css";
         settingsForm.codeRunnerCompileTimeoutMs.value = String(settings.codeRunnerCompileTimeoutMs ?? 10000);
         settingsForm.codeRunnerRunTimeoutMs.value = String(settings.codeRunnerRunTimeoutMs ?? 3000);
         settingsForm.commitScoredAttemptsAutomatically.checked = settings.commitScoredAttemptsAutomatically;
+      }
+
+      function hasActiveSession() {
+        return state.attempt?.status === "inProgress";
+      }
+
+      function updateModeControlLock() {
+        const locked = hasActiveSession();
+        modeInputs.forEach((input) => {
+          input.disabled = locked;
+        });
+
+        const modeControl = document.querySelector<HTMLFieldSetElement>(".mode-control");
+        if (!modeControl) return;
+
+        modeControl.classList.toggle("locked", locked);
+        const existingNote = modeControl.querySelector<HTMLElement>(".mode-lock-note");
+        if (!locked) {
+          existingNote?.remove();
+          modeControl.removeAttribute("aria-describedby");
+          return;
+        }
+
+        syncModeControlToAttempt();
+        if (!existingNote) {
+          modeControl.insertAdjacentHTML("beforeend", `<p id="mode-lock-note" class="mode-lock-note">Locked for current ${escapeHtml(state.attempt!.mode)} session</p>`);
+          modeControl.setAttribute("aria-describedby", "mode-lock-note");
+        } else {
+          existingNote.textContent = `Locked for current ${state.attempt!.mode} session`;
+        }
+      }
+
+      function syncModeControlToAttempt() {
+        if (!state.attempt) return;
+
+        modeInputs.forEach((input) => {
+          input.checked = input.value === state.attempt!.mode;
+        });
       }
 
       function updateActiveAttemptChip(status = "Active") {

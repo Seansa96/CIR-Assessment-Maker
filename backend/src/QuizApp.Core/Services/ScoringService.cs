@@ -35,6 +35,9 @@ public sealed class ScoringService
             var question = item.Question;
             answersByQuestion.TryGetValue(question.Id, out var answer);
             var showFeedback = attempt.Status is AttemptStatus.Completed or AttemptStatus.Abandoned || attempt.Mode is AssessmentMode.Practice;
+            var isPendingSelfCheck = question.Type is QuestionType.FreeResponse
+                && answer?.Answer.FreeResponseText is not null
+                && answer.Answer.SelfCheckCorrect is null;
 
             return new QuestionResult(
                 question.Id,
@@ -53,7 +56,9 @@ public sealed class ScoringService
                 Hint = item.Step?.Hint,
                 ExampleId = item.Example?.Id,
                 ExampleTitle = item.Example?.Title,
-                Problem = item.Example?.Problem
+                Problem = item.Example?.Problem,
+                KeyPoints = showFeedback ? question.Answer.KeyPoints : Array.Empty<string>(),
+                IsPendingSelfCheck = isPendingSelfCheck
             };
         }).ToList();
 
@@ -73,7 +78,8 @@ public sealed class ScoringService
             attempt.Status is AttemptStatus.Completed,
             questionResults)
         {
-            AssessmentType = assessment.AssessmentType
+            AssessmentType = assessment.AssessmentType,
+            HasPendingSelfChecks = questionResults.Any(question => question.IsPendingSelfCheck)
         };
     }
 

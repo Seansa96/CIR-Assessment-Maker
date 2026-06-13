@@ -117,6 +117,7 @@ public sealed record AnswerDefinition(
     public string? SymbolicEquivalenceMode { get; init; }
     public IReadOnlyList<string> SymbolicVariables { get; init; } = Array.Empty<string>();
     public decimal? SymbolicTolerance { get; init; }
+    public IReadOnlyList<string> KeyPoints { get; init; } = Array.Empty<string>();
 }
 
 public sealed record MediaAsset(

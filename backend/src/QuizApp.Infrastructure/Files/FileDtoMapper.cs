@@ -184,7 +184,8 @@ internal static class FileDtoMapper
                 SymbolicExpectedLatex = dto.Answer?.ExpectedLatex,
                 SymbolicEquivalenceMode = dto.Answer?.EquivalenceMode,
                 SymbolicVariables = dto.Answer?.Variables ?? new List<string>(),
-                SymbolicTolerance = dto.Answer?.Tolerance
+                SymbolicTolerance = dto.Answer?.Tolerance,
+                KeyPoints = dto.Answer?.KeyPoints ?? new List<string>()
             },
             dto.Explanation,
             (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
@@ -217,7 +218,8 @@ internal static class FileDtoMapper
                 Variables = (question.Answer.SymbolicVariables.Count > 0 ? question.Answer.SymbolicVariables : question.Answer.Variables).ToList(),
                 Value = question.Answer.NumericValue,
                 Tolerance = question.Answer.NumericTolerance ?? question.Answer.SymbolicTolerance ?? question.Answer.Tolerance,
-                Media = question.Answer.Media.Select(ToDto).ToList()
+                Media = question.Answer.Media.Select(ToDto).ToList(),
+                KeyPoints = question.Answer.KeyPoints.ToList()
             },
             Explanation = question.Explanation,
             Media = question.Media.Select(ToDto).ToList(),

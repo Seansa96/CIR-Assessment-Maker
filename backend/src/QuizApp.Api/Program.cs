@@ -27,12 +27,15 @@ builder.Services.AddSingleton<ISymbolicMathEngine, CortexSymbolicMathEngine>();
 builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
+builder.Services.AddSingleton<GradeAnalyticsService>();
 builder.Services.AddSingleton(new FileStorageOptions { DataRoot = dataRoot });
 builder.Services.AddSingleton<ISettingsRepository, FileSettingsRepository>();
 builder.Services.AddSingleton<ICategoryRepository, FileCategoryRepository>();
 builder.Services.AddSingleton<IAssessmentRepository, FileAssessmentRepository>();
 builder.Services.AddSingleton<IAttemptRepository, FileAttemptRepository>();
+builder.Services.AddSingleton<IAttemptSessionStore, InMemoryAttemptSessionStore>();
 builder.Services.AddSingleton<IGradeLogRepository, FileGradeLogRepository>();
+builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("LocalFrontend", policy =>
@@ -246,6 +249,12 @@ api.MapDelete("/attempts/{attemptId}", async (string attemptId, AttemptService a
     return Results.NoContent();
 });
 
+api.MapPost("/attempts/bulk-delete", async (BulkDeleteAttemptsRequest request, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    await attemptService.DeleteManyAsync(request.AttemptIds ?? Array.Empty<string>(), cancellationToken);
+    return Results.NoContent();
+});
+
 api.MapPost("/attempts/{attemptId}/answers", async (string attemptId, SubmitAnswerRequest request, AttemptService attemptService, CancellationToken cancellationToken) =>
 {
     try
@@ -271,7 +280,7 @@ api.MapPost("/attempts/{attemptId}/complete", async (
         var settings = await settingsRepository.GetAsync(cancellationToken);
         GradeLogEntry? committedGrade = null;
 
-        if (results.Mode is AssessmentMode.Scored && settings.CommitScoredAttemptsAutomatically)
+        if (results.Mode is AssessmentMode.Scored && settings.CommitScoredAttemptsAutomatically && !results.HasPendingSelfChecks)
         {
             committedGrade = await gradeLogService.CommitAttemptAsync(attemptId, cancellationToken);
         }
@@ -319,9 +328,50 @@ api.MapGet("/grades/summary", async (GradeLogService gradeLogService, Cancellati
     return Results.Ok(await gradeLogService.GetSummaryAsync(cancellationToken));
 });
 
+api.MapGet("/analytics/grades", async (
+    string? status,
+    string? mode,
+    string? assessmentType,
+    string? categoryId,
+    string? subcategoryId,
+    string? areaId,
+    string? questionType,
+    bool? committed,
+    DateTimeOffset? from,
+    DateTimeOffset? to,
+    decimal? minScore,
+    decimal? maxScore,
+    GradeAnalyticsService analyticsService,
+    CancellationToken cancellationToken) =>
+{
+    var filter = new GradeAnalyticsFilter(
+        ParseEnum<AttemptStatus>(status),
+        ParseEnum<AssessmentMode>(mode),
+        ParseEnum<AssessmentType>(assessmentType),
+        categoryId,
+        subcategoryId,
+        areaId,
+        ParseEnum<QuestionType>(questionType),
+        committed,
+        from,
+        to,
+        minScore,
+        maxScore);
+
+    return Results.Ok(await analyticsService.GetSummaryAsync(filter, cancellationToken));
+});
+
 app.Run();
 
 static object ApiError(string code, string message)
 {
     return new { error = new { code, message } };
+}
+
+static TEnum? ParseEnum<TEnum>(string? value)
+    where TEnum : struct
+{
+    return string.IsNullOrWhiteSpace(value) || !Enum.TryParse<TEnum>(value, true, out var parsed)
+        ? null
+        : parsed;
 }

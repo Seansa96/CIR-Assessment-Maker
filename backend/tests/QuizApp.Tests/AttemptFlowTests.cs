@@ -16,15 +16,52 @@ public sealed class AttemptFlowTests
             TestData.MultipleChoiceQuestion("q003")
         });
         var attempts = new InMemoryAttemptRepository();
-        var service = CreateAttemptService(assessment, attempts);
+        var sessions = new InMemoryAttemptSessionStore();
+        var service = CreateAttemptService(assessment, attempts, sessions);
 
         var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
-        var savedAttempt = await attempts.GetByIdAsync(attempt.Id);
+        var savedAttempt = await sessions.GetByIdAsync(attempt.Id);
 
         Assert.NotNull(savedAttempt);
         Assert.Equal(AttemptStatus.InProgress, savedAttempt.Status);
         Assert.Equal(attempt.QuestionOrder, savedAttempt.QuestionOrder);
         Assert.Equal(assessment.Questions.Count, savedAttempt.QuestionOrder.Count);
+        Assert.Null(await attempts.GetByIdAsync(attempt.Id));
+    }
+
+    [Fact]
+    public async Task PauseAsync_persists_attempt_and_removes_active_session()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
+        var attempts = new InMemoryAttemptRepository();
+        var sessions = new InMemoryAttemptSessionStore();
+        var service = CreateAttemptService(assessment, attempts, sessions);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.PauseAsync(attempt.Id);
+
+        Assert.Null(await sessions.GetByIdAsync(attempt.Id));
+        var persisted = await attempts.GetByIdAsync(attempt.Id);
+        Assert.NotNull(persisted);
+        Assert.Equal(AttemptStatus.Paused, persisted.Status);
+    }
+
+    [Fact]
+    public async Task CompleteAsync_persists_attempt_and_removes_active_session()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
+        var attempts = new InMemoryAttemptRepository();
+        var sessions = new InMemoryAttemptSessionStore();
+        var service = CreateAttemptService(assessment, attempts, sessions);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null));
+        await service.CompleteAsync(attempt.Id);
+
+        Assert.Null(await sessions.GetByIdAsync(attempt.Id));
+        var persisted = await attempts.GetByIdAsync(attempt.Id);
+        Assert.NotNull(persisted);
+        Assert.Equal(AttemptStatus.Completed, persisted.Status);
     }
 
     [Fact]
@@ -84,7 +121,7 @@ public sealed class AttemptFlowTests
         var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
         var attempts = new InMemoryAttemptRepository();
         var grades = new InMemoryGradeLogRepository();
-        var attemptService = CreateAttemptService(assessment, attempts, grades);
+        var attemptService = CreateAttemptService(assessment, attempts, grades: grades);
         var gradeService = new GradeLogService(grades, attemptService);
         var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Scored);
 
@@ -115,6 +152,87 @@ public sealed class AttemptFlowTests
         Assert.Equal(1, results.CorrectCount);
         Assert.True(results.Questions.Single().IsCorrect);
         Assert.NotNull(results.Questions.Single().Explanation);
+    }
+
+    [Fact]
+    public async Task Free_response_text_submission_remains_pending_until_self_check()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.FreeResponseQuestion("q001") });
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), "It sums upper minus lower.", null, null));
+
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        var result = Assert.Single(results.Questions);
+        Assert.True(result.IsPendingSelfCheck);
+        Assert.True(results.HasPendingSelfChecks);
+        Assert.False(result.IsCorrect);
+        Assert.Equal(0, results.CorrectCount);
+        Assert.Equal(new[] { "Mention the accumulated difference.", "Identify upper minus lower." }, result.KeyPoints);
+    }
+
+    [Fact]
+    public async Task Free_response_self_check_update_preserves_locked_text_and_recalculates_results()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.FreeResponseQuestion("q001") });
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), "Original response.", null, null));
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), "Edited after lock.", true, null));
+
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        var result = Assert.Single(results.Questions);
+        Assert.False(results.HasPendingSelfChecks);
+        Assert.True(result.IsCorrect);
+        Assert.Equal("Original response.", result.SubmittedAnswer?.FreeResponseText);
+    }
+
+    [Fact]
+    public async Task Completed_scored_attempt_allows_free_response_self_check_review()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.FreeResponseQuestion("q001") });
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), "It sums upper minus lower.", null, null));
+        await service.CompleteAsync(attempt.Id);
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), null, true, null));
+
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        Assert.False(results.HasPendingSelfChecks);
+        Assert.Equal(1, results.CorrectCount);
+        Assert.True(results.Questions.Single().IsCorrect);
+    }
+
+    [Fact]
+    public async Task Grade_log_commit_rejects_pending_free_response_self_check()
+    {
+        var assessment = TestData.Assessment(questions: new[] { TestData.FreeResponseQuestion("q001") });
+        var attemptService = CreateAttemptService(assessment);
+        var gradeService = new GradeLogService(new InMemoryGradeLogRepository(), attemptService);
+        var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        await attemptService.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", null, Array.Empty<string>(), "It sums upper minus lower.", null, null));
+        await attemptService.CompleteAsync(attempt.Id);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
     }
 
     [Fact]
@@ -241,11 +359,13 @@ public sealed class AttemptFlowTests
     private static AttemptService CreateAttemptService(
         AssessmentDefinition assessment,
         InMemoryAttemptRepository? attempts = null,
+        InMemoryAttemptSessionStore? sessions = null,
         InMemoryGradeLogRepository? grades = null)
     {
         return new AttemptService(
             new InMemoryAssessmentRepository(assessment),
             attempts ?? new InMemoryAttemptRepository(),
+            sessions ?? new InMemoryAttemptSessionStore(),
             grades ?? new InMemoryGradeLogRepository(),
             new InMemorySettingsRepository(),
             new AssessmentValidator(),
@@ -365,7 +485,10 @@ internal static class TestData
             QuestionType.FreeResponse,
             "Explain what the integral represents.",
             Array.Empty<ChoiceOption>(),
-            new AnswerDefinition(null, Array.Empty<string>(), "The accumulated difference between upper and lower functions.", "selfCheck", null, null, Array.Empty<MediaAsset>()),
+            new AnswerDefinition(null, Array.Empty<string>(), "The accumulated difference between upper and lower functions.", "selfCheck", null, null, Array.Empty<MediaAsset>())
+            {
+                KeyPoints = new[] { "Mention the accumulated difference.", "Identify upper minus lower." }
+            },
             "The integral sums vertical differences over the interval.",
             Array.Empty<MediaAsset>());
     }
@@ -479,6 +602,34 @@ internal sealed class InMemoryAssessmentRepository : IAssessmentRepository
 }
 
 internal sealed class InMemoryAttemptRepository : IAttemptRepository
+{
+    private readonly Dictionary<string, Attempt> attempts = new(StringComparer.OrdinalIgnoreCase);
+
+    public Task<IReadOnlyList<Attempt>> ListAsync(CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult<IReadOnlyList<Attempt>>(attempts.Values.OrderByDescending(attempt => attempt.StartedAt).ToList());
+    }
+
+    public Task<Attempt?> GetByIdAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        attempts.TryGetValue(attemptId, out var attempt);
+        return Task.FromResult(attempt);
+    }
+
+    public Task SaveAsync(Attempt attempt, CancellationToken cancellationToken = default)
+    {
+        attempts[attempt.Id] = attempt;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        attempts.Remove(attemptId);
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class InMemoryAttemptSessionStore : IAttemptSessionStore
 {
     private readonly Dictionary<string, Attempt> attempts = new(StringComparer.OrdinalIgnoreCase);
 

@@ -39,6 +39,8 @@ public sealed record SubmitAnswerRequest(
 
 public sealed record CommitGradeRequest(string AttemptId);
 
+public sealed record BulkDeleteAttemptsRequest(IReadOnlyList<string>? AttemptIds);
+
 public sealed record SaveAssessmentRequest(
     string Id,
     string Title,

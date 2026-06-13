@@ -115,6 +115,26 @@ public sealed class FileAssessmentRepositoryTests
     }
 
     [Fact]
+    public async Task SaveAsync_round_trips_free_response_key_points()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.Assessment(questions: new[] { TestData.FreeResponseQuestion("q001") }) with
+        {
+            Id = "free-response-key-points"
+        };
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync("free-response-key-points");
+
+        Assert.NotNull(loaded);
+        var question = Assert.Single(loaded.Questions);
+        Assert.Equal(new[] { "Mention the accumulated difference.", "Identify upper minus lower." }, question.Answer.KeyPoints);
+    }
+
+    [Fact]
     public async Task SaveAsync_round_trips_worked_examples()
     {
         var dataRoot = CreateDataRoot();

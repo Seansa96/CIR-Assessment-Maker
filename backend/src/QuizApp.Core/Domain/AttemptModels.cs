@@ -40,6 +40,7 @@ public sealed record AttemptResults(
     IReadOnlyList<QuestionResult> Questions)
 {
     public AssessmentType AssessmentType { get; init; } = AssessmentType.Unknown;
+    public bool HasPendingSelfChecks { get; init; }
 }
 
 public sealed record QuestionResult(
@@ -60,6 +61,8 @@ public sealed record QuestionResult(
     public string? ExampleId { get; init; }
     public string? ExampleTitle { get; init; }
     public string? Problem { get; init; }
+    public IReadOnlyList<string> KeyPoints { get; init; } = Array.Empty<string>();
+    public bool IsPendingSelfCheck { get; init; }
 }
 
 public sealed record GradeLogEntry(

@@ -105,6 +105,7 @@ internal sealed class AnswerFileDto
     public decimal? Value { get; set; }
     public decimal? Tolerance { get; set; }
     public List<MediaFileDto>? Media { get; set; }
+    public List<string>? KeyPoints { get; set; }
 }
 
 internal sealed class MediaFileDto

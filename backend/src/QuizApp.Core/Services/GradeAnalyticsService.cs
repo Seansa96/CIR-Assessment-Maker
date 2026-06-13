@@ -1,0 +1,335 @@
+using QuizApp.Core.Domain;
+using QuizApp.Core.Repositories;
+
+namespace QuizApp.Core.Services;
+
+public sealed class GradeAnalyticsService
+{
+    private readonly IGradeLogRepository gradeLogRepository;
+    private readonly IAttemptRepository attemptRepository;
+    private readonly IAttemptSessionStore attemptSessionStore;
+    private readonly IAssessmentRepository assessmentRepository;
+    private readonly ICategoryRepository categoryRepository;
+    private readonly IAreaRepository areaRepository;
+    private readonly ScoringService scoringService;
+
+    public GradeAnalyticsService(
+        IGradeLogRepository gradeLogRepository,
+        IAttemptRepository attemptRepository,
+        IAttemptSessionStore attemptSessionStore,
+        IAssessmentRepository assessmentRepository,
+        ICategoryRepository categoryRepository,
+        IAreaRepository areaRepository,
+        ScoringService scoringService)
+    {
+        this.gradeLogRepository = gradeLogRepository;
+        this.attemptRepository = attemptRepository;
+        this.attemptSessionStore = attemptSessionStore;
+        this.assessmentRepository = assessmentRepository;
+        this.categoryRepository = categoryRepository;
+        this.areaRepository = areaRepository;
+        this.scoringService = scoringService;
+    }
+
+    public async Task<GradeAnalyticsSummary> GetSummaryAsync(GradeAnalyticsFilter filter, CancellationToken cancellationToken = default)
+    {
+        var entries = await gradeLogRepository.ListAsync(cancellationToken);
+        var attempts = await ListAllAttemptsAsync(cancellationToken);
+        var categories = await categoryRepository.ListAsync(cancellationToken);
+        var areas = await areaRepository.ListAsync(cancellationToken);
+        var assessmentLookup = await BuildAssessmentLookupAsync(entries.Select(entry => entry.AssessmentId)
+            .Concat(attempts.Select(attempt => attempt.AssessmentId)), cancellationToken);
+
+        var committedAttemptIds = entries.Select(entry => entry.AttemptId).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var historyRows = BuildAttemptRows(attempts, assessmentLookup, categories, areas, committedAttemptIds)
+            .Where(row => MatchesFilter(row, filter))
+            .OrderByDescending(row => row.LastActivityAt ?? row.StartedAt)
+            .ToList();
+
+        var filteredCommittedEntries = entries
+            .Where(entry => assessmentLookup.ContainsKey(entry.AssessmentId))
+            .Where(entry => historyRows.Any(row => string.Equals(row.AttemptId, entry.AttemptId, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        var categorySummaries = BuildCategorySummaries(filteredCommittedEntries, assessmentLookup, categories);
+        var subcategorySummaries = BuildSubcategorySummaries(filteredCommittedEntries, assessmentLookup, categories);
+        var areaSummaries = BuildAreaSummaries(filteredCommittedEntries, assessmentLookup, categories, areas);
+        var questionTypeSummaries = BuildQuestionTypeSummaries(historyRows, attempts, assessmentLookup, filter.QuestionType);
+        var weakAreas = BuildWeakFocusSummaries(categorySummaries, areaSummaries);
+
+        return new GradeAnalyticsSummary(
+            filteredCommittedEntries.Count,
+            filteredCommittedEntries.Count == 0 ? null : Math.Round(filteredCommittedEntries.Average(entry => entry.PercentScore), 2),
+            categorySummaries.OrderBy(summary => summary.AveragePercent).ThenByDescending(summary => summary.AttemptCount)
+                .Select(summary => new AnalyticsFocus(summary.CategoryId, summary.CategoryTitle, summary.AttemptCount, summary.AveragePercent))
+                .FirstOrDefault(),
+            areaSummaries.OrderBy(summary => summary.AveragePercent).ThenByDescending(summary => summary.AttemptCount)
+                .Select(summary => new AnalyticsFocus(summary.AreaId, summary.AreaTitle, summary.AttemptCount, summary.AveragePercent))
+                .FirstOrDefault(),
+            questionTypeSummaries.Where(summary => summary.AnsweredCount > 0)
+                .OrderBy(summary => summary.CorrectPercent)
+                .ThenByDescending(summary => summary.AnsweredCount)
+                .FirstOrDefault(),
+            categorySummaries,
+            subcategorySummaries,
+            areaSummaries,
+            questionTypeSummaries,
+            weakAreas,
+            historyRows);
+    }
+
+    private async Task<IReadOnlyList<Attempt>> ListAllAttemptsAsync(CancellationToken cancellationToken)
+    {
+        var active = await attemptSessionStore.ListAsync(cancellationToken);
+        var persisted = await attemptRepository.ListAsync(cancellationToken);
+        return active
+            .Concat(persisted)
+            .GroupBy(attempt => attempt.Id, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.First())
+            .ToList();
+    }
+
+    private async Task<Dictionary<string, AssessmentDefinition>> BuildAssessmentLookupAsync(IEnumerable<string> assessmentIds, CancellationToken cancellationToken)
+    {
+        var lookup = new Dictionary<string, AssessmentDefinition>(StringComparer.OrdinalIgnoreCase);
+        foreach (var assessmentId in assessmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            var assessment = await assessmentRepository.GetByIdAsync(assessmentId, cancellationToken);
+            if (assessment is not null)
+            {
+                lookup[assessment.Id] = assessment;
+            }
+        }
+
+        return lookup;
+    }
+
+    private static IReadOnlyList<AttemptHistoryRow> BuildAttemptRows(
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        IReadOnlyList<Category> categories,
+        IReadOnlyList<AreaDefinition> areas,
+        ISet<string> committedAttemptIds)
+    {
+        return attempts
+            .Where(attempt => assessments.ContainsKey(attempt.AssessmentId))
+            .Select(attempt =>
+            {
+                var assessment = assessments[attempt.AssessmentId];
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, assessment.CategoryId, StringComparison.OrdinalIgnoreCase));
+                var subcategoryTitles = assessment.SubcategoryIds
+                    .Select(subcategoryId => category?.Subcategories.FirstOrDefault(subcategory => string.Equals(subcategory.Id, subcategoryId, StringComparison.OrdinalIgnoreCase))?.Title ?? subcategoryId)
+                    .ToList();
+                var matchingAreas = MatchAreas(assessment, areas).ToList();
+                var correctCount = attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
+                var totalQuestions = attempt.QuestionOrder.Count;
+
+                return new AttemptHistoryRow(
+                    attempt.Id,
+                    assessment.Id,
+                    assessment.Title,
+                    assessment.AssessmentType,
+                    attempt.Mode,
+                    attempt.Status,
+                    assessment.CategoryId,
+                    category?.Title ?? assessment.CategoryId,
+                    assessment.SubcategoryIds,
+                    subcategoryTitles,
+                    matchingAreas.Select(area => area.Id).ToList(),
+                    matchingAreas.Select(area => area.Title).ToList(),
+                    ExtractQuestionTypes(assessment),
+                    correctCount,
+                    totalQuestions,
+                    totalQuestions == 0 ? 0 : Math.Round(correctCount * 100m / totalQuestions, 2),
+                    attempt.Answers.Count(answer => answer.Answer is not null),
+                    attempt.Answers.Any(answer => answer.Answer.FreeResponseText is not null && answer.Answer.SelfCheckCorrect is null),
+                    committedAttemptIds.Contains(attempt.Id),
+                    attempt.StartedAt,
+                    attempt.CompletedAt,
+                    attempt.CompletedAt ?? attempt.AbandonedAt ?? attempt.PausedAt ?? attempt.Answers.OrderByDescending(answer => answer.SubmittedAt).FirstOrDefault()?.SubmittedAt ?? attempt.StartedAt);
+            })
+            .ToList();
+    }
+
+    private static IReadOnlyList<CategoryGradeAnalytics> BuildCategorySummaries(
+        IReadOnlyList<GradeLogEntry> entries,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        IReadOnlyList<Category> categories)
+    {
+        return entries
+            .GroupBy(entry => assessments[entry.AssessmentId].CategoryId, StringComparer.OrdinalIgnoreCase)
+            .Select(group =>
+            {
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, group.Key, StringComparison.OrdinalIgnoreCase));
+                var ordered = group.OrderByDescending(entry => entry.CommittedAt).ToList();
+                return new CategoryGradeAnalytics(
+                    group.Key,
+                    category?.Title ?? group.Key,
+                    ordered.Count,
+                    Math.Round(ordered.Average(entry => entry.PercentScore), 2),
+                    ordered.FirstOrDefault()?.PercentScore);
+            })
+            .OrderBy(summary => summary.CategoryTitle)
+            .ToList();
+    }
+
+    private static IReadOnlyList<SubcategoryGradeAnalytics> BuildSubcategorySummaries(
+        IReadOnlyList<GradeLogEntry> entries,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        IReadOnlyList<Category> categories)
+    {
+        return entries
+            .SelectMany(entry => assessments[entry.AssessmentId].SubcategoryIds.Select(subcategoryId => new { Entry = entry, Assessment = assessments[entry.AssessmentId], SubcategoryId = subcategoryId }))
+            .GroupBy(item => new { item.Assessment.CategoryId, item.SubcategoryId })
+            .Select(group =>
+            {
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, group.Key.CategoryId, StringComparison.OrdinalIgnoreCase));
+                var subcategoryTitle = category?.Subcategories.FirstOrDefault(subcategory => string.Equals(subcategory.Id, group.Key.SubcategoryId, StringComparison.OrdinalIgnoreCase))?.Title ?? group.Key.SubcategoryId;
+                var ordered = group.Select(item => item.Entry).OrderByDescending(entry => entry.CommittedAt).ToList();
+                return new SubcategoryGradeAnalytics(
+                    group.Key.SubcategoryId,
+                    subcategoryTitle,
+                    group.Key.CategoryId,
+                    ordered.Count,
+                    Math.Round(ordered.Average(entry => entry.PercentScore), 2),
+                    ordered.FirstOrDefault()?.PercentScore);
+            })
+            .OrderBy(summary => summary.SubcategoryTitle)
+            .ToList();
+    }
+
+    private static IReadOnlyList<AreaGradeAnalytics> BuildAreaSummaries(
+        IReadOnlyList<GradeLogEntry> entries,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        IReadOnlyList<Category> categories,
+        IReadOnlyList<AreaDefinition> areas)
+    {
+        var subcategories = BuildSubcategorySummaries(entries, assessments, categories);
+        return entries
+            .SelectMany(entry => MatchAreas(assessments[entry.AssessmentId], areas).Select(area => new { Entry = entry, Area = area }))
+            .GroupBy(item => item.Area.Id, StringComparer.OrdinalIgnoreCase)
+            .Select(group =>
+            {
+                var area = group.First().Area;
+                var ordered = group.Select(item => item.Entry).OrderByDescending(entry => entry.CommittedAt).ToList();
+                var weakestSubcategory = subcategories
+                    .Where(subcategory => area.SubcategoryIds.Contains(subcategory.SubcategoryId, StringComparer.OrdinalIgnoreCase))
+                    .OrderBy(subcategory => subcategory.AveragePercent)
+                    .FirstOrDefault();
+
+                return new AreaGradeAnalytics(
+                    area.Id,
+                    area.Title,
+                    ordered.Count,
+                    Math.Round(ordered.Average(entry => entry.PercentScore), 2),
+                    weakestSubcategory?.SubcategoryId,
+                    weakestSubcategory?.SubcategoryTitle);
+            })
+            .OrderBy(summary => summary.AreaTitle)
+            .ToList();
+    }
+
+    private IReadOnlyList<QuestionTypePerformance> BuildQuestionTypeSummaries(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        QuestionType? questionTypeFilter)
+    {
+        var includedAttemptIds = rows
+            .Where(row => row.Status is AttemptStatus.Completed)
+            .Select(row => row.AttemptId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var stats = new Dictionary<QuestionType, (int Answered, int Correct, int NeedsReview)>();
+
+        foreach (var attempt in attempts.Where(attempt => includedAttemptIds.Contains(attempt.Id)))
+        {
+            var assessment = assessments[attempt.AssessmentId];
+            var results = scoringService.BuildResults(assessment, attempt);
+            foreach (var question in results.Questions.Where(question => question.SubmittedAnswer is not null))
+            {
+                if (questionTypeFilter is not null && question.Type != questionTypeFilter)
+                {
+                    continue;
+                }
+
+                var current = stats.TryGetValue(question.Type, out var value) ? value : (Answered: 0, Correct: 0, NeedsReview: 0);
+                stats[question.Type] = (
+                    current.Answered + 1,
+                    current.Correct + (question.IsCorrect == true ? 1 : 0),
+                    current.NeedsReview + (question.IsPendingSelfCheck ? 1 : 0));
+            }
+        }
+
+        return stats
+            .Select(pair => new QuestionTypePerformance(
+                pair.Key,
+                pair.Value.Answered,
+                pair.Value.Correct,
+                pair.Value.NeedsReview,
+                pair.Value.Answered == 0 ? 0 : Math.Round(pair.Value.Correct * 100m / pair.Value.Answered, 2)))
+            .OrderBy(summary => summary.QuestionType)
+            .ToList();
+    }
+
+    private static IReadOnlyList<WeakFocusSummary> BuildWeakFocusSummaries(
+        IReadOnlyList<CategoryGradeAnalytics> categories,
+        IReadOnlyList<AreaGradeAnalytics> areas)
+    {
+        return categories.Select(category => new WeakFocusSummary(
+                category.CategoryId,
+                category.CategoryTitle,
+                "category",
+                category.AttemptCount,
+                category.AveragePercent,
+                $"Focus on {category.CategoryTitle}: {category.AveragePercent}% across {category.AttemptCount} committed attempt(s)."))
+            .Concat(areas.Select(area => new WeakFocusSummary(
+                area.AreaId,
+                area.AreaTitle,
+                "area",
+                area.AttemptCount,
+                area.AveragePercent,
+                $"Focus on {area.AreaTitle}: {area.AveragePercent}% across {area.AttemptCount} committed attempt(s).")))
+            .Where(summary => summary.AttemptCount > 0)
+            .OrderBy(summary => summary.AveragePercent)
+            .ThenByDescending(summary => summary.AttemptCount)
+            .Take(5)
+            .ToList();
+    }
+
+    private static IEnumerable<AreaDefinition> MatchAreas(AssessmentDefinition assessment, IReadOnlyList<AreaDefinition> areas)
+    {
+        return areas.Where(area =>
+            area.CategoryIds.Contains(assessment.CategoryId, StringComparer.OrdinalIgnoreCase)
+            || assessment.SubcategoryIds.Any(subcategoryId => area.SubcategoryIds.Contains(subcategoryId, StringComparer.OrdinalIgnoreCase)));
+    }
+
+    private static IReadOnlyList<QuestionType> ExtractQuestionTypes(AssessmentDefinition assessment)
+    {
+        return assessment.AssessmentType is AssessmentType.WorkedExample
+            ? assessment.WorkedExamples
+                .SelectMany(example => example.Steps.Select(step => step.Question.Type))
+                .Distinct()
+                .ToList()
+            : assessment.Questions
+                .Select(question => question.Type)
+                .Distinct()
+                .ToList();
+    }
+
+    private static bool MatchesFilter(AttemptHistoryRow row, GradeAnalyticsFilter filter)
+    {
+        if (filter.Status is not null && row.Status != filter.Status) return false;
+        if (filter.Mode is not null && row.Mode != filter.Mode) return false;
+        if (filter.AssessmentType is not null && row.AssessmentType != filter.AssessmentType) return false;
+        if (!string.IsNullOrWhiteSpace(filter.CategoryId) && !string.Equals(row.CategoryId, filter.CategoryId, StringComparison.OrdinalIgnoreCase)) return false;
+        if (!string.IsNullOrWhiteSpace(filter.SubcategoryId) && !row.SubcategoryIds.Contains(filter.SubcategoryId, StringComparer.OrdinalIgnoreCase)) return false;
+        if (!string.IsNullOrWhiteSpace(filter.AreaId) && !row.AreaIds.Contains(filter.AreaId, StringComparer.OrdinalIgnoreCase)) return false;
+        if (filter.Committed is not null && row.IsCommitted != filter.Committed) return false;
+        if (filter.From is not null && (row.LastActivityAt ?? row.StartedAt) < filter.From) return false;
+        if (filter.To is not null && (row.LastActivityAt ?? row.StartedAt) > filter.To) return false;
+        if (filter.MinScore is not null && row.PercentScore < filter.MinScore) return false;
+        if (filter.MaxScore is not null && row.PercentScore > filter.MaxScore) return false;
+
+        return true;
+    }
+}

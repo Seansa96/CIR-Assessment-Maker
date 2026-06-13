@@ -8,6 +8,7 @@ public sealed class AttemptService
 {
     private readonly IAssessmentRepository assessmentRepository;
     private readonly IAttemptRepository attemptRepository;
+    private readonly IAttemptSessionStore attemptSessionStore;
     private readonly IGradeLogRepository gradeLogRepository;
     private readonly ISettingsRepository settingsRepository;
     private readonly AssessmentValidator validator;
@@ -18,6 +19,7 @@ public sealed class AttemptService
     public AttemptService(
         IAssessmentRepository assessmentRepository,
         IAttemptRepository attemptRepository,
+        IAttemptSessionStore attemptSessionStore,
         IGradeLogRepository gradeLogRepository,
         ISettingsRepository settingsRepository,
         AssessmentValidator validator,
@@ -27,6 +29,7 @@ public sealed class AttemptService
     {
         this.assessmentRepository = assessmentRepository;
         this.attemptRepository = attemptRepository;
+        this.attemptSessionStore = attemptSessionStore;
         this.gradeLogRepository = gradeLogRepository;
         this.settingsRepository = settingsRepository;
         this.validator = validator;
@@ -63,22 +66,26 @@ public sealed class AttemptService
             null,
             null);
 
-        await attemptRepository.SaveAsync(attempt, cancellationToken);
+        await SaveAttemptAsync(attempt, cancellationToken);
         return attempt;
     }
 
     public async Task<Attempt> SubmitAnswerAsync(string attemptId, SubmittedAnswer submittedAnswer, CancellationToken cancellationToken = default)
     {
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
-        if (attempt.Status is not AttemptStatus.InProgress)
-        {
-            throw new InvalidOperationException("Can only submit answers to an in-progress attempt.");
-        }
-
         var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
         var questions = scoringService.GetAttemptQuestions(assessment);
         var question = questions.FirstOrDefault(candidate => string.Equals(candidate.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Question '{submittedAnswer.QuestionId}' does not exist on this assessment.");
+        var existingAnswer = attempt.Answers.LastOrDefault(answer => string.Equals(answer.QuestionId, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase));
+
+        if (attempt.Status is not AttemptStatus.InProgress)
+        {
+            if (!CanUpdateCompletedFreeResponseSelfCheck(attempt, question, submittedAnswer, existingAnswer))
+            {
+                throw new InvalidOperationException("Can only submit answers to an in-progress attempt.");
+            }
+        }
 
         if (assessment.AssessmentType is AssessmentType.WorkedExample)
         {
@@ -89,16 +96,18 @@ public sealed class AttemptService
             }
         }
 
+        var answerToScore = NormalizeSubmittedAnswer(question, submittedAnswer, existingAnswer);
+
         var settings = await settingsRepository.GetAsync(cancellationToken);
         var evaluation = question.Type switch
         {
-            QuestionType.Code => await codeQuestionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
-            QuestionType.SymbolicResponse => await symbolicExpressionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
-            _ => scoringService.ScoreAnswer(question, submittedAnswer)
+            QuestionType.Code => await codeQuestionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
+            QuestionType.SymbolicResponse => await symbolicExpressionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
+            _ => scoringService.ScoreAnswer(question, answerToScore)
         };
         var answers = attempt.Answers
             .Where(answer => !string.Equals(answer.QuestionId, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
-            .Append(new AttemptAnswer(submittedAnswer.QuestionId, submittedAnswer, evaluation, DateTimeOffset.UtcNow))
+            .Append(new AttemptAnswer(answerToScore.QuestionId, answerToScore, evaluation, DateTimeOffset.UtcNow))
             .ToList();
 
         var shouldCompleteWorkedExample = assessment.AssessmentType is AssessmentType.WorkedExample
@@ -109,7 +118,7 @@ public sealed class AttemptService
         var updatedAttempt = shouldCompleteWorkedExample
             ? attempt with { Answers = answers, Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt with { Answers = answers };
-        await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
         return updatedAttempt;
     }
 
@@ -126,7 +135,7 @@ public sealed class AttemptService
             Status = AttemptStatus.InProgress,
             PausedAt = null
         };
-        await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
         return updatedAttempt;
     }
 
@@ -143,7 +152,7 @@ public sealed class AttemptService
             Status = AttemptStatus.Paused,
             PausedAt = DateTimeOffset.UtcNow
         };
-        await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
         return updatedAttempt;
     }
 
@@ -161,7 +170,7 @@ public sealed class AttemptService
             AbandonedAt = DateTimeOffset.UtcNow,
             PausedAt = null
         };
-        await attemptRepository.SaveAsync(updatedAttempt, cancellationToken);
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
         await gradeLogRepository.RemoveByAttemptIdAsync(attemptId, cancellationToken);
         return updatedAttempt;
     }
@@ -187,14 +196,23 @@ public sealed class AttemptService
             ? attempt with { Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt;
 
-        await attemptRepository.SaveAsync(completedAttempt, cancellationToken);
+        await SaveAttemptAsync(completedAttempt, cancellationToken);
         return await GetResultsAsync(completedAttempt.Id, cancellationToken);
     }
 
     public async Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default)
     {
         await gradeLogRepository.RemoveByAttemptIdAsync(attemptId, cancellationToken);
+        await attemptSessionStore.DeleteAsync(attemptId, cancellationToken);
         await attemptRepository.DeleteAsync(attemptId, cancellationToken);
+    }
+
+    public async Task DeleteManyAsync(IReadOnlyList<string> attemptIds, CancellationToken cancellationToken = default)
+    {
+        foreach (var attemptId in attemptIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            await DeleteAsync(attemptId, cancellationToken);
+        }
     }
 
     public async Task<AttemptResults> GetResultsAsync(string attemptId, CancellationToken cancellationToken = default)
@@ -211,7 +229,7 @@ public sealed class AttemptService
 
     public async Task<IReadOnlyList<AttemptResults>> ListResultsAsync(CancellationToken cancellationToken = default)
     {
-        var attempts = await attemptRepository.ListAsync(cancellationToken);
+        var attempts = await ListAllAttemptsAsync(cancellationToken);
         var results = new List<AttemptResults>();
 
         foreach (var attempt in attempts)
@@ -242,8 +260,62 @@ public sealed class AttemptService
 
     private async Task<Attempt> GetAttemptAsync(string attemptId, CancellationToken cancellationToken)
     {
-        return await attemptRepository.GetByIdAsync(attemptId, cancellationToken)
+        return await attemptSessionStore.GetByIdAsync(attemptId, cancellationToken)
+            ?? await attemptRepository.GetByIdAsync(attemptId, cancellationToken)
             ?? throw new InvalidOperationException($"Attempt '{attemptId}' was not found.");
+    }
+
+    private async Task<IReadOnlyList<Attempt>> ListAllAttemptsAsync(CancellationToken cancellationToken)
+    {
+        var activeAttempts = await attemptSessionStore.ListAsync(cancellationToken);
+        var persistedAttempts = await attemptRepository.ListAsync(cancellationToken);
+
+        return activeAttempts
+            .Concat(persistedAttempts)
+            .GroupBy(attempt => attempt.Id, StringComparer.OrdinalIgnoreCase)
+            .Select(group => group.First())
+            .OrderByDescending(attempt => attempt.StartedAt)
+            .ToList();
+    }
+
+    private async Task SaveAttemptAsync(Attempt attempt, CancellationToken cancellationToken)
+    {
+        if (attempt.Status is AttemptStatus.InProgress)
+        {
+            await attemptSessionStore.SaveAsync(attempt, cancellationToken);
+            await attemptRepository.DeleteAsync(attempt.Id, cancellationToken);
+            return;
+        }
+
+        await attemptRepository.SaveAsync(attempt, cancellationToken);
+        await attemptSessionStore.DeleteAsync(attempt.Id, cancellationToken);
+    }
+
+    private static bool CanUpdateCompletedFreeResponseSelfCheck(
+        Attempt attempt,
+        QuestionDefinition question,
+        SubmittedAnswer submittedAnswer,
+        AttemptAnswer? existingAnswer)
+    {
+        return attempt.Status is AttemptStatus.Completed
+            && question.Type is QuestionType.FreeResponse
+            && existingAnswer?.Answer.FreeResponseText is not null
+            && submittedAnswer.SelfCheckCorrect is not null;
+    }
+
+    private static SubmittedAnswer NormalizeSubmittedAnswer(
+        QuestionDefinition question,
+        SubmittedAnswer submittedAnswer,
+        AttemptAnswer? existingAnswer)
+    {
+        if (question.Type is not QuestionType.FreeResponse
+            || submittedAnswer.SelfCheckCorrect is null
+            || existingAnswer?.Answer.FreeResponseText is null)
+        {
+            return submittedAnswer;
+        }
+
+        return submittedAnswer with { FreeResponseText = existingAnswer.Answer.FreeResponseText };
     }
 
     private static string? GetCurrentWorkedExampleStepId(Attempt attempt)
