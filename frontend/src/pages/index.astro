@@ -1826,6 +1826,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupQuestionNavigator();
         setupChoiceCards(question);
+        setupSymbolicResponseField(question);
         setupSelfCheckButtons();
       }
 
@@ -1902,6 +1903,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupChoiceCards(question);
+        setupSymbolicResponseField(question);
         setupSelfCheckButtons();
       }
 
@@ -1994,7 +1996,8 @@ import "../styles/global.css";
           return `
             <div class="field symbolic-response-field">
               <label for="symbolic-response">Symbolic response</label>
-              <math-field id="symbolic-response">${escapeHtml(submittedAnswer?.symbolicLatex ?? "")}</math-field>
+              <math-field id="symbolic-response" aria-describedby="symbolic-response-help">${escapeHtml(submittedAnswer?.symbolicLatex ?? "")}</math-field>
+              <p id="symbolic-response-help" class="input-help">Use Tab to leave powers, roots, fractions, and placeholders. Shortcuts like sin, cos, sqrt, pi, theta, and int expand automatically.</p>
             </div>
           `;
         }
@@ -2247,6 +2250,54 @@ import "../styles/global.css";
 
             toggleChoiceCard(card);
           });
+        });
+      }
+
+      function setupSymbolicResponseField(question: Question) {
+        if (question.type !== "symbolicResponse") return;
+
+        const mathField = document.querySelector<HTMLElement & {
+          value?: string;
+          smartFence?: boolean;
+          smartMode?: boolean;
+          mathVirtualKeyboardPolicy?: "auto" | "manual" | "sandboxed";
+          placeholderSymbol?: string;
+          inlineShortcuts?: Record<string, string | { value: string; after?: string }>;
+          executeCommand?: (command: string | unknown[]) => unknown;
+        }>("#symbolic-response");
+        if (!mathField) return;
+
+        mathField.smartFence = true;
+        mathField.smartMode = true;
+        mathField.mathVirtualKeyboardPolicy = "manual";
+        mathField.placeholderSymbol = "□";
+        mathField.inlineShortcuts = {
+          sin: "\\sin\\left(\\placeholder{}\\right)",
+          cos: "\\cos\\left(\\placeholder{}\\right)",
+          tan: "\\tan\\left(\\placeholder{}\\right)",
+          sec: "\\sec\\left(\\placeholder{}\\right)",
+          csc: "\\csc\\left(\\placeholder{}\\right)",
+          cot: "\\cot\\left(\\placeholder{}\\right)",
+          sqrt: "\\sqrt{\\placeholder{}}",
+          abs: "\\left|\\placeholder{}\\right|",
+          pi: "\\pi",
+          theta: "\\theta",
+          alpha: "\\alpha",
+          beta: "\\beta",
+          int: "\\int \\placeholder{}\\,d\\placeholder{}",
+          infinity: "\\infty"
+        };
+
+        mathField.addEventListener("keydown", (event) => {
+          const keyboardEvent = event as KeyboardEvent;
+          if (keyboardEvent.key === "Tab") {
+            keyboardEvent.preventDefault();
+            mathField.executeCommand?.(keyboardEvent.shiftKey ? "moveToPreviousGroup" : "moveToNextGroup");
+          }
+
+          if (keyboardEvent.key === " " && mathField.executeCommand) {
+            mathField.executeCommand("moveToNextGroup");
+          }
         });
       }
 

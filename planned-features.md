@@ -185,6 +185,7 @@ Support:
 * Dark mode
 * Keyboard navigation
 * Mobile-friendly layout
+* Replace code question textareas with CodeMirror 6 for indentation, syntax highlighting, bracket matching, and language-aware editing
 
 ## Deferred Features
 
