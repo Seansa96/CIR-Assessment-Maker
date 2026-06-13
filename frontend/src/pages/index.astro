@@ -530,6 +530,7 @@ import "../styles/global.css";
         };
         historySort: { key: string; direction: "asc" | "desc" };
         selectedAttemptIds: Set<string>;
+        questionNavigatorOpen: boolean;
         draftQuestions: Question[];
       } = {
         settings: null,
@@ -553,6 +554,7 @@ import "../styles/global.css";
         },
         historySort: { key: "lastActivityAt", direction: "desc" },
         selectedAttemptIds: new Set(),
+        questionNavigatorOpen: false,
         draftQuestions: []
       };
 
@@ -703,7 +705,7 @@ import "../styles/global.css";
         const result = state.latestResults.questions.find((candidate) => candidate.questionId === questionId);
         if (!result?.submittedAnswer?.freeResponseText) return;
 
-        await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
+        state.attempt = await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
           method: "POST",
           body: JSON.stringify({
             questionId,
@@ -713,6 +715,9 @@ import "../styles/global.css";
           })
         });
         state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+        if (state.latestResults.assessmentType === "workedExample") {
+          state.currentIndex = firstUnansweredIndex(state.latestResults, state.attempt);
+        }
 
         if (state.latestResults.status === "completed" || state.latestResults.status === "abandoned") {
           await renderResults(isAttemptCommitted(state.attempt.id));
@@ -1838,6 +1843,9 @@ import "../styles/global.css";
         const question = workedStepToQuestion(step);
         const result = state.latestResults?.questions.find((candidate) => candidate.questionId === step.id);
         const example = getWorkedExampleForStep(step.id);
+        const currentUnlockedIndex = state.latestResults ? firstUnansweredIndex(state.latestResults, state.attempt) : 0;
+        const isReviewingPreviousStep = state.currentIndex < currentUnlockedIndex;
+        const isLockedFutureStep = state.currentIndex > currentUnlockedIndex;
         const problemHtml = await renderMarkdown(example?.problem ?? "");
         const instructionHtml = await renderMarkdown(step.instruction);
         const promptHtml = await renderMarkdown(question.prompt);
@@ -1861,7 +1869,14 @@ import "../styles/global.css";
                 ${steps.map((candidate, index) => {
                   const completed = state.latestResults?.questions.find((question) => question.questionId === candidate.id)?.isCorrect === true;
                   const current = candidate.id === step.id;
-                  return `<li class="${completed ? "complete" : ""} ${current ? "current" : ""}"><span>${index + 1}</span>${escapeHtml(current || completed ? candidate.title : "Locked step")}</li>`;
+                  const unlocked = completed || index <= currentUnlockedIndex;
+                  return `
+                    <li class="${completed ? "complete" : ""} ${current ? "current" : ""} ${!unlocked ? "locked" : ""}">
+                      <button type="button" data-worked-step-index="${index}" ${unlocked ? "" : "disabled"} aria-current="${current ? "step" : "false"}">
+                        <span>${index + 1}</span>${escapeHtml(unlocked ? candidate.title : "Locked step")}
+                      </button>
+                    </li>
+                  `;
                 }).join("")}
               </ol>
             </aside>
@@ -1881,7 +1896,9 @@ import "../styles/global.css";
                   ${await renderAnswerInput(question, result?.submittedAnswer ?? null)}
                   <div class="assessment-control-bar">
                     <div class="button-row">
-                      <button class="primary chunky" id="submit-answer" type="submit">${result?.isCorrect ? "Continue" : "Check Step"}</button>
+                      ${isReviewingPreviousStep ? `<button type="button" id="return-current-step">Return to Current Step</button>` : ""}
+                      <button type="button" id="previous-worked-step" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Step</button>
+                      <button class="primary chunky" id="submit-answer" type="submit" ${isReviewingPreviousStep || isLockedFutureStep ? "disabled" : ""}>${result?.isCorrect ? "Continue" : "Check Step"}</button>
                       <button type="button" id="pause-attempt">Save and Quit</button>
                     </div>
                     <div class="button-row terminal-actions" aria-label="Assessment ending actions">
@@ -1898,7 +1915,22 @@ import "../styles/global.css";
 
         document.querySelector<HTMLFormElement>("#answer-form")!.addEventListener("submit", (event) => {
           event.preventDefault();
+          if (isReviewingPreviousStep || isLockedFutureStep) return;
           submitCurrentAnswer();
+        });
+        document.querySelector<HTMLButtonElement>("#previous-worked-step")!.addEventListener("click", () => {
+          state.currentIndex = Math.max(0, state.currentIndex - 1);
+          void renderCurrentWorkedExampleStep();
+        });
+        document.querySelector<HTMLButtonElement>("#return-current-step")?.addEventListener("click", () => {
+          state.currentIndex = currentUnlockedIndex;
+          void renderCurrentWorkedExampleStep();
+        });
+        document.querySelectorAll<HTMLButtonElement>("[data-worked-step-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.currentIndex = Number(button.dataset.workedStepIndex ?? state.currentIndex);
+            void renderCurrentWorkedExampleStep();
+          });
         });
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
@@ -2178,7 +2210,7 @@ import "../styles/global.css";
           .map((question) => question.questionId));
 
         return `
-          <details class="question-navigator">
+          <details class="question-navigator" ${state.questionNavigatorOpen ? "open" : ""}>
             <summary>
               <span>Jump to question</span>
               <strong>${state.currentIndex + 1}/${state.attempt.questionOrder.length}</strong>
@@ -2208,7 +2240,7 @@ import "../styles/global.css";
                     data-question-index="${index}"
                     aria-current="${index === state.currentIndex ? "step" : "false"}"
                     aria-label="Jump to question ${index + 1}, ${stateLabel}"
-                  >${index + 1}</button>
+                  ><span>${index + 1}</span></button>
                 `;
               }).join("")}
             </div>
@@ -2222,8 +2254,12 @@ import "../styles/global.css";
       }
 
       function setupQuestionNavigator() {
+        document.querySelector<HTMLDetailsElement>(".question-navigator")?.addEventListener("toggle", (event) => {
+          state.questionNavigatorOpen = (event.currentTarget as HTMLDetailsElement).open;
+        });
         document.querySelectorAll<HTMLButtonElement>("[data-question-index]").forEach((button) => {
           button.addEventListener("click", () => {
+            state.questionNavigatorOpen = true;
             state.currentIndex = Number(button.dataset.questionIndex ?? state.currentIndex);
             void renderCurrentQuestion();
           });

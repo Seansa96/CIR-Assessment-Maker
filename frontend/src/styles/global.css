@@ -871,10 +871,16 @@ textarea {
 }
 
 .question-jump {
+  position: relative;
   min-height: 2.35rem;
   padding: 0.35rem;
   border-radius: 7px;
   font-weight: 900;
+}
+
+.question-jump span {
+  position: relative;
+  z-index: 1;
 }
 
 .question-jump.current {
@@ -885,19 +891,52 @@ textarea {
 
 .question-jump.correct {
   border-color: rgba(37, 113, 77, 0.55);
+  background: linear-gradient(180deg, #f6fffa, #dcefe5);
+  color: var(--success);
 }
 
 .question-jump.answered {
   border-color: rgba(29, 98, 91, 0.45);
+  background: linear-gradient(180deg, #ffffff, #e3ecec);
+  color: var(--accent-strong);
 }
 
 .question-jump.needs-review,
 .question-jump.pending {
   border-color: rgba(158, 49, 67, 0.55);
+  background: linear-gradient(180deg, #fff8f4, #f2ded5);
+  color: var(--danger);
 }
 
 .question-jump.unanswered {
   color: var(--text-muted);
+}
+
+.question-jump.correct::after,
+.question-jump.answered::after,
+.question-jump.needs-review::after,
+.question-jump.pending::after {
+  position: absolute;
+  right: 0.28rem;
+  bottom: 0.18rem;
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
+.question-jump.correct::after {
+  content: "✓";
+}
+
+.question-jump.answered::after {
+  content: "•";
+}
+
+.question-jump.needs-review::after {
+  content: "!";
+}
+
+.question-jump.pending::after {
+  content: "?";
 }
 
 .question-jump-legend {
@@ -935,13 +974,25 @@ textarea {
   list-style: none;
 }
 
-.worked-progress li {
+.worked-progress li button {
   display: grid;
   grid-template-columns: 1.8rem minmax(0, 1fr);
   gap: 0.55rem;
   align-items: center;
+  width: 100%;
+  min-height: 2.4rem;
+  padding: 0.28rem 0.35rem;
+  border-color: transparent;
+  background: transparent;
   color: var(--text-muted);
   font-weight: 800;
+  text-align: left;
+  box-shadow: none;
+}
+
+.worked-progress li button:hover:not(:disabled) {
+  border-color: var(--border);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .worked-progress li span {
@@ -965,6 +1016,18 @@ textarea {
 
 .worked-progress li.complete {
   color: var(--success);
+}
+
+.worked-progress li.complete button {
+  color: var(--success);
+}
+
+.worked-progress li.current button {
+  color: var(--accent-strong);
+}
+
+.worked-progress li.locked button {
+  color: var(--text-muted);
 }
 
 .worked-step {
