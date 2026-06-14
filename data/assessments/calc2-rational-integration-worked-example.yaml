@@ -1,0 +1,182 @@
+schemaVersion: 1
+id: calc2-rational-integration-worked-example
+title: Rational Integration Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Integrating rational functions by structure
+    problem: |
+      Integrate rational functions by choosing among direct substitution, long division, partial fractions, and completing the square.
+
+      Use this example family:
+
+      $$
+      \int \frac{2x+3}{x^2+3x+2}\,dx,
+      \qquad
+      \int \frac{x^2+1}{x-1}\,dx,
+      \qquad
+      \int \frac{1}{x^2+4x+8}\,dx.
+      $$
+    steps:
+      - id: s001
+        title: Check whether the fraction is proper
+        instruction: "Before partial fractions, compare the degree of the numerator and denominator."
+        type: multipleChoice
+        prompt: 'For $\frac{x^2+1}{x-1}$, what should you do before integrating?'
+        choices:
+          - id: a
+            text: 'Polynomial long division'
+          - id: b
+            text: 'Power reduction'
+          - id: c
+            text: 'Integration by parts'
+          - id: d
+            text: 'Treat it as already decomposed'
+        answer:
+          choiceId: a
+        hint: "The numerator degree is greater than the denominator degree."
+        explanation: |
+          Partial fractions are for proper rational functions. Since $x^2+1$ has degree 2 and $x-1$ has degree 1, divide first.
+
+          Related topic: Rational integration setup. Always check proper versus improper first.
+
+      - id: s002
+        title: Factor when possible
+        instruction: "If the denominator factors over the real numbers, choose a partial fraction template based on those factors."
+        type: multipleChoice
+        prompt: 'For $\frac{2x+3}{x^2+3x+2}$, what factorization controls the partial fractions?'
+        choices:
+          - id: a
+            text: '$(x+1)(x+2)$'
+          - id: b
+            text: '$(x-1)(x-2)$'
+          - id: c
+            text: '$(x+3)(x+2)$'
+          - id: d
+            text: 'It does not factor.'
+        answer:
+          choiceId: a
+        hint: "Find two numbers that multiply to $2$ and add to $3$."
+        explanation: |
+          $x^2+3x+2=(x+1)(x+2)$. Since both factors are distinct and linear, use
+
+          $$
+          \frac{2x+3}{(x+1)(x+2)}=\frac{A}{x+1}+\frac{B}{x+2}.
+          $$
+
+          Related topic: Partial fractions for distinct linear factors.
+
+      - id: s003
+        title: Solve the partial fraction constants
+        instruction: "Clear denominators and solve for constants."
+        type: multipleChoice
+        prompt: 'For $\frac{2x+3}{(x+1)(x+2)}=\frac{A}{x+1}+\frac{B}{x+2}$, what are $A$ and $B$?'
+        choices:
+          - id: a
+            text: '$A=1$, $B=1$'
+          - id: b
+            text: '$A=2$, $B=-1$'
+          - id: c
+            text: '$A=-1$, $B=2$'
+          - id: d
+            text: '$A=3$, $B=2$'
+        answer:
+          choiceId: a
+        hint: "After clearing denominators, $2x+3=A(x+2)+B(x+1)$."
+        explanation: |
+          Expanding gives
+
+          $$
+          2x+3=(A+B)x+(2A+B).
+          $$
+
+          So $A+B=2$ and $2A+B=3$, which gives $A=1$, $B=1$.
+
+          Related topic: Solving partial fraction coefficients.
+
+      - id: s004
+        title: Integrate the decomposed pieces
+        instruction: "Each linear denominator integrates to a logarithm."
+        type: multipleChoice
+        prompt: 'What is $\int \frac{2x+3}{x^2+3x+2}\,dx$?'
+        choices:
+          - id: a
+            text: '$\ln|x+1|+\ln|x+2|+C$'
+          - id: b
+            text: '$\frac{1}{x+1}+\frac{1}{x+2}+C$'
+          - id: c
+            text: '$\ln|x^2+3x+2|+C$'
+          - id: d
+            text: '$2\ln|x+1|+3\ln|x+2|+C$'
+        answer:
+          choiceId: a
+        hint: 'Use $\int \frac{1}{x+a}\,dx=\ln|x+a|+C$.'
+        explanation: |
+          Since the fraction equals $\frac{1}{x+1}+\frac{1}{x+2}$, the integral is
+
+          $$
+          \ln|x+1|+\ln|x+2|+C.
+          $$
+
+          Related topic: Rational integration after partial fractions.
+
+      - id: s005
+        title: Complete the square for irreducible quadratics
+        instruction: "If the quadratic does not factor over the reals, complete the square and look for an arctangent pattern."
+        type: multipleChoice
+        prompt: 'For $\int \frac{1}{x^2+4x+8}\,dx$, which rewrite is best?'
+        choices:
+          - id: a
+            text: '$\int \frac{1}{(x+2)^2+4}\,dx$'
+          - id: b
+            text: '$\int \frac{1}{(x+4)^2+8}\,dx$'
+          - id: c
+            text: '$\int \frac{1}{(x+2)^2-4}\,dx$'
+          - id: d
+            text: '$\int \frac{1}{(x-2)^2+4}\,dx$'
+        answer:
+          choiceId: a
+        hint: "$x^2+4x+8=(x+2)^2+4$."
+        explanation: |
+          Complete the square:
+
+          $$
+          x^2+4x+8=(x+2)^2+4.
+          $$
+
+          This matches an arctangent form, not a linear partial fraction form.
+
+          Related topic: Irreducible quadratic rational integrals.
+
+      - id: s006
+        title: Choose the correct final form
+        instruction: "Use the arctangent template after completing the square."
+        type: multipleChoice
+        prompt: 'What is $\int \frac{1}{(x+2)^2+4}\,dx$?'
+        choices:
+          - id: a
+            text: '$\frac{1}{2}\arctan\left(\frac{x+2}{2}\right)+C$'
+          - id: b
+            text: '$2\arctan(x+2)+C$'
+          - id: c
+            text: '$\ln|(x+2)^2+4|+C$'
+          - id: d
+            text: '$-\frac{1}{x+2}+C$'
+        answer:
+          choiceId: a
+        hint: 'Use $\int \frac{1}{u^2+a^2}\,du=\frac{1}{a}\arctan\left(\frac{u}{a}\right)+C$.'
+        explanation: |
+          Here $u=x+2$ and $a=2$, so
+
+          $$
+          \int \frac{1}{(x+2)^2+2^2}\,dx
+          =\frac{1}{2}\arctan\left(\frac{x+2}{2}\right)+C.
+          $$
+
+          Related topic: Arctangent form from completed square.
+

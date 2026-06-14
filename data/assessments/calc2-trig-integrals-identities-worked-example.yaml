@@ -1,0 +1,211 @@
+schemaVersion: 1
+id: calc2-trig-integrals-identities-worked-example
+title: Trigonometric Integrals with Identities Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Choosing identities for powers of sine, cosine, tangent, and secant
+    problem: |
+      Learn the decision patterns behind integrals such as
+
+      $$
+      \int \sin^3(x)\,dx,\qquad
+      \int \sin^5(x)\cos^2(x)\,dx,\qquad
+      \int \tan^8(x)\sec^4(x)\,dx.
+      $$
+
+      The main skill is not memorizing one answer. It is identifying which factor to save, which identity to use, and what substitution becomes available.
+    steps:
+      - id: s001
+        title: Identify the odd sine pattern
+        instruction: 'When a power of sine is odd, save one sine factor and convert the remaining even power using $\sin^2 x=1-\cos^2 x$.'
+        type: multipleChoice
+        prompt: 'For $\int \sin^3(x)\,dx$, what is the best first rewrite?'
+        choices:
+          - id: a
+            text: '$\int \sin^2(x)\sin(x)\,dx=\int (1-\cos^2 x)\sin x\,dx$'
+          - id: b
+            text: '$\int (1+\tan^2 x)\,dx$'
+          - id: c
+            text: '$\int \cos^3(x)\,dx$'
+          - id: d
+            text: '$\int \frac{\sin x}{\cos x}\,dx$'
+        answer:
+          choiceId: a
+        hint: "Save the factor whose companion derivative appears after substitution."
+        explanation: |
+          Since the sine power is odd, save one $\sin x\,dx$ and convert $\sin^2 x$ into $1-\cos^2 x$. Then let $u=\cos x$, so $du=-\sin x\,dx$.
+
+          Related topic: Odd sine power trig integrals. Look up the identity $\sin^2 x=1-\cos^2 x$ and $u=\cos x$ substitution.
+
+      - id: s002
+        title: Finish the odd sine integral
+        instruction: 'After the rewrite, integrate in terms of $u=\cos x$.'
+        type: multipleChoice
+        prompt: 'Which antiderivative matches $\int \sin^3(x)\,dx$?'
+        choices:
+          - id: a
+            text: '$-\cos x+\frac{\cos^3 x}{3}+C$'
+          - id: b
+            text: '$\cos x-\frac{\cos^3 x}{3}+C$'
+          - id: c
+            text: '$-\frac{\sin^4 x}{4}+C$'
+          - id: d
+            text: '$\tan x+C$'
+        answer:
+          choiceId: a
+        hint: 'With $u=\cos x$, the integral becomes $-\int(1-u^2)\,du$.'
+        explanation: |
+          $$
+          \int \sin^3 x\,dx
+          =\int (1-\cos^2 x)\sin x\,dx
+          =-\int (1-u^2)\,du
+          =-u+\frac{u^3}{3}+C.
+          $$
+
+          Substitute back to get $-\cos x+\frac{\cos^3 x}{3}+C$.
+
+          Related topic: Odd sine power integration by identity plus substitution.
+
+      - id: s003
+        title: Odd sine with an extra cosine power
+        instruction: "When sine has an odd power and cosine has an even power, still save one sine and convert the rest to cosine."
+        type: multipleChoice
+        prompt: 'For $\int \sin^5(x)\cos^2(x)\,dx$, which setup is best?'
+        choices:
+          - id: a
+            text: '$\int (1-\cos^2 x)^2\cos^2 x\sin x\,dx$ with $u=\cos x$'
+          - id: b
+            text: '$\int (1+\tan^2 x)^5\,dx$ with $u=\tan x$'
+          - id: c
+            text: '$\int \sin^5 x(1-\sin^2 x)\,dx$ with no substitution'
+          - id: d
+            text: 'Use integration by parts immediately.'
+        answer:
+          choiceId: a
+        hint: 'Save one $\sin x\,dx$ and convert the leftover $\sin^4 x$.'
+        explanation: |
+          The odd sine power is the signal. Write
+
+          $$
+          \sin^5 x\cos^2 x=(\sin^2 x)^2\cos^2 x\sin x=(1-\cos^2 x)^2\cos^2 x\sin x.
+          $$
+
+          Then $u=\cos x$ turns the entire integrand into a polynomial in $u$.
+
+          Related topic: Odd sine or odd cosine powers. The actionable path is save one odd factor, convert the rest, substitute.
+
+      - id: s004
+        title: Expand only after substitution
+        instruction: "Once the integral is in $u$, expand and integrate the polynomial."
+        type: multipleChoice
+        prompt: 'After $u=\cos x$, what does $\int \sin^5(x)\cos^2(x)\,dx$ become?'
+        choices:
+          - id: a
+            text: '$-\int (1-u^2)^2u^2\,du$'
+          - id: b
+            text: '$\int (1-u^2)^2u^2\,du$'
+          - id: c
+            text: '$-\int (1+u^2)^2u^2\,du$'
+          - id: d
+            text: '$\int u^7\,du$'
+        answer:
+          choiceId: a
+        hint: 'The minus sign comes from $du=-\sin x\,dx$.'
+        explanation: |
+          Since $du=-\sin x\,dx$, the integral is
+
+          $$
+          -\int (1-u^2)^2u^2\,du.
+          $$
+
+          Expanding gives $-\int(u^2-2u^4+u^6)\,du$.
+
+          Related topic: Polynomial integration after trig identity substitution.
+
+      - id: s005
+        title: Recognize the tangent/secant pattern
+        instruction: "For tangent and secant powers, the usual split depends on whether secant has an even power or tangent has an odd power."
+        type: multipleChoice
+        prompt: 'For $\int \tan^8(x)\sec^4(x)\,dx$, what is the best first move?'
+        choices:
+          - id: a
+            text: 'Save $\sec^2 x\,dx$, convert the remaining $\sec^2 x$ to $1+\tan^2 x$, and let $u=\tan x$.'
+          - id: b
+            text: 'Save $\tan x\sec x\,dx$ and let $u=\sec x$.'
+          - id: c
+            text: 'Convert everything to sine and cosine first.'
+          - id: d
+            text: 'Use integration by parts twice.'
+        answer:
+          choiceId: a
+        hint: 'An even power of secant lets you save $\sec^2 x\,dx$.'
+        explanation: |
+          Because $\sec^4 x$ contains at least one $\sec^2 x$ factor, save $\sec^2 x\,dx$ for $du$ with $u=\tan x$. Convert the remaining $\sec^2 x$ using $\sec^2 x=1+\tan^2 x$.
+
+          Related topic: Even secant power strategy for tangent/secant integrals.
+
+      - id: s006
+        title: Finish the tangent/secant integral
+        instruction: 'After the substitution, integrate the polynomial in $u=\tan x$.'
+        type: multipleChoice
+        prompt: 'Which expression is equivalent to the transformed integral for $\int \tan^8(x)\sec^4(x)\,dx$?'
+        choices:
+          - id: a
+            text: '$\int u^8(1+u^2)\,du$'
+          - id: b
+            text: '$\int u^8(1-u^2)\,du$'
+          - id: c
+            text: '$\int u^4(1+u^8)\,du$'
+          - id: d
+            text: '$\int \frac{u^8}{1+u^2}\,du$'
+        answer:
+          choiceId: a
+        hint: 'One $\sec^2 x\,dx$ becomes $du$ and the other becomes $1+u^2$.'
+        explanation: |
+          $$
+          \tan^8 x\sec^4 x\,dx
+          =\tan^8 x\sec^2 x(\sec^2 x\,dx).
+          $$
+
+          With $u=\tan x$, this becomes
+
+          $$
+          \int u^8(1+u^2)\,du=\int(u^8+u^{10})\,du.
+          $$
+
+          Related topic: Tangent/secant identity substitution. Use $u=\tan x$ when saving $\sec^2 x\,dx$.
+
+      - id: s007
+        title: Know when power reduction is needed
+        instruction: "If both sine and cosine have even powers, the odd-factor trick is unavailable."
+        type: multipleChoice
+        prompt: 'For $\int \sin^2(x)\cos^2(x)\,dx$, what technique is usually best?'
+        choices:
+          - id: a
+            text: 'Use power-reduction identities.'
+          - id: b
+            text: 'Save one sine factor and use $u=\cos x$.'
+          - id: c
+            text: 'Save one cosine factor and use $u=\sin x$.'
+          - id: d
+            text: 'Use partial fractions.'
+        answer:
+          choiceId: a
+        hint: "There is no odd sine or cosine factor to save."
+        explanation: |
+          When both sine and cosine powers are even, power-reduction identities are the standard path, such as
+
+          $$
+          \sin^2 x=\frac{1-\cos 2x}{2},
+          \qquad
+          \cos^2 x=\frac{1+\cos 2x}{2}.
+          $$
+
+          Related topic: Even-even trig integrals. The actionable lookup is "power reduction identities."
+

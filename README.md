@@ -281,7 +281,7 @@ Prompts, choices, explanations, hints, and worked-example text support Markdown 
 Inline math:
 
 ```yaml
-prompt: "Use $v_x=v_{0x}+a_xt$ to find the velocity component."
+prompt: 'Use $v_x=v_{0x}+a_xt$ to find the velocity component.'
 ```
 
 Display math:
@@ -301,9 +301,10 @@ Tips:
 
 * Wrap inline equations in `$...$`.
 * Wrap display equations in `$$...$$`.
-* In YAML double-quoted strings, backslashes may need escaping. For LaTeX-heavy text, prefer block strings with `|`.
-* Use `\,` for small spacing in integrals, for example `$\\int f(x)\\,dx$` inside quoted strings.
+* Do not put LaTeX backslashes inside double-quoted YAML strings. Prefer block strings with `|` for longer text and single quotes for short inline LaTeX.
+* Use `\,` for small spacing in integrals. Prefer `'$\int f(x)\,dx$'` instead of a double-quoted string with escaped backslashes.
 * Use explanations to name the exact formula or subconcept used, not just the broad topic.
+* See [Assessment YAML LaTeX Authoring](docs/assessment-yaml-latex.md) before adding LaTeX-heavy assessments.
 
 Good explanation pattern:
 
