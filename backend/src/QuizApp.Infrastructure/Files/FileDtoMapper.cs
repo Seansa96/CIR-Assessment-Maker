@@ -66,7 +66,8 @@ internal static class FileDtoMapper
             dto.AssessmentTimerSeconds,
             (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList())
         {
-            WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList()
+            WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList(),
+            GuidedProject = dto.GuidedProject is null ? null : ToDomain(dto.GuidedProject)
         };
     }
 
@@ -85,7 +86,62 @@ internal static class FileDtoMapper
             QuestionTimerSeconds = assessment.QuestionTimerSeconds,
             AssessmentTimerSeconds = assessment.AssessmentTimerSeconds,
             Questions = assessment.Questions.Select(ToDto).ToList(),
-            WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList()
+            WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList(),
+            GuidedProject = assessment.GuidedProject is null ? null : ToDto(assessment.GuidedProject)
+        };
+    }
+
+    private static GuidedProjectDefinition ToDomain(GuidedProjectFileDto dto)
+    {
+        return new GuidedProjectDefinition(
+            dto.Language ?? string.Empty,
+            dto.Instructions ?? string.Empty,
+            (dto.Files ?? new List<GuidedProjectSourceFileDto>())
+                .Select(file => new GuidedProjectFileDefinition(
+                    file.Path ?? string.Empty,
+                    file.Content ?? string.Empty,
+                    file.ReadOnly))
+                .ToList(),
+            (dto.RequiredChecks ?? new List<GuidedProjectCheckFileDto>()).Select(ToDomain).ToList(),
+            (dto.BonusChecks ?? new List<GuidedProjectCheckFileDto>()).Select(ToDomain).ToList());
+    }
+
+    private static GuidedProjectFileDto ToDto(GuidedProjectDefinition project)
+    {
+        return new GuidedProjectFileDto
+        {
+            Language = project.Language,
+            Instructions = project.Instructions,
+            Files = project.Files.Select(file => new GuidedProjectSourceFileDto
+            {
+                Path = file.Path,
+                Content = file.Content,
+                ReadOnly = file.ReadOnly
+            }).ToList(),
+            RequiredChecks = project.RequiredChecks.Select(ToDto).ToList(),
+            BonusChecks = project.BonusChecks.Select(ToDto).ToList()
+        };
+    }
+
+    private static GuidedProjectCheckDefinition ToDomain(GuidedProjectCheckFileDto dto)
+    {
+        return new GuidedProjectCheckDefinition(
+            dto.Id ?? string.Empty,
+            dto.Title ?? string.Empty,
+            dto.Description ?? string.Empty,
+            dto.TestCode ?? string.Empty,
+            dto.ExpectedOutputContains ?? new List<string>());
+    }
+
+    private static GuidedProjectCheckFileDto ToDto(GuidedProjectCheckDefinition check)
+    {
+        return new GuidedProjectCheckFileDto
+        {
+            Id = check.Id,
+            Title = check.Title,
+            Description = check.Description,
+            TestCode = check.TestCode,
+            ExpectedOutputContains = check.ExpectedOutputContains.ToList()
         };
     }
 
@@ -277,6 +333,7 @@ internal static class FileDtoMapper
             "quiz" => AssessmentType.Quiz,
             "test" => AssessmentType.Test,
             "workedexample" => AssessmentType.WorkedExample,
+            "guidedproject" => AssessmentType.GuidedProject,
             _ => AssessmentType.Unknown
         };
     }
@@ -325,6 +382,7 @@ internal static class FileDtoMapper
         {
             AssessmentType.Test => "test",
             AssessmentType.WorkedExample => "workedExample",
+            AssessmentType.GuidedProject => "guidedProject",
             _ => "quiz"
         };
     }

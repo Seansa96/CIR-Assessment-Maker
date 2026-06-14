@@ -281,4 +281,30 @@ public sealed class AssessmentValidatorTests
 
         Assert.Contains(result.Issues, issue => issue.Code == "MISSING_PROMPT");
     }
+
+    [Fact]
+    public void Validate_accepts_valid_guided_project()
+    {
+        var assessment = TestData.GuidedProjectAssessment();
+
+        var result = validator.Validate(assessment);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_rejects_guided_project_without_required_checks()
+    {
+        var assessment = TestData.GuidedProjectAssessment() with
+        {
+            GuidedProject = TestData.GuidedProjectAssessment().GuidedProject! with
+            {
+                RequiredChecks = Array.Empty<GuidedProjectCheckDefinition>()
+            }
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_GUIDED_PROJECT_REQUIRED_CHECKS");
+    }
 }

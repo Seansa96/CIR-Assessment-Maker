@@ -24,7 +24,14 @@ public sealed record CodeRunnerExecuteRequest(
     string FileName,
     string Content,
     int CompileTimeoutMs,
-    int RunTimeoutMs);
+    int RunTimeoutMs)
+{
+    public IReadOnlyList<CodeRunnerFile> Files { get; init; } = Array.Empty<CodeRunnerFile>();
+}
+
+public sealed record CodeRunnerFile(
+    string Name,
+    string Content);
 
 public sealed record CodeRunnerExecutionResult(
     bool Succeeded,

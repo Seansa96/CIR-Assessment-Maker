@@ -22,9 +22,9 @@ public sealed class GradeLogService
             throw new InvalidOperationException("Only completed attempts can be committed to the grade log.");
         }
 
-        if (results.AssessmentType is AssessmentType.WorkedExample)
+        if (results.AssessmentType is AssessmentType.WorkedExample or AssessmentType.GuidedProject)
         {
-            throw new InvalidOperationException("Worked examples are instructional sessions and cannot be committed to the grade log.");
+            throw new InvalidOperationException("Instructional sessions cannot be committed to the grade log.");
         }
 
         if (results.HasPendingSelfChecks)

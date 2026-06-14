@@ -126,8 +126,11 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
 
     private static int CountAssessmentItems(AssessmentDefinition assessment)
     {
-        return assessment.AssessmentType is AssessmentType.WorkedExample
-            ? assessment.WorkedExamples.Sum(example => example.Steps.Count)
-            : assessment.Questions.Count;
+        return assessment.AssessmentType switch
+        {
+            AssessmentType.WorkedExample => assessment.WorkedExamples.Sum(example => example.Steps.Count),
+            AssessmentType.GuidedProject => assessment.GuidedProject?.RequiredChecks.Count ?? 0,
+            _ => assessment.Questions.Count
+        };
     }
 }

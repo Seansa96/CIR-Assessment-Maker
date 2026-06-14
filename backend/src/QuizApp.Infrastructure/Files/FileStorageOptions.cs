@@ -10,4 +10,5 @@ public sealed class FileStorageOptions
     public string SamplesPath => Path.Combine(DataRoot, "samples");
     public string AttemptsPath => Path.Combine(DataRoot, "attempts");
     public string GradesPath => Path.Combine(DataRoot, "grades");
+    public string ProjectSessionsPath => Path.Combine(DataRoot, "project-sessions");
 }

@@ -396,6 +396,7 @@ public sealed class AttemptFlowTests
             attempts ?? new InMemoryAttemptRepository(),
             sessions ?? new InMemoryAttemptSessionStore(),
             grades ?? new InMemoryGradeLogRepository(),
+            new InMemoryGuidedProjectSessionRepository(),
             new InMemorySettingsRepository(),
             new AssessmentValidator(),
             new ScoringService(),
@@ -472,6 +473,37 @@ internal static class TestData
                 Answer = new AnswerDefinition("no", Array.Empty<string>(), null, null, null, null, Array.Empty<MediaAsset>()),
                 Explanation = "The composed factor suggests substitution because the derivative of $3x+1$ is constant."
             });
+    }
+
+    public static AssessmentDefinition GuidedProjectAssessment()
+    {
+        return Assessment(AssessmentType.GuidedProject, Array.Empty<QuestionDefinition>()) with
+        {
+            Id = "cpp-runner-guided-project",
+            Title = "C++ Runner Guided Project",
+            CategoryId = "c++",
+            SubcategoryIds = new[] { "c++-oop" },
+            GuidedProject = new GuidedProjectDefinition(
+                "cpp",
+                "Build a Runner class.",
+                new[]
+                {
+                    new GuidedProjectFileDefinition(
+                        "Runner.h",
+                        "#pragma once\nclass Runner {};",
+                        false)
+                },
+                new[]
+                {
+                    new GuidedProjectCheckDefinition(
+                        "runner-check",
+                        "Runner check",
+                        "Checks that Runner exists.",
+                        "int main() { cout << \"RUNNER_OK\"; return 0; }",
+                        new[] { "RUNNER_OK" })
+                },
+                Array.Empty<GuidedProjectCheckDefinition>())
+        };
     }
 
     public static QuestionDefinition MultipleChoiceQuestion(string id)
@@ -704,6 +736,29 @@ internal sealed class InMemoryGradeLogRepository : IGradeLogRepository
     public Task RemoveByAttemptIdAsync(string attemptId, CancellationToken cancellationToken = default)
     {
         entries.RemoveAll(entry => string.Equals(entry.AttemptId, attemptId, StringComparison.OrdinalIgnoreCase));
+        return Task.CompletedTask;
+    }
+}
+
+internal sealed class InMemoryGuidedProjectSessionRepository : IGuidedProjectSessionRepository
+{
+    private readonly Dictionary<string, GuidedProjectSession> sessions = new(StringComparer.OrdinalIgnoreCase);
+
+    public Task<GuidedProjectSession?> GetAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        sessions.TryGetValue(attemptId, out var session);
+        return Task.FromResult(session);
+    }
+
+    public Task SaveAsync(GuidedProjectSession session, CancellationToken cancellationToken = default)
+    {
+        sessions[session.AttemptId] = session;
+        return Task.CompletedTask;
+    }
+
+    public Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default)
+    {
+        sessions.Remove(attemptId);
         return Task.CompletedTask;
     }
 }

@@ -10,6 +10,7 @@ public sealed class AttemptService
     private readonly IAttemptRepository attemptRepository;
     private readonly IAttemptSessionStore attemptSessionStore;
     private readonly IGradeLogRepository gradeLogRepository;
+    private readonly IGuidedProjectSessionRepository guidedProjectSessionRepository;
     private readonly ISettingsRepository settingsRepository;
     private readonly AssessmentValidator validator;
     private readonly ScoringService scoringService;
@@ -21,6 +22,7 @@ public sealed class AttemptService
         IAttemptRepository attemptRepository,
         IAttemptSessionStore attemptSessionStore,
         IGradeLogRepository gradeLogRepository,
+        IGuidedProjectSessionRepository guidedProjectSessionRepository,
         ISettingsRepository settingsRepository,
         AssessmentValidator validator,
         ScoringService scoringService,
@@ -31,6 +33,7 @@ public sealed class AttemptService
         this.attemptRepository = attemptRepository;
         this.attemptSessionStore = attemptSessionStore;
         this.gradeLogRepository = gradeLogRepository;
+        this.guidedProjectSessionRepository = guidedProjectSessionRepository;
         this.settingsRepository = settingsRepository;
         this.validator = validator;
         this.scoringService = scoringService;
@@ -42,12 +45,12 @@ public sealed class AttemptService
     {
         var assessment = await GetValidAssessmentAsync(assessmentId, cancellationToken);
         var settings = await settingsRepository.GetAsync(cancellationToken);
-        var selectedMode = assessment.AssessmentType is AssessmentType.WorkedExample
+        var selectedMode = assessment.AssessmentType is AssessmentType.WorkedExample or AssessmentType.GuidedProject
             ? AssessmentMode.Practice
             : mode ?? assessment.ModeDefault;
         var questionOrder = scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList();
 
-        if (assessment.AssessmentType is not AssessmentType.WorkedExample
+        if (assessment.AssessmentType is not AssessmentType.WorkedExample and not AssessmentType.GuidedProject
             && assessment.RandomizeQuestions
             && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized)
         {
@@ -172,6 +175,7 @@ public sealed class AttemptService
         };
         await SaveAttemptAsync(updatedAttempt, cancellationToken);
         await gradeLogRepository.RemoveByAttemptIdAsync(attemptId, cancellationToken);
+        await guidedProjectSessionRepository.DeleteAsync(attemptId, cancellationToken);
         return updatedAttempt;
     }
 
@@ -205,6 +209,7 @@ public sealed class AttemptService
         await gradeLogRepository.RemoveByAttemptIdAsync(attemptId, cancellationToken);
         await attemptSessionStore.DeleteAsync(attemptId, cancellationToken);
         await attemptRepository.DeleteAsync(attemptId, cancellationToken);
+        await guidedProjectSessionRepository.DeleteAsync(attemptId, cancellationToken);
     }
 
     public async Task DeleteManyAsync(IReadOnlyList<string> attemptIds, CancellationToken cancellationToken = default)

@@ -120,6 +120,11 @@ public sealed class ScoringService
 
     private static IReadOnlyList<AssessmentItem> GetAssessmentItems(AssessmentDefinition assessment)
     {
+        if (assessment.AssessmentType is AssessmentType.GuidedProject)
+        {
+            return Array.Empty<AssessmentItem>();
+        }
+
         if (assessment.AssessmentType is not AssessmentType.WorkedExample)
         {
             return assessment.Questions.Select(question => new AssessmentItem(question, null, null)).ToList();

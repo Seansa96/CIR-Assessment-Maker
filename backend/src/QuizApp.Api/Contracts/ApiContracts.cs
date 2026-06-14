@@ -41,6 +41,21 @@ public sealed record CommitGradeRequest(string AttemptId);
 
 public sealed record BulkDeleteAttemptsRequest(IReadOnlyList<string>? AttemptIds);
 
+public sealed record GuidedProjectFileStateRequest(
+    string Path,
+    string Content);
+
+public sealed record SaveGuidedProjectFilesRequest(
+    IReadOnlyList<GuidedProjectFileStateRequest>? Files)
+{
+    public IReadOnlyList<GuidedProjectFileState> ToDomain()
+    {
+        return (Files ?? Array.Empty<GuidedProjectFileStateRequest>())
+            .Select(file => new GuidedProjectFileState(file.Path, file.Content, false))
+            .ToList();
+    }
+}
+
 public sealed record SaveAssessmentRequest(
     string Id,
     string Title,
@@ -52,7 +67,8 @@ public sealed record SaveAssessmentRequest(
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
     IReadOnlyList<QuestionDefinition>? Questions,
-    IReadOnlyList<WorkedExampleDefinition>? WorkedExamples)
+    IReadOnlyList<WorkedExampleDefinition>? WorkedExamples,
+    GuidedProjectDefinition? GuidedProject)
 {
     public AssessmentDefinition ToDomain()
     {
@@ -69,7 +85,8 @@ public sealed record SaveAssessmentRequest(
             AssessmentTimerSeconds,
             Questions ?? Array.Empty<QuestionDefinition>())
         {
-            WorkedExamples = WorkedExamples ?? Array.Empty<WorkedExampleDefinition>()
+            WorkedExamples = WorkedExamples ?? Array.Empty<WorkedExampleDefinition>(),
+            GuidedProject = GuidedProject
         };
     }
 }

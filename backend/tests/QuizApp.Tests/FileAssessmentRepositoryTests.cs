@@ -155,11 +155,67 @@ public sealed class FileAssessmentRepositoryTests
         Assert.Contains(summaries, summary => summary.Id == assessment.Id && summary.QuestionCount == 2);
     }
 
+    [Fact]
+    public async Task SaveAsync_round_trips_guided_projects()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.GuidedProjectAssessment();
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync(assessment.Id);
+        var summaries = await repository.ListByCategoryAsync(assessment.CategoryId);
+
+        Assert.NotNull(loaded);
+        Assert.Equal(AssessmentType.GuidedProject, loaded.AssessmentType);
+        Assert.NotNull(loaded.GuidedProject);
+        Assert.Equal("cpp", loaded.GuidedProject.Language);
+        Assert.Equal("Runner.h", Assert.Single(loaded.GuidedProject.Files).Path);
+        Assert.Equal("runner-check", Assert.Single(loaded.GuidedProject.RequiredChecks).Id);
+        Assert.Contains(summaries, summary => summary.Id == assessment.Id && summary.QuestionCount == 1);
+    }
+
+    [Fact]
+    public async Task Repository_loads_runner_guided_project_from_data_files()
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var loaded = await repository.GetByIdAsync("cpp-runner-race-control-guided-project");
+
+        Assert.NotNull(loaded);
+        Assert.Equal(AssessmentType.GuidedProject, loaded.AssessmentType);
+        Assert.NotNull(loaded.GuidedProject);
+        Assert.Equal("Runner.h", loaded.GuidedProject.Files[0].Path);
+        Assert.Equal(2, loaded.GuidedProject.RequiredChecks.Count);
+        Assert.Equal("coach-updates-distance", Assert.Single(loaded.GuidedProject.BonusChecks).Id);
+    }
+
     private static string CreateDataRoot()
     {
         var dataRoot = Path.Combine(AppContext.BaseDirectory, "file-repository-tests", Guid.NewGuid().ToString("n"));
         Directory.CreateDirectory(Path.Combine(dataRoot, "assessments"));
         Directory.CreateDirectory(Path.Combine(dataRoot, "samples"));
         return dataRoot;
+    }
+
+    private static string FindRepositoryDataRoot()
+    {
+        var directory = new DirectoryInfo(AppContext.BaseDirectory);
+        while (directory is not null)
+        {
+            var dataRoot = Path.Combine(directory.FullName, "data");
+            if (Directory.Exists(Path.Combine(dataRoot, "assessments")))
+            {
+                return dataRoot;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Could not locate repository data directory.");
     }
 }

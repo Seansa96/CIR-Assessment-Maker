@@ -35,6 +35,7 @@ builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
 builder.Services.AddSingleton<GradeAnalyticsService>();
+builder.Services.AddSingleton<GuidedProjectService>();
 builder.Services.AddSingleton(new FileStorageOptions { DataRoot = dataRoot });
 builder.Services.AddSingleton(new SqliteRetentionOptions { DatabasePath = sqlitePath });
 builder.Services.AddSingleton<SqliteRetentionInitializer>();
@@ -48,6 +49,7 @@ builder.Services.AddSingleton<IAttemptRepository>(provider => provider.GetRequir
 builder.Services.AddSingleton<IAttemptSessionStore, InMemoryAttemptSessionStore>();
 builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequiredService<SqliteGradeLogRepository>());
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
+builder.Services.AddSingleton<IGuidedProjectSessionRepository, FileGuidedProjectSessionRepository>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("LocalFrontend", policy =>
@@ -278,6 +280,68 @@ api.MapPost("/attempts/{attemptId}/answers", async (string attemptId, SubmitAnsw
     catch (InvalidOperationException ex)
     {
         return Results.BadRequest(ApiError("ANSWER_SUBMIT_FAILED", ex.Message));
+    }
+});
+
+api.MapGet("/attempts/{attemptId}/guided-project", async (
+    string attemptId,
+    GuidedProjectService guidedProjectService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await guidedProjectService.GetSessionAsync(attemptId, cancellationToken));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("GUIDED_PROJECT_SESSION_FAILED", ex.Message));
+    }
+});
+
+api.MapPut("/attempts/{attemptId}/guided-project/files", async (
+    string attemptId,
+    SaveGuidedProjectFilesRequest request,
+    GuidedProjectService guidedProjectService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await guidedProjectService.SaveFilesAsync(attemptId, request.ToDomain(), cancellationToken));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("GUIDED_PROJECT_SAVE_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/guided-project/run", async (
+    string attemptId,
+    SaveGuidedProjectFilesRequest request,
+    GuidedProjectService guidedProjectService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(await guidedProjectService.RunAsync(attemptId, request.ToDomain(), cancellationToken));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("GUIDED_PROJECT_RUN_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/guided-project/complete", async (
+    string attemptId,
+    GuidedProjectService guidedProjectService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        return Results.Ok(new { results = await guidedProjectService.CompleteAsync(attemptId, cancellationToken) });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("GUIDED_PROJECT_COMPLETE_FAILED", ex.Message));
     }
 });
 

@@ -24,14 +24,15 @@ public sealed class PistonCodeRunnerClient : ICodeRunnerClient
         }
 
         var runtime = await ResolveRuntimeAsync(baseUri, request.Language, cancellationToken);
+        var files = request.Files.Count > 0
+            ? request.Files.Select(file => new { name = file.Name, content = file.Content }).ToArray()
+            : new[] { new { name = request.FileName, content = request.Content } };
+
         var payload = new
         {
             language = runtime.Language,
             version = runtime.Version,
-            files = new[]
-            {
-                new { name = request.FileName, content = request.Content }
-            },
+            files,
             stdin = "",
             args = Array.Empty<string>(),
             compile_timeout = request.CompileTimeoutMs,

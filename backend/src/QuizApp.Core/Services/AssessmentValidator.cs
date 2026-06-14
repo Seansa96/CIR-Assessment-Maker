@@ -22,7 +22,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, or workedExample."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, or guidedProject."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -38,6 +38,12 @@ public sealed class AssessmentValidator
         if (assessment.AssessmentType is AssessmentType.WorkedExample)
         {
             ValidateWorkedExamples(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        if (assessment.AssessmentType is AssessmentType.GuidedProject)
+        {
+            ValidateGuidedProject(assessment, issues);
             return new AssessmentValidationResult(issues);
         }
 
@@ -194,6 +200,106 @@ public sealed class AssessmentValidator
         {
             issues.Add(new ValidationIssue("DUPLICATE_WORKED_EXAMPLE_STEP_ID", $"Worked example step id '{duplicateId}' is duplicated.", duplicateId));
         }
+    }
+
+    private static void ValidateGuidedProject(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        var project = assessment.GuidedProject;
+        if (project is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_GUIDED_PROJECT", "Guided project assessments must include guidedProject."));
+            return;
+        }
+
+        if (!string.Equals(project.Language, "cpp", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(project.Language, "python", StringComparison.OrdinalIgnoreCase))
+        {
+            issues.Add(new ValidationIssue("INVALID_GUIDED_PROJECT_LANGUAGE", "Guided project language must be cpp or python."));
+        }
+
+        RequireText(project.Instructions, "MISSING_GUIDED_PROJECT_INSTRUCTIONS", "Guided projects must include instructions.", issues);
+
+        if (project.Files.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_GUIDED_PROJECT_FILES", "Guided projects must include at least one source file."));
+        }
+
+        if (!project.Files.Any(file => !file.ReadOnly))
+        {
+            issues.Add(new ValidationIssue("MISSING_EDITABLE_GUIDED_PROJECT_FILE", "Guided projects must include at least one editable source file."));
+        }
+
+        var duplicateFilePaths = project.Files
+            .Where(file => !string.IsNullOrWhiteSpace(file.Path))
+            .GroupBy(file => file.Path, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key);
+
+        foreach (var duplicatePath in duplicateFilePaths)
+        {
+            issues.Add(new ValidationIssue("DUPLICATE_GUIDED_PROJECT_FILE", $"Guided project file path '{duplicatePath}' is duplicated."));
+        }
+
+        foreach (var file in project.Files)
+        {
+            RequireText(file.Path, "MISSING_GUIDED_PROJECT_FILE_PATH", "Guided project files must include path.", issues);
+            if (!IsSafeRelativePath(file.Path))
+            {
+                issues.Add(new ValidationIssue("INVALID_GUIDED_PROJECT_FILE_PATH", $"Guided project file path '{file.Path}' must be a safe relative path."));
+            }
+        }
+
+        if (project.RequiredChecks.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_GUIDED_PROJECT_REQUIRED_CHECKS", "Guided projects must include at least one required check."));
+        }
+
+        ValidateGuidedProjectChecks(project.RequiredChecks, issues, true);
+        ValidateGuidedProjectChecks(project.BonusChecks, issues, false);
+    }
+
+    private static void ValidateGuidedProjectChecks(
+        IReadOnlyList<GuidedProjectCheckDefinition> checks,
+        List<ValidationIssue> issues,
+        bool required)
+    {
+        var duplicateCheckIds = checks
+            .Where(check => !string.IsNullOrWhiteSpace(check.Id))
+            .GroupBy(check => check.Id, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key);
+
+        foreach (var duplicateId in duplicateCheckIds)
+        {
+            issues.Add(new ValidationIssue("DUPLICATE_GUIDED_PROJECT_CHECK", $"Guided project check id '{duplicateId}' is duplicated.", duplicateId));
+        }
+
+        foreach (var check in checks)
+        {
+            RequireText(check.Id, "MISSING_GUIDED_PROJECT_CHECK_ID", "Guided project checks must include id.", issues);
+            RequireText(check.Title, "MISSING_GUIDED_PROJECT_CHECK_TITLE", "Guided project checks must include title.", issues, check.Id);
+            RequireText(check.Description, "MISSING_GUIDED_PROJECT_CHECK_DESCRIPTION", "Guided project checks must include description.", issues, check.Id);
+            RequireText(check.TestCode, "MISSING_GUIDED_PROJECT_CHECK_TEST_CODE", "Guided project checks must include testCode.", issues, check.Id);
+
+            if (required && check.ExpectedOutputContains.Count == 0)
+            {
+                issues.Add(new ValidationIssue("MISSING_GUIDED_PROJECT_EXPECTED_OUTPUT", "Required guided project checks must include expectedOutputContains.", check.Id));
+            }
+        }
+    }
+
+    private static bool IsSafeRelativePath(string path)
+    {
+        if (string.IsNullOrWhiteSpace(path)
+            || Path.IsPathRooted(path)
+            || path.Contains("..", StringComparison.Ordinal)
+            || path.Contains('\\'))
+        {
+            return false;
+        }
+
+        return path.Split('/', StringSplitOptions.RemoveEmptyEntries)
+            .All(part => part.Length > 0 && part.All(character => char.IsLetterOrDigit(character) || character is '-' or '_' or '.'));
     }
 
     private static void RequireText(string? value, string code, string message, List<ValidationIssue> issues, string? questionId = null)

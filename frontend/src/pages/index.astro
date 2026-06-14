@@ -218,7 +218,7 @@ import "../styles/global.css";
       import "mathlive";
 
       type AssessmentMode = "practice" | "scored";
-      type AssessmentType = "quiz" | "test" | "workedExample";
+      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse";
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
 
@@ -324,12 +324,59 @@ import "../styles/global.css";
         explanation?: string | null;
       }
 
+      interface GuidedProject {
+        language: "cpp" | "python";
+        instructions: string;
+        files: GuidedProjectFile[];
+        requiredChecks: GuidedProjectCheck[];
+        bonusChecks: GuidedProjectCheck[];
+      }
+
+      interface GuidedProjectFile {
+        path: string;
+        content: string;
+        readOnly: boolean;
+      }
+
+      interface GuidedProjectCheck {
+        id: string;
+        title: string;
+        description: string;
+        testCode: string;
+        expectedOutputContains: string[];
+      }
+
+      interface GuidedProjectSession {
+        attemptId: string;
+        assessmentId: string;
+        files: GuidedProjectFile[];
+        checkResults: GuidedProjectCheckResult[];
+        updatedAt: string;
+      }
+
+      interface GuidedProjectCheckResult {
+        checkId: string;
+        title: string;
+        required: boolean;
+        passed: boolean;
+        output: string | null;
+        compileOutput: string | null;
+        error: string | null;
+        ranAt: string;
+      }
+
+      interface GuidedProjectRunResult {
+        session: GuidedProjectSession;
+        allRequiredPassed: boolean;
+      }
+
       interface Assessment {
         id: string;
         title: string;
         assessmentType: AssessmentType;
         questions: Question[];
         workedExamples?: WorkedExample[];
+        guidedProject?: GuidedProject | null;
       }
 
       interface Attempt {
@@ -506,7 +553,9 @@ import "../styles/global.css";
       }
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
+      const IS_DEV = import.meta.env.DEV;
       let currentCodeEditor: EditorView | null = null;
+      let currentProjectEditor: EditorView | null = null;
       const markdownProcessor = unified()
         .use(remarkParse)
         .use(remarkMath)
@@ -522,6 +571,8 @@ import "../styles/global.css";
         attempt: Attempt | null;
         currentIndex: number;
         latestResults: AttemptResults | null;
+        guidedProjectSession: GuidedProjectSession | null;
+        guidedProjectActiveFile: string;
         committedAttemptIds: Set<string>;
         analytics: GradeAnalyticsSummary | null;
         historyFilters: {
@@ -546,6 +597,8 @@ import "../styles/global.css";
         attempt: null,
         currentIndex: 0,
         latestResults: null,
+        guidedProjectSession: null,
+        guidedProjectActiveFile: "",
         committedAttemptIds: new Set(),
         analytics: null,
         historyFilters: {
@@ -665,6 +718,8 @@ import "../styles/global.css";
           });
           state.currentIndex = 0;
           state.latestResults = null;
+          state.guidedProjectSession = null;
+          state.guidedProjectActiveFile = "";
           updateActiveAttemptChip();
           updateModeControlLock();
           await renderCurrentQuestion();
@@ -750,6 +805,8 @@ import "../styles/global.css";
         state.assessment = session.assessment;
         state.attempt = session.attempt;
         state.latestResults = session.results;
+        state.guidedProjectSession = null;
+        state.guidedProjectActiveFile = "";
         state.currentIndex = preferFirstUnanswered ? firstUnansweredIndex(session.results, session.attempt) : 0;
         updateActiveAttemptChip(statusLabel(session.attempt.status));
         syncModeControlToAttempt();
@@ -764,8 +821,40 @@ import "../styles/global.css";
         await renderCurrentQuestion();
       }
 
+      async function refreshCurrentAssessment() {
+        if (!state.assessment || !state.attempt || !IS_DEV) return;
+
+        const refreshButton = document.querySelector<HTMLButtonElement>("[data-refresh-current-assessment]");
+        const currentQuestionId = state.attempt.questionOrder[state.currentIndex] ?? "";
+        if (refreshButton) setBusy(refreshButton, "Refreshing");
+
+        try {
+          const refreshedAssessment = await api<Assessment>(`/assessments/${encodeURIComponent(state.assessment.id)}`);
+          state.assessment = refreshedAssessment;
+
+          if (state.attempt.status !== "inProgress") {
+            state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+            await renderResults(isAttemptCommitted(state.attempt.id));
+            return;
+          }
+
+          const refreshedQuestionIds = getAssessmentQuestionIds(refreshedAssessment);
+          if (refreshedQuestionIds.length > 0 && !refreshedQuestionIds.includes(currentQuestionId)) {
+            const fallbackIndex = state.attempt.questionOrder.findIndex((questionId) => refreshedQuestionIds.includes(questionId));
+            state.currentIndex = Math.max(0, fallbackIndex);
+          }
+
+          await renderCurrentQuestion();
+        } finally {
+          if (refreshButton) clearBusy(refreshButton, "Refresh Assessment");
+        }
+      }
+
       async function pauseAttempt() {
         if (!state.attempt) return;
+        if (state.assessment?.assessmentType === "guidedProject") {
+          await saveGuidedProjectFiles();
+        }
         const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${state.attempt.id}/pause`, {
           method: "POST"
         });
@@ -826,6 +915,10 @@ import "../styles/global.css";
 
       async function completeAttempt() {
         if (!state.attempt) return;
+        if (state.assessment?.assessmentType === "guidedProject") {
+          await completeGuidedProject();
+          return;
+        }
         const completeButton = document.querySelector<HTMLButtonElement>("#complete-attempt");
 
         if (completeButton) setBusy(completeButton, "Completing");
@@ -845,7 +938,7 @@ import "../styles/global.css";
       }
 
       async function commitGrade() {
-        if (!state.attempt || state.latestResults?.assessmentType === "workedExample") return;
+        if (!state.attempt || state.latestResults?.assessmentType === "workedExample" || state.latestResults?.assessmentType === "guidedProject") return;
         await api("/grades/commit", {
           method: "POST",
           body: JSON.stringify({ attemptId: state.attempt.id })
@@ -1025,7 +1118,7 @@ import "../styles/global.css";
               <div class="history-filter-grid">
                 ${renderHistorySelect("status", "Status", [["", "Any"], ["inProgress", "In progress"], ["paused", "Paused"], ["completed", "Complete"], ["abandoned", "Abandoned"]])}
                 ${renderHistorySelect("mode", "Mode", [["", "Any"], ["practice", "Practice"], ["scored", "Scored"]])}
-                ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"]])}
+                ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"], ["guidedProject", "Guided Project"]])}
                 ${renderHistorySelect("categoryId", "Category", [["", "Any"], ...uniqueOptions(analytics.attempts.map((row) => [row.categoryId, row.categoryTitle]))])}
                 ${renderHistorySelect("areaId", "Area", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.areaIds.map((areaId, index) => [areaId, row.areaTitles[index] ?? areaId])))])}
                 ${renderHistorySelect("questionType", "Question Type", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.questionTypes.map((type) => [type, questionTypeLabel(type)] as [string, string])))])}
@@ -1149,7 +1242,7 @@ import "../styles/global.css";
           actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
         }
 
-        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
+        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && attempt.assessmentType !== "guidedProject" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
           actions.push(`<button type="button" data-attempt-action="commit" data-attempt-id="${id}">Commit</button>`);
         }
 
@@ -1774,6 +1867,11 @@ import "../styles/global.css";
           return;
         }
 
+        if (state.assessment.assessmentType === "guidedProject") {
+          await renderGuidedProject();
+          return;
+        }
+
         const question = getCurrentQuestion();
         const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
@@ -1808,6 +1906,7 @@ import "../styles/global.css";
                 <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
                 <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
                 <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
+                ${renderDevAssessmentRefreshButton()}
                 <button type="button" id="pause-attempt">Save and Quit</button>
               </div>
               <div class="button-row terminal-actions" aria-label="Assessment ending actions">
@@ -1835,6 +1934,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
+        setupDevAssessmentRefresh();
         setupQuestionNavigator();
         setupChoiceCards(question);
         setupCodeEditor(question);
@@ -1906,6 +2006,7 @@ import "../styles/global.css";
                       ${isReviewingPreviousStep ? `<button type="button" id="return-current-step">Return to Current Step</button>` : ""}
                       <button type="button" id="previous-worked-step" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Step</button>
                       <button class="primary chunky" id="submit-answer" type="submit" ${isReviewingPreviousStep || isLockedFutureStep ? "disabled" : ""}>${result?.isCorrect ? "Continue" : "Check Step"}</button>
+                      ${renderDevAssessmentRefreshButton()}
                       <button type="button" id="pause-attempt">Save and Quit</button>
                     </div>
                     <div class="button-row terminal-actions" aria-label="Assessment ending actions">
@@ -1941,16 +2042,238 @@ import "../styles/global.css";
         });
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
+        setupDevAssessmentRefresh();
         setupChoiceCards(question);
         setupCodeEditor(question);
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
       }
 
+      async function renderGuidedProject() {
+        if (!state.attempt || !state.assessment?.guidedProject) return;
+        if (state.attempt.status !== "inProgress") {
+          attemptContent.innerHTML = `<div class="empty-state">This guided project is ${escapeHtml(statusLabel(state.attempt.status).toLowerCase())}. Continue it from Attempt Sessions to make changes.</div>`;
+          return;
+        }
+
+        if (!state.guidedProjectSession) {
+          state.guidedProjectSession = await api<GuidedProjectSession>(`/attempts/${encodeURIComponent(state.attempt.id)}/guided-project`);
+        }
+
+        const project = state.assessment.guidedProject;
+        const session = state.guidedProjectSession;
+        const editableFiles = session.files.filter((file) => !file.readOnly);
+        const activePath = state.guidedProjectActiveFile
+          || editableFiles[0]?.path
+          || session.files[0]?.path
+          || "";
+        state.guidedProjectActiveFile = activePath;
+        const activeFile = session.files.find((file) => file.path === activePath) ?? session.files[0];
+        const instructionsHtml = await renderMarkdown(project.instructions);
+
+        attemptContent.innerHTML = `
+          <div class="guided-project-shell">
+            <aside class="guided-project-sidebar">
+              <p class="eyebrow">Guided Project</p>
+              <h2>${escapeHtml(state.assessment.title)}</h2>
+              <div class="markdown">${instructionsHtml}</div>
+              <div class="guided-check-list">
+                <h3>Required Checks</h3>
+                ${renderGuidedProjectChecks(project.requiredChecks, session.checkResults, true)}
+                ${project.bonusChecks.length > 0 ? `<h3>Bonus Checks</h3>${renderGuidedProjectChecks(project.bonusChecks, session.checkResults, false)}` : ""}
+              </div>
+            </aside>
+            <section class="guided-project-workspace">
+              <div class="project-file-tabs" role="tablist" aria-label="Project files">
+                ${session.files.map((file) => `
+                  <button
+                    type="button"
+                    class="${file.path === activeFile.path ? "active" : ""}"
+                    data-project-file="${escapeHtml(file.path)}"
+                    role="tab"
+                    aria-selected="${file.path === activeFile.path ? "true" : "false"}"
+                  >
+                    ${escapeHtml(file.path)}${file.readOnly ? " · read-only" : ""}
+                  </button>
+                `).join("")}
+              </div>
+              <div class="project-editor-header">
+                <strong>${escapeHtml(activeFile.path)}</strong>
+                ${activeFile.readOnly ? `<span>Read-only reference</span>` : `<span>Editable session file</span>`}
+              </div>
+              <div id="guided-project-editor" class="code-editor-shell project-editor-shell" data-language="${escapeHtml(project.language)}" data-code="${escapeHtml(activeFile.content)}" data-readonly="${activeFile.readOnly ? "true" : "false"}"></div>
+              <div class="assessment-control-bar">
+                <div class="button-row">
+                  <button class="primary chunky" type="button" id="run-guided-project">Run Checks</button>
+                  <button type="button" id="save-guided-project">Save Progress</button>
+                  ${renderDevAssessmentRefreshButton()}
+                  <button type="button" id="pause-attempt">Save and Quit</button>
+                </div>
+                <div class="button-row terminal-actions" aria-label="Project ending actions">
+                  <button class="chunky complete-action" type="button" id="complete-attempt" ${guidedProjectAllRequiredPassed(project, session) ? "" : "disabled"}>Complete Project</button>
+                  <button class="chunky danger-action" type="button" id="abandon-attempt">Quit Early</button>
+                </div>
+              </div>
+              ${session.checkResults.length > 0 ? renderGuidedProjectOutput(session.checkResults) : `<p class="input-help">Run checks when you want the app to compile and test the current files. You do not need to write a makefile or terminal command.</p>`}
+            </section>
+          </div>
+        `;
+
+        setupGuidedProjectEditor(project.language, activeFile.readOnly);
+        document.querySelectorAll<HTMLButtonElement>("[data-project-file]").forEach((button) => {
+          button.addEventListener("click", () => {
+            syncGuidedProjectEditor();
+            state.guidedProjectActiveFile = button.dataset.projectFile ?? state.guidedProjectActiveFile;
+            void renderGuidedProject();
+          });
+        });
+        document.querySelector<HTMLButtonElement>("#run-guided-project")!.addEventListener("click", runGuidedProject);
+        document.querySelector<HTMLButtonElement>("#save-guided-project")!.addEventListener("click", async () => {
+          await saveGuidedProjectFiles();
+          await renderGuidedProject();
+        });
+        document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
+        document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
+        document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
+        setupDevAssessmentRefresh();
+      }
+
+      function renderGuidedProjectChecks(checks: GuidedProjectCheck[], results: GuidedProjectCheckResult[], required: boolean) {
+        if (checks.length === 0) return `<p class="muted">No checks configured.</p>`;
+
+        return `
+          <ol>
+            ${checks.map((check) => {
+              const result = results.find((candidate) => candidate.checkId === check.id && candidate.required === required);
+              const status = result ? (result.passed ? "Pass" : "Needs work") : "Not run";
+              return `
+                <li class="${result?.passed ? "complete" : result ? "needs-review" : ""}">
+                  <strong>${escapeHtml(check.title)}</strong>
+                  <span>${escapeHtml(status)}</span>
+                  <p>${escapeHtml(check.description)}</p>
+                </li>
+              `;
+            }).join("")}
+          </ol>
+        `;
+      }
+
+      function renderGuidedProjectOutput(results: GuidedProjectCheckResult[]) {
+        return `
+          <div class="guided-output">
+            <h3>Latest run</h3>
+            ${results.map((result) => `
+              <details class="${result.passed ? "correct" : "incorrect"}" ${result.passed ? "" : "open"}>
+                <summary>${escapeHtml(result.title)} - ${result.passed ? "Pass" : "Needs work"}</summary>
+                ${result.output ? `<pre>${escapeHtml(result.output)}</pre>` : ""}
+                ${result.compileOutput ? `<pre>${escapeHtml(result.compileOutput)}</pre>` : ""}
+                ${result.error ? `<pre>${escapeHtml(result.error)}</pre>` : ""}
+              </details>
+            `).join("")}
+          </div>
+        `;
+      }
+
+      async function runGuidedProject() {
+        if (!state.attempt) return;
+        const button = document.querySelector<HTMLButtonElement>("#run-guided-project");
+        if (button) setBusy(button, "Running");
+
+        try {
+          const response = await api<GuidedProjectRunResult>(`/attempts/${encodeURIComponent(state.attempt.id)}/guided-project/run`, {
+            method: "POST",
+            body: JSON.stringify({ files: readGuidedProjectFiles() })
+          });
+          state.guidedProjectSession = response.session;
+          await renderGuidedProject();
+        } finally {
+          if (button) clearBusy(button, "Run Checks");
+        }
+      }
+
+      async function saveGuidedProjectFiles() {
+        if (!state.attempt || state.assessment?.assessmentType !== "guidedProject" || !state.guidedProjectSession) return;
+        state.guidedProjectSession = await api<GuidedProjectSession>(`/attempts/${encodeURIComponent(state.attempt.id)}/guided-project/files`, {
+          method: "PUT",
+          body: JSON.stringify({ files: readGuidedProjectFiles() })
+        });
+      }
+
+      async function completeGuidedProject() {
+        if (!state.attempt) return;
+        const completeButton = document.querySelector<HTMLButtonElement>("#complete-attempt");
+        if (completeButton) setBusy(completeButton, "Completing");
+
+        try {
+          await saveGuidedProjectFiles();
+          const response = await api<{ results: AttemptResults }>(`/attempts/${encodeURIComponent(state.attempt.id)}/guided-project/complete`, {
+            method: "POST"
+          });
+          state.latestResults = response.results;
+          state.guidedProjectSession = null;
+          updateActiveAttemptChip("Complete");
+          updateModeControlLock();
+          await renderResults(false);
+          await loadGrades();
+        } finally {
+          if (completeButton) clearBusy(completeButton, "Complete Project");
+        }
+      }
+
+      function guidedProjectAllRequiredPassed(project: GuidedProject, session: GuidedProjectSession) {
+        return project.requiredChecks.every((check) =>
+          session.checkResults.some((result) => result.required && result.checkId === check.id && result.passed));
+      }
+
+      function readGuidedProjectFiles() {
+        syncGuidedProjectEditor();
+        return (state.guidedProjectSession?.files ?? []).map((file) => ({
+          path: file.path,
+          content: file.content
+        }));
+      }
+
+      function syncGuidedProjectEditor() {
+        if (!state.guidedProjectSession || !state.guidedProjectActiveFile || !currentProjectEditor) return;
+
+        state.guidedProjectSession = {
+          ...state.guidedProjectSession,
+          files: state.guidedProjectSession.files.map((file) =>
+            file.path === state.guidedProjectActiveFile && !file.readOnly
+              ? { ...file, content: currentProjectEditor!.state.doc.toString() }
+              : file)
+        };
+      }
+
+      function setupGuidedProjectEditor(language: "cpp" | "python", readOnly: boolean) {
+        currentProjectEditor?.destroy();
+        currentProjectEditor = null;
+
+        const mount = document.querySelector<HTMLDivElement>("#guided-project-editor");
+        if (!mount) return;
+
+        const languageExtension = language === "cpp" ? cpp() : python();
+        currentProjectEditor = new EditorView({
+          doc: mount.dataset.code ?? "",
+          parent: mount,
+          extensions: [
+            keymap.of([indentWithTab]),
+            basicSetup,
+            languageExtension,
+            EditorView.lineWrapping,
+            EditorView.editable.of(!readOnly),
+            EditorView.updateListener.of((update) => {
+              if (update.docChanged) syncGuidedProjectEditor();
+            })
+          ]
+        });
+      }
+
       async function renderResults(alreadyCommitted: boolean) {
         if (!state.latestResults) return;
         const results = state.latestResults;
         const isWorkedExample = results.assessmentType === "workedExample";
+        const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject";
         const questionHtml = await Promise.all(results.questions.map(async (question) => {
           const promptHtml = await renderMarkdown(question.prompt);
           const expectedHtml = question.expectedAnswer ? await renderMarkdown(question.type === "symbolicResponse" ? `$${question.expectedAnswer}$` : question.expectedAnswer) : "";
@@ -1980,18 +2303,20 @@ import "../styles/global.css";
         attemptContent.innerHTML = `
           <div class="results-header">
             <h2>${escapeHtml(results.assessmentTitle)}</h2>
-            <div class="score-badge">${isWorkedExample ? "Complete" : `${results.percentScore}%`}</div>
+            <div class="score-badge">${isInstructionalSession ? "Complete" : `${results.percentScore}%`}</div>
           </div>
-          <p class="muted">${isWorkedExample ? "Worked Example" : `${results.correctCount} correct out of ${results.totalQuestions} questions`}. Status: ${escapeHtml(statusLabel(results.status))}.</p>
+          <p class="muted">${isInstructionalSession ? assessmentTypeLabel(results.assessmentType) : `${results.correctCount} correct out of ${results.totalQuestions} questions`}. Status: ${escapeHtml(statusLabel(results.status))}.</p>
           <div class="result-list">
             ${questionHtml.join("")}
           </div>
           ${results.hasPendingSelfChecks ? `<p class="feedback incorrect">Resolve pending free-response self-checks before committing this score.</p>` : ""}
           ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
-          ${!alreadyCommitted && !isWorkedExample && !results.hasPendingSelfChecks && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+          ${renderDevAssessmentRefreshButton()}
+          ${!alreadyCommitted && !isInstructionalSession && !results.hasPendingSelfChecks && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
         `;
 
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
+        setupDevAssessmentRefresh();
         setupSelfCheckButtons();
       }
 
@@ -2393,6 +2718,7 @@ import "../styles/global.css";
 
       function handleAnswerShortcut(event: KeyboardEvent) {
         if (!state.attempt || !state.assessment) return;
+        if (state.assessment.assessmentType === "guidedProject") return;
 
         const target = event.target as HTMLElement;
         if (target.matches("input, textarea, select, math-field")) return;
@@ -2428,6 +2754,10 @@ import "../styles/global.css";
       }
 
       function getCurrentQuestion() {
+        if (state.assessment?.assessmentType === "guidedProject") {
+          throw new Error("Guided projects do not use question navigation.");
+        }
+
         const questionId = state.attempt!.questionOrder[state.currentIndex];
         if (state.assessment?.assessmentType === "workedExample") {
           const step = getWorkedExampleSteps().find((candidate) => candidate.id === questionId)!;
@@ -2463,11 +2793,38 @@ import "../styles/global.css";
           example.steps.some((step) => step.id === stepId));
       }
 
+      function getAssessmentQuestionIds(assessment: Assessment) {
+        if (assessment.assessmentType === "workedExample") {
+          return (assessment.workedExamples ?? []).flatMap((example) => example.steps.map((step) => step.id));
+        }
+
+        if (assessment.assessmentType === "guidedProject") {
+          return [];
+        }
+
+        return assessment.questions.map((question) => question.id);
+      }
+
+      function renderDevAssessmentRefreshButton() {
+        return IS_DEV
+          ? `<button type="button" data-refresh-current-assessment title="Reload the current assessment YAML without ending this session">Refresh Assessment</button>`
+          : "";
+      }
+
+      function setupDevAssessmentRefresh() {
+        if (!IS_DEV) return;
+
+        document.querySelectorAll<HTMLButtonElement>("[data-refresh-current-assessment]").forEach((button) => {
+          button.addEventListener("click", refreshCurrentAssessment);
+        });
+      }
+
       function assessmentTypeLabel(type: AssessmentType) {
         return {
           quiz: "Quiz",
           test: "Test",
-          workedExample: "Worked Example"
+          workedExample: "Worked Example",
+          guidedProject: "Guided Project"
         }[type] ?? "Assessment";
       }
 

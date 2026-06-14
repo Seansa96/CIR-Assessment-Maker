@@ -43,6 +43,32 @@ internal sealed class AssessmentFileDto
     public int? AssessmentTimerSeconds { get; set; }
     public List<QuestionFileDto>? Questions { get; set; }
     public List<WorkedExampleFileDto>? WorkedExamples { get; set; }
+    public GuidedProjectFileDto? GuidedProject { get; set; }
+}
+
+internal sealed class GuidedProjectFileDto
+{
+    public string? Language { get; set; }
+    public string? Instructions { get; set; }
+    public List<GuidedProjectSourceFileDto>? Files { get; set; }
+    public List<GuidedProjectCheckFileDto>? RequiredChecks { get; set; }
+    public List<GuidedProjectCheckFileDto>? BonusChecks { get; set; }
+}
+
+internal sealed class GuidedProjectSourceFileDto
+{
+    public string? Path { get; set; }
+    public string? Content { get; set; }
+    public bool ReadOnly { get; set; }
+}
+
+internal sealed class GuidedProjectCheckFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public string? Description { get; set; }
+    public string? TestCode { get; set; }
+    public List<string>? ExpectedOutputContains { get; set; }
 }
 
 internal sealed class WorkedExampleFileDto

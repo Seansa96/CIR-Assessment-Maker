@@ -5,7 +5,8 @@ public enum AssessmentType
     Unknown,
     Quiz,
     Test,
-    WorkedExample
+    WorkedExample,
+    GuidedProject
 }
 
 public enum AssessmentMode
@@ -68,7 +69,53 @@ public sealed record AssessmentDefinition(
     IReadOnlyList<QuestionDefinition> Questions)
 {
     public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
+    public GuidedProjectDefinition? GuidedProject { get; init; }
 }
+
+public sealed record GuidedProjectDefinition(
+    string Language,
+    string Instructions,
+    IReadOnlyList<GuidedProjectFileDefinition> Files,
+    IReadOnlyList<GuidedProjectCheckDefinition> RequiredChecks,
+    IReadOnlyList<GuidedProjectCheckDefinition> BonusChecks);
+
+public sealed record GuidedProjectFileDefinition(
+    string Path,
+    string Content,
+    bool ReadOnly);
+
+public sealed record GuidedProjectCheckDefinition(
+    string Id,
+    string Title,
+    string Description,
+    string TestCode,
+    IReadOnlyList<string> ExpectedOutputContains);
+
+public sealed record GuidedProjectSession(
+    string AttemptId,
+    string AssessmentId,
+    IReadOnlyList<GuidedProjectFileState> Files,
+    IReadOnlyList<GuidedProjectCheckResult> CheckResults,
+    DateTimeOffset UpdatedAt);
+
+public sealed record GuidedProjectFileState(
+    string Path,
+    string Content,
+    bool ReadOnly);
+
+public sealed record GuidedProjectCheckResult(
+    string CheckId,
+    string Title,
+    bool Required,
+    bool Passed,
+    string? Output,
+    string? CompileOutput,
+    string? Error,
+    DateTimeOffset RanAt);
+
+public sealed record GuidedProjectRunResult(
+    GuidedProjectSession Session,
+    bool AllRequiredPassed);
 
 public sealed record WorkedExampleDefinition(
     string Id,
