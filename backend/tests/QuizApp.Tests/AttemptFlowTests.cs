@@ -385,6 +385,58 @@ public sealed class AttemptFlowTests
         await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
     }
 
+    [Fact]
+    public async Task Recall_drill_reveal_and_rating_tracks_summary_and_completes()
+    {
+        var assessment = TestData.RecallDrillAssessment();
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        Assert.Equal(AssessmentMode.Practice, attempt.Mode);
+        Assert.Equal(new[] { "typed-1", "symbolic-1", "flashcard-1", "cloze-1" }, attempt.QuestionOrder);
+
+        await service.RevealRecallItemAsync(attempt.Id, "typed-1", "A variable stores a value.");
+        await service.RateRecallItemAsync(attempt.Id, "typed-1", RecallRating.Correct);
+        await service.RevealRecallItemAsync(attempt.Id, "symbolic-1", "\\sin^2(x)+\\cos^2(x)=1");
+        await service.RateRecallItemAsync(attempt.Id, "symbolic-1", RecallRating.Easy);
+        await service.RevealRecallItemAsync(attempt.Id, "flashcard-1", null);
+        await service.RateRecallItemAsync(attempt.Id, "flashcard-1", RecallRating.NeedsReview);
+        await service.RevealRecallItemAsync(attempt.Id, "cloze-1", "cos^2(x)");
+        var completed = await service.RateRecallItemAsync(attempt.Id, "cloze-1", RecallRating.ForgotCompletely);
+
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.Completed, completed.Status);
+        Assert.True(results.IsComplete);
+        Assert.Equal(AssessmentType.RecallDrill, results.AssessmentType);
+        Assert.Equal(4, results.RecallSummary?.ItemsReviewed);
+        Assert.Equal(1, results.RecallSummary?.EasyCount);
+        Assert.Equal(1, results.RecallSummary?.CorrectCount);
+        Assert.Equal(1, results.RecallSummary?.NeedsReviewCount);
+        Assert.Equal(1, results.RecallSummary?.ForgotCompletelyCount);
+        Assert.Contains("trig", results.RecallSummary!.WeakTags);
+    }
+
+    [Fact]
+    public async Task Recall_drill_cannot_rate_before_reveal_or_commit_to_grade_log()
+    {
+        var assessment = TestData.RecallDrillAssessment();
+        var attemptService = CreateAttemptService(assessment);
+        var gradeService = new GradeLogService(new InMemoryGradeLogRepository(), attemptService);
+        var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            attemptService.RateRecallItemAsync(attempt.Id, "typed-1", RecallRating.Correct));
+
+        foreach (var itemId in attempt.QuestionOrder)
+        {
+            await attemptService.RevealRecallItemAsync(attempt.Id, itemId, "response");
+            await attemptService.RateRecallItemAsync(attempt.Id, itemId, RecallRating.Correct);
+        }
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+    }
+
     private static AttemptService CreateAttemptService(
         AssessmentDefinition assessment,
         InMemoryAttemptRepository? attempts = null,
@@ -503,6 +555,48 @@ internal static class TestData
                         new[] { "RUNNER_OK" })
                 },
                 Array.Empty<GuidedProjectCheckDefinition>())
+        };
+    }
+
+    public static AssessmentDefinition RecallDrillAssessment()
+    {
+        return Assessment(AssessmentType.RecallDrill, Array.Empty<QuestionDefinition>()) with
+        {
+            Id = "trig-identities-basic-recall",
+            Title = "Trig Identities Basic Recall",
+            CategoryId = "trigonometry",
+            SubcategoryIds = new[] { "trig-identities" },
+            Items = new[]
+            {
+                new RecallItemDefinition(
+                    "typed-1",
+                    RecallItemType.Typed,
+                    "Define a variable.",
+                    new RecallItemAnswerDefinition("A named storage location for a value.", null, Array.Empty<string>(), Array.Empty<MediaAsset>()),
+                    "Variables let code refer to values by name.",
+                    new[] { "syntax", "definition" }),
+                new RecallItemDefinition(
+                    "symbolic-1",
+                    RecallItemType.Symbolic,
+                    "Write the primary Pythagorean identity.",
+                    new RecallItemAnswerDefinition(null, "\\sin^2(x)+\\cos^2(x)=1", new[] { "sin^2(x)+cos^2(x)=1" }, Array.Empty<MediaAsset>()),
+                    "This follows from points on the unit circle.",
+                    new[] { "trig", "pythagorean-identity" }),
+                new RecallItemDefinition(
+                    "flashcard-1",
+                    RecallItemType.Flashcard,
+                    "When do you use the Law of Cosines?",
+                    new RecallItemAnswerDefinition("When two sides and the included angle, or all three sides, are known.", null, Array.Empty<string>(), Array.Empty<MediaAsset>()),
+                    "It generalizes the Pythagorean theorem.",
+                    new[] { "trig", "law-of-cosines" }),
+                new RecallItemDefinition(
+                    "cloze-1",
+                    RecallItemType.Cloze,
+                    "Complete: sin^2(x) + ____ = 1",
+                    new RecallItemAnswerDefinition("cos^2(x)", null, Array.Empty<string>(), Array.Empty<MediaAsset>()),
+                    "The missing term is the complementary square.",
+                    new[] { "trig" })
+            }
         };
     }
 
@@ -640,7 +734,9 @@ internal sealed class InMemoryAssessmentRepository : IAssessmentRepository
                 assessment.SubcategoryIds,
                 assessment.AssessmentType is AssessmentType.WorkedExample
                     ? assessment.WorkedExamples.Sum(example => example.Steps.Count)
-                    : assessment.Questions.Count)
+                    : assessment.AssessmentType is AssessmentType.RecallDrill
+                        ? assessment.Items.Count
+                        : assessment.Questions.Count)
         };
 
         return Task.FromResult(summaries);

@@ -27,7 +27,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         await connection.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT id, assessment_id, mode, status, question_order_json, answers_json, started_at, paused_at, completed_at, abandoned_at
+            SELECT id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, started_at, paused_at, completed_at, abandoned_at
             FROM attempts
             ORDER BY started_at DESC;
             """;
@@ -49,7 +49,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         await connection.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT id, assessment_id, mode, status, question_order_json, answers_json, started_at, paused_at, completed_at, abandoned_at
+            SELECT id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, started_at, paused_at, completed_at, abandoned_at
             FROM attempts
             WHERE id = $id;
             """;
@@ -67,10 +67,10 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         await using var command = connection.CreateCommand();
         command.CommandText = """
             INSERT INTO attempts (
-                id, assessment_id, mode, status, question_order_json, answers_json, started_at, paused_at, completed_at, abandoned_at
+                id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, started_at, paused_at, completed_at, abandoned_at
             )
             VALUES (
-                $id, $assessment_id, $mode, $status, $question_order_json, $answers_json, $started_at, $paused_at, $completed_at, $abandoned_at
+                $id, $assessment_id, $mode, $status, $question_order_json, $answers_json, $recall_items_json, $started_at, $paused_at, $completed_at, $abandoned_at
             )
             ON CONFLICT(id) DO UPDATE SET
                 assessment_id = excluded.assessment_id,
@@ -78,6 +78,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
                 status = excluded.status,
                 question_order_json = excluded.question_order_json,
                 answers_json = excluded.answers_json,
+                recall_items_json = excluded.recall_items_json,
                 started_at = excluded.started_at,
                 paused_at = excluded.paused_at,
                 completed_at = excluded.completed_at,
@@ -106,6 +107,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         command.Parameters.AddWithValue("$status", (int)attempt.Status);
         command.Parameters.AddWithValue("$question_order_json", RetentionJson.Serialize(attempt.QuestionOrder));
         command.Parameters.AddWithValue("$answers_json", RetentionJson.Serialize(attempt.Answers));
+        command.Parameters.AddWithValue("$recall_items_json", RetentionJson.Serialize(attempt.RecallItems));
         command.Parameters.AddWithValue("$started_at", FormatDate(attempt.StartedAt));
         command.Parameters.AddWithValue("$paused_at", FormatNullableDate(attempt.PausedAt));
         command.Parameters.AddWithValue("$completed_at", FormatNullableDate(attempt.CompletedAt));
@@ -118,13 +120,16 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
             reader.GetString(0),
             reader.GetString(1),
             (AssessmentMode)reader.GetInt32(2),
-            NormalizeStatus((AttemptStatus)reader.GetInt32(3), ReadNullableDate(reader, 8)),
+            NormalizeStatus((AttemptStatus)reader.GetInt32(3), ReadNullableDate(reader, 9)),
             RetentionJson.Deserialize<IReadOnlyList<string>>(reader.GetString(4)) ?? Array.Empty<string>(),
             RetentionJson.Deserialize<IReadOnlyList<AttemptAnswer>>(reader.GetString(5)) ?? Array.Empty<AttemptAnswer>(),
-            DateTimeOffset.Parse(reader.GetString(6)),
-            ReadNullableDate(reader, 7),
+            DateTimeOffset.Parse(reader.GetString(7)),
             ReadNullableDate(reader, 8),
-            ReadNullableDate(reader, 9));
+            ReadNullableDate(reader, 9),
+            ReadNullableDate(reader, 10))
+        {
+            RecallItems = RetentionJson.Deserialize<IReadOnlyList<RecallItemAttempt>>(reader.GetString(6)) ?? Array.Empty<RecallItemAttempt>()
+        };
     }
 
     private static AttemptStatus NormalizeStatus(AttemptStatus status, DateTimeOffset? completedAt)

@@ -307,4 +307,38 @@ public sealed class AssessmentValidatorTests
 
         Assert.Contains(result.Issues, issue => issue.Code == "MISSING_GUIDED_PROJECT_REQUIRED_CHECKS");
     }
+
+    [Fact]
+    public void Validate_accepts_valid_recall_drill()
+    {
+        var assessment = TestData.RecallDrillAssessment();
+
+        var result = validator.Validate(assessment);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_rejects_recall_drill_without_items()
+    {
+        var assessment = TestData.RecallDrillAssessment() with { Items = Array.Empty<RecallItemDefinition>() };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_RECALL_ITEMS");
+    }
+
+    [Fact]
+    public void Validate_rejects_symbolic_recall_item_without_expected_latex()
+    {
+        var item = TestData.RecallDrillAssessment().Items.First(candidate => candidate.Type is RecallItemType.Symbolic);
+        var assessment = TestData.RecallDrillAssessment() with
+        {
+            Items = new[] { item with { Answer = item.Answer with { ExpectedLatex = null } } }
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_RECALL_EXPECTED_LATEX");
+    }
 }

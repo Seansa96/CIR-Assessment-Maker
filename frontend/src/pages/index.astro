@@ -218,9 +218,11 @@ import "../styles/global.css";
       import "mathlive";
 
       type AssessmentMode = "practice" | "scored";
-      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject";
+      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse";
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
+      type RecallItemType = "typed" | "symbolic" | "flashcard" | "cloze";
+      type RecallRating = "unknown" | "easy" | "correct" | "needsReview" | "forgotCompletely";
 
       interface AppSettings {
         schemaVersion: number;
@@ -370,6 +372,20 @@ import "../styles/global.css";
         allRequiredPassed: boolean;
       }
 
+      interface RecallItem {
+        id: string;
+        type: RecallItemType;
+        prompt: string;
+        answer: {
+          expected?: string | null;
+          expectedLatex?: string | null;
+          aliases?: string[];
+          media?: MediaAsset[];
+        };
+        explanation?: string | null;
+        tags: string[];
+      }
+
       interface Assessment {
         id: string;
         title: string;
@@ -377,6 +393,7 @@ import "../styles/global.css";
         questions: Question[];
         workedExamples?: WorkedExample[];
         guidedProject?: GuidedProject | null;
+        items?: RecallItem[];
       }
 
       interface Attempt {
@@ -385,6 +402,15 @@ import "../styles/global.css";
         mode: AssessmentMode;
         status: AttemptStatus;
         questionOrder: string[];
+        recallItems?: RecallItemAttempt[];
+      }
+
+      interface RecallItemAttempt {
+        itemId: string;
+        userResponse: string | null;
+        answerRevealed: boolean;
+        rating: RecallRating;
+        updatedAt: string;
       }
 
       interface SubmittedAnswer {
@@ -454,6 +480,32 @@ import "../styles/global.css";
         isComplete: boolean;
         hasPendingSelfChecks: boolean;
         questions: QuestionResult[];
+        recallSummary: RecallDrillSummary | null;
+        recallItems: RecallItemResult[];
+      }
+
+      interface RecallDrillSummary {
+        itemsReviewed: number;
+        easyCount: number;
+        correctCount: number;
+        needsReviewCount: number;
+        forgotCompletelyCount: number;
+        weakTags: string[];
+      }
+
+      interface RecallItemResult {
+        itemId: string;
+        type: RecallItemType;
+        prompt: string;
+        userResponse: string | null;
+        answerRevealed: boolean;
+        rating: RecallRating;
+        expected: string | null;
+        expectedLatex: string | null;
+        aliases: string[];
+        explanation: string | null;
+        tags: string[];
+        media: MediaAsset[];
       }
 
       interface AttemptSessionResponse {
@@ -514,6 +566,26 @@ import "../styles/global.css";
         message: string;
       }
 
+      interface RecallRatingAnalytics {
+        rating: RecallRating;
+        count: number;
+      }
+
+      interface RecallTagAnalytics {
+        tag: string;
+        attemptCount: number;
+        averageRating: number;
+        weakCount: number;
+      }
+
+      interface RecallGroupAnalytics {
+        id: string;
+        title: string;
+        attemptCount: number;
+        averageRating: number;
+        weakCount: number;
+      }
+
       interface AttemptHistoryRow {
         attemptId: string;
         assessmentId: string;
@@ -548,6 +620,10 @@ import "../styles/global.css";
         categories: CategoryGradeAnalytics[];
         areas: AreaGradeAnalytics[];
         questionTypes: QuestionTypePerformance[];
+        recallRatings: RecallRatingAnalytics[];
+        recallTags: RecallTagAnalytics[];
+        recallCategories: RecallGroupAnalytics[];
+        recallSubcategories: RecallGroupAnalytics[];
         weakAreas: WeakFocusSummary[];
         attempts: AttemptHistoryRow[];
       }
@@ -938,7 +1014,7 @@ import "../styles/global.css";
       }
 
       async function commitGrade() {
-        if (!state.attempt || state.latestResults?.assessmentType === "workedExample" || state.latestResults?.assessmentType === "guidedProject") return;
+        if (!state.attempt || state.latestResults?.assessmentType === "workedExample" || state.latestResults?.assessmentType === "guidedProject" || state.latestResults?.assessmentType === "recallDrill") return;
         await api("/grades/commit", {
           method: "POST",
           body: JSON.stringify({ attemptId: state.attempt.id })
@@ -1016,6 +1092,11 @@ import "../styles/global.css";
               ${renderAreaAnalyticsTable(analytics.areas)}
               ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
             </div>
+            <div class="analytics-table-grid recall-analytics-grid">
+              ${renderRecallRatingAnalyticsTable(analytics.recallRatings)}
+              ${renderRecallTagAnalyticsTable(analytics.recallTags)}
+              ${renderRecallGroupAnalyticsTable("Recall Categories", analytics.recallCategories)}
+            </div>
             ${renderCommittedEntries(entries)}
           </section>
         `;
@@ -1086,6 +1167,30 @@ import "../styles/global.css";
           "No completed question results yet.");
       }
 
+      function renderRecallRatingAnalyticsTable(rows: RecallRatingAnalytics[]) {
+        return renderMiniAnalyticsTable(
+          "Recall Ratings",
+          ["Rating", "Count"],
+          rows.map((row) => [recallRatingLabel(row.rating), String(row.count)]),
+          "Complete recall drills to see rating counts.");
+      }
+
+      function renderRecallTagAnalyticsTable(rows: RecallTagAnalytics[]) {
+        return renderMiniAnalyticsTable(
+          "Weak Recall Tags",
+          ["Tag", "Avg", "Weak"],
+          rows.slice(0, 8).map((row) => [row.tag, String(row.averageRating), String(row.weakCount)]),
+          "Weak tags appear after recall items are rated.");
+      }
+
+      function renderRecallGroupAnalyticsTable(title: string, rows: RecallGroupAnalytics[]) {
+        return renderMiniAnalyticsTable(
+          title,
+          ["Group", "Avg", "Weak"],
+          rows.slice(0, 8).map((row) => [row.title, String(row.averageRating), String(row.weakCount)]),
+          "No recall drill groups yet.");
+      }
+
       function renderMiniAnalyticsTable(title: string, headers: string[], rows: string[][], emptyText: string) {
         return `
           <section class="analytics-card">
@@ -1118,7 +1223,7 @@ import "../styles/global.css";
               <div class="history-filter-grid">
                 ${renderHistorySelect("status", "Status", [["", "Any"], ["inProgress", "In progress"], ["paused", "Paused"], ["completed", "Complete"], ["abandoned", "Abandoned"]])}
                 ${renderHistorySelect("mode", "Mode", [["", "Any"], ["practice", "Practice"], ["scored", "Scored"]])}
-                ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"], ["guidedProject", "Guided Project"]])}
+                ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"], ["guidedProject", "Guided Project"], ["recallDrill", "Recall Drill"]])}
                 ${renderHistorySelect("categoryId", "Category", [["", "Any"], ...uniqueOptions(analytics.attempts.map((row) => [row.categoryId, row.categoryTitle]))])}
                 ${renderHistorySelect("areaId", "Area", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.areaIds.map((areaId, index) => [areaId, row.areaTitles[index] ?? areaId])))])}
                 ${renderHistorySelect("questionType", "Question Type", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.questionTypes.map((type) => [type, questionTypeLabel(type)] as [string, string])))])}
@@ -1156,7 +1261,7 @@ import "../styles/global.css";
                     </td>
                     <td>${escapeHtml(modeLabel(attempt.mode))}</td>
                     <td>${escapeHtml(statusLabel(attempt.status))}</td>
-                    <td>${attempt.correctCount}/${attempt.totalQuestions} (${attempt.percentScore}%)<small>${attempt.answeredCount}/${attempt.totalQuestions} answered</small></td>
+                    <td>${attempt.assessmentType === "recallDrill" ? `${attempt.answeredCount}/${attempt.totalQuestions} rated` : `${attempt.correctCount}/${attempt.totalQuestions} (${attempt.percentScore}%)`}<small>${attempt.answeredCount}/${attempt.totalQuestions} answered</small></td>
                     <td>${formatDate(attempt.lastActivityAt ?? attempt.startedAt)}</td>
                     <td class="table-actions">${renderAttemptActions(attempt)}</td>
                   </tr>
@@ -1242,7 +1347,7 @@ import "../styles/global.css";
           actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
         }
 
-        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && attempt.assessmentType !== "guidedProject" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
+        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && attempt.assessmentType !== "guidedProject" && attempt.assessmentType !== "recallDrill" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
           actions.push(`<button type="button" data-attempt-action="commit" data-attempt-id="${id}">Commit</button>`);
         }
 
@@ -1872,6 +1977,11 @@ import "../styles/global.css";
           return;
         }
 
+        if (state.assessment.assessmentType === "recallDrill") {
+          await renderCurrentRecallItem();
+          return;
+        }
+
         const question = getCurrentQuestion();
         const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
@@ -2138,6 +2248,126 @@ import "../styles/global.css";
         setupDevAssessmentRefresh();
       }
 
+      async function renderCurrentRecallItem() {
+        if (!state.attempt || !state.assessment) return;
+        const itemId = state.attempt.questionOrder[state.currentIndex];
+        const item = state.assessment.items?.find((candidate) => candidate.id === itemId);
+        if (!item) {
+          attemptContent.innerHTML = `<div class="empty-state">Recall item could not be found.</div>`;
+          return;
+        }
+
+        const result = state.latestResults?.recallItems.find((candidate) => candidate.itemId === item.id);
+        const promptHtml = await renderMarkdown(item.prompt);
+        const expectedHtml = result?.expected
+          ? await renderMarkdown(result.expected)
+          : result?.expectedLatex
+            ? await renderMarkdown(`$${result.expectedLatex}$`)
+            : "";
+        const explanationHtml = result?.explanation ? await renderMarkdown(result.explanation) : "";
+        const responseValue = result?.userResponse ?? "";
+        const isRevealed = result?.answerRevealed === true;
+        const isRated = result?.rating && result.rating !== "unknown";
+        const summary = state.latestResults?.recallSummary;
+
+        attemptContent.innerHTML = `
+          <div class="recall-shell">
+            <aside class="recall-progress">
+              <p class="eyebrow">Recall Drill</p>
+              <h2>${escapeHtml(state.assessment.title)}</h2>
+              <p>${state.currentIndex + 1} of ${state.attempt.questionOrder.length}</p>
+              <div class="question-jump-grid recall-jump-grid">
+                ${state.attempt.questionOrder.map((candidateId, index) => {
+                  const candidateResult = state.latestResults?.recallItems.find((candidate) => candidate.itemId === candidateId);
+                  const stateClass = candidateResult?.rating && candidateResult.rating !== "unknown"
+                    ? recallRatingClass(candidateResult.rating)
+                    : candidateResult?.answerRevealed ? "pending" : "unanswered";
+                  return `
+                    <button
+                      type="button"
+                      class="question-jump ${stateClass} ${index === state.currentIndex ? "current" : ""}"
+                      data-recall-index="${index}"
+                      aria-label="Jump to recall item ${index + 1}, ${recallRatingLabel(candidateResult?.rating ?? "unknown")}"
+                    ><span>${index + 1}</span></button>
+                  `;
+                }).join("")}
+              </div>
+              ${summary ? `
+                <div class="recall-mini-summary">
+                  <strong>${summary.itemsReviewed}/${state.attempt.questionOrder.length}</strong>
+                  <span>rated</span>
+                </div>
+              ` : ""}
+            </aside>
+            <section class="recall-card">
+              <div class="question-header">
+                <span>${escapeHtml(recallItemTypeLabel(item.type))}</span>
+                <strong>${escapeHtml(state.assessment.title)}</strong>
+              </div>
+              <div class="question-prompt markdown">${promptHtml}</div>
+              ${renderRecallResponseInput(item, responseValue, isRevealed)}
+              ${isRevealed ? `
+                <div class="recall-answer-panel">
+                  <h3>Answer</h3>
+                  ${expectedHtml ? `<div class="markdown">${expectedHtml}</div>` : ""}
+                  ${renderMedia(result?.media ?? item.answer.media ?? [])}
+                  ${(result?.aliases ?? []).length > 0 ? `
+                    <div class="result-detail">
+                      <strong>Aliases</strong>
+                      <p>${(result?.aliases ?? []).map(escapeHtml).join(", ")}</p>
+                    </div>
+                  ` : ""}
+                  ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
+                </div>
+                <div class="recall-rating-panel">
+                  <h3>${isRated ? `Rated ${escapeHtml(recallRatingLabel(result!.rating))}` : "Rate your recall"}</h3>
+                  <div class="button-row recall-rating-buttons">
+                    ${renderRecallRatingButton("easy", result?.rating)}
+                    ${renderRecallRatingButton("correct", result?.rating)}
+                    ${renderRecallRatingButton("needsReview", result?.rating)}
+                    ${renderRecallRatingButton("forgotCompletely", result?.rating)}
+                  </div>
+                </div>
+              ` : ""}
+              <div class="assessment-control-bar">
+                <div class="button-row">
+                  <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
+                  <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
+                  ${!isRevealed ? `<button class="primary chunky" type="button" id="reveal-recall-answer">Reveal Answer</button>` : ""}
+                  ${renderDevAssessmentRefreshButton()}
+                  <button type="button" id="pause-attempt">Save and Quit</button>
+                </div>
+                <div class="button-row terminal-actions" aria-label="Recall drill ending actions">
+                  <button class="chunky danger-action" type="button" id="abandon-attempt">Quit Early</button>
+                </div>
+              </div>
+            </section>
+          </div>
+        `;
+
+        document.querySelector<HTMLButtonElement>("#previous-question")!.addEventListener("click", () => {
+          state.currentIndex -= 1;
+          void renderCurrentRecallItem();
+        });
+        document.querySelector<HTMLButtonElement>("#next-question")!.addEventListener("click", () => {
+          state.currentIndex += 1;
+          void renderCurrentRecallItem();
+        });
+        document.querySelector<HTMLButtonElement>("#reveal-recall-answer")?.addEventListener("click", revealCurrentRecallItem);
+        document.querySelectorAll<HTMLButtonElement>("[data-recall-rating]").forEach((button) => {
+          button.addEventListener("click", () => rateCurrentRecallItem(button.dataset.recallRating as RecallRating));
+        });
+        document.querySelectorAll<HTMLButtonElement>("[data-recall-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.currentIndex = Number(button.dataset.recallIndex ?? state.currentIndex);
+            void renderCurrentRecallItem();
+          });
+        });
+        document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
+        document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
+        setupDevAssessmentRefresh();
+      }
+
       function renderGuidedProjectChecks(checks: GuidedProjectCheck[], results: GuidedProjectCheckResult[], required: boolean) {
         if (checks.length === 0) return `<p class="muted">No checks configured.</p>`;
 
@@ -2273,7 +2503,12 @@ import "../styles/global.css";
         if (!state.latestResults) return;
         const results = state.latestResults;
         const isWorkedExample = results.assessmentType === "workedExample";
-        const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject";
+        const isRecallDrill = results.assessmentType === "recallDrill";
+        const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject" || isRecallDrill;
+        if (isRecallDrill) {
+          await renderRecallResults(results);
+          return;
+        }
         const questionHtml = await Promise.all(results.questions.map(async (question) => {
           const promptHtml = await renderMarkdown(question.prompt);
           const expectedHtml = question.expectedAnswer ? await renderMarkdown(question.type === "symbolicResponse" ? `$${question.expectedAnswer}$` : question.expectedAnswer) : "";
@@ -2318,6 +2553,60 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
         setupDevAssessmentRefresh();
         setupSelfCheckButtons();
+      }
+
+      async function renderRecallResults(results: AttemptResults) {
+        const summary = results.recallSummary;
+        const itemHtml = await Promise.all(results.recallItems.map(async (item) => {
+          const promptHtml = await renderMarkdown(item.prompt);
+          const expectedHtml = item.expected
+            ? await renderMarkdown(item.expected)
+            : item.expectedLatex
+              ? await renderMarkdown(`$${item.expectedLatex}$`)
+              : "";
+          const explanationHtml = item.explanation ? await renderMarkdown(item.explanation) : "";
+          return `
+            <article class="result-item ${recallRatingClass(item.rating)}">
+              <h3>${escapeHtml(recallItemTypeLabel(item.type))}</h3>
+              <div class="markdown">${promptHtml}</div>
+              ${item.userResponse ? `<div class="result-detail"><strong>Your recall attempt</strong><p>${escapeHtml(item.userResponse)}</p></div>` : ""}
+              ${expectedHtml ? `<div class="result-detail"><strong>Expected</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
+              ${renderMedia(item.media ?? [])}
+              <p><strong>${escapeHtml(recallRatingLabel(item.rating))}</strong></p>
+              ${item.tags.length > 0 ? `<p class="muted">Tags: ${item.tags.map(escapeHtml).join(", ")}</p>` : ""}
+              ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
+            </article>
+          `;
+        }));
+
+        attemptContent.innerHTML = `
+          <div class="results-header">
+            <h2>${escapeHtml(results.assessmentTitle)}</h2>
+            <div class="score-badge">Complete</div>
+          </div>
+          <p class="muted">Recall Drill. Status: ${escapeHtml(statusLabel(results.status))}.</p>
+          ${summary ? `
+            <div class="metric-row recall-summary-row">
+              <div><span>${summary.itemsReviewed}</span><small>Items reviewed</small></div>
+              <div><span>${summary.easyCount}</span><small>Easy</small></div>
+              <div><span>${summary.correctCount}</span><small>Correct</small></div>
+              <div><span>${summary.needsReviewCount}</span><small>Needs Review</small></div>
+              <div><span>${summary.forgotCompletelyCount}</span><small>Forgot Completely</small></div>
+            </div>
+            ${summary.weakTags.length > 0 ? `
+              <section class="focus-callout">
+                <h3>Weak Tags</h3>
+                ${summary.weakTags.map((tag) => `<p>${escapeHtml(tag)}</p>`).join("")}
+              </section>
+            ` : ""}
+          ` : ""}
+          <div class="result-list">
+            ${itemHtml.join("")}
+          </div>
+          ${renderDevAssessmentRefreshButton()}
+        `;
+
+        setupDevAssessmentRefresh();
       }
 
       async function renderAnswerInput(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
@@ -2519,6 +2808,103 @@ import "../styles/global.css";
         };
       }
 
+      function renderRecallResponseInput(item: RecallItem, value: string, isRevealed: boolean) {
+        if (item.type === "flashcard") {
+          return `<p class="input-help">Think through the answer first, then reveal it and rate your recall.</p>`;
+        }
+
+        if (isRevealed) {
+          return value
+            ? `<div class="locked-response"><strong>Your recall attempt</strong><p>${escapeHtml(value)}</p></div>`
+            : `<div class="locked-response"><strong>Your recall attempt</strong><p class="muted">No response entered.</p></div>`;
+        }
+
+        if (item.type === "symbolic") {
+          return `
+            <div class="field symbolic-response-field">
+              <label for="recall-response">Your recalled expression</label>
+              <math-field id="recall-response" aria-describedby="recall-response-help">${escapeHtml(value)}</math-field>
+              <p id="recall-response-help" class="input-help">This is self-rated in V1. Use the math field to produce the expression from memory.</p>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="field">
+            <label for="recall-response">${item.type === "cloze" ? "Missing text" : "Your recall attempt"}</label>
+            <textarea id="recall-response" rows="4">${escapeHtml(value)}</textarea>
+          </div>
+        `;
+      }
+
+      function readRecallResponse() {
+        const mathField = document.querySelector<HTMLElement & { value?: string }>("#recall-response");
+        if (mathField?.tagName.toLowerCase() === "math-field") {
+          return mathField.value ?? mathField.textContent ?? "";
+        }
+
+        return (document.querySelector<HTMLTextAreaElement>("#recall-response")?.value ?? "").trim();
+      }
+
+      async function revealCurrentRecallItem() {
+        if (!state.attempt || !state.assessment) return;
+        const itemId = state.attempt.questionOrder[state.currentIndex];
+        const button = document.querySelector<HTMLButtonElement>("#reveal-recall-answer");
+        if (button) setBusy(button, "Revealing");
+
+        try {
+          const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${encodeURIComponent(state.attempt.id)}/recall/${encodeURIComponent(itemId)}/reveal`, {
+            method: "POST",
+            body: JSON.stringify({ userResponse: readRecallResponse() })
+          });
+          state.attempt = response.attempt;
+          state.latestResults = response.results;
+          await renderCurrentRecallItem();
+        } finally {
+          if (button) clearBusy(button, "Reveal Answer");
+        }
+      }
+
+      async function rateCurrentRecallItem(rating: RecallRating) {
+        if (!state.attempt || !state.assessment) return;
+        const itemId = state.attempt.questionOrder[state.currentIndex];
+        const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${encodeURIComponent(state.attempt.id)}/recall/${encodeURIComponent(itemId)}/rate`, {
+          method: "POST",
+          body: JSON.stringify({ rating })
+        });
+        state.attempt = response.attempt;
+        state.latestResults = response.results;
+
+        if (state.attempt.status === "completed") {
+          updateActiveAttemptChip("Complete");
+          updateModeControlLock();
+          await renderResults(false);
+          await loadGrades();
+          return;
+        }
+
+        const nextUnratedIndex = state.attempt.questionOrder.findIndex((candidateId) => {
+          const result = state.latestResults?.recallItems.find((item) => item.itemId === candidateId);
+          return !result || result.rating === "unknown";
+        });
+        if (nextUnratedIndex >= 0) {
+          state.currentIndex = nextUnratedIndex;
+        }
+
+        await renderCurrentRecallItem();
+        await loadGrades();
+      }
+
+      function renderRecallRatingButton(rating: RecallRating, currentRating: RecallRating | undefined) {
+        return `
+          <button
+            type="button"
+            class="chunky ${currentRating === rating ? "primary" : "secondary-action"}"
+            data-recall-rating="${rating}"
+          >${escapeHtml(recallRatingLabel(rating))}</button>
+        `;
+      }
+
       function readCodeText(form: FormData) {
         return currentCodeEditor?.state.doc.toString() ?? String(form.get("codeText") ?? "");
       }
@@ -2718,7 +3104,7 @@ import "../styles/global.css";
 
       function handleAnswerShortcut(event: KeyboardEvent) {
         if (!state.attempt || !state.assessment) return;
-        if (state.assessment.assessmentType === "guidedProject") return;
+        if (state.assessment.assessmentType === "guidedProject" || state.assessment.assessmentType === "recallDrill") return;
 
         const target = event.target as HTMLElement;
         if (target.matches("input, textarea, select, math-field")) return;
@@ -2756,6 +3142,10 @@ import "../styles/global.css";
       function getCurrentQuestion() {
         if (state.assessment?.assessmentType === "guidedProject") {
           throw new Error("Guided projects do not use question navigation.");
+        }
+
+        if (state.assessment?.assessmentType === "recallDrill") {
+          throw new Error("Recall drills do not use quiz question navigation.");
         }
 
         const questionId = state.attempt!.questionOrder[state.currentIndex];
@@ -2802,6 +3192,10 @@ import "../styles/global.css";
           return [];
         }
 
+        if (assessment.assessmentType === "recallDrill") {
+          return assessment.items?.map((item) => item.id) ?? [];
+        }
+
         return assessment.questions.map((question) => question.id);
       }
 
@@ -2824,8 +3218,38 @@ import "../styles/global.css";
           quiz: "Quiz",
           test: "Test",
           workedExample: "Worked Example",
-          guidedProject: "Guided Project"
+          guidedProject: "Guided Project",
+          recallDrill: "Recall Drill"
         }[type] ?? "Assessment";
+      }
+
+      function recallItemTypeLabel(type: RecallItemType) {
+        return {
+          typed: "Typed Recall",
+          symbolic: "Symbolic Recall",
+          flashcard: "Flashcard",
+          cloze: "Cloze"
+        }[type] ?? "Recall";
+      }
+
+      function recallRatingLabel(rating: RecallRating) {
+        return {
+          easy: "Easy",
+          correct: "Correct",
+          needsReview: "Needs Review",
+          forgotCompletely: "Forgot Completely",
+          unknown: "Unrated"
+        }[rating] ?? "Unrated";
+      }
+
+      function recallRatingClass(rating: RecallRating) {
+        return {
+          easy: "correct",
+          correct: "answered",
+          needsReview: "pending",
+          forgotCompletely: "needs-review",
+          unknown: "unanswered"
+        }[rating] ?? "unanswered";
       }
 
       function fillSettingsForm(settings: AppSettings) {

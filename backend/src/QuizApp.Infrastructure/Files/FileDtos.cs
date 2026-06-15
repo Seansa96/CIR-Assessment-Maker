@@ -44,6 +44,25 @@ internal sealed class AssessmentFileDto
     public List<QuestionFileDto>? Questions { get; set; }
     public List<WorkedExampleFileDto>? WorkedExamples { get; set; }
     public GuidedProjectFileDto? GuidedProject { get; set; }
+    public List<RecallItemFileDto>? Items { get; set; }
+}
+
+internal sealed class RecallItemFileDto
+{
+    public string? Id { get; set; }
+    public string? Type { get; set; }
+    public string? Prompt { get; set; }
+    public RecallItemAnswerFileDto? Answer { get; set; }
+    public string? Explanation { get; set; }
+    public List<string>? Tags { get; set; }
+}
+
+internal sealed class RecallItemAnswerFileDto
+{
+    public string? Expected { get; set; }
+    public string? ExpectedLatex { get; set; }
+    public List<string>? Aliases { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
 }
 
 internal sealed class GuidedProjectFileDto

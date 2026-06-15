@@ -30,8 +30,29 @@ public sealed record GradeAnalyticsSummary(
     IReadOnlyList<SubcategoryGradeAnalytics> Subcategories,
     IReadOnlyList<AreaGradeAnalytics> Areas,
     IReadOnlyList<QuestionTypePerformance> QuestionTypes,
+    IReadOnlyList<RecallRatingAnalytics> RecallRatings,
+    IReadOnlyList<RecallTagAnalytics> RecallTags,
+    IReadOnlyList<RecallGroupAnalytics> RecallCategories,
+    IReadOnlyList<RecallGroupAnalytics> RecallSubcategories,
     IReadOnlyList<WeakFocusSummary> WeakAreas,
     IReadOnlyList<AttemptHistoryRow> Attempts);
+
+public sealed record RecallRatingAnalytics(
+    RecallRating Rating,
+    int Count);
+
+public sealed record RecallTagAnalytics(
+    string Tag,
+    int AttemptCount,
+    decimal AverageRating,
+    int WeakCount);
+
+public sealed record RecallGroupAnalytics(
+    string Id,
+    string Title,
+    int AttemptCount,
+    decimal AverageRating,
+    int WeakCount);
 
 public sealed record AnalyticsFocus(
     string Id,

@@ -6,7 +6,8 @@ public enum AssessmentType
     Quiz,
     Test,
     WorkedExample,
-    GuidedProject
+    GuidedProject,
+    RecallDrill
 }
 
 public enum AssessmentMode
@@ -30,6 +31,15 @@ public enum QuestionOrderMode
 {
     Randomized,
     Static
+}
+
+public enum RecallItemType
+{
+    Unknown,
+    Typed,
+    Symbolic,
+    Flashcard,
+    Cloze
 }
 
 public sealed record Category(
@@ -70,7 +80,22 @@ public sealed record AssessmentDefinition(
 {
     public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
     public GuidedProjectDefinition? GuidedProject { get; init; }
+    public IReadOnlyList<RecallItemDefinition> Items { get; init; } = Array.Empty<RecallItemDefinition>();
 }
+
+public sealed record RecallItemDefinition(
+    string Id,
+    RecallItemType Type,
+    string Prompt,
+    RecallItemAnswerDefinition Answer,
+    string? Explanation,
+    IReadOnlyList<string> Tags);
+
+public sealed record RecallItemAnswerDefinition(
+    string? Expected,
+    string? ExpectedLatex,
+    IReadOnlyList<string> Aliases,
+    IReadOnlyList<MediaAsset> Media);
 
 public sealed record GuidedProjectDefinition(
     string Language,

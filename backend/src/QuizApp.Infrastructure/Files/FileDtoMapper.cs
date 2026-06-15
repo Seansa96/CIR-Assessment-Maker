@@ -67,7 +67,8 @@ internal static class FileDtoMapper
             (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList())
         {
             WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList(),
-            GuidedProject = dto.GuidedProject is null ? null : ToDomain(dto.GuidedProject)
+            GuidedProject = dto.GuidedProject is null ? null : ToDomain(dto.GuidedProject),
+            Items = (dto.Items ?? new List<RecallItemFileDto>()).Select(ToDomain).ToList()
         };
     }
 
@@ -87,7 +88,42 @@ internal static class FileDtoMapper
             AssessmentTimerSeconds = assessment.AssessmentTimerSeconds,
             Questions = assessment.Questions.Select(ToDto).ToList(),
             WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList(),
-            GuidedProject = assessment.GuidedProject is null ? null : ToDto(assessment.GuidedProject)
+            GuidedProject = assessment.GuidedProject is null ? null : ToDto(assessment.GuidedProject),
+            Items = assessment.Items.Select(ToDto).ToList()
+        };
+    }
+
+    private static RecallItemDefinition ToDomain(RecallItemFileDto dto)
+    {
+        return new RecallItemDefinition(
+            dto.Id ?? string.Empty,
+            ParseRecallItemType(dto.Type),
+            dto.Prompt ?? string.Empty,
+            new RecallItemAnswerDefinition(
+                dto.Answer?.Expected,
+                dto.Answer?.ExpectedLatex,
+                dto.Answer?.Aliases ?? new List<string>(),
+                (dto.Answer?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()),
+            dto.Explanation,
+            dto.Tags ?? new List<string>());
+    }
+
+    private static RecallItemFileDto ToDto(RecallItemDefinition item)
+    {
+        return new RecallItemFileDto
+        {
+            Id = item.Id,
+            Type = ToWireValue(item.Type),
+            Prompt = item.Prompt,
+            Answer = new RecallItemAnswerFileDto
+            {
+                Expected = item.Answer.Expected,
+                ExpectedLatex = item.Answer.ExpectedLatex,
+                Aliases = item.Answer.Aliases.ToList(),
+                Media = item.Answer.Media.Select(ToDto).ToList()
+            },
+            Explanation = item.Explanation,
+            Tags = item.Tags.ToList()
         };
     }
 
@@ -334,7 +370,20 @@ internal static class FileDtoMapper
             "test" => AssessmentType.Test,
             "workedexample" => AssessmentType.WorkedExample,
             "guidedproject" => AssessmentType.GuidedProject,
+            "recalldrill" => AssessmentType.RecallDrill,
             _ => AssessmentType.Unknown
+        };
+    }
+
+    private static RecallItemType ParseRecallItemType(string? value)
+    {
+        return Normalize(value) switch
+        {
+            "typed" => RecallItemType.Typed,
+            "symbolic" => RecallItemType.Symbolic,
+            "flashcard" => RecallItemType.Flashcard,
+            "cloze" => RecallItemType.Cloze,
+            _ => RecallItemType.Unknown
         };
     }
 
@@ -383,7 +432,20 @@ internal static class FileDtoMapper
             AssessmentType.Test => "test",
             AssessmentType.WorkedExample => "workedExample",
             AssessmentType.GuidedProject => "guidedProject",
+            AssessmentType.RecallDrill => "recallDrill",
             _ => "quiz"
+        };
+    }
+
+    private static string ToWireValue(RecallItemType itemType)
+    {
+        return itemType switch
+        {
+            RecallItemType.Symbolic => "symbolic",
+            RecallItemType.Flashcard => "flashcard",
+            RecallItemType.Cloze => "cloze",
+            RecallItemType.Typed => "typed",
+            _ => "typed"
         };
     }
 

@@ -283,6 +283,44 @@ api.MapPost("/attempts/{attemptId}/answers", async (string attemptId, SubmitAnsw
     }
 });
 
+api.MapPost("/attempts/{attemptId}/recall/{itemId}/reveal", async (
+    string attemptId,
+    string itemId,
+    RevealRecallItemRequest request,
+    AttemptService attemptService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.RevealRecallItemAsync(attemptId, itemId, request.UserResponse, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("RECALL_REVEAL_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/recall/{itemId}/rate", async (
+    string attemptId,
+    string itemId,
+    RateRecallItemRequest request,
+    AttemptService attemptService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.RateRecallItemAsync(attemptId, itemId, request.Rating, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("RECALL_RATE_FAILED", ex.Message));
+    }
+});
+
 api.MapGet("/attempts/{attemptId}/guided-project", async (
     string attemptId,
     GuidedProjectService guidedProjectService,

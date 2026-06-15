@@ -22,7 +22,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, or guidedProject."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, or recallDrill."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -47,6 +47,12 @@ public sealed class AssessmentValidator
             return new AssessmentValidationResult(issues);
         }
 
+        if (assessment.AssessmentType is AssessmentType.RecallDrill)
+        {
+            ValidateRecallDrill(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
         ValidateQuestions(assessment.Questions, issues);
 
         var questionCount = assessment.Questions.Count;
@@ -61,6 +67,52 @@ public sealed class AssessmentValidator
         }
 
         return new AssessmentValidationResult(issues);
+    }
+
+    private static void ValidateRecallDrill(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        if (assessment.Items.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_RECALL_ITEMS", "Recall drill assessments must include items."));
+            return;
+        }
+
+        var duplicateItemIds = assessment.Items
+            .Where(item => !string.IsNullOrWhiteSpace(item.Id))
+            .GroupBy(item => item.Id, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key);
+
+        foreach (var duplicateId in duplicateItemIds)
+        {
+            issues.Add(new ValidationIssue("DUPLICATE_RECALL_ITEM_ID", $"Recall item id '{duplicateId}' is duplicated.", duplicateId));
+        }
+
+        foreach (var item in assessment.Items)
+        {
+            RequireText(item.Id, "MISSING_RECALL_ITEM_ID", "Recall items must include an id.", issues);
+            RequireText(item.Prompt, "MISSING_RECALL_PROMPT", "Recall items must include a prompt.", issues, item.Id);
+
+            if (item.Type is RecallItemType.Unknown)
+            {
+                issues.Add(new ValidationIssue("INVALID_RECALL_ITEM_TYPE", "Recall item type must be typed, symbolic, flashcard, or cloze.", item.Id));
+            }
+
+            if (item.Type is RecallItemType.Symbolic)
+            {
+                RequireText(item.Answer.ExpectedLatex, "MISSING_RECALL_EXPECTED_LATEX", "Symbolic recall items must include answer.expectedLatex.", issues, item.Id);
+            }
+            else if (item.Type is not RecallItemType.Flashcard)
+            {
+                RequireText(item.Answer.Expected, "MISSING_RECALL_EXPECTED", "Recall items must include answer.expected.", issues, item.Id);
+            }
+            else if (string.IsNullOrWhiteSpace(item.Answer.Expected) && string.IsNullOrWhiteSpace(item.Answer.ExpectedLatex))
+            {
+                issues.Add(new ValidationIssue("MISSING_RECALL_EXPECTED", "Flashcard recall items must include answer.expected or answer.expectedLatex.", item.Id));
+            }
+
+            ValidateMedia(item.Answer.Media, issues, item.Id);
+        }
     }
 
     private static void ValidateQuestions(IReadOnlyList<QuestionDefinition> questions, List<ValidationIssue> issues)

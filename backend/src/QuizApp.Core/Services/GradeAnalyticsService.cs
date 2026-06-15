@@ -55,6 +55,10 @@ public sealed class GradeAnalyticsService
         var subcategorySummaries = BuildSubcategorySummaries(filteredCommittedEntries, assessmentLookup, categories);
         var areaSummaries = BuildAreaSummaries(filteredCommittedEntries, assessmentLookup, categories, areas);
         var questionTypeSummaries = BuildQuestionTypeSummaries(historyRows, attempts, assessmentLookup, filter.QuestionType);
+        var recallRatingSummaries = BuildRecallRatingSummaries(historyRows, attempts, assessmentLookup);
+        var recallTagSummaries = BuildRecallTagSummaries(historyRows, attempts, assessmentLookup);
+        var recallCategorySummaries = BuildRecallCategorySummaries(historyRows, attempts, assessmentLookup, categories);
+        var recallSubcategorySummaries = BuildRecallSubcategorySummaries(historyRows, attempts, assessmentLookup, categories);
         var weakAreas = BuildWeakFocusSummaries(categorySummaries, areaSummaries);
 
         return new GradeAnalyticsSummary(
@@ -74,6 +78,10 @@ public sealed class GradeAnalyticsService
             subcategorySummaries,
             areaSummaries,
             questionTypeSummaries,
+            recallRatingSummaries,
+            recallTagSummaries,
+            recallCategorySummaries,
+            recallSubcategorySummaries,
             weakAreas,
             historyRows);
     }
@@ -121,8 +129,13 @@ public sealed class GradeAnalyticsService
                     .Select(subcategoryId => category?.Subcategories.FirstOrDefault(subcategory => string.Equals(subcategory.Id, subcategoryId, StringComparison.OrdinalIgnoreCase))?.Title ?? subcategoryId)
                     .ToList();
                 var matchingAreas = MatchAreas(assessment, areas).ToList();
-                var correctCount = attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
+                var correctCount = assessment.AssessmentType is AssessmentType.RecallDrill
+                    ? attempt.RecallItems.Count(item => item.Rating is RecallRating.Easy or RecallRating.Correct)
+                    : attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
                 var totalQuestions = attempt.QuestionOrder.Count;
+                var answeredCount = assessment.AssessmentType is AssessmentType.RecallDrill
+                    ? attempt.RecallItems.Count(item => item.Rating is not RecallRating.Unknown)
+                    : attempt.Answers.Count(answer => answer.Answer is not null);
 
                 return new AttemptHistoryRow(
                     attempt.Id,
@@ -141,13 +154,97 @@ public sealed class GradeAnalyticsService
                     correctCount,
                     totalQuestions,
                     totalQuestions == 0 ? 0 : Math.Round(correctCount * 100m / totalQuestions, 2),
-                    attempt.Answers.Count(answer => answer.Answer is not null),
+                    answeredCount,
                     attempt.Answers.Any(answer => answer.Answer.FreeResponseText is not null && answer.Answer.SelfCheckCorrect is null),
                     committedAttemptIds.Contains(attempt.Id),
                     attempt.StartedAt,
                     attempt.CompletedAt,
                     attempt.CompletedAt ?? attempt.AbandonedAt ?? attempt.PausedAt ?? attempt.Answers.OrderByDescending(answer => answer.SubmittedAt).FirstOrDefault()?.SubmittedAt ?? attempt.StartedAt);
             })
+            .ToList();
+    }
+
+    private static IReadOnlyList<RecallRatingAnalytics> BuildRecallRatingSummaries(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments)
+    {
+        var recallAttempts = CompletedRecallAttempts(rows, attempts, assessments);
+        return recallAttempts
+            .SelectMany(attempt => attempt.RecallItems)
+            .Where(item => item.Rating is not RecallRating.Unknown)
+            .GroupBy(item => item.Rating)
+            .Select(group => new RecallRatingAnalytics(group.Key, group.Count()))
+            .OrderBy(summary => summary.Rating)
+            .ToList();
+    }
+
+    private static IReadOnlyList<RecallTagAnalytics> BuildRecallTagSummaries(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments)
+    {
+        var records = RecallRecords(rows, attempts, assessments);
+        return records
+            .SelectMany(record => record.Item.Tags.Select(tag => new { Tag = tag, record.Rating }))
+            .Where(item => !string.IsNullOrWhiteSpace(item.Tag) && item.Rating is not RecallRating.Unknown)
+            .GroupBy(item => item.Tag, StringComparer.OrdinalIgnoreCase)
+            .Select(group => new RecallTagAnalytics(
+                group.Key,
+                group.Count(),
+                Math.Round(group.Average(item => RatingValue(item.Rating)), 2),
+                group.Count(item => IsWeakRating(item.Rating))))
+            .OrderByDescending(summary => summary.WeakCount)
+            .ThenBy(summary => summary.AverageRating)
+            .ThenBy(summary => summary.Tag)
+            .ToList();
+    }
+
+    private static IReadOnlyList<RecallGroupAnalytics> BuildRecallCategorySummaries(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        IReadOnlyList<Category> categories)
+    {
+        var records = RecallRecords(rows, attempts, assessments);
+        return records
+            .GroupBy(record => record.Assessment.CategoryId, StringComparer.OrdinalIgnoreCase)
+            .Select(group =>
+            {
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, group.Key, StringComparison.OrdinalIgnoreCase));
+                return new RecallGroupAnalytics(
+                    group.Key,
+                    category?.Title ?? group.Key,
+                    group.Count(),
+                    Math.Round(group.Average(record => RatingValue(record.Rating)), 2),
+                    group.Count(record => IsWeakRating(record.Rating)));
+            })
+            .OrderBy(summary => summary.Title)
+            .ToList();
+    }
+
+    private static IReadOnlyList<RecallGroupAnalytics> BuildRecallSubcategorySummaries(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        IReadOnlyList<Category> categories)
+    {
+        var records = RecallRecords(rows, attempts, assessments);
+        return records
+            .SelectMany(record => record.Assessment.SubcategoryIds.Select(subcategoryId => new { record.Assessment, record.Rating, SubcategoryId = subcategoryId }))
+            .GroupBy(record => new { record.Assessment.CategoryId, record.SubcategoryId })
+            .Select(group =>
+            {
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, group.Key.CategoryId, StringComparison.OrdinalIgnoreCase));
+                var title = category?.Subcategories.FirstOrDefault(subcategory => string.Equals(subcategory.Id, group.Key.SubcategoryId, StringComparison.OrdinalIgnoreCase))?.Title ?? group.Key.SubcategoryId;
+                return new RecallGroupAnalytics(
+                    group.Key.SubcategoryId,
+                    title,
+                    group.Count(),
+                    Math.Round(group.Average(record => RatingValue(record.Rating)), 2),
+                    group.Count(record => IsWeakRating(record.Rating)));
+            })
+            .OrderBy(summary => summary.Title)
             .ToList();
     }
 
@@ -305,16 +402,79 @@ public sealed class GradeAnalyticsService
 
     private static IReadOnlyList<QuestionType> ExtractQuestionTypes(AssessmentDefinition assessment)
     {
-        return assessment.AssessmentType is AssessmentType.WorkedExample
-            ? assessment.WorkedExamples
+        return assessment.AssessmentType switch
+        {
+            AssessmentType.WorkedExample => assessment.WorkedExamples
                 .SelectMany(example => example.Steps.Select(step => step.Question.Type))
                 .Distinct()
-                .ToList()
-            : assessment.Questions
+                .ToList(),
+            AssessmentType.RecallDrill => Array.Empty<QuestionType>(),
+            _ => assessment.Questions
                 .Select(question => question.Type)
                 .Distinct()
-                .ToList();
+                .ToList()
+        };
     }
+
+    private static IReadOnlyList<Attempt> CompletedRecallAttempts(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments)
+    {
+        var includedAttemptIds = rows
+            .Where(row => row.Status is AttemptStatus.Completed && row.AssessmentType is AssessmentType.RecallDrill)
+            .Select(row => row.AttemptId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        return attempts
+            .Where(attempt => includedAttemptIds.Contains(attempt.Id)
+                && assessments.TryGetValue(attempt.AssessmentId, out var assessment)
+                && assessment.AssessmentType is AssessmentType.RecallDrill)
+            .ToList();
+    }
+
+    private static IReadOnlyList<RecallRecord> RecallRecords(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments)
+    {
+        return CompletedRecallAttempts(rows, attempts, assessments)
+            .SelectMany(attempt =>
+            {
+                var assessment = assessments[attempt.AssessmentId];
+                return attempt.RecallItems
+                    .Where(recall => recall.Rating is not RecallRating.Unknown)
+                    .Select(recall =>
+                    {
+                        var item = assessment.Items.FirstOrDefault(candidate => string.Equals(candidate.Id, recall.ItemId, StringComparison.OrdinalIgnoreCase));
+                        return item is null ? null : new RecallRecord(assessment, item, recall.Rating);
+                    })
+                    .OfType<RecallRecord>();
+            })
+            .ToList();
+    }
+
+    private static decimal RatingValue(RecallRating rating)
+    {
+        return rating switch
+        {
+            RecallRating.Easy => 4,
+            RecallRating.Correct => 3,
+            RecallRating.NeedsReview => 2,
+            RecallRating.ForgotCompletely => 1,
+            _ => 0
+        };
+    }
+
+    private static bool IsWeakRating(RecallRating rating)
+    {
+        return rating is RecallRating.NeedsReview or RecallRating.ForgotCompletely;
+    }
+
+    private sealed record RecallRecord(
+        AssessmentDefinition Assessment,
+        RecallItemDefinition Item,
+        RecallRating Rating);
 
     private static bool MatchesFilter(AttemptHistoryRow row, GradeAnalyticsFilter filter)
     {

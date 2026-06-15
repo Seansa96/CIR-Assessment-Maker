@@ -130,6 +130,7 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
         {
             AssessmentType.WorkedExample => assessment.WorkedExamples.Sum(example => example.Steps.Count),
             AssessmentType.GuidedProject => assessment.GuidedProject?.RequiredChecks.Count ?? 0,
+            AssessmentType.RecallDrill => assessment.Items.Count,
             _ => assessment.Questions.Count
         };
     }

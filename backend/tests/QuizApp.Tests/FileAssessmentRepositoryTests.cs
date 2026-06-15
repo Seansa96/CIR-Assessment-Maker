@@ -178,6 +178,27 @@ public sealed class FileAssessmentRepositoryTests
     }
 
     [Fact]
+    public async Task SaveAsync_round_trips_recall_drills()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.RecallDrillAssessment();
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync(assessment.Id);
+        var summaries = await repository.ListByCategoryAsync(assessment.CategoryId);
+
+        Assert.NotNull(loaded);
+        Assert.Equal(AssessmentType.RecallDrill, loaded.AssessmentType);
+        Assert.Equal(4, loaded.Items.Count);
+        Assert.Equal(RecallItemType.Symbolic, loaded.Items[1].Type);
+        Assert.Equal("\\sin^2(x)+\\cos^2(x)=1", loaded.Items[1].Answer.ExpectedLatex);
+        Assert.Contains(summaries, summary => summary.Id == assessment.Id && summary.QuestionCount == 4);
+    }
+
+    [Fact]
     public async Task Repository_loads_runner_guided_project_from_data_files()
     {
         var repository = new FileAssessmentRepository(

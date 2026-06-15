@@ -24,6 +24,11 @@ public sealed class ScoringService
 
     public AttemptResults BuildResults(AssessmentDefinition assessment, Attempt attempt)
     {
+        if (assessment.AssessmentType is AssessmentType.RecallDrill)
+        {
+            return BuildRecallResults(assessment, attempt);
+        }
+
         var answersByQuestion = attempt.Answers.ToDictionary(answer => answer.QuestionId, StringComparer.OrdinalIgnoreCase);
         var assessmentItems = GetAssessmentItems(assessment);
         var orderedQuestions = attempt.QuestionOrder
@@ -88,6 +93,74 @@ public sealed class ScoringService
         return GetAssessmentItems(assessment).Select(item => item.Question).ToList();
     }
 
+    public IReadOnlyList<RecallItemDefinition> GetRecallItems(AssessmentDefinition assessment)
+    {
+        return assessment.AssessmentType is AssessmentType.RecallDrill
+            ? assessment.Items.ToList()
+            : Array.Empty<RecallItemDefinition>();
+    }
+
+    private static AttemptResults BuildRecallResults(AssessmentDefinition assessment, Attempt attempt)
+    {
+        var recallAttempts = attempt.RecallItems.ToDictionary(item => item.ItemId, StringComparer.OrdinalIgnoreCase);
+        var orderedItems = attempt.QuestionOrder
+            .Select(itemId => assessment.Items.First(item => string.Equals(item.Id, itemId, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+        var itemResults = orderedItems.Select(item =>
+        {
+            recallAttempts.TryGetValue(item.Id, out var recallAttempt);
+            var answerRevealed = recallAttempt?.AnswerRevealed == true
+                || attempt.Status is AttemptStatus.Completed or AttemptStatus.Abandoned;
+
+            return new RecallItemResult(
+                item.Id,
+                item.Type,
+                item.Prompt,
+                recallAttempt?.UserResponse,
+                answerRevealed,
+                recallAttempt?.Rating ?? RecallRating.Unknown,
+                answerRevealed ? item.Answer.Expected : null,
+                answerRevealed ? item.Answer.ExpectedLatex : null,
+                answerRevealed ? item.Answer.Aliases : Array.Empty<string>(),
+                answerRevealed ? item.Explanation : null,
+                item.Tags,
+                item.Answer.Media);
+        }).ToList();
+
+        var easyCount = itemResults.Count(item => item.Rating is RecallRating.Easy);
+        var correctCount = itemResults.Count(item => item.Rating is RecallRating.Correct);
+        var needsReviewCount = itemResults.Count(item => item.Rating is RecallRating.NeedsReview);
+        var forgotCount = itemResults.Count(item => item.Rating is RecallRating.ForgotCompletely);
+        var weakTags = itemResults
+            .Where(item => item.Rating is RecallRating.NeedsReview or RecallRating.ForgotCompletely)
+            .SelectMany(item => item.Tags)
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .GroupBy(tag => tag, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(group => group.Count())
+            .ThenBy(group => group.Key)
+            .Select(group => group.Key)
+            .ToList();
+        var reviewedCount = itemResults.Count(item => item.Rating is not RecallRating.Unknown);
+        var totalItems = attempt.QuestionOrder.Count;
+
+        return new AttemptResults(
+            attempt.Id,
+            assessment.Id,
+            assessment.Title,
+            attempt.Mode,
+            attempt.Status,
+            easyCount + correctCount,
+            totalItems,
+            totalItems == 0 ? 0 : Math.Round((easyCount + correctCount) * 100m / totalItems, 2),
+            attempt.Status is AttemptStatus.Completed,
+            Array.Empty<QuestionResult>())
+        {
+            AssessmentType = assessment.AssessmentType,
+            RecallSummary = new RecallDrillSummary(reviewedCount, easyCount, correctCount, needsReviewCount, forgotCount, weakTags),
+            RecallItems = itemResults
+        };
+    }
+
     private static bool SameChoiceSet(IReadOnlyList<string> expected, IReadOnlyList<string> actual)
     {
         return expected.ToHashSet(StringComparer.OrdinalIgnoreCase)
@@ -121,6 +194,11 @@ public sealed class ScoringService
     private static IReadOnlyList<AssessmentItem> GetAssessmentItems(AssessmentDefinition assessment)
     {
         if (assessment.AssessmentType is AssessmentType.GuidedProject)
+        {
+            return Array.Empty<AssessmentItem>();
+        }
+
+        if (assessment.AssessmentType is AssessmentType.RecallDrill)
         {
             return Array.Empty<AssessmentItem>();
         }

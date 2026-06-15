@@ -41,6 +41,10 @@ public sealed record CommitGradeRequest(string AttemptId);
 
 public sealed record BulkDeleteAttemptsRequest(IReadOnlyList<string>? AttemptIds);
 
+public sealed record RevealRecallItemRequest(string? UserResponse);
+
+public sealed record RateRecallItemRequest(RecallRating Rating);
+
 public sealed record GuidedProjectFileStateRequest(
     string Path,
     string Content);
@@ -68,7 +72,8 @@ public sealed record SaveAssessmentRequest(
     int? AssessmentTimerSeconds,
     IReadOnlyList<QuestionDefinition>? Questions,
     IReadOnlyList<WorkedExampleDefinition>? WorkedExamples,
-    GuidedProjectDefinition? GuidedProject)
+    GuidedProjectDefinition? GuidedProject,
+    IReadOnlyList<RecallItemDefinition>? Items)
 {
     public AssessmentDefinition ToDomain()
     {
@@ -86,7 +91,8 @@ public sealed record SaveAssessmentRequest(
             Questions ?? Array.Empty<QuestionDefinition>())
         {
             WorkedExamples = WorkedExamples ?? Array.Empty<WorkedExampleDefinition>(),
-            GuidedProject = GuidedProject
+            GuidedProject = GuidedProject,
+            Items = Items ?? Array.Empty<RecallItemDefinition>()
         };
     }
 }

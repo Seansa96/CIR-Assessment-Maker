@@ -9,6 +9,15 @@ public enum AttemptStatus
     Abandoned
 }
 
+public enum RecallRating
+{
+    Unknown,
+    Easy,
+    Correct,
+    NeedsReview,
+    ForgotCompletely
+}
+
 public sealed record Attempt(
     string Id,
     string AssessmentId,
@@ -19,13 +28,23 @@ public sealed record Attempt(
     DateTimeOffset StartedAt,
     DateTimeOffset? PausedAt,
     DateTimeOffset? CompletedAt,
-    DateTimeOffset? AbandonedAt);
+    DateTimeOffset? AbandonedAt)
+{
+    public IReadOnlyList<RecallItemAttempt> RecallItems { get; init; } = Array.Empty<RecallItemAttempt>();
+}
 
 public sealed record AttemptAnswer(
     string QuestionId,
     SubmittedAnswer Answer,
     AnswerEvaluation? Evaluation,
     DateTimeOffset SubmittedAt);
+
+public sealed record RecallItemAttempt(
+    string ItemId,
+    string? UserResponse,
+    bool AnswerRevealed,
+    RecallRating Rating,
+    DateTimeOffset UpdatedAt);
 
 public sealed record AttemptResults(
     string AttemptId,
@@ -41,7 +60,31 @@ public sealed record AttemptResults(
 {
     public AssessmentType AssessmentType { get; init; } = AssessmentType.Unknown;
     public bool HasPendingSelfChecks { get; init; }
+    public RecallDrillSummary? RecallSummary { get; init; }
+    public IReadOnlyList<RecallItemResult> RecallItems { get; init; } = Array.Empty<RecallItemResult>();
 }
+
+public sealed record RecallDrillSummary(
+    int ItemsReviewed,
+    int EasyCount,
+    int CorrectCount,
+    int NeedsReviewCount,
+    int ForgotCompletelyCount,
+    IReadOnlyList<string> WeakTags);
+
+public sealed record RecallItemResult(
+    string ItemId,
+    RecallItemType Type,
+    string Prompt,
+    string? UserResponse,
+    bool AnswerRevealed,
+    RecallRating Rating,
+    string? Expected,
+    string? ExpectedLatex,
+    IReadOnlyList<string> Aliases,
+    string? Explanation,
+    IReadOnlyList<string> Tags,
+    IReadOnlyList<MediaAsset> Media);
 
 public sealed record QuestionResult(
     string QuestionId,

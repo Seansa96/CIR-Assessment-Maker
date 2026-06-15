@@ -45,12 +45,14 @@ public sealed class AttemptService
     {
         var assessment = await GetValidAssessmentAsync(assessmentId, cancellationToken);
         var settings = await settingsRepository.GetAsync(cancellationToken);
-        var selectedMode = assessment.AssessmentType is AssessmentType.WorkedExample or AssessmentType.GuidedProject
+        var selectedMode = assessment.AssessmentType is AssessmentType.WorkedExample or AssessmentType.GuidedProject or AssessmentType.RecallDrill
             ? AssessmentMode.Practice
             : mode ?? assessment.ModeDefault;
-        var questionOrder = scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList();
+        var questionOrder = assessment.AssessmentType is AssessmentType.RecallDrill
+            ? scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList()
+            : scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList();
 
-        if (assessment.AssessmentType is not AssessmentType.WorkedExample and not AssessmentType.GuidedProject
+        if (assessment.AssessmentType is not AssessmentType.WorkedExample and not AssessmentType.GuidedProject and not AssessmentType.RecallDrill
             && assessment.RandomizeQuestions
             && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized)
         {
@@ -125,6 +127,90 @@ public sealed class AttemptService
         return updatedAttempt;
     }
 
+    public async Task<Attempt> RevealRecallItemAsync(string attemptId, string itemId, string? userResponse, CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+        if (assessment.AssessmentType is not AssessmentType.RecallDrill)
+        {
+            throw new InvalidOperationException("Only recall drill attempts can reveal recall answers.");
+        }
+
+        if (attempt.Status is not AttemptStatus.InProgress)
+        {
+            throw new InvalidOperationException("Can only reveal recall answers on an in-progress attempt.");
+        }
+
+        var item = assessment.Items.FirstOrDefault(candidate => string.Equals(candidate.Id, itemId, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Recall item '{itemId}' does not exist on this assessment.");
+        if (!attempt.QuestionOrder.Contains(item.Id, StringComparer.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException($"Recall item '{itemId}' is not part of this attempt.");
+        }
+
+        var existing = attempt.RecallItems.FirstOrDefault(candidate => string.Equals(candidate.ItemId, item.Id, StringComparison.OrdinalIgnoreCase));
+        var response = item.Type is RecallItemType.Flashcard
+            ? existing?.UserResponse
+            : userResponse ?? existing?.UserResponse;
+        var updatedRecall = new RecallItemAttempt(
+            item.Id,
+            response,
+            true,
+            existing?.Rating ?? RecallRating.Unknown,
+            DateTimeOffset.UtcNow);
+        var updatedAttempt = attempt with
+        {
+            RecallItems = ReplaceRecallItemAttempt(attempt.RecallItems, updatedRecall)
+        };
+
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
+    public async Task<Attempt> RateRecallItemAsync(string attemptId, string itemId, RecallRating rating, CancellationToken cancellationToken = default)
+    {
+        if (rating is RecallRating.Unknown)
+        {
+            throw new InvalidOperationException("Recall rating must be easy, correct, needsReview, or forgotCompletely.");
+        }
+
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+        if (assessment.AssessmentType is not AssessmentType.RecallDrill)
+        {
+            throw new InvalidOperationException("Only recall drill attempts can rate recall answers.");
+        }
+
+        if (attempt.Status is not AttemptStatus.InProgress)
+        {
+            throw new InvalidOperationException("Can only rate recall answers on an in-progress attempt.");
+        }
+
+        var item = assessment.Items.FirstOrDefault(candidate => string.Equals(candidate.Id, itemId, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Recall item '{itemId}' does not exist on this assessment.");
+        var existing = attempt.RecallItems.FirstOrDefault(candidate => string.Equals(candidate.ItemId, item.Id, StringComparison.OrdinalIgnoreCase));
+        if (existing?.AnswerRevealed != true)
+        {
+            throw new InvalidOperationException("Reveal the recall answer before rating it.");
+        }
+
+        var updatedRecall = existing with
+        {
+            Rating = rating,
+            UpdatedAt = DateTimeOffset.UtcNow
+        };
+        var updatedRecallItems = ReplaceRecallItemAttempt(attempt.RecallItems, updatedRecall);
+        var allRated = attempt.QuestionOrder.All(orderItemId => updatedRecallItems.Any(recall =>
+            string.Equals(recall.ItemId, orderItemId, StringComparison.OrdinalIgnoreCase)
+            && recall.Rating is not RecallRating.Unknown));
+        var updatedAttempt = allRated
+            ? attempt with { RecallItems = updatedRecallItems, Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
+            : attempt with { RecallItems = updatedRecallItems };
+
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
     public async Task<Attempt> ResumeAsync(string attemptId, CancellationToken cancellationToken = default)
     {
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
@@ -194,6 +280,14 @@ public sealed class AttemptService
                 && answer.Evaluation?.IsCorrect == true)))
         {
             throw new InvalidOperationException("Worked examples can only be completed after every step is correct.");
+        }
+
+        if (assessment.AssessmentType is AssessmentType.RecallDrill
+            && !attempt.QuestionOrder.All(itemId => attempt.RecallItems.Any(item =>
+                string.Equals(item.ItemId, itemId, StringComparison.OrdinalIgnoreCase)
+                && item.Rating is not RecallRating.Unknown)))
+        {
+            throw new InvalidOperationException("Recall drills can only be completed after every item is rated.");
         }
 
         var completedAttempt = attempt.Status is not AttemptStatus.Completed
@@ -334,6 +428,16 @@ public sealed class AttemptService
         }
 
         return attempt.QuestionOrder.LastOrDefault();
+    }
+
+    private static IReadOnlyList<RecallItemAttempt> ReplaceRecallItemAttempt(
+        IReadOnlyList<RecallItemAttempt> recallItems,
+        RecallItemAttempt updated)
+    {
+        return recallItems
+            .Where(item => !string.Equals(item.ItemId, updated.ItemId, StringComparison.OrdinalIgnoreCase))
+            .Append(updated)
+            .ToList();
     }
 
     private static void Shuffle<T>(IList<T> values)
