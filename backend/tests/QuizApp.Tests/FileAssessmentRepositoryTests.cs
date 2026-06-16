@@ -243,6 +243,12 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("cpp-memory-management-basics-quiz")]
     [InlineData("cpp-resize-array-code-question")]
     [InlineData("cpp-int-buffer-guided-project")]
+    [InlineData("precalculus-polynomial-division-worked-example")]
+    [InlineData("precalculus-polynomial-division-quiz")]
+    [InlineData("precalculus-partial-fractions-deep-worked-example")]
+    [InlineData("precalculus-binomial-theorem-worked-example")]
+    [InlineData("precalculus-binomial-theorem-recall")]
+    [InlineData("precalculus-binomial-theorem-quiz")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
