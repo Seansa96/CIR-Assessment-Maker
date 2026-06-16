@@ -1,0 +1,279 @@
+schemaVersion: 1
+id: cpp-memory-management-basics-quiz
+title: C++ Memory Management Basics Quiz
+assessmentType: quiz
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: true
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      Which release operation matches `new int[10]`?
+    choices:
+      - id: a
+        text: '`delete[] data;`'
+      - id: b
+        text: '`delete data;`'
+      - id: c
+        text: '`free[] data;`'
+      - id: d
+        text: '`data.delete();`'
+    answer:
+      choiceId: a
+    explanation: |
+      Array allocation with `new[]` must be paired with array deletion using `delete[]`.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      What is a memory leak?
+    choices:
+      - id: a
+        text: 'Allocated memory is no longer reachable and was not released.'
+      - id: b
+        text: 'A variable is initialized to zero.'
+      - id: c
+        text: 'A function returns an integer.'
+      - id: d
+        text: 'An array has capacity greater than size.'
+    answer:
+      choiceId: a
+    explanation: |
+      A leak happens when the program loses the ability to release memory it allocated.
+
+  - id: q003
+    type: multipleChoice
+    prompt: |
+      What is a dangling pointer?
+    choices:
+      - id: a
+        text: 'A pointer that still points to memory after that memory has been deleted or gone out of lifetime.'
+      - id: b
+        text: 'A pointer set to `nullptr`.'
+      - id: c
+        text: 'A pointer to the first valid array element.'
+      - id: d
+        text: 'A reference to a valid object.'
+    answer:
+      choiceId: a
+    explanation: |
+      A dangling pointer points at memory that is no longer valid to use. Dereferencing it is unsafe.
+
+  - id: q004
+    type: multipleChoice
+    prompt: |
+      In a dynamic buffer, what does `capacity` mean?
+    choices:
+      - id: a
+        text: 'The number of allocated slots available.'
+      - id: b
+        text: 'The number of values currently stored.'
+      - id: c
+        text: 'The largest value in the buffer.'
+      - id: d
+        text: 'The index of the first value.'
+    answer:
+      choiceId: a
+    explanation: |
+      Capacity is allocated room. Size/count is how many of those slots are currently used.
+
+  - id: q005
+    type: multipleChoice
+    prompt: |
+      In a dynamic buffer, what does `size` or `count` mean?
+    choices:
+      - id: a
+        text: 'The number of values currently stored.'
+      - id: b
+        text: 'The number of bytes in an integer.'
+      - id: c
+        text: 'The amount of memory leaked.'
+      - id: d
+        text: 'The maximum possible index in C++.'
+    answer:
+      choiceId: a
+    explanation: |
+      Size/count tracks used slots. A buffer can have capacity `8` while its size is only `3`.
+
+  - id: q006
+    type: multipleChoice
+    prompt: |
+      Which condition means a buffer should grow before appending?
+    choices:
+      - id: a
+        text: '`count == cap`'
+      - id: b
+        text: '`count < cap`'
+      - id: c
+        text: '`count == 0`'
+      - id: d
+        text: '`cap > count`'
+    answer:
+      choiceId: a
+    explanation: |
+      When the number of used slots equals the number of allocated slots, the next push needs more capacity.
+
+  - id: q007
+    type: multipleChoice
+    prompt: |
+      Which resize order is safest?
+    choices:
+      - id: a
+        text: 'Allocate new array, copy values, delete old array, repoint `data`.'
+      - id: b
+        text: 'Delete old array, then copy values from it.'
+      - id: c
+        text: 'Set `data` to null, then copy.'
+      - id: d
+        text: 'Increase `count` and skip allocation.'
+    answer:
+      choiceId: a
+    explanation: |
+      You must copy while the old memory is still valid, then release the old memory and store the new pointer.
+
+  - id: q008
+    type: multipleChoice
+    prompt: |
+      What should the destructor of a class owning `int* data = new int[cap];` do?
+    choices:
+      - id: a
+        text: '`delete[] data;`'
+      - id: b
+        text: '`delete data;`'
+      - id: c
+        text: '`data = new int[cap];`'
+      - id: d
+        text: 'Nothing, because destructors cannot release arrays.'
+    answer:
+      choiceId: a
+    explanation: |
+      The destructor is where the owning class releases the dynamic array with `delete[]`.
+
+  - id: q009
+    type: multipleChoice
+    prompt: |
+      Why can shallow copying be dangerous for a class that owns a raw pointer?
+    choices:
+      - id: a
+        text: 'Two objects may point to the same owned memory and both try to delete it.'
+      - id: b
+        text: 'The pointer becomes an integer.'
+      - id: c
+        text: 'The compiler forbids all classes with pointers.'
+      - id: d
+        text: 'The copy always has a larger capacity.'
+    answer:
+      choiceId: a
+    explanation: |
+      The default copy copies the pointer value, not the pointed-to array. That can create shared ownership accidentally.
+
+  - id: q010
+    type: multipleChoice
+    prompt: |
+      What should `get(-1)` do in the planned `IntBuffer` project contract?
+    choices:
+      - id: a
+        text: 'Return `0` because the index is invalid.'
+      - id: b
+        text: 'Read `data[-1]`.'
+      - id: c
+        text: 'Double the capacity.'
+      - id: d
+        text: 'Delete the buffer.'
+    answer:
+      choiceId: a
+    explanation: |
+      This project avoids exception complexity by making invalid indexes return `0`.
+
+  - id: q011
+    type: multipleChoice
+    prompt: |
+      Why should `push` usually write to `data[count]` before incrementing `count`?
+    choices:
+      - id: a
+        text: '`count` is the next free index before the new value is added.'
+      - id: b
+        text: '`count` is always the last valid index.'
+      - id: c
+        text: 'Incrementing first deletes the array.'
+      - id: d
+        text: 'The index must always be negative.'
+    answer:
+      choiceId: a
+    explanation: |
+      If there are `count` values, the next free slot is index `count`. After storing the value, increment `count`.
+
+  - id: q012
+    type: multipleChoice
+    prompt: |
+      If a buffer starts with capacity `2` and doubles when full, what capacity should it have after pushing a third value?
+    choices:
+      - id: a
+        text: '`4`'
+      - id: b
+        text: '`2`'
+      - id: c
+        text: '`3`'
+      - id: d
+        text: '`8`'
+    answer:
+      choiceId: a
+    explanation: |
+      The third push does not fit in capacity `2`, so the buffer grows to `4`.
+
+  - id: q013
+    type: multipleChoice
+    prompt: |
+      What is RAII?
+    choices:
+      - id: a
+        text: 'A pattern where resource acquisition and release are tied to object lifetime.'
+      - id: b
+        text: 'A rule that arrays cannot be resized.'
+      - id: c
+        text: 'A sorting algorithm.'
+      - id: d
+        text: 'A way to ignore destructors.'
+    answer:
+      choiceId: a
+    explanation: |
+      RAII lets constructors acquire resources and destructors release them, so cleanup follows object lifetime.
+
+  - id: q014
+    type: multipleChoice
+    prompt: |
+      Which statement best describes `delete[] data; data = newData;` during resize?
+    choices:
+      - id: a
+        text: 'Release the old storage, then make the object point to the new storage.'
+      - id: b
+        text: 'Delete the new storage and keep using the old one.'
+      - id: c
+        text: 'Copy values automatically.'
+      - id: d
+        text: 'Set the size to the capacity.'
+    answer:
+      choiceId: a
+    explanation: |
+      After copying values into `newData`, the object can release the old array and keep the new pointer.
+
+  - id: q015
+    type: multipleChoice
+    prompt: |
+      Which mistake is most likely to lose all stored values during resize?
+    choices:
+      - id: a
+        text: 'Allocating a new array but never copying the old values into it.'
+      - id: b
+        text: 'Checking `count == cap`.'
+      - id: c
+        text: 'Returning `count` from `size()`.'
+      - id: d
+        text: 'Using initial capacity `2`.'
+    answer:
+      choiceId: a
+    explanation: |
+      Resizing must preserve existing values. If you skip the copy loop, the new array does not contain the old contents.

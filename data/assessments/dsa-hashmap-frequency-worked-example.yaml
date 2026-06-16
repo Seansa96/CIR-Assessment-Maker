@@ -1,0 +1,131 @@
+schemaVersion: 1
+id: dsa-hashmap-frequency-worked-example
+title: Hash Map Frequency Counting Worked Example
+assessmentType: workedExample
+categoryId: dsa
+subcategoryIds:
+  - dsa-hashmaps
+  - dsa-arrays-strings
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Replacing repeated scanning with a hash map
+    problem: |
+      Given a list of words, find the first word that appears at least twice.
+
+      The issue: a beginner solution often compares every word to every later word. That works, but it repeats the same search over and over.
+    steps:
+      - id: s001
+        title: Identify the pain point
+        instruction: |
+          Start by naming what makes the direct approach inefficient.
+        type: multipleChoice
+        prompt: |
+          If you compare every word with every later word, what is the main issue?
+        choices:
+          - id: a
+            text: 'You may scan the same words many times.'
+          - id: b
+            text: 'The list cannot contain strings.'
+          - id: c
+            text: 'Duplicate words are impossible.'
+          - id: d
+            text: 'The answer must always be the first element.'
+        answer:
+          choiceId: a
+        hint: |
+          Think about how many comparisons happen as the list grows.
+        explanation: |
+          The brute-force approach keeps asking, "Have I seen this later?" by scanning more of the list. That can grow roughly like $n^2$ comparisons.
+
+          Related topic: time complexity and repeated search.
+
+      - id: s002
+        title: Choose what must be remembered
+        instruction: |
+          A better solution stores just enough information while scanning once.
+        type: multipleChoice
+        prompt: |
+          While reading words from left to right, what do you need to remember?
+        choices:
+          - id: a
+            text: 'Which words have already appeared.'
+          - id: b
+            text: 'Every possible word in the language.'
+          - id: c
+            text: 'Only the final word.'
+          - id: d
+            text: 'The words sorted alphabetically.'
+        answer:
+          choiceId: a
+        hint: |
+          You need to answer "have I seen this before?" quickly.
+        explanation: |
+          The key operation is membership lookup: for the current word, ask whether it already appeared. A hash set or hash map is designed for fast average-case lookup.
+
+      - id: s003
+        title: Pick the structure
+        instruction: |
+          Match the problem operation to a data structure.
+        type: multipleChoice
+        prompt: |
+          Which structure is the best basic fit for tracking already-seen words?
+        choices:
+          - id: a
+            text: 'Hash set or hash map'
+          - id: b
+            text: 'Stack'
+          - id: c
+            text: 'Queue'
+          - id: d
+            text: 'Binary search tree without sorting guarantees'
+        answer:
+          choiceId: a
+        hint: |
+          The operation is quick "contains?" lookup by key.
+        explanation: |
+          A hash set stores keys. A hash map stores key-value pairs. If you only need presence, a set is enough. If you need counts, use a map from word to count.
+
+      - id: s004
+        title: Write the one-pass idea
+        instruction: |
+          State the algorithm before worrying about syntax.
+        type: freeResponse
+        prompt: |
+          Describe the one-pass hash map or hash set strategy for finding the first repeated word.
+        answer:
+          expected: |
+            Scan left to right. For each word, check whether it is already in a seen set or map. If it is, return it. Otherwise add it and continue.
+          gradingMode: selfCheck
+          keyPoints:
+            - Scan the list once from left to right.
+            - Check the current word in a hash set/map.
+            - Return immediately when the word has already been seen.
+        hint: |
+          The repeated word is found at the moment a lookup says "already seen."
+        explanation: |
+          The hash structure turns the expensive inner scan into a fast lookup. The structure is not magic; it simply keeps a memory of earlier items.
+
+      - id: s005
+        title: Recognize the pattern
+        instruction: |
+          Connect this worked example to the general pattern.
+        type: multipleChoice
+        prompt: |
+          When should a hash map or hash set come to mind?
+        choices:
+          - id: a
+            text: 'When you repeatedly ask whether a value has appeared, or need counts by key.'
+          - id: b
+            text: 'Only when data is already sorted.'
+          - id: c
+            text: 'Only when you need last-in-first-out behavior.'
+          - id: d
+            text: 'Only when traversing a tree.'
+        answer:
+          choiceId: a
+        hint: |
+          Hash maps are about lookup by key.
+        explanation: |
+          The core pattern is key-based memory: seen items, counts, indexes, grouping, and lookup tables. Common examples include two-sum, first duplicate, anagrams, and frequency counting.

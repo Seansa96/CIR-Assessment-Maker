@@ -1,0 +1,75 @@
+schemaVersion: 1
+id: cpp-resize-array-code-question
+title: C++ Resize Array Coding Question
+assessmentType: quiz
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: false
+questions:
+  - id: q001
+    type: code
+    prompt: |
+      Write a C++ function named `resizeArray` that receives an old dynamic array pointer, the number of values to copy, and a new capacity.
+
+      It should allocate a new integer array with `newCapacity` slots, copy the first `oldSize` values into it, delete the old array with `delete[]`, and return the new pointer.
+
+      Submit both complete function definitions shown in the starter code. Do not write `main()`, do not print output, and do not call the functions yourself. The runner will call `resizeArrayCase` automatically so it can verify pointer behavior safely.
+    language: cpp
+    functionName: resizeArrayCase
+    starterCode: |
+      int* resizeArray(int* oldData, int oldSize, int newCapacity)
+      {
+          // Allocate a larger array, copy oldSize values, delete oldData, and return the new array.
+          return nullptr;
+      }
+
+      string resizeArrayCase(int caseId)
+      {
+          if (caseId == 1) {
+              int* values = new int[2]{4, 7};
+              int* resized = resizeArray(values, 2, 4);
+              bool ok = resized != nullptr && resized[0] == 4 && resized[1] == 7;
+              delete[] resized;
+              return ok ? "COPY_OK" : "COPY_FAIL";
+          }
+
+          if (caseId == 2) {
+              int* values = new int[1]{9};
+              int* resized = resizeArray(values, 1, 3);
+              bool ok = resized != nullptr && resized[0] == 9;
+              delete[] resized;
+              return ok ? "GROW_OK" : "GROW_FAIL";
+          }
+
+          if (caseId == 3) {
+              int* resized = resizeArray(nullptr, 0, 2);
+              bool ok = resized != nullptr;
+              if (resized != nullptr) {
+                  resized[0] = 11;
+              }
+              delete[] resized;
+              return ok ? "NULL_OK" : "NULL_FAIL";
+          }
+
+          int* values = new int[2]{1, 2};
+          int* resized = resizeArray(values, 0, 5);
+          bool ok = resized != nullptr;
+          delete[] resized;
+          return ok ? "ZERO_SIZE_OK" : "ZERO_SIZE_FAIL";
+      }
+    tests:
+      - input: "1"
+        expected: COPY_OK
+      - input: "2"
+        expected: GROW_OK
+      - input: "3"
+        expected: NULL_OK
+      - input: "4"
+        expected: ZERO_SIZE_OK
+    answer: {}
+    explanation: |
+      A correct `resizeArray` allocates `int* newData = new int[newCapacity];`, copies indexes `0` through `oldSize - 1`, calls `delete[] oldData;`, and returns `newData`.
+
+      Related topic: manual resize sequence. This is the core operation that `IntBuffer::push` will need when the buffer is full.

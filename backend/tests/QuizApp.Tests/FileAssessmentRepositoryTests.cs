@@ -215,6 +215,47 @@ public sealed class FileAssessmentRepositoryTests
         Assert.Equal("coach-updates-distance", Assert.Single(loaded.GuidedProject.BonusChecks).Id);
     }
 
+    [Theory]
+    [InlineData("calc2-rational-integration-quiz")]
+    [InlineData("calc2-improper-integrals-worked-example")]
+    [InlineData("physics-tennis-ball-kinematics-free-response")]
+    [InlineData("physics-relative-motion-basic-free-response")]
+    [InlineData("physics-relative-motion-harder-free-response")]
+    [InlineData("physics-forces-vectors-no-friction-worked-example")]
+    [InlineData("chemistry-periodic-table-group-names-recall")]
+    [InlineData("chemistry-periodic-table-elements-ions-recall")]
+    [InlineData("chemistry-periodic-table-group-properties-recall")]
+    [InlineData("chemistry-binary-ionic-type-i-naming-quiz")]
+    [InlineData("chemistry-binary-ionic-type-ii-naming-quiz")]
+    [InlineData("dsa-hashmap-frequency-worked-example")]
+    [InlineData("dsa-stack-parentheses-worked-example")]
+    [InlineData("dsa-queue-bfs-worked-example")]
+    [InlineData("dsa-binary-search-worked-example")]
+    [InlineData("dsa-recursion-dp-worked-example")]
+    [InlineData("dsa-pseudocode-recognition-recall")]
+    [InlineData("cpp-pointer-vs-reference-worked-example")]
+    [InlineData("cpp-pointer-array-traversal-worked-example")]
+    [InlineData("cpp-pointer-basics-quiz")]
+    [InlineData("cpp-find-first-even-code-question")]
+    [InlineData("cpp-inventory-pointer-scanner-guided-project")]
+    [InlineData("cpp-new-delete-array-worked-example")]
+    [InlineData("cpp-dynamic-array-resize-worked-example")]
+    [InlineData("cpp-memory-management-basics-quiz")]
+    [InlineData("cpp-resize-array-code-question")]
+    [InlineData("cpp-int-buffer-guided-project")]
+    public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var loaded = await repository.GetByIdAsync(assessmentId);
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.NotNull(loaded);
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
     private static string CreateDataRoot()
     {
         var dataRoot = Path.Combine(AppContext.BaseDirectory, "file-repository-tests", Guid.NewGuid().ToString("n"));

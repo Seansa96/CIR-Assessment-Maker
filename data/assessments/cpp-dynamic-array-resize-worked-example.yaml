@@ -1,0 +1,123 @@
+schemaVersion: 1
+id: cpp-dynamic-array-resize-worked-example
+title: C++ Dynamic Array Resize Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Growing a dynamic buffer
+    problem: |
+      Learn how a dynamic array grows when it runs out of capacity.
+
+      The issue: raw arrays cannot resize themselves. To grow, you allocate a larger array, copy the existing values, release the old array, and then point to the new one.
+    steps:
+      - id: s001
+        title: Detect full capacity
+        instruction: |
+          Resize only when the number of stored values reaches the number of available slots.
+        type: multipleChoice
+        prompt: |
+          Which condition means an `IntBuffer` is full?
+        choices:
+          - id: a
+            text: '`count == cap`'
+          - id: b
+            text: '`count == 0`'
+          - id: c
+            text: '`cap == 0` always'
+          - id: d
+            text: '`data == nullptr` after every push'
+        answer:
+          choiceId: a
+        explanation: |
+          `count` tracks used slots and `cap` tracks available slots. When `count == cap`, there is no room for the next value.
+
+      - id: s002
+        title: Choose the new capacity
+        instruction: |
+          This project uses the common doubling strategy.
+        type: multipleChoice
+        prompt: |
+          If the current capacity is `4`, what should the next capacity be in this project?
+        choices:
+          - id: a
+            text: '`8`'
+          - id: b
+            text: '`5`'
+          - id: c
+            text: '`4`'
+          - id: d
+            text: '`0`'
+        answer:
+          choiceId: a
+        hint: |
+          The contract says capacity doubles.
+        explanation: |
+          Doubling gives room for future pushes without resizing on every insertion. The sequence for this project is `2`, `4`, `8`, and so on.
+
+      - id: s003
+        title: Copy before deleting
+        instruction: |
+          The old array contains the values you still need.
+        type: multipleChoice
+        prompt: |
+          During resize, why must you copy values before deleting the old array?
+        choices:
+          - id: a
+            text: 'After `delete[] data;`, the old values are no longer safely readable.'
+          - id: b
+            text: 'Copying after deletion is faster.'
+          - id: c
+            text: 'The old pointer automatically copies itself.'
+          - id: d
+            text: 'Deleting first increases `count`.'
+        answer:
+          choiceId: a
+        explanation: |
+          Once memory is deleted, you no longer own it and cannot safely read from it. Resize order matters: allocate new storage, copy values, delete old storage, then repoint `data`.
+
+      - id: s004
+        title: Update the pointer
+        instruction: |
+          After the copy, the buffer must point at the new storage.
+        type: multipleChoice
+        prompt: |
+          After copying old values into `newData`, which assignments complete the resize?
+        choices:
+          - id: a
+            text: '`delete[] data; data = newData; cap = newCap;`'
+          - id: b
+            text: '`data = nullptr; cap = count;`'
+          - id: c
+            text: '`delete[] newData; data = newData;`'
+          - id: d
+            text: '`count = cap;` only'
+        answer:
+          choiceId: a
+        explanation: |
+          Release the old array, store the new pointer in `data`, and update `cap` so the object knows the new capacity.
+
+      - id: s005
+        title: Describe the resize sequence
+        instruction: |
+          State the complete algorithm in order.
+        type: freeResponse
+        prompt: |
+          Describe the safe resize sequence for a dynamic integer buffer.
+        answer:
+          expected: |
+            Allocate a larger array, copy the existing `count` values into it, delete the old array with `delete[]`, assign `data` to the new array, and update `cap`.
+          gradingMode: selfCheck
+          keyPoints:
+            - Allocate new larger storage.
+            - Copy existing values before deleting old storage.
+            - Delete old storage with `delete[]`.
+            - Repoint `data` and update `cap`.
+        hint: |
+          The old data must survive the move into the new array.
+        explanation: |
+          This sequence is the heart of `push` in the `IntBuffer` guided project. If `push` finds `count == cap`, it grows first, then writes the new value at `data[count]` and increments `count`.

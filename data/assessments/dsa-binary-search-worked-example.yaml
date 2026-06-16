@@ -1,0 +1,119 @@
+schemaVersion: 1
+id: dsa-binary-search-worked-example
+title: Binary Search Worked Example
+assessmentType: workedExample
+categoryId: dsa
+subcategoryIds:
+  - dsa-sorting-searching
+  - dsa-arrays-strings
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Using sorted order to discard half the search space
+    problem: |
+      Given a sorted array, determine whether a target value is present.
+
+      The issue: linear search ignores the sorted order and checks one value at a time.
+    steps:
+      - id: s001
+        title: Identify the special condition
+        instruction: |
+          Binary search depends on a property of the input.
+        type: multipleChoice
+        prompt: |
+          What condition makes binary search possible?
+        choices:
+          - id: a
+            text: 'The values are sorted or the search condition is monotonic.'
+          - id: b
+            text: 'The values are random.'
+          - id: c
+            text: 'The array has exactly ten items.'
+          - id: d
+            text: 'The target is always at index zero.'
+        answer:
+          choiceId: a
+        explanation: |
+          Binary search needs a reliable way to decide which side can be discarded. Sorted arrays and monotonic true/false conditions provide that.
+
+      - id: s002
+        title: Use the middle
+        instruction: |
+          The midpoint tells you which half cannot contain the answer.
+        type: multipleChoice
+        prompt: |
+          In an ascending sorted array, if `array[mid] < target`, what should happen?
+        choices:
+          - id: a
+            text: 'Search the right half.'
+          - id: b
+            text: 'Search the left half.'
+          - id: c
+            text: 'Stop and return not found every time.'
+          - id: d
+            text: 'Shuffle the array.'
+        answer:
+          choiceId: a
+        explanation: |
+          If the middle value is smaller than the target, all values to the left of and including `mid` are too small. Move the left boundary to `mid + 1`.
+
+      - id: s003
+        title: State the invariant
+        instruction: |
+          Good binary search is boundary management.
+        type: freeResponse
+        prompt: |
+          What do `left` and `right` represent during binary search?
+        answer:
+          expected: |
+            They represent the current search range that may still contain the target or answer.
+          gradingMode: selfCheck
+          keyPoints:
+            - Boundaries describe the remaining possible range.
+            - Each comparison removes half of that range.
+            - The answer is never discarded if the update is correct.
+        explanation: |
+          Thinking in terms of the remaining possible range prevents most binary search bugs. Each update must preserve the invariant that the answer, if it exists, remains inside the search interval.
+
+      - id: s004
+        title: Choose the complexity
+        instruction: |
+          Each step halves the remaining search space.
+        type: multipleChoice
+        prompt: |
+          What is the usual time complexity of binary search over $n$ sorted items?
+        choices:
+          - id: a
+            text: '$O(\log n)$'
+          - id: b
+            text: '$O(n)$'
+          - id: c
+            text: '$O(n^2)$'
+          - id: d
+            text: '$O(1)$ for every case'
+        answer:
+          choiceId: a
+        explanation: |
+          Halving repeatedly gives logarithmic growth. Doubling the input size only adds about one more comparison.
+
+      - id: s005
+        title: Recognize the broader pattern
+        instruction: |
+          Binary search is not only for arrays.
+        type: multipleChoice
+        prompt: |
+          Which problem can often be solved with binary search even without a literal sorted array?
+        choices:
+          - id: a
+            text: 'Find the smallest value where a monotonic condition becomes true.'
+          - id: b
+            text: 'Validate nested parentheses.'
+          - id: c
+            text: 'Count word frequencies.'
+          - id: d
+            text: 'Process tasks in arrival order.'
+        answer:
+          choiceId: a
+        explanation: |
+          Binary search applies when the answer space has a one-way structure, such as false false false true true. Search the boundary where the condition flips.

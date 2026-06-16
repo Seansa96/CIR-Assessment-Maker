@@ -1,0 +1,124 @@
+schemaVersion: 1
+id: cpp-pointer-array-traversal-worked-example
+title: C++ Pointer Array Traversal Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Walking an array with pointers
+    problem: |
+      Learn how to inspect an array when a function receives a pointer to the first element and a separate count.
+
+      The issue: a pointer by itself does not know how many elements are available. The `count` value is the boundary that keeps traversal safe.
+    steps:
+      - id: s001
+        title: Identify what the pointer means
+        instruction: |
+          In C-style array parameters, the pointer points to the first element.
+        type: multipleChoice
+        prompt: |
+          In `Item* items`, what does `items` usually point to?
+        choices:
+          - id: a
+            text: 'The first `Item` in a contiguous array.'
+          - id: b
+            text: 'The number of items in the array.'
+          - id: c
+            text: 'The last item automatically.'
+          - id: d
+            text: 'A string containing every item name.'
+        answer:
+          choiceId: a
+        explanation: |
+          `Item* items` stores an address. In this pattern, that address is the start of a contiguous array. The separate `count` tells the function how far it may read.
+
+      - id: s002
+        title: Move to a slot
+        instruction: |
+          Pointer arithmetic moves by elements, not raw bytes at the source-code level.
+        type: multipleChoice
+        prompt: |
+          Which expression points to the element at index `i`?
+        choices:
+          - id: a
+            text: '`items + i`'
+          - id: b
+            text: '`items + count` for every `i`'
+          - id: c
+            text: '`&i`'
+          - id: d
+            text: '`nullptr + i`'
+        answer:
+          choiceId: a
+        hint: |
+          Adding `i` to a pointer advances by `i` elements of that pointer type.
+        explanation: |
+          `items + i` points at the slot with index `i`. Dereferencing it with `*(items + i)` gives the item, and `items[i]` is equivalent syntax.
+
+      - id: s003
+        title: Use arrow on a pointer
+        instruction: |
+          The arrow operator accesses a member through a pointer.
+        type: multipleChoice
+        prompt: |
+          If `Item* current = items + i;`, which expression reads the current slot's `id` field?
+        choices:
+          - id: a
+            text: '`current->id`'
+          - id: b
+            text: '`current.id`'
+          - id: c
+            text: '`*current.id`'
+          - id: d
+            text: '`&current->id()`'
+        answer:
+          choiceId: a
+        explanation: |
+          `current->id` is shorthand for `(*current).id`. Use `->` when you have a pointer to an object.
+
+      - id: s004
+        title: Protect the boundary
+        instruction: |
+          A loop must stop before it steps past the end of the array.
+        type: multipleChoice
+        prompt: |
+          Which loop boundary is safest for checking every valid slot?
+        choices:
+          - id: a
+            text: '`for (int i = 0; i < count; i++)`'
+          - id: b
+            text: '`for (int i = 0; i <= count; i++)`'
+          - id: c
+            text: '`while (true)` without a stop condition'
+          - id: d
+            text: '`for (int i = count; i >= 0; i++)`'
+        answer:
+          choiceId: a
+        hint: |
+          Valid indexes run from `0` through `count - 1`.
+        explanation: |
+          `i < count` visits indexes `0` through `count - 1`. Using `i <= count` reads one slot past the end, which is undefined behavior.
+
+      - id: s005
+        title: State the safe traversal rule
+        instruction: |
+          Explain why pointer traversal needs both a pointer and a count.
+        type: freeResponse
+        prompt: |
+          Why is `count` necessary when traversing an array through `Item* items`?
+        answer:
+          expected: |
+            A pointer only stores an address. It does not store the array length, so the function needs `count` to know which indexes are valid and when to stop.
+          gradingMode: selfCheck
+          keyPoints:
+            - A raw pointer does not know the array length.
+            - Valid indexes are controlled by `count`.
+            - Reading beyond the boundary is unsafe.
+        hint: |
+          Think about what information is stored in the pointer itself.
+        explanation: |
+          The Inventory Pointer Scanner uses this exact pattern: `findItemById(Item* items, int count, int id)` must scan from `0` to `count - 1`, check each occupied slot, and return a pointer to the matching slot.

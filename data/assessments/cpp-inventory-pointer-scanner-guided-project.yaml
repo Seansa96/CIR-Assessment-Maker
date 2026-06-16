@@ -1,0 +1,234 @@
+schemaVersion: 1
+id: cpp-inventory-pointer-scanner-guided-project
+title: C++ Inventory Pointer Scanner Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Build a small pointer-based inventory scanner.
+
+    The app will handle compiling, linking, and running hidden checks. You only edit the project files. Do not add `main()` to your files; the app supplies hidden `main()` functions when you click Run Checks.
+
+    Required project behavior:
+
+    - Use the provided `Item` struct exactly as written.
+    - Implement `Item* findItemById(Item* items, int count, int id);`
+    - Implement `void applyDurabilityDamage(Item* item, int amount);`
+    - Implement `bool transferItem(Item* from, Item* to);`
+
+    Exact behavior:
+
+    - `findItemById` scans indexes `0` through `count - 1`.
+    - `findItemById` only matches occupied slots.
+    - `findItemById` returns a pointer to the matching slot.
+    - `findItemById` returns `nullptr` if `items` is null, `count <= 0`, or no occupied item has the target id.
+    - `applyDurabilityDamage` must safely do nothing when `item == nullptr`.
+    - `applyDurabilityDamage` subtracts `amount` from `item->durability`.
+    - `applyDurabilityDamage` clamps durability at `0`.
+    - `transferItem` returns `false` if either pointer is null.
+    - `transferItem` returns `false` if `from` is not occupied.
+    - `transferItem` returns `false` if `to` is already occupied.
+    - On success, `transferItem` copies the item from `from` to `to`, clears the source slot, and returns `true`.
+
+    Keep the file names, struct fields, and function names exactly as provided. The hidden checks call these exact names.
+  files:
+    - path: Item.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <string>
+        using namespace std;
+
+        struct Item {
+            int id;
+            string name;
+            int durability;
+            bool occupied;
+        };
+
+    - path: InventoryScanner.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include "Item.h"
+
+        Item* findItemById(Item* items, int count, int id)
+        {
+            // Scan occupied slots and return a pointer to the matching item.
+            return nullptr;
+        }
+
+        void applyDurabilityDamage(Item* item, int amount)
+        {
+            // Safely damage the item and clamp durability at 0.
+        }
+
+        bool transferItem(Item* from, Item* to)
+        {
+            // Move an occupied item into an empty destination slot.
+            return false;
+        }
+
+    - path: ProjectNotes.md
+      readOnly: true
+      content: |
+        This project is intentionally header-only so the hidden checks can include your code directly.
+
+        Names that must match exactly:
+
+        - Item
+        - id
+        - name
+        - durability
+        - occupied
+        - findItemById(Item* items, int count, int id)
+        - applyDurabilityDamage(Item* item, int amount)
+        - transferItem(Item* from, Item* to)
+
+        Do not write main(). The app writes the hidden main() functions for each check.
+  requiredChecks:
+    - id: find-existing-occupied-item
+      title: findItemById returns the matching occupied slot
+      description: findItemById must scan occupied slots and return a pointer to the item with the requested id.
+      expectedOutputContains:
+        - FIND_EXISTING_OK
+      testCode: |
+        int main() {
+            Item items[4] = {
+                {10, "potion", 5, true},
+                {20, "sword", 80, true},
+                {30, "empty-looking", 40, false},
+                {40, "shield", 60, true}
+            };
+
+            Item* found = findItemById(items, 4, 20);
+            if (found == &items[1] && found->name == "sword") {
+                cout << "FIND_EXISTING_OK";
+                return 0;
+            }
+
+            cout << "FIND_EXISTING_FAIL";
+            return 0;
+        }
+
+    - id: find-ignores-empty-and-missing
+      title: findItemById ignores empty slots and reports missing items
+      description: findItemById must ignore unoccupied slots and return nullptr when no occupied matching item exists.
+      expectedOutputContains:
+        - FIND_MISSING_OK
+      testCode: |
+        int main() {
+            Item items[3] = {
+                {7, "empty-bow", 25, false},
+                {8, "lantern", 10, true},
+                {9, "rope", 12, true}
+            };
+
+            Item* emptyMatch = findItemById(items, 3, 7);
+            Item* missing = findItemById(items, 3, 100);
+            Item* nullItems = findItemById(nullptr, 3, 8);
+            Item* zeroCount = findItemById(items, 0, 8);
+
+            if (emptyMatch == nullptr && missing == nullptr && nullItems == nullptr && zeroCount == nullptr) {
+                cout << "FIND_MISSING_OK";
+                return 0;
+            }
+
+            cout << "FIND_MISSING_FAIL";
+            return 0;
+        }
+
+    - id: damage-mutates-and-clamps
+      title: applyDurabilityDamage mutates and clamps
+      description: applyDurabilityDamage must subtract damage from durability and never leave durability below zero.
+      expectedOutputContains:
+        - DAMAGE_CLAMP_OK
+      testCode: |
+        int main() {
+            Item item{5, "helmet", 12, true};
+            applyDurabilityDamage(&item, 4);
+            bool firstDamage = item.durability == 8;
+
+            applyDurabilityDamage(&item, 50);
+            bool clamped = item.durability == 0;
+
+            if (firstDamage && clamped) {
+                cout << "DAMAGE_CLAMP_OK";
+                return 0;
+            }
+
+            cout << "DAMAGE_CLAMP_FAIL:" << item.durability;
+            return 0;
+        }
+
+    - id: damage-null-safe
+      title: applyDurabilityDamage handles nullptr
+      description: applyDurabilityDamage must safely do nothing when it receives nullptr.
+      expectedOutputContains:
+        - DAMAGE_NULL_OK
+      testCode: |
+        int main() {
+            applyDurabilityDamage(nullptr, 10);
+            cout << "DAMAGE_NULL_OK";
+            return 0;
+        }
+
+    - id: transfer-moves-and-clears
+      title: transferItem moves an item and clears the source
+      description: transferItem must copy an occupied source item into an empty destination and clear the source slot.
+      expectedOutputContains:
+        - TRANSFER_MOVE_OK
+      testCode: |
+        int main() {
+            Item from{11, "axe", 70, true};
+            Item to{0, "", 0, false};
+
+            bool moved = transferItem(&from, &to);
+            bool destinationHasItem = to.occupied && to.id == 11 && to.name == "axe" && to.durability == 70;
+            bool sourceCleared = !from.occupied;
+
+            if (moved && destinationHasItem && sourceCleared) {
+                cout << "TRANSFER_MOVE_OK";
+                return 0;
+            }
+
+            cout << "TRANSFER_MOVE_FAIL";
+            return 0;
+        }
+
+  bonusChecks:
+    - id: transfer-fails-cleanly
+      title: transferItem rejects invalid transfers
+      description: transferItem should fail without damaging data when the destination is occupied, the source is empty, or either pointer is null.
+      expectedOutputContains:
+        - TRANSFER_FAILS_OK
+      testCode: |
+        int main() {
+            Item source{1, "gem", 100, true};
+            Item occupiedDestination{2, "coin", 1, true};
+            Item emptySource{0, "", 0, false};
+            Item emptyDestination{0, "", 0, false};
+
+            bool blockedOccupied = !transferItem(&source, &occupiedDestination)
+                && source.occupied
+                && occupiedDestination.id == 2;
+
+            bool blockedEmptySource = !transferItem(&emptySource, &emptyDestination)
+                && !emptyDestination.occupied;
+
+            bool blockedNull = !transferItem(nullptr, &emptyDestination)
+                && !transferItem(&source, nullptr);
+
+            if (blockedOccupied && blockedEmptySource && blockedNull) {
+                cout << "TRANSFER_FAILS_OK";
+                return 0;
+            }
+
+            cout << "TRANSFER_FAILS_FAIL";
+            return 0;
+        }

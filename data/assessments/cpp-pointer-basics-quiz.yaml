@@ -1,0 +1,279 @@
+schemaVersion: 1
+id: cpp-pointer-basics-quiz
+title: C++ Pointer Basics Quiz
+assessmentType: quiz
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: true
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      Given `int value = 5;`, which expression gets the address of `value`?
+    choices:
+      - id: a
+        text: '`&value`'
+      - id: b
+        text: '`*value`'
+      - id: c
+        text: '`value*`'
+      - id: d
+        text: '`nullptr`'
+    answer:
+      choiceId: a
+    explanation: |
+      The address-of operator is `&`. `&value` produces a pointer to `value`.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      If `int* ptr = &value;`, which expression accesses the integer that `ptr` points to?
+    choices:
+      - id: a
+        text: '`*ptr`'
+      - id: b
+        text: '`&ptr`'
+      - id: c
+        text: '`ptr&`'
+      - id: d
+        text: '`nullptr`'
+    answer:
+      choiceId: a
+    explanation: |
+      Dereferencing with `*ptr` follows the pointer to the object it points at.
+
+  - id: q003
+    type: multipleChoice
+    prompt: |
+      What does `nullptr` represent?
+    choices:
+      - id: a
+        text: 'A pointer that points to no object.'
+      - id: b
+        text: 'The first element of every array.'
+      - id: c
+        text: 'An integer with value zero only.'
+      - id: d
+        text: 'A reference to a valid object.'
+    answer:
+      choiceId: a
+    explanation: |
+      `nullptr` is the null pointer value. Code should not dereference a pointer until it knows the pointer is not null.
+
+  - id: q004
+    type: multipleChoice
+    prompt: |
+      If `Item* item` points to an object with a field named `id`, which expression reads that field?
+    choices:
+      - id: a
+        text: '`item->id`'
+      - id: b
+        text: '`item.id`'
+      - id: c
+        text: '`id->item`'
+      - id: d
+        text: '`item&id`'
+    answer:
+      choiceId: a
+    explanation: |
+      Use `->` to access members through a pointer. `item->id` is shorthand for `(*item).id`.
+
+  - id: q005
+    type: multipleChoice
+    prompt: |
+      What should you usually do before dereferencing a pointer that may be null?
+    choices:
+      - id: a
+        text: 'Check whether it is `nullptr`.'
+      - id: b
+        text: 'Dereference it twice.'
+      - id: c
+        text: 'Convert it to a string.'
+      - id: d
+        text: 'Ignore the possibility.'
+    answer:
+      choiceId: a
+    explanation: |
+      If null is a valid possibility, check the pointer first. Dereferencing a null pointer is unsafe.
+
+  - id: q006
+    type: multipleChoice
+    prompt: |
+      Which function parameter best communicates "this object is required and should be valid"?
+    choices:
+      - id: a
+        text: '`Item& item`'
+      - id: b
+        text: '`Item* item` when null is expected'
+      - id: c
+        text: '`nullptr`'
+      - id: d
+        text: '`int count`'
+    answer:
+      choiceId: a
+    explanation: |
+      A reference parameter usually communicates that the caller must provide a valid object. A pointer is better when null is meaningful.
+
+  - id: q007
+    type: multipleChoice
+    prompt: |
+      Given `Item* items` points to the first element of an array, what does `items + 2` point to?
+    choices:
+      - id: a
+        text: 'The element at index 2.'
+      - id: b
+        text: 'Two bytes after the pointer.'
+      - id: c
+        text: 'The array length.'
+      - id: d
+        text: 'The same address as `items` always.'
+    answer:
+      choiceId: a
+    explanation: |
+      Pointer arithmetic advances by elements of the pointed-to type. `items + 2` points to index 2.
+
+  - id: q008
+    type: multipleChoice
+    prompt: |
+      Which loop visits every valid index for an array with `count` elements?
+    choices:
+      - id: a
+        text: '`for (int i = 0; i < count; i++)`'
+      - id: b
+        text: '`for (int i = 0; i <= count; i++)`'
+      - id: c
+        text: '`for (int i = 1; i <= count; i++)`'
+      - id: d
+        text: '`for (int i = count; i <= count; i++)`'
+    answer:
+      choiceId: a
+    explanation: |
+      Valid indexes are `0` through `count - 1`, so the loop condition should be `i < count`.
+
+  - id: q009
+    type: multipleChoice
+    prompt: |
+      What is a good return value for a search function that returns `Item*` but finds no match?
+    choices:
+      - id: a
+        text: '`nullptr`'
+      - id: b
+        text: '`0` as an `Item` object'
+      - id: c
+        text: '`items[count]`'
+      - id: d
+        text: '`false` as a pointer to an item'
+    answer:
+      choiceId: a
+    explanation: |
+      A pointer-returning search function can use `nullptr` to say "no matching object was found."
+
+  - id: q010
+    type: multipleChoice
+    prompt: |
+      Why is `count` needed in `findItemById(Item* items, int count, int id)`?
+    choices:
+      - id: a
+        text: 'The raw pointer does not store the array length.'
+      - id: b
+        text: 'The pointer automatically becomes invalid without `count`.'
+      - id: c
+        text: '`count` stores the id being searched for.'
+      - id: d
+        text: 'C++ arrays always begin at index 1.'
+    answer:
+      choiceId: a
+    explanation: |
+      A raw pointer is just an address. The function needs `count` to know how many elements can be safely inspected.
+
+  - id: q011
+    type: multipleChoice
+    prompt: |
+      If a function receives `Item* item` and changes `item->durability`, what happens?
+    choices:
+      - id: a
+        text: 'The original object pointed to by `item` is modified.'
+      - id: b
+        text: 'Only a local copy is modified.'
+      - id: c
+        text: 'The pointer must always become null.'
+      - id: d
+        text: 'The code cannot compile because fields cannot be changed through pointers.'
+    answer:
+      choiceId: a
+    explanation: |
+      A pointer gives access to the original object. Mutating a field through the pointer mutates that object.
+
+  - id: q012
+    type: multipleChoice
+    prompt: |
+      Which statement best describes array-to-pointer decay in a function call?
+    choices:
+      - id: a
+        text: 'An array argument can be received as a pointer to its first element.'
+      - id: b
+        text: 'The array automatically passes its full length.'
+      - id: c
+        text: 'The array becomes a string.'
+      - id: d
+        text: 'Every element is copied into a new pointer variable.'
+    answer:
+      choiceId: a
+    explanation: |
+      In many function-call contexts, an array can decay to a pointer to its first element. The length is not automatically included.
+
+  - id: q013
+    type: multipleChoice
+    prompt: |
+      Which operation is unsafe if `item == nullptr`?
+    choices:
+      - id: a
+        text: '`item->id`'
+      - id: b
+        text: '`item == nullptr`'
+      - id: c
+        text: '`item != nullptr`'
+      - id: d
+        text: 'Returning `item`'
+    answer:
+      choiceId: a
+    explanation: |
+      `item->id` dereferences the pointer. That is unsafe when the pointer is null.
+
+  - id: q014
+    type: multipleChoice
+    prompt: |
+      Which line makes `ref` an alias for `value`?
+    choices:
+      - id: a
+        text: '`int& ref = value;`'
+      - id: b
+        text: '`int* ref = value;`'
+      - id: c
+        text: '`int ref& = value;`'
+      - id: d
+        text: '`nullptr ref = value;`'
+    answer:
+      choiceId: a
+    explanation: |
+      `int& ref = value;` declares `ref` as a reference to `value`.
+
+  - id: q015
+    type: multipleChoice
+    prompt: |
+      Which inventory function naturally returns a pointer because the requested item may not exist?
+    choices:
+      - id: a
+        text: '`Item* findItemById(Item* items, int count, int id)`'
+      - id: b
+        text: '`void printTitle()`'
+      - id: c
+        text: '`int add(int a, int b)`'
+      - id: d
+        text: '`bool isPositive(int value)`'
+    answer:
+      choiceId: a
+    explanation: |
+      A search function can return a pointer to the found item or `nullptr` when no matching item exists. That is why pointer returns fit this project.

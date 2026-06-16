@@ -1,0 +1,60 @@
+schemaVersion: 1
+id: cpp-find-first-even-code-question
+title: C++ Find First Even Pointer Coding Question
+assessmentType: quiz
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: false
+questions:
+  - id: q001
+    type: code
+    prompt: |
+      Write a C++ function named `findFirstEven` that receives a pointer to the first element of an integer array and the number of elements.
+
+      Return a pointer to the first even integer in the array. Return `nullptr` if the array pointer is null, the size is zero or negative, or no even integer exists.
+
+      Submit both complete function definitions shown in the starter code. Do not write `main()`, do not print output, and do not call the functions yourself. The runner will call `findFirstEvenCase` automatically so it can verify the pointer returned by `findFirstEven`.
+    language: cpp
+    functionName: findFirstEvenCase
+    starterCode: |
+      int* findFirstEven(int* arr, int size)
+      {
+          // Return a pointer to the first even value, or nullptr if none exists.
+          return nullptr;
+      }
+
+      string findFirstEvenCase(int caseId)
+      {
+          if (caseId == 1) {
+              int values[] = {2, 5, 7};
+              return findFirstEven(values, 3) == &values[0] ? "FIRST_OK" : "FIRST_FAIL";
+          }
+
+          if (caseId == 2) {
+              int values[] = {1, 9, 8, 10};
+              return findFirstEven(values, 4) == &values[2] ? "LATER_OK" : "LATER_FAIL";
+          }
+
+          if (caseId == 3) {
+              int values[] = {1, 3, 5};
+              return findFirstEven(values, 3) == nullptr ? "NONE_OK" : "NONE_FAIL";
+          }
+
+          return findFirstEven(nullptr, 0) == nullptr ? "EMPTY_OK" : "EMPTY_FAIL";
+      }
+    tests:
+      - input: "1"
+        expected: FIRST_OK
+      - input: "2"
+        expected: LATER_OK
+      - input: "3"
+        expected: NONE_OK
+      - input: "4"
+        expected: EMPTY_OK
+    answer: {}
+    explanation: |
+      The pointer-search function should first check `arr == nullptr` or `size <= 0`. Then loop from `0` through `size - 1`. When `arr[i] % 2 == 0`, return `arr + i` or `&arr[i]`. If the loop finishes, return `nullptr`.
+
+      Related topic: pointer returns from array search functions. This is the smaller version of `findItemById` in the Inventory Pointer Scanner project.

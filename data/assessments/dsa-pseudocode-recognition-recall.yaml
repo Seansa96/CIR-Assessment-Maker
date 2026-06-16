@@ -1,0 +1,309 @@
+schemaVersion: 1
+id: dsa-pseudocode-recognition-recall
+title: DSA Pseudocode Recognition Recall
+assessmentType: recallDrill
+categoryId: dsa
+subcategoryIds:
+  - dsa-hashmaps
+  - dsa-stacks-queues
+  - dsa-graphs
+  - dsa-sorting-searching
+  - dsa-recursion-dp
+modeDefault: practice
+randomizeQuestions: false
+items:
+  - id: recognize-hashmap-frequency
+    type: typed
+    prompt: |
+      Identify the pattern:
+
+      ```text
+      counts = {}
+      for x in values:
+          if x not in counts:
+              counts[x] = 0
+          counts[x] = counts[x] + 1
+      ```
+    answer:
+      expected: hash map frequency counting
+      aliases:
+        - frequency map
+        - hashmap counting
+        - dictionary counting
+    explanation: |
+      The code maps each value to a count. This is the hash map frequency-counting pattern used for duplicates, anagrams, histograms, and counting occurrences.
+    tags:
+      - hashmaps
+      - frequency-counting
+
+  - id: recognize-two-sum-hashmap
+    type: typed
+    prompt: |
+      Identify the algorithmic idea:
+
+      ```text
+      seen = {}
+      for i from 0 to n - 1:
+          need = target - nums[i]
+          if need in seen:
+              return [seen[need], i]
+          seen[nums[i]] = i
+      ```
+    answer:
+      expected: two-sum with a hash map
+      aliases:
+        - two sum hashmap
+        - complement lookup
+        - hash map complement search
+    explanation: |
+      The key idea is storing previously seen numbers by value so each new number can check for its complement in constant average time.
+    tags:
+      - hashmaps
+      - complement-lookup
+
+  - id: recognize-stack-parentheses
+    type: cloze
+    prompt: |
+      Identify the data structure:
+
+      ```text
+      for ch in text:
+          if ch is opener:
+              push ch
+          else if ch is closer:
+              top = pop()
+              check top matches ch
+      ```
+
+      This is a ____ pattern.
+    answer:
+      expected: stack
+      aliases:
+        - stack matching
+        - valid parentheses
+    explanation: |
+      Opening brackets are pushed and the most recent opener is popped first. That is last-in-first-out behavior.
+    tags:
+      - stacks
+      - nesting
+
+  - id: recognize-queue-bfs
+    type: typed
+    prompt: |
+      Identify the traversal:
+
+      ```text
+      queue.add(start)
+      visited.add(start)
+      while queue is not empty:
+          node = queue.remove_front()
+          for neighbor in neighbors(node):
+              if neighbor not in visited:
+                  visited.add(neighbor)
+                  queue.add(neighbor)
+      ```
+    answer:
+      expected: breadth-first search
+      aliases:
+        - BFS
+        - queue BFS
+    explanation: |
+      The queue processes nodes in discovery order, which explores the graph level by level. This is breadth-first search.
+    tags:
+      - graphs
+      - bfs
+      - queues
+
+  - id: recognize-dfs
+    type: typed
+    prompt: |
+      Identify the traversal:
+
+      ```text
+      visit(node):
+          mark node visited
+          for neighbor in neighbors(node):
+              if neighbor not visited:
+                  visit(neighbor)
+      ```
+    answer:
+      expected: depth-first search
+      aliases:
+        - DFS
+        - recursive DFS
+    explanation: |
+      Recursive traversal goes as far as it can along one branch before returning. That is depth-first search.
+    tags:
+      - graphs
+      - dfs
+      - recursion
+
+  - id: recognize-binary-search
+    type: cloze
+    prompt: |
+      Identify the algorithm:
+
+      ```text
+      left = 0
+      right = n - 1
+      while left <= right:
+          mid = floor((left + right) / 2)
+          if values[mid] == target:
+              return mid
+          else if values[mid] < target:
+              left = mid + 1
+          else:
+              right = mid - 1
+      ```
+
+      This is ____.
+    answer:
+      expected: binary search
+    explanation: |
+      The algorithm checks the middle and discards half of the remaining sorted search space each iteration.
+    tags:
+      - binary-search
+      - sorting-searching
+
+  - id: recognize-sliding-window
+    type: typed
+    prompt: |
+      Identify the pattern:
+
+      ```text
+      left = 0
+      for right from 0 to n - 1:
+          add values[right] to window
+          while window is invalid:
+              remove values[left] from window
+              left = left + 1
+          update best answer
+      ```
+    answer:
+      expected: sliding window
+      aliases:
+        - two pointer sliding window
+    explanation: |
+      The window expands with `right` and shrinks with `left`. This pattern is common for contiguous subarray or substring problems.
+    tags:
+      - arrays-strings
+      - sliding-window
+
+  - id: recognize-two-pointers
+    type: typed
+    prompt: |
+      Identify the pattern:
+
+      ```text
+      left = 0
+      right = n - 1
+      while left < right:
+          if values[left] + values[right] is too small:
+              left = left + 1
+          else:
+              right = right - 1
+      ```
+    answer:
+      expected: two pointers
+      aliases:
+        - opposite-direction two pointers
+    explanation: |
+      Two pointers move inward from opposite ends. This often appears with sorted arrays and pair-sum style problems.
+    tags:
+      - arrays-strings
+      - two-pointers
+
+  - id: recognize-merge-sort
+    type: typed
+    prompt: |
+      Identify the algorithm:
+
+      ```text
+      sort(left half)
+      sort(right half)
+      merge the two sorted halves
+      ```
+    answer:
+      expected: merge sort
+      aliases:
+        - mergesort
+    explanation: |
+      Merge sort divides the input into halves, recursively sorts each half, and merges sorted results.
+    tags:
+      - sorting-searching
+      - divide-and-conquer
+
+  - id: recognize-dp-memoization
+    type: cloze
+    prompt: |
+      Identify the optimization:
+
+      ```text
+      solve(state):
+          if state in cache:
+              return cache[state]
+          answer = combine smaller states
+          cache[state] = answer
+          return answer
+      ```
+
+      This is ____.
+    answer:
+      expected: memoization
+      aliases:
+        - top-down dynamic programming
+        - DP memoization
+    explanation: |
+      Memoization stores answers for states so repeated recursive calls can reuse work instead of recomputing it.
+    tags:
+      - dynamic-programming
+      - memoization
+
+  - id: recognize-min-heap
+    type: typed
+    prompt: |
+      Identify the structure:
+
+      ```text
+      push all tasks with priority
+      while heap is not empty:
+          task = remove smallest priority
+          process task
+      ```
+    answer:
+      expected: priority queue or min-heap
+      aliases:
+        - priority queue
+        - min heap
+        - heap
+    explanation: |
+      A priority queue processes the item with the best priority next, rather than first-in-first-out or last-in-first-out order.
+    tags:
+      - heaps
+      - priority-queue
+
+  - id: recognize-union-find
+    type: typed
+    prompt: |
+      Identify the structure:
+
+      ```text
+      find(x):
+          return representative of x
+
+      union(a, b):
+          connect the representatives of a and b
+
+      connected(a, b):
+          return find(a) == find(b)
+      ```
+    answer:
+      expected: union find
+      aliases:
+        - disjoint set union
+        - DSU
+    explanation: |
+      Union-find tracks connected components as sets. It is common in connectivity and Kruskal-style minimum spanning tree problems.
+    tags:
+      - graphs
+      - union-find

@@ -1,0 +1,130 @@
+schemaVersion: 1
+id: cpp-pointer-vs-reference-worked-example
+title: C++ Pointer vs Reference Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Choosing between pointers and references
+    problem: |
+      Learn when a C++ function should receive an object by pointer and when it should receive one by reference.
+
+      The issue: both pointers and references can let a function work with an existing object, but they communicate different expectations about nullability and reassignment.
+    steps:
+      - id: s001
+        title: Read an address
+        instruction: |
+          Start with the address-of operator. It produces a pointer to an existing variable.
+        type: multipleChoice
+        prompt: |
+          Given `int value = 42;`, which expression produces the address of `value`?
+        choices:
+          - id: a
+            text: '`&value`'
+          - id: b
+            text: '`*value`'
+          - id: c
+            text: '`value&`'
+          - id: d
+            text: '`nullptr`'
+        answer:
+          choiceId: a
+        hint: |
+          The address-of operator is written before the variable name.
+        explanation: |
+          `&value` gives the memory address of `value`, so it can be stored in a pointer such as `int* ptr = &value;`.
+
+          Related topic: address-of operator. Look up C++ `&` as address-of, not reference declaration.
+
+      - id: s002
+        title: Dereference a pointer
+        instruction: |
+          Dereferencing means following a pointer to the object it points at.
+        type: multipleChoice
+        prompt: |
+          If `int* ptr = &value;`, which expression reads or modifies the integer that `ptr` points to?
+        choices:
+          - id: a
+            text: '`*ptr`'
+          - id: b
+            text: '`&ptr`'
+          - id: c
+            text: '`ptr*`'
+          - id: d
+            text: '`nullptr`'
+        answer:
+          choiceId: a
+        hint: |
+          The same `*` symbol appears in pointer declarations and dereference expressions, but those are different uses.
+        explanation: |
+          `*ptr` means "the value at the address stored in `ptr`." If `ptr` is null, dereferencing it is unsafe, so pointer code often needs a null check first.
+
+      - id: s003
+        title: Recognize reference aliasing
+        instruction: |
+          A reference is an alias for an existing object. It is usually expected to refer to a valid object.
+        type: multipleChoice
+        prompt: |
+          What does `int& alias = value;` mean?
+        choices:
+          - id: a
+            text: '`alias` is another name for `value`.'
+          - id: b
+            text: '`alias` is a nullable pointer.'
+          - id: c
+            text: '`alias` stores a copy that can never change `value`.'
+          - id: d
+            text: '`alias` is an array index.'
+        answer:
+          choiceId: a
+        hint: |
+          A reference behaves like the original variable, not like a separate pointer variable.
+        explanation: |
+          A reference aliases an existing object. Assigning through the reference changes the original object. Unlike a pointer parameter, a normal reference parameter does not naturally express "maybe no object."
+
+      - id: s004
+        title: Decide when null matters
+        instruction: |
+          Pick the interface that communicates "this argument may be missing."
+        type: multipleChoice
+        prompt: |
+          Which parameter type is usually clearer when a function must accept "no item" as a valid input?
+        choices:
+          - id: a
+            text: '`Item* item`'
+          - id: b
+            text: '`Item& item`'
+          - id: c
+            text: '`Item item`'
+          - id: d
+            text: '`int count`'
+        answer:
+          choiceId: a
+        hint: |
+          Which form can be `nullptr`?
+        explanation: |
+          A pointer can be `nullptr`, so it communicates optional presence. If the function requires a valid object, a reference often communicates that requirement better.
+
+      - id: s005
+        title: Explain the tradeoff
+        instruction: |
+          Summarize the decision rule in your own words.
+        type: freeResponse
+        prompt: |
+          When would you choose a pointer parameter instead of a reference parameter?
+        answer:
+          expected: |
+            Use a pointer when the function may receive no object, needs to check for nullptr, or may need pointer-style traversal/reassignment. Use a reference when the function requires a valid object and should simply operate on that object.
+          gradingMode: selfCheck
+          keyPoints:
+            - Pointers can represent missing objects with `nullptr`.
+            - References communicate that a valid object is expected.
+            - Pointer code should check before dereferencing when null is possible.
+        hint: |
+          Focus on nullability and what the function contract should communicate.
+        explanation: |
+          This is the key idea for the Inventory Pointer Scanner: `findItemById` returns a pointer because the item might not exist, and `applyDurabilityDamage` accepts a pointer because it should safely handle `nullptr`.

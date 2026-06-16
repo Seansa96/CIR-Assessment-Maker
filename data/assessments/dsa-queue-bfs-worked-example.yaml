@@ -1,0 +1,121 @@
+schemaVersion: 1
+id: dsa-queue-bfs-worked-example
+title: Queue Breadth-First Search Worked Example
+assessmentType: workedExample
+categoryId: dsa
+subcategoryIds:
+  - dsa-stacks-queues
+  - dsa-graphs
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Finding shortest unweighted paths with BFS
+    problem: |
+      You have an unweighted maze or graph and need the fewest number of moves from a start node to a target node.
+
+      The issue: going deep down one path first may miss a shorter path nearby.
+    steps:
+      - id: s001
+        title: Identify what shortest means
+        instruction: |
+          For unweighted graphs, distance is counted by number of edges or moves.
+        type: multipleChoice
+        prompt: |
+          In an unweighted graph, what does "shortest path" usually mean?
+        choices:
+          - id: a
+            text: 'Fewest edges or moves.'
+          - id: b
+            text: 'Smallest node value.'
+          - id: c
+            text: 'Path found by going as deep as possible first.'
+          - id: d
+            text: 'Path with alphabetically earliest labels.'
+        answer:
+          choiceId: a
+        explanation: |
+          Without edge weights, every move costs the same amount. Shortest path means the fewest moves.
+
+      - id: s002
+        title: Choose level-by-level exploration
+        instruction: |
+          The algorithm should exhaust all distance-1 nodes before distance-2 nodes.
+        type: multipleChoice
+        prompt: |
+          Which traversal explores nodes level by level from the start?
+        choices:
+          - id: a
+            text: 'Breadth-first search'
+          - id: b
+            text: 'Depth-first search'
+          - id: c
+            text: 'Binary search'
+          - id: d
+            text: 'Insertion sort'
+        answer:
+          choiceId: a
+        hint: |
+          Breadth means widening outward.
+        explanation: |
+          BFS expands in waves: start, then all neighbors, then all nodes two steps away, and so on. That is why it finds shortest paths in unweighted graphs.
+
+      - id: s003
+        title: Pick the supporting structure
+        instruction: |
+          BFS needs first-in-first-out processing.
+        type: multipleChoice
+        prompt: |
+          Which data structure should hold the frontier for BFS?
+        choices:
+          - id: a
+            text: 'Queue'
+          - id: b
+            text: 'Stack'
+          - id: c
+            text: 'Hash map sorted by key'
+          - id: d
+            text: 'Recursive call stack only'
+        answer:
+          choiceId: a
+        explanation: |
+          A queue processes older discovered nodes before newer discovered nodes. That preserves level order.
+
+      - id: s004
+        title: Avoid revisiting nodes
+        instruction: |
+          Graphs can contain cycles, so you need memory.
+        type: freeResponse
+        prompt: |
+          Why does BFS usually keep a `visited` set?
+        answer:
+          expected: |
+            To avoid processing the same node repeatedly, especially when the graph has cycles, and to prevent the queue from growing with duplicate work.
+          gradingMode: selfCheck
+          keyPoints:
+            - Graphs may have cycles.
+            - A visited set prevents duplicate processing.
+            - It keeps the traversal finite and efficient.
+        explanation: |
+          Without `visited`, a cycle like A-B-A can keep adding the same nodes forever. BFS usually uses both a queue and a set: the queue controls order, and the set remembers what has already been discovered.
+
+      - id: s005
+        title: Recognize the BFS pattern
+        instruction: |
+          Tie the algorithm to the problem shape.
+        type: multipleChoice
+        prompt: |
+          Which phrase is the strongest signal for BFS?
+        choices:
+          - id: a
+            text: 'Fewest moves in an unweighted graph or grid.'
+          - id: b
+            text: 'Find the middle of a sorted array.'
+          - id: c
+            text: 'Undo the most recent action.'
+          - id: d
+            text: 'Sort values in ascending order.'
+        answer:
+          choiceId: a
+        explanation: |
+          BFS is the default tool for shortest path by number of steps in unweighted graphs, grids, word ladders, and state-space search.

@@ -1,0 +1,127 @@
+schemaVersion: 1
+id: dsa-stack-parentheses-worked-example
+title: Stack Valid Parentheses Worked Example
+assessmentType: workedExample
+categoryId: dsa
+subcategoryIds:
+  - dsa-stacks-queues
+  - dsa-arrays-strings
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Using a stack for nested structure
+    problem: |
+      Decide whether a string of brackets is valid, such as `([]{})`.
+
+      The issue: nested structures must close in the reverse order that they opened.
+    steps:
+      - id: s001
+        title: Name the ordering problem
+        instruction: |
+          Before choosing a structure, identify the order constraint.
+        type: multipleChoice
+        prompt: |
+          In valid nested brackets, which opener should match the next closing bracket?
+        choices:
+          - id: a
+            text: 'The most recent unmatched opener.'
+          - id: b
+            text: 'The first opener in the string.'
+          - id: c
+            text: 'A random opener.'
+          - id: d
+            text: 'The opener with the smallest character code.'
+        answer:
+          choiceId: a
+        hint: |
+          Look at `[()]`: the `(` opens last and closes first.
+        explanation: |
+          Nested structures are last-in-first-out. The most recent unmatched opener must be closed before earlier openers.
+
+      - id: s002
+        title: Choose the structure
+        instruction: |
+          Pick the data structure whose removal order matches nesting.
+        type: multipleChoice
+        prompt: |
+          Which data structure naturally stores "most recent unmatched opener"?
+        choices:
+          - id: a
+            text: 'Stack'
+          - id: b
+            text: 'Queue'
+          - id: c
+            text: 'Hash map only'
+          - id: d
+            text: 'Sorted array'
+        answer:
+          choiceId: a
+        hint: |
+          Think push and pop.
+        explanation: |
+          A stack gives last-in-first-out behavior. Push openers as you see them; pop when a closer must match the most recent opener.
+
+      - id: s003
+        title: Handle closing brackets
+        instruction: |
+          The key logic happens when a closer appears.
+        type: freeResponse
+        prompt: |
+          What should the algorithm do when it sees a closing bracket?
+        answer:
+          expected: |
+            If the stack is empty, the string is invalid. Otherwise pop the most recent opener and check that it matches the closer.
+          gradingMode: selfCheck
+          keyPoints:
+            - Empty stack before a closer means invalid.
+            - Pop the most recent opener.
+            - Verify the opener and closer are a matching pair.
+        hint: |
+          A closer needs something available to close.
+        explanation: |
+          A closing bracket is a demand to match the latest open context. If no opener exists, or the type does not match, the nesting is invalid.
+
+      - id: s004
+        title: Finish the scan
+        instruction: |
+          The end of input has one final condition.
+        type: multipleChoice
+        prompt: |
+          After scanning all characters, when is the string valid?
+        choices:
+          - id: a
+            text: 'The stack is empty and no mismatch occurred.'
+          - id: b
+            text: 'The stack contains at least one opener.'
+          - id: c
+            text: 'The string contains more openers than closers.'
+          - id: d
+            text: 'The first and last characters are the same.'
+        answer:
+          choiceId: a
+        hint: |
+          Unclosed openers still matter.
+        explanation: |
+          If the stack is not empty, some opener was never closed. Valid input requires every opener to be matched in the correct order.
+
+      - id: s005
+        title: Generalize the stack signal
+        instruction: |
+          Connect this to the broader data-structure pattern.
+        type: multipleChoice
+        prompt: |
+          Which kind of problem should make you consider a stack?
+        choices:
+          - id: a
+            text: 'Nested, undo, backtracking, or most-recent-first problems.'
+          - id: b
+            text: 'Problems requiring alphabetical order only.'
+          - id: c
+            text: 'Problems requiring random sampling.'
+          - id: d
+            text: 'Problems where old items must always be processed first.'
+        answer:
+          choiceId: a
+        explanation: |
+          Stacks are useful when the most recent unresolved item should be handled first: bracket matching, call stacks, undo actions, DFS, and expression evaluation.

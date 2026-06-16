@@ -1,0 +1,128 @@
+schemaVersion: 1
+id: cpp-new-delete-array-worked-example
+title: C++ new[] and delete[] Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryIds:
+  - c++-pointers-memory
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Owning a dynamic array safely
+    problem: |
+      Learn how a class can own a dynamic array and release it when the object is destroyed.
+
+      The issue: `new[]` gives you memory that does not clean itself up. If your class owns that memory, the class must release it with `delete[]`.
+    steps:
+      - id: s001
+        title: Identify ownership
+        instruction: |
+          Ownership means the object is responsible for eventually releasing a resource.
+        type: multipleChoice
+        prompt: |
+          If a class stores `int* data` and assigns `data = new int[2];`, what responsibility does the class now have?
+        choices:
+          - id: a
+            text: 'It must eventually release that array with `delete[] data;`.'
+          - id: b
+            text: 'It should never store the pointer.'
+          - id: c
+            text: 'It should call `delete data;` immediately after allocation.'
+          - id: d
+            text: 'It can ignore the array because C++ frees it automatically.'
+        answer:
+          choiceId: a
+        hint: |
+          Pair array allocation with array deletion.
+        explanation: |
+          `new int[2]` allocates an array. The matching release operation is `delete[] data;`. Using plain `delete` for array memory is the wrong pairing.
+
+          Related topic: ownership and allocation pairs.
+
+      - id: s002
+        title: Initialize the fields
+        instruction: |
+          A dynamic buffer needs both a pointer and bookkeeping values.
+        type: selectAll
+        prompt: |
+          For an `IntBuffer` with initial capacity `2`, which constructor actions are needed?
+        choices:
+          - id: a
+            text: 'Set `data = new int[2];`'
+          - id: b
+            text: 'Set `count = 0;`'
+          - id: c
+            text: 'Set `cap = 2;`'
+          - id: d
+            text: 'Set `count = 2;` because two slots are allocated.'
+        answer:
+          choiceIds: [a, b, c]
+        hint: |
+          Allocated space and used elements are not the same thing.
+        explanation: |
+          Capacity is how many slots exist. Size/count is how many values are currently stored. A new buffer with two available slots still has size `0`.
+
+      - id: s003
+        title: Release in the destructor
+        instruction: |
+          The destructor runs when the object's lifetime ends.
+        type: multipleChoice
+        prompt: |
+          Which destructor body correctly releases an owned dynamic integer array?
+        choices:
+          - id: a
+            text: '`delete[] data;`'
+          - id: b
+            text: '`delete data;`'
+          - id: c
+            text: '`data = new int[cap];`'
+          - id: d
+            text: '`count = 0;` only'
+        answer:
+          choiceId: a
+        hint: |
+          The brackets in `new[]` and `delete[]` should match.
+        explanation: |
+          If memory was allocated with `new[]`, release it with `delete[]`. The destructor is the natural place for that cleanup because it runs automatically when the owning object is destroyed.
+
+      - id: s004
+        title: Avoid a leak
+        instruction: |
+          A memory leak happens when allocated memory becomes unreachable without being released.
+        type: multipleChoice
+        prompt: |
+          What happens if a constructor allocates `data = new int[2];` but the destructor never calls `delete[] data;`?
+        choices:
+          - id: a
+            text: 'The buffer leaks its owned array memory.'
+          - id: b
+            text: 'The compiler automatically writes the destructor.'
+          - id: c
+            text: 'The array turns into a stack variable.'
+          - id: d
+            text: 'The program cannot use `push`.'
+        answer:
+          choiceId: a
+        explanation: |
+          The pointer field disappears when the object is destroyed. If the array was not deleted before then, the program has lost the address needed to release it.
+
+      - id: s005
+        title: Explain RAII
+        instruction: |
+          Put the lifecycle idea in your own words.
+        type: freeResponse
+        prompt: |
+          Explain RAII for a class that owns a dynamic array.
+        answer:
+          expected: |
+            RAII means the class acquires the array in its constructor, keeps ownership during the object's lifetime, and releases the array in its destructor so cleanup happens automatically.
+          gradingMode: selfCheck
+          keyPoints:
+            - Constructor acquires or initializes the resource.
+            - Destructor releases the resource.
+            - Cleanup is tied to object lifetime.
+        hint: |
+          Think: acquire in constructor, release in destructor.
+        explanation: |
+          RAII stands for Resource Acquisition Is Initialization. For this project, it means `IntBuffer` allocates its internal array when constructed and deletes that array when destroyed.
