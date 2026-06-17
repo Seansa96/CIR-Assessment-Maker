@@ -62,6 +62,7 @@ internal static class FileDtoMapper
             dto.SubcategoryIds ?? new List<string>(),
             ParseMode(dto.ModeDefault, AssessmentMode.Practice),
             dto.RandomizeQuestions ?? true,
+            dto.AttemptQuestionCount,
             dto.QuestionTimerSeconds,
             dto.AssessmentTimerSeconds,
             (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList())
@@ -84,6 +85,7 @@ internal static class FileDtoMapper
             SubcategoryIds = assessment.SubcategoryIds.ToList(),
             ModeDefault = ToWireValue(assessment.ModeDefault),
             RandomizeQuestions = assessment.RandomizeQuestions,
+            AttemptQuestionCount = assessment.AttemptQuestionCount,
             QuestionTimerSeconds = assessment.QuestionTimerSeconds,
             AssessmentTimerSeconds = assessment.AssessmentTimerSeconds,
             Questions = assessment.Questions.Select(ToDto).ToList(),

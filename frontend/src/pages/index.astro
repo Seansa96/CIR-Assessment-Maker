@@ -254,6 +254,8 @@ import "../styles/global.css";
         title: string;
         assessmentType: AssessmentType;
         questionCount: number;
+        authoredQuestionCount?: number;
+        attemptQuestionCount?: number | null;
       }
 
       interface MediaAsset {
@@ -390,6 +392,7 @@ import "../styles/global.css";
         id: string;
         title: string;
         assessmentType: AssessmentType;
+        attemptQuestionCount?: number | null;
         questions: Question[];
         workedExamples?: WorkedExample[];
         guidedProject?: GuidedProject | null;
@@ -1537,8 +1540,17 @@ import "../styles/global.css";
 
       function renderAssessmentOptions() {
         assessmentSelect.innerHTML = state.assessments
-          .map((assessment) => `<option value="${escapeHtml(assessment.id)}">${escapeHtml(assessment.title)} - ${assessmentTypeLabel(assessment.assessmentType)} (${assessment.questionCount})</option>`)
+          .map((assessment) => `<option value="${escapeHtml(assessment.id)}">${escapeHtml(assessment.title)} - ${assessmentTypeLabel(assessment.assessmentType)} (${assessmentCountLabel(assessment)})</option>`)
           .join("");
+      }
+
+      function assessmentCountLabel(assessment: AssessmentSummary) {
+        const authoredCount = assessment.authoredQuestionCount ?? assessment.questionCount;
+        if (assessment.attemptQuestionCount && authoredCount > assessment.questionCount) {
+          return `${assessment.questionCount} of ${authoredCount}`;
+        }
+
+        return String(assessment.questionCount);
       }
 
       function renderCreateCategories() {
@@ -1893,6 +1905,7 @@ import "../styles/global.css";
           subcategoryIds: [String(form.get("subcategoryId") ?? "").trim()].filter(Boolean),
           modeDefault: String(form.get("modeDefault") ?? "practice"),
           randomizeQuestions: form.get("randomizeQuestions") === "on",
+          attemptQuestionCount: null,
           questionTimerSeconds: null,
           assessmentTimerSeconds: null,
           questions: state.draftQuestions

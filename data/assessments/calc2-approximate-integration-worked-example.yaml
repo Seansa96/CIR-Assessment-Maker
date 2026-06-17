@@ -1,0 +1,267 @@
+schemaVersion: 1
+id: calc2-approximate-integration-worked-example
+title: Approximate Integration Beginner Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Estimating an integral with midpoint and trapezoidal rules
+    problem: |
+      Approximate integration is useful when an antiderivative is difficult, unavailable, or when the function is known only from sampled data.
+
+      Main problem:
+
+      $$
+      \int_0^4 (x^2+1)\,dx
+      $$
+
+      Use $n=4$ equal subintervals to approximate the integral with the midpoint rule and trapezoidal rule. Then briefly compare the results to the exact value.
+    steps:
+      - id: s001
+        title: Why approximate an integral
+        instruction: |
+          Before computing, identify why numerical integration exists.
+        type: multipleChoice
+        prompt: |
+          Why might we approximate a definite integral instead of finding an exact antiderivative?
+        choices:
+          - id: a
+            text: 'The antiderivative may be hard or impossible to express simply, or the function may be given only by data.'
+          - id: b
+            text: 'Approximation is always more exact than calculus.'
+          - id: c
+            text: 'Definite integrals never have exact values.'
+          - id: d
+            text: 'Approximation avoids using intervals.'
+        answer:
+          choiceId: a
+        explanation: |
+          Approximate integration estimates accumulated area from finite samples. It is especially useful for data tables, difficult antiderivatives, and quick numerical checks.
+
+          Related topic: numerical integration purpose.
+
+      - id: s002
+        title: Compute the subinterval width
+        instruction: |
+          Most rules start by dividing the interval into equal subintervals.
+        type: numericResponse
+        prompt: |
+          For $[0,4]$ with $n=4$, what is $\Delta x$?
+        answer:
+          value: 1
+          tolerance: 0.0001
+        hint: |
+          Use $\Delta x=\frac{b-a}{n}$.
+        explanation: |
+          The width is
+
+          $$
+          \Delta x=\frac{4-0}{4}=1.
+          $$
+
+          Related topic: subinterval width for numerical integration.
+
+      - id: s003
+        title: Understand midpoint rule
+        instruction: |
+          The midpoint rule uses the height of each rectangle at the center of each subinterval.
+        type: multipleChoice
+        prompt: |
+          Which sample points are used by the midpoint rule on $[0,4]$ with $n=4$?
+        choices:
+          - id: a
+            text: '$0.5,\ 1.5,\ 2.5,\ 3.5$'
+          - id: b
+            text: '$0,\ 1,\ 2,\ 3$'
+          - id: c
+            text: '$1,\ 2,\ 3,\ 4$'
+          - id: d
+            text: '$0,\ 2,\ 4$'
+        answer:
+          choiceId: a
+        explanation: |
+          The subintervals are $[0,1]$, $[1,2]$, $[2,3]$, and $[3,4]$. Their midpoints are $0.5$, $1.5$, $2.5$, and $3.5$.
+
+          Related topic: midpoint rule sample points.
+
+      - id: s004
+        title: Apply midpoint rule
+        instruction: |
+          Sum the function values at the midpoints and multiply by $\Delta x$.
+        type: numericResponse
+        prompt: |
+          Use the midpoint rule with $n=4$ to approximate:
+
+          $$
+          \int_0^4 (x^2+1)\,dx
+          $$
+        answer:
+          value: 25
+          tolerance: 0.0001
+        hint: |
+          Evaluate $f(0.5)$, $f(1.5)$, $f(2.5)$, and $f(3.5)$.
+        explanation: |
+          The midpoint values are
+
+          $$
+          f(0.5)=1.25,\quad f(1.5)=3.25,\quad f(2.5)=7.25,\quad f(3.5)=13.25.
+          $$
+
+          Sum and multiply by $\Delta x=1$:
+
+          $$
+          M_4=1(1.25+3.25+7.25+13.25)=25.
+          $$
+
+          Related topic: midpoint rule computation.
+
+      - id: s005
+        title: Understand trapezoidal rule
+        instruction: |
+          The trapezoidal rule connects endpoint heights with straight-line tops.
+        type: multipleChoice
+        prompt: |
+          Which formula matches the trapezoidal rule for equal subintervals?
+        choices:
+          - id: a
+            text: '$T_n=\frac{\Delta x}{2}\left[f(x_0)+2f(x_1)+\cdots+2f(x_{n-1})+f(x_n)\right]$'
+          - id: b
+            text: '$T_n=\Delta x\left[f(m_1)+\cdots+f(m_n)\right]$'
+          - id: c
+            text: '$T_n=f(b)-f(a)$'
+          - id: d
+            text: '$T_n=\Delta x^2$'
+        answer:
+          choiceId: a
+        explanation: |
+          The trapezoidal rule weights interior points twice because each interior height belongs to two adjacent trapezoids.
+
+          Related topic: trapezoidal rule formula.
+
+      - id: s006
+        title: Apply trapezoidal rule
+        instruction: |
+          Use endpoints $0,1,2,3,4$.
+        type: numericResponse
+        prompt: |
+          Use the trapezoidal rule with $n=4$ to approximate:
+
+          $$
+          \int_0^4 (x^2+1)\,dx
+          $$
+        answer:
+          value: 26
+          tolerance: 0.0001
+        hint: |
+          Use $f(0)=1$, $f(1)=2$, $f(2)=5$, $f(3)=10$, and $f(4)=17$.
+        explanation: |
+          With $\Delta x=1$,
+
+          $$
+          T_4=\frac{1}{2}\left[1+2(2)+2(5)+2(10)+17\right]=26.
+          $$
+
+          Related topic: trapezoidal rule endpoint weights.
+
+      - id: s007
+        title: Compare to exact value
+        instruction: |
+          For this beginner example, the exact integral is available, so use it to interpret the approximations.
+        type: numericResponse
+        prompt: |
+          What is the exact value of:
+
+          $$
+          \int_0^4 (x^2+1)\,dx
+          $$
+        answer:
+          value: 25.3333
+          tolerance: 0.01
+        explanation: |
+          The exact value is
+
+          $$
+          \left[\frac{x^3}{3}+x\right]_0^4
+          =
+          \frac{64}{3}+4
+          =
+          \frac{76}{3}
+          \approx25.33.
+          $$
+
+          The midpoint estimate $25$ is slightly low, and the trapezoidal estimate $26$ is high.
+
+          Related topic: comparing numerical estimates to exact integrals.
+
+      - id: s008
+        title: Interpret error bounds
+        instruction: |
+          Error bounds estimate worst-case error without knowing the exact integral.
+        type: multipleChoice
+        prompt: |
+          What does an error bound tell you?
+        choices:
+          - id: a
+            text: 'A guaranteed upper limit on how far the approximation may be from the true value, assuming the derivative bound is valid.'
+          - id: b
+            text: 'The exact error every time.'
+          - id: c
+            text: 'That approximation is unnecessary.'
+          - id: d
+            text: 'The antiderivative of the function.'
+        answer:
+          choiceId: a
+        explanation: |
+          Error bounds use derivative information to say the error is no larger than a certain amount. They are often conservative.
+
+          Related topic: midpoint and trapezoidal error bounds.
+
+      - id: s009
+        title: Simpson's rule overview
+        instruction: |
+          Simpson's rule uses parabolic arcs and usually improves accuracy for smooth functions.
+        type: multipleChoice
+        prompt: |
+          Which requirement is necessary for Simpson's rule?
+        choices:
+          - id: a
+            text: 'The number of subintervals must be even.'
+          - id: b
+            text: 'The function must be linear.'
+          - id: c
+            text: 'The interval must be infinite.'
+          - id: d
+            text: 'The function must be positive.'
+        answer:
+          choiceId: a
+        explanation: |
+          Simpson's rule groups subintervals in pairs, so $n$ must be even. Its weights follow the pattern $1,4,2,4,\ldots,2,4,1$.
+
+          Related topic: Simpson's rule setup.
+
+      - id: s010
+        title: Simpson error bound
+        instruction: |
+          Simpson's error bound depends on the fourth derivative.
+        type: multipleChoice
+        prompt: |
+          Which derivative controls the standard Simpson's rule error bound?
+        choices:
+          - id: a
+            text: 'The fourth derivative'
+          - id: b
+            text: 'The first derivative'
+          - id: c
+            text: 'Only the function value'
+          - id: d
+            text: 'The antiderivative'
+        answer:
+          choiceId: a
+        explanation: |
+          The standard Simpson's rule error bound uses a bound on $|f^{(4)}(x)|$ over the interval. Midpoint and trapezoidal bounds use the second derivative; Simpson's uses the fourth derivative.
+
+          Related topic: Simpson's rule error bound.

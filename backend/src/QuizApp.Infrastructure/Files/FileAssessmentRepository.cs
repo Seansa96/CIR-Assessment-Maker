@@ -21,13 +21,7 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
         return assessments
             .Where(assessment => string.Equals(assessment.CategoryId, categoryId, StringComparison.OrdinalIgnoreCase))
             .OrderBy(assessment => assessment.Title)
-            .Select(assessment => new AssessmentSummary(
-                assessment.Id,
-                assessment.Title,
-                assessment.AssessmentType,
-                assessment.CategoryId,
-                assessment.SubcategoryIds,
-                CountAssessmentItems(assessment)))
+            .Select(CreateSummary)
             .ToList();
     }
 
@@ -133,5 +127,23 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             AssessmentType.RecallDrill => assessment.Items.Count,
             _ => assessment.Questions.Count
         };
+    }
+
+    private static AssessmentSummary CreateSummary(AssessmentDefinition assessment)
+    {
+        var authoredCount = CountAssessmentItems(assessment);
+        var effectiveCount = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
+            ? Math.Min(assessment.AttemptQuestionCount ?? authoredCount, authoredCount)
+            : authoredCount;
+
+        return new AssessmentSummary(
+            assessment.Id,
+            assessment.Title,
+            assessment.AssessmentType,
+            assessment.CategoryId,
+            assessment.SubcategoryIds,
+            effectiveCount,
+            authoredCount,
+            assessment.AttemptQuestionCount);
     }
 }

@@ -74,6 +74,7 @@ public sealed record AssessmentDefinition(
     IReadOnlyList<string> SubcategoryIds,
     AssessmentMode ModeDefault,
     bool RandomizeQuestions,
+    int? AttemptQuestionCount,
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
     IReadOnlyList<QuestionDefinition> Questions)
@@ -256,4 +257,6 @@ public sealed record AssessmentSummary(
     AssessmentType AssessmentType,
     string CategoryId,
     IReadOnlyList<string> SubcategoryIds,
-    int QuestionCount);
+    int QuestionCount,
+    int AuthoredQuestionCount = 0,
+    int? AttemptQuestionCount = null);

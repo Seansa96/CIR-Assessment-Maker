@@ -68,6 +68,35 @@ public sealed class FileAssessmentRepositoryTests
     }
 
     [Fact]
+    public async Task SaveAsync_round_trips_attempt_question_count_and_lists_effective_count()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.Assessment(AssessmentType.Test, new[]
+        {
+            TestData.MultipleChoiceQuestion("q001"),
+            TestData.MultipleChoiceQuestion("q002"),
+            TestData.MultipleChoiceQuestion("q003")
+        }) with
+        {
+            Id = "sample-bank-test",
+            AttemptQuestionCount = 2
+        };
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync("sample-bank-test");
+        var summary = Assert.Single(await repository.ListByCategoryAsync(assessment.CategoryId));
+
+        Assert.NotNull(loaded);
+        Assert.Equal(2, loaded.AttemptQuestionCount);
+        Assert.Equal(2, summary.QuestionCount);
+        Assert.Equal(3, summary.AuthoredQuestionCount);
+        Assert.Equal(2, summary.AttemptQuestionCount);
+    }
+
+    [Fact]
     public async Task SaveAsync_round_trips_code_question_fields()
     {
         var dataRoot = CreateDataRoot();
@@ -249,6 +278,19 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("precalculus-binomial-theorem-worked-example")]
     [InlineData("precalculus-binomial-theorem-recall")]
     [InlineData("precalculus-binomial-theorem-quiz")]
+    [InlineData("physics-two-vehicle-problems-worked-example")]
+    [InlineData("physics-two-vehicle-problems-quiz")]
+    [InlineData("calc2-improper-integrals-types-recall")]
+    [InlineData("calc2-improper-integrals-p-test-recognition-quiz")]
+    [InlineData("calc2-improper-integrals-convergence-quiz")]
+    [InlineData("calc2-approximate-integration-worked-example")]
+    [InlineData("physics-newtons-second-law-sprinter-worked-example")]
+    [InlineData("physics-newtons-first-law-force-balance-worked-example")]
+    [InlineData("physics-propagation-of-errors-worked-example")]
+    [InlineData("physics-propagation-of-errors-quiz")]
+    [InlineData("physics-speed-displacement-basics-quiz")]
+    [InlineData("aops-symbolic-manipulation-worked-example")]
+    [InlineData("calc2-practice-test-1-integrals")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(

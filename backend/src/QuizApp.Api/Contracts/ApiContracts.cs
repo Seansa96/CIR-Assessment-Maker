@@ -68,6 +68,7 @@ public sealed record SaveAssessmentRequest(
     IReadOnlyList<string>? SubcategoryIds,
     AssessmentMode ModeDefault,
     bool RandomizeQuestions,
+    int? AttemptQuestionCount,
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
     IReadOnlyList<QuestionDefinition>? Questions,
@@ -86,6 +87,7 @@ public sealed record SaveAssessmentRequest(
             SubcategoryIds ?? Array.Empty<string>(),
             ModeDefault,
             RandomizeQuestions,
+            AttemptQuestionCount,
             QuestionTimerSeconds,
             AssessmentTimerSeconds,
             Questions ?? Array.Empty<QuestionDefinition>())

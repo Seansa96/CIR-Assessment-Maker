@@ -59,6 +59,13 @@ public sealed class AttemptService
             Shuffle(questionOrder);
         }
 
+        if (assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
+            && assessment.AttemptQuestionCount is > 0
+            && assessment.AttemptQuestionCount < questionOrder.Count)
+        {
+            questionOrder = questionOrder.Take(assessment.AttemptQuestionCount.Value).ToList();
+        }
+
         var attempt = new Attempt(
             Guid.NewGuid().ToString("n"),
             assessment.Id,

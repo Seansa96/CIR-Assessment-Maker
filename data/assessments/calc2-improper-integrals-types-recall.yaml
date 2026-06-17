@@ -1,0 +1,205 @@
+schemaVersion: 1
+id: calc2-improper-integrals-types-recall
+title: Improper Integrals Types and Conditions Recall
+assessmentType: recallDrill
+categoryId: calculus-2
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+items:
+  - id: type-1-definition
+    type: flashcard
+    prompt: |
+      What is a Type 1 improper integral?
+    answer:
+      expected: An improper integral with one or more infinite limits of integration.
+    explanation: |
+      Type 1 means the interval is unbounded, such as $\int_a^\infty f(x)\,dx$, $\int_{-\infty}^{b}f(x)\,dx$, or $\int_{-\infty}^{\infty}f(x)\,dx$.
+    tags:
+      - improper-integrals
+      - type-1
+
+  - id: type-2-definition
+    type: flashcard
+    prompt: |
+      What is a Type 2 improper integral?
+    answer:
+      expected: An improper integral where the integrand is unbounded or undefined at an endpoint or interior point of a finite interval.
+    explanation: |
+      Type 2 means the interval may be finite, but the function has a vertical asymptote or undefined point that must be approached with a one-sided limit.
+    tags:
+      - improper-integrals
+      - type-2
+
+  - id: infinite-upper-tail
+    type: cloze
+    prompt: |
+      Complete the setup:
+
+      $$
+      \int_a^\infty f(x)\,dx
+      =
+      \_\_\_\_
+      $$
+    answer:
+      expected: lim as b goes to infinity integral from a to b of f(x) dx
+      aliases:
+        - limit b to infinity integral a to b f(x) dx
+        - lim b->infinity int_a^b f(x) dx
+    explanation: |
+      Replace the infinite endpoint with a finite endpoint, integrate first, then take the limit:
+
+      $$
+      \lim_{b\to\infty}\int_a^b f(x)\,dx.
+      $$
+    tags:
+      - type-1
+      - upper-tail
+
+  - id: infinite-lower-tail
+    type: cloze
+    prompt: |
+      Complete the setup:
+
+      $$
+      \int_{-\infty}^{b} f(x)\,dx
+      =
+      \_\_\_\_
+      $$
+    answer:
+      expected: lim as a goes to negative infinity integral from a to b of f(x) dx
+      aliases:
+        - limit a to negative infinity integral a to b f(x) dx
+        - lim a->-infinity int_a^b f(x) dx
+    explanation: |
+      Replace $-\infty$ with a finite lower endpoint and send that endpoint left:
+
+      $$
+      \lim_{a\to-\infty}\int_a^b f(x)\,dx.
+      $$
+    tags:
+      - type-1
+      - lower-tail
+
+  - id: two-tail-condition
+    type: typed
+    prompt: |
+      For $\int_{-\infty}^{\infty}f(x)\,dx$, what condition must be met for ordinary improper convergence?
+    answer:
+      expected: Both separate tails must converge.
+      aliases:
+        - both tails converge
+        - the negative and positive tails both converge
+    explanation: |
+      Split at a finite point, often $0$:
+
+      $$
+      \int_{-\infty}^{0}f(x)\,dx+\int_0^\infty f(x)\,dx.
+      $$
+
+      Both pieces must converge. A symmetric principal value alone is not enough.
+    tags:
+      - type-1
+      - two-tails
+
+  - id: endpoint-singularity-setup
+    type: cloze
+    prompt: |
+      Complete the setup for an endpoint singularity at $a$:
+
+      $$
+      \int_a^b f(x)\,dx
+      =
+      \_\_\_\_
+      $$
+    answer:
+      expected: lim as t goes to a from the right integral from t to b of f(x) dx
+      aliases:
+        - lim t->a+ int_t^b f(x) dx
+        - limit t to a plus integral t to b
+    explanation: |
+      If the function is unbounded at the lower endpoint, approach from inside the interval:
+
+      $$
+      \lim_{t\to a^+}\int_t^b f(x)\,dx.
+      $$
+    tags:
+      - type-2
+      - endpoint-singularity
+
+  - id: interior-singularity-condition
+    type: flashcard
+    prompt: |
+      What must you do if an integrand is undefined at an interior point $c$ in $[a,b]$?
+    answer:
+      expected: Split the integral at c and test both one-sided improper integrals separately.
+    explanation: |
+      Use
+
+      $$
+      \int_a^c f(x)\,dx+\int_c^b f(x)\,dx
+      $$
+
+      with one-sided limits on both pieces. If either piece diverges, the whole integral diverges.
+    tags:
+      - type-2
+      - interior-singularity
+
+  - id: p-test-infinity
+    type: cloze
+    prompt: |
+      Complete the $p$-test at infinity:
+
+      $$
+      \int_1^\infty \frac{1}{x^p}\,dx
+      $$
+
+      converges when $p$ is ____.
+    answer:
+      expected: greater than 1
+      aliases:
+        - p > 1
+    explanation: |
+      For the infinite-tail $p$-test, convergence requires $p>1$. The boundary case $p=1$ diverges.
+    tags:
+      - p-test
+      - type-1
+
+  - id: p-test-zero
+    type: cloze
+    prompt: |
+      Complete the endpoint $p$-test:
+
+      $$
+      \int_0^1 \frac{1}{x^p}\,dx
+      $$
+
+      converges when $p$ is ____.
+    answer:
+      expected: less than 1
+      aliases:
+        - p < 1
+    explanation: |
+      For a singularity at $0$, convergence requires $p<1$. The boundary case $p=1$ diverges.
+    tags:
+      - p-test
+      - type-2
+
+  - id: zero-not-enough
+    type: flashcard
+    prompt: |
+      Why is $\lim_{x\to\infty}f(x)=0$ not enough to prove $\int_a^\infty f(x)\,dx$ converges?
+    answer:
+      expected: A function can approach zero too slowly, such as 1/x, and still have infinite total area.
+    explanation: |
+      The classic counterexample is
+
+      $$
+      \int_1^\infty \frac{1}{x}\,dx,
+      $$
+
+      which diverges even though $\frac{1}{x}\to0$.
+    tags:
+      - convergence-conditions
+      - p-test

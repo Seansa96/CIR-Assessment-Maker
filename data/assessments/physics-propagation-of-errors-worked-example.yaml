@@ -1,0 +1,213 @@
+schemaVersion: 1
+id: physics-propagation-of-errors-worked-example
+title: Propagation of Errors Worked Example
+assessmentType: workedExample
+categoryId: physics-1
+subcategoryIds:
+  - physics-measurement-error
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Choosing uncertainty rules for calculated quantities
+    problem: |
+      Propagation of errors asks how uncertainty in measured values affects a value calculated from them.
+
+      The main idea is that a measured value is not just one number. It represents a best estimate plus a possible spread:
+
+      $$
+      x=x_{\text{BE}}\pm\delta x.
+      $$
+
+      For beginner problems, first identify the operation used to calculate the new quantity. Addition/subtraction uses absolute uncertainty. Multiplication/division/powers use fractional or relative uncertainty. A general function uses sensitivity: how much the output changes when the input changes.
+    steps:
+      - id: s001
+        title: Identify the purpose
+        instruction: |
+          Before using any formula, decide what propagation of error is trying to measure.
+        type: multipleChoice
+        prompt: |
+          What does uncertainty propagation estimate?
+        choices:
+          - id: a
+            text: 'How uncertainty in measured inputs affects uncertainty in a calculated output.'
+          - id: b
+            text: 'How to remove all experimental error from a measurement.'
+          - id: c
+            text: 'How to choose units for a final answer.'
+          - id: d
+            text: 'How to replace calculus with significant figures.'
+        answer:
+          choiceId: a
+        explanation: |
+          If $z=f(x,y)$, then uncertainty propagation estimates $\delta z$ from uncertainties such as $\delta x$ and $\delta y$.
+
+          Related topic: measurement uncertainty. Strengthen the idea that calculated quantities inherit uncertainty from measured quantities.
+
+      - id: s002
+        title: Addition and subtraction
+        instruction: |
+          For sums and differences, track absolute uncertainty.
+        type: multipleChoice
+        prompt: |
+          Without assuming independent random errors, if $z=x+y$, which conservative rule is used?
+        choices:
+          - id: a
+            text: '$\delta z=\delta x+\delta y$'
+          - id: b
+            text: '$\frac{\delta z}{z}=\frac{\delta x}{x}+\frac{\delta y}{y}$'
+          - id: c
+            text: '$\delta z=xy$'
+          - id: d
+            text: '$\delta z=0$'
+        answer:
+          choiceId: a
+        explanation: |
+          For addition or subtraction, conservative absolute errors add:
+
+          $$
+          \delta z=\delta x+\delta y.
+          $$
+
+          Related topic: absolute uncertainty. Use this when the operation is $+$ or $-$.
+
+      - id: s003
+        title: Independent random errors
+        instruction: |
+          When errors are random and independent, uncertainties combine by quadrature instead of direct addition.
+        type: multipleChoice
+        prompt: |
+          If $z=x+y$ and the errors are random and independent, which rule is usually used?
+        choices:
+          - id: a
+            text: '$\delta z=\sqrt{(\delta x)^2+(\delta y)^2}$'
+          - id: b
+            text: '$\delta z=\delta x+\delta y$'
+          - id: c
+            text: '$\delta z=\delta x-\delta y$'
+          - id: d
+            text: '$\frac{\delta z}{z}=xy$'
+        answer:
+          choiceId: a
+        explanation: |
+          Independent random errors partly cancel statistically, so they are combined in quadrature:
+
+          $$
+          \delta z=\sqrt{(\delta x)^2+(\delta y)^2}.
+          $$
+
+          Related topic: quadrature. Use this only when the independence/random-error assumption is justified.
+
+      - id: s004
+        title: Multiplication and division
+        instruction: |
+          Products and quotients are easiest to handle with fractional uncertainty.
+        type: multipleChoice
+        prompt: |
+          Without the independent-random-error assumption, if $z=xy$, which rule is used?
+        choices:
+          - id: a
+            text: '$\frac{\delta z}{|z|}=\frac{\delta x}{|x|}+\frac{\delta y}{|y|}$'
+          - id: b
+            text: '$\delta z=\delta x+\delta y$'
+          - id: c
+            text: '$z=\delta x\delta y$'
+          - id: d
+            text: '$\frac{\delta z}{|z|}=0$'
+        answer:
+          choiceId: a
+        explanation: |
+          For multiplication and division, relative uncertainties add:
+
+          $$
+          \frac{\delta z}{|z|}=\frac{\delta x}{|x|}+\frac{\delta y}{|y|}.
+          $$
+
+          Related topic: fractional uncertainty. The operation determines whether absolute or fractional uncertainty is the natural form.
+
+      - id: s005
+        title: Power rule
+        instruction: |
+          A power magnifies relative uncertainty by the absolute value of the exponent.
+        type: multipleChoice
+        prompt: |
+          If $y=x^n$, which rule connects relative uncertainty in $y$ to relative uncertainty in $x$?
+        choices:
+          - id: a
+            text: '$\frac{\delta y}{|y|}=|n|\frac{\delta x}{|x|}$'
+          - id: b
+            text: '$\delta y=n+\delta x$'
+          - id: c
+            text: '$\delta y=\frac{\delta x}{n}$'
+          - id: d
+            text: '$\frac{\delta y}{|y|}=\frac{\delta x}{|x|+n}$'
+        answer:
+          choiceId: a
+        explanation: |
+          For a power,
+
+          $$
+          y=x^n
+          $$
+
+          gives
+
+          $$
+          \frac{\delta y}{|y|}=|n|\frac{\delta x}{|x|}.
+          $$
+
+          Related topic: fractional error in powers. This comes from how strongly a power function changes when its input changes.
+
+      - id: s006
+        title: General function rule
+        instruction: |
+          For a one-variable function, the derivative measures sensitivity.
+        type: multipleChoice
+        prompt: |
+          If $y=f(x)$, which first-order uncertainty estimate is used?
+        choices:
+          - id: a
+            text: '$\delta y\approx\left|\frac{df}{dx}\right|\delta x$'
+          - id: b
+            text: '$\delta y=f(x)+\delta x$'
+          - id: c
+            text: '$\delta y=\frac{x}{f(x)}$'
+          - id: d
+            text: '$\delta y=0$ for every function'
+        answer:
+          choiceId: a
+        explanation: |
+          The derivative tells you how much the output changes for a small change in input:
+
+          $$
+          \delta y\approx\left|\frac{df}{dx}\right|\delta x.
+          $$
+
+          Related topic: local linear approximation. Review derivatives as sensitivity, not just slopes on graphs.
+
+      - id: s007
+        title: Two-variable function
+        instruction: |
+          A function of two variables depends on sensitivity to each variable separately.
+        type: multipleChoice
+        prompt: |
+          For independent random errors in $z=f(x,y)$, which structure is used?
+        choices:
+          - id: a
+            text: '$\delta z=\sqrt{\left(\frac{\partial z}{\partial x}\delta x\right)^2+\left(\frac{\partial z}{\partial y}\delta y\right)^2}$'
+          - id: b
+            text: '$\delta z=\frac{\partial z}{\partial x}+\frac{\partial z}{\partial y}$'
+          - id: c
+            text: '$\delta z=xy$'
+          - id: d
+            text: '$\delta z=\delta x-\delta y$'
+        answer:
+          choiceId: a
+        explanation: |
+          Use partial derivatives to measure sensitivity to each input, then combine independent errors by quadrature:
+
+          $$
+          \delta z=\sqrt{\left(\frac{\partial z}{\partial x}\delta x\right)^2+\left(\frac{\partial z}{\partial y}\delta y\right)^2}.
+          $$
+
+          Related topic: partial derivatives and uncertainty propagation. The procedure is sensitivity first, combination rule second.

@@ -30,6 +30,27 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
+    public async Task StartAsync_samples_attempt_question_count_and_results_use_sample()
+    {
+        var assessment = TestData.Assessment(AssessmentType.Test, Enumerable.Range(1, 15)
+            .Select(index => TestData.MultipleChoiceQuestion($"q{index:000}"))
+            .ToList()) with
+        {
+            AttemptQuestionCount = 12
+        };
+        var service = CreateAttemptService(assessment);
+
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        Assert.Equal(12, attempt.QuestionOrder.Count);
+        Assert.Equal(12, attempt.QuestionOrder.Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.All(attempt.QuestionOrder, questionId => Assert.Contains(assessment.Questions, question => question.Id == questionId));
+        Assert.Equal(12, results.TotalQuestions);
+        Assert.Equal(attempt.QuestionOrder, results.Questions.Select(question => question.QuestionId));
+    }
+
+    [Fact]
     public async Task PauseAsync_persists_attempt_and_removes_active_session()
     {
         var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
@@ -472,6 +493,7 @@ internal static class TestData
             new[] { "area-between-curves" },
             AssessmentMode.Practice,
             true,
+            null,
             null,
             null,
             questions ?? new[] { MultipleChoiceQuestion("q001") });

@@ -39,6 +39,7 @@ internal sealed class AssessmentFileDto
     public List<string>? SubcategoryIds { get; set; }
     public string? ModeDefault { get; set; }
     public bool? RandomizeQuestions { get; set; }
+    public int? AttemptQuestionCount { get; set; }
     public int? QuestionTimerSeconds { get; set; }
     public int? AssessmentTimerSeconds { get; set; }
     public List<QuestionFileDto>? Questions { get; set; }

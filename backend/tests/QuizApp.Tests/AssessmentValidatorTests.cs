@@ -67,6 +67,27 @@ public sealed class AssessmentValidatorTests
         Assert.Contains(result.Issues, issue => issue.Code == "QUIZ_TOO_LONG");
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(4)]
+    public void Validate_rejects_invalid_attempt_question_count(int attemptQuestionCount)
+    {
+        var assessment = TestData.Assessment(AssessmentType.Test, new[]
+        {
+            TestData.MultipleChoiceQuestion("q001"),
+            TestData.MultipleChoiceQuestion("q002"),
+            TestData.MultipleChoiceQuestion("q003")
+        }) with
+        {
+            AttemptQuestionCount = attemptQuestionCount
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_ATTEMPT_QUESTION_COUNT");
+    }
+
     [Fact]
     public void Validate_rejects_numeric_response_without_non_negative_tolerance()
     {

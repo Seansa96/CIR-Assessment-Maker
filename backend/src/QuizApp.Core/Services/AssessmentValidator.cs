@@ -56,6 +56,22 @@ public sealed class AssessmentValidator
         ValidateQuestions(assessment.Questions, issues);
 
         var questionCount = assessment.Questions.Count;
+        if (assessment.AttemptQuestionCount is not null)
+        {
+            if (assessment.AssessmentType is not AssessmentType.Quiz and not AssessmentType.Test)
+            {
+                issues.Add(new ValidationIssue("INVALID_ATTEMPT_QUESTION_COUNT", "attemptQuestionCount is only supported for quiz and test assessments."));
+            }
+            else if (assessment.AttemptQuestionCount <= 0)
+            {
+                issues.Add(new ValidationIssue("INVALID_ATTEMPT_QUESTION_COUNT", "attemptQuestionCount must be greater than zero."));
+            }
+            else if (assessment.AttemptQuestionCount > questionCount)
+            {
+                issues.Add(new ValidationIssue("INVALID_ATTEMPT_QUESTION_COUNT", "attemptQuestionCount cannot exceed the number of authored questions."));
+            }
+        }
+
         if (assessment.AssessmentType is AssessmentType.Quiz && questionCount > QuizMaxQuestions)
         {
             issues.Add(new ValidationIssue("QUIZ_TOO_LONG", $"Quiz assessments cannot exceed {QuizMaxQuestions} questions."));
