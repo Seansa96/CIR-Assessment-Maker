@@ -96,7 +96,8 @@ public sealed record QuestionResult(
     string? Explanation,
     string? ExpectedAnswer,
     CodeFeedback? CodeFeedback,
-    SymbolicFeedback? SymbolicFeedback)
+    SymbolicFeedback? SymbolicFeedback,
+    CircuitFeedback? CircuitFeedback = null)
 {
     public string? Title { get; init; }
     public string? Instruction { get; init; }

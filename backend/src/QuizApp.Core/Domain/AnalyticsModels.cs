@@ -4,7 +4,8 @@ public sealed record AreaDefinition(
     string Id,
     string Title,
     IReadOnlyList<string> CategoryIds,
-    IReadOnlyList<string> SubcategoryIds);
+    IReadOnlyList<string> SubcategoryIds,
+    string? Description = null);
 
 public sealed record GradeAnalyticsFilter(
     AttemptStatus? Status,
@@ -120,4 +121,6 @@ public sealed record AttemptHistoryRow(
     bool IsCommitted,
     DateTimeOffset StartedAt,
     DateTimeOffset? CompletedAt,
-    DateTimeOffset? LastActivityAt);
+    DateTimeOffset? LastActivityAt,
+    string? LearningGoal = null,
+    string? ActivityType = null);

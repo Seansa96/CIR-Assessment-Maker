@@ -11,8 +11,12 @@ internal static class FileDtoMapper
             dto.Id ?? string.Empty,
             dto.Title ?? string.Empty,
             (dto.Subcategories ?? new List<SubCategoryFileDto>())
-                .Select(subcategory => new SubCategory(subcategory.Id ?? string.Empty, subcategory.Title ?? string.Empty))
-                .ToList());
+                .Select(subcategory => new SubCategory(
+                    subcategory.Id ?? string.Empty,
+                    subcategory.Title ?? string.Empty,
+                    subcategory.Description))
+                .ToList(),
+            dto.Description);
     }
 
     public static AppSettings ToDomain(this SettingsFileDto dto)
@@ -69,7 +73,11 @@ internal static class FileDtoMapper
         {
             WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList(),
             GuidedProject = dto.GuidedProject is null ? null : ToDomain(dto.GuidedProject),
-            Items = (dto.Items ?? new List<RecallItemFileDto>()).Select(ToDomain).ToList()
+            Items = (dto.Items ?? new List<RecallItemFileDto>()).Select(ToDomain).ToList(),
+            Navigation = dto.Navigation is null ? null : new NavigationMetadata(
+                dto.Navigation.LearningGoal,
+                dto.Navigation.ActivityType,
+                dto.Navigation.Tags ?? new List<string>())
         };
     }
 
@@ -91,7 +99,13 @@ internal static class FileDtoMapper
             Questions = assessment.Questions.Select(ToDto).ToList(),
             WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList(),
             GuidedProject = assessment.GuidedProject is null ? null : ToDto(assessment.GuidedProject),
-            Items = assessment.Items.Select(ToDto).ToList()
+            Items = assessment.Items.Select(ToDto).ToList(),
+            Navigation = assessment.Navigation is null ? null : new NavigationFileDto
+            {
+                LearningGoal = assessment.Navigation.LearningGoal,
+                ActivityType = assessment.Navigation.ActivityType,
+                Tags = assessment.Navigation.Tags.ToList()
+            }
         };
     }
 
@@ -252,9 +266,10 @@ internal static class FileDtoMapper
 
     private static QuestionDefinition ToDomain(QuestionFileDto dto)
     {
+        var type = ParseQuestionType(dto.Type);
         return new QuestionDefinition(
             dto.Id ?? string.Empty,
-            ParseQuestionType(dto.Type),
+            type,
             dto.Prompt ?? string.Empty,
             (dto.Choices ?? new List<ChoiceFileDto>())
                 .Select(choice => new ChoiceOption(
@@ -279,12 +294,14 @@ internal static class FileDtoMapper
                 SymbolicEquivalenceMode = dto.Answer?.EquivalenceMode,
                 SymbolicVariables = dto.Answer?.Variables ?? new List<string>(),
                 SymbolicTolerance = dto.Answer?.Tolerance,
-                KeyPoints = dto.Answer?.KeyPoints ?? new List<string>()
+                KeyPoints = dto.Answer?.KeyPoints ?? new List<string>(),
+                CircuitAnswer = ToDomain(dto.Answer?.CircuitAnswer)
             },
             dto.Explanation,
             (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
         {
-            CodeQuestion = ToCodeQuestion(dto)
+            CodeQuestion = ToCodeQuestion(dto),
+            CircuitQuestion = ToDomain(dto.CircuitQuestion)
         };
     }
 
@@ -313,7 +330,8 @@ internal static class FileDtoMapper
                 Value = question.Answer.NumericValue,
                 Tolerance = question.Answer.NumericTolerance ?? question.Answer.SymbolicTolerance ?? question.Answer.Tolerance,
                 Media = question.Answer.Media.Select(ToDto).ToList(),
-                KeyPoints = question.Answer.KeyPoints.ToList()
+                KeyPoints = question.Answer.KeyPoints.ToList(),
+                CircuitAnswer = ToDto(question.Answer.CircuitAnswer)
             },
             Explanation = question.Explanation,
             Media = question.Media.Select(ToDto).ToList(),
@@ -324,7 +342,8 @@ internal static class FileDtoMapper
             {
                 Input = test.Input,
                 Expected = test.Expected
-            }).ToList()
+            }).ToList(),
+            CircuitQuestion = ToDto(question.CircuitQuestion)
         };
     }
 
@@ -399,6 +418,7 @@ internal static class FileDtoMapper
             "numericresponse" => QuestionType.NumericResponse,
             "code" => QuestionType.Code,
             "symbolicresponse" => QuestionType.SymbolicResponse,
+            "circuit" => QuestionType.Circuit,
             _ => QuestionType.Unknown
         };
     }
@@ -460,6 +480,7 @@ internal static class FileDtoMapper
             QuestionType.NumericResponse => "numericResponse",
             QuestionType.Code => "code",
             QuestionType.SymbolicResponse => "symbolicResponse",
+            QuestionType.Circuit => "circuit",
             _ => "multipleChoice"
         };
     }
@@ -467,5 +488,260 @@ internal static class FileDtoMapper
     private static string Normalize(string? value)
     {
         return string.Concat((value ?? string.Empty).Where(char.IsLetterOrDigit)).ToLowerInvariant();
+    }
+
+    private static CircuitQuestionDefinition? ToDomain(CircuitQuestionFileDto? dto)
+    {
+        if (dto is null) return null;
+        return new CircuitQuestionDefinition(
+            dto.SchemaVersion,
+            dto.CatalogVersion,
+            dto.InteractionMode ?? "select",
+            dto.PaletteSymbolIds ?? new List<string>(),
+            dto.EditableProperties ?? new List<string>(),
+            ToDomain(dto.Diagram) ?? new CircuitDiagramDefinition(900, 520, Array.Empty<CircuitComponentInstance>(), Array.Empty<CircuitNodeDefinition>(), Array.Empty<CircuitWireDefinition>(), Array.Empty<CircuitAnnotationDefinition>())
+        );
+    }
+
+    private static CircuitDiagramDefinition? ToDomain(CircuitDiagramFileDto? dto)
+    {
+        if (dto is null) return null;
+        return new CircuitDiagramDefinition(
+            dto.Width <= 0 ? 900 : dto.Width,
+            dto.Height <= 0 ? 520 : dto.Height,
+            (dto.Components ?? new List<CircuitComponentInstanceFileDto>()).Select(ToDomain).ToList(),
+            (dto.Nodes ?? new List<CircuitNodeFileDto>()).Select(ToDomain).ToList(),
+            (dto.Wires ?? new List<CircuitWireFileDto>()).Select(ToDomain).ToList(),
+            (dto.Annotations ?? new List<CircuitAnnotationFileDto>()).Select(ToDomain).ToList()
+        );
+    }
+
+    private static CircuitComponentInstance ToDomain(CircuitComponentInstanceFileDto dto)
+    {
+        return new CircuitComponentInstance(
+            dto.Id ?? string.Empty,
+            dto.SymbolId ?? string.Empty,
+            dto.X,
+            dto.Y,
+            dto.Rotation,
+            dto.Value,
+            dto.Label,
+            dto.PropertyOverrides ?? new Dictionary<string, string>()
+        );
+    }
+
+    private static CircuitNodeDefinition ToDomain(CircuitNodeFileDto dto)
+    {
+        return new CircuitNodeDefinition(dto.Id ?? string.Empty, dto.Label, dto.X, dto.Y);
+    }
+
+    private static CircuitWireDefinition ToDomain(CircuitWireFileDto dto)
+    {
+        return new CircuitWireDefinition(
+            dto.Id ?? string.Empty,
+            dto.SourceId ?? string.Empty,
+            dto.TargetId ?? string.Empty,
+            (dto.RoutePoints ?? new List<CircuitPointFileDto>()).Select(ToDomain).ToList()
+        );
+    }
+
+    private static CircuitPoint ToDomain(CircuitPointFileDto dto)
+    {
+        return new CircuitPoint(dto.X, dto.Y);
+    }
+
+    private static CircuitAnnotationDefinition ToDomain(CircuitAnnotationFileDto dto)
+    {
+        return new CircuitAnnotationDefinition(
+            dto.Id ?? string.Empty,
+            dto.Type ?? string.Empty,
+            dto.Text ?? string.Empty,
+            dto.X,
+            dto.Y
+        );
+    }
+
+    private static CircuitAnswerDefinition? ToDomain(CircuitAnswerFileDto? dto)
+    {
+        if (dto is null) return null;
+        return new CircuitAnswerDefinition(
+            ToDomain(dto.Topology),
+            dto.SelectedTargetIds,
+            ToDomain(dto.MeterPlacement),
+            dto.ExpectedValues?.ToDictionary(p => p.Key, p => ToDomain(p.Value))
+        );
+    }
+
+    private static CircuitTopologyDefinition? ToDomain(CircuitTopologyFileDto? dto)
+    {
+        if (dto is null) return null;
+        return new CircuitTopologyDefinition(
+            (dto.RequiredComponents ?? new List<RequiredComponentFileDto>()).Select(ToDomain).ToList(),
+            dto.ConnectionMode ?? "graphIsomorphism"
+        );
+    }
+
+    private static RequiredComponentDefinition ToDomain(RequiredComponentFileDto dto)
+    {
+        return new RequiredComponentDefinition(dto.SymbolId ?? string.Empty, dto.Count);
+    }
+
+    private static CircuitMeterPlacementDefinition? ToDomain(CircuitMeterPlacementFileDto? dto)
+    {
+        if (dto is null) return null;
+        return new CircuitMeterPlacementDefinition(
+            dto.MeterType ?? string.Empty,
+            dto.TargetBranchId,
+            dto.TargetNodeIds,
+            dto.RequirePolarity,
+            dto.PositiveTerminalId,
+            dto.NegativeTerminalId
+        );
+    }
+
+    private static ExpectedValueDefinition ToDomain(ExpectedValueFileDto dto)
+    {
+        return new ExpectedValueDefinition(
+            dto.Mode ?? "text",
+            dto.ExpectedText,
+            dto.NumericValue,
+            dto.NumericTolerance,
+            dto.SymbolicExpectedLatex,
+            dto.SymbolicEquivalenceMode,
+            dto.SymbolicVariables,
+            dto.SymbolicTolerance
+        );
+    }
+
+    private static CircuitQuestionFileDto? ToDto(CircuitQuestionDefinition? domain)
+    {
+        if (domain is null) return null;
+        return new CircuitQuestionFileDto
+        {
+            SchemaVersion = domain.SchemaVersion,
+            CatalogVersion = domain.CatalogVersion,
+            InteractionMode = domain.InteractionMode,
+            PaletteSymbolIds = domain.PaletteSymbolIds.ToList(),
+            EditableProperties = domain.EditableProperties.ToList(),
+            Diagram = ToDto(domain.Diagram)
+        };
+    }
+
+    private static CircuitDiagramFileDto? ToDto(CircuitDiagramDefinition? domain)
+    {
+        if (domain is null) return null;
+        return new CircuitDiagramFileDto
+        {
+            Width = domain.Width,
+            Height = domain.Height,
+            Components = domain.Components.Select(ToDto).ToList(),
+            Nodes = domain.Nodes.Select(ToDto).ToList(),
+            Wires = domain.Wires.Select(ToDto).ToList(),
+            Annotations = domain.Annotations.Select(ToDto).ToList()
+        };
+    }
+
+    private static CircuitComponentInstanceFileDto ToDto(CircuitComponentInstance domain)
+    {
+        return new CircuitComponentInstanceFileDto
+        {
+            Id = domain.Id,
+            SymbolId = domain.SymbolId,
+            X = domain.X,
+            Y = domain.Y,
+            Rotation = domain.Rotation,
+            Value = domain.Value,
+            Label = domain.Label,
+            PropertyOverrides = domain.PropertyOverrides?.ToDictionary(p => p.Key, p => p.Value)
+        };
+    }
+
+    private static CircuitNodeFileDto ToDto(CircuitNodeDefinition domain)
+    {
+        return new CircuitNodeFileDto { Id = domain.Id, Label = domain.Label, X = domain.X, Y = domain.Y };
+    }
+
+    private static CircuitWireFileDto ToDto(CircuitWireDefinition domain)
+    {
+        return new CircuitWireFileDto
+        {
+            Id = domain.Id,
+            SourceId = domain.SourceId,
+            TargetId = domain.TargetId,
+            RoutePoints = domain.RoutePoints?.Select(ToDto).ToList()
+        };
+    }
+
+    private static CircuitPointFileDto ToDto(CircuitPoint domain)
+    {
+        return new CircuitPointFileDto { X = domain.X, Y = domain.Y };
+    }
+
+    private static CircuitAnnotationFileDto ToDto(CircuitAnnotationDefinition domain)
+    {
+        return new CircuitAnnotationFileDto
+        {
+            Id = domain.Id,
+            Type = domain.Type,
+            Text = domain.Text,
+            X = domain.X,
+            Y = domain.Y
+        };
+    }
+
+    private static CircuitAnswerFileDto? ToDto(CircuitAnswerDefinition? domain)
+    {
+        if (domain is null) return null;
+        return new CircuitAnswerFileDto
+        {
+            Topology = ToDto(domain.Topology),
+            SelectedTargetIds = domain.SelectedTargetIds?.ToList(),
+            MeterPlacement = ToDto(domain.MeterPlacement),
+            ExpectedValues = domain.ExpectedValues?.ToDictionary(p => p.Key, p => ToDto(p.Value))
+        };
+    }
+
+    private static CircuitTopologyFileDto? ToDto(CircuitTopologyDefinition? domain)
+    {
+        if (domain is null) return null;
+        return new CircuitTopologyFileDto
+        {
+            RequiredComponents = domain.RequiredComponents.Select(ToDto).ToList(),
+            ConnectionMode = domain.ConnectionMode
+        };
+    }
+
+    private static RequiredComponentFileDto ToDto(RequiredComponentDefinition domain)
+    {
+        return new RequiredComponentFileDto { SymbolId = domain.SymbolId, Count = domain.Count };
+    }
+
+    private static CircuitMeterPlacementFileDto? ToDto(CircuitMeterPlacementDefinition? domain)
+    {
+        if (domain is null) return null;
+        return new CircuitMeterPlacementFileDto
+        {
+            MeterType = domain.MeterType,
+            TargetBranchId = domain.TargetBranchId,
+            TargetNodeIds = domain.TargetNodeIds?.ToList(),
+            RequirePolarity = domain.RequirePolarity,
+            PositiveTerminalId = domain.PositiveTerminalId,
+            NegativeTerminalId = domain.NegativeTerminalId
+        };
+    }
+
+    private static ExpectedValueFileDto ToDto(ExpectedValueDefinition domain)
+    {
+        return new ExpectedValueFileDto
+        {
+            Mode = domain.Mode,
+            ExpectedText = domain.ExpectedText,
+            NumericValue = domain.NumericValue,
+            NumericTolerance = domain.NumericTolerance,
+            SymbolicExpectedLatex = domain.SymbolicExpectedLatex,
+            SymbolicEquivalenceMode = domain.SymbolicEquivalenceMode,
+            SymbolicVariables = domain.SymbolicVariables?.ToList(),
+            SymbolicTolerance = domain.SymbolicTolerance
+        };
     }
 }

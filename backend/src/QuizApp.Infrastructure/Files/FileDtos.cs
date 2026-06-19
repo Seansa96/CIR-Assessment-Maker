@@ -5,6 +5,7 @@ internal sealed class CategoryFileDto
     public int SchemaVersion { get; set; }
     public string? Id { get; set; }
     public string? Title { get; set; }
+    public string? Description { get; set; }
     public List<SubCategoryFileDto>? Subcategories { get; set; }
 }
 
@@ -12,6 +13,7 @@ internal sealed class SubCategoryFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
+    public string? Description { get; set; }
 }
 
 internal sealed class SettingsFileDto
@@ -46,7 +48,16 @@ internal sealed class AssessmentFileDto
     public List<WorkedExampleFileDto>? WorkedExamples { get; set; }
     public GuidedProjectFileDto? GuidedProject { get; set; }
     public List<RecallItemFileDto>? Items { get; set; }
+    public NavigationFileDto? Navigation { get; set; }
 }
+
+internal sealed class NavigationFileDto
+{
+    public string? LearningGoal { get; set; }
+    public string? ActivityType { get; set; }
+    public List<string>? Tags { get; set; }
+}
+
 
 internal sealed class RecallItemFileDto
 {
@@ -130,6 +141,7 @@ internal sealed class QuestionFileDto
     public string? FunctionName { get; set; }
     public string? StarterCode { get; set; }
     public List<CodeQuestionTestFileDto>? Tests { get; set; }
+    public CircuitQuestionFileDto? CircuitQuestion { get; set; }
 }
 
 internal sealed class ChoiceFileDto
@@ -152,6 +164,7 @@ internal sealed class AnswerFileDto
     public decimal? Tolerance { get; set; }
     public List<MediaFileDto>? Media { get; set; }
     public List<string>? KeyPoints { get; set; }
+    public CircuitAnswerFileDto? CircuitAnswer { get; set; }
 }
 
 internal sealed class MediaFileDto
@@ -166,4 +179,109 @@ internal sealed class CodeQuestionTestFileDto
 {
     public string? Input { get; set; }
     public string? Expected { get; set; }
+}
+
+internal sealed class CircuitQuestionFileDto
+{
+    public int SchemaVersion { get; set; }
+    public int CatalogVersion { get; set; }
+    public string? InteractionMode { get; set; }
+    public List<string>? PaletteSymbolIds { get; set; }
+    public List<string>? EditableProperties { get; set; }
+    public CircuitDiagramFileDto? Diagram { get; set; }
+}
+
+internal sealed class CircuitDiagramFileDto
+{
+    public int Width { get; set; }
+    public int Height { get; set; }
+    public List<CircuitComponentInstanceFileDto>? Components { get; set; }
+    public List<CircuitNodeFileDto>? Nodes { get; set; }
+    public List<CircuitWireFileDto>? Wires { get; set; }
+    public List<CircuitAnnotationFileDto>? Annotations { get; set; }
+}
+
+internal sealed class CircuitComponentInstanceFileDto
+{
+    public string? Id { get; set; }
+    public string? SymbolId { get; set; }
+    public decimal X { get; set; }
+    public decimal Y { get; set; }
+    public decimal Rotation { get; set; }
+    public string? Value { get; set; }
+    public string? Label { get; set; }
+    public Dictionary<string, string>? PropertyOverrides { get; set; }
+}
+
+internal sealed class CircuitNodeFileDto
+{
+    public string? Id { get; set; }
+    public string? Label { get; set; }
+    public decimal? X { get; set; }
+    public decimal? Y { get; set; }
+}
+
+internal sealed class CircuitWireFileDto
+{
+    public string? Id { get; set; }
+    public string? SourceId { get; set; }
+    public string? TargetId { get; set; }
+    public List<CircuitPointFileDto>? RoutePoints { get; set; }
+}
+
+internal sealed class CircuitPointFileDto
+{
+    public decimal X { get; set; }
+    public decimal Y { get; set; }
+}
+
+internal sealed class CircuitAnnotationFileDto
+{
+    public string? Id { get; set; }
+    public string? Type { get; set; }
+    public string? Text { get; set; }
+    public decimal X { get; set; }
+    public decimal Y { get; set; }
+}
+
+internal sealed class CircuitAnswerFileDto
+{
+    public CircuitTopologyFileDto? Topology { get; set; }
+    public List<string>? SelectedTargetIds { get; set; }
+    public CircuitMeterPlacementFileDto? MeterPlacement { get; set; }
+    public Dictionary<string, ExpectedValueFileDto>? ExpectedValues { get; set; }
+}
+
+internal sealed class CircuitTopologyFileDto
+{
+    public List<RequiredComponentFileDto>? RequiredComponents { get; set; }
+    public string? ConnectionMode { get; set; }
+}
+
+internal sealed class RequiredComponentFileDto
+{
+    public string? SymbolId { get; set; }
+    public int Count { get; set; }
+}
+
+internal sealed class CircuitMeterPlacementFileDto
+{
+    public string? MeterType { get; set; }
+    public string? TargetBranchId { get; set; }
+    public List<string>? TargetNodeIds { get; set; }
+    public bool? RequirePolarity { get; set; }
+    public string? PositiveTerminalId { get; set; }
+    public string? NegativeTerminalId { get; set; }
+}
+
+internal sealed class ExpectedValueFileDto
+{
+    public string? Mode { get; set; }
+    public string? ExpectedText { get; set; }
+    public decimal? NumericValue { get; set; }
+    public decimal? NumericTolerance { get; set; }
+    public string? SymbolicExpectedLatex { get; set; }
+    public string? SymbolicEquivalenceMode { get; set; }
+    public List<string>? SymbolicVariables { get; set; }
+    public decimal? SymbolicTolerance { get; set; }
 }

@@ -24,7 +24,8 @@ public enum QuestionType
     FreeResponse,
     NumericResponse,
     Code,
-    SymbolicResponse
+    SymbolicResponse,
+    Circuit
 }
 
 public enum QuestionOrderMode
@@ -46,9 +47,10 @@ public sealed record Category(
     int SchemaVersion,
     string Id,
     string Title,
-    IReadOnlyList<SubCategory> Subcategories);
+    IReadOnlyList<SubCategory> Subcategories,
+    string? Description = null);
 
-public sealed record SubCategory(string Id, string Title);
+public sealed record SubCategory(string Id, string Title, string? Description = null);
 
 public sealed record AppSettings(
     int SchemaVersion,
@@ -64,6 +66,11 @@ public sealed record AppSettings(
     public int CodeRunnerCompileTimeoutMs { get; init; } = 10000;
     public int CodeRunnerRunTimeoutMs { get; init; } = 3000;
 }
+
+public sealed record NavigationMetadata(
+    string? LearningGoal,
+    string? ActivityType,
+    IReadOnlyList<string> Tags);
 
 public sealed record AssessmentDefinition(
     int SchemaVersion,
@@ -82,6 +89,7 @@ public sealed record AssessmentDefinition(
     public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
     public GuidedProjectDefinition? GuidedProject { get; init; }
     public IReadOnlyList<RecallItemDefinition> Items { get; init; } = Array.Empty<RecallItemDefinition>();
+    public NavigationMetadata? Navigation { get; init; }
 }
 
 public sealed record RecallItemDefinition(
@@ -166,6 +174,7 @@ public sealed record QuestionDefinition(
     IReadOnlyList<MediaAsset> Media)
 {
     public CodeQuestionDefinition? CodeQuestion { get; init; }
+    public CircuitQuestionDefinition? CircuitQuestion { get; init; }
 }
 
 public sealed record ChoiceOption(
@@ -191,6 +200,7 @@ public sealed record AnswerDefinition(
     public IReadOnlyList<string> SymbolicVariables { get; init; } = Array.Empty<string>();
     public decimal? SymbolicTolerance { get; init; }
     public IReadOnlyList<string> KeyPoints { get; init; } = Array.Empty<string>();
+    public CircuitAnswerDefinition? CircuitAnswer { get; init; }
 }
 
 public sealed record MediaAsset(
@@ -219,6 +229,7 @@ public sealed record SubmittedAnswer(
 {
     public string? CodeText { get; init; }
     public string? SymbolicLatex { get; init; }
+    public SubmittedCircuitAnswer? CircuitAnswer { get; init; }
 }
 
 public sealed record AnswerEvaluation(
@@ -229,6 +240,7 @@ public sealed record AnswerEvaluation(
 {
     public CodeFeedback? CodeFeedback { get; init; }
     public SymbolicFeedback? SymbolicFeedback { get; init; }
+    public CircuitFeedback? CircuitFeedback { get; init; }
 }
 
 public sealed record CodeFeedback(
@@ -259,4 +271,113 @@ public sealed record AssessmentSummary(
     IReadOnlyList<string> SubcategoryIds,
     int QuestionCount,
     int AuthoredQuestionCount = 0,
-    int? AttemptQuestionCount = null);
+    int? AttemptQuestionCount = null)
+{
+    public IReadOnlyList<string> AreaIds { get; init; } = Array.Empty<string>();
+    public string? LearningGoal { get; init; }
+    public string? ActivityType { get; init; }
+    public IReadOnlyList<string> Tags { get; init; } = Array.Empty<string>();
+}
+
+public sealed record CircuitQuestionDefinition(
+    int SchemaVersion,
+    int CatalogVersion,
+    string InteractionMode,
+    IReadOnlyList<string> PaletteSymbolIds,
+    IReadOnlyList<string> EditableProperties,
+    CircuitDiagramDefinition Diagram);
+
+public sealed record CircuitDiagramDefinition(
+    int Width,
+    int Height,
+    IReadOnlyList<CircuitComponentInstance> Components,
+    IReadOnlyList<CircuitNodeDefinition> Nodes,
+    IReadOnlyList<CircuitWireDefinition> Wires,
+    IReadOnlyList<CircuitAnnotationDefinition> Annotations);
+
+public sealed record CircuitComponentInstance(
+    string Id,
+    string SymbolId,
+    decimal X,
+    decimal Y,
+    decimal Rotation,
+    string? Value = null,
+    string? Label = null,
+    IReadOnlyDictionary<string, string>? PropertyOverrides = null);
+
+public sealed record CircuitNodeDefinition(
+    string Id,
+    string? Label = null,
+    decimal? X = null,
+    decimal? Y = null);
+
+public sealed record CircuitWireDefinition(
+    string Id,
+    string SourceId,
+    string TargetId,
+    IReadOnlyList<CircuitPoint>? RoutePoints = null);
+
+public sealed record CircuitPoint(decimal X, decimal Y);
+
+public sealed record CircuitAnnotationDefinition(
+    string Id,
+    string Type,
+    string Text,
+    decimal X,
+    decimal Y);
+
+public sealed record CircuitAnswerDefinition(
+    CircuitTopologyDefinition? Topology,
+    IReadOnlyList<string>? SelectedTargetIds = null,
+    CircuitMeterPlacementDefinition? MeterPlacement = null,
+    IReadOnlyDictionary<string, ExpectedValueDefinition>? ExpectedValues = null);
+
+public sealed record CircuitTopologyDefinition(
+    IReadOnlyList<RequiredComponentDefinition> RequiredComponents,
+    string ConnectionMode);
+
+public sealed record RequiredComponentDefinition(
+    string SymbolId,
+    int Count);
+
+public sealed record CircuitMeterPlacementDefinition(
+    string MeterType,
+    string? TargetBranchId = null,
+    IReadOnlyList<string>? TargetNodeIds = null,
+    bool? RequirePolarity = null,
+    string? PositiveTerminalId = null,
+    string? NegativeTerminalId = null);
+
+public sealed record ExpectedValueDefinition(
+    string Mode,
+    string? ExpectedText = null,
+    decimal? NumericValue = null,
+    decimal? NumericTolerance = null,
+    string? SymbolicExpectedLatex = null,
+    string? SymbolicEquivalenceMode = null,
+    IReadOnlyList<string>? SymbolicVariables = null,
+    decimal? SymbolicTolerance = null);
+
+public sealed record SubmittedCircuitAnswer(
+    IReadOnlyList<string>? SelectedComponentIds = null,
+    IReadOnlyList<string>? SelectedNodeIds = null,
+    IReadOnlyList<string>? SelectedBranchIds = null,
+    string? MeterType = null,
+    string? MeterTargetBranchId = null,
+    IReadOnlyList<string>? MeterTargetNodeIds = null,
+    string? MeterPositiveTerminalId = null,
+    string? MeterNegativeTerminalId = null,
+    IReadOnlyDictionary<string, string>? Values = null,
+    CircuitDiagramDefinition? BuiltDiagram = null);
+
+public sealed record CircuitFeedback(
+    IReadOnlyList<string> MissingComponents,
+    IReadOnlyList<string> ExtraComponents,
+    IReadOnlyList<string> IncorrectComponentTypes,
+    IReadOnlyList<string> MissingConnections,
+    IReadOnlyList<string> ExtraConnections,
+    IReadOnlyList<string> IncorrectSelectedTargets,
+    bool? IncorrectMeterPlacement,
+    bool? IncorrectPolarity,
+    IReadOnlyDictionary<string, string> IncorrectValues,
+    IReadOnlyList<string> ExpectedHighlightTargetIds);

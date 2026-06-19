@@ -16,6 +16,7 @@ public sealed class AttemptService
     private readonly ScoringService scoringService;
     private readonly ICodeQuestionScorer codeQuestionScorer;
     private readonly ISymbolicExpressionScorer symbolicExpressionScorer;
+    private readonly ICircuitQuestionScorer circuitQuestionScorer;
 
     public AttemptService(
         IAssessmentRepository assessmentRepository,
@@ -27,7 +28,8 @@ public sealed class AttemptService
         AssessmentValidator validator,
         ScoringService scoringService,
         ICodeQuestionScorer codeQuestionScorer,
-        ISymbolicExpressionScorer symbolicExpressionScorer)
+        ISymbolicExpressionScorer symbolicExpressionScorer,
+        ICircuitQuestionScorer circuitQuestionScorer)
     {
         this.assessmentRepository = assessmentRepository;
         this.attemptRepository = attemptRepository;
@@ -39,6 +41,7 @@ public sealed class AttemptService
         this.scoringService = scoringService;
         this.codeQuestionScorer = codeQuestionScorer;
         this.symbolicExpressionScorer = symbolicExpressionScorer;
+        this.circuitQuestionScorer = circuitQuestionScorer;
     }
 
     public async Task<Attempt> StartAsync(string assessmentId, AssessmentMode? mode, CancellationToken cancellationToken = default)
@@ -115,6 +118,7 @@ public sealed class AttemptService
         {
             QuestionType.Code => await codeQuestionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
             QuestionType.SymbolicResponse => await symbolicExpressionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
+            QuestionType.Circuit => await circuitQuestionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
             _ => scoringService.ScoreAnswer(question, answerToScore)
         };
         var answers = attempt.Answers

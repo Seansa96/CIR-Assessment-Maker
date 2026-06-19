@@ -1,6 +1,6 @@
 # CIR Assessment Maker
 
-CIR Assessment Maker is a local-first quiz, test, worked-example, and grade-tracking app for personal STEM study.
+CIR Assessment Maker is a local-first quiz, test, Worked Example, Recall Drill, Guided Project, and grade-tracking app for personal STEM study.
 
 The core learning loop is:
 
@@ -8,7 +8,12 @@ The core learning loop is:
 Load assessment -> answer questions -> review feedback -> commit scores -> find weak topics -> study deliberately
 ```
 
-The app is intentionally local and file-backed. Assessments, categories, settings, attempts, area mappings, and grade logs live under `data/`.
+The app is intentionally local-first. Authored content and configuration are file-backed; durable attempts and committed grades use embedded SQLite, while actively running attempts live in memory.
+
+Developer and agent collaboration guidance:
+
+* [Shared repository instructions](AGENTS.md)
+* [Codex and Gemini coexistence report](docs/agent-coexistence.md)
 
 ## Current State
 
@@ -17,11 +22,15 @@ Implemented:
 * ASP.NET Core Web API backend
 * Astro + TypeScript frontend
 * YAML and JSON assessment loading
-* File-backed repositories
+* File-backed authored content and configuration
+* SQLite attempt and grade retention
+* In-memory active attempt sessions
 * Categories and subcategories
 * Practice and scored modes
 * Quiz and test assessments
 * Schema-only Worked Example assessments
+* Recall Drill assessments
+* Guided Project assessments
 * Resumable attempt sessions
 * Save and quit, quit early, review, delete, and bulk delete attempt flows
 * Grade log with category, area, question-type, and weak-topic analytics
@@ -82,7 +91,7 @@ backend/
   src/
     QuizApp.Api/             API endpoints and contracts
     QuizApp.Core/            Domain models, validation, scoring, services
-    QuizApp.Infrastructure/  File-backed repositories and adapters
+    QuizApp.Infrastructure/  File/SQLite repositories and external adapters
   tests/
     QuizApp.Tests/           Validation, scoring, attempts, analytics tests
 
@@ -94,9 +103,11 @@ data/
   settings.yaml              App defaults
   areas.yaml                 Manual area mappings for analytics
   categories/                Category and subcategory files
-  assessments/               Authored quiz/test/worked example files
-  attempts/                  Persisted paused/completed/abandoned attempts
-  grades/                    Grade log
+  assessments/               Authored assessment files
+  retention/quizapp.db       Durable attempts and committed grades
+  project-sessions/          Guided-project working sessions
+  attempts/                  Legacy attempt JSON migration input
+  grades/                    Legacy grade-log migration input
   samples/                   Sample media/files
 ```
 
@@ -142,6 +153,27 @@ Good for:
 * Replacing passive note review with guided action
 
 Worked examples show one step at a time. The user can revisit previous completed steps, but future steps remain locked until the current step is completed.
+
+### Recall Drill
+
+Use `recallDrill` for production-from-memory practice. Users attempt recall, reveal the expected answer, and rate the result as Easy, Correct, Needs Review, or Forgot Completely.
+
+Good for:
+
+* Formula and identity recall
+* Definitions and syntax patterns
+* Concept relationships
+* Recognizing which technique applies
+
+### Guided Project
+
+Use `guidedProject` for longer programming exercises with multiple editable files and required/bonus checks. Guided Projects are schema-authored and use the configured Piston-compatible code runner.
+
+Good for:
+
+* Multi-class or multi-file programming exercises
+* Deeper practice beyond isolated functions
+* Incremental completion with hidden checks
 
 ## Modes
 
@@ -245,6 +277,7 @@ subcategoryIds:
   - area-between-curves
 modeDefault: practice
 randomizeQuestions: true
+attemptQuestionCount:
 questionTimerSeconds:
 assessmentTimerSeconds:
 questions:
@@ -271,8 +304,11 @@ Required top-level fields:
 * `subcategoryIds`
 * `modeDefault`
 * `randomizeQuestions`
+* Optional `attemptQuestionCount` for sampling a quiz/test attempt from a larger authored question bank
 * `questions` for quiz/test
 * `workedExamples` for worked examples
+* `guidedProject` for Guided Projects
+* `items` for Recall Drills
 
 ## Markdown And LaTeX Formatting
 
@@ -442,11 +478,14 @@ Use when the final answer is a number with tolerance.
 ```yaml
 - id: q004
   type: numericResponse
-  prompt: "A particle starts from rest and accelerates at $3.0\\,m/s^2$ for $4.0\\,s$. What is its speed?"
+  prompt: |
+    A particle starts from rest and accelerates at $3.0\,m/s^2$ for $4.0\,s$.
+    What is its speed?
   answer:
-    numericValue: 12
-    numericTolerance: 0.01
-  explanation: "Use $v=v_0+at=0+3.0(4.0)=12\\,m/s$."
+    value: 12
+    tolerance: 0.01
+  explanation: |
+    Use $v=v_0+at=0+3.0(4.0)=12\,m/s$.
 ```
 
 Best for:
@@ -469,7 +508,7 @@ Expression equivalence:
   prompt: |
     Enter an expression equivalent to $(x+1)^2$.
   answer:
-    expectedLatex: "x^2+2x+1"
+    expectedLatex: 'x^2+2x+1'
     equivalenceMode: expression
     variables: [x]
     tolerance: 0.000001
@@ -484,7 +523,7 @@ Derivative equivalence for antiderivatives:
   prompt: |
     Find an antiderivative of $x^2$.
   answer:
-    expectedLatex: "\\frac{x^3}{3}+C"
+    expectedLatex: '\frac{x^3}{3}+C'
     equivalenceMode: derivative
     variables: [x]
     tolerance: 0.000001
@@ -757,10 +796,11 @@ Current intentional boundaries:
 * No authentication
 * No cloud sync
 * No public deployment workflow
-* No full database migration yet
+* SQLite retention currently covers attempts and grades; authored content remains file-backed
 * No AI grading
 * No LMS integration
 * Worked Example creation is schema-only
+* Recall Drill and Guided Project creation are schema-only
 * Code question execution requires a local/containerized Piston-compatible runner
 
 Planned improvements live in `planned-features.md`.

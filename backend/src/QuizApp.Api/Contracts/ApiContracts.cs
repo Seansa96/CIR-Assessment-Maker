@@ -19,7 +19,8 @@ public sealed record SubmitAnswerRequest(
     bool? SelfCheckCorrect,
     decimal? NumericValue,
     string? CodeText,
-    string? SymbolicLatex)
+    string? SymbolicLatex,
+    SubmittedCircuitAnswer? CircuitAnswer = null)
 {
     public SubmittedAnswer ToDomain()
     {
@@ -32,7 +33,8 @@ public sealed record SubmitAnswerRequest(
             NumericValue)
         {
             CodeText = CodeText,
-            SymbolicLatex = SymbolicLatex
+            SymbolicLatex = SymbolicLatex,
+            CircuitAnswer = CircuitAnswer
         };
     }
 }
@@ -74,7 +76,8 @@ public sealed record SaveAssessmentRequest(
     IReadOnlyList<QuestionDefinition>? Questions,
     IReadOnlyList<WorkedExampleDefinition>? WorkedExamples,
     GuidedProjectDefinition? GuidedProject,
-    IReadOnlyList<RecallItemDefinition>? Items)
+    IReadOnlyList<RecallItemDefinition>? Items,
+    NavigationMetadata? Navigation = null)
 {
     public AssessmentDefinition ToDomain()
     {
@@ -94,7 +97,8 @@ public sealed record SaveAssessmentRequest(
         {
             WorkedExamples = WorkedExamples ?? Array.Empty<WorkedExampleDefinition>(),
             GuidedProject = GuidedProject,
-            Items = Items ?? Array.Empty<RecallItemDefinition>()
+            Items = Items ?? Array.Empty<RecallItemDefinition>(),
+            Navigation = Navigation
         };
     }
 }

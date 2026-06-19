@@ -30,6 +30,7 @@ builder.Services.AddSingleton<AssessmentValidator>();
 builder.Services.AddSingleton<ScoringService>();
 builder.Services.AddSingleton<ICodeQuestionScorer, CodeQuestionScorer>();
 builder.Services.AddSingleton<ISymbolicExpressionScorer, SymbolicExpressionScorer>();
+builder.Services.AddSingleton<ICircuitQuestionScorer, CircuitQuestionScorer>();
 builder.Services.AddSingleton<ISymbolicMathEngine, CortexSymbolicMathEngine>();
 builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();
@@ -44,12 +45,17 @@ builder.Services.AddSingleton<SqliteGradeLogRepository>();
 builder.Services.AddSingleton<LegacyRetentionMigrationService>();
 builder.Services.AddSingleton<ISettingsRepository, FileSettingsRepository>();
 builder.Services.AddSingleton<ICategoryRepository, FileCategoryRepository>();
-builder.Services.AddSingleton<IAssessmentRepository, FileAssessmentRepository>();
+builder.Services.AddSingleton<FileAssessmentRepository>();
+builder.Services.AddSingleton<SqliteAssessmentCatalogImporter>();
+builder.Services.AddSingleton<HybridAssessmentRepository>();
+builder.Services.AddSingleton<IAssessmentRepository>(provider => provider.GetRequiredService<HybridAssessmentRepository>());
 builder.Services.AddSingleton<IAttemptRepository>(provider => provider.GetRequiredService<SqliteAttemptRepository>());
 builder.Services.AddSingleton<IAttemptSessionStore, InMemoryAttemptSessionStore>();
 builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequiredService<SqliteGradeLogRepository>());
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
 builder.Services.AddSingleton<IGuidedProjectSessionRepository, FileGuidedProjectSessionRepository>();
+builder.Services.AddSingleton<SqliteNavigationCatalogService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("LocalFrontend", policy =>
@@ -63,6 +69,8 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 await app.Services.GetRequiredService<LegacyRetentionMigrationService>().MigrateAsync();
+await app.Services.GetRequiredService<SqliteRetentionInitializer>().InitializeAsync();
+await app.Services.GetRequiredService<SqliteAssessmentCatalogImporter>().ImportAsync();
 
 if (app.Environment.IsDevelopment())
 {
@@ -120,6 +128,20 @@ api.MapGet("/assessments", async (string categoryId, IAssessmentRepository repos
 {
     return Results.Ok(await repository.ListByCategoryAsync(categoryId, cancellationToken));
 });
+
+api.MapGet("/navigation/catalog", async (SqliteNavigationCatalogService catalogService, CancellationToken cancellationToken) =>
+{
+    if (!catalogService.IsAvailable)
+    {
+        return Results.Json(
+            ApiError("CATALOG_UNAVAILABLE", "The SQLite assessment catalog is unavailable. Use the classic assessment picker."),
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+
+    var catalog = await catalogService.GetCatalogAsync(cancellationToken);
+    return Results.Ok(catalog);
+});
+
 
 api.MapGet("/assessments/{assessmentId}", async (string assessmentId, IAssessmentRepository repository, CancellationToken cancellationToken) =>
 {

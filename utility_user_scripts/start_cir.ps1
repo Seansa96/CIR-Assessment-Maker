@@ -6,7 +6,8 @@ $backend = Start-Process `
     -FilePath "dotnet" `
     -ArgumentList "run --project backend/src/QuizApp.Api --urls http://localhost:5000" `
     -WorkingDirectory $ProjectRoot `
-    -PassThru
+    -PassThru `
+    -WindowStyle Hidden
 
 Write-Host "Starting frontend..."
 
@@ -14,8 +15,8 @@ $frontend = Start-Process `
     -FilePath "npm" `
     -ArgumentList "run dev -- --port 4321" `
     -WorkingDirectory "$ProjectRoot\frontend" `
-    -PassThru
-
+    -PassThru `
+    -WindowStyle Hidden
 @{
     BackendPid = $backend.Id
     FrontendPid = $frontend.Id

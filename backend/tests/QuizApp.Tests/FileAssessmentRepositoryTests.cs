@@ -164,6 +164,51 @@ public sealed class FileAssessmentRepositoryTests
     }
 
     [Fact]
+    public async Task SaveAsync_round_trips_circuit_node_coordinates()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var question = TestData.MultipleChoiceQuestion("q001") with
+        {
+            Type = QuestionType.Circuit,
+            Answer = TestData.MultipleChoiceQuestion("q001").Answer with
+            {
+                CircuitAnswer = new CircuitAnswerDefinition(
+                    new CircuitTopologyDefinition(
+                        new[] { new RequiredComponentDefinition("resistor", 1) },
+                        "graphIsomorphism"))
+            },
+            CircuitQuestion = new CircuitQuestionDefinition(
+                1,
+                1,
+                "build",
+                Array.Empty<string>(),
+                Array.Empty<string>(),
+                new CircuitDiagramDefinition(
+                    900,
+                    520,
+                    Array.Empty<CircuitComponentInstance>(),
+                    new[] { new CircuitNodeDefinition("node-1", "Junction", 245.5m, 180.25m) },
+                    Array.Empty<CircuitWireDefinition>(),
+                    Array.Empty<CircuitAnnotationDefinition>()))
+        };
+        var assessment = TestData.Assessment(questions: new[] { question }) with
+        {
+            Id = "circuit-node-coordinate-quiz"
+        };
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync(assessment.Id);
+
+        Assert.NotNull(loaded);
+        var node = Assert.Single(Assert.Single(loaded.Questions).CircuitQuestion!.Diagram.Nodes);
+        Assert.Equal(245.5m, node.X);
+        Assert.Equal(180.25m, node.Y);
+    }
+
+    [Fact]
     public async Task SaveAsync_round_trips_worked_examples()
     {
         var dataRoot = CreateDataRoot();
@@ -291,6 +336,8 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("physics-speed-displacement-basics-quiz")]
     [InlineData("aops-symbolic-manipulation-worked-example")]
     [InlineData("calc2-practice-test-1-integrals")]
+    [InlineData("circuit-basics-quiz")]
+    [InlineData("circuit-builder-quiz")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(

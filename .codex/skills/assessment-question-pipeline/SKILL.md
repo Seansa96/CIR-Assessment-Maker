@@ -1,85 +1,100 @@
 ---
 name: assessment-question-pipeline
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: Create, refine, validate, or review CIR Assessment Maker quiz/test content, especially YAML/JSON assessments with symbolicResponse, multipleChoice, selectAll, freeResponse, numericResponse, or code questions. Use when Codex is asked to generate STEM assessment questions, improve answers/explanations, verify question difficulty, cite or refresh educational source context, or decide whether a question-building task needs web research, OER sources, or a larger local knowledge corpus.
 ---
 
 # Assessment Question Pipeline
 
-## Overview
+## Core Workflow
 
-[TODO: 1-2 sentences explaining what this skill enables]
+1. Inspect the local assessment schema first:
+   - `data/assessments/*.yaml`
+   - `backend/src/QuizApp.Core/Domain/AssessmentModels.cs`
+   - `backend/src/QuizApp.Core/Services/AssessmentValidator.cs`
+   - relevant existing quizzes in the same category.
 
-## Structuring This Skill
+2. Decide the source mode:
+   - Use local context only for routine formatting, schema repair, and content already present in the repo.
+   - Browse current web sources when asked to research, refresh, cite, benchmark difficulty, or generate from external curriculum standards.
+   - Prefer open educational resources and primary references over answer-farm or scraped homework sites.
+   - Do not bulk scrape by default. Recommend a corpus pipeline only when repeated refresh, large coverage, provenance tracking, or offline retrieval is required.
 
-[TODO: Choose the structure that best fits this skill's purpose. Common patterns:
+3. Draft content against the app contract:
+   - Shared top level: `schemaVersion`, `id`, `title`, `assessmentType`, `categoryId`, `subcategoryIds`, `modeDefault`, `randomizeQuestions`, and optional timers.
+   - Quiz/test: `questions`; optional `attemptQuestionCount` can sample an attempt from a larger authored bank.
+   - Worked Example: `workedExamples`.
+   - Guided Project: `guidedProject`.
+   - Recall Drill: `items`.
+   - Stable IDs: `q001`, `q002`, etc.; no duplicates.
+   - Use Markdown math delimiters for rendered text: `$...$` and `$$...$$`, not `\(...\)` or `\[...\]`.
+   - For `symbolicResponse`, use `answer.expectedLatex`, `equivalenceMode`, `tolerance`, and `variables`.
+   - Keep explanations short but instructional: method, key identity/substitution, final check, and optional related topic.
 
-**1. Workflow-Based** (best for sequential processes)
-- Works well when there are clear step-by-step procedures
-- Example: DOCX skill with "Workflow Decision Tree" -> "Reading" -> "Creating" -> "Editing"
-- Structure: ## Overview -> ## Workflow Decision Tree -> ## Step 1 -> ## Step 2...
+4. Verify every answer:
+   - Differentiate indefinite-integral answers mentally or with a CAS-style check when possible.
+   - For symbolic answers, prefer derivative equivalence for antiderivatives.
+   - For numeric answers, include a tolerance and ensure the explanation reaches the same value.
+   - For multiple choice/select-all, ensure correct choices exist and distractors are plausible but unambiguous.
 
-**2. Task-Based** (best for tool collections)
-- Works well when the skill offers different operations/capabilities
-- Example: PDF skill with "Quick Start" -> "Merge PDFs" -> "Split PDFs" -> "Extract Text"
-- Structure: ## Overview -> ## Quick Start -> ## Task Category 1 -> ## Task Category 2...
+5. Validate before finishing:
+   - Parse changed YAML/JSON.
+   - Count questions if the user specified a count.
+   - Check every question type matches the requested type.
+   - Check no old math delimiters remain in rendered fields.
+   - Run backend tests only when behavior changed; for content-only edits, parser/schema spot checks are usually enough.
 
-**3. Reference/Guidelines** (best for standards or specifications)
-- Works well for brand guidelines, coding standards, or requirements
-- Example: Brand styling with "Brand Guidelines" -> "Colors" -> "Typography" -> "Features"
-- Structure: ## Overview -> ## Guidelines -> ## Specifications -> ## Usage...
+## Web Research Rules
 
-**4. Capabilities-Based** (best for integrated systems)
-- Works well when the skill provides multiple interrelated features
-- Example: Product Management with "Core Capabilities" -> numbered capability list
-- Structure: ## Overview -> ## Core Capabilities -> ### 1. Feature -> ### 2. Feature...
+Read `references/source-policy.md` when using outside sources. In short:
 
-Patterns can be mixed and matched as needed. Most skills combine patterns (e.g., start with task-based, add workflow for complex operations).
+- Use sources to guide coverage, terminology, and difficulty; write original questions and explanations.
+- Track provenance in working notes when useful, but avoid copying large passages into assessment YAML.
+- Respect robots, terms, licenses, and attribution requirements.
+- Cite sources in the final response when web research materially shaped content.
 
-Delete this entire "Structuring This Skill" section when done - it's just guidance.]
+## Corpus Pipeline Decision
 
-## [TODO: Replace with the first main section based on chosen structure]
+Recommend a maintained data corpus instead of ad hoc browsing when at least two are true:
 
-[TODO: Add content here. See examples in existing skills:
-- Code samples for technical skills
-- Decision trees for complex workflows
-- Concrete examples with realistic user requests
-- References to scripts/templates/references as needed]
+- The same topics will be refreshed repeatedly.
+- The user wants broad coverage across many courses or standards.
+- Agents need retrieval over a local source library while offline.
+- The project needs provenance, license, and refresh dates per source.
+- The source set is stable enough to curate.
 
-## Resources (optional)
+If building the corpus, prefer:
 
-Create only the resource directories this skill actually needs. Delete this section if no resources are required.
+1. Licensed/OER source inventory with URLs, licenses, and allowed use.
+2. Fetch jobs that respect robots and rate limits.
+3. Chunking and metadata extraction by topic, source, license, date, and learning objective.
+4. Retrieval for agents, not blind generation.
+5. A scheduled refresh with change detection and human review before new content becomes active.
 
-### scripts/
-Executable code (Python/Bash/etc.) that can be run directly to perform specific operations.
+Do not use scraping to bypass site restrictions, paywalls, login walls, or licensing limits.
 
-**Examples from other skills:**
-- PDF skill: `fill_fillable_fields.py`, `extract_form_field_info.py` - utilities for PDF manipulation
-- DOCX skill: `document.py`, `utilities.py` - Python modules for document processing
+## Quality Bar
 
-**Appropriate for:** Python scripts, shell scripts, or any executable code that performs automation, data processing, or specific operations.
+Good assessment content should be:
 
-**Note:** Scripts may be executed without loading into context, but can still be read by Codex for patching or environment adjustments.
+- Schema-valid and renderable in the existing web UI.
+- Aligned to the requested course, topic, and difficulty.
+- Solvable from the prompt without hidden assumptions.
+- Clear about expected answer format.
+- Explanatory enough to teach the method, not just state the answer.
+- Free of copied textbook wording unless the license and attribution explicitly allow it.
 
-### references/
-Documentation and reference material intended to be loaded into context to inform Codex's process and thinking.
+## Useful Checks
 
-**Examples from other skills:**
-- Product management: `communication.md`, `context_building.md` - detailed workflow guides
-- BigQuery: API reference documentation and query examples
-- Finance: Schema documentation, company policies
+Use the repository validation tests for important new content:
 
-**Appropriate for:** In-depth documentation, API references, database schemas, comprehensive guides, or any detailed information that Codex should reference while working.
+```powershell
+dotnet test backend\QuizApp.sln --no-restore
+```
 
-### assets/
-Files not intended to be loaded into context, but rather used within the output Codex produces.
+For content-only work, add the assessment ID to the repository content-validation theory when appropriate and run the LaTeX scan from `docs/assessment-yaml-latex.md`.
 
-**Examples from other skills:**
-- Brand styling: PowerPoint template files (.pptx), logo files
-- Frontend builder: HTML/React boilerplate project directories
-- Typography: Font files (.ttf, .woff2)
+Search for legacy math delimiters:
 
-**Appropriate for:** Templates, boilerplate code, document templates, images, icons, fonts, or any files meant to be copied or used in the final output.
-
----
-
-**Not every skill requires all three types of resources.**
+```powershell
+rg -n '\\\\\\(|\\\\\\)|\\\\\\[|\\\\\\]' data/assessments
+```

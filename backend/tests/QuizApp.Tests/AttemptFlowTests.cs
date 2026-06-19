@@ -474,7 +474,8 @@ public sealed class AttemptFlowTests
             new AssessmentValidator(),
             new ScoringService(),
             new FakeCodeQuestionScorer(),
-            new FakeSymbolicExpressionScorer());
+            new FakeSymbolicExpressionScorer(),
+            new FakeCircuitQuestionScorer());
     }
 }
 
@@ -916,6 +917,24 @@ internal sealed class FakeSymbolicExpressionScorer : ISymbolicExpressionScorer
                 question.Answer.SymbolicExpectedLatex ?? question.Answer.ExpectedLatex,
                 question.Answer.SymbolicEquivalenceMode ?? question.Answer.EquivalenceMode ?? "expression",
                 "Expressions matched.")
+        });
+    }
+}
+
+internal sealed class FakeCircuitQuestionScorer : ICircuitQuestionScorer
+{
+    public Task<AnswerEvaluation> ScoreAsync(
+        QuestionDefinition question,
+        SubmittedAnswer submittedAnswer,
+        AppSettings settings,
+        CancellationToken cancellationToken = default)
+    {
+        return Task.FromResult(new AnswerEvaluation(question.Id, true, question.Explanation, "Circuit matching requirements")
+        {
+            CircuitFeedback = new CircuitFeedback(
+                Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
+                Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>(),
+                null, null, new Dictionary<string, string>(), Array.Empty<string>())
         });
     }
 }

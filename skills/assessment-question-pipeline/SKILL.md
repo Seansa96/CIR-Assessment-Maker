@@ -19,8 +19,12 @@ description: Create, refine, validate, or review CIR Assessment Maker quiz/test 
    - Prefer open educational resources and primary references over answer-farm or scraped homework sites.
    - Do not bulk scrape by default. Recommend a corpus pipeline only when repeated refresh, large coverage, provenance tracking, or offline retrieval is required.
 
-3. Draft questions against the app contract:
-   - Top level: `schemaVersion`, `id`, `title`, `assessmentType`, `categoryId`, `subcategoryIds`, `modeDefault`, `randomizeQuestions`, timers, `questions`.
+3. Draft content against the app contract:
+   - Shared top level: `schemaVersion`, `id`, `title`, `assessmentType`, `categoryId`, `subcategoryIds`, `modeDefault`, `randomizeQuestions`, and optional timers.
+   - Quiz/test: `questions`; optional `attemptQuestionCount` can sample an attempt from a larger authored bank.
+   - Worked Example: `workedExamples`.
+   - Guided Project: `guidedProject`.
+   - Recall Drill: `items`.
    - Stable IDs: `q001`, `q002`, etc.; no duplicates.
    - Use Markdown math delimiters for rendered text: `$...$` and `$$...$$`, not `\(...\)` or `\[...\]`.
    - For `symbolicResponse`, use `answer.expectedLatex`, `equivalenceMode`, `tolerance`, and `variables`.
@@ -81,13 +85,15 @@ Good assessment content should be:
 
 ## Useful Checks
 
-Use quick local checks such as:
+Use the repository validation tests for important new content:
 
 ```powershell
-node -e "const fs=require('fs'); const yaml=require('./frontend/node_modules/js-yaml'); const doc=yaml.load(fs.readFileSync('data/assessments/example.yaml','utf8')); console.log(doc.id, doc.questions.length)"
+dotnet test backend\QuizApp.sln --no-restore
 ```
 
-Search for bad math delimiters:
+For content-only work, add the assessment ID to the repository content-validation theory when appropriate and run the LaTeX scan from `docs/assessment-yaml-latex.md`.
+
+Search for legacy math delimiters:
 
 ```powershell
 rg -n '\\\\\\(|\\\\\\)|\\\\\\[|\\\\\\]' data/assessments

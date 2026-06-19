@@ -37,6 +37,14 @@ internal static class FileFormat
         return YamlDeserializer.Deserialize<T>(content);
     }
 
+    public static T? ReadFromString<T>(string content, string extension = ".yaml")
+    {
+        if (extension.Equals(".json", StringComparison.OrdinalIgnoreCase))
+            return JsonSerializer.Deserialize<T>(content, JsonOptions);
+        return YamlDeserializer.Deserialize<T>(content);
+    }
+
+
     public static async Task WriteJsonAsync<T>(string path, T value, CancellationToken cancellationToken = default)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);

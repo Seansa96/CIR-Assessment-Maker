@@ -32,7 +32,8 @@ public sealed class FileAreaRepository : IAreaRepository
                 area.Id!.Trim(),
                 string.IsNullOrWhiteSpace(area.Title) ? area.Id!.Trim() : area.Title!.Trim(),
                 area.CategoryIds?.ToList() ?? new List<string>(),
-                area.SubcategoryIds?.ToList() ?? new List<string>()))
+                area.SubcategoryIds?.ToList() ?? new List<string>(),
+                area.Description))
             .OrderBy(area => area.Title)
             .ToList();
     }
@@ -48,6 +49,7 @@ internal sealed class AreaItemFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
+    public string? Description { get; set; }
     public List<string>? CategoryIds { get; set; }
     public List<string>? SubcategoryIds { get; set; }
 }

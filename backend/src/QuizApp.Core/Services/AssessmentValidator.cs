@@ -14,6 +14,7 @@ public sealed class AssessmentValidator
         RequireText(assessment.Id, "MISSING_ID", "Assessment id is required.", issues);
         RequireText(assessment.Title, "MISSING_TITLE", "Assessment title is required.", issues);
         RequireText(assessment.CategoryId, "MISSING_CATEGORY_ID", "Category id is required.", issues);
+        ValidateNavigation(assessment.Navigation, issues);
 
         if (assessment.SchemaVersion <= 0)
         {
@@ -83,6 +84,44 @@ public sealed class AssessmentValidator
         }
 
         return new AssessmentValidationResult(issues);
+    }
+
+    private static void ValidateNavigation(NavigationMetadata? navigation, List<ValidationIssue> issues)
+    {
+        if (navigation is null)
+        {
+            return;
+        }
+
+        var goal = navigation.LearningGoal?.Trim();
+        var activity = navigation.ActivityType?.Trim();
+        if (string.IsNullOrWhiteSpace(goal) && string.IsNullOrWhiteSpace(activity))
+        {
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(goal) || string.IsNullOrWhiteSpace(activity))
+        {
+            issues.Add(new ValidationIssue(
+                "INVALID_NAVIGATION_METADATA",
+                "navigation.learningGoal and navigation.activityType must either both be set or both be omitted."));
+            return;
+        }
+
+        var knownGoal = LearningGoals.All.FirstOrDefault(candidate =>
+            string.Equals(candidate.Id, goal, StringComparison.OrdinalIgnoreCase));
+        if (string.IsNullOrWhiteSpace(knownGoal.Id))
+        {
+            issues.Add(new ValidationIssue("INVALID_LEARNING_GOAL", $"Unknown navigation learning goal '{goal}'."));
+            return;
+        }
+
+        if (!knownGoal.ActivityTypes.Contains(activity, StringComparer.OrdinalIgnoreCase))
+        {
+            issues.Add(new ValidationIssue(
+                "INVALID_ACTIVITY_TYPE",
+                $"Activity type '{activity}' is not valid for learning goal '{goal}'."));
+        }
     }
 
     private static void ValidateRecallDrill(AssessmentDefinition assessment, List<ValidationIssue> issues)
@@ -225,6 +264,11 @@ public sealed class AssessmentValidator
         if (question.Type is QuestionType.SymbolicResponse)
         {
             ValidateSymbolicQuestion(question, issues);
+        }
+
+        if (question.Type is QuestionType.Circuit)
+        {
+            ValidateCircuitQuestion(question, issues);
         }
     }
 
@@ -453,6 +497,213 @@ public sealed class AssessmentValidator
         if (tolerance is null or < 0)
         {
             issues.Add(new ValidationIssue("INVALID_SYMBOLIC_TOLERANCE", "Symbolic response questions must include a non-negative answer.tolerance.", question.Id));
+        }
+    }
+
+    private static void ValidateCircuitQuestion(QuestionDefinition question, List<ValidationIssue> issues)
+    {
+        var circ = question.CircuitQuestion;
+        if (circ is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_CIRCUIT_DEFINITION", "Circuit questions must include circuit question definitions.", question.Id));
+            return;
+        }
+
+        if (circ.SchemaVersion <= 0)
+        {
+            issues.Add(new ValidationIssue("INVALID_CIRCUIT_SCHEMA_VERSION", "Circuit schemaVersion must be greater than zero.", question.Id));
+        }
+
+        var allowedModes = new[] { "select", "meterPlacement", "valueEntry", "build" };
+        if (string.IsNullOrWhiteSpace(circ.InteractionMode) || !allowedModes.Contains(circ.InteractionMode))
+        {
+            issues.Add(new ValidationIssue("INVALID_CIRCUIT_INTERACTION_MODE", "Circuit interactionMode must be select, meterPlacement, valueEntry, or build.", question.Id));
+        }
+
+        var diagram = circ.Diagram;
+        if (diagram is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_CIRCUIT_DIAGRAM", "Circuit questions must include diagram definitions.", question.Id));
+            return;
+        }
+
+        if (diagram.Components.Count > 100)
+        {
+            issues.Add(new ValidationIssue("CIRCUIT_TOO_MANY_COMPONENTS", "Circuit diagram cannot exceed 100 components.", question.Id));
+        }
+        if (diagram.Wires.Count > 250)
+        {
+            issues.Add(new ValidationIssue("CIRCUIT_TOO_MANY_WIRES", "Circuit diagram cannot exceed 250 wires.", question.Id));
+        }
+        if (diagram.Nodes.Count > 200)
+        {
+            issues.Add(new ValidationIssue("CIRCUIT_TOO_MANY_NODES", "Circuit diagram cannot exceed 200 nodes.", question.Id));
+        }
+
+        var compIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var comp in diagram.Components)
+        {
+            if (string.IsNullOrWhiteSpace(comp.Id))
+            {
+                issues.Add(new ValidationIssue("MISSING_COMPONENT_ID", "Component must have a stable id.", question.Id));
+            }
+            else if (!compIds.Add(comp.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_COMPONENT_ID", $"Duplicate component id '{comp.Id}'.", question.Id));
+            }
+
+            if (string.IsNullOrWhiteSpace(comp.SymbolId))
+            {
+                issues.Add(new ValidationIssue("MISSING_COMPONENT_SYMBOL_ID", $"Component '{comp.Id}' must have a symbol id.", question.Id));
+            }
+        }
+
+        var nodeIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var node in diagram.Nodes)
+        {
+            if (string.IsNullOrWhiteSpace(node.Id))
+            {
+                issues.Add(new ValidationIssue("MISSING_NODE_ID", "Node must have a stable id.", question.Id));
+            }
+            else if (!nodeIds.Add(node.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_NODE_ID", $"Duplicate node id '{node.Id}'.", question.Id));
+            }
+        }
+
+        var wireIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var wire in diagram.Wires)
+        {
+            if (string.IsNullOrWhiteSpace(wire.Id))
+            {
+                issues.Add(new ValidationIssue("MISSING_WIRE_ID", "Wire must have a stable id.", question.Id));
+            }
+            else if (!wireIds.Add(wire.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_WIRE_ID", $"Duplicate wire id '{wire.Id}'.", question.Id));
+            }
+
+            if (string.IsNullOrWhiteSpace(wire.SourceId) || string.IsNullOrWhiteSpace(wire.TargetId))
+            {
+                issues.Add(new ValidationIssue("INVALID_WIRE_ENDPOINT", $"Wire '{wire.Id}' must have sourceId and targetId.", question.Id));
+            }
+            else if (string.Equals(wire.SourceId, wire.TargetId, StringComparison.OrdinalIgnoreCase))
+            {
+                issues.Add(new ValidationIssue("ILLEGAL_SELF_LOOP_WIRE", $"Wire '{wire.Id}' cannot connect a terminal to itself.", question.Id));
+            }
+        }
+
+        var ans = question.Answer?.CircuitAnswer;
+        if (ans is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_CIRCUIT_ANSWER", "Circuit questions must define answer.circuit properties.", question.Id));
+            return;
+        }
+
+        if (string.Equals(circ.InteractionMode, "select", StringComparison.OrdinalIgnoreCase))
+        {
+            if (ans.SelectedTargetIds is null || ans.SelectedTargetIds.Count == 0)
+            {
+                issues.Add(new ValidationIssue("MISSING_CIRCUIT_EXPECTED_TARGETS", "Select interaction mode requires answer.circuit.selectedTargetIds.", question.Id));
+            }
+        }
+        else if (string.Equals(circ.InteractionMode, "meterPlacement", StringComparison.OrdinalIgnoreCase))
+        {
+            var mp = ans.MeterPlacement;
+            if (mp is null)
+            {
+                issues.Add(new ValidationIssue("MISSING_CIRCUIT_METER_PLACEMENT", "meterPlacement interaction mode requires answer.circuit.meterPlacement.", question.Id));
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(mp.MeterType) || (!string.Equals(mp.MeterType, "ammeter", StringComparison.OrdinalIgnoreCase) && !string.Equals(mp.MeterType, "voltmeter", StringComparison.OrdinalIgnoreCase)))
+                {
+                    issues.Add(new ValidationIssue("INVALID_METER_TYPE", "Meter placement type must be ammeter or voltmeter.", question.Id));
+                }
+
+                if (string.Equals(mp.MeterType, "ammeter", StringComparison.OrdinalIgnoreCase) && string.IsNullOrWhiteSpace(mp.TargetBranchId))
+                {
+                    issues.Add(new ValidationIssue("MISSING_METER_TARGET_BRANCH", "Ammeter requires a target branch/wire ID.", question.Id));
+                }
+
+                if (string.Equals(mp.MeterType, "voltmeter", StringComparison.OrdinalIgnoreCase) && (mp.TargetNodeIds is null || mp.TargetNodeIds.Count != 2))
+                {
+                    issues.Add(new ValidationIssue("INVALID_METER_TARGET_NODES", "Voltmeter requires exactly two target node IDs.", question.Id));
+                }
+            }
+        }
+        else if (string.Equals(circ.InteractionMode, "valueEntry", StringComparison.OrdinalIgnoreCase))
+        {
+            if (ans.ExpectedValues is null || ans.ExpectedValues.Count == 0)
+            {
+                issues.Add(new ValidationIssue("MISSING_CIRCUIT_EXPECTED_VALUES", "valueEntry interaction mode requires answer.circuit.expectedValues.", question.Id));
+            }
+            else
+            {
+                foreach (var kv in ans.ExpectedValues)
+                {
+                    var ev = kv.Value;
+                    if (string.IsNullOrWhiteSpace(ev.Mode) || (!string.Equals(ev.Mode, "text", StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(ev.Mode, "numeric", StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(ev.Mode, "symbolic", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        issues.Add(new ValidationIssue("INVALID_VALUE_MODE", $"Value entry '{kv.Key}' has invalid mode. Must be text, numeric, or symbolic.", question.Id));
+                    }
+
+                    if (string.Equals(ev.Mode, "numeric", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (ev.NumericValue is null)
+                        {
+                            issues.Add(new ValidationIssue("MISSING_NUMERIC_VALUE", $"Value entry '{kv.Key}' requires numericValue.", question.Id));
+                        }
+                        if (ev.NumericTolerance is null or < 0)
+                        {
+                            issues.Add(new ValidationIssue("INVALID_NUMERIC_TOLERANCE", $"Value entry '{kv.Key}' requires a non-negative numericTolerance.", question.Id));
+                        }
+                    }
+
+                    if (string.Equals(ev.Mode, "symbolic", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (string.IsNullOrWhiteSpace(ev.SymbolicExpectedLatex))
+                        {
+                            issues.Add(new ValidationIssue("MISSING_SYMBOLIC_EXPECTED", $"Value entry '{kv.Key}' requires symbolicExpectedLatex.", question.Id));
+                        }
+                        if (ev.SymbolicTolerance is null or < 0)
+                        {
+                            issues.Add(new ValidationIssue("INVALID_SYMBOLIC_TOLERANCE", $"Value entry '{kv.Key}' requires a non-negative symbolicTolerance.", question.Id));
+                        }
+                    }
+                }
+            }
+        }
+        else if (string.Equals(circ.InteractionMode, "build", StringComparison.OrdinalIgnoreCase))
+        {
+            var topo = ans.Topology;
+            if (topo is null)
+            {
+                issues.Add(new ValidationIssue("MISSING_CIRCUIT_TOPOLOGY", "build interaction mode requires answer.circuit.topology.", question.Id));
+            }
+            else
+            {
+                if (topo.RequiredComponents is null || topo.RequiredComponents.Count == 0)
+                {
+                    issues.Add(new ValidationIssue("MISSING_REQUIRED_COMPONENTS", "Topology must specify requiredComponents.", question.Id));
+                }
+                else
+                {
+                    foreach (var rc in topo.RequiredComponents)
+                    {
+                        if (string.IsNullOrWhiteSpace(rc.SymbolId))
+                        {
+                            issues.Add(new ValidationIssue("MISSING_REQUIRED_COMPONENT_SYMBOL", "Required component must specify symbolId.", question.Id));
+                        }
+                        if (rc.Count <= 0)
+                        {
+                            issues.Add(new ValidationIssue("INVALID_REQUIRED_COMPONENT_COUNT", "Required component count must be greater than zero.", question.Id));
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -54,7 +54,8 @@ public sealed class ScoringService
                 showFeedback ? question.Explanation : null,
                 showFeedback ? DescribeExpectedAnswer(question) : null,
                 showFeedback ? answer?.Evaluation?.CodeFeedback : null,
-                showFeedback ? answer?.Evaluation?.SymbolicFeedback : null)
+                showFeedback ? answer?.Evaluation?.SymbolicFeedback : null,
+                showFeedback ? answer?.Evaluation?.CircuitFeedback : null)
             {
                 Title = item.Step?.Title,
                 Instruction = item.Step?.Instruction,
@@ -177,6 +178,7 @@ public sealed class ScoringService
             QuestionType.NumericResponse => question.Answer.NumericValue?.ToString(),
             QuestionType.Code => "All code tests pass",
             QuestionType.SymbolicResponse => question.Answer.SymbolicExpectedLatex ?? question.Answer.ExpectedLatex,
+            QuestionType.Circuit => "Circuit matching requirements",
             _ => null
         };
     }

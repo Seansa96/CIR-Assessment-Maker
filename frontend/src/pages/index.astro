@@ -27,45 +27,109 @@ import "../styles/global.css";
       </nav>
 
       <section class="view active" id="view-load" aria-labelledby="load-title">
-        <section class="switcher" aria-labelledby="load-title">
-          <div class="switcher-heading">
-            <div>
-              <h2 id="load-title">Load Assessment</h2>
-              <p class="quiet-hint">Switch assessments whenever you need a different path.</p>
-            </div>
+        <!-- Progressive Assessment Navigator -->
+        <section class="nav-explorer" id="nav-explorer" aria-label="Assessment Navigator">
+          <div class="nav-header">
+            <h2 id="load-title">Load Assessment</h2>
             <div class="attempt-chip" id="active-attempt-chip">No active attempt</div>
           </div>
+          <p class="quiet-hint">Switch assessments whenever you need a different path.</p>
 
-          <div class="switcher-controls">
-            <div class="field compact">
-              <label for="category-select">Category</label>
-              <select id="category-select"></select>
+          <!-- Breadcrumb path -->
+          <nav class="nav-breadcrumb" id="nav-breadcrumb" aria-label="Navigator path" hidden></nav>
+
+          <!-- Step stages (each revealed after prior selection) -->
+          <div class="nav-stages" id="nav-stages">
+            <!-- Stage 0: Subject -->
+            <div class="nav-stage active" id="nav-stage-subject" data-stage="subject">
+              <h3 class="nav-stage-label">Subject</h3>
+              <div class="nav-tile-grid" id="nav-subject-tiles" role="listbox" aria-label="Select subject"></div>
             </div>
-            <div class="field compact wide">
-              <label for="assessment-select">Assessment</label>
-              <select id="assessment-select"></select>
+            <!-- Stage 1: Area -->
+            <div class="nav-stage" id="nav-stage-area" data-stage="area" hidden>
+              <h3 class="nav-stage-label">Area</h3>
+              <div class="nav-tile-grid" id="nav-area-tiles" role="listbox" aria-label="Select area"></div>
             </div>
+            <!-- Stage 2: Topic -->
+            <div class="nav-stage" id="nav-stage-topic" data-stage="topic" hidden>
+              <h3 class="nav-stage-label">Topic</h3>
+              <div class="nav-tile-grid" id="nav-topic-tiles" role="listbox" aria-label="Select topic"></div>
+            </div>
+            <!-- Stage 3: Learning Goal -->
+            <div class="nav-stage" id="nav-stage-goal" data-stage="goal" hidden>
+              <h3 class="nav-stage-label">Learning Goal</h3>
+              <div class="nav-tile-grid" id="nav-goal-tiles" role="listbox" aria-label="Select learning goal"></div>
+            </div>
+            <!-- Stage 4: Activity Type -->
+            <div class="nav-stage" id="nav-stage-activity" data-stage="activity" hidden>
+              <h3 class="nav-stage-label">Activity Type</h3>
+              <div class="nav-tile-grid" id="nav-activity-tiles" role="listbox" aria-label="Select activity type"></div>
+            </div>
+            <!-- Stage 5: Assessment list -->
+            <div class="nav-stage" id="nav-stage-assessments" data-stage="assessments" hidden>
+              <h3 class="nav-stage-label">Assessments</h3>
+              <div id="nav-assessment-list" class="nav-assessment-list" role="listbox" aria-label="Select assessment"></div>
+            </div>
+          </div>
+
+          <!-- Mode + Start -->
+          <div class="nav-actions" id="nav-actions" hidden>
             <fieldset class="mode-control compact">
               <legend>Mode</legend>
               <div class="mode-segments">
                 <label class="mode-segment">
-                  <input type="radio" name="mode" value="practice" checked />
+                  <input type="radio" name="nav-mode" value="practice" checked />
                   <span>Practice</span>
                 </label>
                 <label class="mode-segment">
-                  <input type="radio" name="mode" value="scored" />
+                  <input type="radio" name="nav-mode" value="scored" />
                   <span>Scored</span>
                 </label>
               </div>
             </fieldset>
-            <button class="primary action-button" id="start-attempt">Start Selected</button>
+            <button class="primary action-button" id="nav-start-attempt">Start Selected</button>
           </div>
+
+          <!-- Error fallback message -->
+          <p class="nav-error" id="nav-error" hidden></p>
         </section>
+
+        <!-- Classic picker (fallback / legacy) -->
+        <details class="classic-picker" id="classic-picker">
+          <summary>Classic assessment picker</summary>
+          <section class="switcher" aria-labelledby="classic-picker-label">
+            <div class="switcher-controls">
+              <div class="field compact">
+                <label for="category-select">Category</label>
+                <select id="category-select"></select>
+              </div>
+              <div class="field compact wide">
+                <label for="assessment-select">Assessment</label>
+                <select id="assessment-select"></select>
+              </div>
+              <fieldset class="mode-control compact">
+                <legend>Mode</legend>
+                <div class="mode-segments">
+                  <label class="mode-segment">
+                    <input type="radio" name="mode" value="practice" checked />
+                    <span>Practice</span>
+                  </label>
+                  <label class="mode-segment">
+                    <input type="radio" name="mode" value="scored" />
+                    <span>Scored</span>
+                  </label>
+                </div>
+              </fieldset>
+              <button class="primary action-button" id="start-attempt">Start Selected</button>
+            </div>
+          </section>
+        </details>
 
         <section class="workspace" id="attempt-panel" aria-live="polite">
           <div id="attempt-content" class="empty-state">Choose an assessment to begin.</div>
         </section>
       </section>
+
 
       <section class="view" id="view-create" aria-labelledby="create-title">
         <section class="panel">
@@ -215,11 +279,47 @@ import "../styles/global.css";
       import { indentWithTab } from "@codemirror/commands";
       import { python } from "@codemirror/lang-python";
       import { cpp } from "@codemirror/lang-cpp";
-      import "mathlive";
+      import { CircuitCanvas } from "../scripts/CircuitCanvas";
+      import type { CircuitDiagram, CircuitComponent, CircuitNode, CircuitWire } from "../scripts/CircuitCanvas";
 
       type AssessmentMode = "practice" | "scored";
       type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill";
-      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse";
+      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit";
+
+      interface CircuitQuestionDefinition {
+        schemaVersion: number;
+        catalogVersion: number;
+        interactionMode: string;
+        paletteSymbolIds: string[];
+        editableProperties: string[];
+        diagram: CircuitDiagram;
+      }
+
+      interface SubmittedCircuitAnswer {
+        selectedComponentIds?: string[] | null;
+        selectedNodeIds?: string[] | null;
+        selectedBranchIds?: string[] | null;
+        meterType?: string | null;
+        meterTargetBranchId?: string | null;
+        meterTargetNodeIds?: string[] | null;
+        meterPositiveTerminalId?: string | null;
+        meterNegativeTerminalId?: string | null;
+        values?: Record<string, string> | null;
+        builtDiagram?: CircuitDiagram | null;
+      }
+
+      interface CircuitFeedback {
+        missingComponents: string[];
+        extraComponents: string[];
+        incorrectComponentTypes: string[];
+        missingConnections: string[];
+        extraConnections: string[];
+        incorrectSelectedTargets: string[];
+        incorrectMeterPlacement: boolean | null;
+        incorrectPolarity: boolean | null;
+        incorrectValues: Record<string, string>;
+        expectedHighlightTargetIds: string[];
+      }
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
       type RecallItemType = "typed" | "symbolic" | "flashcard" | "cloze";
       type RecallRating = "unknown" | "easy" | "correct" | "needsReview" | "forgotCompletely";
@@ -241,12 +341,14 @@ import "../styles/global.css";
       interface Category {
         id: string;
         title: string;
+        description?: string | null;
         subcategories: SubCategory[];
       }
 
       interface SubCategory {
         id: string;
         title: string;
+        description?: string | null;
       }
 
       interface AssessmentSummary {
@@ -256,6 +358,50 @@ import "../styles/global.css";
         questionCount: number;
         authoredQuestionCount?: number;
         attemptQuestionCount?: number | null;
+      }
+
+      interface NavigationCatalog {
+        subjects: NavigationSubject[];
+        areas: NavigationArea[];
+        topics: NavigationTopic[];
+        goals: NavigationGoal[];
+        assessments: NavigationAssessment[];
+      }
+
+      interface NavigationSubject {
+        id: string;
+        title: string;
+        description?: string | null;
+      }
+
+      interface NavigationArea {
+        id: string;
+        title: string;
+        subjectIds: string[];
+        topicIds: string[];
+        description?: string | null;
+      }
+
+      interface NavigationTopic {
+        id: string;
+        title: string;
+        subjectId: string;
+        description?: string | null;
+      }
+
+      interface NavigationGoal {
+        id: string;
+        label: string;
+        activityTypes: string[];
+      }
+
+      interface NavigationAssessment extends AssessmentSummary {
+        subjectId: string;
+        areaIds: string[];
+        topicIds: string[];
+        learningGoal: string;
+        activityType: string;
+        tags: string[];
       }
 
       interface MediaAsset {
@@ -290,12 +436,14 @@ import "../styles/global.css";
           tolerance?: number | null;
           media?: MediaAsset[];
           keyPoints?: string[];
+          circuitAnswer?: any;
         };
         language?: "python" | "cpp";
         functionName?: string;
         starterCode?: string;
         tests?: CodeQuestionTest[];
         explanation?: string | null;
+        circuitQuestion?: CircuitQuestionDefinition;
       }
 
       interface CodeQuestionTest {
@@ -425,6 +573,7 @@ import "../styles/global.css";
         numericValue: number | null;
         codeText: string | null;
         symbolicLatex: string | null;
+        circuitAnswer?: SubmittedCircuitAnswer | null;
       }
 
       interface CodeFeedback {
@@ -461,6 +610,7 @@ import "../styles/global.css";
         expectedAnswer: string | null;
         codeFeedback: CodeFeedback | null;
         symbolicFeedback: SymbolicFeedback | null;
+        circuitFeedback?: CircuitFeedback | null;
         title: string | null;
         instruction: string | null;
         hint: string | null;
@@ -612,6 +762,8 @@ import "../styles/global.css";
         startedAt: string;
         completedAt: string | null;
         lastActivityAt: string | null;
+        learningGoal?: string | null;
+        activityType?: string | null;
       }
 
       interface GradeAnalyticsSummary {
@@ -635,6 +787,8 @@ import "../styles/global.css";
       const IS_DEV = import.meta.env.DEV;
       let currentCodeEditor: EditorView | null = null;
       let currentProjectEditor: EditorView | null = null;
+      let activeCircuitCanvas: CircuitCanvas | null = null;
+      let resultCircuitCanvases: CircuitCanvas[] = [];
       const markdownProcessor = unified()
         .use(remarkParse)
         .use(remarkMath)
@@ -668,6 +822,15 @@ import "../styles/global.css";
         selectedAttemptIds: Set<string>;
         questionNavigatorOpen: boolean;
         draftQuestions: Question[];
+        navigationCatalog: NavigationCatalog | null;
+        navigationSelection: {
+          subjectId: string;
+          areaId: string;
+          topicId: string;
+          goalId: string;
+          activityType: string;
+          assessmentId: string;
+        };
       } = {
         settings: null,
         categories: [],
@@ -693,7 +856,16 @@ import "../styles/global.css";
         historySort: { key: "lastActivityAt", direction: "desc" },
         selectedAttemptIds: new Set(),
         questionNavigatorOpen: false,
-        draftQuestions: []
+        draftQuestions: [],
+        navigationCatalog: null,
+        navigationSelection: {
+          subjectId: "",
+          areaId: "",
+          topicId: "",
+          goalId: "",
+          activityType: "",
+          assessmentId: ""
+        }
       };
 
       const apiStatus = document.querySelector<HTMLDivElement>("#api-status")!;
@@ -713,7 +885,11 @@ import "../styles/global.css";
       const settingsStatus = document.querySelector<HTMLParagraphElement>("#settings-status")!;
       const gradeSummary = document.querySelector<HTMLDivElement>("#grade-summary")!;
       const attemptHistory = document.querySelector<HTMLDivElement>("#attempt-history")!;
-      const modeInputs = Array.from(document.querySelectorAll<HTMLInputElement>("input[name='mode']"));
+      const modeInputs = Array.from(document.querySelectorAll<HTMLInputElement>("input[name='mode'], input[name='nav-mode']"));
+      const classicPicker = document.querySelector<HTMLDetailsElement>("#classic-picker")!;
+      const navError = document.querySelector<HTMLParagraphElement>("#nav-error")!;
+      const navActions = document.querySelector<HTMLDivElement>("#nav-actions")!;
+      const navBreadcrumb = document.querySelector<HTMLElement>("#nav-breadcrumb")!;
 
       document.querySelectorAll<HTMLButtonElement>(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -723,6 +899,7 @@ import "../styles/global.css";
 
       categorySelect.addEventListener("change", () => loadAssessments(categorySelect.value));
       document.querySelector<HTMLButtonElement>("#start-attempt")!.addEventListener("click", startAttempt);
+      document.querySelector<HTMLButtonElement>("#nav-start-attempt")!.addEventListener("click", startNavigationAttempt);
       document.querySelector<HTMLButtonElement>("#refresh-grades")!.addEventListener("click", loadGrades);
       settingsForm.addEventListener("submit", saveSettings);
       document.addEventListener("keydown", handleAnswerShortcut);
@@ -762,6 +939,7 @@ import "../styles/global.css";
           renderCreateCategories();
           addDraftQuestion();
           await loadAssessments(categorySelect.value);
+          await initializeNavigation();
           await loadGrades();
           setApiStatus("Connected", "ok");
         } catch (error) {
@@ -781,14 +959,255 @@ import "../styles/global.css";
         renderAssessmentOptions();
       }
 
+      async function initializeNavigation() {
+        try {
+          const catalog = await api<NavigationCatalog>("/navigation/catalog");
+          if (!catalog.assessments.length) throw new Error("The assessment catalog is empty.");
+          state.navigationCatalog = catalog;
+          navError.hidden = true;
+          renderNavigation();
+        } catch (error) {
+          state.navigationCatalog = null;
+          navError.textContent = `Guided navigation is unavailable. The classic picker remains ready. ${readableError(error)}`;
+          navError.hidden = false;
+          classicPicker.open = true;
+        }
+      }
+
+      function renderNavigation() {
+        const catalog = state.navigationCatalog;
+        if (!catalog) return;
+        const selection = state.navigationSelection;
+        const subjects = catalog.subjects
+          .map((subject) => ({
+            subject,
+            count: catalog.assessments.filter((assessment) => assessment.subjectId === subject.id).length
+          }))
+          .filter((entry) => entry.count > 0);
+
+        renderNavigationTiles("nav-subject-tiles", subjects.map(({ subject, count }) => ({
+          id: subject.id,
+          label: subject.title,
+          description: subject.description,
+          count,
+          selected: selection.subjectId === subject.id,
+          disabled: false
+        })), (id) => selectNavigationStage("subject", id));
+
+        const subjectAssessments = catalog.assessments.filter((assessment) => assessment.subjectId === selection.subjectId);
+        const areas = catalog.areas
+          .filter((area) => area.subjectIds.includes(selection.subjectId))
+          .map((area) => ({
+            area,
+            count: subjectAssessments.filter((assessment) => assessment.areaIds.includes(area.id)).length
+          }))
+          .filter((entry) => entry.count > 0);
+        renderNavigationTiles("nav-area-tiles", areas.map(({ area, count }) => ({
+          id: area.id,
+          label: area.title,
+          description: area.description,
+          count,
+          selected: selection.areaId === area.id,
+          disabled: false
+        })), (id) => selectNavigationStage("area", id));
+
+        const areaAssessments = subjectAssessments.filter((assessment) => assessment.areaIds.includes(selection.areaId));
+        const availableTopicIds = new Set(areaAssessments.flatMap((assessment) => assessment.topicIds));
+        const topics = catalog.topics
+          .filter((topic) => topic.subjectId === selection.subjectId && availableTopicIds.has(topic.id))
+          .map((topic) => ({
+            topic,
+            count: areaAssessments.filter((assessment) => assessment.topicIds.includes(topic.id)).length
+          }));
+        renderNavigationTiles("nav-topic-tiles", topics.map(({ topic, count }) => ({
+          id: topic.id,
+          label: topic.title,
+          description: topic.description,
+          count,
+          selected: selection.topicId === topic.id,
+          disabled: false
+        })), (id) => selectNavigationStage("topic", id));
+
+        const topicAssessments = areaAssessments.filter((assessment) => assessment.topicIds.includes(selection.topicId));
+        renderNavigationTiles("nav-goal-tiles", catalog.goals.map((goal) => {
+          const count = topicAssessments.filter((assessment) => assessment.learningGoal === goal.id).length;
+          return {
+            id: goal.id,
+            label: goal.label,
+            count,
+            selected: selection.goalId === goal.id,
+            disabled: count === 0
+          };
+        }), (id) => selectNavigationStage("goal", id));
+
+        const goal = catalog.goals.find((candidate) => candidate.id === selection.goalId);
+        const goalAssessments = topicAssessments.filter((assessment) => assessment.learningGoal === selection.goalId);
+        const activities = (goal?.activityTypes ?? []).map((activityType) => ({
+          id: activityType,
+          label: activityTypeLabel(activityType),
+          count: goalAssessments.filter((assessment) => assessment.activityType === activityType).length
+        })).filter((activity) => activity.count > 0);
+        renderNavigationTiles("nav-activity-tiles", activities.map((activity, index) => ({
+          ...activity,
+          selected: selection.activityType === activity.id,
+          disabled: false,
+          suggested: index === 0
+        })), (id) => selectNavigationStage("activity", id));
+
+        const matchingAssessments = goalAssessments.filter((assessment) =>
+          assessment.activityType === selection.activityType);
+        const assessmentList = document.querySelector<HTMLDivElement>("#nav-assessment-list")!;
+        assessmentList.innerHTML = matchingAssessments.map((assessment) => `
+          <button
+            type="button"
+            class="nav-assessment-item ${selection.assessmentId === assessment.id ? "selected" : ""}"
+            data-navigation-assessment="${escapeHtml(assessment.id)}"
+            role="option"
+            aria-selected="${selection.assessmentId === assessment.id}"
+          >
+            <span class="nav-assessment-name">${escapeHtml(assessment.title)}</span>
+            <span class="nav-assessment-meta">${escapeHtml(assessmentTypeLabel(assessment.assessmentType))} · ${escapeHtml(assessmentCountLabel(assessment))} items</span>
+          </button>
+        `).join("");
+        assessmentList.querySelectorAll<HTMLButtonElement>("[data-navigation-assessment]").forEach((button) => {
+          button.addEventListener("click", () => selectNavigationStage("assessment", button.dataset.navigationAssessment ?? ""));
+        });
+
+        setNavigationStageVisible("area", Boolean(selection.subjectId));
+        setNavigationStageVisible("topic", Boolean(selection.areaId));
+        setNavigationStageVisible("goal", Boolean(selection.topicId));
+        setNavigationStageVisible("activity", Boolean(selection.goalId));
+        setNavigationStageVisible("assessments", Boolean(selection.activityType));
+        navActions.hidden = !selection.assessmentId;
+        renderNavigationBreadcrumb();
+      }
+
+      function renderNavigationTiles(
+        containerId: string,
+        items: Array<{
+          id: string;
+          label: string;
+          description?: string | null;
+          count: number;
+          selected: boolean;
+          disabled: boolean;
+          suggested?: boolean;
+        }>,
+        onSelect: (id: string) => void
+      ) {
+        const container = document.querySelector<HTMLDivElement>(`#${containerId}`)!;
+        container.innerHTML = items.map((item) => `
+          <button
+            type="button"
+            class="nav-tile ${item.selected ? "selected" : ""}"
+            data-navigation-id="${escapeHtml(item.id)}"
+            title="${escapeHtml(item.description ?? item.label)}"
+            role="option"
+            aria-selected="${item.selected}"
+            ${item.disabled ? "disabled" : ""}
+          >
+            ${item.suggested ? `<span class="nav-tile-suggested">Suggested</span>` : ""}
+            <span>${escapeHtml(item.label)}</span>
+            <span class="nav-tile-count">${item.count} available</span>
+          </button>
+        `).join("");
+        container.querySelectorAll<HTMLButtonElement>("[data-navigation-id]").forEach((button) => {
+          button.addEventListener("click", () => onSelect(button.dataset.navigationId ?? ""));
+        });
+      }
+
+      function selectNavigationStage(
+        stage: "subject" | "area" | "topic" | "goal" | "activity" | "assessment",
+        id: string
+      ) {
+        const selection = state.navigationSelection;
+        if (stage === "subject") Object.assign(selection, { subjectId: id, areaId: "", topicId: "", goalId: "", activityType: "", assessmentId: "" });
+        if (stage === "area") Object.assign(selection, { areaId: id, topicId: "", goalId: "", activityType: "", assessmentId: "" });
+        if (stage === "topic") Object.assign(selection, { topicId: id, goalId: "", activityType: "", assessmentId: "" });
+        if (stage === "goal") Object.assign(selection, { goalId: id, activityType: "", assessmentId: "" });
+        if (stage === "activity") Object.assign(selection, { activityType: id, assessmentId: "" });
+        if (stage === "assessment") selection.assessmentId = id;
+        renderNavigation();
+      }
+
+      function renderNavigationBreadcrumb() {
+        const catalog = state.navigationCatalog;
+        if (!catalog) return;
+        const selection = state.navigationSelection;
+        const parts = [
+          { stage: "subject", id: selection.subjectId, label: catalog.subjects.find((item) => item.id === selection.subjectId)?.title },
+          { stage: "area", id: selection.areaId, label: catalog.areas.find((item) => item.id === selection.areaId)?.title },
+          { stage: "topic", id: selection.topicId, label: catalog.topics.find((item) => item.id === selection.topicId)?.title },
+          { stage: "goal", id: selection.goalId, label: catalog.goals.find((item) => item.id === selection.goalId)?.label },
+          { stage: "activity", id: selection.activityType, label: activityTypeLabel(selection.activityType) }
+        ].filter((part) => part.id && part.label);
+        navBreadcrumb.hidden = parts.length === 0;
+        navBreadcrumb.innerHTML = parts.map((part, index) => `
+          <span class="nav-breadcrumb-item">
+            ${index > 0 ? `<span class="nav-breadcrumb-sep">›</span>` : ""}
+            <button type="button" data-navigation-back="${part.stage}">${escapeHtml(part.label ?? "")}</button>
+          </span>
+        `).join("");
+        navBreadcrumb.querySelectorAll<HTMLButtonElement>("[data-navigation-back]").forEach((button) => {
+          button.addEventListener("click", () => resetNavigationAfter(button.dataset.navigationBack ?? "subject"));
+        });
+      }
+
+      function resetNavigationAfter(stage: string) {
+        const selection = state.navigationSelection;
+        if (stage === "subject") Object.assign(selection, { areaId: "", topicId: "", goalId: "", activityType: "", assessmentId: "" });
+        if (stage === "area") Object.assign(selection, { topicId: "", goalId: "", activityType: "", assessmentId: "" });
+        if (stage === "topic") Object.assign(selection, { goalId: "", activityType: "", assessmentId: "" });
+        if (stage === "goal") Object.assign(selection, { activityType: "", assessmentId: "" });
+        if (stage === "activity") selection.assessmentId = "";
+        renderNavigation();
+      }
+
+      function setNavigationStageVisible(stage: string, visible: boolean) {
+        const element = document.querySelector<HTMLElement>(`#nav-stage-${stage}`);
+        if (element) element.hidden = !visible;
+      }
+
+      function activityTypeLabel(activityType: string) {
+        return {
+          guidedWorkedExample: "Guided Worked Example",
+          recognitionDrill: "Recognition Drill",
+          clozeDrill: "Cloze Drill",
+          mixedRecallSet: "Mixed Recall Set",
+          focusedPractice: "Focused Practice",
+          mixedPractice: "Mixed Practice",
+          guidedProject: "Guided Project",
+          codingApplication: "Coding Application",
+          circuitApplication: "Circuit Application",
+          masteryCheck: "Mastery Check",
+          formalTest: "Formal Test",
+          selfReview: "Self Review"
+        }[activityType] ?? activityType;
+      }
+
       async function startAttempt() {
         const assessmentId = assessmentSelect.value;
         if (!assessmentId) return;
 
         const startButton = document.querySelector<HTMLButtonElement>("#start-attempt")!;
         const mode = document.querySelector<HTMLInputElement>("input[name='mode']:checked")!.value as AssessmentMode;
-        setBusy(startButton, "Loading");
+        await startSelectedAssessment(assessmentId, mode, startButton);
+      }
 
+      async function startNavigationAttempt() {
+        const assessmentId = state.navigationSelection.assessmentId;
+        if (!assessmentId) return;
+        const startButton = document.querySelector<HTMLButtonElement>("#nav-start-attempt")!;
+        const mode = document.querySelector<HTMLInputElement>("input[name='nav-mode']:checked")!.value as AssessmentMode;
+        await startSelectedAssessment(assessmentId, mode, startButton);
+      }
+
+      async function startSelectedAssessment(
+        assessmentId: string,
+        mode: AssessmentMode,
+        startButton: HTMLButtonElement
+      ) {
+        setBusy(startButton, "Loading");
         try {
           state.assessment = await api<Assessment>(`/assessments/${encodeURIComponent(assessmentId)}`);
           state.attempt = await api<Attempt>("/attempts", {
@@ -1618,6 +2037,33 @@ import "../styles/global.css";
           };
         }
 
+        if (type === "circuit") {
+          return {
+            id,
+            type,
+            prompt: "",
+            choices: [],
+            media: [],
+            circuitQuestion: {
+              schemaVersion: 1,
+              catalogVersion: 1,
+              interactionMode: "build",
+              paletteSymbolIds: ["resistor", "battery", "capacitor", "junction"],
+              editableProperties: ["value", "label", "rotation"],
+              diagram: { width: 600, height: 400, components: [], nodes: [], wires: [], annotations: [] }
+            },
+            answer: {
+              circuitAnswer: {
+                topology: { requiredComponents: [], connectionMode: "anyValidNetlist" },
+                selectedTargetIds: [],
+                meterPlacement: null,
+                expectedValues: {}
+              }
+            },
+            explanation: ""
+          };
+        }
+
         if (type === "code") {
           return {
             id,
@@ -1673,6 +2119,7 @@ import "../styles/global.css";
                   <option value="numericResponse" ${question.type === "numericResponse" ? "selected" : ""}>Numeric response</option>
                   <option value="symbolicResponse" ${question.type === "symbolicResponse" ? "selected" : ""}>Symbolic response</option>
                   <option value="code" ${question.type === "code" ? "selected" : ""}>Code</option>
+                  <option value="circuit" ${question.type === "circuit" ? "selected" : ""}>Circuit</option>
                 </select>
               </div>
             </div>
@@ -1790,6 +2237,101 @@ import "../styles/global.css";
           `;
         }
 
+        if (question.type === "circuit") {
+          const cQ = question.circuitQuestion || {
+            interactionMode: "build",
+            paletteSymbolIds: ["resistor", "battery", "capacitor", "junction"],
+            editableProperties: ["value", "label", "rotation"],
+            diagram: { width: 600, height: 400, components: [], nodes: [], wires: [], annotations: [] }
+          };
+          const answer = question.answer?.circuitAnswer || {};
+
+          return `
+            <div class="settings-grid">
+              <div class="field">
+                <label for="question-circuit-mode-${index}">Interaction mode</label>
+                <select id="question-circuit-mode-${index}" data-question-field="circuitInteractionMode">
+                  <option value="select" ${cQ.interactionMode === "select" ? "selected" : ""}>Select components/wires/nodes</option>
+                  <option value="meterPlacement" ${cQ.interactionMode === "meterPlacement" ? "selected" : ""}>Meter placement</option>
+                  <option value="valueEntry" ${cQ.interactionMode === "valueEntry" ? "selected" : ""}>Value entry</option>
+                  <option value="build" ${cQ.interactionMode === "build" ? "selected" : ""}>Build schematic</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="question-circuit-width-${index}">Canvas width</label>
+                <input id="question-circuit-width-${index}" data-question-field="circuitWidth" type="number" value="${cQ.diagram?.width ?? 600}" />
+              </div>
+              <div class="field">
+                <label for="question-circuit-height-${index}">Canvas height</label>
+                <input id="question-circuit-height-${index}" data-question-field="circuitHeight" type="number" value="${cQ.diagram?.height ?? 400}" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="question-circuit-palette-${index}">Palette symbol IDs (comma separated)</label>
+              <input id="question-circuit-palette-${index}" data-question-field="circuitPalette" value="${escapeHtml((cQ.paletteSymbolIds ?? []).join(", "))}" placeholder="resistor, battery, capacitor, junction" />
+            </div>
+            <div class="field">
+              <label for="question-circuit-editable-${index}">Editable properties (comma separated)</label>
+              <input id="question-circuit-editable-${index}" data-question-field="circuitEditable" value="${escapeHtml((cQ.editableProperties ?? []).join(", "))}" placeholder="value, label, rotation" />
+            </div>
+
+            <div class="field">
+              <label for="question-circuit-diagram-json-${index}">Initial diagram JSON (components, nodes, wires)</label>
+              <textarea id="question-circuit-diagram-json-${index}" data-question-field="circuitDiagramJson" rows="4" placeholder='{"components": [], "nodes": [], "wires": [], "annotations": []}'>${escapeHtml(JSON.stringify(cQ.diagram || { components: [], nodes: [], wires: [], annotations: [] }, null, 2))}</textarea>
+            </div>
+
+            <h5 class="author-subtitle" style="margin-top: 15px; font-weight: bold;">Expected Answer Config</h5>
+
+            <div class="circuit-answer-fields">
+              <div class="field">
+                <label for="question-circuit-select-targets-${index}">Select Mode: Expected Selected IDs (comma separated)</label>
+                <input id="question-circuit-select-targets-${index}" data-question-field="circuitSelectTargets" value="${escapeHtml((answer.selectedTargetIds ?? []).join(", "))}" placeholder="R1, R2, w1" />
+              </div>
+
+              <div class="settings-grid">
+                <div class="field">
+                  <label for="question-circuit-meter-type-${index}">Meter: Type</label>
+                  <select id="question-circuit-meter-type-${index}" data-question-field="circuitMeterType">
+                    <option value="" ${!answer.meterPlacement?.meterType ? "selected" : ""}>None</option>
+                    <option value="voltmeter" ${answer.meterPlacement?.meterType === "voltmeter" ? "selected" : ""}>Voltmeter</option>
+                    <option value="ammeter" ${answer.meterPlacement?.meterType === "ammeter" ? "selected" : ""}>Ammeter</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="question-circuit-meter-branch-${index}">Meter: Target Branch ID</label>
+                  <input id="question-circuit-meter-branch-${index}" data-question-field="circuitMeterBranch" value="${escapeHtml(answer.meterPlacement?.targetBranchId ?? "")}" placeholder="w1" />
+                </div>
+                <div class="field">
+                  <label for="question-circuit-meter-nodes-${index}">Meter: Target Node IDs (comma separated)</label>
+                  <input id="question-circuit-meter-nodes-${index}" data-question-field="circuitMeterNodes" value="${escapeHtml((answer.meterPlacement?.targetNodeIds ?? []).join(", "))}" placeholder="n1, n2" />
+                </div>
+                <label class="checkbox-line" style="margin-bottom: 10px;">
+                  <input id="question-circuit-meter-polarity-${index}" data-question-field="circuitMeterPolarity" type="checkbox" ${answer.meterPlacement?.requirePolarity ? "checked" : ""} />
+                  Require polarity
+                </label>
+                <div class="field">
+                  <label for="question-circuit-meter-pos-${index}">Meter: Positive Terminal ID</label>
+                  <input id="question-circuit-meter-pos-${index}" data-question-field="circuitMeterPos" value="${escapeHtml(answer.meterPlacement?.positiveTerminalId ?? "")}" placeholder="R1.p1" />
+                </div>
+                <div class="field">
+                  <label for="question-circuit-meter-neg-${index}">Meter: Negative Terminal ID</label>
+                  <input id="question-circuit-meter-neg-${index}" data-question-field="circuitMeterNeg" value="${escapeHtml(answer.meterPlacement?.negativeTerminalId ?? "")}" placeholder="R1.p2" />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="question-circuit-values-json-${index}">Value Mode: Expected component values JSON</label>
+                <textarea id="question-circuit-values-json-${index}" data-question-field="circuitExpectedValuesJson" rows="3" placeholder='{"R1": {"mode": "numeric", "numericValue": 100, "numericTolerance": 5}}'>${escapeHtml(JSON.stringify(answer.expectedValues || {}, null, 2))}</textarea>
+              </div>
+
+              <div class="field">
+                <label for="question-circuit-topology-json-${index}">Build Mode: Expected topology requirements JSON</label>
+                <textarea id="question-circuit-topology-json-${index}" data-question-field="circuitTopologyJson" rows="3" placeholder='{"requiredComponents": [{"symbolId": "resistor", "count": 2}], "connectionMode": "anyValidNetlist"}'>${escapeHtml(JSON.stringify(answer.topology || { requiredComponents: [], connectionMode: "anyValidNetlist" }, null, 2))}</textarea>
+              </div>
+            </div>
+          `;
+        }
+
         return `
           <div class="choice-editor-grid">
             ${question.choices.map((choice) => `
@@ -1814,17 +2356,44 @@ import "../styles/global.css";
             .map((input) => ({ id: input.dataset.choiceId ?? "", text: input.value }));
           const answerValue = editor.querySelector<HTMLInputElement>("[data-question-field='answer']")?.value ?? "";
 
+          const isCircuit = type === "circuit";
+          let circuitQuestion = undefined;
+          if (isCircuit) {
+            let diag = { width: 600, height: 400, components: [], nodes: [], wires: [], annotations: [] };
+            try {
+              diag = JSON.parse(editor.querySelector<HTMLTextAreaElement>("[data-question-field='circuitDiagramJson']")!.value);
+            } catch (e) {}
+            diag.width = Number(editor.querySelector<HTMLInputElement>("[data-question-field='circuitWidth']")?.value ?? diag.width ?? 600);
+            diag.height = Number(editor.querySelector<HTMLInputElement>("[data-question-field='circuitHeight']")?.value ?? diag.height ?? 400);
+
+            circuitQuestion = {
+              schemaVersion: 1,
+              catalogVersion: 1,
+              interactionMode: editor.querySelector<HTMLSelectElement>("[data-question-field='circuitInteractionMode']")!.value,
+              paletteSymbolIds: (editor.querySelector<HTMLInputElement>("[data-question-field='circuitPalette']")?.value ?? "")
+                .split(",")
+                .map(s => s.trim())
+                .filter(Boolean),
+              editableProperties: (editor.querySelector<HTMLInputElement>("[data-question-field='circuitEditable']")?.value ?? "")
+                .split(",")
+                .map(s => s.trim())
+                .filter(Boolean),
+              diagram: diag
+            };
+          }
+
           return {
             id: editor.querySelector<HTMLInputElement>("[data-question-field='id']")!.value.trim(),
             type,
             prompt: editor.querySelector<HTMLTextAreaElement>("[data-question-field='prompt']")!.value.trim(),
-            choices: type === "freeResponse" || type === "numericResponse" || type === "code" || type === "symbolicResponse" ? [] : choices,
+            choices: type === "freeResponse" || type === "numericResponse" || type === "code" || type === "symbolicResponse" || type === "circuit" ? [] : choices,
             answer: buildDraftAnswer(type, answerValue, editor),
             language: type === "code" ? editor.querySelector<HTMLSelectElement>("[data-question-field='language']")?.value as "python" | "cpp" : undefined,
             functionName: type === "code" ? editor.querySelector<HTMLInputElement>("[data-question-field='functionName']")?.value.trim() : undefined,
             starterCode: type === "code" ? editor.querySelector<HTMLTextAreaElement>("[data-question-field='starterCode']")?.value : undefined,
             tests: type === "code" ? parseCodeTests(editor.querySelector<HTMLTextAreaElement>("[data-question-field='tests']")?.value ?? "[]") : undefined,
-            explanation: editor.querySelector<HTMLTextAreaElement>("[data-question-field='explanation']")!.value.trim()
+            explanation: editor.querySelector<HTMLTextAreaElement>("[data-question-field='explanation']")!.value.trim(),
+            circuitQuestion
           };
         });
       }
@@ -1877,6 +2446,48 @@ import "../styles/global.css";
               .map((value) => value.trim())
               .filter(Boolean),
             tolerance: nullableNumber(editor.querySelector<HTMLInputElement>("[data-question-field='tolerance']")?.value ?? "")
+          };
+        }
+
+        if (type === "circuit") {
+          let expectedValues = {};
+          try {
+            expectedValues = JSON.parse(editor.querySelector<HTMLTextAreaElement>("[data-question-field='circuitExpectedValuesJson']")?.value ?? "{}");
+          } catch (e) {}
+
+          let topology = { requiredComponents: [], connectionMode: "anyValidNetlist" };
+          try {
+            topology = JSON.parse(editor.querySelector<HTMLTextAreaElement>("[data-question-field='circuitTopologyJson']")?.value ?? '{"requiredComponents": [], "connectionMode": "anyValidNetlist"}');
+          } catch (e) {}
+
+          const meterType = editor.querySelector<HTMLSelectElement>("[data-question-field='circuitMeterType']")?.value ?? "";
+          let meterPlacement = null;
+          if (meterType) {
+            meterPlacement = {
+              meterType,
+              targetBranchId: editor.querySelector<HTMLInputElement>("[data-question-field='circuitMeterBranch']")?.value.trim() || null,
+              targetNodeIds: (editor.querySelector<HTMLInputElement>("[data-question-field='circuitMeterNodes']")?.value ?? "")
+                .split(",")
+                .map(s => s.trim())
+                .filter(Boolean),
+              requirePolarity: editor.querySelector<HTMLInputElement>("[data-question-field='circuitMeterPolarity']")?.checked ?? false,
+              positiveTerminalId: editor.querySelector<HTMLInputElement>("[data-question-field='circuitMeterPos']")?.value.trim() || null,
+              negativeTerminalId: editor.querySelector<HTMLInputElement>("[data-question-field='circuitMeterNeg']")?.value.trim() || null
+            };
+          }
+
+          return {
+            choiceId: null,
+            choiceIds: [],
+            circuitAnswer: {
+              topology,
+              selectedTargetIds: (editor.querySelector<HTMLInputElement>("[data-question-field='circuitSelectTargets']")?.value ?? "")
+                .split(",")
+                .map(s => s.trim())
+                .filter(Boolean),
+              meterPlacement,
+              expectedValues
+            }
           };
         }
 
@@ -1941,6 +2552,10 @@ import "../styles/global.css";
             if (!["expression", "derivative"].includes(String(question.answer?.equivalenceMode ?? ""))) errors.push(`Question ${index + 1} needs expression or derivative equivalence.`);
             if (question.answer?.equivalenceMode === "derivative" && (question.answer?.variables ?? []).length === 0) errors.push(`Question ${index + 1} needs a variable for derivative equivalence.`);
             if ((question.answer?.tolerance ?? -1) < 0) errors.push(`Question ${index + 1} needs a non-negative symbolic tolerance.`);
+          }
+          if (question.type === "circuit") {
+            if (!question.circuitQuestion) errors.push(`Question ${index + 1} needs circuit definition.`);
+            if (!question.answer?.circuitAnswer) errors.push(`Question ${index + 1} needs circuit expected answer.`);
           }
         });
 
@@ -2009,6 +2624,7 @@ import "../styles/global.css";
               ${results.isCorrect ? "Correct" : "Needs review"}
               ${renderCodeFeedback(results.codeFeedback)}
               ${symbolicFeedbackHtml}
+              ${renderCircuitFeedback(results.circuitFeedback)}
               ${feedbackExplanation ? `<details><summary>Explanation</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
             </div>`;
 
@@ -2063,6 +2679,7 @@ import "../styles/global.css";
         setupCodeEditor(question);
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
+        setupCircuitEditor(question, results?.submittedAnswer ?? null);
       }
 
       async function renderCurrentWorkedExampleStep() {
@@ -2088,6 +2705,7 @@ import "../styles/global.css";
               ${result.isCorrect ? "Step complete" : "Try this step again"}
               ${renderCodeFeedback(result.codeFeedback)}
               ${symbolicFeedbackHtml}
+              ${renderCircuitFeedback(result.circuitFeedback)}
               ${feedbackExplanation ? `<details open><summary>Feedback</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
             </div>`;
 
@@ -2170,6 +2788,7 @@ import "../styles/global.css";
         setupCodeEditor(question);
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
+        setupCircuitEditor(question, result?.submittedAnswer ?? null);
       }
 
       async function renderGuidedProject() {
@@ -2514,6 +3133,10 @@ import "../styles/global.css";
 
       async function renderResults(alreadyCommitted: boolean) {
         if (!state.latestResults) return;
+        activeCircuitCanvas?.destroy();
+        activeCircuitCanvas = null;
+        resultCircuitCanvases.forEach((canvas) => canvas.destroy());
+        resultCircuitCanvases = [];
         const results = state.latestResults;
         const isWorkedExample = results.assessmentType === "workedExample";
         const isRecallDrill = results.assessmentType === "recallDrill";
@@ -2540,6 +3163,8 @@ import "../styles/global.css";
               <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
               ${renderCodeFeedback(question.codeFeedback)}
               ${symbolicFeedbackHtml}
+              ${renderCircuitFeedback(question.circuitFeedback)}
+              ${question.type === "circuit" ? `<div class="circuit-result-mount" data-question-id="${question.questionId}" style="min-height: 250px; margin-top: 10px;"></div>` : ""}
               ${question.type === "freeResponse" ? selfCheckHtml : ""}
               ${question.type !== "freeResponse" && expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
               ${hintHtml ? `<details><summary>Hint used for this step</summary><div class="markdown">${hintHtml}</div></details>` : ""}
@@ -2566,6 +3191,50 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
         setupDevAssessmentRefresh();
         setupSelfCheckButtons();
+
+        document.querySelectorAll<HTMLElement>(".circuit-result-mount").forEach((mount) => {
+          const questionId = mount.dataset.questionId;
+          const qDef = state.assessment?.questions.find((q) => q.id === questionId);
+          if (!qDef) return;
+
+          const results = state.latestResults?.questions.find((r) => r.questionId === questionId);
+          const submittedAnswer = results?.submittedAnswer;
+          const def = qDef.circuitQuestion || {
+            interactionMode: "build",
+            paletteSymbolIds: ["resistor", "battery", "capacitor", "junction"],
+            editableProperties: ["value", "label", "rotation"],
+            diagram: { width: 600, height: 400, components: [], nodes: [], wires: [], annotations: [] }
+          };
+
+          let startDiagram = def.diagram;
+          if (def.interactionMode === "build" && submittedAnswer?.circuitAnswer?.builtDiagram) {
+            startDiagram = submittedAnswer.circuitAnswer.builtDiagram;
+          }
+
+          const resultsCanvas = new CircuitCanvas(
+            mount,
+            startDiagram,
+            "preview",
+            () => {}
+          );
+          resultCircuitCanvases.push(resultsCanvas);
+
+          if (submittedAnswer?.circuitAnswer) {
+            const ca = submittedAnswer.circuitAnswer;
+            resultsCanvas.restoreState({
+              selectedIds: [
+                ...(ca.selectedComponentIds ?? []),
+                ...(ca.selectedNodeIds ?? []),
+                ...(ca.selectedBranchIds ?? [])
+              ],
+              meterType: ca.meterType ?? null,
+              meterPositiveTerminalId: ca.meterPositiveTerminalId ?? null,
+              meterNegativeTerminalId: ca.meterNegativeTerminalId ?? null,
+              meterTargetBranchId: ca.meterTargetBranchId ?? null,
+              values: ca.values ?? null
+            });
+          }
+        });
       }
 
       async function renderRecallResults(results: AttemptResults) {
@@ -2668,6 +3337,55 @@ import "../styles/global.css";
               <label for="symbolic-response">Symbolic response</label>
               <math-field id="symbolic-response" aria-describedby="symbolic-response-help">${escapeHtml(submittedAnswer?.symbolicLatex ?? "")}</math-field>
               <p id="symbolic-response-help" class="input-help">Use Tab to leave powers, roots, fractions, and placeholders. Shortcuts like sin, cos, sqrt, pi, theta, and int expand automatically.</p>
+            </div>
+          `;
+        }
+
+        if (question.type === "circuit") {
+          const def = question.circuitQuestion || {
+            interactionMode: "build",
+            paletteSymbolIds: ["resistor", "battery", "capacitor", "junction"],
+            editableProperties: ["value", "label", "rotation"],
+            diagram: { width: 600, height: 400, components: [], nodes: [], wires: [], annotations: [] }
+          };
+          let promptNote = "";
+          let toolbarHtml = "";
+
+          if (def.interactionMode === "select") {
+            promptNote = `<p class="input-help"><strong>Interaction Mode: Select.</strong> Click components, nodes, or wires in the diagram below to select them.</p>`;
+          } else if (def.interactionMode === "meterPlacement") {
+            promptNote = `<p class="input-help"><strong>Interaction Mode: Meter Placement.</strong> Select Voltmeter or Ammeter tool below, then place/drag probes onto the circuit terminals or nodes.</p>`;
+            toolbarHtml = `
+              <div class="circuit-meter-toolbar">
+                <button type="button" class="meter-btn" id="tool-voltmeter">Voltmeter Probe Tool</button>
+                <button type="button" class="meter-btn" id="tool-ammeter">Ammeter Tool</button>
+                <button type="button" class="meter-btn" id="tool-clear-meter">Eraser/Reset Probes Tool</button>
+              </div>
+            `;
+          } else if (def.interactionMode === "valueEntry") {
+            promptNote = `<p class="input-help"><strong>Interaction Mode: Value Entry.</strong> Click components in the diagram to edit/enter their electrical values (e.g. 10k, 5V, 220).</p>`;
+          } else if (def.interactionMode === "build") {
+            promptNote = `<p class="input-help"><strong>Interaction Mode: Build.</strong> Drag components to position them. Click green terminal dots to draw connecting wires. Click to select items, and use the toolbar to rotate or delete.</p>`;
+            const symbols = def.paletteSymbolIds?.length > 0 ? def.paletteSymbolIds : ["resistor", "battery", "capacitor", "junction"];
+            toolbarHtml = `
+              <div class="circuit-build-toolbar">
+                <div class="palette-buttons">
+                  ${symbols.map(sym => `<button type="button" class="palette-btn" data-symbol="${sym}">Add ${sym}</button>`).join(" ")}
+                </div>
+                <div class="tool-actions">
+                  <button type="button" id="btn-circuit-rotate">Rotate Selected</button>
+                  <button type="button" class="danger-light" id="btn-circuit-delete">Delete Selected</button>
+                  <button type="button" id="btn-circuit-node">Add Junction Node</button>
+                </div>
+              </div>
+            `;
+          }
+
+          return `
+            <div class="circuit-editor-shell">
+              ${promptNote}
+              ${toolbarHtml}
+              <div id="circuit-editor-mount" class="circuit-mount"></div>
             </div>
           `;
         }
@@ -2806,6 +3524,52 @@ import "../styles/global.css";
       }
 
       function readAnswer(question: Question) {
+        if (question.type === "circuit") {
+          if (activeCircuitCanvas) {
+            const diag = activeCircuitCanvas.getDiagram();
+            const selectedIds = activeCircuitCanvas.getSelectedIds();
+            const meterType = activeCircuitCanvas.getMeterType();
+            const meterPosTarget = activeCircuitCanvas.getMeterPositiveTerminalId();
+            const meterNegTarget = activeCircuitCanvas.getMeterNegativeTerminalId();
+            const meterBranchTarget = activeCircuitCanvas.getMeterTargetBranchId();
+            const values = activeCircuitCanvas.getValues();
+
+            const selectedComponentIds = selectedIds.filter(id => diag.components.some(c => c.id === id));
+            const selectedNodeIds = selectedIds.filter(id => diag.nodes.some(n => n.id === id));
+            const selectedBranchIds = selectedIds.filter(id => diag.wires.some(w => w.id === id));
+
+            let meterTargetNodeIds: string[] | null = null;
+            if (meterType === "voltmeter") {
+              meterTargetNodeIds = [];
+              if (meterPosTarget) meterTargetNodeIds.push(meterPosTarget);
+              if (meterNegTarget) meterTargetNodeIds.push(meterNegTarget);
+            }
+
+            return {
+              questionId: question.id,
+              choiceId: null,
+              choiceIds: [],
+              freeResponseText: null,
+              selfCheckCorrect: null,
+              numericValue: null,
+              codeText: null,
+              symbolicLatex: null,
+              circuitAnswer: {
+                selectedComponentIds: selectedComponentIds.length > 0 ? selectedComponentIds : null,
+                selectedNodeIds: selectedNodeIds.length > 0 ? selectedNodeIds : null,
+                selectedBranchIds: selectedBranchIds.length > 0 ? selectedBranchIds : null,
+                meterType: meterType || null,
+                meterTargetBranchId: meterBranchTarget || null,
+                meterTargetNodeIds: meterTargetNodeIds,
+                meterPositiveTerminalId: meterPosTarget || null,
+                meterNegativeTerminalId: meterNegTarget || null,
+                values: Object.keys(values).length > 0 ? values : null,
+                builtDiagram: diag
+              }
+            };
+          }
+        }
+
         const form = new FormData(document.querySelector<HTMLFormElement>("#answer-form")!);
         const selectedCards = Array.from(document.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
 
@@ -2819,6 +3583,166 @@ import "../styles/global.css";
           codeText: question.type === "code" ? readCodeText(form) : null,
           symbolicLatex: question.type === "symbolicResponse" ? readSymbolicLatex() : null
         };
+      }
+
+      function setupCircuitEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
+        activeCircuitCanvas?.destroy();
+        activeCircuitCanvas = null;
+        if (question.type !== "circuit") return;
+
+        const container = document.querySelector<HTMLElement>("#circuit-editor-mount");
+        if (!container) return;
+
+        const def = question.circuitQuestion || {
+          schemaVersion: 1,
+          catalogVersion: 1,
+          interactionMode: "build",
+          paletteSymbolIds: ["resistor", "battery", "capacitor", "junction"],
+          editableProperties: ["value", "label", "rotation"],
+          diagram: { width: 600, height: 400, components: [], nodes: [], wires: [], annotations: [] }
+        };
+
+        let startDiagram = def.diagram;
+        if (def.interactionMode === "build") {
+          if (submittedAnswer?.circuitAnswer?.builtDiagram) {
+            startDiagram = submittedAnswer.circuitAnswer.builtDiagram;
+          } else {
+            startDiagram = {
+              width: def.diagram.width,
+              height: def.diagram.height,
+              components: [],
+              nodes: [],
+              wires: [],
+              annotations: []
+            };
+          }
+        }
+
+        activeCircuitCanvas = new CircuitCanvas(
+          container,
+          startDiagram,
+          def.interactionMode,
+          () => {}
+        );
+
+        // Restore submitted state
+        if (submittedAnswer?.circuitAnswer) {
+          const ca = submittedAnswer.circuitAnswer;
+          activeCircuitCanvas.restoreState({
+            selectedIds: [
+              ...(ca.selectedComponentIds ?? []),
+              ...(ca.selectedNodeIds ?? []),
+              ...(ca.selectedBranchIds ?? [])
+            ],
+            meterType: ca.meterType ?? null,
+            meterPositiveTerminalId: ca.meterPositiveTerminalId ?? null,
+            meterNegativeTerminalId: ca.meterNegativeTerminalId ?? null,
+            meterTargetBranchId: ca.meterTargetBranchId ?? null,
+            values: ca.values ?? null
+          });
+        }
+
+        // Setup toolbars based on mode
+        if (def.interactionMode === "meterPlacement") {
+          const meterVoltmeterBtn = document.querySelector<HTMLButtonElement>("#tool-voltmeter");
+          const meterAmmeterBtn = document.querySelector<HTMLButtonElement>("#tool-ammeter");
+          const meterClearBtn = document.querySelector<HTMLButtonElement>("#tool-clear-meter");
+
+          const updateMeterToolActive = (type: string | null) => {
+            meterVoltmeterBtn?.classList.toggle("active", type === "voltmeter");
+            meterAmmeterBtn?.classList.toggle("active", type === "ammeter");
+            meterClearBtn?.classList.toggle("active", type === null);
+          };
+
+          meterVoltmeterBtn?.addEventListener("click", () => {
+            activeCircuitCanvas?.setMeterType("voltmeter");
+            updateMeterToolActive("voltmeter");
+          });
+          meterAmmeterBtn?.addEventListener("click", () => {
+            activeCircuitCanvas?.setMeterType("ammeter");
+            updateMeterToolActive("ammeter");
+          });
+          meterClearBtn?.addEventListener("click", () => {
+            activeCircuitCanvas?.setMeterType(null);
+            updateMeterToolActive(null);
+          });
+
+          updateMeterToolActive(activeCircuitCanvas.getMeterType());
+        } else if (def.interactionMode === "build") {
+          document.querySelectorAll(".palette-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+              const sym = (e.currentTarget as HTMLButtonElement).dataset.symbol;
+              if (sym && activeCircuitCanvas) {
+                activeCircuitCanvas.addComponent(sym);
+              }
+            });
+          });
+
+          document.querySelector("#btn-circuit-rotate")?.addEventListener("click", () => {
+            activeCircuitCanvas?.rotateSelected();
+          });
+
+          document.querySelector("#btn-circuit-delete")?.addEventListener("click", () => {
+            activeCircuitCanvas?.deleteSelected();
+          });
+
+          document.querySelector("#btn-circuit-node")?.addEventListener("click", () => {
+            activeCircuitCanvas?.addNode();
+          });
+        }
+      }
+
+      function renderCircuitFeedback(feedback: CircuitFeedback | null | undefined) {
+        if (!feedback) return "";
+
+        const items: string[] = [];
+        if (feedback.missingComponents?.length > 0) {
+          items.push(`<li><strong>Missing components:</strong> ${feedback.missingComponents.map(escapeHtml).join(", ")}</li>`);
+        }
+        if (feedback.extraComponents?.length > 0) {
+          items.push(`<li><strong>Extra components:</strong> ${feedback.extraComponents.map(escapeHtml).join(", ")}</li>`);
+        }
+        if (feedback.incorrectComponentTypes?.length > 0) {
+          items.push(`<li><strong>Incorrect component types:</strong> ${feedback.incorrectComponentTypes.map(escapeHtml).join(", ")}</li>`);
+        }
+        if (feedback.missingConnections?.length > 0) {
+          items.push(`<li><strong>Missing connections:</strong> ${feedback.missingConnections.map(escapeHtml).join(", ")}</li>`);
+        }
+        if (feedback.extraConnections?.length > 0) {
+          items.push(`<li><strong>Extra connections:</strong> ${feedback.extraConnections.map(escapeHtml).join(", ")}</li>`);
+        }
+        if (feedback.incorrectSelectedTargets?.length > 0) {
+          items.push(`<li><strong>Incorrect selections:</strong> ${feedback.incorrectSelectedTargets.map(escapeHtml).join(", ")}</li>`);
+        }
+        if (feedback.incorrectMeterPlacement === true) {
+          items.push(`<li><strong>Meter placement:</strong> Incorrect location. Make sure you place/probe the correct node(s) or wire.</li>`);
+        }
+        if (feedback.incorrectPolarity === true) {
+          items.push(`<li><strong>Meter polarity:</strong> Reverse connection. Positive/negative probes are swapped.</li>`);
+        }
+        if (feedback.incorrectValues && Object.keys(feedback.incorrectValues).length > 0) {
+          const valEntries = Object.entries(feedback.incorrectValues)
+            .map(([k, v]) => `${k} (Expected: ${v})`)
+            .join(", ");
+          items.push(`<li><strong>Incorrect values:</strong> ${escapeHtml(valEntries)}</li>`);
+        }
+
+        if (items.length === 0) {
+          return `
+            <div class="circuit-feedback correct-feedback">
+              <p><strong>Circuit check passed:</strong> All components, connections, placements, and values match the expected topology.</p>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="circuit-feedback">
+            <p><strong>Circuit check details:</strong></p>
+            <ul class="circuit-feedback-list">
+              ${items.join("")}
+            </ul>
+          </div>
+        `;
       }
 
       function renderRecallResponseInput(item: RecallItem, value: string, isRevealed: boolean) {
@@ -3288,24 +4212,24 @@ import "../styles/global.css";
           input.disabled = locked;
         });
 
-        const modeControl = document.querySelector<HTMLFieldSetElement>(".mode-control");
-        if (!modeControl) return;
+        document.querySelectorAll<HTMLFieldSetElement>(".mode-control").forEach((modeControl, index) => {
+          modeControl.classList.toggle("locked", locked);
+          const existingNote = modeControl.querySelector<HTMLElement>(".mode-lock-note");
+          if (!locked) {
+            existingNote?.remove();
+            modeControl.removeAttribute("aria-describedby");
+            return;
+          }
 
-        modeControl.classList.toggle("locked", locked);
-        const existingNote = modeControl.querySelector<HTMLElement>(".mode-lock-note");
-        if (!locked) {
-          existingNote?.remove();
-          modeControl.removeAttribute("aria-describedby");
-          return;
-        }
-
-        syncModeControlToAttempt();
-        if (!existingNote) {
-          modeControl.insertAdjacentHTML("beforeend", `<p id="mode-lock-note" class="mode-lock-note">Locked for current ${escapeHtml(state.attempt!.mode)} session</p>`);
-          modeControl.setAttribute("aria-describedby", "mode-lock-note");
-        } else {
-          existingNote.textContent = `Locked for current ${state.attempt!.mode} session`;
-        }
+          syncModeControlToAttempt();
+          const noteId = `mode-lock-note-${index}`;
+          if (!existingNote) {
+            modeControl.insertAdjacentHTML("beforeend", `<p id="${noteId}" class="mode-lock-note">Locked for current ${escapeHtml(state.attempt!.mode)} session</p>`);
+            modeControl.setAttribute("aria-describedby", noteId);
+          } else {
+            existingNote.textContent = `Locked for current ${state.attempt!.mode} session`;
+          }
+        });
       }
 
       function syncModeControlToAttempt() {

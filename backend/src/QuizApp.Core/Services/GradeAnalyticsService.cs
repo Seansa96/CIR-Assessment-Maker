@@ -159,7 +159,9 @@ public sealed class GradeAnalyticsService
                     committedAttemptIds.Contains(attempt.Id),
                     attempt.StartedAt,
                     attempt.CompletedAt,
-                    attempt.CompletedAt ?? attempt.AbandonedAt ?? attempt.PausedAt ?? attempt.Answers.OrderByDescending(answer => answer.SubmittedAt).FirstOrDefault()?.SubmittedAt ?? attempt.StartedAt);
+                    attempt.CompletedAt ?? attempt.AbandonedAt ?? attempt.PausedAt ?? attempt.Answers.OrderByDescending(answer => answer.SubmittedAt).FirstOrDefault()?.SubmittedAt ?? attempt.StartedAt,
+                    NavigationInference.Infer(assessment).LearningGoal,
+                    NavigationInference.Infer(assessment).ActivityType);
             })
             .ToList();
     }
