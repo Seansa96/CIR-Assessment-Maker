@@ -27,7 +27,8 @@ public enum QuestionType
     NumericResponse,
     Code,
     SymbolicResponse,
-    Circuit
+    Circuit,
+    Multipart
 }
 
 public enum QuestionOrderMode
@@ -228,6 +229,20 @@ public sealed record QuestionDefinition(
 {
     public CodeQuestionDefinition? CodeQuestion { get; init; }
     public CircuitQuestionDefinition? CircuitQuestion { get; init; }
+    public IReadOnlyList<MultipartPartDefinition> Parts { get; init; } = Array.Empty<MultipartPartDefinition>();
+}
+
+public sealed record MultipartPartDefinition(
+    string Id,
+    QuestionType Type,
+    string Prompt,
+    IReadOnlyList<ChoiceOption> Choices,
+    AnswerDefinition Answer,
+    string? Explanation,
+    IReadOnlyList<MediaAsset> Media)
+{
+    public CodeQuestionDefinition? CodeQuestion { get; init; }
+    public CircuitQuestionDefinition? CircuitQuestion { get; init; }
 }
 
 public sealed record ChoiceOption(
@@ -283,6 +298,7 @@ public sealed record SubmittedAnswer(
     public string? CodeText { get; init; }
     public string? SymbolicLatex { get; init; }
     public SubmittedCircuitAnswer? CircuitAnswer { get; init; }
+    public IReadOnlyList<SubmittedAnswer> PartAnswers { get; init; } = Array.Empty<SubmittedAnswer>();
 }
 
 public sealed record AnswerEvaluation(
@@ -294,6 +310,9 @@ public sealed record AnswerEvaluation(
     public CodeFeedback? CodeFeedback { get; init; }
     public SymbolicFeedback? SymbolicFeedback { get; init; }
     public CircuitFeedback? CircuitFeedback { get; init; }
+    public decimal EarnedPoints { get; init; }
+    public decimal PossiblePoints { get; init; }
+    public IReadOnlyList<AnswerEvaluation> PartEvaluations { get; init; } = Array.Empty<AnswerEvaluation>();
 }
 
 public sealed record CodeFeedback(

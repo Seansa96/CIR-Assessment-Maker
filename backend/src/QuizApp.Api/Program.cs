@@ -55,6 +55,8 @@ builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequi
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
 builder.Services.AddSingleton<IGuidedProjectSessionRepository, FileGuidedProjectSessionRepository>();
 builder.Services.AddSingleton<SqliteNavigationCatalogService>();
+builder.Services.AddSingleton<INavigationCatalogService>(sp => sp.GetRequiredService<SqliteNavigationCatalogService>());
+builder.Services.AddSingleton<NavigationRecommendationService>();
 
 builder.Services.AddCors(options =>
 {
@@ -140,6 +142,12 @@ api.MapGet("/navigation/catalog", async (SqliteNavigationCatalogService catalogS
 
     var catalog = await catalogService.GetCatalogAsync(cancellationToken);
     return Results.Ok(catalog);
+});
+
+api.MapGet("/navigation/recommendations", async (NavigationRecommendationService recommendationService, CancellationToken cancellationToken) =>
+{
+    var recommendations = await recommendationService.GetRecommendationsAsync(cancellationToken);
+    return Results.Ok(recommendations);
 });
 
 
@@ -271,9 +279,9 @@ api.MapPost("/attempts/{attemptId}/abandon", async (string attemptId, AttemptSer
 {
     try
     {
-        var attempt = await attemptService.AbandonAsync(attemptId, cancellationToken);
         var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
-        return Results.Ok(new { attempt, results });
+        var attempt = await attemptService.AbandonAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results = results with { Status = AttemptStatus.Abandoned } });
     }
     catch (InvalidOperationException ex)
     {

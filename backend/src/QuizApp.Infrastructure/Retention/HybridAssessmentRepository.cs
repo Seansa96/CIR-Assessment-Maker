@@ -16,7 +16,10 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
     private readonly SqliteRetentionOptions retentionOptions;
     private readonly FileAssessmentRepository fileRepo;
 
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+    {
+        Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+    };
 
     public HybridAssessmentRepository(
         SqliteAssessmentCatalogImporter importer,

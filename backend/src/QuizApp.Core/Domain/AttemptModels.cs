@@ -70,6 +70,8 @@ public sealed record AttemptResults(
     IReadOnlyList<QuestionResult> Questions)
 {
     public AssessmentType AssessmentType { get; init; } = AssessmentType.Unknown;
+    public decimal EarnedPoints { get; init; }
+    public decimal PossiblePoints { get; init; }
     public bool HasPendingSelfChecks { get; init; }
     public RecallDrillSummary? RecallSummary { get; init; }
     public IReadOnlyList<RecallItemResult> RecallItems { get; init; } = Array.Empty<RecallItemResult>();
@@ -130,6 +132,9 @@ public sealed record QuestionResult(
     public string? Problem { get; init; }
     public IReadOnlyList<string> KeyPoints { get; init; } = Array.Empty<string>();
     public bool IsPendingSelfCheck { get; init; }
+    public decimal EarnedPoints { get; init; }
+    public decimal PossiblePoints { get; init; }
+    public IReadOnlyList<QuestionResult> PartResults { get; init; } = Array.Empty<QuestionResult>();
 }
 
 public sealed record GradeLogEntry(
@@ -141,7 +146,11 @@ public sealed record GradeLogEntry(
     int CorrectCount,
     int TotalQuestions,
     decimal PercentScore,
-    DateTimeOffset CommittedAt);
+    DateTimeOffset CommittedAt)
+{
+    public decimal EarnedPoints { get; init; }
+    public decimal PossiblePoints { get; init; }
+}
 
 public sealed record GradeLogSummary(
     int EntryCount,

@@ -65,12 +65,25 @@ public sealed class SqliteRetentionInitializer
                 correct_count INTEGER NOT NULL,
                 total_questions INTEGER NOT NULL,
                 percent_score TEXT NOT NULL,
-                committed_at TEXT NOT NULL
+                committed_at TEXT NOT NULL,
+                earned_points TEXT NOT NULL DEFAULT '0',
+                possible_points TEXT NOT NULL DEFAULT '0'
             );
             """, cancellationToken);
 
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_attempts_started_at ON attempts(started_at DESC);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_grades_committed_at ON grade_log_entries(committed_at DESC);", cancellationToken);
+
+        if (!await ColumnExistsAsync(connection, "grade_log_entries", "earned_points", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE grade_log_entries ADD COLUMN earned_points TEXT NOT NULL DEFAULT '0';", cancellationToken);
+            await ExecuteAsync(connection, "UPDATE grade_log_entries SET earned_points = CAST(correct_count AS TEXT);", cancellationToken);
+        }
+        if (!await ColumnExistsAsync(connection, "grade_log_entries", "possible_points", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE grade_log_entries ADD COLUMN possible_points TEXT NOT NULL DEFAULT '0';", cancellationToken);
+            await ExecuteAsync(connection, "UPDATE grade_log_entries SET possible_points = CAST(total_questions AS TEXT);", cancellationToken);
+        }
 
         // Assessment catalog tables
         await ExecuteAsync(connection, """
@@ -118,6 +131,8 @@ public sealed class SqliteRetentionInitializer
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_goal ON assessments(learning_goal);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_activity ON assessments(activity_type);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_active ON assessments(is_active);", cancellationToken);
+        
+        await RunAttemptCleanupMigrationAsync(connection, cancellationToken);
     }
 
     private static async Task<bool> ColumnExistsAsync(
@@ -145,5 +160,24 @@ public sealed class SqliteRetentionInitializer
         await using var command = connection.CreateCommand();
         command.CommandText = commandText;
         await command.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    private async Task RunAttemptCleanupMigrationAsync(SqliteConnection connection, CancellationToken cancellationToken)
+    {
+        await using var checkCommand = connection.CreateCommand();
+        checkCommand.CommandText = "SELECT value FROM retention_metadata WHERE key = 'migration_abandoned_cleanup';";
+        var result = await checkCommand.ExecuteScalarAsync(cancellationToken);
+        if (result is not null)
+        {
+            return;
+        }
+
+        await ExecuteAsync(connection, "DELETE FROM grade_log_entries WHERE attempt_id IN (SELECT id FROM attempts WHERE status = 4);", cancellationToken);
+        await ExecuteAsync(connection, "DELETE FROM attempts WHERE status = 4;", cancellationToken);
+
+        await using var updateCommand = connection.CreateCommand();
+        updateCommand.CommandText = "INSERT INTO retention_metadata (key, value, updated_at) VALUES ('migration_abandoned_cleanup', 'completed', $updated_at);";
+        updateCommand.Parameters.AddWithValue("$updated_at", DateTimeOffset.UtcNow.ToString("O"));
+        await updateCommand.ExecuteNonQueryAsync(cancellationToken);
     }
 }

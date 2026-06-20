@@ -4,7 +4,98 @@ namespace QuizApp.Core.Services;
 
 public sealed class ScoringService
 {
-    public AnswerEvaluation ScoreAnswer(QuestionDefinition question, SubmittedAnswer submittedAnswer)
+    private readonly ICodeQuestionScorer codeQuestionScorer;
+    private readonly ISymbolicExpressionScorer symbolicExpressionScorer;
+    private readonly ICircuitQuestionScorer circuitQuestionScorer;
+
+    public ScoringService(
+        ICodeQuestionScorer codeQuestionScorer,
+        ISymbolicExpressionScorer symbolicExpressionScorer,
+        ICircuitQuestionScorer circuitQuestionScorer)
+    {
+        this.codeQuestionScorer = codeQuestionScorer;
+        this.symbolicExpressionScorer = symbolicExpressionScorer;
+        this.circuitQuestionScorer = circuitQuestionScorer;
+    }
+
+    public async Task<AnswerEvaluation> ScoreQuestionAsync(QuestionDefinition question, SubmittedAnswer submittedAnswer, AppSettings settings, CancellationToken cancellationToken = default)
+    {
+        if (question.Type is QuestionType.Multipart)
+        {
+            return await ScoreMultipartQuestionAsync(question, submittedAnswer, settings, cancellationToken);
+        }
+
+        var evaluation = question.Type switch
+        {
+            QuestionType.Code => await codeQuestionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
+            QuestionType.SymbolicResponse => await symbolicExpressionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
+            QuestionType.Circuit => await circuitQuestionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
+            _ => ScoreSynchronousAnswer(question, submittedAnswer)
+        };
+
+        return evaluation with
+        {
+            EarnedPoints = evaluation.IsCorrect ? 1m : 0m,
+            PossiblePoints = 1m
+        };
+    }
+
+    private async Task<AnswerEvaluation> ScoreMultipartQuestionAsync(QuestionDefinition question, SubmittedAnswer submittedAnswer, AppSettings settings, CancellationToken cancellationToken)
+    {
+        var partEvaluations = new List<AnswerEvaluation>();
+        var partAnswersDict = submittedAnswer.PartAnswers.ToDictionary(a => a.QuestionId, StringComparer.OrdinalIgnoreCase);
+
+        var earnedPoints = 0m;
+        var possiblePoints = 1m;
+        var partWeight = question.Parts.Count > 0 ? 1m / question.Parts.Count : 0m;
+
+        foreach (var part in question.Parts)
+        {
+            var partDef = new QuestionDefinition(
+                Id: part.Id,
+                Type: part.Type,
+                Prompt: part.Prompt,
+                Choices: part.Choices,
+                Answer: part.Answer,
+                Explanation: part.Explanation,
+                Media: part.Media)
+            {
+                CodeQuestion = part.CodeQuestion,
+                CircuitQuestion = part.CircuitQuestion
+            };
+
+            partAnswersDict.TryGetValue(part.Id, out var partSubmittedAnswer);
+            if (partSubmittedAnswer is null)
+            {
+                partSubmittedAnswer = new SubmittedAnswer(part.Id, null, Array.Empty<string>(), null, null, null);
+            }
+
+            var partEval = await ScoreQuestionAsync(partDef, partSubmittedAnswer, settings, cancellationToken);
+            var scaledEarned = partEval.IsCorrect ? partWeight : 0m;
+            
+            partEvaluations.Add(partEval with 
+            { 
+                EarnedPoints = scaledEarned,
+                PossiblePoints = partWeight
+            });
+            earnedPoints += scaledEarned;
+        }
+
+        var isCorrect = earnedPoints >= possiblePoints - 0.0001m && earnedPoints <= possiblePoints + 0.0001m; // Floating point tolerance
+
+        return new AnswerEvaluation(
+            question.Id,
+            isCorrect,
+            question.Explanation,
+            null)
+        {
+            EarnedPoints = earnedPoints,
+            PossiblePoints = possiblePoints,
+            PartEvaluations = partEvaluations
+        };
+    }
+
+    private AnswerEvaluation ScoreSynchronousAnswer(QuestionDefinition question, SubmittedAnswer submittedAnswer)
     {
         var isCorrect = question.Type switch
         {
@@ -75,7 +166,9 @@ public sealed class ScoringService
 
         var correctCount = attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
         var totalQuestions = attempt.QuestionOrder.Count;
-        var percentScore = totalQuestions == 0 ? 0 : Math.Round(correctCount * 100m / totalQuestions, 2);
+        var earnedPoints = attempt.Answers.Sum(answer => answer.Evaluation?.EarnedPoints ?? 0m);
+        var possiblePoints = (decimal)totalQuestions;
+        var percentScore = possiblePoints == 0m ? 0m : Math.Round(earnedPoints * 100m / possiblePoints, 2);
 
         return new AttemptResults(
             attempt.Id,
@@ -90,6 +183,8 @@ public sealed class ScoringService
             questionResults)
         {
             AssessmentType = assessment.AssessmentType,
+            EarnedPoints = earnedPoints,
+            PossiblePoints = possiblePoints,
             HasPendingSelfChecks = questionResults.Any(question => question.IsPendingSelfCheck)
         };
     }
@@ -148,6 +243,8 @@ public sealed class ScoringService
             .ToList();
         var reviewedCount = itemResults.Count(item => item.Rating is not RecallRating.Unknown);
         var totalItems = attempt.QuestionOrder.Count;
+        var earnedPoints = (decimal)(easyCount + correctCount);
+        var possiblePoints = (decimal)totalItems;
 
         return new AttemptResults(
             attempt.Id,
@@ -157,11 +254,13 @@ public sealed class ScoringService
             attempt.Status,
             easyCount + correctCount,
             totalItems,
-            totalItems == 0 ? 0 : Math.Round((easyCount + correctCount) * 100m / totalItems, 2),
+            possiblePoints == 0m ? 0m : Math.Round(earnedPoints * 100m / possiblePoints, 2),
             attempt.Status is AttemptStatus.Completed,
             Array.Empty<QuestionResult>())
         {
             AssessmentType = assessment.AssessmentType,
+            EarnedPoints = earnedPoints,
+            PossiblePoints = possiblePoints,
             RecallSummary = new RecallDrillSummary(reviewedCount, easyCount, correctCount, needsReviewCount, forgotCount, weakTags),
             RecallItems = itemResults
         };
@@ -212,6 +311,8 @@ public sealed class ScoringService
         var requiredSections = sectionResults.Where(section => section.Required).ToList();
         var completedCount = requiredSections.Count(section => section.Completed);
         var totalCount = requiredSections.Count;
+        var earnedPoints = (decimal)completedCount;
+        var possiblePoints = (decimal)totalCount;
         return new AttemptResults(
             attempt.Id,
             assessment.Id,
@@ -220,11 +321,13 @@ public sealed class ScoringService
             attempt.Status,
             completedCount,
             totalCount,
-            totalCount == 0 ? 0 : Math.Round(completedCount * 100m / totalCount, 2),
+            possiblePoints == 0m ? 0m : Math.Round(earnedPoints * 100m / possiblePoints, 2),
             attempt.Status is AttemptStatus.Completed,
             Array.Empty<QuestionResult>())
         {
             AssessmentType = assessment.AssessmentType,
+            EarnedPoints = earnedPoints,
+            PossiblePoints = possiblePoints,
             LearningSections = sectionResults
         };
     }
@@ -234,9 +337,47 @@ public sealed class ScoringService
         AttemptAnswer? answer,
         bool showFeedback)
     {
-        var isPendingSelfCheck = question.Type is QuestionType.FreeResponse
-            && answer?.Answer.FreeResponseText is not null
-            && answer.Answer.SelfCheckCorrect is null;
+        var isPendingSelfCheck = false;
+        
+        if (question.Type is QuestionType.Multipart)
+        {
+            isPendingSelfCheck = question.Parts.Any(part => 
+                part.Type is QuestionType.FreeResponse 
+                && answer?.Answer.PartAnswers.FirstOrDefault(pa => string.Equals(pa.QuestionId, part.Id, StringComparison.OrdinalIgnoreCase))?.FreeResponseText is not null
+                && answer?.Answer.PartAnswers.FirstOrDefault(pa => string.Equals(pa.QuestionId, part.Id, StringComparison.OrdinalIgnoreCase))?.SelfCheckCorrect is null);
+        }
+        else
+        {
+            isPendingSelfCheck = question.Type is QuestionType.FreeResponse
+                && answer?.Answer.FreeResponseText is not null
+                && answer.Answer.SelfCheckCorrect is null;
+        }
+
+        var partResults = Array.Empty<QuestionResult>();
+        if (question.Type is QuestionType.Multipart && question.Parts.Count > 0)
+        {
+            partResults = question.Parts.Select(part =>
+            {
+                var partAnswer = answer?.Answer.PartAnswers.FirstOrDefault(pa => string.Equals(pa.QuestionId, part.Id, StringComparison.OrdinalIgnoreCase));
+                var partEval = answer?.Evaluation?.PartEvaluations.FirstOrDefault(pe => string.Equals(pe.QuestionId, part.Id, StringComparison.OrdinalIgnoreCase));
+                
+                var partDef = new QuestionDefinition(
+                    Id: part.Id,
+                    Type: part.Type,
+                    Prompt: part.Prompt,
+                    Choices: part.Choices,
+                    Answer: part.Answer,
+                    Explanation: part.Explanation,
+                    Media: part.Media)
+                {
+                    CodeQuestion = part.CodeQuestion,
+                    CircuitQuestion = part.CircuitQuestion
+                };
+
+                return BuildQuestionResult(partDef, partAnswer is not null ? new AttemptAnswer(part.Id, partAnswer, partEval, answer?.SubmittedAt ?? DateTimeOffset.UtcNow) : null, showFeedback);
+            }).ToArray();
+        }
+
         return new QuestionResult(
             question.Id,
             question.Prompt,
@@ -251,7 +392,10 @@ public sealed class ScoringService
             showFeedback ? answer?.Evaluation?.CircuitFeedback : null)
         {
             KeyPoints = showFeedback ? question.Answer.KeyPoints : Array.Empty<string>(),
-            IsPendingSelfCheck = isPendingSelfCheck
+            IsPendingSelfCheck = isPendingSelfCheck,
+            EarnedPoints = answer?.Evaluation?.EarnedPoints ?? 0m,
+            PossiblePoints = answer?.Evaluation?.PossiblePoints ?? 1m,
+            PartResults = partResults
         };
     }
 

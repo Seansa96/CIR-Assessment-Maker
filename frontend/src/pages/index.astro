@@ -38,6 +38,9 @@ import "../styles/global.css";
           <!-- Breadcrumb path -->
           <nav class="nav-breadcrumb" id="nav-breadcrumb" aria-label="Navigator path" hidden></nav>
 
+          <!-- Compact Active Session -->
+          <div id="nav-compact-active-session" class="compact-active-session" hidden></div>
+
           <!-- Step stages (each revealed after prior selection) -->
           <div class="nav-stages" id="nav-stages">
             <!-- Stage 0: Subject -->
@@ -275,6 +278,7 @@ import "../styles/global.css";
       import rehypeKatex from "rehype-katex";
       import rehypeStringify from "rehype-stringify";
       import { EditorView, basicSetup } from "codemirror";
+      import { createCodeEditor } from "../scripts/codeEditor";
       import { keymap } from "@codemirror/view";
       import { indentWithTab } from "@codemirror/commands";
       import { python } from "@codemirror/lang-python";
@@ -286,7 +290,7 @@ import "../styles/global.css";
 
       type AssessmentMode = "practice" | "scored";
       type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "conceptLesson" | "interactiveExploration";
-      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit";
+      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit" | "multipart";
 
       interface CircuitQuestionDefinition {
         schemaVersion: number;
@@ -370,6 +374,20 @@ import "../styles/global.css";
         assessments: NavigationAssessment[];
       }
 
+      interface NavigationRecommendation {
+        topicId: string;
+        areaIds: string[];
+        state: "learn" | "recall" | "practice" | "review" | "evaluate";
+        recommendedLearningGoal: string;
+        recommendedActivityTypes: string[];
+        suggestedAssessmentIds: string[];
+        completedLearnCount: number;
+        completedRecallCount: number;
+        eligibleMasteryAttemptCount: number;
+        masteryPercent: number | null;
+        provisionalMastery: boolean;
+      }
+
       interface NavigationSubject {
         id: string;
         title: string;
@@ -446,6 +464,7 @@ import "../styles/global.css";
         tests?: CodeQuestionTest[];
         explanation?: string | null;
         circuitQuestion?: CircuitQuestionDefinition;
+        parts?: Question[];
       }
 
       interface CodeQuestionTest {
@@ -646,6 +665,7 @@ import "../styles/global.css";
         codeText: string | null;
         symbolicLatex: string | null;
         circuitAnswer?: SubmittedCircuitAnswer | null;
+        partAnswers?: SubmittedAnswer[];
       }
 
       interface CodeFeedback {
@@ -691,6 +711,9 @@ import "../styles/global.css";
         problem: string | null;
         keyPoints: string[];
         isPendingSelfCheck: boolean;
+        earnedPoints?: number;
+        possiblePoints?: number;
+        partResults?: QuestionResult[];
       }
 
       interface AttemptResults {
@@ -704,6 +727,8 @@ import "../styles/global.css";
         percentScore: number;
         isComplete: boolean;
         hasPendingSelfChecks: boolean;
+        earnedPoints: number;
+        possiblePoints: number;
         questions: QuestionResult[];
         recallSummary: RecallDrillSummary | null;
         recallItems: RecallItemResult[];
@@ -870,7 +895,8 @@ import "../styles/global.css";
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
       const IS_DEV = import.meta.env.DEV;
-      let currentCodeEditor: EditorView | null = null;
+      let currentCodeEditors: EditorView[] = [];
+      let currentCodeEditor: EditorView | null = null; // Legacy
       let currentProjectEditor: EditorView | null = null;
       let activeCircuitCanvas: CircuitCanvas | null = null;
       let resultCircuitCanvases: CircuitCanvas[] = [];
@@ -914,6 +940,7 @@ import "../styles/global.css";
         questionNavigatorOpen: boolean;
         draftQuestions: Question[];
         navigationCatalog: NavigationCatalog | null;
+        navigationRecommendations: NavigationRecommendation[] | null;
         navigationSelection: {
           subjectId: string;
           areaId: string;
@@ -949,6 +976,7 @@ import "../styles/global.css";
         questionNavigatorOpen: false,
         draftQuestions: [],
         navigationCatalog: null,
+        navigationRecommendations: null,
         navigationSelection: {
           subjectId: "",
           areaId: "",
@@ -1050,11 +1078,21 @@ import "../styles/global.css";
         renderAssessmentOptions();
       }
 
+      async function loadRecommendations() {
+        try {
+          state.navigationRecommendations = await api<NavigationRecommendation[]>("/navigation/recommendations");
+        } catch (error) {
+          console.error("Recommendations unavailable:", error);
+          state.navigationRecommendations = [];
+        }
+      }
+
       async function initializeNavigation() {
         try {
           const catalog = await api<NavigationCatalog>("/navigation/catalog");
           if (!catalog.assessments.length) throw new Error("The assessment catalog is empty.");
           state.navigationCatalog = catalog;
+          await loadRecommendations();
           navError.hidden = true;
           renderNavigation();
         } catch (error) {
@@ -1069,6 +1107,57 @@ import "../styles/global.css";
         const catalog = state.navigationCatalog;
         if (!catalog) return;
         const selection = state.navigationSelection;
+
+        const inProgress = state.attempt?.status === "inProgress";
+        const compactBar = document.querySelector<HTMLElement>("#nav-compact-active-session");
+        const classicPicker = document.querySelector<HTMLElement>("#classic-picker");
+        const navStages = document.querySelector<HTMLElement>("#nav-stages");
+
+        if (inProgress) {
+          if (navStages) navStages.hidden = true;
+          if (classicPicker) classicPicker.hidden = true;
+          navActions.hidden = true;
+          navBreadcrumb.hidden = true;
+
+          if (compactBar) {
+            compactBar.hidden = false;
+            compactBar.innerHTML = `
+              <div class="compact-bar">
+                <span class="compact-bar-item">${escapeHtml(catalog.subjects.find(s => s.id === selection.subjectId)?.title ?? "")}</span>
+                <span class="compact-bar-sep">›</span>
+                <span class="compact-bar-item">${escapeHtml(catalog.areas.find(a => a.id === selection.areaId)?.title ?? "")}</span>
+                <span class="compact-bar-sep">›</span>
+                <span class="compact-bar-item">${escapeHtml(catalog.topics.find(t => t.id === selection.topicId)?.title ?? "")}</span>
+                <span class="compact-bar-sep">›</span>
+                <span class="compact-bar-item"><strong>${escapeHtml(state.assessment?.title ?? "")}</strong> (${escapeHtml(state.attempt?.mode ?? "")})</span>
+                <button type="button" class="compact-bar-change secondary-action" id="btn-change-assessment">Change Assessment</button>
+              </div>
+            `;
+            const changeBtn = compactBar.querySelector("#btn-change-assessment");
+            if (changeBtn) {
+              changeBtn.addEventListener("click", () => {
+                if (confirm("Are you sure? Your current progress will be paused and saved, but you will leave this assessment.")) {
+                  state.attempt = null;
+                  state.assessment = null;
+                  state.latestResults = null;
+                  renderApp();
+                }
+              });
+            }
+          }
+          return;
+        } else {
+          if (navStages) navStages.hidden = false;
+          if (classicPicker) classicPicker.hidden = false;
+          if (compactBar) compactBar.hidden = true;
+          const stageSubject = document.querySelector<HTMLElement>("#nav-stage-subject");
+          if (stageSubject) stageSubject.hidden = false;
+        }
+
+
+        const recommendations = state.navigationRecommendations ?? [];
+        const topicRecommendations = new Map(recommendations.map(r => [r.topicId, r]));
+
         const subjects = catalog.subjects
           .map((subject) => ({
             subject,
@@ -1093,14 +1182,20 @@ import "../styles/global.css";
             count: subjectAssessments.filter((assessment) => assessment.areaIds.includes(area.id)).length
           }))
           .filter((entry) => entry.count > 0);
-        renderNavigationTiles("nav-area-tiles", areas.map(({ area, count }) => ({
-          id: area.id,
-          label: area.title,
-          description: area.description,
-          count,
-          selected: selection.areaId === area.id,
-          disabled: false
-        })), (id) => selectNavigationStage("area", id));
+        renderNavigationTiles("nav-area-tiles", areas.map(({ area, count }) => {
+          const areaRecs = recommendations.filter(r => r.areaIds.includes(area.id) && r.state === "review");
+          const reviewCount = areaRecs.length;
+          const badgeHtml = reviewCount > 0 ? `<span class="quiet-badge" style="font-size: 0.85em; opacity: 0.8; margin-left: 6px;">${reviewCount} topics need review</span>` : "";
+          return {
+            id: area.id,
+            label: area.title,
+            description: area.description,
+            count,
+            selected: selection.areaId === area.id,
+            disabled: false,
+            badgeHtml: badgeHtml
+          };
+        }), (id) => selectNavigationStage("area", id));
 
         const areaAssessments = subjectAssessments.filter((assessment) => assessment.areaIds.includes(selection.areaId));
         const availableTopicIds = new Set(areaAssessments.flatMap((assessment) => assessment.topicIds));
@@ -1110,24 +1205,37 @@ import "../styles/global.css";
             topic,
             count: areaAssessments.filter((assessment) => assessment.topicIds.includes(topic.id)).length
           }));
-        renderNavigationTiles("nav-topic-tiles", topics.map(({ topic, count }) => ({
-          id: topic.id,
-          label: topic.title,
-          description: topic.description,
-          count,
-          selected: selection.topicId === topic.id,
-          disabled: false
-        })), (id) => selectNavigationStage("topic", id));
+        renderNavigationTiles("nav-topic-tiles", topics.map(({ topic, count }) => {
+          const rec = topicRecommendations.get(topic.id);
+          let badgeHtml = "";
+          if (rec) {
+            if (rec.state === "review") badgeHtml = `<span class="badge review" style="background: #ffd600; color: #000;">Review</span>`;
+            else if (rec.state === "evaluate") badgeHtml = `<span class="badge evaluate" style="background: #00c853; color: #fff;">Ready to Evaluate</span>`;
+            else if (rec.provisionalMastery) badgeHtml = `<span class="badge provisional" style="background: #e0e0e0; color: #000;">Provisional</span>`;
+          }
+          return {
+            id: topic.id,
+            label: topic.title,
+            description: topic.description,
+            count,
+            selected: selection.topicId === topic.id,
+            disabled: false,
+            badgeHtml: badgeHtml
+          };
+        }), (id) => selectNavigationStage("topic", id));
 
+        const activeTopicRec = topicRecommendations.get(selection.topicId);
         const topicAssessments = areaAssessments.filter((assessment) => assessment.topicIds.includes(selection.topicId));
         renderNavigationTiles("nav-goal-tiles", catalog.goals.map((goal) => {
           const count = topicAssessments.filter((assessment) => assessment.learningGoal === goal.id).length;
+          const isSuggested = activeTopicRec?.recommendedLearningGoal === goal.id;
           return {
             id: goal.id,
             label: goal.label,
             count,
             selected: selection.goalId === goal.id,
-            disabled: count === 0
+            disabled: count === 0,
+            suggested: isSuggested
           };
         }), (id) => selectNavigationStage("goal", id));
 
@@ -1138,17 +1246,23 @@ import "../styles/global.css";
           label: activityTypeLabel(activityType),
           count: goalAssessments.filter((assessment) => assessment.activityType === activityType).length
         })).filter((activity) => activity.count > 0);
-        renderNavigationTiles("nav-activity-tiles", activities.map((activity, index) => ({
-          ...activity,
-          selected: selection.activityType === activity.id,
-          disabled: false,
-          suggested: index === 0
-        })), (id) => selectNavigationStage("activity", id));
+        renderNavigationTiles("nav-activity-tiles", activities.map((activity) => {
+          const isSuggested = selection.goalId === activeTopicRec?.recommendedLearningGoal && 
+                              activeTopicRec?.recommendedActivityTypes.includes(activity.id);
+          return {
+            ...activity,
+            selected: selection.activityType === activity.id,
+            disabled: false,
+            suggested: isSuggested
+          };
+        }), (id) => selectNavigationStage("activity", id));
 
         const matchingAssessments = goalAssessments.filter((assessment) =>
           assessment.activityType === selection.activityType);
         const assessmentList = document.querySelector<HTMLDivElement>("#nav-assessment-list")!;
-        assessmentList.innerHTML = matchingAssessments.map((assessment) => `
+        assessmentList.innerHTML = matchingAssessments.map((assessment) => {
+          const isSuggested = activeTopicRec?.suggestedAssessmentIds.includes(assessment.id);
+          return `
           <button
             type="button"
             class="nav-assessment-item ${selection.assessmentId === assessment.id ? "selected" : ""}"
@@ -1156,10 +1270,13 @@ import "../styles/global.css";
             role="option"
             aria-selected="${selection.assessmentId === assessment.id}"
           >
-            <span class="nav-assessment-name">${escapeHtml(assessment.title)}</span>
+            <span class="nav-assessment-name">
+              ${escapeHtml(assessment.title)}
+              ${isSuggested ? `<span class="badge suggested" style="background: #2196f3; color: #fff; margin-left: 6px; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">Suggested</span>` : ""}
+            </span>
             <span class="nav-assessment-meta">${escapeHtml(assessmentTypeLabel(assessment.assessmentType))} · ${escapeHtml(assessmentCountLabel(assessment))} items</span>
           </button>
-        `).join("");
+        `}).join("");
         assessmentList.querySelectorAll<HTMLButtonElement>("[data-navigation-assessment]").forEach((button) => {
           button.addEventListener("click", () => selectNavigationStage("assessment", button.dataset.navigationAssessment ?? ""));
         });
@@ -1179,10 +1296,11 @@ import "../styles/global.css";
           id: string;
           label: string;
           description?: string | null;
-          count: number;
-          selected: boolean;
-          disabled: boolean;
+          count?: number;
+          selected?: boolean;
+          disabled?: boolean;
           suggested?: boolean;
+          badgeHtml?: string;
         }>,
         onSelect: (id: string) => void
       ) {
@@ -1194,11 +1312,11 @@ import "../styles/global.css";
             data-navigation-id="${escapeHtml(item.id)}"
             title="${escapeHtml(item.description ?? item.label)}"
             role="option"
-            aria-selected="${item.selected}"
+            aria-selected="${item.selected ?? false}"
             ${item.disabled ? "disabled" : ""}
           >
-            ${item.suggested ? `<span class="nav-tile-suggested">Suggested</span>` : ""}
-            <span>${escapeHtml(item.label)}</span>
+            ${item.suggested ? `<div class="nav-tile-suggestion" style="background: #2196f3; color: #fff; font-size: 0.7em; padding: 2px 4px; border-radius: 3px; position: absolute; top: -8px; right: -8px;">Suggested</div>` : ""}
+            <span class="nav-tile-label">${escapeHtml(item.label)} ${item.badgeHtml ?? ""}</span>
             <span class="nav-tile-count">${item.count} available</span>
           </button>
         `).join("");
@@ -1225,6 +1343,54 @@ import "../styles/global.css";
         const catalog = state.navigationCatalog;
         if (!catalog) return;
         const selection = state.navigationSelection;
+
+        const inProgress = state.attempt?.status === "inProgress";
+        const compactBar = document.querySelector<HTMLElement>("#nav-compact-active-session");
+        const classicPicker = document.querySelector<HTMLElement>("#classic-picker");
+        const navStages = document.querySelector<HTMLElement>("#nav-stages");
+
+        if (inProgress) {
+          if (navStages) navStages.hidden = true;
+          if (classicPicker) classicPicker.hidden = true;
+          navActions.hidden = true;
+          navBreadcrumb.hidden = true;
+
+          if (compactBar) {
+            compactBar.hidden = false;
+            compactBar.innerHTML = `
+              <div class="compact-bar">
+                <span class="compact-bar-item">${escapeHtml(catalog.subjects.find(s => s.id === selection.subjectId)?.title ?? "")}</span>
+                <span class="compact-bar-sep">›</span>
+                <span class="compact-bar-item">${escapeHtml(catalog.areas.find(a => a.id === selection.areaId)?.title ?? "")}</span>
+                <span class="compact-bar-sep">›</span>
+                <span class="compact-bar-item">${escapeHtml(catalog.topics.find(t => t.id === selection.topicId)?.title ?? "")}</span>
+                <span class="compact-bar-sep">›</span>
+                <span class="compact-bar-item"><strong>${escapeHtml(state.assessment?.title ?? "")}</strong> (${escapeHtml(state.attempt?.mode ?? "")})</span>
+                <button type="button" class="compact-bar-change secondary-action" id="btn-change-assessment">Change Assessment</button>
+              </div>
+            `;
+            const changeBtn = compactBar.querySelector("#btn-change-assessment");
+            if (changeBtn) {
+              changeBtn.addEventListener("click", () => {
+                if (confirm("Are you sure? Your current progress will be paused and saved, but you will leave this assessment.")) {
+                  state.attempt = null;
+                  state.assessment = null;
+                  state.latestResults = null;
+                  renderApp();
+                }
+              });
+            }
+          }
+          return;
+        } else {
+          if (navStages) navStages.hidden = false;
+          if (classicPicker) classicPicker.hidden = false;
+          if (compactBar) compactBar.hidden = true;
+          const stageSubject = document.querySelector<HTMLElement>("#nav-stage-subject");
+          if (stageSubject) stageSubject.hidden = false;
+        }
+
+
         const parts = [
           { stage: "subject", id: selection.subjectId, label: catalog.subjects.find((item) => item.id === selection.subjectId)?.title },
           { stage: "area", id: selection.areaId, label: catalog.areas.find((item) => item.id === selection.areaId)?.title },
@@ -1300,6 +1466,19 @@ import "../styles/global.css";
         mode: AssessmentMode,
         startButton: HTMLButtonElement
       ) {
+        if (state.attempt?.status === "inProgress") {
+          if (!confirm("Starting this assessment will permanently delete your current unsaved attempt. Continue?")) return;
+          try {
+            setBusy(startButton, "Deleting");
+            await api(`/attempts/${encodeURIComponent(state.attempt.id)}`, { method: "DELETE" });
+          } catch (e) {
+            console.error(e);
+            alert("Failed to delete the previous attempt.");
+            clearBusy(startButton, "Start Selected");
+            return;
+          }
+        }
+        
         setBusy(startButton, "Loading");
         try {
           state.assessment = await api<Assessment>(`/assessments/${encodeURIComponent(assessmentId)}`);
@@ -1314,6 +1493,9 @@ import "../styles/global.css";
           updateActiveAttemptChip();
           updateModeControlLock();
           await renderCurrentQuestion();
+          if (typeof loadRecommendations === "function") {
+            await loadRecommendations();
+          }
         } finally {
           clearBusy(startButton, "Start Selected");
         }
@@ -1374,7 +1556,7 @@ import "../styles/global.css";
           state.currentIndex = firstUnansweredIndex(state.latestResults, state.attempt);
         }
 
-        if (state.latestResults.status === "completed" || state.latestResults.status === "abandoned") {
+        if (state.latestResults.status === "completed") {
           await renderResults(isAttemptCommitted(state.attempt.id));
         } else {
           await renderCurrentQuestion();
@@ -1407,7 +1589,7 @@ import "../styles/global.css";
         updateModeControlLock();
         activateTab("load");
 
-        if (session.attempt.status === "completed" || session.attempt.status === "abandoned") {
+        if (session.attempt.status === "completed") {
           await renderResults(isAttemptCommitted(session.attempt.id));
           return;
         }
@@ -1467,18 +1649,27 @@ import "../styles/global.css";
 
       async function abandonAttempt() {
         if (!state.attempt) return;
-        if (!confirm("Quit this attempt early? It will be kept for review but cannot be committed to the grade log.")) return;
-        await flushLearningSectionState();
+        if (!confirm("Quit this assessment early? This attempt and all unsaved progress will be permanently deleted.")) return;
 
-        const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${state.attempt.id}/abandon`, {
-          method: "POST"
-        });
-        state.attempt = response.attempt;
-        state.latestResults = response.results;
-        updateActiveAttemptChip("Abandoned");
+        await api(`/attempts/${state.attempt.id}`, { method: "DELETE" });
+        
+        state.attempt = null;
+        state.assessment = null;
+        state.latestResults = null;
+        state.guidedProjectSession = null;
+        currentCodeEditor?.destroy();
+        currentCodeEditor = null;
+        currentCircuitCanvas?.destroy();
+        currentCircuitCanvas = null;
+
+        updateActiveAttemptChip();
         updateModeControlLock();
-        await renderResults(false);
+        attemptContent.innerHTML = `<div class="empty-state">Attempt deleted.</div>`;
+        
         await loadGrades();
+        if (typeof loadRecommendations === "function") {
+           await loadRecommendations();
+        }
       }
 
       async function deleteAttempt(attemptId: string) {
@@ -1741,7 +1932,7 @@ import "../styles/global.css";
             <details class="history-filters">
               <summary>Filters <span>${rows.length}/${analytics.attempts.length}</span></summary>
               <div class="history-filter-grid">
-                ${renderHistorySelect("status", "Status", [["", "Any"], ["inProgress", "In progress"], ["paused", "Paused"], ["completed", "Complete"], ["abandoned", "Abandoned"]])}
+                ${renderHistorySelect("status", "Status", [["", "Any"], ["inProgress", "In progress"], ["paused", "Paused"], ["completed", "Complete"]])}
                 ${renderHistorySelect("mode", "Mode", [["", "Any"], ["practice", "Practice"], ["scored", "Scored"]])}
                 ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"], ["guidedProject", "Guided Project"], ["recallDrill", "Recall Drill"]])}
                 ${renderHistorySelect("categoryId", "Category", [["", "Any"], ...uniqueOptions(analytics.attempts.map((row) => [row.categoryId, row.categoryTitle]))])}
@@ -1863,7 +2054,7 @@ import "../styles/global.css";
           actions.push(`<button type="button" data-attempt-action="abandon" data-attempt-id="${id}">Quit Early</button>`);
         }
 
-        if (attempt.status === "completed" || attempt.status === "abandoned") {
+        if (attempt.status === "completed") {
           actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
         }
 
@@ -1933,8 +2124,7 @@ import "../styles/global.css";
         return {
           inProgress: "In progress",
           paused: "Paused",
-          completed: "Complete",
-          abandoned: "Abandoned"
+          completed: "Complete"
         }[status] ?? "In progress";
       }
 
@@ -2341,6 +2531,24 @@ import "../styles/global.css";
           `;
         }
 
+        
+        if (question.type === "multipart") {
+          const answerForm = getActiveAnswerForm();
+          if (!answerForm) throw new Error("Form not found");
+          const form = new FormData(answerForm);
+          return {
+            questionId: question.id,
+            choiceId: null,
+            choiceIds: [],
+            freeResponseText: null,
+            selfCheckCorrect: null,
+            numericValue: null,
+            codeText: null,
+            symbolicLatex: null,
+            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
+          };
+        }
+
         if (question.type === "circuit") {
           const cQ = question.circuitQuestion || {
             interactionMode: "build",
@@ -2657,7 +2865,25 @@ import "../styles/global.css";
             if (question.answer?.equivalenceMode === "derivative" && (question.answer?.variables ?? []).length === 0) errors.push(`Question ${index + 1} needs a variable for derivative equivalence.`);
             if ((question.answer?.tolerance ?? -1) < 0) errors.push(`Question ${index + 1} needs a non-negative symbolic tolerance.`);
           }
-          if (question.type === "circuit") {
+          
+        if (question.type === "multipart") {
+          const answerForm = getActiveAnswerForm();
+          if (!answerForm) throw new Error("Form not found");
+          const form = new FormData(answerForm);
+          return {
+            questionId: question.id,
+            choiceId: null,
+            choiceIds: [],
+            freeResponseText: null,
+            selfCheckCorrect: null,
+            numericValue: null,
+            codeText: null,
+            symbolicLatex: null,
+            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
+          };
+        }
+
+        if (question.type === "circuit") {
             if (!question.circuitQuestion) errors.push(`Question ${index + 1} needs circuit definition.`);
             if (!question.answer?.circuitAnswer) errors.push(`Question ${index + 1} needs circuit expected answer.`);
           }
@@ -2724,6 +2950,31 @@ import "../styles/global.css";
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
         const promptHtml = await renderMarkdown(question.prompt);
         const navigatorHtml = renderQuestionNavigator();
+        let inputHtml = "";
+
+        if (question.type === "multipart") {
+          const partsHtml = await Promise.all((question.parts ?? []).map(async (part, i) => {
+            const partResult = results?.partResults?.find(r => r.questionId === part.id);
+            const partPrefix = `${part.id}-`;
+            const partPromptHtml = await renderMarkdown(part.prompt);
+            const partInputHtml = await renderAnswerInput(part, partResult?.submittedAnswer ?? null, partPrefix);
+            const partFeedback = part.type === "freeResponse" || partResult?.isCorrect === null || partResult?.isCorrect === undefined
+              ? ""
+              : `<div class="feedback ${partResult.isCorrect ? "correct" : "incorrect"}">${partResult.isCorrect ? "Correct" : "Needs review"}</div>`;
+            return `
+              <div class="multipart-part" id="part-container-${partPrefix}">
+                <h4>Part ${String.fromCharCode(65 + i)}</h4>
+                <div class="markdown">${partPromptHtml}</div>
+                ${partInputHtml}
+                ${partFeedback}
+              </div>
+            `;
+          }));
+          inputHtml = partsHtml.join("");
+        } else {
+          inputHtml = await renderAnswerInput(question, results?.submittedAnswer ?? null);
+        }
+
         const feedbackExplanation = results?.explanation ? await renderMarkdown(results.explanation) : "";
         const symbolicFeedbackHtml = await renderSymbolicFeedback(results?.symbolicFeedback);
         const selfCheckHtml = await renderFreeResponseSelfCheck(results, state.attempt.mode === "practice");
@@ -2748,7 +2999,7 @@ import "../styles/global.css";
           </div>
           <form id="answer-form" class="answer-form">
             ${navigatorHtml}
-            ${await renderAnswerInput(question, results?.submittedAnswer ?? null)}
+            ${inputHtml}
             <div class="assessment-control-bar">
               <div class="button-row">
                 <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
@@ -3505,27 +3756,24 @@ import "../styles/global.css";
         };
       }
 
-      function setupGuidedProjectEditor(language: "cpp" | "python", readOnly: boolean) {
+            function setupGuidedProjectEditor(language: "cpp" | "python", readOnly: boolean) {
         currentProjectEditor?.destroy();
         currentProjectEditor = null;
 
         const mount = document.querySelector<HTMLDivElement>("#guided-project-editor");
         if (!mount) return;
 
-        const languageExtension = language === "cpp" ? cpp() : python();
-        currentProjectEditor = new EditorView({
-          doc: mount.dataset.code ?? "",
+        const projectFiles = state.guidedProjectSession?.files || [];
+        const activeFilePath = state.guidedProjectActiveFile || "";
+
+        currentProjectEditor = createCodeEditor({
           parent: mount,
-          extensions: [
-            keymap.of([indentWithTab]),
-            basicSetup,
-            languageExtension,
-            EditorView.lineWrapping,
-            EditorView.editable.of(!readOnly),
-            EditorView.updateListener.of((update) => {
-              if (update.docChanged) syncGuidedProjectEditor();
-            })
-          ]
+          document: mount.dataset.code ?? "",
+          language: language,
+          readOnly: readOnly,
+          projectFiles: projectFiles,
+          activeFilePath: activeFilePath,
+          onChange: () => syncGuidedProjectEditor()
         });
       }
 
@@ -3720,10 +3968,10 @@ import "../styles/global.css";
         setupDevAssessmentRefresh();
       }
 
-      async function renderAnswerInput(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
+      async function renderAnswerInput(question: Question, submittedAnswer: SubmittedAnswer | null = null, idPrefix: string = "") {
         if (question.type === "multipleChoice") {
           const choices = displayedChoices(question);
-          const choiceCards = await Promise.all(choices.map((choice, index) => renderChoiceCard(choice, index, "radio", submittedAnswer)));
+          const choiceCards = await Promise.all(choices.map((choice, index) => renderChoiceCard(choice, index, "radio", submittedAnswer, idPrefix)));
           return `
             <div class="choice-card-list" role="radiogroup" aria-label="Answer choices">
               ${choiceCards.join("")}
@@ -3732,7 +3980,7 @@ import "../styles/global.css";
         }
 
         if (question.type === "selectAll") {
-          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "checkbox", submittedAnswer)));
+          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "checkbox", submittedAnswer, idPrefix)));
           return `
             <div class="choice-card-list" role="group" aria-label="Select all that apply">
               ${choices.join("")}
@@ -3743,8 +3991,8 @@ import "../styles/global.css";
         if (question.type === "numericResponse") {
           return `
             <div class="field numeric-response-field">
-              <label for="numeric-response">Numeric response</label>
-              <input id="numeric-response" name="numericValue" type="number" step="any" inputmode="decimal" value="${escapeHtml(String(submittedAnswer?.numericValue ?? ""))}" />
+              <label for="${idPrefix}numeric-response">Numeric response</label>
+              <input id="${idPrefix}numeric-response" name="${idPrefix}numericValue" type="number" step="any" inputmode="decimal" value="${escapeHtml(String(submittedAnswer?.numericValue ?? ""))}" />
             </div>
           `;
         }
@@ -3753,9 +4001,9 @@ import "../styles/global.css";
           const codeValue = submittedAnswer?.codeText ?? question.starterCode ?? "";
           return `
             <div class="field code-response-field">
-              <label for="code-response">${escapeHtml((question.language ?? "code").toUpperCase())} response</label>
-              <div id="code-response-editor" class="code-editor-shell" data-language="${escapeHtml(question.language ?? "python")}" data-code="${escapeHtml(codeValue)}"></div>
-              <input id="code-response" name="codeText" type="hidden" value="${escapeHtml(codeValue)}" />
+              <label for="${idPrefix}code-response">${escapeHtml((question.language ?? "code").toUpperCase())} response</label>
+              <div id="${idPrefix}code-response-editor" class="code-editor-shell" data-language="${escapeHtml(question.language ?? "python")}" data-code="${escapeHtml(codeValue)}"></div>
+              <input id="${idPrefix}code-response" name="${idPrefix}codeText" type="hidden" value="${escapeHtml(codeValue)}" />
               <p class="input-help">Submit the complete function definition. Tab indents inside the editor; the test runner calls the named function automatically.</p>
             </div>
           `;
@@ -3764,11 +4012,29 @@ import "../styles/global.css";
         if (question.type === "symbolicResponse") {
           return `
             <div class="field symbolic-response-field">
-              <label for="symbolic-response">Symbolic response</label>
-              <math-field id="symbolic-response" aria-describedby="symbolic-response-help">${escapeHtml(submittedAnswer?.symbolicLatex ?? "")}</math-field>
-              <p id="symbolic-response-help" class="input-help">Use Tab to leave powers, roots, fractions, and placeholders. Shortcuts like sin, cos, sqrt, pi, theta, and int expand automatically.</p>
+              <label for="${idPrefix}symbolic-response">Symbolic response</label>
+              <math-field id="${idPrefix}symbolic-response" aria-describedby="${idPrefix}symbolic-response-help">${escapeHtml(submittedAnswer?.symbolicLatex ?? "")}</math-field>
+              <p id="${idPrefix}symbolic-response-help" class="input-help">Use Tab to leave powers, roots, fractions, and placeholders. Shortcuts like sin, cos, sqrt, pi, theta, and int expand automatically.</p>
             </div>
           `;
+        }
+
+        
+        if (question.type === "multipart") {
+          const answerForm = getActiveAnswerForm();
+          if (!answerForm) throw new Error("Form not found");
+          const form = new FormData(answerForm);
+          return {
+            questionId: question.id,
+            choiceId: null,
+            choiceIds: [],
+            freeResponseText: null,
+            selfCheckCorrect: null,
+            numericValue: null,
+            codeText: null,
+            symbolicLatex: null,
+            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
+          };
         }
 
         if (question.type === "circuit") {
@@ -3815,13 +4081,17 @@ import "../styles/global.css";
             <div class="circuit-editor-shell">
               ${promptNote}
               ${toolbarHtml}
-              <div id="circuit-editor-mount" class="circuit-mount"></div>
+              <div id="${idPrefix}circuit-editor-mount" class="circuit-mount"></div>
             </div>
           `;
         }
 
         if (question.type === "freeResponse") {
-          if (submittedAnswer?.freeResponseText !== null && submittedAnswer?.freeResponseText !== undefined) {
+          const isPractice = state.attempt?.mode === "practice";
+          const hasResponse = submittedAnswer?.freeResponseText !== null && submittedAnswer?.freeResponseText !== undefined;
+          const shouldLock = hasResponse && (state.attempt?.status === "completed" || state.attempt?.mode === "scored");
+
+          if (shouldLock) {
             return `
               <div class="locked-response">
                 <strong>Your locked response</strong>
@@ -3832,16 +4102,16 @@ import "../styles/global.css";
 
           return `
             <div class="field">
-              <label for="free-response">Your response</label>
-              <textarea id="free-response" name="freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
+              <label for="${idPrefix}free-response">Your response</label>
+              <textarea id="${idPrefix}free-response" name="${idPrefix}freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
             </div>
           `;
         }
 
         return `
           <div class="field">
-            <label for="free-response">Your response</label>
-            <textarea id="free-response" name="freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
+            <label for="${idPrefix}free-response">Your response</label>
+            <textarea id="${idPrefix}free-response" name="${idPrefix}freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
           </div>
         `;
       }
@@ -3888,7 +4158,7 @@ import "../styles/global.css";
         return next >>> 0;
       }
 
-      async function renderChoiceCard(choice: ChoiceOption, index: number, role: "radio" | "checkbox", submittedAnswer: SubmittedAnswer | null) {
+      async function renderChoiceCard(choice: ChoiceOption, index: number, role: "radio" | "checkbox", submittedAnswer: SubmittedAnswer | null, idPrefix: string = "") {
         const isSelectAll = role === "checkbox";
         const shortcut = choiceShortcut(index);
         const choiceHtml = await renderMarkdown(choice.text);
@@ -3957,6 +4227,7 @@ import "../styles/global.css";
 
       async function renderFreeResponseSelfCheck(result: QuestionResult | null | undefined, allowSelfCheck: boolean) {
         if (!allowSelfCheck || !result || result.type !== "freeResponse" || !result.submittedAnswer?.freeResponseText) return "";
+        if (state.attempt?.mode === "scored" && state.attempt?.status === "inProgress") return "";
 
         const expectedHtml = result.expectedAnswer ? await renderMarkdown(result.expectedAnswer) : "";
         const explanationHtml = result.explanation ? await renderMarkdown(result.explanation) : "";
@@ -3995,7 +4266,66 @@ import "../styles/global.css";
         `;
       }
 
+      
+      function readPartAnswer(question: Question, answerForm: HTMLFormElement, form: FormData, idPrefix: string = ""): SubmittedAnswer {
+        
+        if (question.type === "multipart") {
+          const answerForm = getActiveAnswerForm();
+          if (!answerForm) throw new Error("Form not found");
+          const form = new FormData(answerForm);
+          return {
+            questionId: question.id,
+            choiceId: null,
+            choiceIds: [],
+            freeResponseText: null,
+            selfCheckCorrect: null,
+            numericValue: null,
+            codeText: null,
+            symbolicLatex: null,
+            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
+          };
+        }
+
+        if (question.type === "circuit") {
+          const mount = document.querySelector<HTMLElement>(`#${idPrefix}circuit-editor-mount`);
+          // Note: In a full impl we need to extract from multiple activeCircuitCanvases
+          // For now we just return null or empty to avoid breaking
+        }
+        
+        const partScope = idPrefix ? document.querySelector<HTMLElement>(`#part-container-${idPrefix}`) || answerForm : answerForm;
+        const selectedCards = Array.from(partScope.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
+
+        return {
+          questionId: question.id,
+          choiceId: question.type === "multipleChoice" ? selectedCards[0]?.dataset.choiceId ?? null : null,
+          choiceIds: question.type === "selectAll" ? selectedCards.map((card) => card.dataset.choiceId ?? "") : [],
+          freeResponseText: question.type === "freeResponse" ? String(form.get(`${idPrefix}freeResponseText`) ?? "") : null,
+          selfCheckCorrect: null,
+          numericValue: question.type === "numericResponse" ? nullableNumber(form.get(`${idPrefix}numericValue`)) : null,
+          codeText: question.type === "code" ? readCodeText(form, idPrefix) : null,
+          symbolicLatex: question.type === "symbolicResponse" ? readSymbolicLatex(idPrefix) : null
+        };
+      }
+
       function readAnswer(question: Question) {
+        
+        if (question.type === "multipart") {
+          const answerForm = getActiveAnswerForm();
+          if (!answerForm) throw new Error("Form not found");
+          const form = new FormData(answerForm);
+          return {
+            questionId: question.id,
+            choiceId: null,
+            choiceIds: [],
+            freeResponseText: null,
+            selfCheckCorrect: null,
+            numericValue: null,
+            codeText: null,
+            symbolicLatex: null,
+            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
+          };
+        }
+
         if (question.type === "circuit") {
           if (activeCircuitCanvas) {
             const diag = activeCircuitCanvas.getDiagram();
@@ -4318,8 +4648,8 @@ import "../styles/global.css";
         `;
       }
 
-      function readCodeText(form: FormData) {
-        return currentCodeEditor?.state.doc.toString() ?? String(form.get("codeText") ?? "");
+      function readCodeText(form: FormData, idPrefix: string = "") {
+        return String(form.get(`${idPrefix}codeText`) ?? "");
       }
 
       function setupSelfCheckButtons() {
@@ -4413,8 +4743,8 @@ import "../styles/global.css";
         });
       }
 
-      function readSymbolicLatex() {
-        const mathField = document.querySelector<HTMLElement & { value?: string }>("#symbolic-response");
+      function readSymbolicLatex(idPrefix: string = "") {
+        const mathField = document.querySelector<HTMLElement & { value?: string }>(`#${idPrefix}symbolic-response`);
         return mathField?.value ?? mathField?.textContent ?? "";
       }
 
@@ -4443,33 +4773,35 @@ import "../styles/global.css";
       }
 
       function setupCodeEditor(question: Question) {
-        currentCodeEditor?.destroy();
-        currentCodeEditor = null;
+        if (!currentCodeEditors) currentCodeEditors = [];
+        currentCodeEditors.forEach(ed => ed.destroy());
+        currentCodeEditors = [];
+
+        if (question.type === "multipart") {
+          question.parts?.forEach(p => setupCodeEditor(p));
+        }
 
         if (question.type !== "code") return;
 
-        const mount = document.querySelector<HTMLDivElement>("#code-response-editor");
-        const hiddenInput = document.querySelector<HTMLInputElement>("#code-response");
-        if (!mount || !hiddenInput) return;
+        const mounts = document.querySelectorAll<HTMLDivElement>(".code-editor-shell");
+        mounts.forEach(mount => {
+          const inputId = mount.dataset.inputId;
+          if (!inputId) return;
+          const hiddenInput = document.querySelector<HTMLInputElement>(`#${inputId}`);
+          if (!hiddenInput) return;
 
-        const initialCode = mount.dataset.code ?? hiddenInput.value ?? "";
-        hiddenInput.value = initialCode;
-        const languageExtension = question.language === "cpp" ? cpp() : python();
+          const initialCode = mount.dataset.code ?? hiddenInput.value ?? "";
+          hiddenInput.value = initialCode;
 
-        currentCodeEditor = new EditorView({
-          doc: initialCode,
-          parent: mount,
-          extensions: [
-            keymap.of([indentWithTab]),
-            basicSetup,
-            languageExtension,
-            EditorView.lineWrapping,
-            EditorView.updateListener.of((update) => {
-              if (update.docChanged) {
-                hiddenInput.value = update.state.doc.toString();
-              }
-            })
-          ]
+          const editor = createCodeEditor({
+            parent: mount,
+            document: initialCode,
+            language: question.language ?? "python",
+            onChange: (content) => {
+              hiddenInput.value = content;
+            }
+          });
+          currentCodeEditors.push(editor);
         });
       }
 

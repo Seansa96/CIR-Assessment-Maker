@@ -14,9 +14,6 @@ public sealed class AttemptService
     private readonly ISettingsRepository settingsRepository;
     private readonly AssessmentValidator validator;
     private readonly ScoringService scoringService;
-    private readonly ICodeQuestionScorer codeQuestionScorer;
-    private readonly ISymbolicExpressionScorer symbolicExpressionScorer;
-    private readonly ICircuitQuestionScorer circuitQuestionScorer;
 
     public AttemptService(
         IAssessmentRepository assessmentRepository,
@@ -26,10 +23,7 @@ public sealed class AttemptService
         IGuidedProjectSessionRepository guidedProjectSessionRepository,
         ISettingsRepository settingsRepository,
         AssessmentValidator validator,
-        ScoringService scoringService,
-        ICodeQuestionScorer codeQuestionScorer,
-        ISymbolicExpressionScorer symbolicExpressionScorer,
-        ICircuitQuestionScorer circuitQuestionScorer)
+        ScoringService scoringService)
     {
         this.assessmentRepository = assessmentRepository;
         this.attemptRepository = attemptRepository;
@@ -39,9 +33,6 @@ public sealed class AttemptService
         this.settingsRepository = settingsRepository;
         this.validator = validator;
         this.scoringService = scoringService;
-        this.codeQuestionScorer = codeQuestionScorer;
-        this.symbolicExpressionScorer = symbolicExpressionScorer;
-        this.circuitQuestionScorer = circuitQuestionScorer;
     }
 
     public async Task<Attempt> StartAsync(string assessmentId, AssessmentMode? mode, CancellationToken cancellationToken = default)
@@ -126,23 +117,17 @@ public sealed class AttemptService
         var answerToScore = NormalizeSubmittedAnswer(question, submittedAnswer, existingAnswer);
 
         var settings = await settingsRepository.GetAsync(cancellationToken);
-        var evaluation = question.Type switch
-        {
-            QuestionType.Code => await codeQuestionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
-            QuestionType.SymbolicResponse => await symbolicExpressionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
-            QuestionType.Circuit => await circuitQuestionScorer.ScoreAsync(question, answerToScore, settings, cancellationToken),
-            _ => scoringService.ScoreAnswer(question, answerToScore)
-        };
+        var evaluation = await scoringService.ScoreQuestionAsync(question, answerToScore, settings, cancellationToken);
         var answers = attempt.Answers
             .Where(answer => !string.Equals(answer.QuestionId, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
             .Append(new AttemptAnswer(answerToScore.QuestionId, answerToScore, evaluation, DateTimeOffset.UtcNow))
             .ToList();
 
         var shouldCompleteWorkedExample = assessment.AssessmentType is AssessmentType.WorkedExample
-            && evaluation.IsCorrect
+            && IsResolved(new AttemptAnswer(answerToScore.QuestionId, answerToScore, evaluation, DateTimeOffset.UtcNow))
             && attempt.QuestionOrder.All(questionId => answers.Any(answer =>
                 string.Equals(answer.QuestionId, questionId, StringComparison.OrdinalIgnoreCase)
-                && answer.Evaluation?.IsCorrect == true));
+                && IsResolved(answer)));
         var updatedAttempt = shouldCompleteWorkedExample
             ? attempt with { Answers = answers, Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt with { Answers = answers };
@@ -207,7 +192,7 @@ public sealed class AttemptService
         }
         if (section.Check is not null && !attempt.Answers.Any(answer =>
             string.Equals(answer.QuestionId, section.Check.Id, StringComparison.OrdinalIgnoreCase)
-            && answer.Evaluation?.IsCorrect == true))
+            && IsResolved(answer)))
         {
             throw new InvalidOperationException("Complete the section check correctly before continuing.");
         }
@@ -370,9 +355,7 @@ public sealed class AttemptService
             AbandonedAt = DateTimeOffset.UtcNow,
             PausedAt = null
         };
-        await SaveAttemptAsync(updatedAttempt, cancellationToken);
-        await gradeLogRepository.RemoveByAttemptIdAsync(attemptId, cancellationToken);
-        await guidedProjectSessionRepository.DeleteAsync(attemptId, cancellationToken);
+        await DeleteAsync(attemptId, cancellationToken);
         return updatedAttempt;
     }
 
@@ -388,9 +371,9 @@ public sealed class AttemptService
         if (assessment.AssessmentType is AssessmentType.WorkedExample
             && !attempt.QuestionOrder.All(questionId => attempt.Answers.Any(answer =>
                 string.Equals(answer.QuestionId, questionId, StringComparison.OrdinalIgnoreCase)
-                && answer.Evaluation?.IsCorrect == true)))
+                && IsResolved(answer))))
         {
-            throw new InvalidOperationException("Worked examples can only be completed after every step is correct.");
+            throw new InvalidOperationException("Worked examples can only be completed after every step is correct or resolved.");
         }
 
         if (assessment.AssessmentType is AssessmentType.RecallDrill
@@ -613,13 +596,19 @@ public sealed class AttemptService
         foreach (var questionId in attempt.QuestionOrder)
         {
             var answer = attempt.Answers.LastOrDefault(candidate => string.Equals(candidate.QuestionId, questionId, StringComparison.OrdinalIgnoreCase));
-            if (answer?.Evaluation?.IsCorrect != true)
+            if (answer == null || !IsResolved(answer))
             {
                 return questionId;
             }
         }
 
         return attempt.QuestionOrder.LastOrDefault();
+    }
+
+    private static bool IsResolved(AttemptAnswer answer)
+    {
+        return answer.Evaluation?.IsCorrect == true
+            || (answer.Answer.FreeResponseText is not null && answer.Answer.SelfCheckCorrect is not null);
     }
 
     private static IReadOnlyList<RecallItemAttempt> ReplaceRecallItemAttempt(

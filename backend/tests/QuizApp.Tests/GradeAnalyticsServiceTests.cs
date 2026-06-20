@@ -119,7 +119,7 @@ public sealed class GradeAnalyticsServiceTests
             new MultiAssessmentRepository(assessments),
             new AnalyticsCategoryRepository(),
             new AnalyticsAreaRepository(),
-            new ScoringService());
+            new ScoringService(null!, null!, null!));
     }
 
     private static GradeAnalyticsFilter EmptyFilter()

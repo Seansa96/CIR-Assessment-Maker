@@ -523,10 +523,10 @@ public sealed class AttemptFlowTests
             new InMemoryGuidedProjectSessionRepository(),
             new InMemorySettingsRepository(),
             new AssessmentValidator(),
-            new ScoringService(),
-            new FakeCodeQuestionScorer(),
-            new FakeSymbolicExpressionScorer(),
-            new FakeCircuitQuestionScorer());
+            new ScoringService(
+                new FakeCodeQuestionScorer(),
+                new FakeSymbolicExpressionScorer(),
+                new FakeCircuitQuestionScorer()));
     }
 }
 

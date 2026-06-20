@@ -39,6 +39,10 @@ public sealed class LegacyRetentionMigrationService
         var legacyAttempts = new FileAttemptRepository(fileOptions);
         foreach (var attempt in await legacyAttempts.ListAsync(cancellationToken))
         {
+            if (attempt.Status is QuizApp.Core.Domain.AttemptStatus.Abandoned)
+            {
+                continue;
+            }
             await attemptRepository.SaveAsync(attempt, cancellationToken);
         }
 

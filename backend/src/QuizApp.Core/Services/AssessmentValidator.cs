@@ -66,7 +66,7 @@ public sealed class AssessmentValidator
             return new AssessmentValidationResult(issues);
         }
 
-        ValidateQuestions(assessment.Questions, issues);
+        ValidateQuestions(assessment.Questions, assessment.AssessmentType, issues);
 
         var questionCount = assessment.Questions.Count;
         if (assessment.AttemptQuestionCount is not null)
@@ -116,6 +116,7 @@ public sealed class AssessmentValidator
                 section.Media,
                 section.Check)).ToList(),
             "lesson",
+            assessment.AssessmentType,
             issues);
     }
 
@@ -137,6 +138,7 @@ public sealed class AssessmentValidator
                 (IReadOnlyList<MediaAsset>)Array.Empty<MediaAsset>(),
                 section.Check)).ToList(),
             "exploration",
+            assessment.AssessmentType,
             issues);
 
         foreach (var section in exploration.Sections)
@@ -220,6 +222,7 @@ public sealed class AssessmentValidator
     private static void ValidateLearningSections(
         IReadOnlyList<(string Id, string Title, string Content, IReadOnlyList<MediaAsset> Media, QuestionDefinition? Check)> sections,
         string kind,
+        AssessmentType assessmentType,
         List<ValidationIssue> issues)
     {
         if (sections.Count == 0)
@@ -246,7 +249,7 @@ public sealed class AssessmentValidator
                 {
                     issues.Add(new ValidationIssue("DUPLICATE_LEARNING_CHECK_ID", $"Learning check id '{section.Check.Id}' is duplicated.", section.Id));
                 }
-                ValidateQuestion(section.Check, issues);
+                ValidateQuestion(section.Check, assessmentType, issues);
             }
         }
     }
@@ -335,7 +338,7 @@ public sealed class AssessmentValidator
         }
     }
 
-    private static void ValidateQuestions(IReadOnlyList<QuestionDefinition> questions, List<ValidationIssue> issues)
+    private static void ValidateQuestions(IReadOnlyList<QuestionDefinition> questions, AssessmentType assessmentType, List<ValidationIssue> issues)
     {
         var duplicateQuestionIds = questions
             .Where(q => !string.IsNullOrWhiteSpace(q.Id))
@@ -350,18 +353,28 @@ public sealed class AssessmentValidator
 
         foreach (var question in questions)
         {
-            ValidateQuestion(question, issues);
+            ValidateQuestion(question, assessmentType, issues);
         }
     }
 
-    private static void ValidateQuestion(QuestionDefinition question, List<ValidationIssue> issues)
+    private static void ValidateQuestion(QuestionDefinition question, AssessmentType assessmentType, List<ValidationIssue> issues)
     {
         RequireText(question.Id, "MISSING_QUESTION_ID", "Question id is required.", issues);
         RequireText(question.Prompt, "MISSING_PROMPT", "Question prompt is required.", issues, question.Id);
 
         if (question.Type is QuestionType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, numericResponse, code, or symbolicResponse.", question.Id));
+            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, numericResponse, code, symbolicResponse, circuit, or multipart.", question.Id));
+            return;
+        }
+
+        if (question.Type is QuestionType.Multipart)
+        {
+            if (assessmentType is not AssessmentType.Quiz && assessmentType is not AssessmentType.Test)
+            {
+                issues.Add(new ValidationIssue("INVALID_MULTIPART_ASSESSMENT", "Multipart questions are only supported in quiz and test assessments.", question.Id));
+            }
+            ValidateMultipartQuestion(question, issues);
             return;
         }
 
@@ -437,6 +450,48 @@ public sealed class AssessmentValidator
         }
     }
 
+    private static void ValidateMultipartQuestion(QuestionDefinition question, List<ValidationIssue> issues)
+    {
+        if (question.Parts.Count < 2)
+        {
+            issues.Add(new ValidationIssue("INVALID_MULTIPART_PARTS", "Multipart questions must include at least two parts.", question.Id));
+        }
+
+        var partIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var part in question.Parts)
+        {
+            if (string.IsNullOrWhiteSpace(part.Id))
+            {
+                issues.Add(new ValidationIssue("MISSING_PART_ID", "Multipart parts must include an id.", question.Id));
+            }
+            else if (!partIds.Add(part.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_PART_ID", $"Multipart part id '{part.Id}' is duplicated.", question.Id));
+            }
+
+            if (part.Type is QuestionType.Multipart)
+            {
+                issues.Add(new ValidationIssue("NESTED_MULTIPART", "Multipart parts cannot be nested.", question.Id));
+                continue;
+            }
+
+            var partDef = new QuestionDefinition(
+                Id: part.Id,
+                Type: part.Type,
+                Prompt: part.Prompt,
+                Choices: part.Choices,
+                Answer: part.Answer,
+                Explanation: part.Explanation,
+                Media: part.Media)
+            {
+                CodeQuestion = part.CodeQuestion,
+                CircuitQuestion = part.CircuitQuestion
+            };
+            
+            ValidateQuestion(partDef, AssessmentType.Quiz, issues);
+        }
+    }
+
     private static void ValidateWorkedExamples(AssessmentDefinition assessment, List<ValidationIssue> issues)
     {
         if (assessment.WorkedExamples.Count == 0)
@@ -463,7 +518,7 @@ public sealed class AssessmentValidator
                 RequireText(step.Title, "MISSING_WORKED_EXAMPLE_STEP_TITLE", "Worked example steps must include a title.", issues, step.Id);
                 RequireText(step.Instruction, "MISSING_WORKED_EXAMPLE_STEP_INSTRUCTION", "Worked example steps must include instruction.", issues, step.Id);
                 stepIds.Add(step.Id);
-                ValidateQuestion(step.Question with { Id = step.Id }, issues);
+                ValidateQuestion(step.Question with { Id = step.Id }, assessment.AssessmentType, issues);
             }
         }
 

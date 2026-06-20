@@ -339,6 +339,17 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("circuit-basics-quiz")]
     [InlineData("circuit-builder-quiz")]
     [InlineData("python-loops-concept-lesson")]
+    [InlineData("physics-centripetal-acceleration-concept-lesson")]
+    [InlineData("physics-newtons-first-law-concept-lesson")]
+    [InlineData("physics-newtons-second-law-concept-lesson")]
+    [InlineData("physics-newtons-third-law-concept-lesson")]
+    [InlineData("physics-static-kinetic-friction-concept-lesson")]
+    [InlineData("cpp-oop-class-conventions-concept-lesson")]
+    [InlineData("cpp-inheritance-concept-lesson")]
+    [InlineData("cpp-polymorphism-concept-lesson")]
+    [InlineData("python-oop-class-conventions-concept-lesson")]
+    [InlineData("python-inheritance-concept-lesson")]
+    [InlineData("python-polymorphism-concept-lesson")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
@@ -349,6 +360,41 @@ public sealed class FileAssessmentRepositoryTests
         var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
 
         Assert.NotNull(loaded);
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("physics-centripetal-acceleration-concept-lesson")]
+    [InlineData("physics-newtons-first-law-concept-lesson")]
+    [InlineData("physics-newtons-second-law-concept-lesson")]
+    [InlineData("physics-newtons-third-law-concept-lesson")]
+    [InlineData("physics-static-kinetic-friction-concept-lesson")]
+    public async Task Repository_validates_physics_dynamics_concept_lessons(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("cpp-oop-class-conventions-concept-lesson")]
+    [InlineData("cpp-inheritance-concept-lesson")]
+    [InlineData("cpp-polymorphism-concept-lesson")]
+    [InlineData("python-oop-class-conventions-concept-lesson")]
+    [InlineData("python-inheritance-concept-lesson")]
+    [InlineData("python-polymorphism-concept-lesson")]
+    public async Task Repository_validates_oop_concept_lessons(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
         Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
     }
 

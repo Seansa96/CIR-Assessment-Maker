@@ -52,7 +52,11 @@ public sealed class GradeLogService
             results.CorrectCount,
             results.TotalQuestions,
             results.PercentScore,
-            DateTimeOffset.UtcNow);
+            DateTimeOffset.UtcNow)
+        {
+            EarnedPoints = results.EarnedPoints,
+            PossiblePoints = results.PossiblePoints
+        };
 
         await gradeLogRepository.AddAsync(entry, cancellationToken);
         return entry;

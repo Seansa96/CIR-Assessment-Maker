@@ -1,0 +1,89 @@
+schemaVersion: 1
+id: cpp-file-io-reader-guided-project
+title: C++ File I/O Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryIds:
+  - c++-file-io
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: Learn how to read from and write to text files in C++
+  activityType: guidedProject
+  tags:
+    - file-io
+    - fstream
+    - reading
+    - writing
+guidedProject:
+  language: cpp
+  instructions: |
+    In this project, you will write a C++ program that interacts with files using the `<fstream>` library.
+    
+    ### Required Objective
+    You must create a function named `printFileContents` that takes a `std::string` filename as a parameter. This function should:
+    1. Open the file specified by the filename using `std::ifstream`.
+    2. Read each line from the file.
+    3. Print each line exactly as it appears in the file to `std::cout` using `std::cout << line << '\n';` (or `std::endl`).
+    4. Make sure to close the file or rely on the destructor to close it automatically.
+    
+    The runner will provide a file named `input/message.txt` containing a secret message.
+    
+    ### Optional Objective (Bonus)
+    As an extra challenge, write a second function named `writeAndReadBack` that:
+    1. Takes a `std::string` filename as a parameter.
+    2. Opens the file using `std::ofstream` and writes the exact text `"Hello, File I/O!"` into it.
+    3. Closes the file.
+    4. Opens the same file again using `std::ifstream`, reads the line you just wrote, and prints it to `std::cout`.
+    
+    Complete your code in `main.cpp`. The runner handles calling your functions.
+  files:
+    - path: main.cpp
+      readOnly: false
+      content: |
+        #include <iostream>
+        #include <fstream>
+        #include <string>
+
+        // TODO: Write your printFileContents(std::string filename) function here
+
+
+        // TODO: (Bonus) Write your writeAndReadBack(std::string filename) function here
+
+  requiredChecks:
+    - id: reads-file-contents
+      title: Reads and prints the file contents
+      description: Verifies that printFileContents correctly reads input/message.txt and prints its content.
+      testCode: |
+        #include <iostream>
+        #include <fstream>
+        #include <string>
+        
+        // Forward declarations
+        void printFileContents(std::string filename);
+        
+        int main() {
+            printFileContents("input/message.txt");
+            return 0;
+        }
+      expectedOutputContains:
+        - "This is a secret message."
+        - "You have successfully read the file!"
+  bonusChecks:
+    - id: writes-and-reads-back
+      title: Writes and reads back from a file
+      description: Verifies that writeAndReadBack correctly writes text to output/test.txt and reads it back.
+      testCode: |
+        #include <iostream>
+        #include <fstream>
+        #include <string>
+        
+        // Forward declarations
+        void writeAndReadBack(std::string filename);
+        
+        int main() {
+            writeAndReadBack("output/test.txt");
+            return 0;
+        }
+      expectedOutputContains:
+        - "Hello, File I/O!"

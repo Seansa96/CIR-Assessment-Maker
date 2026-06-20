@@ -1,0 +1,272 @@
+schemaVersion: 1
+id: python-oop-class-conventions-concept-lesson
+title: Python Classes and Object-Oriented Conventions Concept Lesson
+assessmentType: conceptLesson
+categoryId: python
+subcategoryIds:
+  - python-oop
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - object-oriented-programming
+    - classes
+    - encapsulation
+    - python-conventions
+lesson:
+  introduction: |
+    Python classes combine state and behavior while relying on clear conventions rather
+    than rigid access controls. This lesson develops object responsibilities, `__init__`,
+    instance and class attributes, properties, special methods, and idiomatic class style.
+  sections:
+    - id: model-one-coherent-concept
+      title: Model one coherent concept
+      required: true
+      content: |
+        A useful class represents a concept whose data and operations belong together.
+        A `Playlist` can own songs and operations such as `add_song()` and
+        `total_duration()`. It should not also manage database connections and draw the
+        entire user interface.
+
+        Keep state changes behind methods when rules must be preserved. Python permits
+        direct access, but a clear public interface still communicates how the object is
+        meant to be used.
+      check:
+        id: model-one-coherent-concept-check
+        type: multipleChoice
+        prompt: Which class has the clearest responsibility?
+        choices:
+          - id: a
+            text: A `Rectangle` that stores dimensions and calculates area and perimeter
+          - id: b
+            text: A `Helper` that sends email, calculates taxes, parses images, and stores users
+          - id: c
+            text: A `Manager` that owns every global operation
+          - id: d
+            text: A class created only to avoid writing a normal function
+        answer:
+          choiceId: a
+        explanation: |
+          The rectangle's state and behavior form one cohesive abstraction.
+
+          Related topic: single responsibility and cohesion.
+
+    - id: initialization-and-self
+      title: Initialize instance state with __init__
+      required: true
+      content: |
+        `__init__` configures a newly created instance. The first parameter is conventionally
+        named `self`, which refers to the instance receiving the method call.
+
+        ```python
+        class Runner:
+            def __init__(self, name: str, distance: float = 0.0) -> None:
+                self.name = name
+                self.distance = max(0.0, distance)
+        ```
+
+        Assigning `self.name` creates or updates instance state. A bare local variable
+        named `name` disappears when the method returns.
+      check:
+        id: initialization-and-self-check
+        type: multipleChoice
+        prompt: What does `self.distance = distance` do inside `__init__`?
+        choices:
+          - id: a
+            text: Stores the argument on the new instance
+          - id: b
+            text: Creates a local variable only
+          - id: c
+            text: Creates one global value shared by every instance
+          - id: d
+            text: Defines a new class
+        answer:
+          choiceId: a
+        explanation: |
+          The `self.` prefix identifies an attribute belonging to that particular object.
+
+          Related topic: instance attributes and method binding.
+
+    - id: instance-versus-class-attributes
+      title: Distinguish instance and class attributes
+      required: true
+      content: |
+        Attributes assigned through `self` normally belong to one instance. Attributes
+        assigned in the class body are shared defaults or class-level state.
+
+        ```python
+        class Runner:
+            species = "human"
+
+            def __init__(self, name: str) -> None:
+                self.name = name
+        ```
+
+        Avoid mutable class attributes such as `items = []` when each instance should own
+        a separate list.
+      check:
+        id: instance-versus-class-attributes-check
+        type: multipleChoice
+        prompt: Where should a separate inventory list for each player be initialized?
+        choices:
+          - id: a
+            text: As `self.inventory = []` inside `__init__`
+          - id: b
+            text: As `inventory = []` once in the class body
+          - id: c
+            text: As a global list used by every player
+          - id: d
+            text: Inside `__str__`
+        answer:
+          choiceId: a
+        explanation: |
+          Initializing through `self` gives each player an independent list.
+
+          Related topic: shared mutable class attributes.
+
+    - id: naming-and-public-conventions
+      title: Use Python naming and visibility conventions
+      required: true
+      content: |
+        Common conventions include:
+
+        - `PascalCase` for class names
+        - `snake_case` for methods and attributes
+        - a leading underscore for non-public implementation details
+        - type hints for public method contracts when they improve clarity
+
+        A leading underscore communicates intent but does not enforce privacy. Double
+        leading underscores trigger name mangling and are mainly useful to avoid accidental
+        collisions in subclasses, not to create absolute security.
+      check:
+        id: naming-and-public-conventions-check
+        type: selectAll
+        prompt: Which names follow common Python class conventions?
+        choices:
+          - id: a
+            text: '`class RaceControl:`'
+          - id: b
+            text: '`def winner_name(self):`'
+          - id: c
+            text: '`self._cached_result` for an internal detail'
+          - id: d
+            text: '`class race_control:`'
+        answer:
+          choiceIds: [a, b, c]
+        explanation: |
+          Classes use PascalCase, methods use snake_case, and a leading underscore marks
+          an implementation detail by convention.
+
+          Related topic: PEP 8 naming conventions.
+
+    - id: properties-protect-transitions
+      title: Use properties when access needs behavior
+      required: true
+      content: |
+        Begin with a normal attribute when direct access is appropriate. Introduce a
+        property when reading or assigning the value needs validation or computation.
+
+        ```python
+        @property
+        def distance(self) -> float:
+            return self._distance
+
+        @distance.setter
+        def distance(self, value: float) -> None:
+            if value < 0:
+                raise ValueError("distance cannot be negative")
+            self._distance = value
+        ```
+
+        Do not create Java-style getters and setters automatically for every attribute.
+      check:
+        id: properties-protect-transitions-check
+        type: multipleChoice
+        prompt: When is a property most useful?
+        choices:
+          - id: a
+            text: When attribute access must validate or compute a value while preserving a simple interface
+          - id: b
+            text: Whenever an attribute stores any value at all
+          - id: c
+            text: To make all instance state global
+          - id: d
+            text: To replace every normal method
+        answer:
+          choiceId: a
+        explanation: |
+          Properties preserve attribute-style use while centralizing meaningful behavior.
+
+          Related topic: descriptors and invariant validation.
+
+    - id: special-methods
+      title: Implement protocols with special methods
+      required: true
+      content: |
+        Special methods let objects participate in Python protocols:
+
+        - `__repr__` provides a developer-oriented representation.
+        - `__str__` provides human-readable text.
+        - `__len__` supports `len(obj)`.
+        - `__eq__` defines value equality.
+
+        Implement a special method because the type naturally supports that protocol, not
+        merely because operator syntax looks clever.
+      check:
+        id: special-methods-check
+        type: multipleChoice
+        prompt: Which method should provide a useful developer representation of an object?
+        choices:
+          - id: a
+            text: '`__repr__`'
+          - id: b
+            text: '`__init__`'
+          - id: c
+            text: '`__delete__`'
+          - id: d
+            text: '`__module__`'
+        answer:
+          choiceId: a
+        explanation: |
+          `__repr__` should make debugging and inspection clearer.
+
+          Related topic: Python data model protocols.
+
+    - id: dataclasses-and-composition
+      title: Use dataclasses and composition intentionally
+      required: true
+      content: |
+        For a class whose main purpose is storing structured values, `@dataclass` can
+        generate initialization, representation, and equality behavior.
+
+        ```python
+        @dataclass
+        class Point:
+            x: float
+            y: float
+        ```
+
+        Composition remains the usual choice for has-a relationships. A `Race` has
+        `Runner` objects; a race is not a specialized runner.
+      check:
+        id: dataclasses-and-composition-check
+        type: selectAll
+        prompt: Which statements are sound design choices?
+        choices:
+          - id: a
+            text: Use a dataclass for a value-oriented record when generated methods fit
+          - id: b
+            text: Use composition when one object owns or coordinates another
+          - id: c
+            text: Use inheritance whenever two classes share one attribute
+          - id: d
+            text: Keep each class focused on a coherent responsibility
+        answer:
+          choiceIds: [a, b, d]
+        explanation: |
+          Dataclasses reduce value-object boilerplate, while composition and cohesion keep
+          object relationships understandable.
+
+          Related topic: dataclasses, composition, and value objects.

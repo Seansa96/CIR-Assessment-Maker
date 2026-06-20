@@ -27,7 +27,7 @@ public sealed class SqliteGradeLogRepository : IGradeLogRepository
         await connection.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT id, attempt_id, assessment_id, assessment_title, mode, correct_count, total_questions, percent_score, committed_at
+            SELECT id, attempt_id, assessment_id, assessment_title, mode, correct_count, total_questions, percent_score, committed_at, earned_points, possible_points
             FROM grade_log_entries
             ORDER BY committed_at DESC;
             """;
@@ -50,10 +50,10 @@ public sealed class SqliteGradeLogRepository : IGradeLogRepository
         await using var command = connection.CreateCommand();
         command.CommandText = """
             INSERT INTO grade_log_entries (
-                id, attempt_id, assessment_id, assessment_title, mode, correct_count, total_questions, percent_score, committed_at
+                id, attempt_id, assessment_id, assessment_title, mode, correct_count, total_questions, percent_score, committed_at, earned_points, possible_points
             )
             VALUES (
-                $id, $attempt_id, $assessment_id, $assessment_title, $mode, $correct_count, $total_questions, $percent_score, $committed_at
+                $id, $attempt_id, $assessment_id, $assessment_title, $mode, $correct_count, $total_questions, $percent_score, $committed_at, $earned_points, $possible_points
             )
             ON CONFLICT(attempt_id) DO UPDATE SET
                 id = excluded.id,
@@ -63,7 +63,9 @@ public sealed class SqliteGradeLogRepository : IGradeLogRepository
                 correct_count = excluded.correct_count,
                 total_questions = excluded.total_questions,
                 percent_score = excluded.percent_score,
-                committed_at = excluded.committed_at;
+                committed_at = excluded.committed_at,
+                earned_points = excluded.earned_points,
+                possible_points = excluded.possible_points;
             """;
         command.Parameters.AddWithValue("$id", entry.Id);
         command.Parameters.AddWithValue("$attempt_id", entry.AttemptId);
@@ -74,6 +76,8 @@ public sealed class SqliteGradeLogRepository : IGradeLogRepository
         command.Parameters.AddWithValue("$total_questions", entry.TotalQuestions);
         command.Parameters.AddWithValue("$percent_score", entry.PercentScore.ToString(System.Globalization.CultureInfo.InvariantCulture));
         command.Parameters.AddWithValue("$committed_at", entry.CommittedAt.ToString("O"));
+        command.Parameters.AddWithValue("$earned_points", entry.EarnedPoints.ToString(System.Globalization.CultureInfo.InvariantCulture));
+        command.Parameters.AddWithValue("$possible_points", entry.PossiblePoints.ToString(System.Globalization.CultureInfo.InvariantCulture));
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
@@ -99,6 +103,10 @@ public sealed class SqliteGradeLogRepository : IGradeLogRepository
             reader.GetInt32(5),
             reader.GetInt32(6),
             decimal.Parse(reader.GetString(7), System.Globalization.CultureInfo.InvariantCulture),
-            DateTimeOffset.Parse(reader.GetString(8)));
+            DateTimeOffset.Parse(reader.GetString(8)))
+        {
+            EarnedPoints = decimal.Parse(reader.GetString(9), System.Globalization.CultureInfo.InvariantCulture),
+            PossiblePoints = decimal.Parse(reader.GetString(10), System.Globalization.CultureInfo.InvariantCulture)
+        };
     }
 }

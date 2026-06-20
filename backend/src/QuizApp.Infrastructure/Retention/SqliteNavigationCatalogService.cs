@@ -1,10 +1,11 @@
 using Microsoft.Data.Sqlite;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
+using QuizApp.Core.Services;
 
 namespace QuizApp.Infrastructure.Retention;
 
-public sealed class SqliteNavigationCatalogService
+public sealed class SqliteNavigationCatalogService : INavigationCatalogService
 {
     private readonly SqliteRetentionOptions retentionOptions;
     private readonly SqliteAssessmentCatalogImporter importer;
