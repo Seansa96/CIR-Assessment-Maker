@@ -665,7 +665,7 @@ api.MapGet("/analytics/grades", async (
     return Results.Ok(await analyticsService.GetSummaryAsync(filter, cancellationToken));
 });
 
-app.MapFallbackToFile("index.html");
+app.MapFallbackToFile("index.html").AllowAnonymous();
 
 app.Run();
 

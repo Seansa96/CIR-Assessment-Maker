@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CIR Assessment Maker</title>
+  <link rel="stylesheet" href="/_astro/index.49eecb7b.css" /><script type="module" src="/_astro/hoisted.10d65722.js"></script></head>
+  <body>
+    <div id="login-gate" class="login-gate" hidden>
+      <div class="login-box">
+        <h2>CIR Assessment Maker</h2>
+        <p class="login-prompt">Please enter the shared access token to connect.</p>
+        <form id="login-form">
+          <label class="form-field">
+            <span class="field-label">Access Token</span>
+            <input type="password" id="login-token-input" name="token" required>
+          </label>
+          <p id="login-error" class="form-error" hidden></p>
+          <button type="submit" class="primary action-button" id="login-submit-button">Connect</button>
+        </form>
+      </div>
+    </div>
+
+    <main class="app-shell" id="app-shell" hidden>
+      <header class="app-header">
+        <div>
+          <p class="eyebrow">Local STEM assessment loop</p>
+          <h1>CIR Assessment Maker</h1>
+        </div>
+        <div class="api-status" id="api-status" role="status">Connecting</div>
+      </header>
+
+      <nav class="tabs" aria-label="Primary">
+        <button class="tab active" data-tab="load">Load Assessment</button>
+        <button class="tab" data-tab="create">Create Quiz/Test</button>
+        <button class="tab" data-tab="settings">Settings</button>
+        <button class="tab" data-tab="grades">Grade Log</button>
+      </nav>
+
+      <section class="view active" id="view-load" aria-labelledby="load-title">
+        <!-- Progressive Assessment Navigator -->
+        <section class="nav-explorer" id="nav-explorer" aria-label="Assessment Navigator">
+          <div class="nav-header">
+            <h2 id="load-title">Load Assessment</h2>
+            <div class="attempt-chip" id="active-attempt-chip">No active attempt</div>
+          </div>
+          <p class="quiet-hint">Switch assessments whenever you need a different path.</p>
+
+          <!-- Breadcrumb path -->
+          <nav class="nav-breadcrumb" id="nav-breadcrumb" aria-label="Navigator path" hidden></nav>
+
+          <!-- Compact Active Session -->
+          <div id="nav-compact-active-session" class="compact-active-session" hidden></div>
+
+          <!-- Step stages (each revealed after prior selection) -->
+          <div class="nav-stages" id="nav-stages">
+            <!-- Stage 0: Subject -->
+            <div class="nav-stage active" id="nav-stage-subject" data-stage="subject">
+              <h3 class="nav-stage-label">Subject</h3>
+              <div class="nav-tile-grid" id="nav-subject-tiles" role="listbox" aria-label="Select subject"></div>
+            </div>
+            <!-- Stage 1: Area -->
+            <div class="nav-stage" id="nav-stage-area" data-stage="area" hidden>
+              <h3 class="nav-stage-label">Area</h3>
+              <div class="nav-tile-grid" id="nav-area-tiles" role="listbox" aria-label="Select area"></div>
+            </div>
+            <!-- Stage 2: Topic -->
+            <div class="nav-stage" id="nav-stage-topic" data-stage="topic" hidden>
+              <h3 class="nav-stage-label">Topic</h3>
+              <div class="nav-tile-grid" id="nav-topic-tiles" role="listbox" aria-label="Select topic"></div>
+            </div>
+            <!-- Stage 3: Learning Goal -->
+            <div class="nav-stage" id="nav-stage-goal" data-stage="goal" hidden>
+              <h3 class="nav-stage-label">Learning Goal</h3>
+              <div class="nav-tile-grid" id="nav-goal-tiles" role="listbox" aria-label="Select learning goal"></div>
+            </div>
+            <!-- Stage 4: Activity Type -->
+            <div class="nav-stage" id="nav-stage-activity" data-stage="activity" hidden>
+              <h3 class="nav-stage-label">Activity Type</h3>
+              <div class="nav-tile-grid" id="nav-activity-tiles" role="listbox" aria-label="Select activity type"></div>
+            </div>
+            <!-- Stage 5: Assessment list -->
+            <div class="nav-stage" id="nav-stage-assessments" data-stage="assessments" hidden>
+              <h3 class="nav-stage-label">Assessments</h3>
+              <div id="nav-assessment-list" class="nav-assessment-list" role="listbox" aria-label="Select assessment"></div>
+            </div>
+          </div>
+
+          <!-- Mode + Start -->
+          <div class="nav-actions" id="nav-actions" hidden>
+            <fieldset class="mode-control compact">
+              <legend>Mode</legend>
+              <div class="mode-segments">
+                <label class="mode-segment">
+                  <input type="radio" name="nav-mode" value="practice" checked>
+                  <span>Practice</span>
+                </label>
+                <label class="mode-segment">
+                  <input type="radio" name="nav-mode" value="scored">
+                  <span>Scored</span>
+                </label>
+              </div>
+            </fieldset>
+            <button class="primary action-button" id="nav-start-attempt">Start Selected</button>
+          </div>
+
+          <!-- Error fallback message -->
+          <p class="nav-error" id="nav-error" hidden></p>
+        </section>
+
+        <!-- Classic picker (fallback / legacy) -->
+        <details class="classic-picker" id="classic-picker">
+          <summary>Classic assessment picker</summary>
+          <section class="switcher" aria-labelledby="classic-picker-label">
+            <div class="switcher-controls">
+              <div class="field compact">
+                <label for="category-select">Category</label>
+                <select id="category-select"></select>
+              </div>
+              <div class="field compact wide">
+                <label for="assessment-select">Assessment</label>
+                <select id="assessment-select"></select>
+              </div>
+              <fieldset class="mode-control compact">
+                <legend>Mode</legend>
+                <div class="mode-segments">
+                  <label class="mode-segment">
+                    <input type="radio" name="mode" value="practice" checked>
+                    <span>Practice</span>
+                  </label>
+                  <label class="mode-segment">
+                    <input type="radio" name="mode" value="scored">
+                    <span>Scored</span>
+                  </label>
+                </div>
+              </fieldset>
+              <button class="primary action-button" id="start-attempt">Start Selected</button>
+            </div>
+          </section>
+        </details>
+
+        <section class="workspace" id="attempt-panel" aria-live="polite">
+          <div id="attempt-content" class="empty-state">Choose an assessment to begin.</div>
+        </section>
+      </section>
+
+
+      <section class="view" id="view-create" aria-labelledby="create-title">
+        <section class="panel">
+          <h2 id="create-title">Create Quiz/Test</h2>
+          <p class="muted">Worked Examples are schema-only for now. Create them in YAML/JSON using the project documentation once that section is added.</p>
+          <form id="create-form" class="authoring-grid">
+            <div class="field">
+              <label for="create-title-input">Title</label>
+              <input id="create-title-input" name="title" required placeholder="Area Between Curves Practice">
+            </div>
+            <div class="field">
+              <label for="create-id-input">Stable ID</label>
+              <input id="create-id-input" name="id" required placeholder="area-between-curves-practice">
+            </div>
+            <div class="field">
+              <label for="create-type">Type</label>
+              <select id="create-type" name="assessmentType">
+                <option value="quiz">Quiz</option>
+                <option value="test">Test</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="create-category">Category</label>
+              <select id="create-category" name="categoryId"></select>
+            </div>
+            <div class="field">
+              <label for="create-subcategory">Subcategory</label>
+              <select id="create-subcategory" name="subcategoryId"></select>
+            </div>
+            <div class="field">
+              <label for="create-mode">Default mode</label>
+              <select id="create-mode" name="modeDefault">
+                <option value="practice">Practice</option>
+                <option value="scored">Scored</option>
+              </select>
+            </div>
+            <label class="checkbox-line">
+              <input id="create-randomize" name="randomizeQuestions" type="checkbox" checked>
+              Randomize question order
+            </label>
+
+            <section class="author-section">
+              <div class="section-header">
+                <h3>Questions</h3>
+                <button type="button" id="add-question">Add Question</button>
+              </div>
+              <div id="question-editor-list" class="question-editor-list"></div>
+            </section>
+
+            <section class="author-section">
+              <div class="section-header">
+                <h3>Preview</h3>
+                <button type="button" id="refresh-preview">Refresh Preview</button>
+              </div>
+              <pre id="assessment-preview" class="preview-panel"></pre>
+            </section>
+
+            <div class="button-row">
+              <button class="primary chunky" type="submit">Save Assessment</button>
+              <button type="button" id="validate-draft">Validate Draft</button>
+            </div>
+          </form>
+          <p id="create-status" class="muted" role="status"></p>
+        </section>
+      </section>
+
+      <section class="view" id="view-settings" aria-labelledby="settings-title">
+        <section class="panel">
+          <h2 id="settings-title">Settings</h2>
+          <form id="settings-form" class="settings-grid">
+            <div class="field">
+              <label for="default-mode">Default mode</label>
+              <select id="default-mode" name="defaultMode">
+                <option value="practice">Practice</option>
+                <option value="scored">Scored</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="default-question-order">Question order</label>
+              <select id="default-question-order" name="defaultQuestionOrder">
+                <option value="randomized">Randomized</option>
+                <option value="static">Static</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="default-quiz-length">Default quiz length</label>
+              <input id="default-quiz-length" name="defaultQuizLength" type="number" min="1" max="50">
+            </div>
+            <div class="field">
+              <label for="default-test-length">Default test length</label>
+              <input id="default-test-length" name="defaultTestLength" type="number" min="1" max="200">
+            </div>
+            <div class="field">
+              <label for="question-timer">Question timer seconds</label>
+              <input id="question-timer" name="questionTimerSeconds" type="number" min="0" placeholder="None">
+            </div>
+            <div class="field">
+              <label for="assessment-timer">Assessment timer seconds</label>
+              <input id="assessment-timer" name="assessmentTimerSeconds" type="number" min="0" placeholder="None">
+            </div>
+            <div class="field">
+              <label for="code-runner-base-url">Code runner URL</label>
+              <input id="code-runner-base-url" name="codeRunnerBaseUrl" placeholder="http://localhost:2000/api/v2">
+            </div>
+            <div class="field">
+              <label for="code-runner-compile-timeout">Compile timeout ms</label>
+              <input id="code-runner-compile-timeout" name="codeRunnerCompileTimeoutMs" type="number" min="1">
+            </div>
+            <div class="field">
+              <label for="code-runner-run-timeout">Run timeout ms</label>
+              <input id="code-runner-run-timeout" name="codeRunnerRunTimeoutMs" type="number" min="1">
+            </div>
+            <label class="checkbox-line">
+              <input id="commit-scored" name="commitScoredAttemptsAutomatically" type="checkbox">
+              Commit scored attempts automatically
+            </label>
+            <button class="primary" type="submit">Save Settings</button>
+          </form>
+          <p id="settings-status" class="muted" role="status"></p>
+        </section>
+      </section>
+
+      <section class="view" id="view-grades" aria-labelledby="grades-title">
+        <section class="panel">
+          <div class="section-header">
+            <h2 id="grades-title">Grade Log</h2>
+            <button id="refresh-grades">Refresh</button>
+          </div>
+          <div id="grade-summary" class="empty-state">No grade entries loaded yet.</div>
+          <section class="author-section">
+            <h3>Attempt History</h3>
+            <div id="attempt-history" class="empty-state">No attempts loaded yet.</div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    
+  </body>
+</html>
