@@ -131,10 +131,14 @@ public sealed class GradeAnalyticsService
                 var matchingAreas = MatchAreas(assessment, areas).ToList();
                 var correctCount = assessment.AssessmentType is AssessmentType.RecallDrill
                     ? attempt.RecallItems.Count(item => item.Rating is RecallRating.Easy or RecallRating.Correct)
+                    : assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration
+                        ? attempt.LearningSections.Count(section => section.Completed)
                     : attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
                 var totalQuestions = attempt.QuestionOrder.Count;
                 var answeredCount = assessment.AssessmentType is AssessmentType.RecallDrill
                     ? attempt.RecallItems.Count(item => item.Rating is not RecallRating.Unknown)
+                    : assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration
+                        ? attempt.LearningSections.Count(section => section.Visited)
                     : attempt.Answers.Count(answer => answer.Answer is not null);
 
                 return new AttemptHistoryRow(
@@ -411,6 +415,20 @@ public sealed class GradeAnalyticsService
                 .Distinct()
                 .ToList(),
             AssessmentType.RecallDrill => Array.Empty<QuestionType>(),
+            AssessmentType.ConceptLesson => assessment.Lesson is null
+                ? Array.Empty<QuestionType>()
+                : assessment.Lesson.Sections
+                    .Where(section => section.Check is not null)
+                    .Select(section => section.Check!.Type)
+                    .Distinct()
+                    .ToList(),
+            AssessmentType.InteractiveExploration => assessment.Exploration is null
+                ? Array.Empty<QuestionType>()
+                : assessment.Exploration.Sections
+                    .Where(section => section.Check is not null)
+                    .Select(section => section.Check!.Type)
+                    .Distinct()
+                    .ToList(),
             _ => assessment.Questions
                 .Select(question => question.Type)
                 .Distinct()

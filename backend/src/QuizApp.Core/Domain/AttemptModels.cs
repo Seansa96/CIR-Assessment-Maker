@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace QuizApp.Core.Domain;
 
 public enum AttemptStatus
@@ -31,7 +33,16 @@ public sealed record Attempt(
     DateTimeOffset? AbandonedAt)
 {
     public IReadOnlyList<RecallItemAttempt> RecallItems { get; init; } = Array.Empty<RecallItemAttempt>();
+    public IReadOnlyList<LearningSectionAttempt> LearningSections { get; init; } = Array.Empty<LearningSectionAttempt>();
 }
+
+public sealed record LearningSectionAttempt(
+    string SectionId,
+    bool Visited,
+    bool InteractionChanged,
+    bool Completed,
+    IReadOnlyDictionary<string, JsonElement> ControlValues,
+    DateTimeOffset UpdatedAt);
 
 public sealed record AttemptAnswer(
     string QuestionId,
@@ -62,7 +73,19 @@ public sealed record AttemptResults(
     public bool HasPendingSelfChecks { get; init; }
     public RecallDrillSummary? RecallSummary { get; init; }
     public IReadOnlyList<RecallItemResult> RecallItems { get; init; } = Array.Empty<RecallItemResult>();
+    public IReadOnlyList<LearningSectionResult> LearningSections { get; init; } = Array.Empty<LearningSectionResult>();
 }
+
+public sealed record LearningSectionResult(
+    string SectionId,
+    string Title,
+    bool Required,
+    bool Visited,
+    bool InteractionChanged,
+    bool Completed,
+    bool Unlocked,
+    IReadOnlyDictionary<string, JsonElement> ControlValues,
+    QuestionResult? Check);
 
 public sealed record RecallDrillSummary(
     int ItemsReviewed,

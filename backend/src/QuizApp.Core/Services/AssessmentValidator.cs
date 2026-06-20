@@ -23,7 +23,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, or recallDrill."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, conceptLesson, or interactiveExploration."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -51,6 +51,18 @@ public sealed class AssessmentValidator
         if (assessment.AssessmentType is AssessmentType.RecallDrill)
         {
             ValidateRecallDrill(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson)
+        {
+            ValidateConceptLesson(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        if (assessment.AssessmentType is AssessmentType.InteractiveExploration)
+        {
+            ValidateInteractiveExploration(assessment, issues);
             return new AssessmentValidationResult(issues);
         }
 
@@ -84,6 +96,159 @@ public sealed class AssessmentValidator
         }
 
         return new AssessmentValidationResult(issues);
+    }
+
+    private static void ValidateConceptLesson(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        var lesson = assessment.Lesson;
+        if (lesson is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_CONCEPT_LESSON", "Concept lesson assessments must include lesson."));
+            return;
+        }
+
+        RequireText(lesson.Introduction, "MISSING_LESSON_INTRODUCTION", "Concept lessons must include an introduction.", issues);
+        ValidateLearningSections(
+            lesson.Sections.Select(section => (
+                section.Id,
+                section.Title,
+                section.Content,
+                section.Media,
+                section.Check)).ToList(),
+            "lesson",
+            issues);
+    }
+
+    private static void ValidateInteractiveExploration(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        var exploration = assessment.Exploration;
+        if (exploration is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_INTERACTIVE_EXPLORATION", "Interactive exploration assessments must include exploration."));
+            return;
+        }
+
+        RequireText(exploration.Introduction, "MISSING_EXPLORATION_INTRODUCTION", "Interactive explorations must include an introduction.", issues);
+        ValidateLearningSections(
+            exploration.Sections.Select(section => (
+                section.Id,
+                section.Title,
+                section.Instruction,
+                (IReadOnlyList<MediaAsset>)Array.Empty<MediaAsset>(),
+                section.Check)).ToList(),
+            "exploration",
+            issues);
+
+        foreach (var section in exploration.Sections)
+        {
+            if (section.Controls.Count == 0)
+            {
+                issues.Add(new ValidationIssue("MISSING_EXPLORATION_CONTROLS", "Exploration sections must include at least one control.", section.Id));
+            }
+
+            var controlIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var control in section.Controls)
+            {
+                RequireText(control.Id, "MISSING_EXPLORATION_CONTROL_ID", "Exploration controls must include an id.", issues, section.Id);
+                RequireText(control.Label, "MISSING_EXPLORATION_CONTROL_LABEL", "Exploration controls must include a label.", issues, section.Id);
+                if (!controlIds.Add(control.Id))
+                {
+                    issues.Add(new ValidationIssue("DUPLICATE_EXPLORATION_CONTROL_ID", $"Exploration control id '{control.Id}' is duplicated.", section.Id));
+                }
+
+                var type = control.Type.Trim().ToLowerInvariant();
+                if (type is not ("slider" or "number" or "select" or "toggle"))
+                {
+                    issues.Add(new ValidationIssue("INVALID_EXPLORATION_CONTROL_TYPE", "Exploration control type must be slider, number, select, or toggle.", section.Id));
+                }
+                if (type is "slider" or "number")
+                {
+                    if (control.Min is null || control.Max is null || control.Min > control.Max)
+                    {
+                        issues.Add(new ValidationIssue("INVALID_EXPLORATION_CONTROL_RANGE", $"Control '{control.Id}' must define min <= max.", section.Id));
+                    }
+                    if (control.Step is null or <= 0)
+                    {
+                        issues.Add(new ValidationIssue("INVALID_EXPLORATION_CONTROL_STEP", $"Control '{control.Id}' must define a positive step.", section.Id));
+                    }
+                }
+                if (type is "select" && (control.Options is null || control.Options.Count == 0))
+                {
+                    issues.Add(new ValidationIssue("MISSING_EXPLORATION_OPTIONS", $"Select control '{control.Id}' must define options.", section.Id));
+                }
+            }
+
+            var viewIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var view in section.Views)
+            {
+                RequireText(view.Id, "MISSING_EXPLORATION_VIEW_ID", "Exploration views must include an id.", issues, section.Id);
+                RequireText(view.Label, "MISSING_EXPLORATION_VIEW_LABEL", "Exploration views must include a label.", issues, section.Id);
+                if (!viewIds.Add(view.Id))
+                {
+                    issues.Add(new ValidationIssue("DUPLICATE_EXPLORATION_VIEW_ID", $"Exploration view id '{view.Id}' is duplicated.", section.Id));
+                }
+
+                var type = view.Type.Trim().ToLowerInvariant();
+                if (type is not ("readout" or "conditionaltext" or "table" or "plot"))
+                {
+                    issues.Add(new ValidationIssue("INVALID_EXPLORATION_VIEW_TYPE", "Exploration view type must be readout, conditionalText, table, or plot.", section.Id));
+                }
+                if (type is "readout" or "table" or "plot")
+                {
+                    RequireText(view.Expression, "MISSING_EXPLORATION_EXPRESSION", $"View '{view.Id}' must include an expression.", issues, section.Id);
+                }
+                if (type is "conditionaltext")
+                {
+                    RequireText(view.Condition, "MISSING_EXPLORATION_CONDITION", $"View '{view.Id}' must include a condition.", issues, section.Id);
+                    RequireText(view.Content, "MISSING_EXPLORATION_CONTENT", $"View '{view.Id}' must include content.", issues, section.Id);
+                }
+                if (type is "table" or "plot")
+                {
+                    if (string.IsNullOrWhiteSpace(view.InputControlId) || !controlIds.Contains(view.InputControlId))
+                    {
+                        issues.Add(new ValidationIssue("INVALID_EXPLORATION_INPUT_CONTROL", $"View '{view.Id}' must reference a control in its section.", section.Id));
+                    }
+                    if (view.Start is null || view.End is null || view.Start > view.End || view.Step is null or <= 0)
+                    {
+                        issues.Add(new ValidationIssue("INVALID_EXPLORATION_VIEW_RANGE", $"View '{view.Id}' must define start <= end and a positive step.", section.Id));
+                    }
+                }
+            }
+        }
+    }
+
+    private static void ValidateLearningSections(
+        IReadOnlyList<(string Id, string Title, string Content, IReadOnlyList<MediaAsset> Media, QuestionDefinition? Check)> sections,
+        string kind,
+        List<ValidationIssue> issues)
+    {
+        if (sections.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_LEARNING_SECTIONS", $"{kind} assessments must include at least one section."));
+            return;
+        }
+
+        var sectionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var checkIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var section in sections)
+        {
+            RequireText(section.Id, "MISSING_LEARNING_SECTION_ID", "Learning sections must include an id.", issues);
+            RequireText(section.Title, "MISSING_LEARNING_SECTION_TITLE", "Learning sections must include a title.", issues, section.Id);
+            RequireText(section.Content, "MISSING_LEARNING_SECTION_CONTENT", "Learning sections must include content or instruction.", issues, section.Id);
+            if (!sectionIds.Add(section.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_LEARNING_SECTION_ID", $"Learning section id '{section.Id}' is duplicated.", section.Id));
+            }
+            ValidateMedia(section.Media, issues, section.Id);
+            if (section.Check is not null)
+            {
+                if (!checkIds.Add(section.Check.Id))
+                {
+                    issues.Add(new ValidationIssue("DUPLICATE_LEARNING_CHECK_ID", $"Learning check id '{section.Check.Id}' is duplicated.", section.Id));
+                }
+                ValidateQuestion(section.Check, issues);
+            }
+        }
     }
 
     private static void ValidateNavigation(NavigationMetadata? navigation, List<ValidationIssue> issues)

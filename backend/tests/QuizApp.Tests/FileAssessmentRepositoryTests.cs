@@ -338,6 +338,7 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-practice-test-1-integrals")]
     [InlineData("circuit-basics-quiz")]
     [InlineData("circuit-builder-quiz")]
+    [InlineData("python-loops-concept-lesson")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(

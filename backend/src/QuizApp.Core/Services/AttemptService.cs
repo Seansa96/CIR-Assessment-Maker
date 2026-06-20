@@ -48,14 +48,18 @@ public sealed class AttemptService
     {
         var assessment = await GetValidAssessmentAsync(assessmentId, cancellationToken);
         var settings = await settingsRepository.GetAsync(cancellationToken);
-        var selectedMode = assessment.AssessmentType is AssessmentType.WorkedExample or AssessmentType.GuidedProject or AssessmentType.RecallDrill
+        var selectedMode = IsInstructionalAssessment(assessment.AssessmentType)
             ? AssessmentMode.Practice
             : mode ?? assessment.ModeDefault;
-        var questionOrder = assessment.AssessmentType is AssessmentType.RecallDrill
-            ? scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList()
-            : scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList();
+        var questionOrder = assessment.AssessmentType switch
+        {
+            AssessmentType.RecallDrill => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
+            AssessmentType.ConceptLesson => assessment.Lesson!.Sections.Select(section => section.Id).ToList(),
+            AssessmentType.InteractiveExploration => assessment.Exploration!.Sections.Select(section => section.Id).ToList(),
+            _ => scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList()
+        };
 
-        if (assessment.AssessmentType is not AssessmentType.WorkedExample and not AssessmentType.GuidedProject and not AssessmentType.RecallDrill
+        if (!IsInstructionalAssessment(assessment.AssessmentType)
             && assessment.RandomizeQuestions
             && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized)
         {
@@ -111,6 +115,14 @@ public sealed class AttemptService
             }
         }
 
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration)
+        {
+            var section = GetLearningSections(assessment)
+                .FirstOrDefault(candidate => string.Equals(candidate.Check?.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
+                ?? throw new InvalidOperationException($"Learning check '{submittedAnswer.QuestionId}' does not exist on this assessment.");
+            EnsureLearningSectionUnlocked(assessment, attempt, section.Id);
+        }
+
         var answerToScore = NormalizeSubmittedAnswer(question, submittedAnswer, existingAnswer);
 
         var settings = await settingsRepository.GetAsync(cancellationToken);
@@ -134,6 +146,94 @@ public sealed class AttemptService
         var updatedAttempt = shouldCompleteWorkedExample
             ? attempt with { Answers = answers, Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt with { Answers = answers };
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
+    public async Task<Attempt> UpdateLearningSectionStateAsync(
+        string attemptId,
+        string sectionId,
+        bool visited,
+        bool interactionChanged,
+        IReadOnlyDictionary<string, System.Text.Json.JsonElement>? controlValues,
+        CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+        EnsureLearningAssessment(assessment);
+        EnsureLearningAttemptInProgress(attempt);
+        var section = GetLearningSections(assessment)
+            .FirstOrDefault(candidate => string.Equals(candidate.Id, sectionId, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Learning section '{sectionId}' does not exist on this assessment.");
+        EnsureLearningSectionUnlocked(assessment, attempt, section.Id);
+
+        var existing = attempt.LearningSections.FirstOrDefault(candidate =>
+            string.Equals(candidate.SectionId, section.Id, StringComparison.OrdinalIgnoreCase));
+        var updated = new LearningSectionAttempt(
+            section.Id,
+            visited || existing?.Visited == true,
+            interactionChanged || existing?.InteractionChanged == true,
+            existing?.Completed == true,
+            controlValues ?? existing?.ControlValues ?? new Dictionary<string, System.Text.Json.JsonElement>(),
+            DateTimeOffset.UtcNow);
+        var updatedAttempt = attempt with
+        {
+            LearningSections = ReplaceLearningSection(attempt.LearningSections, updated)
+        };
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
+    public async Task<Attempt> CompleteLearningSectionAsync(
+        string attemptId,
+        string sectionId,
+        CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+        EnsureLearningAssessment(assessment);
+        EnsureLearningAttemptInProgress(attempt);
+        var section = GetLearningSections(assessment)
+            .FirstOrDefault(candidate => string.Equals(candidate.Id, sectionId, StringComparison.OrdinalIgnoreCase))
+            ?? throw new InvalidOperationException($"Learning section '{sectionId}' does not exist on this assessment.");
+        EnsureLearningSectionUnlocked(assessment, attempt, section.Id);
+
+        var existing = attempt.LearningSections.FirstOrDefault(candidate =>
+            string.Equals(candidate.SectionId, section.Id, StringComparison.OrdinalIgnoreCase));
+        if (assessment.AssessmentType is AssessmentType.InteractiveExploration
+            && existing?.InteractionChanged != true)
+        {
+            throw new InvalidOperationException("Change at least one exploration control before continuing.");
+        }
+        if (section.Check is not null && !attempt.Answers.Any(answer =>
+            string.Equals(answer.QuestionId, section.Check.Id, StringComparison.OrdinalIgnoreCase)
+            && answer.Evaluation?.IsCorrect == true))
+        {
+            throw new InvalidOperationException("Complete the section check correctly before continuing.");
+        }
+
+        var completedSection = new LearningSectionAttempt(
+            section.Id,
+            true,
+            existing?.InteractionChanged == true,
+            true,
+            existing?.ControlValues ?? new Dictionary<string, System.Text.Json.JsonElement>(),
+            DateTimeOffset.UtcNow);
+        var learningSections = ReplaceLearningSection(attempt.LearningSections, completedSection);
+        var requiredComplete = GetLearningSections(assessment)
+            .Where(candidate => candidate.Required)
+            .All(candidate => learningSections.Any(progress =>
+                string.Equals(progress.SectionId, candidate.Id, StringComparison.OrdinalIgnoreCase)
+                && progress.Completed));
+        var updatedAttempt = requiredComplete
+            ? attempt with
+            {
+                LearningSections = learningSections,
+                Status = AttemptStatus.Completed,
+                CompletedAt = DateTimeOffset.UtcNow,
+                PausedAt = null
+            }
+            : attempt with { LearningSections = learningSections };
         await SaveAttemptAsync(updatedAttempt, cancellationToken);
         return updatedAttempt;
     }
@@ -301,6 +401,17 @@ public sealed class AttemptService
             throw new InvalidOperationException("Recall drills can only be completed after every item is rated.");
         }
 
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration)
+        {
+            var requiredSections = GetLearningSections(assessment).Where(section => section.Required).ToList();
+            if (!requiredSections.All(section => attempt.LearningSections.Any(progress =>
+                string.Equals(progress.SectionId, section.Id, StringComparison.OrdinalIgnoreCase)
+                && progress.Completed)))
+            {
+                throw new InvalidOperationException("Learning sessions can only be completed after every required section is complete.");
+            }
+        }
+
         var completedAttempt = attempt.Status is not AttemptStatus.Completed
             ? attempt with { Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt;
@@ -367,6 +478,76 @@ public sealed class AttemptService
 
         return assessment;
     }
+
+    private static bool IsInstructionalAssessment(AssessmentType type)
+    {
+        return type is AssessmentType.WorkedExample
+            or AssessmentType.GuidedProject
+            or AssessmentType.RecallDrill
+            or AssessmentType.ConceptLesson
+            or AssessmentType.InteractiveExploration;
+    }
+
+    private static void EnsureLearningAssessment(AssessmentDefinition assessment)
+    {
+        if (assessment.AssessmentType is not AssessmentType.ConceptLesson and not AssessmentType.InteractiveExploration)
+        {
+            throw new InvalidOperationException("Only concept lessons and interactive explorations use learning section state.");
+        }
+    }
+
+    private static void EnsureLearningAttemptInProgress(Attempt attempt)
+    {
+        if (attempt.Status is not AttemptStatus.InProgress)
+        {
+            throw new InvalidOperationException("Learning section progress can only be changed on an in-progress attempt.");
+        }
+    }
+
+    private static IReadOnlyList<LearningSectionInfo> GetLearningSections(AssessmentDefinition assessment)
+    {
+        return assessment.AssessmentType switch
+        {
+            AssessmentType.ConceptLesson => assessment.Lesson!.Sections
+                .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, section.Check))
+                .ToList(),
+            AssessmentType.InteractiveExploration => assessment.Exploration!.Sections
+                .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, section.Check))
+                .ToList(),
+            _ => Array.Empty<LearningSectionInfo>()
+        };
+    }
+
+    private static void EnsureLearningSectionUnlocked(AssessmentDefinition assessment, Attempt attempt, string sectionId)
+    {
+        var sections = GetLearningSections(assessment);
+        var index = sections.ToList().FindIndex(section => string.Equals(section.Id, sectionId, StringComparison.OrdinalIgnoreCase));
+        if (index < 0)
+        {
+            throw new InvalidOperationException($"Learning section '{sectionId}' does not exist on this assessment.");
+        }
+
+        var blocked = sections.Take(index).Where(section => section.Required).Any(section =>
+            !attempt.LearningSections.Any(progress =>
+                string.Equals(progress.SectionId, section.Id, StringComparison.OrdinalIgnoreCase)
+                && progress.Completed));
+        if (blocked)
+        {
+            throw new InvalidOperationException("Complete the preceding required sections first.");
+        }
+    }
+
+    private static IReadOnlyList<LearningSectionAttempt> ReplaceLearningSection(
+        IReadOnlyList<LearningSectionAttempt> existing,
+        LearningSectionAttempt updated)
+    {
+        return existing
+            .Where(item => !string.Equals(item.SectionId, updated.SectionId, StringComparison.OrdinalIgnoreCase))
+            .Append(updated)
+            .ToList();
+    }
+
+    private sealed record LearningSectionInfo(string Id, string Title, bool Required, QuestionDefinition? Check);
 
     private async Task<Attempt> GetAttemptAsync(string attemptId, CancellationToken cancellationToken)
     {

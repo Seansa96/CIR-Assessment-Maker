@@ -1,4 +1,5 @@
 using QuizApp.Core.Domain;
+using System.Text.Json;
 
 namespace QuizApp.Api.Contracts;
 
@@ -47,6 +48,11 @@ public sealed record RevealRecallItemRequest(string? UserResponse);
 
 public sealed record RateRecallItemRequest(RecallRating Rating);
 
+public sealed record UpdateLearningSectionStateRequest(
+    bool Visited,
+    bool InteractionChanged,
+    IReadOnlyDictionary<string, JsonElement>? ControlValues);
+
 public sealed record GuidedProjectFileStateRequest(
     string Path,
     string Content);
@@ -77,6 +83,8 @@ public sealed record SaveAssessmentRequest(
     IReadOnlyList<WorkedExampleDefinition>? WorkedExamples,
     GuidedProjectDefinition? GuidedProject,
     IReadOnlyList<RecallItemDefinition>? Items,
+    ConceptLessonDefinition? Lesson,
+    InteractiveExplorationDefinition? Exploration,
     NavigationMetadata? Navigation = null)
 {
     public AssessmentDefinition ToDomain()
@@ -98,6 +106,8 @@ public sealed record SaveAssessmentRequest(
             WorkedExamples = WorkedExamples ?? Array.Empty<WorkedExampleDefinition>(),
             GuidedProject = GuidedProject,
             Items = Items ?? Array.Empty<RecallItemDefinition>(),
+            Lesson = Lesson,
+            Exploration = Exploration,
             Navigation = Navigation
         };
     }

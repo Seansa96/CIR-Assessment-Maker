@@ -279,11 +279,13 @@ import "../styles/global.css";
       import { indentWithTab } from "@codemirror/commands";
       import { python } from "@codemirror/lang-python";
       import { cpp } from "@codemirror/lang-cpp";
+      import { ComputeEngine } from "@cortex-js/compute-engine";
+      import "mathlive";
       import { CircuitCanvas } from "../scripts/CircuitCanvas";
       import type { CircuitDiagram, CircuitComponent, CircuitNode, CircuitWire } from "../scripts/CircuitCanvas";
 
       type AssessmentMode = "practice" | "scored";
-      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill";
+      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "conceptLesson" | "interactiveExploration";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit";
 
       interface CircuitQuestionDefinition {
@@ -536,6 +538,64 @@ import "../styles/global.css";
         tags: string[];
       }
 
+      interface LearningSection {
+        id: string;
+        title: string;
+        required: boolean;
+        content: string;
+        media: MediaAsset[];
+        check: Question | null;
+      }
+
+      interface ConceptLesson {
+        introduction: string;
+        sections: LearningSection[];
+      }
+
+      interface ExplorationOption {
+        value: string;
+        label: string;
+      }
+
+      interface ExplorationControl {
+        id: string;
+        type: "slider" | "number" | "select" | "toggle";
+        label: string;
+        min: number | null;
+        max: number | null;
+        step: number | null;
+        defaultValue: string;
+        options: ExplorationOption[];
+      }
+
+      interface ExplorationView {
+        id: string;
+        type: "readout" | "conditionalText" | "table" | "plot";
+        label: string;
+        expression: string | null;
+        condition: string | null;
+        content: string | null;
+        inputControlId: string | null;
+        start: number | null;
+        end: number | null;
+        step: number | null;
+      }
+
+      interface ExplorationSection {
+        id: string;
+        title: string;
+        required: boolean;
+        instruction: string;
+        controls: ExplorationControl[];
+        views: ExplorationView[];
+        check: Question | null;
+      }
+
+      interface InteractiveExploration {
+        introduction: string;
+        sections: ExplorationSection[];
+      }
+
       interface Assessment {
         id: string;
         title: string;
@@ -545,6 +605,8 @@ import "../styles/global.css";
         workedExamples?: WorkedExample[];
         guidedProject?: GuidedProject | null;
         items?: RecallItem[];
+        lesson?: ConceptLesson | null;
+        exploration?: InteractiveExploration | null;
       }
 
       interface Attempt {
@@ -554,6 +616,16 @@ import "../styles/global.css";
         status: AttemptStatus;
         questionOrder: string[];
         recallItems?: RecallItemAttempt[];
+        learningSections?: LearningSectionAttempt[];
+      }
+
+      interface LearningSectionAttempt {
+        sectionId: string;
+        visited: boolean;
+        interactionChanged: boolean;
+        completed: boolean;
+        controlValues: Record<string, unknown>;
+        updatedAt: string;
       }
 
       interface RecallItemAttempt {
@@ -635,6 +707,19 @@ import "../styles/global.css";
         questions: QuestionResult[];
         recallSummary: RecallDrillSummary | null;
         recallItems: RecallItemResult[];
+        learningSections: LearningSectionResult[];
+      }
+
+      interface LearningSectionResult {
+        sectionId: string;
+        title: string;
+        required: boolean;
+        visited: boolean;
+        interactionChanged: boolean;
+        completed: boolean;
+        unlocked: boolean;
+        controlValues: Record<string, unknown>;
+        check: QuestionResult | null;
       }
 
       interface RecallDrillSummary {
@@ -789,6 +874,12 @@ import "../styles/global.css";
       let currentProjectEditor: EditorView | null = null;
       let activeCircuitCanvas: CircuitCanvas | null = null;
       let resultCircuitCanvases: CircuitCanvas[] = [];
+      let learningStateTimer: ReturnType<typeof setTimeout> | null = null;
+      let pendingLearningSectionState: {
+        sectionId: string;
+        controlValues: Record<string, unknown>;
+      } | null = null;
+      const explorationComputeEngine = new ComputeEngine();
       const markdownProcessor = unified()
         .use(remarkParse)
         .use(remarkMath)
@@ -1170,7 +1261,9 @@ import "../styles/global.css";
 
       function activityTypeLabel(activityType: string) {
         return {
+          conceptLesson: "Concept Lesson",
           guidedWorkedExample: "Guided Worked Example",
+          interactiveExploration: "Interactive Exploration",
           recognitionDrill: "Recognition Drill",
           clozeDrill: "Cloze Drill",
           mixedRecallSet: "Mixed Recall Set",
@@ -1261,7 +1354,10 @@ import "../styles/global.css";
 
       async function markFreeResponseSelfCheck(questionId: string, isCorrect: boolean) {
         if (!state.attempt || !state.latestResults) return;
-        const result = state.latestResults.questions.find((candidate) => candidate.questionId === questionId);
+        const result = state.latestResults.questions.find((candidate) => candidate.questionId === questionId)
+          ?? state.latestResults.learningSections
+            .map((section) => section.check)
+            .find((candidate) => candidate?.questionId === questionId);
         if (!result?.submittedAnswer?.freeResponseText) return;
 
         state.attempt = await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
@@ -1350,6 +1446,7 @@ import "../styles/global.css";
 
       async function pauseAttempt() {
         if (!state.attempt) return;
+        await flushLearningSectionState();
         if (state.assessment?.assessmentType === "guidedProject") {
           await saveGuidedProjectFiles();
         }
@@ -1371,6 +1468,7 @@ import "../styles/global.css";
       async function abandonAttempt() {
         if (!state.attempt) return;
         if (!confirm("Quit this attempt early? It will be kept for review but cannot be committed to the grade log.")) return;
+        await flushLearningSectionState();
 
         const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${state.attempt.id}/abandon`, {
           method: "POST"
@@ -1813,6 +1911,12 @@ import "../styles/global.css";
       }
 
       function firstUnansweredIndex(results: AttemptResults, attempt: Attempt) {
+        if (results.assessmentType === "conceptLesson" || results.assessmentType === "interactiveExploration") {
+          const firstIncomplete = results.learningSections.find((section) => section.unlocked && !section.completed);
+          const index = attempt.questionOrder.findIndex((sectionId) => sectionId === firstIncomplete?.sectionId);
+          return index < 0 ? 0 : index;
+        }
+
         const firstUnansweredQuestion = results.assessmentType === "workedExample"
           ? results.questions.find((question) => question.isCorrect !== true)
           : results.questions.find((question) => !question.submittedAnswer);
@@ -2610,6 +2714,11 @@ import "../styles/global.css";
           return;
         }
 
+        if (state.assessment.assessmentType === "conceptLesson" || state.assessment.assessmentType === "interactiveExploration") {
+          await renderCurrentLearningSection();
+          return;
+        }
+
         const question = getCurrentQuestion();
         const results = state.latestResults?.questions.find((result) => result.questionId === question.id);
         const progress = `${state.currentIndex + 1} of ${state.attempt.questionOrder.length}`;
@@ -2680,6 +2789,295 @@ import "../styles/global.css";
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
         setupCircuitEditor(question, results?.submittedAnswer ?? null);
+      }
+
+      function getLearningSections() {
+        if (state.assessment?.assessmentType === "conceptLesson") {
+          return state.assessment.lesson?.sections ?? [];
+        }
+        return state.assessment?.exploration?.sections ?? [];
+      }
+
+      async function renderCurrentLearningSection() {
+        if (!state.attempt || !state.assessment || !state.latestResults) {
+          if (state.attempt) state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+          if (!state.attempt || !state.assessment || !state.latestResults) return;
+        }
+
+        attemptContent.classList.remove("empty-state");
+        const sections = getLearningSections();
+        const sectionId = state.attempt.questionOrder[state.currentIndex] ?? sections[0]?.id;
+        const section = sections.find((candidate) => candidate.id === sectionId);
+        let result = state.latestResults.learningSections.find((candidate) => candidate.sectionId === sectionId);
+        if (!section || !result) return;
+
+        if (!result.visited) {
+          await saveLearningSectionState(section.id, true, result.interactionChanged, result.controlValues);
+          result = state.latestResults?.learningSections.find((candidate) => candidate.sectionId === sectionId);
+          if (!result) return;
+        }
+
+        const isExploration = state.assessment.assessmentType === "interactiveExploration";
+        const conceptSection = !isExploration ? section as LearningSection : null;
+        const explorationSection = isExploration ? section as ExplorationSection : null;
+        const introduction = isExploration
+          ? state.assessment.exploration?.introduction ?? ""
+          : state.assessment.lesson?.introduction ?? "";
+        const sectionBody = await renderMarkdown(
+          conceptSection?.content ?? explorationSection?.instruction ?? "");
+        const introductionHtml = state.currentIndex === 0 ? await renderMarkdown(introduction) : "";
+        const check = section.check;
+        const checkResult = result.check;
+        const checkPrompt = check ? await renderMarkdown(check.prompt) : "";
+        const explanation = checkResult?.explanation ? await renderMarkdown(checkResult.explanation) : "";
+        const selfCheckHtml = await renderFreeResponseSelfCheck(checkResult, true);
+        const checkFeedback = checkResult?.isCorrect === null || checkResult?.isCorrect === undefined
+          ? ""
+          : `<div class="feedback ${checkResult.isCorrect ? "correct" : "incorrect"}">
+              ${checkResult.isCorrect ? "Check complete" : "Not quite yet"}
+              ${explanation ? `<details open><summary>Explanation</summary><div class="markdown">${explanation}</div></details>` : ""}
+            </div>`;
+        const canComplete = (!check || checkResult?.isCorrect === true)
+          && (!isExploration || result.interactionChanged);
+        const activeSectionIndex = firstUnansweredIndex(state.latestResults, state.attempt);
+        const isReviewingCompletedSection = result.completed && state.currentIndex !== activeSectionIndex;
+        const continueLabel = isReviewingCompletedSection
+          ? "Return to Current Section"
+          : state.currentIndex === sections.length - 1 ? "Finish Lesson" : "Continue";
+
+        attemptContent.innerHTML = `
+          <div class="learning-session-shell">
+            <aside class="learning-progress" aria-label="Lesson sections">
+              <p class="eyebrow">${escapeHtml(assessmentTypeLabel(state.assessment.assessmentType))}</p>
+              <h2>${escapeHtml(state.assessment.title)}</h2>
+              <ol>
+                ${sections.map((candidate, index) => {
+                  const candidateResult = state.latestResults!.learningSections.find((item) => item.sectionId === candidate.id);
+                  const current = candidate.id === section.id;
+                  const selectable = candidateResult?.unlocked === true;
+                  return `<li class="${candidateResult?.completed ? "complete" : ""} ${current ? "current" : ""} ${!candidateResult?.unlocked ? "locked" : ""}">
+                    <button type="button" data-learning-index="${index}" ${selectable ? "" : "disabled"} aria-current="${current ? "step" : "false"}">
+                      <span>${candidateResult?.completed ? "&#10003;" : index + 1}</span>
+                      ${escapeHtml(candidateResult?.unlocked ? candidate.title : "Locked section")}
+                    </button>
+                  </li>`;
+                }).join("")}
+              </ol>
+            </aside>
+            <section class="learning-section">
+              ${introductionHtml ? `<div class="learning-introduction markdown">${introductionHtml}</div>` : ""}
+              <article class="learning-card">
+                <div class="question-header"><span>${state.currentIndex + 1} of ${sections.length}</span><strong>${section.required ? "Required" : "Optional"}</strong></div>
+                <h2>${escapeHtml(section.title)}</h2>
+                <div class="markdown learning-content">${sectionBody}</div>
+                ${conceptSection ? renderMedia(conceptSection.media ?? []) : ""}
+                ${explorationSection ? renderExplorationControls(explorationSection, result.controlValues) : ""}
+                ${check ? `
+                  <form id="learning-check-form" class="answer-form">
+                    <div class="question-prompt markdown">${checkPrompt}</div>
+                    ${renderMedia(check.media ?? [])}
+                    ${await renderAnswerInput(check, checkResult?.submittedAnswer ?? null)}
+                    <button class="primary chunky" id="submit-answer" type="submit">Check Understanding</button>
+                  </form>
+                  ${selfCheckHtml}
+                  ${checkFeedback}
+                ` : ""}
+                ${isExploration && !result.interactionChanged ? `<p class="input-help">Change at least one control to complete this section.</p>` : ""}
+                <div class="assessment-control-bar">
+                  <div class="button-row">
+                    <button type="button" id="previous-learning-section" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Section</button>
+                    <button class="primary chunky" type="button" id="complete-learning-section" ${canComplete ? "" : "disabled"}>${continueLabel}</button>
+                    ${renderDevAssessmentRefreshButton()}
+                    <button type="button" id="pause-attempt">Save and Quit</button>
+                  </div>
+                  <div class="button-row terminal-actions">
+                    <button class="chunky danger-action" type="button" id="abandon-attempt">Quit Early</button>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </div>
+        `;
+
+        document.querySelector<HTMLFormElement>("#learning-check-form")?.addEventListener("submit", (event) => {
+          event.preventDefault();
+          void submitCurrentAnswer();
+        });
+        document.querySelector<HTMLButtonElement>("#previous-learning-section")?.addEventListener("click", async () => {
+          await flushLearningSectionState();
+          state.currentIndex = Math.max(0, state.currentIndex - 1);
+          void renderCurrentLearningSection();
+        });
+        document.querySelector<HTMLButtonElement>("#complete-learning-section")?.addEventListener("click", async () => {
+          await flushLearningSectionState();
+          if (result.completed) {
+            state.currentIndex = firstUnansweredIndex(state.latestResults!, state.attempt!);
+            void renderCurrentLearningSection();
+            return;
+          }
+          void completeLearningSection(section.id);
+        });
+        document.querySelectorAll<HTMLButtonElement>("[data-learning-index]").forEach((button) => {
+          button.addEventListener("click", async () => {
+            await flushLearningSectionState();
+            state.currentIndex = Number(button.dataset.learningIndex ?? state.currentIndex);
+            void renderCurrentLearningSection();
+          });
+        });
+        document.querySelector<HTMLButtonElement>("#pause-attempt")?.addEventListener("click", pauseAttempt);
+        document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
+        setupDevAssessmentRefresh();
+        if (check) {
+          setupChoiceCards(check);
+          setupCodeEditor(check);
+          setupSymbolicResponseField(check);
+          setupSelfCheckButtons();
+          setupCircuitEditor(check, checkResult?.submittedAnswer ?? null);
+        }
+        if (explorationSection) setupExplorationControls(explorationSection, result);
+      }
+
+      function renderExplorationControls(section: ExplorationSection, savedValues: Record<string, unknown>) {
+        const controls = section.controls.map((control) => {
+          const value = savedValues[control.id] ?? control.defaultValue;
+          if (control.type === "select") {
+            return `<label class="exploration-control"><span>${escapeHtml(control.label)}</span><select data-exploration-control="${escapeHtml(control.id)}">${control.options.map((option) =>
+              `<option value="${escapeHtml(option.value)}" ${String(value) === option.value ? "selected" : ""}>${escapeHtml(option.label)}</option>`).join("")}</select></label>`;
+          }
+          if (control.type === "toggle") {
+            const checked = value === true || String(value).toLowerCase() === "true";
+            return `<label class="exploration-control exploration-toggle"><input type="checkbox" data-exploration-control="${escapeHtml(control.id)}" ${checked ? "checked" : ""}/><span>${escapeHtml(control.label)}</span></label>`;
+          }
+          return `<label class="exploration-control"><span>${escapeHtml(control.label)}</span><input type="${control.type === "slider" ? "range" : "number"}" data-exploration-control="${escapeHtml(control.id)}" value="${escapeHtml(String(value))}" ${control.min === null ? "" : `min="${control.min}"`} ${control.max === null ? "" : `max="${control.max}"`} ${control.step === null ? "" : `step="${control.step}"`}/><output data-control-output="${escapeHtml(control.id)}">${escapeHtml(String(value))}</output></label>`;
+        }).join("");
+        const views = section.views.map((view) =>
+          `<section class="exploration-view" data-exploration-view="${escapeHtml(view.id)}"><span>${escapeHtml(view.label)}</span><div class="exploration-view-value"></div></section>`).join("");
+        return `<div class="exploration-workspace"><div class="exploration-controls">${controls}</div><div class="exploration-views">${views}</div></div>`;
+      }
+
+      function setupExplorationControls(section: ExplorationSection, result: LearningSectionResult) {
+        const update = () => {
+          const values = readExplorationValues();
+          document.querySelectorAll<HTMLOutputElement>("[data-control-output]").forEach((output) => {
+            output.value = String(values[output.dataset.controlOutput ?? ""] ?? "");
+          });
+          updateExplorationViews(section, values);
+          if (learningStateTimer) clearTimeout(learningStateTimer);
+          pendingLearningSectionState = {
+            sectionId: section.id,
+            controlValues: values
+          };
+          const completeButton = document.querySelector<HTMLButtonElement>("#complete-learning-section");
+          if (completeButton) {
+            completeButton.disabled = Boolean(section.check && result.check?.isCorrect !== true);
+          }
+          learningStateTimer = setTimeout(() => {
+            void flushLearningSectionState();
+          }, 300);
+        };
+        document.querySelectorAll<HTMLInputElement | HTMLSelectElement>("[data-exploration-control]").forEach((control) => {
+          control.addEventListener("input", update);
+          control.addEventListener("change", update);
+        });
+        updateExplorationViews(section, readExplorationValues());
+      }
+
+      function readExplorationValues() {
+        const values: Record<string, unknown> = {};
+        document.querySelectorAll<HTMLInputElement | HTMLSelectElement>("[data-exploration-control]").forEach((control) => {
+          const id = control.dataset.explorationControl ?? "";
+          if (control instanceof HTMLInputElement && control.type === "checkbox") values[id] = control.checked;
+          else if (control instanceof HTMLInputElement && (control.type === "range" || control.type === "number")) values[id] = Number(control.value);
+          else values[id] = control.value;
+        });
+        return values;
+      }
+
+      function evaluateExplorationExpression(expression: string, values: Record<string, unknown>) {
+        try {
+          const substitutions = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, typeof value === "boolean" ? (value ? 1 : 0) : value]));
+          const evaluated = explorationComputeEngine.parse(expression).subs(substitutions as any).N().value;
+          return typeof evaluated === "number" ? Number(evaluated.toFixed(6)) : evaluated;
+        } catch {
+          return "Unable to evaluate";
+        }
+      }
+
+      function updateExplorationViews(section: ExplorationSection, values: Record<string, unknown>) {
+        section.views.forEach((view) => {
+          const mount = document.querySelector<HTMLElement>(`[data-exploration-view="${CSS.escape(view.id)}"] .exploration-view-value`);
+          if (!mount) return;
+          if (view.type === "conditionalText") {
+            const visible = Boolean(evaluateExplorationExpression(view.condition ?? "0", values));
+            mount.textContent = visible ? view.content ?? "" : "";
+            return;
+          }
+          if (view.type === "table" || view.type === "plot") {
+            const inputId = view.inputControlId ?? "";
+            const start = view.start ?? 0;
+            const end = view.end ?? 10;
+            const step = view.step ?? 1;
+            const rows: Array<[number, unknown]> = [];
+            for (let x = start; x <= end && rows.length < 100; x += step) {
+              rows.push([x, evaluateExplorationExpression(view.expression ?? "0", { ...values, [inputId]: x })]);
+            }
+            if (view.type === "table") {
+              mount.innerHTML = `<table><thead><tr><th>${escapeHtml(inputId)}</th><th>Value</th></tr></thead><tbody>${rows.map(([x, y]) => `<tr><td>${x}</td><td>${escapeHtml(String(y))}</td></tr>`).join("")}</tbody></table>`;
+            } else {
+              const numericRows = rows.filter((row): row is [number, number] => typeof row[1] === "number");
+              const ys = numericRows.map((row) => row[1]);
+              const minY = Math.min(...ys, 0);
+              const maxY = Math.max(...ys, 1);
+              const points = numericRows.map(([x, y]) => `${((x - start) / Math.max(end - start, 1)) * 300},${140 - ((y - minY) / Math.max(maxY - minY, 1)) * 120}`).join(" ");
+              mount.innerHTML = `<svg viewBox="0 0 300 150" role="img" aria-label="${escapeHtml(view.label)} plot"><polyline points="${points}" fill="none" stroke="currentColor" stroke-width="3"/></svg>`;
+            }
+            return;
+          }
+          mount.textContent = String(evaluateExplorationExpression(view.expression ?? "0", values));
+        });
+      }
+
+      async function saveLearningSectionState(sectionId: string, visited: boolean, interactionChanged: boolean, controlValues: Record<string, unknown>) {
+        if (!state.attempt) return;
+        const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${state.attempt.id}/learn/sections/${encodeURIComponent(sectionId)}/state`, {
+          method: "PUT",
+          body: JSON.stringify({ visited, interactionChanged, controlValues })
+        });
+        state.attempt = response.attempt;
+        state.latestResults = response.results;
+      }
+
+      async function flushLearningSectionState() {
+        if (learningStateTimer) {
+          clearTimeout(learningStateTimer);
+          learningStateTimer = null;
+        }
+        const pending = pendingLearningSectionState;
+        pendingLearningSectionState = null;
+        if (!pending) return;
+        await saveLearningSectionState(pending.sectionId, true, true, pending.controlValues);
+      }
+
+      async function completeLearningSection(sectionId: string) {
+        if (!state.attempt) return;
+        const button = document.querySelector<HTMLButtonElement>("#complete-learning-section");
+        if (button) setBusy(button, "Saving");
+        try {
+          await flushLearningSectionState();
+          const response = await api<{ attempt: Attempt; results: AttemptResults }>(`/attempts/${state.attempt.id}/learn/sections/${encodeURIComponent(sectionId)}/complete`, { method: "POST" });
+          state.attempt = response.attempt;
+          state.latestResults = response.results;
+          if (state.attempt.status === "completed") {
+            updateActiveAttemptChip("Complete");
+            await renderResults(false);
+            await loadGrades();
+            return;
+          }
+          state.currentIndex = firstUnansweredIndex(response.results, response.attempt);
+          await renderCurrentLearningSection();
+        } finally {
+          if (button) clearBusy(button, "Continue");
+        }
       }
 
       async function renderCurrentWorkedExampleStep() {
@@ -3140,9 +3538,14 @@ import "../styles/global.css";
         const results = state.latestResults;
         const isWorkedExample = results.assessmentType === "workedExample";
         const isRecallDrill = results.assessmentType === "recallDrill";
-        const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject" || isRecallDrill;
+        const isLearningSession = results.assessmentType === "conceptLesson" || results.assessmentType === "interactiveExploration";
+        const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject" || isRecallDrill || isLearningSession;
         if (isRecallDrill) {
           await renderRecallResults(results);
+          return;
+        }
+        if (isLearningSession) {
+          await renderLearningResults(results);
           return;
         }
         const questionHtml = await Promise.all(results.questions.map(async (question) => {
@@ -3237,6 +3640,32 @@ import "../styles/global.css";
         });
       }
 
+      async function renderLearningResults(results: AttemptResults) {
+        const sections = getLearningSections();
+        const sectionHtml = await Promise.all(sections.map(async (section) => {
+          const progress = results.learningSections.find((candidate) => candidate.sectionId === section.id);
+          const body = await renderMarkdown("content" in section ? section.content : section.instruction);
+          const check = progress?.check;
+          const checkPrompt = check ? await renderMarkdown(check.prompt) : "";
+          const explanation = check?.explanation ? await renderMarkdown(check.explanation) : "";
+          return `<article class="result-item ${progress?.completed ? "correct" : "incorrect"}">
+            <h3>${escapeHtml(section.title)}</h3>
+            <div class="markdown">${body}</div>
+            ${check ? `<div class="result-detail"><strong>Check:</strong><div class="markdown">${checkPrompt}</div><p>${check.isCorrect ? "Correct" : "Needs review"}</p>${explanation ? `<details open><summary>Explanation</summary><div class="markdown">${explanation}</div></details>` : ""}</div>` : ""}
+          </article>`;
+        }));
+        attemptContent.innerHTML = `
+          <div class="results-header">
+            <h2>${escapeHtml(results.assessmentTitle)}</h2>
+            <div class="score-badge">Complete</div>
+          </div>
+          <p class="muted">${escapeHtml(assessmentTypeLabel(results.assessmentType))}. Status: ${escapeHtml(statusLabel(results.status))}.</p>
+          <div class="result-list">${sectionHtml.join("")}</div>
+          ${renderDevAssessmentRefreshButton()}
+        `;
+        setupDevAssessmentRefresh();
+      }
+
       async function renderRecallResults(results: AttemptResults) {
         const summary = results.recallSummary;
         const itemHtml = await Promise.all(results.recallItems.map(async (item) => {
@@ -3293,10 +3722,11 @@ import "../styles/global.css";
 
       async function renderAnswerInput(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
         if (question.type === "multipleChoice") {
-          const choices = await Promise.all(question.choices.map((choice, index) => renderChoiceCard(choice, index, "radio", submittedAnswer)));
+          const choices = displayedChoices(question);
+          const choiceCards = await Promise.all(choices.map((choice, index) => renderChoiceCard(choice, index, "radio", submittedAnswer)));
           return `
             <div class="choice-card-list" role="radiogroup" aria-label="Answer choices">
-              ${choices.join("")}
+              ${choiceCards.join("")}
             </div>
           `;
         }
@@ -3414,6 +3844,48 @@ import "../styles/global.css";
             <textarea id="free-response" name="freeResponseText" rows="5">${escapeHtml(submittedAnswer?.freeResponseText ?? "")}</textarea>
           </div>
         `;
+      }
+
+      function displayedChoices(question: Question) {
+        const supportsChoiceRandomization = state.assessment?.assessmentType === "quiz"
+          || state.assessment?.assessmentType === "test"
+          || state.assessment?.assessmentType === "workedExample"
+          || state.assessment?.assessmentType === "conceptLesson";
+        if (!supportsChoiceRandomization
+          || question.type !== "multipleChoice"
+          || !state.attempt) {
+          return question.choices;
+        }
+
+        return seededShuffle(question.choices, `${state.attempt.id}:${question.id}`);
+      }
+
+      function seededShuffle<T>(values: readonly T[], seedText: string) {
+        const shuffled = [...values];
+        let stateValue = hashSeed(seedText);
+        for (let index = shuffled.length - 1; index > 0; index -= 1) {
+          stateValue = nextSeededValue(stateValue);
+          const swapIndex = Math.floor((stateValue / 0x100000000) * (index + 1));
+          [shuffled[index], shuffled[swapIndex]] = [shuffled[swapIndex], shuffled[index]];
+        }
+        return shuffled;
+      }
+
+      function hashSeed(value: string) {
+        let hash = 2166136261;
+        for (let index = 0; index < value.length; index += 1) {
+          hash ^= value.charCodeAt(index);
+          hash = Math.imul(hash, 16777619);
+        }
+        return hash >>> 0;
+      }
+
+      function nextSeededValue(value: number) {
+        let next = value >>> 0;
+        next ^= next << 13;
+        next ^= next >>> 17;
+        next ^= next << 5;
+        return next >>> 0;
       }
 
       async function renderChoiceCard(choice: ChoiceOption, index: number, role: "radio" | "checkbox", submittedAnswer: SubmittedAnswer | null) {
@@ -3570,8 +4042,12 @@ import "../styles/global.css";
           }
         }
 
-        const form = new FormData(document.querySelector<HTMLFormElement>("#answer-form")!);
-        const selectedCards = Array.from(document.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
+        const answerForm = getActiveAnswerForm();
+        if (!answerForm) {
+          throw new Error("The active answer form could not be found.");
+        }
+        const form = new FormData(answerForm);
+        const selectedCards = Array.from(answerForm.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
 
         return {
           questionId: question.id,
@@ -3945,7 +4421,8 @@ import "../styles/global.css";
       function setupChoiceCards(question: Question) {
         if (question.type !== "multipleChoice" && question.type !== "selectAll") return;
 
-        const form = document.querySelector<HTMLFormElement>("#answer-form")!;
+        const form = getActiveAnswerForm();
+        if (!form) return;
         const cards = Array.from(form.querySelectorAll<HTMLButtonElement>(".choice-card"));
 
         cards.forEach((card) => {
@@ -3958,6 +4435,11 @@ import "../styles/global.css";
             toggleChoiceCard(card);
           });
         });
+      }
+
+      function getActiveAnswerForm() {
+        return document.querySelector<HTMLFormElement>("#learning-check-form")
+          ?? document.querySelector<HTMLFormElement>("#answer-form");
       }
 
       function setupCodeEditor(question: Question) {
@@ -3998,6 +4480,7 @@ import "../styles/global.css";
           value?: string;
           smartFence?: boolean;
           smartMode?: boolean;
+          smartSuperscript?: boolean;
           mathVirtualKeyboardPolicy?: "auto" | "manual" | "sandboxed";
           placeholderSymbol?: string;
           inlineShortcuts?: Record<string, string | { value: string; after?: string }>;
@@ -4007,6 +4490,7 @@ import "../styles/global.css";
 
         mathField.smartFence = true;
         mathField.smartMode = true;
+        mathField.smartSuperscript = false;
         mathField.mathVirtualKeyboardPolicy = "manual";
         mathField.placeholderSymbol = "□";
         mathField.inlineShortcuts = {
@@ -4034,6 +4518,7 @@ import "../styles/global.css";
           }
 
           if (keyboardEvent.key === " " && mathField.executeCommand) {
+            keyboardEvent.preventDefault();
             mathField.executeCommand("moveToNextGroup");
           }
         });
@@ -4046,7 +4531,12 @@ import "../styles/global.css";
         const target = event.target as HTMLElement;
         if (target.matches("input, textarea, select, math-field")) return;
 
-        const question = getCurrentQuestion();
+        let question: Question;
+        try {
+          question = getCurrentQuestion();
+        } catch {
+          return;
+        }
         if (question.type !== "multipleChoice" && question.type !== "selectAll") return;
 
         const key = event.key.toUpperCase();
@@ -4086,6 +4576,18 @@ import "../styles/global.css";
         }
 
         const questionId = state.attempt!.questionOrder[state.currentIndex];
+        if (state.assessment?.assessmentType === "conceptLesson") {
+          const section = state.assessment.lesson!.sections.find((candidate) => candidate.id === questionId);
+          if (!section?.check) throw new Error("This lesson section does not contain a check.");
+          return section.check;
+        }
+
+        if (state.assessment?.assessmentType === "interactiveExploration") {
+          const section = state.assessment.exploration!.sections.find((candidate) => candidate.id === questionId);
+          if (!section?.check) throw new Error("This exploration section does not contain a check.");
+          return section.check;
+        }
+
         if (state.assessment?.assessmentType === "workedExample") {
           const step = getWorkedExampleSteps().find((candidate) => candidate.id === questionId)!;
           return workedStepToQuestion(step);
@@ -4133,6 +4635,14 @@ import "../styles/global.css";
           return assessment.items?.map((item) => item.id) ?? [];
         }
 
+        if (assessment.assessmentType === "conceptLesson") {
+          return assessment.lesson?.sections.map((section) => section.id) ?? [];
+        }
+
+        if (assessment.assessmentType === "interactiveExploration") {
+          return assessment.exploration?.sections.map((section) => section.id) ?? [];
+        }
+
         return assessment.questions.map((question) => question.id);
       }
 
@@ -4156,7 +4666,9 @@ import "../styles/global.css";
           test: "Test",
           workedExample: "Worked Example",
           guidedProject: "Guided Project",
-          recallDrill: "Recall Drill"
+          recallDrill: "Recall Drill",
+          conceptLesson: "Concept Lesson",
+          interactiveExploration: "Interactive Exploration"
         }[type] ?? "Assessment";
       }
 

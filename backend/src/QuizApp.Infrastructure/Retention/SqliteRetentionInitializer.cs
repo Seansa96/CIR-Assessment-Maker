@@ -38,6 +38,7 @@ public sealed class SqliteRetentionInitializer
                 question_order_json TEXT NOT NULL,
                 answers_json TEXT NOT NULL,
                 recall_items_json TEXT NOT NULL DEFAULT '[]',
+                learning_sections_json TEXT NOT NULL DEFAULT '[]',
                 started_at TEXT NOT NULL,
                 paused_at TEXT NULL,
                 completed_at TEXT NULL,
@@ -48,6 +49,10 @@ public sealed class SqliteRetentionInitializer
         if (!await ColumnExistsAsync(connection, "attempts", "recall_items_json", cancellationToken))
         {
             await ExecuteAsync(connection, "ALTER TABLE attempts ADD COLUMN recall_items_json TEXT NOT NULL DEFAULT '[]';", cancellationToken);
+        }
+        if (!await ColumnExistsAsync(connection, "attempts", "learning_sections_json", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE attempts ADD COLUMN learning_sections_json TEXT NOT NULL DEFAULT '[]';", cancellationToken);
         }
 
         await ExecuteAsync(connection, """

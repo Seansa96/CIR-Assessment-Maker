@@ -7,7 +7,9 @@ public enum AssessmentType
     Test,
     WorkedExample,
     GuidedProject,
-    RecallDrill
+    RecallDrill,
+    ConceptLesson,
+    InteractiveExploration
 }
 
 public enum AssessmentMode
@@ -89,8 +91,59 @@ public sealed record AssessmentDefinition(
     public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
     public GuidedProjectDefinition? GuidedProject { get; init; }
     public IReadOnlyList<RecallItemDefinition> Items { get; init; } = Array.Empty<RecallItemDefinition>();
+    public ConceptLessonDefinition? Lesson { get; init; }
+    public InteractiveExplorationDefinition? Exploration { get; init; }
     public NavigationMetadata? Navigation { get; init; }
 }
+
+public sealed record ConceptLessonDefinition(
+    string Introduction,
+    IReadOnlyList<LearningSectionDefinition> Sections);
+
+public sealed record InteractiveExplorationDefinition(
+    string Introduction,
+    IReadOnlyList<ExplorationSectionDefinition> Sections);
+
+public sealed record LearningSectionDefinition(
+    string Id,
+    string Title,
+    bool Required,
+    string Content,
+    IReadOnlyList<MediaAsset> Media,
+    QuestionDefinition? Check);
+
+public sealed record ExplorationSectionDefinition(
+    string Id,
+    string Title,
+    bool Required,
+    string Instruction,
+    IReadOnlyList<ExplorationControlDefinition> Controls,
+    IReadOnlyList<ExplorationViewDefinition> Views,
+    QuestionDefinition? Check);
+
+public sealed record ExplorationControlDefinition(
+    string Id,
+    string Type,
+    string Label,
+    decimal? Min = null,
+    decimal? Max = null,
+    decimal? Step = null,
+    string? DefaultValue = null,
+    IReadOnlyList<ExplorationOptionDefinition>? Options = null);
+
+public sealed record ExplorationOptionDefinition(string Value, string Label);
+
+public sealed record ExplorationViewDefinition(
+    string Id,
+    string Type,
+    string Label,
+    string? Expression = null,
+    string? Condition = null,
+    string? Content = null,
+    string? InputControlId = null,
+    decimal? Start = null,
+    decimal? End = null,
+    decimal? Step = null);
 
 public sealed record RecallItemDefinition(
     string Id,

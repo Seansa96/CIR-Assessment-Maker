@@ -1,6 +1,7 @@
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
 using QuizApp.Core.Services;
+using System.Text.Json;
 
 namespace QuizApp.Tests;
 
@@ -458,6 +459,56 @@ public sealed class AttemptFlowTests
         await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
     }
 
+    [Fact]
+    public async Task ConceptLesson_enforces_ordered_checks_and_rejects_grade_commit()
+    {
+        var assessment = TestData.ConceptLessonAssessment();
+        var attemptService = CreateAttemptService(assessment);
+        var gradeService = new GradeLogService(new InMemoryGradeLogRepository(), attemptService);
+        var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        Assert.Equal(AssessmentMode.Practice, attempt.Mode);
+        Assert.Equal(new[] { "intro", "check-loop" }, attempt.QuestionOrder);
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("check-loop-question", "a", Array.Empty<string>(), null, null, null)));
+
+        await attemptService.CompleteLearningSectionAsync(attempt.Id, "intro");
+        await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("check-loop-question", "b", Array.Empty<string>(), null, null, null));
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            attemptService.CompleteLearningSectionAsync(attempt.Id, "check-loop"));
+
+        await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("check-loop-question", "a", Array.Empty<string>(), null, null, null));
+        var completed = await attemptService.CompleteLearningSectionAsync(attempt.Id, "check-loop");
+        var results = await attemptService.GetResultsAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.Completed, completed.Status);
+        Assert.All(results.LearningSections, section => Assert.True(section.Completed));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+    }
+
+    [Fact]
+    public async Task InteractiveExploration_state_survives_pause_and_resume()
+    {
+        var assessment = TestData.InteractiveExplorationAssessment();
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+        var values = new Dictionary<string, JsonElement>
+        {
+            ["n"] = JsonSerializer.SerializeToElement(7)
+        };
+
+        await service.UpdateLearningSectionStateAsync(attempt.Id, "parameter-effect", true, true, values);
+        await service.PauseAsync(attempt.Id);
+        var resumed = await service.ResumeAsync(attempt.Id);
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.InProgress, resumed.Status);
+        var progress = Assert.Single(results.LearningSections);
+        Assert.True(progress.Visited);
+        Assert.True(progress.InteractionChanged);
+        Assert.Equal(7, progress.ControlValues["n"].GetInt32());
+    }
+
     private static AttemptService CreateAttemptService(
         AssessmentDefinition assessment,
         InMemoryAttemptRepository? attempts = null,
@@ -620,6 +671,66 @@ internal static class TestData
                     "The missing term is the complementary square.",
                     new[] { "trig" })
             }
+        };
+    }
+
+    public static AssessmentDefinition ConceptLessonAssessment()
+    {
+        return Assessment(AssessmentType.ConceptLesson, Array.Empty<QuestionDefinition>()) with
+        {
+            Id = "python-loops-concept-lesson",
+            Title = "Python Loops Concept Lesson",
+            CategoryId = "python",
+            SubcategoryIds = new[] { "python-control-flow" },
+            Lesson = new ConceptLessonDefinition(
+                "Learn how loops repeat work.",
+                new[]
+                {
+                    new LearningSectionDefinition("intro", "Why loops", true, "Loops repeat a block.", Array.Empty<MediaAsset>(), null),
+                    new LearningSectionDefinition(
+                        "check-loop",
+                        "Check the loop body",
+                        true,
+                        "Indentation defines the body.",
+                        Array.Empty<MediaAsset>(),
+                        MultipleChoiceQuestion("check-loop-question"))
+                })
+        };
+    }
+
+    public static AssessmentDefinition InteractiveExplorationAssessment()
+    {
+        return Assessment(AssessmentType.InteractiveExploration, Array.Empty<QuestionDefinition>()) with
+        {
+            Id = "parameter-exploration",
+            Title = "Parameter Exploration",
+            Exploration = new InteractiveExplorationDefinition(
+                "Change a control.",
+                new[]
+                {
+                    new ExplorationSectionDefinition(
+                        "parameter-effect",
+                        "Parameter effect",
+                        true,
+                        "Move the slider.",
+                        new[]
+                        {
+                            new ExplorationControlDefinition(
+                                "n",
+                                "slider",
+                                "Iterations",
+                                1,
+                                10,
+                                1,
+                                "3",
+                                Array.Empty<ExplorationOptionDefinition>())
+                        },
+                        new[]
+                        {
+                            new ExplorationViewDefinition("double", "readout", "Doubled", "2n", null, null, null, null, null, null)
+                        },
+                        null)
+                })
         };
     }
 

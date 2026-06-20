@@ -185,6 +185,10 @@ public sealed class SqliteNavigationCatalogService
                     ? we.EnumerateArray().Sum(e => e.TryGetProperty("steps", out var steps) ? steps.GetArrayLength() : 0) : 0,
                 "guidedproject" => root.TryGetProperty("guidedProject", out var gp)
                     && gp.TryGetProperty("requiredChecks", out var rc) ? rc.GetArrayLength() : 0,
+                "conceptlesson" => root.TryGetProperty("lesson", out var lesson)
+                    && lesson.TryGetProperty("sections", out var lessonSections) ? lessonSections.GetArrayLength() : 0,
+                "interactiveexploration" => root.TryGetProperty("exploration", out var exploration)
+                    && exploration.TryGetProperty("sections", out var explorationSections) ? explorationSections.GetArrayLength() : 0,
                 _ => root.TryGetProperty("questions", out var qs) ? qs.GetArrayLength() : 0
             };
 

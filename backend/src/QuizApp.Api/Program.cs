@@ -343,6 +343,49 @@ api.MapPost("/attempts/{attemptId}/recall/{itemId}/rate", async (
     }
 });
 
+api.MapPut("/attempts/{attemptId}/learn/sections/{sectionId}/state", async (
+    string attemptId,
+    string sectionId,
+    UpdateLearningSectionStateRequest request,
+    AttemptService attemptService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.UpdateLearningSectionStateAsync(
+            attemptId,
+            sectionId,
+            request.Visited,
+            request.InteractionChanged,
+            request.ControlValues,
+            cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("LEARNING_SECTION_STATE_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/learn/sections/{sectionId}/complete", async (
+    string attemptId,
+    string sectionId,
+    AttemptService attemptService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.CompleteLearningSectionAsync(attemptId, sectionId, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("LEARNING_SECTION_COMPLETE_FAILED", ex.Message));
+    }
+});
+
 api.MapGet("/attempts/{attemptId}/guided-project", async (
     string attemptId,
     GuidedProjectService guidedProjectService,

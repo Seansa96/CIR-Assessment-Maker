@@ -29,6 +29,11 @@ public sealed class ScoringService
             return BuildRecallResults(assessment, attempt);
         }
 
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration)
+        {
+            return BuildLearningResults(assessment, attempt);
+        }
+
         var answersByQuestion = attempt.Answers.ToDictionary(answer => answer.QuestionId, StringComparer.OrdinalIgnoreCase);
         var assessmentItems = GetAssessmentItems(assessment);
         var orderedQuestions = attempt.QuestionOrder
@@ -162,6 +167,94 @@ public sealed class ScoringService
         };
     }
 
+    private static AttemptResults BuildLearningResults(AssessmentDefinition assessment, Attempt attempt)
+    {
+        var progressBySection = attempt.LearningSections.ToDictionary(
+            section => section.SectionId,
+            StringComparer.OrdinalIgnoreCase);
+        var answersByQuestion = attempt.Answers.ToDictionary(
+            answer => answer.QuestionId,
+            StringComparer.OrdinalIgnoreCase);
+        var sections = assessment.AssessmentType is AssessmentType.ConceptLesson
+            ? assessment.Lesson!.Sections.Select(section => new LearningItem(section.Id, section.Title, section.Required, section.Check)).ToList()
+            : assessment.Exploration!.Sections.Select(section => new LearningItem(section.Id, section.Title, section.Required, section.Check)).ToList();
+
+        var previousRequiredComplete = true;
+        var sectionResults = new List<LearningSectionResult>();
+        foreach (var section in sections)
+        {
+            progressBySection.TryGetValue(section.Id, out var progress);
+            QuestionResult? checkResult = null;
+            if (section.Check is not null)
+            {
+                answersByQuestion.TryGetValue(section.Check.Id, out var answer);
+                checkResult = BuildQuestionResult(section.Check, answer, true);
+            }
+
+            var unlocked = previousRequiredComplete;
+            sectionResults.Add(new LearningSectionResult(
+                section.Id,
+                section.Title,
+                section.Required,
+                progress?.Visited == true,
+                progress?.InteractionChanged == true,
+                progress?.Completed == true,
+                unlocked,
+                progress?.ControlValues ?? new Dictionary<string, System.Text.Json.JsonElement>(),
+                checkResult));
+
+            if (section.Required && progress?.Completed != true)
+            {
+                previousRequiredComplete = false;
+            }
+        }
+
+        var requiredSections = sectionResults.Where(section => section.Required).ToList();
+        var completedCount = requiredSections.Count(section => section.Completed);
+        var totalCount = requiredSections.Count;
+        return new AttemptResults(
+            attempt.Id,
+            assessment.Id,
+            assessment.Title,
+            attempt.Mode,
+            attempt.Status,
+            completedCount,
+            totalCount,
+            totalCount == 0 ? 0 : Math.Round(completedCount * 100m / totalCount, 2),
+            attempt.Status is AttemptStatus.Completed,
+            Array.Empty<QuestionResult>())
+        {
+            AssessmentType = assessment.AssessmentType,
+            LearningSections = sectionResults
+        };
+    }
+
+    private static QuestionResult BuildQuestionResult(
+        QuestionDefinition question,
+        AttemptAnswer? answer,
+        bool showFeedback)
+    {
+        var isPendingSelfCheck = question.Type is QuestionType.FreeResponse
+            && answer?.Answer.FreeResponseText is not null
+            && answer.Answer.SelfCheckCorrect is null;
+        return new QuestionResult(
+            question.Id,
+            question.Prompt,
+            question.Type,
+            question.Media,
+            answer?.Answer,
+            showFeedback ? answer?.Evaluation?.IsCorrect : null,
+            showFeedback ? question.Explanation : null,
+            showFeedback ? DescribeExpectedAnswer(question) : null,
+            showFeedback ? answer?.Evaluation?.CodeFeedback : null,
+            showFeedback ? answer?.Evaluation?.SymbolicFeedback : null,
+            showFeedback ? answer?.Evaluation?.CircuitFeedback : null)
+        {
+            KeyPoints = showFeedback ? question.Answer.KeyPoints : Array.Empty<string>(),
+            IsPendingSelfCheck = isPendingSelfCheck
+        };
+    }
+
     private static bool SameChoiceSet(IReadOnlyList<string> expected, IReadOnlyList<string> actual)
     {
         return expected.ToHashSet(StringComparer.OrdinalIgnoreCase)
@@ -205,6 +298,22 @@ public sealed class ScoringService
             return Array.Empty<AssessmentItem>();
         }
 
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson)
+        {
+            return assessment.Lesson!.Sections
+                .Where(section => section.Check is not null)
+                .Select(section => new AssessmentItem(section.Check!, null, null))
+                .ToList();
+        }
+
+        if (assessment.AssessmentType is AssessmentType.InteractiveExploration)
+        {
+            return assessment.Exploration!.Sections
+                .Where(section => section.Check is not null)
+                .Select(section => new AssessmentItem(section.Check!, null, null))
+                .ToList();
+        }
+
         if (assessment.AssessmentType is not AssessmentType.WorkedExample)
         {
             return assessment.Questions.Select(question => new AssessmentItem(question, null, null)).ToList();
@@ -219,4 +328,10 @@ public sealed class ScoringService
         QuestionDefinition Question,
         WorkedExampleDefinition? Example,
         WorkedExampleStepDefinition? Step);
+
+    private sealed record LearningItem(
+        string Id,
+        string Title,
+        bool Required,
+        QuestionDefinition? Check);
 }

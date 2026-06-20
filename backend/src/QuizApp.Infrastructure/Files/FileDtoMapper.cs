@@ -74,6 +74,8 @@ internal static class FileDtoMapper
             WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList(),
             GuidedProject = dto.GuidedProject is null ? null : ToDomain(dto.GuidedProject),
             Items = (dto.Items ?? new List<RecallItemFileDto>()).Select(ToDomain).ToList(),
+            Lesson = dto.Lesson is null ? null : ToDomain(dto.Lesson),
+            Exploration = dto.Exploration is null ? null : ToDomain(dto.Exploration),
             Navigation = dto.Navigation is null ? null : new NavigationMetadata(
                 dto.Navigation.LearningGoal,
                 dto.Navigation.ActivityType,
@@ -100,12 +102,130 @@ internal static class FileDtoMapper
             WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList(),
             GuidedProject = assessment.GuidedProject is null ? null : ToDto(assessment.GuidedProject),
             Items = assessment.Items.Select(ToDto).ToList(),
+            Lesson = assessment.Lesson is null ? null : ToDto(assessment.Lesson),
+            Exploration = assessment.Exploration is null ? null : ToDto(assessment.Exploration),
             Navigation = assessment.Navigation is null ? null : new NavigationFileDto
             {
                 LearningGoal = assessment.Navigation.LearningGoal,
                 ActivityType = assessment.Navigation.ActivityType,
                 Tags = assessment.Navigation.Tags.ToList()
             }
+        };
+    }
+
+    private static ConceptLessonDefinition ToDomain(ConceptLessonFileDto dto)
+    {
+        return new ConceptLessonDefinition(
+            dto.Introduction ?? string.Empty,
+            (dto.Sections ?? new List<LearningSectionFileDto>())
+                .Select(section => new LearningSectionDefinition(
+                    section.Id ?? string.Empty,
+                    section.Title ?? string.Empty,
+                    section.Required ?? true,
+                    section.Content ?? string.Empty,
+                    (section.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList(),
+                    section.Check is null ? null : ToDomain(section.Check)))
+                .ToList());
+    }
+
+    private static ConceptLessonFileDto ToDto(ConceptLessonDefinition lesson)
+    {
+        return new ConceptLessonFileDto
+        {
+            Introduction = lesson.Introduction,
+            Sections = lesson.Sections.Select(section => new LearningSectionFileDto
+            {
+                Id = section.Id,
+                Title = section.Title,
+                Required = section.Required,
+                Content = section.Content,
+                Media = section.Media.Select(ToDto).ToList(),
+                Check = section.Check is null ? null : ToDto(section.Check)
+            }).ToList()
+        };
+    }
+
+    private static InteractiveExplorationDefinition ToDomain(InteractiveExplorationFileDto dto)
+    {
+        return new InteractiveExplorationDefinition(
+            dto.Introduction ?? string.Empty,
+            (dto.Sections ?? new List<ExplorationSectionFileDto>())
+                .Select(section => new ExplorationSectionDefinition(
+                    section.Id ?? string.Empty,
+                    section.Title ?? string.Empty,
+                    section.Required ?? true,
+                    section.Instruction ?? string.Empty,
+                    (section.Controls ?? new List<ExplorationControlFileDto>())
+                        .Select(control => new ExplorationControlDefinition(
+                            control.Id ?? string.Empty,
+                            control.Type ?? string.Empty,
+                            control.Label ?? string.Empty,
+                            control.Min,
+                            control.Max,
+                            control.Step,
+                            control.DefaultValue,
+                            (control.Options ?? new List<ExplorationOptionFileDto>())
+                                .Select(option => new ExplorationOptionDefinition(option.Value ?? string.Empty, option.Label ?? string.Empty))
+                                .ToList()))
+                        .ToList(),
+                    (section.Views ?? new List<ExplorationViewFileDto>())
+                        .Select(view => new ExplorationViewDefinition(
+                            view.Id ?? string.Empty,
+                            view.Type ?? string.Empty,
+                            view.Label ?? string.Empty,
+                            view.Expression,
+                            view.Condition,
+                            view.Content,
+                            view.InputControlId,
+                            view.Start,
+                            view.End,
+                            view.Step))
+                        .ToList(),
+                    section.Check is null ? null : ToDomain(section.Check)))
+                .ToList());
+    }
+
+    private static InteractiveExplorationFileDto ToDto(InteractiveExplorationDefinition exploration)
+    {
+        return new InteractiveExplorationFileDto
+        {
+            Introduction = exploration.Introduction,
+            Sections = exploration.Sections.Select(section => new ExplorationSectionFileDto
+            {
+                Id = section.Id,
+                Title = section.Title,
+                Required = section.Required,
+                Instruction = section.Instruction,
+                Controls = section.Controls.Select(control => new ExplorationControlFileDto
+                {
+                    Id = control.Id,
+                    Type = control.Type,
+                    Label = control.Label,
+                    Min = control.Min,
+                    Max = control.Max,
+                    Step = control.Step,
+                    DefaultValue = control.DefaultValue,
+                    Options = control.Options?.Select(option => new ExplorationOptionFileDto
+                    {
+                        Value = option.Value,
+                        Label = option.Label
+                    }).ToList()
+                }).ToList(),
+                Views = section.Views.Select(view => new ExplorationViewFileDto
+                {
+                    Id = view.Id,
+                    Type = view.Type,
+                    Label = view.Label,
+                    Expression = view.Expression,
+                    Condition = view.Condition,
+                    Content = view.Content,
+                    InputControlId = view.InputControlId,
+                    Start = view.Start,
+                    End = view.End,
+                    Step = view.Step
+                }).ToList(),
+                Check = section.Check is null ? null : ToDto(section.Check)
+            }).ToList()
         };
     }
 
@@ -392,6 +512,8 @@ internal static class FileDtoMapper
             "workedexample" => AssessmentType.WorkedExample,
             "guidedproject" => AssessmentType.GuidedProject,
             "recalldrill" => AssessmentType.RecallDrill,
+            "conceptlesson" => AssessmentType.ConceptLesson,
+            "interactiveexploration" => AssessmentType.InteractiveExploration,
             _ => AssessmentType.Unknown
         };
     }
@@ -455,6 +577,8 @@ internal static class FileDtoMapper
             AssessmentType.WorkedExample => "workedExample",
             AssessmentType.GuidedProject => "guidedProject",
             AssessmentType.RecallDrill => "recallDrill",
+            AssessmentType.ConceptLesson => "conceptLesson",
+            AssessmentType.InteractiveExploration => "interactiveExploration",
             _ => "quiz"
         };
     }

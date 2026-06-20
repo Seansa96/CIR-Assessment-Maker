@@ -32,6 +32,33 @@ public sealed class SqliteRetentionTests
     }
 
     [Fact]
+    public async Task InteractiveExploration_progress_round_trips_through_sqlite()
+    {
+        var repository = new SqliteAttemptRepository(CreateOptions());
+        var attempt = SampleAttempt("exploration-attempt", AttemptStatus.Paused) with
+        {
+            LearningSections = new[]
+            {
+                new LearningSectionAttempt(
+                    "parameter-effect",
+                    true,
+                    true,
+                    false,
+                    new Dictionary<string, JsonElement> { ["n"] = JsonSerializer.SerializeToElement(6) },
+                    DateTimeOffset.UtcNow)
+            }
+        };
+
+        await repository.SaveAsync(attempt);
+        var roundTripped = await repository.GetByIdAsync(attempt.Id);
+
+        var progress = Assert.Single(roundTripped!.LearningSections);
+        Assert.True(progress.Visited);
+        Assert.True(progress.InteractionChanged);
+        Assert.Equal(6, progress.ControlValues["n"].GetInt32());
+    }
+
+    [Fact]
     public async Task Grade_repository_upserts_by_attempt_id_and_removes_by_attempt_id()
     {
         var options = CreateOptions();

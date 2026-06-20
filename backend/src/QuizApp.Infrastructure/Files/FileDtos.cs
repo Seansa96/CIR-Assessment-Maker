@@ -48,7 +48,74 @@ internal sealed class AssessmentFileDto
     public List<WorkedExampleFileDto>? WorkedExamples { get; set; }
     public GuidedProjectFileDto? GuidedProject { get; set; }
     public List<RecallItemFileDto>? Items { get; set; }
+    public ConceptLessonFileDto? Lesson { get; set; }
+    public InteractiveExplorationFileDto? Exploration { get; set; }
     public NavigationFileDto? Navigation { get; set; }
+}
+
+internal sealed class ConceptLessonFileDto
+{
+    public string? Introduction { get; set; }
+    public List<LearningSectionFileDto>? Sections { get; set; }
+}
+
+internal sealed class LearningSectionFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public bool? Required { get; set; }
+    public string? Content { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
+    public QuestionFileDto? Check { get; set; }
+}
+
+internal sealed class InteractiveExplorationFileDto
+{
+    public string? Introduction { get; set; }
+    public List<ExplorationSectionFileDto>? Sections { get; set; }
+}
+
+internal sealed class ExplorationSectionFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public bool? Required { get; set; }
+    public string? Instruction { get; set; }
+    public List<ExplorationControlFileDto>? Controls { get; set; }
+    public List<ExplorationViewFileDto>? Views { get; set; }
+    public QuestionFileDto? Check { get; set; }
+}
+
+internal sealed class ExplorationControlFileDto
+{
+    public string? Id { get; set; }
+    public string? Type { get; set; }
+    public string? Label { get; set; }
+    public decimal? Min { get; set; }
+    public decimal? Max { get; set; }
+    public decimal? Step { get; set; }
+    public string? DefaultValue { get; set; }
+    public List<ExplorationOptionFileDto>? Options { get; set; }
+}
+
+internal sealed class ExplorationOptionFileDto
+{
+    public string? Value { get; set; }
+    public string? Label { get; set; }
+}
+
+internal sealed class ExplorationViewFileDto
+{
+    public string? Id { get; set; }
+    public string? Type { get; set; }
+    public string? Label { get; set; }
+    public string? Expression { get; set; }
+    public string? Condition { get; set; }
+    public string? Content { get; set; }
+    public string? InputControlId { get; set; }
+    public decimal? Start { get; set; }
+    public decimal? End { get; set; }
+    public decimal? Step { get; set; }
 }
 
 internal sealed class NavigationFileDto
