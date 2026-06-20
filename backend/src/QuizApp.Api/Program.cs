@@ -1,6 +1,13 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using QuizApp.Api.Contracts;
+using QuizApp.Api.Endpoints;
+using QuizApp.Api.Security;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
 using QuizApp.Core.Services;
@@ -11,6 +18,26 @@ using QuizApp.Infrastructure.SymbolicMath;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var bindUrl = builder.Configuration["CIR_BIND_URL"];
+if (!string.IsNullOrWhiteSpace(bindUrl))
+{
+    builder.WebHost.UseUrls(bindUrl);
+    
+    var certPath = builder.Configuration["CIR_CERTIFICATE_PATH"];
+    var certPass = builder.Configuration["CIR_CERTIFICATE_PASSWORD"];
+    
+    if (!string.IsNullOrWhiteSpace(certPath))
+    {
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ConfigureHttpsDefaults(httpsOptions =>
+            {
+                httpsOptions.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(certPath, certPass);
+            });
+        });
+    }
+}
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureHttpJsonOptions(options =>
@@ -19,7 +46,11 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 });
 
-var dataRoot = Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../..", "data"));
+var dataRootConfig = builder.Configuration["CIR_DATA_ROOT"];
+var dataRoot = string.IsNullOrWhiteSpace(dataRootConfig)
+    ? Path.GetFullPath(Path.Combine(builder.Environment.ContentRootPath, "../../..", "data"))
+    : Path.GetFullPath(dataRootConfig);
+
 var configuredSqlitePath = builder.Configuration["Retention:SqlitePath"];
 var sqlitePath = string.IsNullOrWhiteSpace(configuredSqlitePath)
     ? Path.Combine(dataRoot, "retention", "quizapp.db")
@@ -58,6 +89,50 @@ builder.Services.AddSingleton<SqliteNavigationCatalogService>();
 builder.Services.AddSingleton<INavigationCatalogService>(sp => sp.GetRequiredService<SqliteNavigationCatalogService>());
 builder.Services.AddSingleton<NavigationRecommendationService>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<SharedTokenAuthenticator>();
+builder.Services.AddSingleton<IAccessContext, HttpContextAccessContext>();
+
+var keyRingPath = builder.Configuration["CIR_KEY_RING_PATH"];
+if (!string.IsNullOrWhiteSpace(keyRingPath))
+{
+    builder.Services.AddDataProtection()
+        .PersistKeysToFileSystem(new DirectoryInfo(Path.GetFullPath(keyRingPath)));
+}
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "cir_access";
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.ExpireTimeSpan = TimeSpan.FromHours(12);
+        options.SlidingExpiration = true;
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = 401;
+            return Task.CompletedTask;
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("LoginLimiter", limiterOptions =>
+    {
+        limiterOptions.PermitLimit = 5;
+        limiterOptions.Window = TimeSpan.FromMinutes(5);
+        limiterOptions.QueueLimit = 0;
+    });
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("LocalFrontend", policy =>
@@ -82,6 +157,46 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("LocalFrontend");
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRateLimiter();
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; frame-ancestors 'none'; connect-src 'self'");
+    context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
+    context.Response.Headers.Append("Referrer-Policy", "no-referrer");
+    context.Response.Headers.Append("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+
+    var isUnsafeMethod = HttpMethods.IsPost(context.Request.Method) || 
+                         HttpMethods.IsPut(context.Request.Method) || 
+                         HttpMethods.IsPatch(context.Request.Method) || 
+                         HttpMethods.IsDelete(context.Request.Method);
+
+    if (isUnsafeMethod)
+    {
+        var expectedOrigin = app.Configuration["CIR_PUBLIC_ORIGIN"];
+        var origin = context.Request.Headers.Origin.ToString();
+        
+        if (!string.IsNullOrEmpty(origin) && !string.IsNullOrEmpty(expectedOrigin))
+        {
+            if (!origin.Equals(expectedOrigin, StringComparison.OrdinalIgnoreCase))
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync("Forbidden: Invalid Origin");
+                return;
+            }
+        }
+    }
+
+    await next();
+});
+
+app.MapAccessEndpoints();
 
 var api = app.MapGroup("/api");
 
@@ -549,6 +664,8 @@ api.MapGet("/analytics/grades", async (
 
     return Results.Ok(await analyticsService.GetSummaryAsync(filter, cancellationToken));
 });
+
+app.MapFallbackToFile("index.html");
 
 app.Run();
 

@@ -10,7 +10,22 @@ import "../styles/global.css";
     <title>CIR Assessment Maker</title>
   </head>
   <body>
-    <main class="app-shell">
+    <div id="login-gate" class="login-gate" hidden>
+      <div class="login-box">
+        <h2>CIR Assessment Maker</h2>
+        <p class="login-prompt">Please enter the shared access token to connect.</p>
+        <form id="login-form">
+          <label class="form-field">
+            <span class="field-label">Access Token</span>
+            <input type="password" id="login-token-input" name="token" required />
+          </label>
+          <p id="login-error" class="form-error" hidden></p>
+          <button type="submit" class="primary action-button" id="login-submit-button">Connect</button>
+        </form>
+      </div>
+    </div>
+
+    <main class="app-shell" id="app-shell" hidden>
       <header class="app-header">
         <div>
           <p class="eyebrow">Local STEM assessment loop</p>
@@ -893,8 +908,8 @@ import "../styles/global.css";
         attempts: AttemptHistoryRow[];
       }
 
-      const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
       const IS_DEV = import.meta.env.DEV;
+      const API_BASE = import.meta.env.PUBLIC_API_BASE ?? (IS_DEV ? "http://localhost:5000/api" : "/api");
       let currentCodeEditors: EditorView[] = [];
       let currentCodeEditor: EditorView | null = null; // Legacy
       let currentProjectEditor: EditorView | null = null;
@@ -1047,7 +1062,72 @@ import "../styles/global.css";
       document.querySelector<HTMLButtonElement>("#refresh-preview")!.addEventListener("click", renderAssessmentPreview);
       document.querySelector<HTMLButtonElement>("#validate-draft")!.addEventListener("click", validateDraftAssessment);
 
-      await initialize();
+      const loginGate = document.querySelector<HTMLDivElement>("#login-gate")!;
+      const appShell = document.querySelector<HTMLElement>("#app-shell")!;
+      const loginForm = document.querySelector<HTMLFormElement>("#login-form")!;
+      const loginError = document.querySelector<HTMLParagraphElement>("#login-error")!;
+      const loginTokenInput = document.querySelector<HTMLInputElement>("#login-token-input")!;
+      const loginSubmitButton = document.querySelector<HTMLButtonElement>("#login-submit-button")!;
+
+      loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const token = loginTokenInput.value.trim();
+        if (!token) return;
+
+        setBusy(loginSubmitButton, "Connecting...");
+        loginError.hidden = true;
+
+        try {
+          const res = await fetch(`${API_BASE}/access/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token })
+          });
+
+          if (res.ok) {
+            loginGate.hidden = true;
+            appShell.hidden = false;
+            await initialize();
+          } else {
+            loginError.textContent = await res.text();
+            loginError.hidden = false;
+          }
+        } catch (err) {
+          loginError.textContent = readableError(err);
+          loginError.hidden = false;
+        } finally {
+          clearBusy(loginSubmitButton, "Connect");
+        }
+      });
+
+      async function checkAccessAndInit() {
+        try {
+          const res = await fetch(`${API_BASE}/access/status`);
+          if (res.ok) {
+            const status = await res.json();
+            if (status.isAuthenticated || IS_DEV) {
+              loginGate.hidden = true;
+              appShell.hidden = false;
+              await initialize();
+              return;
+            }
+          }
+        } catch (error) {
+          // Keep going to fallback or show error
+        }
+        
+        if (IS_DEV) {
+          loginGate.hidden = true;
+          appShell.hidden = false;
+          await initialize();
+          return;
+        }
+
+        loginGate.hidden = false;
+        appShell.hidden = true;
+      }
+
+      await checkAccessAndInit();
 
       async function initialize() {
         try {
