@@ -1,0 +1,173 @@
+schemaVersion: 1
+id: csharp-types-variables-concept-lesson
+title: C# Types, Variables, and Console I/O Concept Lesson
+assessmentType: conceptLesson
+categoryId: csharp
+subcategoryId: csharp-types-and-variables
+subcategoryIds:
+  - csharp-types-and-variables
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - types
+    - variables
+    - console-io
+lesson:
+  introduction: |
+    C# is a strongly-typed, object-oriented language. Unlike Python, you must declare the type of a variable before using it (or let the compiler infer it with `var`).
+    
+    This lesson covers primitive types, `var`, `const`, and basic Console input/output. We'll use these to build the foundation of our "Game Score Tracker" application!
+  sections:
+    - id: primitive-types
+      title: Primitive Types in C#
+      required: true
+      content: |
+        C# has several core value types. Note that C# type names are lowercase keywords that alias to .NET struct types (like `System.Int32`).
+
+        - `int`: Whole numbers (32-bit).
+        - `double`: Floating-point numbers for decimals.
+        - `bool`: Boolean values (`true` or `false` — entirely lowercase).
+        - `string`: Text wrapped in double quotes.
+        - `char`: A single character wrapped in single quotes.
+
+        ```csharp
+        string playerName = "Gamer123";
+        int playerScore = 5000;
+        double playtimeHours = 12.5;
+        bool isOnline = true;
+        char rank = 'S';
+        ```
+      check:
+        id: primitive-types-check
+        type: multipleChoice
+        prompt: |
+          Which is the correct way to declare a boolean variable in C# to indicate a player is offline?
+        choices:
+          - id: a
+            text: '`bool isOnline = False;`'
+          - id: b
+            text: '`bool isOnline = false;`'
+          - id: c
+            text: '`Boolean isOnline = "false";`'
+          - id: d
+            text: '`boolean isOnline = false;`'
+        answer:
+          choiceId: b
+        explanation: |
+          In C#, the keyword is `bool` and the boolean literals are lowercase `true` and `false`. Option A uses Python's uppercase `False`.
+
+    - id: var-and-const
+      title: Implicit Typing (var) and Constants
+      required: true
+      content: |
+        If the type is obvious from the right side of the assignment, you can use the `var` keyword. **The variable is still strongly typed!** The compiler just figures out the type for you.
+        
+        ```csharp
+        var score = 100;     // Compiler infers this is an int
+        var name = "Alex";   // Compiler infers this is a string
+        
+        // score = "High";   // ERROR! score is firmly an int.
+        ```
+        
+        Use the `const` keyword for values that should never change. You must initialize them immediately.
+        
+        ```csharp
+        const int MaxScore = 9999;
+        ```
+      check:
+        id: var-and-const-check
+        type: multipleChoice
+        prompt: |
+          What happens if you run this code?
+          
+          ```csharp
+          var currentLevel = 1;
+          currentLevel = 2.5;
+          ```
+        choices:
+          - id: a
+            text: '`currentLevel` automatically changes to a `double`.'
+          - id: b
+            text: A compilation error occurs.
+          - id: c
+            text: The code runs, and `currentLevel` rounds to `3`.
+        answer:
+          choiceId: b
+        explanation: |
+          `var` does NOT mean dynamically typed. The compiler sees `var currentLevel = 1;` and locks `currentLevel` as an `int`. You cannot assign a `double` (`2.5`) to an `int` implicitly in C#.
+
+    - id: console-io
+      title: Console Input and Output
+      required: true
+      content: |
+        We communicate with the user via the `Console` class.
+        
+        - `Console.WriteLine()` prints text and moves to the next line.
+        - `Console.Write()` prints text but stays on the same line.
+        - `Console.ReadLine()` waits for the user to type something and press Enter. **It always returns a string.**
+
+        ```csharp
+        Console.Write("Enter your username: ");
+        string username = Console.ReadLine();
+        
+        Console.WriteLine("Welcome, " + username + "!");
+        ```
+      check:
+        id: console-io-check
+        type: multipleChoice
+        prompt: |
+          What is the difference between `Console.Write` and `Console.WriteLine`?
+        choices:
+          - id: a
+            text: '`Write` is for strings, `WriteLine` is for numbers.'
+          - id: b
+            text: '`WriteLine` adds a newline character at the end of the output, `Write` does not.'
+          - id: c
+            text: '`Write` reads input, `WriteLine` prints output.'
+        answer:
+          choiceId: b
+        explanation: |
+          `WriteLine` appends a line terminator so the next console output starts on a fresh line.
+
+    - id: string-interpolation
+      title: String Interpolation and Parsing
+      required: true
+      content: |
+        Like Python's f-strings, C# has **String Interpolation**. Put a `$` before the string, and you can inject variables using `{}`.
+        
+        ```csharp
+        int score = 500;
+        Console.WriteLine($"Your final score is {score} points.");
+        ```
+        
+        Because `Console.ReadLine()` always returns a `string`, you must **parse** it to get numbers using `int.Parse()` or `double.Parse()`.
+        
+        ```csharp
+        Console.Write("Enter your level: ");
+        string input = Console.ReadLine();
+        int level = int.Parse(input);
+        
+        // Or in one line:
+        // int level = int.Parse(Console.ReadLine());
+        ```
+      check:
+        id: string-interpolation-check
+        type: multipleChoice
+        prompt: |
+          Which code correctly asks for a score and stores it as an integer?
+        choices:
+          - id: a
+            text: '`int score = Console.ReadLine();`'
+          - id: b
+            text: '`int score = Console.ReadInt();`'
+          - id: c
+            text: '`int score = int.Parse(Console.ReadLine());`'
+          - id: d
+            text: '`int score = parse.int(Console.ReadLine());`'
+        answer:
+          choiceId: c
+        explanation: |
+          You must explicitly take the `string` returned by `Console.ReadLine()` and pass it into `int.Parse()` to convert it to an `int`.

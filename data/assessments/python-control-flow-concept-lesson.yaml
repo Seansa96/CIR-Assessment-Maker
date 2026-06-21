@@ -1,0 +1,163 @@
+schemaVersion: 1
+id: python-control-flow-concept-lesson
+title: Python Control Flow Concept Lesson
+assessmentType: conceptLesson
+categoryId: python
+subcategoryId: python-control-flow
+subcategoryIds:
+  - python-control-flow
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - control-flow
+    - if-else
+    - logic
+lesson:
+  introduction: |
+    Games are entirely built on decisions: *If* the player's health is 0, they die. *If* they use a fire spell on an ice monster, it deals double damage. *Else*, it deals normal damage.
+    
+    This lesson covers the `if/elif/else` branching structures and logical operators (`and`, `or`, `not`) that allow your Python code to make decisions based on changing state.
+  sections:
+    - id: if-statements
+      title: The if, elif, and else statements
+      required: true
+      content: |
+        The `if` statement checks a condition. If the condition is `True`, the indented block of code underneath it runs.
+        
+        You can use `elif` (else if) to check additional conditions if the first one was false. Finally, `else` catches anything that wasn't caught by the previous conditions.
+
+        ```python
+        player_health = 15
+        
+        if player_health <= 0:
+            print("Game Over!")
+        elif player_health < 20:
+            print("Warning: Health is low!")
+        else:
+            print("You are in good condition.")
+        ```
+        
+        Remember: As soon as one condition evaluates to `True`, its block runs, and Python skips the rest of the `elif`/`else` chain.
+      check:
+        id: if-statements-check
+        type: multipleChoice
+        prompt: |
+          If `enemy_hp = 50`, what will this code print?
+          
+          ```python
+          if enemy_hp > 0:
+              print("Enemy is alive.")
+          elif enemy_hp > 25:
+              print("Enemy is strong.")
+          else:
+              print("Enemy is dead.")
+          ```
+        choices:
+          - id: a
+            text: '`Enemy is alive.`'
+          - id: b
+            text: '`Enemy is strong.`'
+          - id: c
+            text: |
+              `Enemy is alive.`
+              `Enemy is strong.`
+          - id: d
+            text: '`Enemy is dead.`'
+        answer:
+          choiceId: a
+        explanation: |
+          Because `50 > 0` is `True`, the first block runs. The `elif` is skipped entirely, even though `50 > 25` is also technically true. If you want both to print, you must use two separate `if` statements instead of `if/elif`.
+
+    - id: logical-operators
+      title: Logical Operators (and, or, not)
+      required: true
+      content: |
+        Sometimes a single comparison isn't enough. You can combine conditions using `and`, `or`, and `not`.
+
+        - `and`: Both sides must be `True`.
+        - `or`: At least one side must be `True`.
+        - `not`: Flips the boolean value (True becomes False).
+
+        ```python
+        has_key = True
+        door_unlocked = False
+        
+        if has_key and not door_unlocked:
+            print("You use the key to unlock the door.")
+            door_unlocked = True
+        ```
+        
+        Another example:
+        ```python
+        mana = 10
+        has_potion = True
+        
+        if mana >= 20 or has_potion:
+            print("You can cast the spell!")
+        ```
+      check:
+        id: logical-operators-check
+        type: multipleChoice
+        prompt: |
+          Which combination of variables allows the player to enter the VIP room?
+          
+          ```python
+          if level >= 10 and (has_vip_pass or gold >= 500):
+              print("You enter the VIP room.")
+          ```
+        choices:
+          - id: a
+            text: '`level = 5`, `has_vip_pass = True`, `gold = 1000`'
+          - id: b
+            text: '`level = 10`, `has_vip_pass = False`, `gold = 100`'
+          - id: c
+            text: '`level = 12`, `has_vip_pass = True`, `gold = 0`'
+          - id: d
+            text: '`level = 9`, `has_vip_pass = False`, `gold = 600`'
+        answer:
+          choiceId: c
+        explanation: |
+          For the whole expression to be True, `level >= 10` MUST be true. Then, the player needs EITHER a VIP pass OR at least 500 gold. Option C is level 12 (True) and has the pass (True).
+
+    - id: match-case
+      title: Match-Case (Python 3.10+)
+      required: true
+      content: |
+        If you are checking the exact value of a single variable against many possibilities, you can use the `match` statement (introduced in Python 3.10). It is similar to `switch` in other languages.
+
+        ```python
+        action = input("What do you do? (attack/defend/run): ")
+        
+        match action:
+            case "attack":
+                print("You swing your sword!")
+            case "defend":
+                print("You raise your shield!")
+            case "run":
+                print("You flee the battle!")
+            case _:
+                print("Invalid action.")
+        ```
+        
+        The `case _:` acts as the default or "catch-all" if none of the specific cases match.
+      check:
+        id: match-case-check
+        type: multipleChoice
+        prompt: |
+          What acts as the "default" case in a Python `match` statement?
+        choices:
+          - id: a
+            text: '`case default:`'
+          - id: b
+            text: '`case _:`'
+          - id: c
+            text: '`case else:`'
+          - id: d
+            text: '`default:`'
+        answer:
+          choiceId: b
+        explanation: |
+          The underscore `_` is the wildcard pattern in Python, meaning it matches anything that hasn't been matched yet.

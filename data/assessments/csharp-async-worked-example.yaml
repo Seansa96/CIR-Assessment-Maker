@@ -1,0 +1,115 @@
+schemaVersion: 1
+id: csharp-async-worked-example
+title: C# Network Call Worked Example
+assessmentType: workedExample
+categoryId: csharp
+subcategoryId: csharp-async
+subcategoryIds:
+  - csharp-async
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Tracing Asynchronous Execution
+    problem: |
+      Understanding *when* code executes is the hardest part of async/await. 
+      Let's trace exactly the order in which lines of code run when we trigger an async network call.
+    steps:
+      - id: s001
+        title: The Setup
+        instruction: |
+          Look at the following two methods:
+          
+          ```csharp
+          public async Task DownloadDataAsync()
+          {
+              Console.WriteLine("1. Starting download...");
+              await Task.Delay(2000); // 2 second delay
+              Console.WriteLine("3. Download complete!");
+          }
+          
+          public async Task Execute()
+          {
+              Console.WriteLine("0. Preparing...");
+              Task dlTask = DownloadDataAsync(); // Note: We do NOT await here!
+              Console.WriteLine("2. Doing other work...");
+              
+              await dlTask; // Now we wait for it to finish
+              Console.WriteLine("4. Done!");
+          }
+          ```
+        type: multipleChoice
+        prompt: |
+          What happens immediately after `DownloadDataAsync()` hits the `await Task.Delay(2000)` line?
+        choices:
+          - id: a
+            text: The entire application freezes for 2 seconds.
+          - id: b
+            text: It immediately jumps to the next line ("3. Download complete!").
+          - id: c
+            text: It yields control back to `Execute()`, allowing "2. Doing other work..." to print while the delay happens in the background.
+        answer:
+          choiceId: c
+        explanation: |
+          This is the magic of `await`. When `DownloadDataAsync` hits an `await`, it says "I'm pausing here, you can go back to whatever called me." Control returns to `Execute()`.
+
+      - id: s002
+        title: Tracing the Output
+        instruction: |
+          Let's trace the exact print order.
+          
+          - "0. Preparing..." prints first.
+          - `DownloadDataAsync` is called synchronously until it hits its first `await`.
+          - So, "1. Starting download..." prints.
+          - It hits `await Task.Delay()`, pauses, and returns a pending `Task` back to `Execute()`.
+          - `Execute()` assigns that pending Task to `dlTask`, and continues.
+          - "2. Doing other work..." prints immediately.
+          - Then `Execute` hits `await dlTask;`. It pauses and waits for the 2 seconds to finish.
+        type: multipleChoice
+        prompt: |
+          What are the last two things printed to the console?
+        choices:
+          - id: a
+            text: |
+              `3. Download complete!`
+              `4. Done!`
+          - id: b
+            text: |
+              `4. Done!`
+              `3. Download complete!`
+          - id: c
+            text: |
+              `2. Doing other work...`
+              `4. Done!`
+        answer:
+          choiceId: a
+        explanation: |
+          After 2 seconds, the `Task.Delay` finishes. `DownloadDataAsync` resumes and prints "3. Download complete!". The method ends, which completes the `dlTask`. Now `Execute()` resumes from its await and prints "4. Done!".
+
+      - id: s003
+        title: The Await Difference
+        instruction: |
+          What if we had awaited `DownloadDataAsync` immediately?
+          
+          ```csharp
+          public async Task Execute()
+          {
+              Console.WriteLine("0. Preparing...");
+              await DownloadDataAsync(); // We wait right here!
+              Console.WriteLine("2. Doing other work...");
+          }
+          ```
+        type: multipleChoice
+        prompt: |
+          If we use the above code instead, what is the exact print order?
+        choices:
+          - id: a
+            text: 0, 1, 2, 3
+          - id: b
+            text: 0, 1, 3, 2
+          - id: c
+            text: 0, 2, 1, 3
+        answer:
+          choiceId: b
+        explanation: |
+          Because we `await` immediately, `Execute` pauses completely until the entire download finishes. It prints 0, goes into the method and prints 1, waits 2 seconds, prints 3 (download finishes), and THEN returns to `Execute` to print 2.

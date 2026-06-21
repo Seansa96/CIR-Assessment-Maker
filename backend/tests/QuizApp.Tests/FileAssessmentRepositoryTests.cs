@@ -291,6 +291,8 @@ public sealed class FileAssessmentRepositoryTests
 
     [Theory]
     [InlineData("calc2-rational-integration-quiz")]
+    [InlineData("calc2-irreducible-quadratic-partial-fractions-worked-example")]
+    [InlineData("calc2-irreducible-quadratic-partial-fractions-quiz")]
     [InlineData("calc2-improper-integrals-worked-example")]
     [InlineData("physics-tennis-ball-kinematics-free-response")]
     [InlineData("physics-relative-motion-basic-free-response")]
@@ -445,6 +447,98 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("aops-identity-engineering-worked-example")]
     [InlineData("aops-identity-engineering-quiz")]
     public async Task Repository_validates_identity_engineering_learning_path(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("csharp-async-concept-lesson")]
+    [InlineData("csharp-async-quiz")]
+    [InlineData("csharp-async-recall")]
+    [InlineData("csharp-async-worked-example")]
+    [InlineData("csharp-collections-concept-lesson")]
+    [InlineData("csharp-collections-quiz")]
+    [InlineData("csharp-collections-recall")]
+    [InlineData("csharp-collections-worked-example")]
+    [InlineData("csharp-combat-turn-guided-project")]
+    [InlineData("csharp-control-flow-concept-lesson")]
+    [InlineData("csharp-control-flow-quiz")]
+    [InlineData("csharp-control-flow-recall")]
+    [InlineData("csharp-control-flow-worked-example")]
+    [InlineData("csharp-functions-concept-lesson")]
+    [InlineData("csharp-functions-quiz")]
+    [InlineData("csharp-functions-recall")]
+    [InlineData("csharp-functions-worked-example")]
+    [InlineData("csharp-game-score-tracker-guided-project")]
+    [InlineData("csharp-leaderboard-guided-project")]
+    [InlineData("csharp-oop-concept-lesson")]
+    [InlineData("csharp-oop-quiz")]
+    [InlineData("csharp-oop-recall")]
+    [InlineData("csharp-oop-worked-example")]
+    [InlineData("csharp-standard-library-concept-lesson")]
+    [InlineData("csharp-standard-library-quiz")]
+    [InlineData("csharp-standard-library-recall")]
+    [InlineData("csharp-standard-library-worked-example")]
+    [InlineData("csharp-types-variables-concept-lesson")]
+    [InlineData("csharp-types-variables-quiz")]
+    [InlineData("csharp-types-variables-recall")]
+    [InlineData("csharp-types-variables-worked-example")]
+    public async Task Repository_validates_csharp_gaming_assessments(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("python-basic-file-io-worked-example")]
+    [InlineData("python-collections-concept-lesson")]
+    [InlineData("python-collections-quiz")]
+    [InlineData("python-collections-recall")]
+    [InlineData("python-collections-worked-example")]
+    [InlineData("python-control-flow-concept-lesson")]
+    [InlineData("python-control-flow-quiz")]
+    [InlineData("python-control-flow-recall")]
+    [InlineData("python-control-flow-worked-example")]
+    [InlineData("python-function-definition-conceptual-quiz")]
+    [InlineData("python-function-definition-worked-example")]
+    [InlineData("python-functions-concept-lesson")]
+    [InlineData("python-functions-quiz")]
+    [InlineData("python-functions-recall")]
+    [InlineData("python-game-loop-guided-project")]
+    [InlineData("python-inheritance-concept-lesson")]
+    [InlineData("python-intro-loops-worked-example")]
+    [InlineData("python-intro-threads-worked-example")]
+    [InlineData("python-inventory-system-guided-project")]
+    [InlineData("python-loops-concept-lesson")]
+    [InlineData("python-loops-practice-quiz")]
+    [InlineData("python-oop-class-conventions-concept-lesson")]
+    [InlineData("python-oop-quiz")]
+    [InlineData("python-oop-recall")]
+    [InlineData("python-oop-worked-example")]
+    [InlineData("python-polymorphism-concept-lesson")]
+    [InlineData("python-sockets-basic-usage-worked-example")]
+    [InlineData("python-sockets-conceptual-worked-example")]
+    [InlineData("python-standard-library-concept-lesson")]
+    [InlineData("python-standard-library-quiz")]
+    [InlineData("python-standard-library-recall")]
+    [InlineData("python-standard-library-worked-example")]
+    [InlineData("python-text-rpg-battle-engine-guided-project")]
+    [InlineData("python-types-variables-concept-lesson")]
+    [InlineData("python-types-variables-quiz")]
+    [InlineData("python-types-variables-recall")]
+    [InlineData("python-types-variables-worked-example")]
+    public async Task Repository_validates_python_gaming_assessments(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
             new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },

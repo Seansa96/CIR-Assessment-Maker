@@ -1,0 +1,107 @@
+schemaVersion: 1
+id: python-oop-quiz
+title: Python OOP Quiz
+assessmentType: quiz
+categoryId: python
+subcategoryId: python-oop
+subcategoryIds:
+  - python-oop
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      Examine the following code:
+      
+      ```python
+      class Item:
+          def __init__(self, name):
+              self.name = name
+              
+      class Weapon(Item):
+          def __init__(self, name, damage):
+              super().__init__(name)
+              self.damage = damage
+              
+      sword = Weapon("Iron Sword", 15)
+      print(sword.name)
+      ```
+      
+      What is output to the console?
+    choices:
+      - id: a
+        text: '`Iron Sword`'
+      - id: b
+        text: '`15`'
+      - id: c
+        text: '`None`'
+      - id: d
+        text: 'An error occurs because `name` is not defined in `Weapon`.'
+    answer:
+      choiceId: a
+    explanation: |
+      `Weapon` inherits from `Item`. By calling `super().__init__(name)`, the `Weapon` constructor tells the `Item` constructor to set up the `self.name` attribute.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      If you want to prevent external code from directly modifying a player's health, but still allow them to read it, which pattern should you use?
+    choices:
+      - id: a
+        text: Use an `_hp` attribute with an `@property` getter.
+      - id: b
+        text: Use a completely public `hp` attribute.
+      - id: c
+        text: Make the class inherit from `ReadOnly`.
+      - id: d
+        text: Use the `@static` decorator.
+    answer:
+      choiceId: a
+    explanation: |
+      Prefixing an attribute with an underscore (e.g., `_hp`) is the Python convention for "private" data. Exposing it via an `@property` method allows read-only access (unless you also define a setter).
+
+  - id: q003
+    type: numericResponse
+    prompt: |
+      Trace this polymorphic code:
+      
+      ```python
+      class Beast:
+          def get_damage(self): return 10
+          
+      class Wolf(Beast):
+          def get_damage(self): return 15
+          
+      class Bear(Beast):
+          def get_damage(self): return super().get_damage() + 20
+          
+      my_bear = Bear()
+      print(my_bear.get_damage())
+      ```
+      
+      What number is printed?
+    answer:
+      value: 30
+      tolerance: 0
+    explanation: |
+      `my_bear.get_damage()` calls the `Bear` class's method. That method calls `super().get_damage()` which goes to the parent class (`Beast`) and returns `10`. Then it adds `20`. `10 + 20 = 30`.
+
+  - id: q004
+    type: multipleChoice
+    prompt: |
+      Why do we use the `self` parameter in class methods?
+    choices:
+      - id: a
+        text: It tells the method which specific instance (object) it is operating on.
+      - id: b
+        text: It prevents other objects from calling the method.
+      - id: c
+        text: It makes the method run faster.
+      - id: d
+        text: It is just a syntax rule and has no functional purpose.
+    answer:
+      choiceId: a
+    explanation: |
+      `self` is the reference to the current object. When you have three `Hero` objects, and one takes damage, `self` ensures the damage is applied to the correct hero's health, not all of them.

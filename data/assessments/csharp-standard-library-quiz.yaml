@@ -1,0 +1,95 @@
+schemaVersion: 1
+id: csharp-standard-library-quiz
+title: C# Standard Library Quiz
+assessmentType: quiz
+categoryId: csharp
+subcategoryId: csharp-standard-library
+subcategoryIds:
+  - csharp-standard-library
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      Examine the following code:
+      
+      ```csharp
+      public class Enemy
+      {
+          public int GetRandomDamage()
+          {
+              Random r = new Random();
+              return r.Next(5, 10);
+          }
+      }
+      ```
+      
+      What is the potential problem if a loop calls `GetRandomDamage()` 50 times very quickly?
+    choices:
+      - id: a
+        text: 'It will generate the exact same "random" number 50 times because the random seed is based on the system clock.'
+      - id: b
+        text: 'It will throw an `OutOfMemoryException`.'
+      - id: c
+        text: 'It will cause a stack overflow.'
+      - id: d
+        text: 'There is no problem, it will work perfectly.'
+    answer:
+      choiceId: a
+    explanation: |
+      If you create `new Random()` rapidly in a loop, the clock hasn't changed enough between iterations, so every instance gets the exact same mathematical seed and generates the exact same numbers. A single, shared `Random` instance should be used instead.
+
+  - id: q002
+    type: numericResponse
+    prompt: |
+      Trace this math code:
+      
+      ```csharp
+      double damage = 12.5;
+      int finalHit = Math.Max(0, (int)Math.Floor(damage) - 20);
+      ```
+      
+      What is the value of `finalHit`?
+    answer:
+      value: 0
+      tolerance: 0
+    explanation: |
+      `Math.Floor(12.5)` returns `12`. `12 - 20` is `-8`. `Math.Max(0, -8)` returns the larger number, which is `0`.
+
+  - id: q003
+    type: multipleChoice
+    prompt: |
+      Which method would you use if you want to write a string of data to a save file, but if the save file already exists, you want to ADD the new text to the end of the file rather than wiping it?
+    choices:
+      - id: a
+        text: '`File.WriteAllText(path, text)`'
+      - id: b
+        text: '`File.AppendAllText(path, text)`'
+      - id: c
+        text: '`File.CreateText(path)`'
+      - id: d
+        text: '`File.Add(path, text)`'
+    answer:
+      choiceId: b
+    explanation: |
+      `File.AppendAllText` opens a file, appends the specified string to the file, and then closes the file. If the file does not exist, it creates it. `WriteAllText` would completely overwrite the existing data.
+
+  - id: q004
+    type: multipleChoice
+    prompt: |
+      If you need to ensure a variable `speed` never goes above a maximum value `MAX_SPEED`, which math function is best?
+    choices:
+      - id: a
+        text: '`Math.Min(speed, MAX_SPEED)`'
+      - id: b
+        text: '`Math.Max(speed, MAX_SPEED)`'
+      - id: c
+        text: '`Math.Clamp(speed)`'
+      - id: d
+        text: '`Math.Abs(speed)`'
+    answer:
+      choiceId: a
+    explanation: |
+      `Math.Min` will return the smaller of the two numbers. If `speed` exceeds `MAX_SPEED`, it returns `MAX_SPEED`. If `speed` is less than `MAX_SPEED`, it returns `speed`. This is the standard way to enforce a ceiling/maximum value.

@@ -1,0 +1,83 @@
+schemaVersion: 1
+id: csharp-combat-turn-guided-project
+title: C# Combat Turn Guided Project
+assessmentType: guidedProject
+categoryId: csharp
+subcategoryId: csharp-control-flow
+subcategoryIds:
+  - csharp-control-flow
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Build a `CombatResolver` class that uses switch expressions and a while loop.
+
+    Required project behavior:
+    - In `Combat.cs`, create a public class `CombatResolver`.
+    - Create a public method `ResolveTurn(string action)` that returns an `int`.
+      - Use a C# 8+ switch expression!
+      - If `"attack"`, return 20.
+      - If `"heavy_attack"`, return 40.
+      - If `"defend"`, return 0.
+      - For anything else (the default `_`), return 0.
+    - Create a public method `RunBattle(int enemyHp)`.
+      - Use a `while` loop that continues as long as `enemyHp > 0`.
+      - Inside the loop, subtract 20 from `enemyHp` on each iteration (simulating a basic attack).
+      - Keep track of the number of turns it took to kill the enemy.
+      - Return the total number of turns (an `int`) once the loop finishes.
+
+  requiredChecks:
+    - id: compile-check
+      title: Compile
+      description: Compiles correctly.
+      expectedOutputContains:
+        - 'OK'
+
+  files:
+    - path: Combat.cs
+      readOnly: false
+      content: |
+        using System;
+
+        public class CombatResolver
+        {
+            public int ResolveTurn(string action)
+            {
+                // TODO: Implement switch expression returning damage
+                return 0;
+            }
+            
+            public int RunBattle(int enemyHp)
+            {
+                // TODO: Loop until enemyHp <= 0, return turn count
+                return 0;
+            }
+        }
+    - path: Program.cs
+      readOnly: true
+      content: |
+        using System;
+
+        public class Program
+        {
+            public static void Main()
+            {
+                var combat = new CombatResolver();
+                
+                // Test ResolveTurn
+                if (combat.ResolveTurn("attack") != 20) throw new Exception("attack should return 20");
+                if (combat.ResolveTurn("heavy_attack") != 40) throw new Exception("heavy_attack should return 40");
+                if (combat.ResolveTurn("defend") != 0) throw new Exception("defend should return 0");
+                if (combat.ResolveTurn("dance") != 0) throw new Exception("unknown action should return 0");
+                
+                // Test RunBattle
+                int turns = combat.RunBattle(50); // 50 -> 30 -> 10 -> -10 (3 turns)
+                if (turns != 3) throw new Exception($"50 HP should take 3 turns, but took {turns}");
+                
+                int turns2 = combat.RunBattle(20); // 20 -> 0 (1 turn)
+                if (turns2 != 1) throw new Exception($"20 HP should take 1 turn, but took {turns2}");
+
+                Console.WriteLine("All tests passed!");
+            }
+        }

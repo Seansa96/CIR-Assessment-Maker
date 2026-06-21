@@ -1,0 +1,84 @@
+schemaVersion: 1
+id: csharp-collections-quiz
+title: C# Collections and LINQ Quiz
+assessmentType: quiz
+categoryId: csharp
+subcategoryId: csharp-standard-library
+subcategoryIds:
+  - csharp-standard-library
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      You have a `Dictionary<string, int> stats`. Which code correctly checks if the key "Agility" exists before attempting to read it?
+    choices:
+      - id: a
+        text: '`if (stats.ContainsKey("Agility"))`'
+      - id: b
+        text: '`if (stats.HasKey("Agility"))`'
+      - id: c
+        text: '`if (stats["Agility"] != null)`'
+      - id: d
+        text: '`if (stats.Keys.Where("Agility"))`'
+    answer:
+      choiceId: a
+    explanation: |
+      `ContainsKey` is the fastest and safest way to check if a key exists in a C# Dictionary. Attempting to directly read a key that doesn't exist (like `stats["Agility"]`) will throw a `KeyNotFoundException`.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      If you have a `List<int> numbers = new List<int> { 1, 2, 3, 4 };`, what does the following LINQ expression return?
+      
+      `numbers.Where(n => n > 2).Select(n => n * 2).ToList();`
+    choices:
+      - id: a
+        text: '`{ 6, 8 }`'
+      - id: b
+        text: '`{ 3, 4 }`'
+      - id: c
+        text: '`{ 2, 4, 6, 8 }`'
+      - id: d
+        text: '`{ 4, 8 }`'
+    answer:
+      choiceId: a
+    explanation: |
+      First, `.Where(n => n > 2)` filters the list down to `{ 3, 4 }`. Then, `.Select(n => n * 2)` multiplies those remaining numbers by 2, resulting in `{ 6, 8 }`.
+
+  - id: q003
+    type: numericResponse
+    prompt: |
+      Trace this LINQ query:
+      
+      ```csharp
+      List<int> rolls = new List<int> { 10, 5, 20, 15 };
+      int result = rolls.Where(r => r >= 15).Sum();
+      ```
+      
+      What is the value of `result`?
+    answer:
+      value: 35
+      tolerance: 0
+    explanation: |
+      `.Where(r => r >= 15)` keeps only the numbers 20 and 15. Then `.Sum()` adds them together. `20 + 15 = 35`.
+
+  - id: q004
+    type: multipleChoice
+    prompt: |
+      You use `.First(e => e.Level == 99)` on a list of enemies, but there are NO level 99 enemies in the list. What happens?
+    choices:
+      - id: a
+        text: The program crashes with an `InvalidOperationException` (Sequence contains no matching element).
+      - id: b
+        text: It safely returns `null`.
+      - id: c
+        text: It creates a new level 99 enemy and returns it.
+      - id: d
+        text: It returns an empty string.
+    answer:
+      choiceId: a
+    explanation: |
+      `.First()` guarantees it will return an item, so if it can't find one, it throws an exception. If you want it to safely return `null` instead, you must use `.FirstOrDefault()`.

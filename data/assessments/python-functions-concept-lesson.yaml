@@ -1,0 +1,186 @@
+schemaVersion: 1
+id: python-functions-concept-lesson
+title: Python Functions Concept Lesson
+assessmentType: conceptLesson
+categoryId: python
+subcategoryId: python-functions
+subcategoryIds:
+  - python-functions
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - functions
+    - parameters
+    - returns
+lesson:
+  introduction: |
+    As your game grows, you don't want to copy and paste the same damage calculation code 50 times. You wrap it in a function.
+    
+    A function is a reusable block of code that takes inputs (parameters), performs an action, and returns an output.
+  sections:
+    - id: defining-functions
+      title: Defining and Calling Functions
+      required: true
+      content: |
+        Use the `def` keyword to create a function. Everything indented beneath it is the function's body.
+
+        ```python
+        def display_welcome_message():
+            print("Welcome to the Dungeon!")
+            print("Prepare your weapons.")
+            
+        # Calling the function
+        display_welcome_message()
+        ```
+        
+        The code inside the function does NOT run until the function is explicitly called.
+      check:
+        id: defining-functions-check
+        type: multipleChoice
+        prompt: |
+          Why doesn't this code print anything?
+          
+          ```python
+          def spawn_enemy():
+              print("A wild slime appears!")
+          ```
+        choices:
+          - id: a
+            text: Because the print statement is indented.
+          - id: b
+            text: Because the function is defined, but never called.
+          - id: c
+            text: Because `def` prevents output to the console.
+        answer:
+          choiceId: b
+        explanation: |
+          Defining a function just saves the instructions for later. You must call it using `spawn_enemy()` for the code inside to actually run.
+
+    - id: parameters-and-arguments
+      title: Parameters and Arguments
+      required: true
+      content: |
+        Parameters act as variables inside the function that receive data when the function is called. The actual data you pass in is called an argument.
+
+        ```python
+        def deal_damage(target, amount):
+            print(f"You hit the {target} for {amount} damage!")
+            
+        deal_damage("Goblin", 15)
+        deal_damage("Dragon", 50)
+        ```
+        
+        You can also provide **default values**. If the caller doesn't provide that argument, the default is used.
+        
+        ```python
+        def heal(amount, is_critical=False):
+            if is_critical:
+                amount *= 2
+            print(f"Healed for {amount} HP.")
+            
+        heal(20)         # Healed for 20 HP.
+        heal(20, True)   # Healed for 40 HP.
+        ```
+      check:
+        id: parameters-and-arguments-check
+        type: multipleChoice
+        prompt: |
+          Given the function:
+          
+          ```python
+          def cast_spell(spell_name, mana_cost=10):
+              print(f"Casting {spell_name} for {mana_cost} MP.")
+          ```
+          
+          Which of the following is a valid way to call it?
+        choices:
+          - id: a
+            text: '`cast_spell("Fireball")`'
+          - id: b
+            text: '`cast_spell("Heal", 25)`'
+          - id: c
+            text: '`cast_spell(spell_name="Ice Bolt", mana_cost=15)`'
+          - id: d
+            text: All of the above are valid.
+        answer:
+          choiceId: d
+        explanation: |
+          A uses the default mana_cost. B overrides the default. C uses keyword arguments, which is also perfectly valid and often makes code easier to read.
+
+    - id: return-values
+      title: Return Values
+      required: true
+      content: |
+        Functions often need to give data *back* to the rest of the program using the `return` keyword.
+        
+        When Python hits a `return` statement, the function immediately stops running, and passes the value back.
+
+        ```python
+        def calculate_damage(base_attack, defense):
+            damage = base_attack - (defense / 2)
+            if damage < 1:
+                return 1
+            return damage
+
+        # Store the returned value in a variable
+        actual_damage = calculate_damage(50, 20)
+        print(f"Dealt {actual_damage} damage.")
+        ```
+      check:
+        id: return-values-check
+        type: multipleChoice
+        prompt: |
+          What happens when a function hits a `return` statement?
+        choices:
+          - id: a
+            text: The function pauses, waits for input, and then continues.
+          - id: b
+            text: The function continues executing the remaining lines of code in its body.
+          - id: c
+            text: The function immediately stops executing and passes the value back to the caller.
+          - id: d
+            text: The program crashes if a variable wasn't ready to receive it.
+        answer:
+          choiceId: c
+        explanation: |
+          `return` instantly exits the function. Any code written beneath a `return` statement that gets executed will be ignored.
+
+    - id: args-and-kwargs
+      title: '*args and **kwargs'
+      required: true
+      content: |
+        Sometimes you don't know exactly how many arguments a function will receive.
+        
+        - `*args` lets you pass a variable number of positional arguments (they are packed into a tuple).
+        - `**kwargs` lets you pass a variable number of keyword arguments (they are packed into a dictionary).
+        
+        ```python
+        def calculate_total_gold(*gold_pouches):
+            total = 0
+            for pouch in gold_pouches:
+                total += pouch
+            return total
+            
+        print(calculate_total_gold(10, 25, 5)) # Outputs 40
+        ```
+      check:
+        id: args-and-kwargs-check
+        type: multipleChoice
+        prompt: |
+          If you define a function `def print_inventory(**items):`, what type of object is `items` inside the function?
+        choices:
+          - id: a
+            text: list
+          - id: b
+            text: tuple
+          - id: c
+            text: dict
+          - id: d
+            text: set
+        answer:
+          choiceId: c
+        explanation: |
+          `**kwargs` (keyword arguments) are packed into a dictionary (`dict`), where the argument names become the keys and their assigned values become the dictionary values.

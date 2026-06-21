@@ -1,0 +1,143 @@
+schemaVersion: 1
+id: csharp-standard-library-concept-lesson
+title: C# Standard Library Concept Lesson
+assessmentType: conceptLesson
+categoryId: csharp
+subcategoryId: csharp-standard-library
+subcategoryIds:
+  - csharp-standard-library
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - standard-library
+    - random
+    - math
+    - file-io
+lesson:
+  introduction: |
+    The .NET base class libraries provide a massive toolkit for C# developers. You don't need to reinvent the wheel!
+    
+    This lesson covers the `System.Random` class, the `System.Math` class, and reading/writing files using `System.IO`.
+  sections:
+    - id: random-class
+      title: The Random Class
+      required: true
+      content: |
+        To generate random numbers in C#, you must first instantiate a `System.Random` object, and then call its `.Next()` method.
+
+        ```csharp
+        using System;
+
+        // Create the RNG (Random Number Generator)
+        Random rng = new Random();
+        
+        // Next(min, max) -> Returns an integer N such that min <= N < max
+        // NOTE: The max value is EXCLUSIVE!
+        int diceRoll = rng.Next(1, 7); // Returns 1, 2, 3, 4, 5, or 6. NEVER 7.
+        
+        Console.WriteLine($"You rolled a {diceRoll}");
+        ```
+        
+        *Tip: Always reuse a single `Random` instance across your game instead of creating a `new Random()` every time you need a number.*
+      check:
+        id: random-class-check
+        type: multipleChoice
+        prompt: |
+          If you want to generate a random number from 0 up to 10 (including 10), which code is correct?
+        choices:
+          - id: a
+            text: '`rng.Next(0, 10)`'
+          - id: b
+            text: '`rng.Next(0, 11)`'
+          - id: c
+            text: '`rng.NextInt(0, 10)`'
+          - id: d
+            text: '`rng.Random(10)`'
+        answer:
+          choiceId: b
+        explanation: |
+          The upper bound of `Next()` is exclusive. So to get a maximum value of 10, you must pass 11 as the upper bound.
+
+    - id: math-class
+      title: The Math Class
+      required: true
+      content: |
+        `System.Math` provides static methods for common mathematical operations. You do not need to use `new Math()` to use it.
+
+        ```csharp
+        using System;
+        
+        // Absolute value (makes negatives positive)
+        int diff = Math.Abs(-15); // 15
+        
+        // Power (Base, Exponent)
+        double squared = Math.Pow(4, 2); // 16
+        
+        // Rounding
+        double damage = 15.8;
+        int floored = (int)Math.Floor(damage); // 15 (Rounds down)
+        int ceiled = (int)Math.Ceiling(damage); // 16 (Rounds up)
+        
+        // Max and Min
+        int health = Math.Min(100, 120); // Clamps to 100
+        ```
+      check:
+        id: math-class-check
+        type: multipleChoice
+        prompt: |
+          A player has 50 Health, and takes 70 Damage. You want to subtract the damage, but ensure the Health never drops below 0. Which `Math` function helps you do this on one line?
+        choices:
+          - id: a
+            text: '`player.Health = Math.Min(0, player.Health - 70);`'
+          - id: b
+            text: '`player.Health = Math.Max(0, player.Health - 70);`'
+          - id: c
+            text: '`player.Health = Math.Abs(player.Health - 70);`'
+        answer:
+          choiceId: b
+        explanation: |
+          `Math.Max` returns the larger of the two numbers. So if `Health - 70` results in `-20`, it compares `0` and `-20`, returning `0`. This effectively clamps the minimum value to 0.
+
+    - id: file-io
+      title: File I/O (System.IO)
+      required: true
+      content: |
+        To save or load data (like high scores or settings), use the `System.IO.File` class.
+
+        ```csharp
+        using System.IO;
+        
+        string path = "save.txt";
+        
+        // Write all text to a file (creates or overwrites)
+        File.WriteAllText(path, "Level: 5\nGold: 100");
+        
+        // Check if a file exists
+        if (File.Exists(path))
+        {
+            // Read all text back out
+            string content = File.ReadAllText(path);
+            Console.WriteLine("Save loaded: \n" + content);
+        }
+        ```
+        
+        Using `WriteAllText` and `ReadAllText` is the simplest way to interact with the file system for basic saves.
+      check:
+        id: file-io-check
+        type: multipleChoice
+        prompt: |
+          What happens if you call `File.WriteAllText("log.txt", "Error!")` but `log.txt` already exists and contains data?
+        choices:
+          - id: a
+            text: It appends "Error!" to the end of the file.
+          - id: b
+            text: It throws an `IOException` because the file already exists.
+          - id: c
+            text: It completely overwrites the file, replacing the old contents with "Error!".
+        answer:
+          choiceId: c
+        explanation: |
+          `WriteAllText` creates a new file, writes the specified string to the file, and then closes the file. If the target file already exists, it is overwritten. If you want to add to it instead, you should use `File.AppendAllText`.

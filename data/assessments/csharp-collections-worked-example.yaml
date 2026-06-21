@@ -1,0 +1,94 @@
+schemaVersion: 1
+id: csharp-collections-worked-example
+title: C# LINQ High Score Tracker Worked Example
+assessmentType: workedExample
+categoryId: csharp
+subcategoryId: csharp-standard-library
+subcategoryIds:
+  - csharp-standard-library
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Building a High Score Query
+    problem: |
+      We have a `List<Player>` in our game. We want to find the top 3 players who are currently online, sort them by score (highest to lowest), and get a list of just their names.
+      
+      Doing this with `foreach` loops would take 15+ lines of code. With LINQ, we can chain methods to do it in one line!
+    steps:
+      - id: s001
+        title: Filtering the Online Players
+        instruction: |
+          First, we need to filter the list so we only have online players.
+          
+          ```csharp
+          List<Player> allPlayers = GetPlayers();
+          var onlinePlayers = allPlayers.Where(p => p.IsOnline);
+          ```
+        type: multipleChoice
+        prompt: |
+          What type of data does `p` represent in the lambda expression `p => p.IsOnline`?
+        choices:
+          - id: a
+            text: A boolean value.
+          - id: b
+            text: An integer index.
+          - id: c
+            text: A single `Player` object from the `allPlayers` list.
+        answer:
+          choiceId: c
+        explanation: |
+          The `.Where()` method feeds each element of the list into the lambda expression one by one. Since it is a list of `Player` objects, `p` represents one `Player`.
+
+      - id: s002
+        title: Sorting by Score
+        instruction: |
+          Next, we want to sort them by score, highest to lowest. LINQ uses `.OrderBy()` for ascending (A-Z, 1-10) and `.OrderByDescending()` for descending (10-1).
+          
+          ```csharp
+          var sortedOnline = allPlayers
+              .Where(p => p.IsOnline)
+              .OrderByDescending(p => p.Score);
+          ```
+        type: multipleChoice
+        prompt: |
+          What would happen if we used `.OrderBy(p => p.Score)` instead?
+        choices:
+          - id: a
+            text: The players would be sorted from lowest score to highest score.
+          - id: b
+            text: The code would fail to compile.
+          - id: c
+            text: It would sort the players alphabetically by name.
+        answer:
+          choiceId: a
+        explanation: |
+          `.OrderBy` is ascending. So a player with 0 score would be first, and a player with 10,000 score would be last. We want descending.
+
+      - id: s003
+        title: Extracting Names and Limiting
+        instruction: |
+          Now we need to extract *just* their names (using `.Select()`), and take only the top 3 (using `.Take(3)`).
+          
+          ```csharp
+          List<string> topThreeNames = allPlayers
+              .Where(p => p.IsOnline)
+              .OrderByDescending(p => p.Score)
+              .Select(p => p.Name)
+              .Take(3)
+              .ToList();
+          ```
+        type: multipleChoice
+        prompt: |
+          What is the purpose of `.ToList()` at the very end of the chain?
+        choices:
+          - id: a
+            text: It converts the names to lowercase.
+          - id: b
+            text: It prints the list to the console.
+          - id: c
+            text: It forces LINQ to execute the query and materializes the result into a concrete `List<string>`.
+        answer:
+          choiceId: c
+        explanation: |
+          LINQ uses "deferred execution". It doesn't actually do any work until you try to read the data. Calling `.ToList()` forces it to process the `Where`, `OrderBy`, `Select`, and `Take`, outputting a finished, standard `List` you can use immediately.

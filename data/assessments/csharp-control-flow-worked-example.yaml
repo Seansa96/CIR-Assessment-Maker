@@ -1,0 +1,81 @@
+schemaVersion: 1
+id: csharp-control-flow-worked-example
+title: C# Damage Resolution Worked Example
+assessmentType: workedExample
+categoryId: csharp
+subcategoryId: csharp-control-flow
+subcategoryIds:
+  - csharp-control-flow
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Tracing a Combat Switch Expression
+    problem: |
+      We have written a method that calculates the damage multiplier based on the weapon type used against an enemy. We are using C# 8+ switch expressions.
+    steps:
+      - id: s001
+        title: Reviewing the Switch Expression
+        instruction: |
+          Here is the code we are analyzing:
+          
+          ```csharp
+          string weaponType = "Axe";
+          string enemyType = "Armored";
+          
+          double damageMultiplier = weaponType switch
+          {
+              "Sword" => 1.0,
+              "Mace" => 1.5,
+              "Axe" when enemyType == "Armored" => 1.2,
+              "Axe" => 1.0,
+              _ => 0.5
+          };
+          
+          Console.WriteLine(damageMultiplier);
+          ```
+        type: numericResponse
+        prompt: |
+          Based on the initial values provided (`weaponType = "Axe"`, `enemyType = "Armored"`), what value will be printed to the console?
+        answer:
+          value: 1.2
+          tolerance: 0
+        explanation: |
+          The switch expression evaluates `weaponType`. It matches the third arm: `"Axe" when enemyType == "Armored"`. The `when` keyword acts as a guard clause, so this specific arm is chosen over the standard `"Axe"` arm. The result is `1.2`.
+
+      - id: s002
+        title: Changing the Inputs
+        instruction: |
+          Now, let's change the scenario. The inputs are now:
+          
+          ```csharp
+          string weaponType = "Axe";
+          string enemyType = "Flying";
+          ```
+        type: numericResponse
+        prompt: |
+          Trace the code again. What value will the switch expression return now?
+        answer:
+          value: 1.0
+          tolerance: 0
+        explanation: |
+          It evaluates `"Axe"`. The first `when` clause (`enemyType == "Armored"`) is FALSE. Therefore, it falls to the very next arm, which is just `"Axe" => 1.0`.
+
+      - id: s003
+        title: The Default Case
+        instruction: |
+          Finally, consider what happens with an unknown weapon.
+        type: multipleChoice
+        prompt: |
+          If `weaponType = "Bow"`, what will happen?
+        choices:
+          - id: a
+            text: It will return `0.5` because it hits the `_` default case.
+          - id: b
+            text: It will throw a `SwitchExpressionException` because "Bow" is not listed.
+          - id: c
+            text: It will return `0.0`.
+        answer:
+          choiceId: a
+        explanation: |
+          The underscore `_` is the discard pattern, which acts as the default catch-all in a switch expression. Because "Bow" doesn't match anything else, it returns `0.5`. If the `_` case was omitted entirely, THEN it would throw an exception.

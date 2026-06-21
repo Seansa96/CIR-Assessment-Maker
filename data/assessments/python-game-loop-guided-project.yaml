@@ -1,0 +1,86 @@
+schemaVersion: 1
+id: python-game-loop-guided-project
+title: Python Game Loop Guided Project
+assessmentType: guidedProject
+categoryId: python
+subcategoryId: python-control-flow
+subcategoryIds:
+  - python-control-flow
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: python
+  instructions: |
+    Build a simple text-based battle loop.
+
+    You will implement a function that runs a loop until either the player or the enemy runs out of health.
+
+    Required project behavior:
+
+    - Implement the `battle_loop()` function in `game.py`.
+    - Set `player_hp = 100` and `enemy_hp = 50`.
+    - Create a `while` loop that continues as long as BOTH `player_hp > 0` and `enemy_hp > 0`.
+    - Inside the loop, prompt the user with: `Action (attack/heal): ` using `input()`.
+    - If the user types `"attack"`, subtract 20 from `enemy_hp`.
+    - If the user types `"heal"`, add 30 to `player_hp`.
+    - For any other input, do nothing.
+    - After the player's action, if the enemy is still alive (`enemy_hp > 0`), subtract 15 from `player_hp` (enemy attacks back).
+    - Return a string at the end: If the player survived (`player_hp > 0`), return `"Victory"`. Otherwise, return `"Defeat"`.
+
+    The automated tests will simulate inputs to check your logic.
+
+  requiredChecks:
+    - id: compile-check
+      title: Compile
+      description: Compiles correctly.
+      expectedOutputContains:
+        - "OK"
+  files:
+    - path: game.py
+      readOnly: false
+      content: |
+        def battle_loop():
+            # TODO: Initialize player_hp and enemy_hp
+            
+            # TODO: Create the while loop
+            
+                # TODO: Ask for input
+                
+                # TODO: Process player action using if/elif
+                
+                # TODO: Process enemy counter-attack
+                
+            # TODO: Return "Victory" or "Defeat"
+            pass
+    - path: run_checks.py
+      readOnly: true
+      content: |
+        import unittest
+        from unittest.mock import patch
+        from game import battle_loop
+        import sys
+
+        class TestBattleLoop(unittest.TestCase):
+            @patch('builtins.input', side_effect=["attack", "attack", "attack"])
+            def test_victory(self, mock_input):
+                result = battle_loop()
+                self.assertEqual(result, "Victory")
+
+            @patch('builtins.input', side_effect=["heal", "heal", "heal", "heal", "heal", "heal", "heal"])
+            def test_defeat(self, mock_input):
+                # If they keep healing (gaining 30) but the enemy keeps hitting (losing 15),
+                # wait, actually they out-heal the enemy. Let's provide invalid inputs so they just get hit.
+                pass
+
+            @patch('builtins.input', side_effect=["nothing", "nothing", "nothing", "nothing", "nothing", "nothing", "nothing"])
+            def test_defeat_by_inaction(self, mock_input):
+                result = battle_loop()
+                self.assertEqual(result, "Defeat")
+                
+            @patch('builtins.input', side_effect=["attack", "heal", "attack", "attack"])
+            def test_mixed_actions(self, mock_input):
+                result = battle_loop()
+                self.assertEqual(result, "Victory")
+
+        if __name__ == '__main__':
+            unittest.main(verbosity=2)

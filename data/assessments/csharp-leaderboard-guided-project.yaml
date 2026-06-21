@@ -1,0 +1,92 @@
+schemaVersion: 1
+id: csharp-leaderboard-guided-project
+title: C# LINQ Leaderboard Guided Project
+assessmentType: guidedProject
+categoryId: csharp
+subcategoryId: csharp-standard-library
+subcategoryIds:
+  - csharp-standard-library
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Build a `Leaderboard` using LINQ!
+
+    Required project behavior:
+    - In `Leaderboard.cs`, you are provided with a `Player` class and a `LeaderboardManager` class.
+    - Implement the `GetTopThree(List<Player> players)` method.
+      - Return a `List<string>` containing exactly the names of the top 3 players by score (highest to lowest).
+      - Use LINQ `.OrderByDescending()`, `.Select()`, and `.Take()` to do this in a single chain!
+    - Implement the `GetAverageScore(List<Player> players)` method.
+      - Return a `double`.
+      - If the list is empty, return 0.0.
+      - Otherwise, use LINQ `.Average()` or a combination of `.Sum()` and `.Count()` to calculate the average score.
+
+  requiredChecks:
+    - id: compile-check
+      title: Compile
+      description: Compiles correctly.
+      expectedOutputContains:
+        - "OK"
+  files:
+    - path: Leaderboard.cs
+      readOnly: false
+      content: |
+        using System.Collections.Generic;
+        using System.Linq;
+
+        public class Player
+        {
+            public string Name { get; set; }
+            public int Score { get; set; }
+        }
+
+        public class LeaderboardManager
+        {
+            public List<string> GetTopThree(List<Player> players)
+            {
+                // TODO: Return a list of the top 3 player names, sorted by score descending
+                return new List<string>();
+            }
+            
+            public double GetAverageScore(List<Player> players)
+            {
+                // TODO: Return the average score. Handle empty list gracefully.
+                return 0.0;
+            }
+        }
+    - path: Program.cs
+      readOnly: true
+      content: |
+        using System;
+        using System.Collections.Generic;
+
+        public class Program
+        {
+            public static void Main()
+            {
+                var manager = new LeaderboardManager();
+                var players = new List<Player>
+                {
+                    new Player { Name = "Alice", Score = 500 },
+                    new Player { Name = "Bob", Score = 1500 },
+                    new Player { Name = "Charlie", Score = 200 },
+                    new Player { Name = "Dave", Score = 1000 }
+                };
+                
+                var top3 = manager.GetTopThree(players);
+                if (top3.Count != 3) throw new Exception("Expected exactly 3 names.");
+                if (top3[0] != "Bob") throw new Exception($"Expected Bob first, got {top3[0]}");
+                if (top3[1] != "Dave") throw new Exception($"Expected Dave second, got {top3[1]}");
+                if (top3[2] != "Alice") throw new Exception($"Expected Alice third, got {top3[2]}");
+                
+                double avg = manager.GetAverageScore(players);
+                if (Math.Abs(avg - 800.0) > 0.01) throw new Exception($"Expected average 800, got {avg}");
+                
+                double emptyAvg = manager.GetAverageScore(new List<Player>());
+                if (Math.Abs(emptyAvg - 0.0) > 0.01) throw new Exception($"Expected empty average 0, got {emptyAvg}");
+                
+                Console.WriteLine("All tests passed!");
+            }
+        }

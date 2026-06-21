@@ -1,0 +1,162 @@
+schemaVersion: 1
+id: csharp-control-flow-concept-lesson
+title: C# Control Flow Concept Lesson
+assessmentType: conceptLesson
+categoryId: csharp
+subcategoryId: csharp-control-flow
+subcategoryIds:
+  - csharp-control-flow
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - control-flow
+    - if-else
+    - switch
+    - loops
+lesson:
+  introduction: |
+    Games need to loop over frames, wait for events, and make decisions based on player input.
+    In C#, we handle these with `if/else` statements, `switch` blocks (or switch expressions), and various loops (`while`, `for`, `foreach`).
+  sections:
+    - id: if-else
+      title: If / Else
+      required: true
+      content: |
+        The standard `if` statement evaluates a boolean condition in parentheses `()`. The body is enclosed in curly braces `{}`.
+
+        ```csharp
+        int playerHp = 15;
+        
+        if (playerHp <= 0)
+        {
+            Console.WriteLine("Game Over!");
+        }
+        else if (playerHp < 20)
+        {
+            Console.WriteLine("Warning: Health is low!");
+        }
+        else
+        {
+            Console.WriteLine("You are healthy.");
+        }
+        ```
+      check:
+        id: if-else-check
+        type: multipleChoice
+        prompt: |
+          Unlike Python, what MUST surround the boolean condition in a C# `if` statement?
+        choices:
+          - id: a
+            text: 'Curly braces `{}`'
+          - id: b
+            text: 'Parentheses `()`'
+          - id: c
+            text: 'Square brackets `[]`'
+          - id: d
+            text: 'Nothing is required.'
+        answer:
+          choiceId: b
+        explanation: |
+          In C#, the condition must always be wrapped in parentheses, e.g., `if (condition)`.
+
+    - id: switch-statements
+      title: Switch Statements and Expressions
+      required: true
+      content: |
+        When you need to check a single variable against many possible values, a `switch` statement is cleaner than an `if/else` chain.
+
+        ```csharp
+        string action = "attack";
+        
+        switch (action)
+        {
+            case "attack":
+                Console.WriteLine("You swing your sword!");
+                break;
+            case "defend":
+                Console.WriteLine("You raise your shield!");
+                break;
+            default:
+                Console.WriteLine("Invalid action.");
+                break;
+        }
+        ```
+        
+        Notice that every case (including default) MUST end with a `break;`. 
+        
+        **C# 8+ Switch Expressions:**
+        If you are just returning or assigning a value, you can use the newer, shorter syntax:
+        
+        ```csharp
+        int damage = action switch
+        {
+            "attack" => 20,
+            "defend" => 0,
+            _ => 0 // The underscore is the default case
+        };
+        ```
+      check:
+        id: switch-statements-check
+        type: multipleChoice
+        prompt: |
+          In a standard C# `switch` statement, what happens if you forget to put a `break;` at the end of a case?
+        choices:
+          - id: a
+            text: Execution automatically "falls through" to the next case (like in C++).
+          - id: b
+            text: The compiler throws an error. C# does not allow implicit fall-through.
+          - id: c
+            text: The program crashes at runtime.
+          - id: d
+            text: It exits the switch statement automatically.
+        answer:
+          choiceId: b
+        explanation: |
+          Unlike C or C++, C# prevents accidental fall-through. If a case contains any code, it MUST end with `break`, `return`, or `goto`. The compiler will catch this error.
+
+    - id: loops
+      title: Loops (while, for, foreach)
+      required: true
+      content: |
+        - **`while`**: Loops as long as a condition is true. Great for game loops!
+        - **`for`**: A counted loop. You initialize a variable, set a condition, and define how it increments.
+        - **`foreach`**: Specifically designed to iterate over collections (like arrays or Lists) without needing an index.
+
+        ```csharp
+        // While loop
+        while (playerHp > 0) { /* play turn */ }
+        
+        // For loop
+        for (int i = 0; i < 3; i++)
+        {
+            Console.WriteLine($"Spawning enemy {i}");
+        }
+        
+        // Foreach loop
+        string[] inventory = { "Sword", "Shield" };
+        foreach (string item in inventory)
+        {
+            Console.WriteLine(item);
+        }
+        ```
+      check:
+        id: loops-check
+        type: multipleChoice
+        prompt: |
+          Which loop is specifically designed to easily traverse every item in an array or list, without needing to manually track an index variable like `i`?
+        choices:
+          - id: a
+            text: '`while`'
+          - id: b
+            text: '`for`'
+          - id: c
+            text: '`do-while`'
+          - id: d
+            text: '`foreach`'
+        answer:
+          choiceId: d
+        explanation: |
+          `foreach (var item in collection)` automatically handles getting every item, one by one, until the collection is exhausted.

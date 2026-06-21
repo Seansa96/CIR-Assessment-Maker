@@ -1,0 +1,147 @@
+schemaVersion: 1
+id: csharp-functions-concept-lesson
+title: C# Methods Concept Lesson
+assessmentType: conceptLesson
+categoryId: csharp
+subcategoryId: csharp-functions
+subcategoryIds:
+  - csharp-functions
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - functions
+    - methods
+    - ref
+    - out
+lesson:
+  introduction: |
+    In C#, functions are called **methods** because they are always attached to a class.
+    
+    You must strictly declare what a method takes in (parameters) and exactly what type it returns. We'll also cover `ref` and `out` modifiers, which let methods modify variables from the outside!
+  sections:
+    - id: defining-methods
+      title: Defining Methods
+      required: true
+      content: |
+        A method signature requires: Access Modifier (`public`/`private`), Return Type (or `void`), Name, and Parameters.
+
+        ```csharp
+        public class Player
+        {
+            // Returns nothing (void)
+            public void TakeDamage(int amount)
+            {
+                Console.WriteLine($"Took {amount} damage.");
+            }
+            
+            // Returns an int
+            public int CalculateScore(int timeBonus)
+            {
+                return 1000 + timeBonus;
+            }
+        }
+        ```
+      check:
+        id: defining-methods-check
+        type: multipleChoice
+        prompt: |
+          If a method does NOT return any value back to the caller, what must its return type be?
+        choices:
+          - id: a
+            text: '`null`'
+          - id: b
+            text: '`void`'
+          - id: c
+            text: '`empty`'
+          - id: d
+            text: '`int`'
+        answer:
+          choiceId: b
+        explanation: |
+          `void` tells the compiler that this method will execute its code and finish, but it won't produce a value that can be assigned to a variable.
+
+    - id: method-overloading
+      title: Method Overloading
+      required: true
+      content: |
+        In C#, you can create multiple methods with the exact same name, as long as they take **different parameters**. This is called Method Overloading.
+
+        ```csharp
+        public class Spellbook
+        {
+            // Version 1: Just the spell name
+            public void CastSpell(string spellName)
+            {
+                Console.WriteLine($"Casting {spellName}!");
+            }
+            
+            // Version 2: Spell name AND power level
+            public void CastSpell(string spellName, int power)
+            {
+                Console.WriteLine($"Casting {spellName} at power level {power}!");
+            }
+        }
+        ```
+        
+        The compiler automatically knows which one to use based on the arguments you provide when calling it.
+      check:
+        id: method-overloading-check
+        type: multipleChoice
+        prompt: |
+          Which of the following is an invalid overload for `public void Move(int distance)`?
+        choices:
+          - id: a
+            text: '`public void Move(int distance, bool isRunning)`'
+          - id: b
+            text: '`public void Move(double distance)`'
+          - id: c
+            text: '`public int Move(int distance)`'
+        answer:
+          choiceId: c
+        explanation: |
+          You cannot overload a method purely by changing the return type. The *parameters* (their types, number, or order) must be different so the compiler knows which one you are trying to call.
+
+    - id: ref-and-out
+      title: Ref and Out Modifiers
+      required: true
+      content: |
+        Normally, when you pass an `int` into a method, it passes a *copy*. If the method changes it, the original variable outside is unaffected.
+        
+        If you want the method to modify the original variable, use `ref` or `out`.
+        
+        - **`ref`**: The variable MUST be initialized before passing it in.
+        - **`out`**: The method MUST assign a value to it before returning.
+
+        ```csharp
+        public void Heal(ref int hp)
+        {
+            hp += 50; // Directly modifies the caller's variable
+        }
+        
+        public void CalculateLoot(out int gold, out string item)
+        {
+            gold = 100;
+            item = "Sword"; // Must assign something to both out variables
+        }
+        ```
+        
+        When calling them, you must also use the keywords: `Heal(ref playerHp);`
+      check:
+        id: ref-and-out-check
+        type: multipleChoice
+        prompt: |
+          What is the primary difference between `ref` and `out`?
+        choices:
+          - id: a
+            text: '`ref` is for integers, `out` is for strings.'
+          - id: b
+            text: '`ref` variables must be initialized before calling the method; `out` variables must be assigned a value inside the method.'
+          - id: c
+            text: '`ref` passes by value, `out` passes by reference.'
+        answer:
+          choiceId: b
+        explanation: |
+          Both pass by reference, but `ref` implies the variable already has useful data going *in*, while `out` implies the method will produce new data going *out*.

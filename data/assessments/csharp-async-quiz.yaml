@@ -1,0 +1,92 @@
+schemaVersion: 1
+id: csharp-async-quiz
+title: C# Async and Await Quiz
+assessmentType: quiz
+categoryId: csharp
+subcategoryId: csharp-async
+subcategoryIds:
+  - csharp-async
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      If you write a method: `public async Task DownloadPatch()`, what is the purpose of the `async` keyword?
+    choices:
+      - id: a
+        text: It forces the method to run on a background thread.
+      - id: b
+        text: It tells the compiler that the method is allowed to use the `await` keyword.
+      - id: c
+        text: It makes the method execute faster by bypassing the CPU cache.
+      - id: d
+        text: It automatically loops the method until it succeeds.
+    answer:
+      choiceId: b
+    explanation: |
+      The `async` keyword does not magically spawn threads or make things faster. It is simply an enabler: it allows you to use the `await` keyword inside that method, which is what actually does the asynchronous waiting.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      Examine the following code:
+      
+      ```csharp
+      public async Task Initialize()
+      {
+          Console.WriteLine("Start");
+          await Task.Delay(1000);
+          Console.WriteLine("End");
+      }
+      ```
+      
+      What does `await Task.Delay(1000)` actually do?
+    choices:
+      - id: a
+        text: It freezes the entire game for 1 second.
+      - id: b
+        text: It pauses the execution of `Initialize`, returning control to the caller, and schedules the rest of `Initialize` to resume after 1 second.
+      - id: c
+        text: It skips 1 second ahead in the game's clock.
+      - id: d
+        text: It causes the method to fail if it takes longer than 1 second.
+    answer:
+      choiceId: b
+    explanation: |
+      This is the core concept of async/await. `await` non-blockingly pauses the method, allowing the main thread to go do other things (like render frames or process input) while the delay happens in the background.
+
+  - id: q003
+    type: multipleChoice
+    prompt: |
+      Which method signature is correct if you want to asynchronously fetch a player's High Score (an integer)?
+    choices:
+      - id: a
+        text: '`public async int FetchScoreAsync()`'
+      - id: b
+        text: '`public Task<int> FetchScoreAsync()`'
+      - id: c
+        text: '`public async Task<int> FetchScoreAsync()`'
+      - id: d
+        text: '`public Task FetchScoreAsync<int>()`'
+    answer:
+      choiceId: c
+    explanation: |
+      You must include the `async` keyword to use `await` inside it, and because it returns data, the return type must be `Task<T>`, where `T` is the type you are returning (`int`).
+
+  - id: q004
+    type: multipleChoice
+    prompt: |
+      What happens if you call an `async` method but FORGET to use the `await` keyword in front of it?
+    choices:
+      - id: a
+        text: The compiler throws an error and refuses to build.
+      - id: b
+        text: The method runs synchronously and freezes the thread.
+      - id: c
+        text: The method starts running in the background, but the current method immediately continues executing without waiting for the result.
+    answer:
+      choiceId: c
+    explanation: |
+      This is sometimes called "fire and forget". The task is started, but because you didn't `await` it, your code keeps executing the next lines immediately. The compiler usually gives a warning, but it is technically valid code.

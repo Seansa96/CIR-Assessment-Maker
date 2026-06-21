@@ -1,0 +1,101 @@
+schemaVersion: 1
+id: csharp-standard-library-worked-example
+title: C# Dice Roller Worked Example
+assessmentType: workedExample
+categoryId: csharp
+subcategoryId: csharp-standard-library
+subcategoryIds:
+  - csharp-standard-library
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: we001
+    title: Building a D&D Dice Roller
+    problem: |
+      We want to create a reusable class that simulates rolling standard Dungeons & Dragons dice (d4, d6, d8, d12, d20).
+      We will use the `System.Random` class, but we must be careful about how we instantiate it to avoid generating the same numbers repeatedly.
+    steps:
+      - id: s001
+        title: The Naive Approach
+        instruction: |
+          First, let's look at the WRONG way to do it:
+          
+          ```csharp
+          public class BadDiceRoller
+          {
+              public int RollD20()
+              {
+                  Random rng = new Random(); // Don't do this!
+                  return rng.Next(1, 21);
+              }
+          }
+          ```
+        type: multipleChoice
+        prompt: |
+          Why is creating a `new Random()` inside the method a bad idea if you call `RollD20()` very quickly in a loop?
+        choices:
+          - id: a
+            text: It uses up too much computer memory.
+          - id: b
+            text: '`new Random()` is seeded by the system clock. If called repeatedly in the same millisecond, it will produce the exact same "random" number over and over.'
+          - id: c
+            text: It will throw an exception if called more than 10 times.
+        answer:
+          choiceId: b
+        explanation: |
+          Historically in .NET, `new Random()` grabs the current system time to use as a mathematical seed. If the clock hasn't ticked to the next millisecond, the next `new Random()` gets the exact same seed, producing identical results.
+
+      - id: s002
+        title: The Correct Approach
+        instruction: |
+          To fix this, we should create ONE instance of `Random` and share it across the whole class (or even the whole application).
+          
+          ```csharp
+          public class DiceRoller
+          {
+              // Create one shared instance
+              private Random _rng = new Random();
+              
+              public int Roll(int sides)
+              {
+                  return _rng.Next(1, sides + 1);
+              }
+          }
+          ```
+        type: numericResponse
+        prompt: |
+          If we call `Roll(6)` using the correct class above, what is the *highest* possible number that could be returned?
+        answer:
+          value: 6
+          tolerance: 0
+        explanation: |
+          The method passes `sides + 1` into the upper bound of `.Next()`. So `Roll(6)` passes `7`. Because `.Next()`'s upper bound is exclusive, the highest number it will ever return is `6`.
+
+      - id: s003
+        title: Simulating Advantage
+        instruction: |
+          In D&D, rolling "with Advantage" means you roll two d20s and take the HIGHEST result. Let's use `System.Math` to do this easily.
+          
+          ```csharp
+          public int RollWithAdvantage()
+          {
+              int roll1 = Roll(20);
+              int roll2 = Roll(20);
+              
+              return Math.Max(roll1, roll2);
+          }
+          ```
+        type: multipleChoice
+        prompt: |
+          What would `Math.Max(14, 14)` return?
+        choices:
+          - id: a
+            text: '`14`'
+          - id: b
+            text: '`28`'
+          - id: c
+            text: '`0`'
+        answer:
+          choiceId: a
+        explanation: |
+          `Math.Max` simply returns the larger of the two numbers. If they are identical, it just returns that number.

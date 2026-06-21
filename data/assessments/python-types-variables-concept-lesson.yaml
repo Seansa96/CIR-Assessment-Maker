@@ -1,0 +1,137 @@
+schemaVersion: 1
+id: python-types-variables-concept-lesson
+title: Python Types, Variables, and I/O Concept Lesson
+assessmentType: conceptLesson
+categoryId: python
+subcategoryId: python-types-and-variables
+subcategoryIds:
+  - python-types-and-variables
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - types
+    - variables
+    - input-output
+lesson:
+  introduction: |
+    Python is a dynamically-typed language, meaning you don't need to declare a variable's type explicitly. The type is determined by the value assigned to it.
+    
+    In this lesson, we will cover the basic primitive types (integers, floats, booleans, and strings), how to declare variables, and how to read user input using the console—essential skills for building interactive applications, like a Text RPG!
+  sections:
+    - id: primitive-types
+      title: Primitive Types
+      required: true
+      content: |
+        Python offers several core types to handle common data:
+
+        - `int`: Whole numbers (e.g., `100`, `-50`).
+        - `float`: Numbers with decimal points (e.g., `3.14`, `99.9`).
+        - `bool`: Boolean logic values (`True` or `False`). Notice the capital letters!
+        - `str`: Text wrapped in single or double quotes (e.g., `'Hero'`, `"Dragon"`).
+
+        When creating a character in a game, you assign these types to variables:
+
+        ```python
+        player_name = "Arthas"    # str
+        player_level = 5          # int
+        player_health = 100.5     # float
+        is_poisoned = False       # bool
+        ```
+      check:
+        id: primitive-types-check
+        type: multipleChoice
+        prompt: Which type is best suited for storing a player's exact gold amount, such as `1450.25`?
+        choices:
+          - id: a
+            text: '`int`'
+          - id: b
+            text: '`float`'
+          - id: c
+            text: '`str`'
+          - id: d
+            text: '`bool`'
+        answer:
+          choiceId: b
+        explanation: |
+          A `float` handles numbers with decimal values, like `1450.25`. An `int` would truncate the decimal part.
+
+    - id: input-output
+      title: Console Input and Output
+      required: true
+      content: |
+        To communicate with the player, Python uses `print()` for output and `input()` for input.
+
+        ```python
+        # Outputting text
+        print("A wild Goblin appears!")
+
+        # Getting input
+        action = input("Do you want to (A)ttack or (R)un? ")
+        ```
+
+        **Important Note:** The `input()` function *always* returns a string (`str`). If you want the player to enter a number, you must explicitly convert (cast) it to an `int` or `float`.
+
+        ```python
+        age_string = input("Enter your hero's age: ")
+        age_number = int(age_string)
+        
+        # Or in one line:
+        potion_count = int(input("How many potions do you want to buy? "))
+        ```
+      check:
+        id: input-output-check
+        type: multipleChoice
+        prompt: |
+          If a user types `10` into `input("Enter damage: ")`, what is the type of the returned value?
+        choices:
+          - id: a
+            text: '`int`'
+          - id: b
+            text: '`float`'
+          - id: c
+            text: '`str`'
+          - id: d
+            text: '`bool`'
+        answer:
+          choiceId: c
+        explanation: |
+          `input()` always returns a string (`str`). Even if the user types a number like `10`, Python treats it as the text `"10"` until you cast it with `int()`.
+
+    - id: string-formatting
+      title: Formatting Strings (f-strings)
+      required: true
+      content: |
+        When you need to mix text and variables, modern Python uses **f-strings** (formatted string literals).
+        
+        Just place an `f` before the opening quote, and put your variables inside curly braces `{}`.
+
+        ```python
+        player_name = "Arthas"
+        health = 85
+        
+        # Using an f-string
+        status_message = f"{player_name} currently has {health} HP remaining."
+        print(status_message)
+        ```
+        
+        This is much cleaner than using the `+` operator to concatenate strings and manually converting numbers to strings with `str()`.
+      check:
+        id: string-formatting-check
+        type: multipleChoice
+        prompt: How would you correctly format a string to say "You hit the Goblin for 15 damage" using variables `enemy = "Goblin"` and `damage = 15`?
+        choices:
+          - id: a
+            text: '`f"You hit the {enemy} for {damage} damage"`'
+          - id: b
+            text: '`"You hit the {enemy} for {damage} damage"`'
+          - id: c
+            text: '`f"You hit the enemy for damage damage"`'
+          - id: d
+            text: '`"You hit the " + enemy + " for " + damage + " damage"`'
+        answer:
+          choiceId: a
+        explanation: |
+          The `f` prefix tells Python to evaluate variables inside the `{}` braces. Option D causes an error because you cannot directly concatenate a string and an integer (`damage`) with `+` without casting the int to a string first.

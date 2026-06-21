@@ -1,0 +1,184 @@
+schemaVersion: 1
+id: python-collections-concept-lesson
+title: Python Collections Concept Lesson
+assessmentType: conceptLesson
+categoryId: python
+subcategoryId: python-collections
+subcategoryIds:
+  - python-collections
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - collections
+    - list
+    - dictionary
+    - set
+    - tuple
+lesson:
+  introduction: |
+    Games need to store groups of things: an inventory of items, a list of active enemies, or a mapping of stats.
+    Python has four built-in collection types to handle these scenarios: `list`, `tuple`, `dict`, and `set`.
+  sections:
+    - id: lists
+      title: Lists
+      required: true
+      content: |
+        A `list` is an ordered, mutable (changeable) collection. It is created with square brackets `[]`.
+        
+        Lists are perfect for things like a player's inventory, where items can be added, removed, or reordered.
+
+        ```python
+        inventory = ["Sword", "Shield", "Potion"]
+        
+        # Accessing by index (0-based)
+        print(inventory[0])  # Outputs: Sword
+        
+        # Adding to the end
+        inventory.append("Map")
+        
+        # Removing an item
+        inventory.remove("Shield")
+        
+        print(inventory) # ["Sword", "Potion", "Map"]
+        ```
+      check:
+        id: lists-check
+        type: multipleChoice
+        prompt: |
+          If `enemies = ["Goblin", "Slime", "Dragon"]`, how do you access `"Slime"`?
+        choices:
+          - id: a
+            text: '`enemies[1]`'
+          - id: b
+            text: '`enemies[2]`'
+          - id: c
+            text: '`enemies["Slime"]`'
+          - id: d
+            text: '`enemies(1)`'
+        answer:
+          choiceId: a
+        explanation: |
+          Lists are zero-indexed. "Goblin" is at index 0, and "Slime" is at index 1.
+
+    - id: dictionaries
+      title: Dictionaries (Dicts)
+      required: true
+      content: |
+        A `dict` stores data in **key-value pairs**, created with curly braces `{}`. Keys must be unique.
+        
+        Dictionaries are ideal for mapping player stats, or storing quantities of items.
+
+        ```python
+        player_stats = {
+            "hp": 100,
+            "mana": 50,
+            "strength": 15
+        }
+        
+        # Accessing a value by its key
+        print(player_stats["mana"])  # Outputs: 50
+        
+        # Adding or updating a key
+        player_stats["agility"] = 12
+        player_stats["hp"] -= 10     # Player took damage!
+        ```
+      check:
+        id: dictionaries-check
+        type: multipleChoice
+        prompt: |
+          How do you update the "gold" value to 500 in this dictionary?
+          
+          `player = {"name": "Hero", "gold": 100}`
+        choices:
+          - id: a
+            text: '`player["gold"] = 500`'
+          - id: b
+            text: '`player.gold = 500`'
+          - id: c
+            text: '`player[1] = 500`'
+          - id: d
+            text: '`player.append("gold", 500)`'
+        answer:
+          choiceId: a
+        explanation: |
+          You access or update a dictionary value by putting the key string inside square brackets `[]` and assigning it a new value.
+
+    - id: tuples-and-sets
+      title: Tuples and Sets
+      required: true
+      content: |
+        **Tuples** are created with parentheses `()`. They are exactly like lists, but they are **immutable** (cannot be changed after creation). Use them for things that should never change, like coordinates `(x, y)`.
+        
+        ```python
+        spawn_point = (10, 25)
+        # spawn_point[0] = 15  # ERROR! Tuples cannot be modified.
+        ```
+        
+        **Sets** are created with curly braces `{}` (but without key-value pairs). They are unordered and **only store unique elements**. Use them to track unique items, like unlocked achievements.
+        
+        ```python
+        achievements = {"First_Kill", "Level_Up"}
+        achievements.add("First_Kill") # Does nothing, already exists.
+        ```
+      check:
+        id: tuples-and-sets-check
+        type: multipleChoice
+        prompt: |
+          Which collection type would be best to store the names of all the unique regions a player has visited?
+        choices:
+          - id: a
+            text: list
+          - id: b
+            text: tuple
+          - id: c
+            text: dict
+          - id: d
+            text: set
+        answer:
+          choiceId: d
+        explanation: |
+          A set is perfect here because it automatically prevents duplicates, ensuring you only have a list of *unique* regions.
+
+    - id: comprehensions
+      title: List Comprehensions
+      required: true
+      content: |
+        A **list comprehension** is a concise way to create lists in a single line of code. It replaces a `for` loop that appends to a list.
+
+        ```python
+        # Standard way:
+        damage_rolls = [2, 5, 8, 3]
+        critical_rolls = []
+        for roll in damage_rolls:
+            critical_rolls.append(roll * 2)
+            
+        # List comprehension (does the exact same thing):
+        critical_rolls = [roll * 2 for roll in damage_rolls]
+        ```
+        
+        You can also add an `if` condition to filter the items:
+        ```python
+        # Only keep rolls greater than 4
+        high_rolls = [roll for roll in damage_rolls if roll > 4]
+        ```
+      check:
+        id: comprehensions-check
+        type: multipleChoice
+        prompt: |
+          What list is generated by `[x + 1 for x in [1, 2, 3]]`?
+        choices:
+          - id: a
+            text: '`[1, 2, 3]`'
+          - id: b
+            text: '`[2, 3, 4]`'
+          - id: c
+            text: '`[1, 2, 3, 1]`'
+          - id: d
+            text: '`[4, 5, 6]`'
+        answer:
+          choiceId: b
+        explanation: |
+          The comprehension iterates through `1, 2, 3`, adds `1` to each, and creates a new list: `[2, 3, 4]`.
