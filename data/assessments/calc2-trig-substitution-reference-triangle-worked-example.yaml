@@ -1,0 +1,397 @@
+schemaVersion: 1
+id: calc2-trig-substitution-reference-triangle-worked-example
+title: Trigonometric Substitution Reference Triangle Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryId: u-sub-integration
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - trigonometric-substitution
+    - reference-triangles
+    - back-substitution
+    - pythagorean-theorem
+    - radical-integrals
+workedExamples:
+  - id: why-reference-triangles-work
+    title: Why the reference-triangle back-substitution works
+    problem: |
+      Trigonometric substitution temporarily replaces $x$ with a trigonometric expression
+      in an angle $\theta$. After integration, the answer must be written in terms of
+      $x$ again.
+
+      A reference triangle is not an extra trick or a memorized picture. It is a geometric
+      encoding of the ratio already stated by the substitution. The Pythagorean theorem
+      supplies the missing side, allowing every remaining trigonometric function of
+      $\theta$ to be rewritten algebraically in $x$ and $a$.
+
+      You will derive all three standard triangles and then use the tangent-substitution
+      triangle to evaluate
+
+      $$
+      \int\frac{dx}{(x^2+9)^{3/2}}.
+      $$
+    steps:
+      - id: triangle-s001
+        title: A substitution defines a trig ratio
+        instruction: |
+          Begin with $x=a\tan\theta$. Divide by $a$ and interpret the result using the
+          definition of tangent.
+        type: multipleChoice
+        prompt: |
+          Which ratio follows directly from $x=a\tan\theta$?
+        choices:
+          - id: a
+            text: '$\tan\theta=\frac{x}{a}=\frac{\text{opposite}}{\text{adjacent}}$'
+          - id: b
+            text: '$\tan\theta=\frac{a}{x}=\frac{\text{opposite}}{\text{adjacent}}$'
+          - id: c
+            text: '$\sin\theta=\frac{x}{a}$'
+          - id: d
+            text: '$\sec\theta=\frac{a}{x}$'
+        answer:
+          choiceId: a
+        hint: |
+          Divide both sides by $a$, then recall the side definition of tangent.
+        explanation: |
+          The substitution gives
+
+          $$
+          \tan\theta=\frac{x}{a}.
+          $$
+
+          Since $\tan\theta=\frac{\text{opposite}}{\text{adjacent}}$, choose an opposite
+          side of length $x$ and an adjacent side of length $a$. Any proportional pair
+          would describe the same angle, but these choices keep the algebra simplest.
+
+          Related topic: trigonometric ratios as side-length ratios.
+
+      - id: triangle-s002
+        title: The Pythagorean theorem creates the third side
+        instruction: |
+          Use the two chosen legs to calculate the hypotenuse.
+        type: symbolicResponse
+        prompt: |
+          If the opposite side is $x$ and the adjacent side is $a$, enter the positive
+          hypotenuse length.
+        answer:
+          expectedLatex: '\sqrt{x^2+a^2}'
+          equivalenceMode: expression
+          variables:
+            - x
+            - a
+          tolerance: 0.000001
+        hint: |
+          Apply $h^2=x^2+a^2$ and use a positive side length.
+        explanation: |
+          The Pythagorean theorem gives
+
+          $$
+          h^2=x^2+a^2,
+          \qquad
+          h=\sqrt{x^2+a^2}.
+          $$
+
+          This is exactly the radical that motivated tangent substitution. The triangle
+          works because its side relation and the identity
+          $1+\tan^2\theta=\sec^2\theta$ are two forms of the same Pythagorean fact.
+
+          Related topic: Pythagorean theorem and the tangent-secant identity.
+
+      - id: triangle-s003
+        title: Read every needed function from the triangle
+        instruction: |
+          Once all three sides are known, any trigonometric function of $\theta$ can be
+          translated back into $x$ and $a$.
+        type: selectAll
+        prompt: |
+          For the tangent-substitution triangle with opposite $x$, adjacent $a$, and
+          hypotenuse $\sqrt{x^2+a^2}$, select every correct relationship.
+        choices:
+          - id: a
+            text: '$\sin\theta=\frac{x}{\sqrt{x^2+a^2}}$'
+          - id: b
+            text: '$\cos\theta=\frac{a}{\sqrt{x^2+a^2}}$'
+          - id: c
+            text: '$\sec\theta=\frac{\sqrt{x^2+a^2}}{a}$'
+          - id: d
+            text: '$\cot\theta=\frac{x}{a}$'
+        answer:
+          choiceIds: [a, b, c]
+        hint: |
+          Use opposite/hypotenuse, adjacent/hypotenuse, and hypotenuse/adjacent.
+        explanation: |
+          The first three ratios follow directly from the triangle. Cotangent is
+          adjacent/opposite, so $\cot\theta=\frac{a}{x}$.
+
+          Related topic: back-substitution through right-triangle ratios.
+
+      - id: triangle-s004
+        title: Compare all three standard triangles
+        instruction: |
+          Study how each substitution ratio determines two sides and how the Pythagorean
+          theorem supplies the radical side.
+        media:
+          - type: image
+            src: /assessments/calc2-trig-substitution/reference-triangles.svg
+            alt: Three right triangles for sine, tangent, and secant substitutions, with sides labeled using x, a, and the corresponding radical.
+            caption: Each triangle encodes the substitution ratio; the third side follows from the Pythagorean theorem.
+        type: multipleChoice
+        prompt: |
+          If $x=a\sec\theta$, which side assignment matches
+          $\sec\theta=\frac{x}{a}$?
+        choices:
+          - id: a
+            text: 'Hypotenuse $x$, adjacent side $a$, opposite side $\sqrt{x^2-a^2}$'
+          - id: b
+            text: 'Opposite side $x$, adjacent side $a$, hypotenuse $\sqrt{x^2+a^2}$'
+          - id: c
+            text: 'Opposite side $x$, hypotenuse $a$, adjacent side $\sqrt{a^2-x^2}$'
+          - id: d
+            text: 'Hypotenuse $a$, adjacent side $x$, opposite side $\sqrt{a^2-x^2}$'
+        answer:
+          choiceId: a
+        hint: |
+          Secant is hypotenuse divided by adjacent.
+        explanation: |
+          Since
+
+          $$
+          \sec\theta=\frac{\text{hypotenuse}}{\text{adjacent}}=\frac{x}{a},
+          $$
+
+          use hypotenuse $x$ and adjacent side $a$. The opposite side is
+
+          $$
+          \sqrt{x^2-a^2}.
+          $$
+
+          Related topic: secant substitution and triangle construction.
+
+      - id: triangle-s005
+        title: Understand the sine-substitution triangle
+        instruction: |
+          Apply the same ratio logic to $x=a\sin\theta$.
+        type: multipleChoice
+        prompt: |
+          If $x=a\sin\theta$, which side is $\sqrt{a^2-x^2}$?
+        choices:
+          - id: a
+            text: The adjacent side
+          - id: b
+            text: The hypotenuse
+          - id: c
+            text: The opposite side
+          - id: d
+            text: No side of the triangle
+        answer:
+          choiceId: a
+        hint: |
+          $\sin\theta=x/a$ assigns opposite $x$ and hypotenuse $a$.
+        explanation: |
+          With opposite $x$ and hypotenuse $a$, the remaining adjacent side satisfies
+
+          $$
+          x^2+\text{adjacent}^2=a^2.
+          $$
+
+          Therefore,
+
+          $$
+          \text{adjacent}=\sqrt{a^2-x^2}.
+          $$
+
+          This yields $\cos\theta=\frac{\sqrt{a^2-x^2}}{a}$.
+
+          Related topic: sine substitution and back-substitution.
+
+      - id: triangle-s006
+        title: Know why side signs are controlled
+        instruction: |
+          Reference triangles use positive side lengths. Trig substitution restricts
+          $\theta$ to an interval where the required trig functions have predictable
+          signs.
+        type: multipleChoice
+        prompt: |
+          Why may $\sqrt{a^2\cos^2\theta}$ usually be written as $a\cos\theta$ during
+          the sine-substitution method?
+        choices:
+          - id: a
+            text: $\theta$ is chosen in an interval where $\cos\theta\ge0$, so $|\cos\theta|=\cos\theta$.
+          - id: b
+            text: Absolute values can always be discarded.
+          - id: c
+            text: Cosine is positive for every real angle.
+          - id: d
+            text: The square root of a square never involves an absolute value.
+        answer:
+          choiceId: a
+        hint: |
+          In general, $\sqrt{z^2}=|z|$. The chosen angle interval determines the sign.
+        explanation: |
+          Algebraically,
+
+          $$
+          \sqrt{a^2\cos^2\theta}=a|\cos\theta|
+          $$
+
+          when $a>0$. The standard restricted interval for the substitution makes cosine
+          nonnegative, allowing $a|\cos\theta|=a\cos\theta$.
+
+          Related topic: inverse-trig branch restrictions and absolute values.
+
+      - id: triangle-s007
+        title: Choose tangent substitution for the example
+        instruction: |
+          Match the radical pattern in the denominator to the identity it should create.
+        type: multipleChoice
+        prompt: |
+          For
+
+          $$
+          \int\frac{dx}{(x^2+9)^{3/2}},
+          $$
+
+          which substitution is appropriate?
+        choices:
+          - id: a
+            text: '$x=3\tan\theta$'
+          - id: b
+            text: '$x=3\sin\theta$'
+          - id: c
+            text: '$x=3\sec\theta$'
+          - id: d
+            text: '$x=9\tan\theta$'
+        answer:
+          choiceId: a
+        hint: |
+          The pattern is $x^2+a^2$ with $a=3$.
+        explanation: |
+          Tangent substitution creates
+
+          $$
+          x^2+9=9\tan^2\theta+9=9\sec^2\theta.
+          $$
+
+          Also,
+
+          $$
+          dx=3\sec^2\theta\,d\theta.
+          $$
+
+          Related topic: $x^2+a^2$ tangent substitution.
+
+      - id: triangle-s008
+        title: Simplify the transformed integral
+        instruction: |
+          Replace the denominator and $dx$, then cancel common secant powers.
+        type: multipleChoice
+        prompt: |
+          What does the integral become after $x=3\tan\theta$?
+        choices:
+          - id: a
+            text: '$\frac{1}{9}\int\cos\theta\,d\theta$'
+          - id: b
+            text: '$\frac{1}{3}\int\sec\theta\,d\theta$'
+          - id: c
+            text: '$9\int\cos\theta\,d\theta$'
+          - id: d
+            text: '$\frac{1}{27}\int\sec^5\theta\,d\theta$'
+        answer:
+          choiceId: a
+        hint: |
+          $(x^2+9)^{3/2}=(9\sec^2\theta)^{3/2}=27\sec^3\theta$ on the chosen interval.
+        explanation: |
+          $$
+          \begin{aligned}
+          \int\frac{dx}{(x^2+9)^{3/2}}
+          &=
+          \int\frac{3\sec^2\theta\,d\theta}
+          {27\sec^3\theta}\\
+          &=
+          \frac{1}{9}\int\cos\theta\,d\theta.
+          \end{aligned}
+          $$
+
+          Related topic: simplifying after tangent substitution.
+
+      - id: triangle-s009
+        title: Use the triangle to return to x
+        instruction: |
+          Integrate in $\theta$, then use the reference triangle rather than solving
+          explicitly for $\theta$.
+        type: symbolicResponse
+        prompt: |
+          From $x=3\tan\theta$, enter $\sin\theta$ in terms of $x$.
+        answer:
+          expectedLatex: '\frac{x}{\sqrt{x^2+9}}'
+          equivalenceMode: expression
+          variables:
+            - x
+          tolerance: 0.000001
+        hint: |
+          The triangle has opposite side $x$, adjacent side $3$, and hypotenuse
+          $\sqrt{x^2+9}$.
+        explanation: |
+          Since sine is opposite over hypotenuse,
+
+          $$
+          \sin\theta=\frac{x}{\sqrt{x^2+9}}.
+          $$
+
+          This is why the triangle is useful: it converts the remaining trig expression
+          directly into an algebraic expression in $x$.
+
+          Related topic: tangent-substitution reference triangle.
+
+      - id: triangle-s010
+        title: Complete and verify the integral
+        instruction: |
+          Substitute the triangle ratio into the antiderivative and differentiate to
+          verify the result.
+        type: symbolicResponse
+        prompt: |
+          Evaluate
+
+          $$
+          \int\frac{dx}{(x^2+9)^{3/2}}.
+          $$
+        answer:
+          expectedLatex: '\frac{x}{9\sqrt{x^2+9}}+C'
+          equivalenceMode: derivative
+          variables:
+            - x
+          tolerance: 0.000001
+        hint: |
+          The transformed integral is $\frac{1}{9}\int\cos\theta\,d\theta$.
+        explanation: |
+          First integrate:
+
+          $$
+          \frac{1}{9}\int\cos\theta\,d\theta
+          =\frac{1}{9}\sin\theta+C.
+          $$
+
+          The triangle gives
+
+          $$
+          \sin\theta=\frac{x}{\sqrt{x^2+9}},
+          $$
+
+          so
+
+          $$
+          \int\frac{dx}{(x^2+9)^{3/2}}
+          =
+          \frac{x}{9\sqrt{x^2+9}}+C.
+          $$
+
+          Differentiating the quotient simplifies to
+          $\frac{1}{(x^2+9)^{3/2}}$, confirming the result.
+
+          Related topic: complete tangent substitution with triangle back-substitution.

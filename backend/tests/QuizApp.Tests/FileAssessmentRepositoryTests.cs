@@ -350,6 +350,16 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("python-oop-class-conventions-concept-lesson")]
     [InlineData("python-inheritance-concept-lesson")]
     [InlineData("python-polymorphism-concept-lesson")]
+    [InlineData("calc2-trig-integrals-strategy-concept-lesson")]
+    [InlineData("calc2-odd-secant-cosecant-concept-lesson")]
+    [InlineData("calc2-trig-integrals-strategy-recall")]
+    [InlineData("calc2-odd-secant-cosecant-worked-example")]
+    [InlineData("calc2-common-antiderivatives-recall")]
+    [InlineData("calc2-trig-substitution-reference-triangle-worked-example")]
+    [InlineData("aops-identity-engineering-concept-lesson")]
+    [InlineData("aops-identity-engineering-interactive-exploration")]
+    [InlineData("aops-identity-engineering-worked-example")]
+    [InlineData("aops-identity-engineering-quiz")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
@@ -388,6 +398,53 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("python-inheritance-concept-lesson")]
     [InlineData("python-polymorphism-concept-lesson")]
     public async Task Repository_validates_oop_concept_lessons(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("calc2-trig-integrals-strategy-concept-lesson")]
+    [InlineData("calc2-odd-secant-cosecant-concept-lesson")]
+    [InlineData("calc2-trig-integrals-strategy-recall")]
+    [InlineData("calc2-odd-secant-cosecant-worked-example")]
+    [InlineData("calc2-trig-integrals-identities-worked-example")]
+    public async Task Repository_validates_trigonometric_integral_learning_modules(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("calc2-common-antiderivatives-recall")]
+    [InlineData("calc2-trig-substitution-reference-triangle-worked-example")]
+    public async Task Repository_validates_antiderivative_and_reference_triangle_modules(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("aops-identity-engineering-concept-lesson")]
+    [InlineData("aops-identity-engineering-interactive-exploration")]
+    [InlineData("aops-identity-engineering-worked-example")]
+    [InlineData("aops-identity-engineering-quiz")]
+    public async Task Repository_validates_identity_engineering_learning_path(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
             new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },

@@ -1,0 +1,374 @@
+schemaVersion: 1
+id: calc2-odd-secant-cosecant-worked-example
+title: Odd Secant and Cosecant Powers Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryId: calc2-common-antiderivatives-recall
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - trigonometric-integrals
+    - secant-cubed
+    - cosecant-cubed
+    - cyclic-integration-by-parts
+    - reduction-formulas
+workedExamples:
+  - id: secant-cubed-derivation
+    title: Derive the secant cubed antiderivative
+    problem: |
+      Evaluate
+
+      $$
+      \int\sec^3x\,dx
+      $$
+
+      by deriving the result rather than recalling it. The key pattern is cyclic
+      integration by parts: the original integral will reappear, and you will solve for
+      it algebraically.
+    steps:
+      - id: sec3-s001
+        title: Reject incomplete substitutions
+        instruction: |
+          First test the standard tangent-secant parity rules. Decide why neither direct
+          substitution package handles the whole integral.
+        type: multipleChoice
+        prompt: |
+          Which diagnosis is correct for $\int\sec^3x\,dx$?
+        choices:
+          - id: a
+            text: Saving $\sec^2x\,dx$ leaves $\sec x$, which is not a polynomial in $\tan x$, and no tangent factor exists for $u=\sec x$.
+          - id: b
+            text: Save $\sec^2x\,dx$ and replace the remaining $\sec x$ by $1+\tan^2x$.
+          - id: c
+            text: Save $\sec x\tan x\,dx$ because a tangent factor is already present.
+          - id: d
+            text: Use $u=\cos x$ without rewriting the integrand.
+        answer:
+          choiceId: a
+        hint: |
+          Check whether the leftover factors can be written entirely in the proposed
+          substitution variable.
+        explanation: |
+          Neither standard package is complete. The integral belongs to the special odd
+          secant branch.
+
+          Related topic: tangent-secant parity decision tree.
+
+      - id: sec3-s002
+        title: Choose integration-by-parts roles
+        instruction: |
+          Split $\sec^3x$ as $\sec x\sec^2x$. Choose the part whose antiderivative creates
+          tangent.
+        type: multipleChoice
+        prompt: Which integration-by-parts assignment creates the useful identity pattern?
+        choices:
+          - id: a
+            text: '$u=\sec x$ and $dv=\sec^2x\,dx$'
+          - id: b
+            text: '$u=\sec^2x$ and $dv=\sec x\,dx$'
+          - id: c
+            text: '$u=x$ and $dv=\sec^3x\,dx$'
+          - id: d
+            text: '$u=\tan x$ and $dv=\sec x\,dx$'
+        answer:
+          choiceId: a
+        hint: |
+          You want $v=\tan x$ so that a $\tan^2x$ factor appears.
+        explanation: |
+          With $u=\sec x$ and $dv=\sec^2x\,dx$,
+
+          $$
+          du=\sec x\tan x\,dx,\qquad v=\tan x.
+          $$
+
+          Related topic: strategic integration by parts.
+
+      - id: sec3-s003
+        title: Write the integration-by-parts equation
+        instruction: |
+          Apply $\int u\,dv=uv-\int v\,du$.
+        type: multipleChoice
+        prompt: |
+          Which expression results for $I=\int\sec^3x\,dx$ before applying a
+          Pythagorean identity?
+        choices:
+          - id: a
+            text: '$I=\sec x\tan x-\int\sec x\tan^2x\,dx$'
+          - id: b
+            text: '$I=\sec x\tan x+\int\sec x\tan^2x\,dx$'
+          - id: c
+            text: '$I=\sec^2x-\int\tan x\,dx$'
+          - id: d
+            text: '$I=\tan x-\int\sec^2x\,dx$'
+        answer:
+          choiceId: a
+        hint: |
+          Multiply $u$ and $v$, then subtract $\int v\,du$.
+        explanation: |
+          Integration by parts gives
+
+          $$
+          I=\sec x\tan x-\int\sec x\tan^2x\,dx.
+          $$
+
+          Related topic: integration-by-parts setup.
+
+      - id: sec3-s004
+        title: Rewrite tangent squared
+        instruction: |
+          Use $\tan^2x=\sec^2x-1$ and distribute the remaining factor of $\sec x$.
+        type: multipleChoice
+        prompt: Which equation correctly exposes the cyclic integral?
+        choices:
+          - id: a
+            text: '$I=\sec x\tan x-I+\int\sec x\,dx$'
+          - id: b
+            text: '$I=\sec x\tan x+I-\int\sec x\,dx$'
+          - id: c
+            text: '$I=\sec x\tan x-\int\sec x\,dx$'
+          - id: d
+            text: '$I=\sec x\tan x-\int\tan^3x\,dx$'
+        answer:
+          choiceId: a
+        hint: |
+          The term $\int\sec x\sec^2x\,dx$ is the original
+          $\int\sec^3x\,dx=I$.
+        explanation: |
+          $$ 
+          \begin{aligned}
+          I
+          &=\sec x\tan x-\int\sec x(\sec^2x-1)\,dx\\
+          &=\sec x\tan x-I+\int\sec x\,dx.
+          \end{aligned}
+          $$
+
+          Related topic: cyclic integration by parts.
+
+      - id: sec3-s005
+        title: Solve algebraically for the integral
+        instruction: |
+          Collect the two copies of $I$ and use the standard secant antiderivative.
+        type: symbolicResponse
+        prompt: |
+          Evaluate
+
+          $$
+          \int\sec^3x\,dx.
+          $$
+        answer:
+          expectedLatex: '\frac{1}{2}\sec x\tan x+\frac{1}{2}\ln|\sec x+\tan x|+C'
+          equivalenceMode: derivative
+          variables:
+            - x
+          tolerance: 0.000001
+        hint: |
+          From $I=\sec x\tan x-I+\int\sec x\,dx$, obtain
+          $2I=\sec x\tan x+\int\sec x\,dx$.
+        explanation: |
+          Since
+
+          $$
+          \int\sec x\,dx=\ln|\sec x+\tan x|+C,
+          $$
+
+          divide the cyclic equation by two:
+
+          $$
+          \int\sec^3x\,dx
+          =
+          \frac{1}{2}\sec x\tan x
+          +\frac{1}{2}\ln|\sec x+\tan x|+C.
+          $$
+
+          Differentiate both terms to verify that they combine to $\sec^3x$.
+
+          Related topic: secant cubed standard integral.
+
+  - id: higher-odd-secant-reduction
+    title: Reduce and evaluate secant to the fifth power
+    problem: |
+      Evaluate
+
+      $$
+      \int\sec^5x\,dx.
+      $$
+
+      The purpose is to reuse the secant-cubed result instead of repeating a full cyclic
+      derivation from scratch.
+    steps:
+      - id: sec5-s001
+        title: Select the reduction formula
+        instruction: |
+          Use the odd-secant reduction formula to lower the exponent by two.
+        type: multipleChoice
+        prompt: Which reduction is correct?
+        choices:
+          - id: a
+            text: '$\int\sec^5x\,dx=\frac{1}{4}\sec^3x\tan x+\frac{3}{4}\int\sec^3x\,dx$'
+          - id: b
+            text: '$\int\sec^5x\,dx=\frac{1}{5}\sec^4x+\int\sec x\,dx$'
+          - id: c
+            text: '$\int\sec^5x\,dx=\sec^3x\tan x-\int\sec^7x\,dx$'
+          - id: d
+            text: '$\int\sec^5x\,dx=\frac{1}{4}\tan^4x+\frac{3}{4}\int\tan^3x\,dx$'
+        answer:
+          choiceId: a
+        hint: |
+          In the formula, set $n=5$ and reduce the exponent from $5$ to $3$.
+        explanation: |
+          $$ 
+          \int\sec^n x\,dx
+          =
+          \frac{\sec^{n-2}x\tan x}{n-1}
+          +\frac{n-2}{n-1}\int\sec^{n-2}x\,dx.
+          $$
+
+          Related topic: odd secant reduction formula.
+
+      - id: sec5-s002
+        title: Substitute the secant-cubed base case
+        instruction: |
+          Insert the result for $\int\sec^3x\,dx$ and distribute the factor
+          $\frac{3}{4}$.
+        type: symbolicResponse
+        prompt: |
+          Evaluate
+
+          $$
+          \int\sec^5x\,dx.
+          $$
+        answer:
+          expectedLatex: '\frac{1}{4}\sec^3x\tan x+\frac{3}{8}\sec x\tan x+\frac{3}{8}\ln|\sec x+\tan x|+C'
+          equivalenceMode: derivative
+          variables:
+            - x
+          tolerance: 0.000001
+        hint: |
+          Multiply the two terms in the secant-cubed result by $\frac{3}{4}$.
+        explanation: |
+          Substitute the base case:
+
+          $$
+          \begin{aligned}
+          \int\sec^5x\,dx
+          &=
+          \frac{1}{4}\sec^3x\tan x
+          +\frac{3}{4}
+          \left(
+          \frac{1}{2}\sec x\tan x
+          +\frac{1}{2}\ln|\sec x+\tan x|
+          \right)+C\\
+          &=
+          \frac{1}{4}\sec^3x\tan x
+          +\frac{3}{8}\sec x\tan x
+          +\frac{3}{8}\ln|\sec x+\tan x|+C.
+          \end{aligned}
+          $$
+
+          Related topic: recursive reduction of odd secant powers.
+
+  - id: cosecant-cubed-parallel
+    title: Transfer the cyclic method to cosecant cubed
+    problem: |
+      Evaluate
+
+      $$
+      \int\csc^3x\,dx.
+      $$
+
+      This problem follows the same cyclic structure as secant cubed, but the derivatives
+      of cosecant and cotangent introduce negative signs.
+    steps:
+      - id: csc3-s001
+        title: Track the derivative signs
+        instruction: |
+          Recall the derivatives that control the integration-by-parts signs.
+        type: selectAll
+        prompt: Which derivative identities are needed?
+        choices:
+          - id: a
+            text: '$\frac{d}{dx}(\csc x)=-\csc x\cot x$'
+          - id: b
+            text: '$\frac{d}{dx}(\cot x)=-\csc^2x$'
+          - id: c
+            text: '$\frac{d}{dx}(\csc x)=\csc^2x$'
+          - id: d
+            text: '$\frac{d}{dx}(\cot x)=\sec^2x$'
+        answer:
+          choiceIds: [a, b]
+        hint: |
+          Both standard derivatives in the cosecant-cotangent pair carry negative signs.
+        explanation: |
+          The negative derivatives explain why the algebra differs from the secant-tangent
+          case even though the cyclic structure is parallel.
+
+          Related topic: cosecant and cotangent derivatives.
+
+      - id: csc3-s002
+        title: Identify the cosecant Pythagorean identity
+        instruction: |
+          Rewrite cotangent squared in terms of cosecant squared.
+        type: multipleChoice
+        prompt: |
+          Which identity solves for $\cot^2x$ in terms of $\csc^2x$?
+        choices:
+          - id: a
+            text: '$\cot^2x=\csc^2x-1$'
+          - id: b
+            text: '$\cot^2x=\csc^2x+1$'
+          - id: c
+            text: '$\cot^2x=1-\csc^2x$'
+          - id: d
+            text: '$\cot^2x=\sec^2x-1$'
+        answer:
+          choiceId: a
+        hint: |
+          Start from $1+\cot^2x=\csc^2x$.
+        explanation: |
+          Subtract $1$ from both sides:
+
+          $$
+          \cot^2x=\csc^2x-1.
+          $$
+
+          Related topic: cosecant-cotangent Pythagorean identity.
+
+      - id: csc3-s003
+        title: Complete the parallel integral
+        instruction: |
+          Use the cyclic method and preserve the signs from the cosecant and cotangent
+          derivatives.
+        type: symbolicResponse
+        prompt: |
+          Evaluate
+
+          $$
+          \int\csc^3x\,dx.
+          $$
+        answer:
+          expectedLatex: '-\frac{1}{2}\csc x\cot x+\frac{1}{2}\ln|\csc x-\cot x|+C'
+          equivalenceMode: derivative
+          variables:
+            - x
+          tolerance: 0.000001
+        hint: |
+          The product term is negative. The logarithm may be written using
+          $|\csc x-\cot x|$.
+        explanation: |
+          The cyclic integration-by-parts derivation gives
+
+          $$
+          \int\csc^3x\,dx
+          =
+          -\frac{1}{2}\csc x\cot x
+          +\frac{1}{2}\ln|\csc x-\cot x|+C.
+          $$
+
+          Differentiate the result and use $1+\cot^2x=\csc^2x$ to verify it.
+
+          Related topic: cosecant cubed standard integral.

@@ -544,9 +544,10 @@ public sealed class AssessmentValidator
         }
 
         if (!string.Equals(project.Language, "cpp", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(project.Language, "python", StringComparison.OrdinalIgnoreCase))
+            && !string.Equals(project.Language, "python", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(project.Language, "bash", StringComparison.OrdinalIgnoreCase))
         {
-            issues.Add(new ValidationIssue("INVALID_GUIDED_PROJECT_LANGUAGE", "Guided project language must be cpp or python."));
+            issues.Add(new ValidationIssue("INVALID_GUIDED_PROJECT_LANGUAGE", "Guided project language must be cpp, python, or bash."));
         }
 
         RequireText(project.Instructions, "MISSING_GUIDED_PROJECT_INSTRUCTIONS", "Guided projects must include instructions.", issues);
@@ -611,11 +612,15 @@ public sealed class AssessmentValidator
             RequireText(check.Id, "MISSING_GUIDED_PROJECT_CHECK_ID", "Guided project checks must include id.", issues);
             RequireText(check.Title, "MISSING_GUIDED_PROJECT_CHECK_TITLE", "Guided project checks must include title.", issues, check.Id);
             RequireText(check.Description, "MISSING_GUIDED_PROJECT_CHECK_DESCRIPTION", "Guided project checks must include description.", issues, check.Id);
-            RequireText(check.TestCode, "MISSING_GUIDED_PROJECT_CHECK_TEST_CODE", "Guided project checks must include testCode.", issues, check.Id);
 
-            if (required && check.ExpectedOutputContains.Count == 0)
+            var hasTestCode = !string.IsNullOrWhiteSpace(check.TestCode);
+            var hasExpectedOutput = check.ExpectedOutputContains?.Count > 0;
+            var hasRun = check.Run is not null;
+            var hasExpect = check.Expect is not null;
+
+            if (required && !hasExpectedOutput && !hasExpect)
             {
-                issues.Add(new ValidationIssue("MISSING_GUIDED_PROJECT_EXPECTED_OUTPUT", "Required guided project checks must include expectedOutputContains.", check.Id));
+                issues.Add(new ValidationIssue("MISSING_GUIDED_PROJECT_EXPECTED_OUTPUT", "Required guided project checks must include expectedOutputContains or expect.", check.Id));
             }
         }
     }

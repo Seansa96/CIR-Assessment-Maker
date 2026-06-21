@@ -527,6 +527,40 @@ import "../styles/global.css";
         updatedAt: string;
       }
 
+      interface GuidedProjectBuildStageResult {
+        succeeded: boolean;
+        output: string | null;
+      }
+
+      interface GuidedProjectProcessStageResult {
+        succeeded: boolean;
+        stdout: string | null;
+        stderr: string | null;
+        exitCode: number | null;
+      }
+
+      interface GuidedProjectFileAssertionResult {
+        path: string;
+        passed: boolean;
+        actualText: string | null;
+        error: string | null;
+      }
+
+      interface GuidedProjectNetworkEventResult {
+        type: string;
+        passed: boolean;
+        expectedText: string | null;
+        actualText: string | null;
+        error: string | null;
+      }
+
+      interface GuidedProjectDiagnosticFinding {
+        category: string;
+        message: string;
+        filePath: string | null;
+        lineNumber: number | null;
+      }
+
       interface GuidedProjectCheckResult {
         checkId: string;
         title: string;
@@ -536,6 +570,12 @@ import "../styles/global.css";
         compileOutput: string | null;
         error: string | null;
         ranAt: string;
+        build?: GuidedProjectBuildStageResult | null;
+        run?: GuidedProjectProcessStageResult | null;
+        files?: GuidedProjectFileAssertionResult[] | null;
+        networkEvents?: GuidedProjectNetworkEventResult[] | null;
+        diagnostics?: GuidedProjectDiagnosticFinding[] | null;
+        failureReason?: string | null;
       }
 
       interface GuidedProjectRunResult {
@@ -3673,14 +3713,59 @@ import "../styles/global.css";
         return `
           <div class="guided-output">
             <h3>Latest run</h3>
-            ${results.map((result) => `
-              <details class="${result.passed ? "correct" : "incorrect"}" ${result.passed ? "" : "open"}>
-                <summary>${escapeHtml(result.title)} - ${result.passed ? "Pass" : "Needs work"}</summary>
-                ${result.output ? `<pre>${escapeHtml(result.output)}</pre>` : ""}
-                ${result.compileOutput ? `<pre>${escapeHtml(result.compileOutput)}</pre>` : ""}
-                ${result.error ? `<pre>${escapeHtml(result.error)}</pre>` : ""}
-              </details>
-            `).join("")}
+            ${results.map((result) => {
+              const hasStructured = result.build || result.run || result.files || result.networkEvents || result.diagnostics || result.failureReason;
+              
+              let content = "";
+              if (hasStructured) {
+                if (result.failureReason) {
+                  content += `<p class="failure-reason"><strong>Failed:</strong> ${escapeHtml(result.failureReason)}</p>`;
+                }
+                if (result.build && result.build.output) {
+                  content += `<h4>Build</h4><pre>${escapeHtml(result.build.output)}</pre>`;
+                }
+                if (result.run) {
+                  content += `<h4>Run</h4>`;
+                  if (result.run.stdout) content += `<pre>${escapeHtml(result.run.stdout)}</pre>`;
+                  if (result.run.stderr) content += `<pre class="error">${escapeHtml(result.run.stderr)}</pre>`;
+                }
+                if (result.files && result.files.length > 0) {
+                  content += `<h4>Files</h4><ul>`;
+                  for (const f of result.files) {
+                    content += `<li>${escapeHtml(f.path)}: ${f.passed ? "Pass" : "Fail"}</li>`;
+                    if (f.error) content += `<pre class="error">${escapeHtml(f.error)}</pre>`;
+                    if (!f.passed && f.actualText) content += `<pre>${escapeHtml(f.actualText)}</pre>`;
+                  }
+                  content += `</ul>`;
+                }
+                if (result.networkEvents && result.networkEvents.length > 0) {
+                  content += `<h4>Network Activity</h4><ul class="network-transcript">`;
+                  for (const evt of result.networkEvents) {
+                    content += `<li><strong>${escapeHtml(evt.type)}</strong>: ${evt.passed ? "Pass" : "Fail"}</li>`;
+                    if (!evt.passed && evt.expectedText) content += `<pre class="error">Expected: ${escapeHtml(evt.expectedText)}\nActual: ${escapeHtml(evt.actualText ?? "")}</pre>`;
+                  }
+                  content += `</ul>`;
+                }
+                if (result.diagnostics && result.diagnostics.length > 0) {
+                  content += `<h4>Diagnostics</h4><ul class="diagnostic-findings">`;
+                  for (const d of result.diagnostics) {
+                    content += `<li><strong>${escapeHtml(d.category)}</strong>: ${escapeHtml(d.message)} ${d.filePath ? `(${escapeHtml(d.filePath)}:${d.lineNumber ?? '?'})` : ''}</li>`;
+                  }
+                  content += `</ul>`;
+                }
+              } else {
+                if (result.output) content += `<pre>${escapeHtml(result.output)}</pre>`;
+                if (result.compileOutput) content += `<pre>${escapeHtml(result.compileOutput)}</pre>`;
+                if (result.error) content += `<pre>${escapeHtml(result.error)}</pre>`;
+              }
+
+              return `
+                <details class="${result.passed ? "correct" : "incorrect"}" ${result.passed ? "" : "open"}>
+                  <summary>${escapeHtml(result.title)} - ${result.passed ? "Pass" : "Needs work"}</summary>
+                  ${content}
+                </details>
+              `;
+            }).join("")}
           </div>
         `;
       }

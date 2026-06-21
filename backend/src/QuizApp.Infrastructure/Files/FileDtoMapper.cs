@@ -267,13 +267,43 @@ internal static class FileDtoMapper
     {
         return new GuidedProjectDefinition(
             dto.Language ?? string.Empty,
+            dto.ProjectKind,
+            dto.RunnerMode,
             dto.Instructions ?? string.Empty,
+            dto.Workspace is null ? null : new GuidedProjectWorkspaceDefinition(
+                dto.Workspace.BuildProfile,
+                dto.Workspace.EntryPoint,
+                dto.Workspace.LabProfile,
+                dto.Workspace.SourceGlobs ?? new List<string>(),
+                dto.Workspace.IncludePaths ?? new List<string>(),
+                dto.Workspace.WritablePaths ?? new List<string>(),
+                dto.Workspace.AllowedBaseImages ?? new List<string>()),
             (dto.Files ?? new List<GuidedProjectSourceFileDto>())
                 .Select(file => new GuidedProjectFileDefinition(
                     file.Path ?? string.Empty,
                     file.Content ?? string.Empty,
                     file.ReadOnly))
                 .ToList(),
+            (dto.Fixtures ?? new List<GuidedProjectFixtureFileDto>())
+                .Select(fixture => new GuidedProjectFixtureDefinition(
+                    fixture.Path ?? string.Empty,
+                    fixture.Content ?? string.Empty,
+                    fixture.ReadOnly))
+                .ToList(),
+            (dto.Scenarios ?? new List<GuidedProjectScenarioFileDto>())
+                .Select(scenario => new GuidedProjectScenarioDefinition(
+                    scenario.Id ?? string.Empty,
+                    scenario.Type ?? string.Empty,
+                    scenario.LearnerRole,
+                    (scenario.Events ?? new List<GuidedProjectNetworkEventFileDto>())
+                        .Select(evt => new GuidedProjectNetworkEventDefinition(
+                            evt.Type ?? string.Empty,
+                            evt.Peer,
+                            evt.From,
+                            evt.Text))
+                        .ToList()))
+                .ToList(),
+            dto.Diagnostics ?? new List<string>(),
             (dto.RequiredChecks ?? new List<GuidedProjectCheckFileDto>()).Select(ToDomain).ToList(),
             (dto.BonusChecks ?? new List<GuidedProjectCheckFileDto>()).Select(ToDomain).ToList());
     }
@@ -283,13 +313,45 @@ internal static class FileDtoMapper
         return new GuidedProjectFileDto
         {
             Language = project.Language,
+            ProjectKind = project.ProjectKind,
+            RunnerMode = project.RunnerMode,
             Instructions = project.Instructions,
+            Workspace = project.Workspace is null ? null : new GuidedProjectWorkspaceFileDto
+            {
+                BuildProfile = project.Workspace.BuildProfile,
+                EntryPoint = project.Workspace.EntryPoint,
+                LabProfile = project.Workspace.LabProfile,
+                SourceGlobs = project.Workspace.SourceGlobs.ToList(),
+                IncludePaths = project.Workspace.IncludePaths.ToList(),
+                WritablePaths = project.Workspace.WritablePaths.ToList(),
+                AllowedBaseImages = project.Workspace.AllowedBaseImages.ToList()
+            },
             Files = project.Files.Select(file => new GuidedProjectSourceFileDto
             {
                 Path = file.Path,
                 Content = file.Content,
                 ReadOnly = file.ReadOnly
             }).ToList(),
+            Fixtures = project.Fixtures.Select(fixture => new GuidedProjectFixtureFileDto
+            {
+                Path = fixture.Path,
+                Content = fixture.Content,
+                ReadOnly = fixture.ReadOnly
+            }).ToList(),
+            Scenarios = project.Scenarios.Select(scenario => new GuidedProjectScenarioFileDto
+            {
+                Id = scenario.Id,
+                Type = scenario.Type,
+                LearnerRole = scenario.LearnerRole,
+                Events = scenario.Events.Select(evt => new GuidedProjectNetworkEventFileDto
+                {
+                    Type = evt.Type,
+                    Peer = evt.Peer,
+                    From = evt.From,
+                    Text = evt.Text
+                }).ToList()
+            }).ToList(),
+            Diagnostics = project.Diagnostics.ToList(),
             RequiredChecks = project.RequiredChecks.Select(ToDto).ToList(),
             BonusChecks = project.BonusChecks.Select(ToDto).ToList()
         };
@@ -301,8 +363,19 @@ internal static class FileDtoMapper
             dto.Id ?? string.Empty,
             dto.Title ?? string.Empty,
             dto.Description ?? string.Empty,
-            dto.TestCode ?? string.Empty,
-            dto.ExpectedOutputContains ?? new List<string>());
+            dto.TestCode,
+            dto.ExpectedOutputContains?.ToList(),
+            dto.Run is null ? null : new GuidedProjectCheckRunDefinition(
+                dto.Run.Arguments ?? new List<string>(),
+                dto.Run.Stdin,
+                dto.Run.Scenario),
+            dto.Expect is null ? null : new GuidedProjectCheckExpectDefinition(
+                dto.Expect.StdoutContains ?? new List<string>(),
+                (dto.Expect.Files ?? new List<GuidedProjectFileExpectationFileDto>())
+                    .Select(file => new GuidedProjectCheckFileExpectation(
+                        file.Path ?? string.Empty,
+                        file.TextContains ?? new List<string>()))
+                    .ToList()));
     }
 
     private static GuidedProjectCheckFileDto ToDto(GuidedProjectCheckDefinition check)
@@ -313,7 +386,22 @@ internal static class FileDtoMapper
             Title = check.Title,
             Description = check.Description,
             TestCode = check.TestCode,
-            ExpectedOutputContains = check.ExpectedOutputContains.ToList()
+            ExpectedOutputContains = check.ExpectedOutputContains?.ToList(),
+            Run = check.Run is null ? null : new GuidedProjectCheckRunFileDto
+            {
+                Arguments = check.Run.Arguments.ToList(),
+                Stdin = check.Run.Stdin,
+                Scenario = check.Run.Scenario
+            },
+            Expect = check.Expect is null ? null : new GuidedProjectCheckExpectFileDto
+            {
+                StdoutContains = check.Expect.StdoutContains.ToList(),
+                Files = check.Expect.Files.Select(file => new GuidedProjectFileExpectationFileDto
+                {
+                    Path = file.Path,
+                    TextContains = file.TextContains.ToList()
+                }).ToList()
+            }
         };
     }
 

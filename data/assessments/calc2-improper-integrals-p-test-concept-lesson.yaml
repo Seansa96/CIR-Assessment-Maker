@@ -1,0 +1,139 @@
+schemaVersion: 1
+id: calc2-improper-integrals-p-test-concept-lesson
+title: Improper Integrals and the P-Test Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryId: calc2-common-antiderivatives-recall
+subcategoryIds:
+  - improper-integrals
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - improper-integrals
+    - p-test
+    - convergence
+    - divergence
+lesson:
+  introduction: |
+    Improper integrals involve calculating the area under a curve over an infinite interval, or where the function approaches infinity. 
+    To determine if the area is finite (convergence) or infinite (divergence), we evaluate a limit.
+
+    The p-test provides a quick way to determine convergence for a common family of improper integrals without evaluating the limit manually.
+  sections:
+    - id: convergence-and-divergence
+      title: Convergence and Divergence
+      required: true
+      content: |
+        An improper integral of the form
+
+        $$
+        \int_{a}^{\infty} f(x)\,dx
+        $$
+
+        is evaluated by replacing the infinite bound with a variable $t$, and taking the limit as $t$ approaches infinity:
+
+        $$
+        \lim_{t \to \infty} \int_{a}^{t} f(x)\,dx.
+        $$
+
+        If this limit exists and is a finite number, we say the integral **converges**. 
+        If the limit does not exist or approaches infinity, we say the integral **diverges**.
+      check:
+        id: convergence-check
+        type: multipleChoice
+        prompt: |
+          What does it mean if an improper integral converges?
+        choices:
+          - id: a
+            text: The limit of the integral as the bound approaches infinity is a finite number.
+          - id: b
+            text: The area under the curve is infinite.
+          - id: c
+            text: The limit of the integral does not exist.
+          - id: d
+            text: The function crosses the x-axis infinitely many times.
+        answer:
+          choiceId: a
+        explanation: |
+          Convergence means the accumulated area approaches a specific, finite value as the interval grows indefinitely.
+
+          Related topic: limits of integration.
+
+    - id: the-p-test
+      title: The P-Test for Integrals
+      required: true
+      content: |
+        Consider the family of integrals:
+
+        $$
+        \int_{1}^{\infty} \frac{1}{x^p}\,dx,
+        $$
+
+        where $p$ is a real number. 
+
+        Evaluating this using limits reveals a simple rule known as the **p-test**:
+        
+        1. If **$p > 1$**, the integral **converges**. The higher power in the denominator means the function shrinks to zero fast enough for the total area to be finite.
+        2. If **$p \le 1$**, the integral **diverges**. The function does not shrink fast enough, and the accumulated area grows indefinitely.
+      check:
+        id: p-test-check
+        type: multipleChoice
+        prompt: |
+          According to the p-test, does $\int_{1}^{\infty} \frac{1}{x^3}\,dx$ converge or diverge?
+        choices:
+          - id: a
+            text: It converges because $p = 3$, and $3 > 1$.
+          - id: b
+            text: It diverges because $p = 3$, and $3 > 1$.
+          - id: c
+            text: It converges because $p = 3$, and $3 < 1$.
+          - id: d
+            text: It diverges because $p = 3$, and $3 \le 1$.
+        answer:
+          choiceId: a
+        explanation: |
+          Here, $p = 3$. Since $3 > 1$, the p-test states that the integral converges.
+
+          Related topic: p-test for improper integrals.
+
+    - id: borderline-case
+      title: The Borderline Case (p = 1)
+      required: true
+      content: |
+        The case where $p = 1$ is particularly important:
+
+        $$
+        \int_{1}^{\infty} \frac{1}{x}\,dx.
+        $$
+
+        Evaluating this with limits:
+
+        $$
+        \lim_{t \to \infty} \int_{1}^{t} \frac{1}{x}\,dx = \lim_{t \to \infty} (\ln t - \ln 1) = \infty.
+        $$
+
+        Even though the function $f(x) = \frac{1}{x}$ approaches zero as $x \to \infty$, it does not approach zero *fast enough*. 
+        Thus, the area is infinite, and the integral **diverges**. The value $p=1$ serves as the exact threshold between convergence and divergence.
+      check:
+        id: borderline-case-check
+        type: multipleChoice
+        prompt: |
+          Why does $\int_{1}^{\infty} \frac{1}{x}\,dx$ diverge?
+        choices:
+          - id: a
+            text: Because its antiderivative is $\ln x$, which grows without bound as $x \to \infty$.
+          - id: b
+            text: Because the function $\frac{1}{x}$ does not approach zero.
+          - id: c
+            text: Because the area under the curve is negative.
+          - id: d
+            text: Because the p-test only applies to $p > 1$.
+        answer:
+          choiceId: a
+        explanation: |
+          The natural logarithm $\ln x$ approaches infinity as $x$ approaches infinity. Thus, the limit is infinite.
+
+          Related topic: harmonic series analog and logarithmic growth.

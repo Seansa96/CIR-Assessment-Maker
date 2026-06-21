@@ -162,10 +162,42 @@ public sealed record RecallItemAnswerDefinition(
 
 public sealed record GuidedProjectDefinition(
     string Language,
+    string? ProjectKind,
+    string? RunnerMode,
     string Instructions,
+    GuidedProjectWorkspaceDefinition? Workspace,
     IReadOnlyList<GuidedProjectFileDefinition> Files,
+    IReadOnlyList<GuidedProjectFixtureDefinition> Fixtures,
+    IReadOnlyList<GuidedProjectScenarioDefinition> Scenarios,
+    IReadOnlyList<string> Diagnostics,
     IReadOnlyList<GuidedProjectCheckDefinition> RequiredChecks,
     IReadOnlyList<GuidedProjectCheckDefinition> BonusChecks);
+
+public sealed record GuidedProjectWorkspaceDefinition(
+    string? BuildProfile,
+    string? EntryPoint,
+    string? LabProfile,
+    IReadOnlyList<string> SourceGlobs,
+    IReadOnlyList<string> IncludePaths,
+    IReadOnlyList<string> WritablePaths,
+    IReadOnlyList<string> AllowedBaseImages);
+
+public sealed record GuidedProjectFixtureDefinition(
+    string Path,
+    string Content,
+    bool ReadOnly);
+
+public sealed record GuidedProjectScenarioDefinition(
+    string Id,
+    string Type,
+    string? LearnerRole,
+    IReadOnlyList<GuidedProjectNetworkEventDefinition> Events);
+
+public sealed record GuidedProjectNetworkEventDefinition(
+    string Type,
+    string? Peer,
+    string? From,
+    string? Text);
 
 public sealed record GuidedProjectFileDefinition(
     string Path,
@@ -176,8 +208,23 @@ public sealed record GuidedProjectCheckDefinition(
     string Id,
     string Title,
     string Description,
-    string TestCode,
-    IReadOnlyList<string> ExpectedOutputContains);
+    string? TestCode,
+    IReadOnlyList<string>? ExpectedOutputContains,
+    GuidedProjectCheckRunDefinition? Run,
+    GuidedProjectCheckExpectDefinition? Expect);
+
+public sealed record GuidedProjectCheckRunDefinition(
+    IReadOnlyList<string> Arguments,
+    string? Stdin,
+    string? Scenario);
+
+public sealed record GuidedProjectCheckExpectDefinition(
+    IReadOnlyList<string> StdoutContains,
+    IReadOnlyList<GuidedProjectCheckFileExpectation> Files);
+
+public sealed record GuidedProjectCheckFileExpectation(
+    string Path,
+    IReadOnlyList<string> TextContains);
 
 public sealed record GuidedProjectSession(
     string AttemptId,
@@ -199,7 +246,44 @@ public sealed record GuidedProjectCheckResult(
     string? Output,
     string? CompileOutput,
     string? Error,
-    DateTimeOffset RanAt);
+    DateTimeOffset RanAt)
+{
+    public GuidedProjectBuildStageResult? Build { get; init; }
+    public GuidedProjectProcessStageResult? Run { get; init; }
+    public IReadOnlyList<GuidedProjectFileAssertionResult>? Files { get; init; }
+    public IReadOnlyList<GuidedProjectNetworkEventResult>? NetworkEvents { get; init; }
+    public IReadOnlyList<GuidedProjectDiagnosticFinding>? Diagnostics { get; init; }
+    public string? FailureReason { get; init; }
+}
+
+public sealed record GuidedProjectBuildStageResult(
+    bool Succeeded,
+    string? Output);
+
+public sealed record GuidedProjectProcessStageResult(
+    bool Succeeded,
+    string? Stdout,
+    string? Stderr,
+    int? ExitCode);
+
+public sealed record GuidedProjectFileAssertionResult(
+    string Path,
+    bool Passed,
+    string? ActualText,
+    string? Error);
+
+public sealed record GuidedProjectNetworkEventResult(
+    string Type,
+    bool Passed,
+    string? ExpectedText,
+    string? ActualText,
+    string? Error);
+
+public sealed record GuidedProjectDiagnosticFinding(
+    string Category,
+    string Message,
+    string? FilePath,
+    int? LineNumber);
 
 public sealed record GuidedProjectRunResult(
     GuidedProjectSession Session,

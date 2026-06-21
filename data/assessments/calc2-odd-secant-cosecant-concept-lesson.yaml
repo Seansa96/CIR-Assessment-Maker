@@ -1,0 +1,308 @@
+schemaVersion: 1
+id: calc2-odd-secant-cosecant-concept-lesson
+title: Odd Secant and Cosecant Powers Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryId: calc2-common-antiderivatives-recall
+subcategoryIds:
+  - integration-techniques
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - trigonometric-integrals
+    - secant-cubed
+    - cosecant-cubed
+    - cyclic-integration-by-parts
+    - reduction-formulas
+lesson:
+  introduction: |
+    Odd powers of secant and cosecant are special because the usual tangent-secant parity
+    substitutions may not provide a complete differential package. The foundational
+    examples $\int\sec^3x\,dx$ and $\int\csc^3x\,dx$ use integration by parts that
+    reproduces the original integral. Solving that algebraic cycle creates formulas that
+    reduce higher odd powers.
+  sections:
+    - id: recognize-the-exception
+      title: Recognize the missing differential package
+      required: true
+      content: |
+        In
+
+        $$
+        I=\int\sec^3x\,dx,
+        $$
+
+        the secant exponent is not even, so saving $\sec^2x\,dx$ would leave a lone
+        $\sec x$ that cannot be written as a polynomial in $\tan x$.
+
+        There is also no tangent factor, so $\sec x\tan x\,dx$ cannot be saved for
+        $u=\sec x$.
+
+        The integral therefore belongs to the special odd-secant branch.
+      check:
+        id: recognize-the-exception-check
+        type: multipleChoice
+        prompt: Which standard substitution package is missing from $\int\sec^3x\,dx$?
+        choices:
+          - id: a
+            text: Both $\sec^2x\,dx$ with a tangent polynomial and $\sec x\tan x\,dx$
+          - id: b
+            text: Only $dx$
+          - id: c
+            text: Only a constant multiple
+          - id: d
+            text: A factor of $\cos^2x$
+        answer:
+          choiceId: a
+        explanation: |
+          Neither standard tangent-secant parity route converts the entire integrand into
+          one substitution variable.
+
+          Related topic: odd secant exception.
+
+    - id: choose-parts-to-create-tangent
+      title: Choose parts that create tangent
+      required: true
+      content: |
+        Write
+
+        $$
+        I=\int\sec x\sec^2x\,dx.
+        $$
+
+        Choose
+
+        $$
+        u=\sec x,\qquad dv=\sec^2x\,dx.
+        $$
+
+        Then
+
+        $$
+        du=\sec x\tan x\,dx,\qquad v=\tan x.
+        $$
+
+        Integration by parts gives
+
+        $$
+        I=\sec x\tan x-\int\sec x\tan^2x\,dx.
+        $$
+      check:
+        id: choose-parts-to-create-tangent-check
+        type: multipleChoice
+        prompt: Why is $dv=\sec^2x\,dx$ useful in this integration-by-parts setup?
+        choices:
+          - id: a
+            text: Its antiderivative is $\tan x$, creating the tangent factors needed for a Pythagorean identity.
+          - id: b
+            text: Its antiderivative is $\sec x$.
+          - id: c
+            text: It removes every secant factor immediately.
+          - id: d
+            text: It makes the remaining integral zero.
+        answer:
+          choiceId: a
+        explanation: |
+          The resulting $\tan^2x$ can be replaced by $\sec^2x-1$, which recreates the
+          original integral.
+
+          Related topic: strategic integration by parts.
+
+    - id: close-the-cycle
+      title: Rewrite tangent squared and close the cycle
+      required: true
+      content: |
+        Use
+
+        $$
+        \tan^2x=\sec^2x-1.
+        $$
+
+        Then
+
+        $$
+        \begin{aligned}
+        I
+        &=\sec x\tan x-\int\sec x(\sec^2x-1)\,dx\\
+        &=\sec x\tan x-\int\sec^3x\,dx+\int\sec x\,dx\\
+        &=\sec x\tan x-I+\int\sec x\,dx.
+        \end{aligned}
+        $$
+
+        The appearance of $I$ on both sides is useful. Move it to the left:
+
+        $$
+        2I=\sec x\tan x+\int\sec x\,dx.
+        $$
+      check:
+        id: close-the-cycle-check
+        type: multipleChoice
+        prompt: What should be done when the original integral reappears on the right side?
+        choices:
+          - id: a
+            text: Treat it as the same unknown quantity and solve the resulting algebraic equation.
+          - id: b
+            text: Discard it as an error.
+          - id: c
+            text: Apply partial fractions to it.
+          - id: d
+            text: Replace it with zero.
+        answer:
+          choiceId: a
+        explanation: |
+          Cyclic integration by parts intentionally reproduces the original integral.
+          Collecting like terms isolates it.
+
+          Related topic: cyclic integration by parts.
+
+    - id: secant-logarithm
+      title: Supply the basic secant antiderivative
+      required: true
+      content: |
+        The remaining standard integral is
+
+        $$
+        \int\sec x\,dx=\ln|\sec x+\tan x|+C.
+        $$
+
+        One derivation multiplies by
+
+        $$
+        \frac{\sec x+\tan x}{\sec x+\tan x}
+        $$
+
+        so the numerator becomes the derivative of the denominator:
+
+        $$
+        \frac{\sec^2x+\sec x\tan x}{\sec x+\tan x}.
+        $$
+
+        Therefore,
+
+        $$
+        \int\sec^3x\,dx
+        =
+        \frac{1}{2}\sec x\tan x
+        +\frac{1}{2}\ln|\sec x+\tan x|+C.
+        $$
+      check:
+        id: secant-logarithm-check
+        type: multipleChoice
+        prompt: Which derivative produces the numerator used in the secant logarithm trick?
+        choices:
+          - id: a
+            text: '$\frac{d}{dx}(\sec x+\tan x)=\sec x\tan x+\sec^2x$'
+          - id: b
+            text: '$\frac{d}{dx}(\sec x+\tan x)=1$'
+          - id: c
+            text: '$\frac{d}{dx}(\sec x+\tan x)=\sin x+\cos x$'
+          - id: d
+            text: '$\frac{d}{dx}(\sec x+\tan x)=\tan^2x$'
+        answer:
+          choiceId: a
+        explanation: |
+          The engineered numerator is exactly the derivative of
+          $\sec x+\tan x$.
+
+          Related topic: logarithmic antiderivative of secant.
+
+    - id: reduction-formula
+      title: Reduce higher odd secant powers
+      required: true
+      content: |
+        The same integration-by-parts structure produces the reduction formula
+
+        $$
+        \int\sec^n x\,dx
+        =
+        \frac{\sec^{n-2}x\tan x}{n-1}
+        +
+        \frac{n-2}{n-1}\int\sec^{n-2}x\,dx,
+        \qquad n>1.
+        $$
+
+        For $n=5$:
+
+        $$
+        \int\sec^5x\,dx
+        =
+        \frac{1}{4}\sec^3x\tan x
+        +
+        \frac{3}{4}\int\sec^3x\,dx.
+        $$
+
+        The exponent drops by two until the base case is either $\int\sec x\,dx$ or
+        $\int\sec^3x\,dx$.
+      check:
+        id: reduction-formula-check
+        type: multipleChoice
+        prompt: |
+          Which expression correctly begins the reduction of
+          $\int\sec^5x\,dx$?
+        choices:
+          - id: a
+            text: '$\frac{1}{4}\sec^3x\tan x+\frac{3}{4}\int\sec^3x\,dx$'
+          - id: b
+            text: '$\frac{1}{5}\sec^4x+\int\sec x\,dx$'
+          - id: c
+            text: '$\sec^3x\tan x-\int\sec^7x\,dx$'
+          - id: d
+            text: '$\frac{1}{4}\tan^4x+\frac{3}{4}\int\tan^3x\,dx$'
+        answer:
+          choiceId: a
+        explanation: |
+          Substitute $n=5$ into the reduction formula. The remaining secant exponent is
+          $3$.
+
+          Related topic: reduction formulas for odd secant powers.
+
+    - id: cosecant-parallel
+      title: Apply the parallel cosecant cycle
+      required: true
+      content: |
+        The cosecant case follows the same idea but carries signs from
+
+        $$
+        \frac{d}{dx}(\csc x)=-\csc x\cot x
+        $$
+
+        and
+
+        $$
+        1+\cot^2x=\csc^2x.
+        $$
+
+        The standard result is
+
+        $$
+        \int\csc^3x\,dx
+        =
+        -\frac{1}{2}\csc x\cot x
+        +\frac{1}{2}\ln|\csc x-\cot x|+C.
+        $$
+
+        The structure mirrors secant cubed; the sign differences must be tracked from the
+        derivative of cosecant.
+      check:
+        id: cosecant-parallel-check
+        type: multipleChoice
+        prompt: Which derivative is responsible for the sign difference in the cosecant cycle?
+        choices:
+          - id: a
+            text: '$\frac{d}{dx}(\csc x)=-\csc x\cot x$'
+          - id: b
+            text: '$\frac{d}{dx}(\csc x)=\csc^2x$'
+          - id: c
+            text: '$\frac{d}{dx}(\cot x)=\csc^2x$'
+          - id: d
+            text: '$\frac{d}{dx}(\sin x)=\sin x$'
+        answer:
+          choiceId: a
+        explanation: |
+          The negative derivative of cosecant changes the signs in the integration-by-parts
+          algebra.
+
+          Related topic: odd cosecant powers.

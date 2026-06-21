@@ -147,8 +147,14 @@ internal sealed class RecallItemAnswerFileDto
 internal sealed class GuidedProjectFileDto
 {
     public string? Language { get; set; }
+    public string? ProjectKind { get; set; }
+    public string? RunnerMode { get; set; }
     public string? Instructions { get; set; }
+    public GuidedProjectWorkspaceFileDto? Workspace { get; set; }
     public List<GuidedProjectSourceFileDto>? Files { get; set; }
+    public List<GuidedProjectFixtureFileDto>? Fixtures { get; set; }
+    public List<GuidedProjectScenarioFileDto>? Scenarios { get; set; }
+    public List<string>? Diagnostics { get; set; }
     public List<GuidedProjectCheckFileDto>? RequiredChecks { get; set; }
     public List<GuidedProjectCheckFileDto>? BonusChecks { get; set; }
 }
@@ -160,6 +166,40 @@ internal sealed class GuidedProjectSourceFileDto
     public bool ReadOnly { get; set; }
 }
 
+internal sealed class GuidedProjectFixtureFileDto
+{
+    public string? Path { get; set; }
+    public string? Content { get; set; }
+    public bool ReadOnly { get; set; }
+}
+
+internal sealed class GuidedProjectScenarioFileDto
+{
+    public string? Id { get; set; }
+    public string? Type { get; set; }
+    public string? LearnerRole { get; set; }
+    public List<GuidedProjectNetworkEventFileDto>? Events { get; set; }
+}
+
+internal sealed class GuidedProjectNetworkEventFileDto
+{
+    public string? Type { get; set; }
+    public string? Peer { get; set; }
+    public string? From { get; set; }
+    public string? Text { get; set; }
+}
+
+internal sealed class GuidedProjectWorkspaceFileDto
+{
+    public string? BuildProfile { get; set; }
+    public string? EntryPoint { get; set; }
+    public string? LabProfile { get; set; }
+    public List<string>? SourceGlobs { get; set; }
+    public List<string>? IncludePaths { get; set; }
+    public List<string>? WritablePaths { get; set; }
+    public List<string>? AllowedBaseImages { get; set; }
+}
+
 internal sealed class GuidedProjectCheckFileDto
 {
     public string? Id { get; set; }
@@ -167,6 +207,27 @@ internal sealed class GuidedProjectCheckFileDto
     public string? Description { get; set; }
     public string? TestCode { get; set; }
     public List<string>? ExpectedOutputContains { get; set; }
+    public GuidedProjectCheckRunFileDto? Run { get; set; }
+    public GuidedProjectCheckExpectFileDto? Expect { get; set; }
+}
+
+internal sealed class GuidedProjectCheckRunFileDto
+{
+    public List<string>? Arguments { get; set; }
+    public string? Stdin { get; set; }
+    public string? Scenario { get; set; }
+}
+
+internal sealed class GuidedProjectCheckExpectFileDto
+{
+    public List<string>? StdoutContains { get; set; }
+    public List<GuidedProjectFileExpectationFileDto>? Files { get; set; }
+}
+
+internal sealed class GuidedProjectFileExpectationFileDto
+{
+    public string? Path { get; set; }
+    public List<string>? TextContains { get; set; }
 }
 
 internal sealed class WorkedExampleFileDto

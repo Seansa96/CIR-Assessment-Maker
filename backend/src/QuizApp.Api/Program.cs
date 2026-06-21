@@ -36,6 +36,9 @@ builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
 builder.Services.AddSingleton<GradeAnalyticsService>();
+builder.Services.AddSingleton<IDockerCommandRunner, QuizApp.Infrastructure.CodeRunner.DockerCommandRunner>();
+builder.Services.AddSingleton<IGuidedProjectRunner, LegacyHarnessGuidedProjectRunner>();
+builder.Services.AddSingleton<IGuidedProjectRunner, DockerWorkspaceGuidedProjectRunner>();
 builder.Services.AddSingleton<GuidedProjectService>();
 builder.Services.AddSingleton(new FileStorageOptions { DataRoot = dataRoot });
 builder.Services.AddSingleton(new SqliteRetentionOptions { DatabasePath = sqlitePath });
@@ -80,7 +83,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+
 app.UseCors("LocalFrontend");
 
 var api = app.MapGroup("/api");

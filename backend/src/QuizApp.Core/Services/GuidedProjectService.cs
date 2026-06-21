@@ -9,20 +9,20 @@ public sealed class GuidedProjectService
     private readonly IAssessmentRepository assessmentRepository;
     private readonly IGuidedProjectSessionRepository sessionRepository;
     private readonly ISettingsRepository settingsRepository;
-    private readonly ICodeRunnerClient runnerClient;
+    private readonly IEnumerable<IGuidedProjectRunner> runners;
 
     public GuidedProjectService(
         AttemptService attemptService,
         IAssessmentRepository assessmentRepository,
         IGuidedProjectSessionRepository sessionRepository,
         ISettingsRepository settingsRepository,
-        ICodeRunnerClient runnerClient)
+        IEnumerable<IGuidedProjectRunner> runners)
     {
         this.attemptService = attemptService;
         this.assessmentRepository = assessmentRepository;
         this.sessionRepository = sessionRepository;
         this.settingsRepository = settingsRepository;
-        this.runnerClient = runnerClient;
+        this.runners = runners;
     }
 
     public async Task<GuidedProjectSession> GetSessionAsync(string attemptId, CancellationToken cancellationToken = default)
@@ -83,30 +83,18 @@ public sealed class GuidedProjectService
         var settings = await settingsRepository.GetAsync(cancellationToken);
         var session = await SaveFilesAsync(attemptId, files, cancellationToken);
 
-        var checkResults = new List<GuidedProjectCheckResult>();
-        foreach (var check in project.RequiredChecks)
+        var runnerMode = project.RunnerMode ?? "legacyHarness";
+        var runner = runners.FirstOrDefault(r => string.Equals(r.Mode, runnerMode, StringComparison.OrdinalIgnoreCase));
+        if (runner is null)
         {
-            checkResults.Add(await RunCheckAsync(project, session.Files, check, required: true, settings, cancellationToken));
+            throw new InvalidOperationException($"No runner found for mode '{runnerMode}'.");
         }
 
-        foreach (var check in project.BonusChecks)
-        {
-            checkResults.Add(await RunCheckAsync(project, session.Files, check, required: false, settings, cancellationToken));
-        }
+        var request = new GuidedProjectRunRequest(session, assessment, settings);
+        var result = await runner.RunAsync(request, cancellationToken);
 
-        var updated = session with
-        {
-            CheckResults = checkResults,
-            UpdatedAt = DateTimeOffset.UtcNow
-        };
-        await sessionRepository.SaveAsync(updated, cancellationToken);
-
-        return new GuidedProjectRunResult(
-            updated,
-            project.RequiredChecks.All(check => checkResults.Any(result =>
-                result.Required
-                && string.Equals(result.CheckId, check.Id, StringComparison.OrdinalIgnoreCase)
-                && result.Passed)));
+        await sessionRepository.SaveAsync(result.Session, cancellationToken);
+        return result;
     }
 
     public async Task<AttemptResults> CompleteAsync(string attemptId, CancellationToken cancellationToken = default)
@@ -165,115 +153,4 @@ public sealed class GuidedProjectService
         return assessment;
     }
 
-    private async Task<GuidedProjectCheckResult> RunCheckAsync(
-        GuidedProjectDefinition project,
-        IReadOnlyList<GuidedProjectFileState> files,
-        GuidedProjectCheckDefinition check,
-        bool required,
-        AppSettings settings,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            var request = BuildRequest(project, files, check, settings);
-            var result = await runnerClient.ExecuteAsync(request, settings, cancellationToken);
-            var output = (result.Stdout ?? string.Empty).Trim();
-            var passed = result.Succeeded
-                && check.ExpectedOutputContains.All(expected => output.Contains(expected, StringComparison.Ordinal));
-
-            return new GuidedProjectCheckResult(
-                check.Id,
-                check.Title,
-                required,
-                passed,
-                TrimOutput(result.Output ?? result.Stdout ?? result.Stderr),
-                TrimOutput(result.CompileOutput),
-                TrimOutput(result.Error),
-                DateTimeOffset.UtcNow);
-        }
-        catch (Exception ex) when (ex is InvalidOperationException or HttpRequestException or TaskCanceledException)
-        {
-            return new GuidedProjectCheckResult(
-                check.Id,
-                check.Title,
-                required,
-                false,
-                null,
-                null,
-                TrimOutput(ex.Message),
-                DateTimeOffset.UtcNow);
-        }
-    }
-
-    private static CodeRunnerExecuteRequest BuildRequest(
-        GuidedProjectDefinition project,
-        IReadOnlyList<GuidedProjectFileState> files,
-        GuidedProjectCheckDefinition check,
-        AppSettings settings)
-    {
-        if (!string.Equals(project.Language, "cpp", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidOperationException("Guided project execution currently supports C++ projects.");
-        }
-
-        return new CodeRunnerExecuteRequest(
-            "cpp",
-            "main.cpp",
-            BuildCppTestHarness(files, check.TestCode),
-            settings.CodeRunnerCompileTimeoutMs,
-            settings.CodeRunnerRunTimeoutMs);
-    }
-
-    private static string BuildCppTestHarness(IReadOnlyList<GuidedProjectFileState> files, string testCode)
-    {
-        var sourceFiles = files
-            .Where(file => IsCppSourceLike(file.Path))
-            .Select(file => string.Join("\n", new[]
-            {
-                $"// ----- {file.Path} -----",
-                StripProjectLocalDirectives(file.Content)
-            }));
-
-        return string.Join("\n", new[]
-        {
-            "#include <bits/stdc++.h>",
-            "using namespace std;"
-        }.Concat(sourceFiles).Concat(new[]
-        {
-            "",
-            "// ----- hidden check -----",
-            testCode
-        }));
-    }
-
-    private static bool IsCppSourceLike(string path)
-    {
-        return path.EndsWith(".h", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".hpp", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".hh", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".cpp", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".cc", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".cxx", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string StripProjectLocalDirectives(string content)
-    {
-        var lines = content.Replace("\r\n", "\n").Replace('\r', '\n').Split('\n');
-        return string.Join("\n", lines.Where(line =>
-        {
-            var trimmed = line.TrimStart();
-            return !trimmed.Equals("#pragma once", StringComparison.Ordinal)
-                && !trimmed.StartsWith("#include \"", StringComparison.Ordinal);
-        }));
-    }
-
-    private static string? TrimOutput(string? value)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            return null;
-        }
-
-        return value.Length <= 4000 ? value.Trim() : value[..4000].Trim();
-    }
 }

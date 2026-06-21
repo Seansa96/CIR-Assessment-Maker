@@ -611,7 +611,10 @@ internal static class TestData
             SubcategoryIds = new[] { "c++-oop" },
             GuidedProject = new GuidedProjectDefinition(
                 "cpp",
+                null,
+                null,
                 "Build a Runner class.",
+                null,
                 new[]
                 {
                     new GuidedProjectFileDefinition(
@@ -619,6 +622,9 @@ internal static class TestData
                         "#pragma once\nclass Runner {};",
                         false)
                 },
+                Array.Empty<GuidedProjectFixtureDefinition>(),
+                Array.Empty<GuidedProjectScenarioDefinition>(),
+                Array.Empty<string>(),
                 new[]
                 {
                     new GuidedProjectCheckDefinition(
@@ -626,7 +632,9 @@ internal static class TestData
                         "Runner check",
                         "Checks that Runner exists.",
                         "int main() { cout << \"RUNNER_OK\"; return 0; }",
-                        new[] { "RUNNER_OK" })
+                        new[] { "RUNNER_OK" },
+                        null,
+                        null)
                 },
                 Array.Empty<GuidedProjectCheckDefinition>())
         };
