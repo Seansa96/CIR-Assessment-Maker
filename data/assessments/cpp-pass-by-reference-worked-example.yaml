@@ -1,0 +1,87 @@
+schemaVersion: 1
+id: cpp-pass-by-reference-worked-example
+title: C++ Pass by Reference Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryId: c++-functions
+subcategoryIds:
+  - c++-functions
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: swap-functions
+    title: Writing a Swap Function
+    problem: |
+      Write a function to swap the values of two integers. We will compare pass-by-value (which fails) with pass-by-reference (which works).
+    steps:
+      - id: pass-by-value
+        title: The failed pass-by-value attempt
+        content: |
+          If we write a swap function using normal parameters, it only swaps local copies.
+
+          ```cpp
+          void badSwap(int a, int b) {
+              int temp = a;
+              a = b;
+              b = temp;
+          }
+
+          int main() {
+              int x = 5, y = 10;
+              badSwap(x, y);
+              // x is still 5, y is still 10
+          }
+          ```
+      - id: pass-by-reference
+        title: The successful pass-by-reference attempt
+        content: |
+          By adding `&` to the parameter types, `a` and `b` become aliases for the original variables passed in.
+
+          ```cpp
+          void goodSwap(int& a, int& b) {
+              int temp = a;
+              a = b;
+              b = temp;
+          }
+
+          int main() {
+              int x = 5, y = 10;
+              goodSwap(x, y);
+              // x is now 10, y is now 5
+          }
+          ```
+      - id: pass-by-pointer
+        title: The C-style pass-by-pointer method
+        content: |
+          Before C++ added references, the only way to modify originals was to pass pointers (memory addresses).
+
+          ```cpp
+          void ptrSwap(int* a, int* b) {
+              int temp = *a;
+              *a = *b;
+              *b = temp;
+          }
+
+          int main() {
+              int x = 5, y = 10;
+              ptrSwap(&x, &y); // Must explicitly pass addresses
+          }
+          ```
+          In modern C++, references are generally preferred over pointers for this because the syntax is cleaner and references cannot be `nullptr`.
+    check:
+      id: pass-by-ref-check
+      type: multipleChoice
+      prompt: If a function `void resetToZero(int& val)` is called with `int score = 50; resetToZero(score);`, what is the value of `score` afterwards?
+      choices:
+        - id: a
+          text: '0'
+        - id: b
+          text: '50'
+        - id: c
+          text: 'Depends on the return value'
+        - id: d
+          text: 'A compiler error occurs'
+      answer:
+        choiceId: a
+      explanation: |
+        Because the function takes an `int&` (reference), any changes made to `val` inside the function directly affect `score`.

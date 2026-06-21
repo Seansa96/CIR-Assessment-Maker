@@ -1,0 +1,128 @@
+schemaVersion: 1
+id: cpp-stl-containers-concept-lesson
+title: C++ STL Containers Concept Lesson
+assessmentType: conceptLesson
+categoryId: c++
+subcategoryId: c++-standard-library
+subcategoryIds:
+  - c++-standard-library
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - stl
+    - containers
+    - vector
+    - deque
+    - list
+lesson:
+  introduction: |
+    The C++ Standard Template Library (STL) provides reusable data structures called containers. They automatically manage memory and adapt to different sizes.
+  sections:
+    - id: vector
+      title: std::vector (Dynamic Array)
+      required: true
+      content: |
+        `std::vector` is the most commonly used container. It acts like a dynamic array that grows automatically as you add elements.
+
+        ```cpp
+        #include <vector>
+        #include <iostream>
+
+        std::vector<int> numbers;
+        numbers.push_back(10); // Adds 10 to the end
+        numbers.push_back(20);
+        
+        // Accessing elements
+        std::cout << numbers[0]; // Prints 10
+        ```
+
+        **Pros:** Fast access (O(1)) and fast insertion at the end.
+        **Cons:** Slow insertion/deletion in the middle or front because elements must be shifted.
+      check:
+        id: vector-check
+        type: multipleChoice
+        prompt: Why is inserting an element at the *front* of a `std::vector` slow?
+        choices:
+          - id: a
+            text: 'Because all existing elements must be shifted back one position in memory.'
+          - id: b
+            text: 'Because the vector must be completely re-allocated every time.'
+          - id: c
+            text: 'Because memory must be dynamically linked.'
+          - id: d
+            text: 'It is not slow; `push_front` is O(1).'
+        answer:
+          choiceId: a
+        explanation: |
+          A vector is backed by a contiguous block of memory. Inserting at the front means moving everything else over by one slot.
+
+    - id: deque
+      title: std::deque (Double-Ended Queue)
+      required: true
+      content: |
+        `std::deque` (pronounced "deck") is similar to a vector, but it allows fast insertions and deletions at *both* the front and the back.
+
+        ```cpp
+        #include <deque>
+
+        std::deque<int> d;
+        d.push_back(10);  // Adds to back
+        d.push_front(5);  // Adds to front!
+        ```
+
+        Internally, it uses multiple chunks of memory rather than one single continuous block.
+        **Pros:** Fast `push_back` and `push_front`.
+        **Cons:** Slightly slower than vector for random access; slightly more memory overhead.
+      check:
+        id: deque-check
+        type: multipleChoice
+        prompt: If you frequently need to add elements to the front of a sequence, which container is a better choice than `std::vector`?
+        choices:
+          - id: a
+            text: '`std::deque`'
+          - id: b
+            text: '`std::array`'
+          - id: c
+            text: '`std::string`'
+          - id: d
+            text: '`std::stack`'
+        answer:
+          choiceId: a
+        explanation: |
+          `deque` provides O(1) `push_front`, whereas `vector` requires O(n) time.
+
+    - id: list
+      title: std::list (Doubly-Linked List)
+      required: true
+      content: |
+        `std::list` stores elements in non-contiguous memory, connected by pointers.
+
+        ```cpp
+        #include <list>
+
+        std::list<int> myList;
+        myList.push_back(1);
+        ```
+
+        **Pros:** Fast insertion and deletion *anywhere* in the sequence (O(1) once you have an iterator).
+        **Cons:** No random access (you can't do `myList[5]`). Finding an element requires iterating from the beginning or end.
+      check:
+        id: list-check
+        type: multipleChoice
+        prompt: Why doesn't `std::list` support the `[]` operator (like `myList[3]`)?
+        choices:
+          - id: a
+            text: 'Because it does not store elements contiguously in memory, so it can''t calculate memory offsets.'
+          - id: b
+            text: 'Because it is a single-linked list.'
+          - id: c
+            text: 'Because the standard forgot to implement it.'
+          - id: d
+            text: 'Because lists only store pointers, not values.'
+        answer:
+          choiceId: a
+        explanation: |
+          In an array or vector, `[3]` means "go to the start address + 3 sizes". In a linked list, memory is scattered, so you must follow pointers one by one to reach the 4th element.

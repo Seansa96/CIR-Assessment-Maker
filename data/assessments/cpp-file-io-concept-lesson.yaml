@@ -1,0 +1,104 @@
+schemaVersion: 1
+id: cpp-file-io-concept-lesson
+title: C++ File I/O Concept Lesson
+assessmentType: conceptLesson
+categoryId: c++
+subcategoryId: c++-file-io
+subcategoryIds:
+  - c++-file-io
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - file-io
+    - fstream
+lesson:
+  introduction: |
+    C++ provides the `<fstream>` header for reading from and writing to files. The classes `std::ifstream` (input file stream) and `std::ofstream` (output file stream) behave very similarly to `std::cin` and `std::cout`.
+  sections:
+    - id: writing-files
+      title: Writing to a File
+      required: true
+      content: |
+        Use `std::ofstream` to write to a file. You can use the `<<` operator just like with `std::cout`.
+
+        ```cpp
+        #include <fstream>
+        #include <iostream>
+
+        void writeLog() {
+            // Open the file (creates it if it doesn't exist, overwrites if it does)
+            std::ofstream outFile("log.txt");
+            
+            if (outFile.is_open()) {
+                outFile << "Program started successfully.\n";
+                outFile << "No errors detected.\n";
+                
+                // It's good practice to close it, though the destructor will do it automatically
+                outFile.close();
+            } else {
+                std::cerr << "Failed to open file.\n";
+            }
+        }
+        ```
+      check:
+        id: writing-files-check
+        type: multipleChoice
+        prompt: If `"log.txt"` already exists and contains data, what happens when `std::ofstream outFile("log.txt");` is executed?
+        choices:
+          - id: a
+            text: 'The file is overwritten and its previous contents are lost.'
+          - id: b
+            text: 'Data is appended to the end of the file.'
+          - id: c
+            text: 'An exception is thrown.'
+          - id: d
+            text: 'The operation fails and `is_open()` returns false.'
+        answer:
+          choiceId: a
+        explanation: |
+          By default, `ofstream` truncates (overwrites) the file. To append, you must pass `std::ios::app` as a second argument.
+
+    - id: reading-files
+      title: Reading from a File
+      required: true
+      content: |
+        Use `std::ifstream` to read from a file. You can read word-by-word with `>>` or line-by-line using `std::getline`.
+
+        ```cpp
+        #include <fstream>
+        #include <string>
+        #include <iostream>
+
+        void readLog() {
+            std::ifstream inFile("log.txt");
+            std::string line;
+            
+            if (inFile.is_open()) {
+                // Read line by line until the end of the file
+                while (std::getline(inFile, line)) {
+                    std::cout << line << "\n";
+                }
+                inFile.close();
+            }
+        }
+        ```
+      check:
+        id: reading-files-check
+        type: multipleChoice
+        prompt: Why is `while (std::getline(inFile, line))` a robust way to read a file?
+        choices:
+          - id: a
+            text: 'Because `getline` returns `false` (or a stream that evaluates to `false`) when it hits the end of the file or an error.'
+          - id: b
+            text: 'Because it reads the entire file into memory at once.'
+          - id: c
+            text: 'Because `getline` automatically parses numbers.'
+          - id: d
+            text: 'Because it prevents the file from being locked.'
+        answer:
+          choiceId: a
+        explanation: |
+          The `while` loop condition cleanly checks both whether a line was successfully extracted and whether the end-of-file was reached.

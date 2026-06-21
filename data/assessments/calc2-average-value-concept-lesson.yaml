@@ -1,0 +1,74 @@
+schemaVersion: 1
+id: calc2-average-value-concept-lesson
+title: Average Value of a Function Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryId: average-value
+subcategoryIds:
+  - average-value
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - average-value
+    - mean-value-theorem
+    - integration
+lesson:
+  introduction: |
+    It is easy to find the average of a finite set of numbers: add them up and divide by the count. 
+    But how do you find the average temperature over a day when temperature changes continuously? You use integration.
+  sections:
+    - id: formula
+      title: The Average Value Formula
+      required: true
+      content: |
+        The **average value** of a continuous function $f(x)$ on the interval $[a, b]$ is given by:
+        
+        $$
+        f_{avg} = \frac{1}{b-a} \int_a^b f(x)\,dx
+        $$
+        
+        This can be geometrically interpreted: $f_{avg}$ is the height of a rectangle over the interval $[a, b]$ whose area exactly equals the area under the curve $y = f(x)$.
+      check:
+        id: formula-check
+        type: numericResponse
+        prompt: Find the average value of $f(x) = x$ on the interval $[0, 4]$.
+        answer:
+          value: 2
+          tolerance: 0.1
+        explanation: |
+          $f_{avg} = \frac{1}{4-0} \int_0^4 x\,dx = \frac{1}{4} \left[ \frac{x^2}{2} \right]_0^4 = \frac{1}{4} (8 - 0) = 2$.
+
+    - id: mvt-integrals
+      title: Mean Value Theorem for Integrals
+      required: true
+      content: |
+        The **Mean Value Theorem for Integrals** states that if $f$ is continuous on $[a, b]$, there exists at least one number $c$ in $[a, b]$ such that:
+        
+        $$
+        f(c) = f_{avg}
+        $$
+        
+        Or equivalently:
+        $$ \int_a^b f(x)\,dx = f(c)(b-a) $$
+        
+        This guarantees that a continuous function must actually *achieve* its average value at least once on the interval.
+      check:
+        id: mvt-integrals-check
+        type: multipleChoice
+        prompt: In the previous example where $f(x) = x$ on $[0, 4]$ and $f_{avg} = 2$, what is the value of $c$ guaranteed by the Mean Value Theorem?
+        choices:
+          - id: a
+            text: $c = 2$
+          - id: b
+            text: $c = 0$
+          - id: c
+            text: $c = 4$
+          - id: d
+            text: $c = 1$
+        answer:
+          choiceId: a
+        explanation: |
+          We need to find $c$ such that $f(c) = 2$. Since $f(x) = x$, $c = 2$. This value is inside the interval $[0, 4]$, satisfying the theorem.

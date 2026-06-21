@@ -1,0 +1,82 @@
+schemaVersion: 1
+id: calc2-applied-integration-worked-example
+title: Applied Integration Worked Examples
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryId: applied-integration
+subcategoryIds:
+  - applied-integration
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: total-blood-flow
+    title: Calculating Total Blood Flow
+    problem: |
+      The velocity of blood in a certain artery with radius $R = 0.01$ cm is given by $v(r) = 1000(0.0001 - r^2)$ cm/s.
+      Find the total blood flow (flux) $F$ in the artery.
+    steps:
+      - id: set-up-flow
+        title: Set up the integral
+        content: |
+          The formula for total flow is:
+          $$ F = \int_0^R 2\pi r \cdot v(r)\,dr $$
+          
+          Substitute $R = 0.01$ and $v(r)$:
+          $$ F = \int_0^{0.01} 2\pi r \cdot [1000(0.0001 - r^2)]\,dr $$
+          $$ F = 2000\pi \int_0^{0.01} (0.0001r - r^3)\,dr $$
+      - id: integrate-flow
+        title: Evaluate
+        content: |
+          $$ F = 2000\pi \left[ 0.0001\frac{r^2}{2} - \frac{r^4}{4} \right]_0^{0.01} $$
+          
+          At $r = 0.01$:
+          $r^2 = 0.0001 = 10^{-4}$.
+          $r^4 = 0.00000001 = 10^{-8}$.
+          
+          $$ 0.0001 \cdot \frac{10^{-4}}{2} = 0.5 \times 10^{-8} $$
+          $$ \frac{10^{-8}}{4} = 0.25 \times 10^{-8} $$
+          
+          Difference: $0.5 \times 10^{-8} - 0.25 \times 10^{-8} = 0.25 \times 10^{-8}$.
+          
+          $$ F = 2000\pi (0.25 \times 10^{-8}) = 500\pi \times 10^{-8} = 5\pi \times 10^{-6} \text{ cm}^3\text{/s} $$
+    check:
+      id: total-blood-flow-check
+      type: numericResponse
+      prompt: What is the maximum velocity of the blood in the artery (at the center $r=0$) in cm/s?
+      answer:
+        value: 0.1
+        tolerance: 0.01
+      explanation: |
+        $v(0) = 1000(0.0001 - 0) = 0.1$ cm/s.
+
+  - id: pdf-expected-value
+    title: Probability and Expected Value
+    problem: |
+      Let $f(x) = \frac{3}{8}x^2$ for $0 \le x \le 2$ (and $f(x) = 0$ otherwise) be a probability density function for the lifespan of a certain insect in weeks.
+      Find the probability that the insect lives more than 1 week, and find its expected lifespan.
+    steps:
+      - id: prob-calc
+        title: Find the Probability P(X > 1)
+        content: |
+          To find the probability that it lives more than 1 week, integrate from 1 to the maximum lifespan (2 weeks).
+          
+          $$ P(X > 1) = \int_1^2 \frac{3}{8}x^2\,dx = \left[ \frac{1}{8}x^3 \right]_1^2 $$
+          $$ P(X > 1) = \frac{1}{8}(8) - \frac{1}{8}(1) = 1 - \frac{1}{8} = \frac{7}{8} = 0.875 $$
+          
+          So there is an 87.5% chance the insect lives longer than 1 week.
+      - id: exp-calc
+        title: Find the Expected Value (Mean)
+        content: |
+          The expected value $\mu = \int_{-\infty}^\infty x f(x)\,dx$.
+          
+          $$ \mu = \int_0^2 x \left(\frac{3}{8}x^2\right)\,dx = \frac{3}{8} \int_0^2 x^3\,dx $$
+          $$ \mu = \frac{3}{8} \left[ \frac{x^4}{4} \right]_0^2 = \frac{3}{8} \left( \frac{16}{4} - 0 \right) = \frac{3}{8}(4) = \frac{12}{8} = 1.5 \text{ weeks} $$
+    check:
+      id: pdf-expected-value-check
+      type: numericResponse
+      prompt: Verify that $f(x)$ is a valid PDF by computing its integral over the whole domain $[0, 2]$. What should it equal?
+      answer:
+        value: 1.0
+        tolerance: 0.001
+      explanation: |
+        $\int_0^2 \frac{3}{8}x^2 dx = [\frac{1}{8}x^3]_0^2 = \frac{8}{8} = 1$. The total probability must always be exactly 1.

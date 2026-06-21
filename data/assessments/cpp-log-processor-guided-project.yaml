@@ -1,0 +1,77 @@
+schemaVersion: 1
+id: cpp-log-processor-guided-project
+title: C++ Log Processor Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryId: c++-file-io
+subcategoryIds:
+  - c++-file-io
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Implement a `LogProcessor` class that reads a log file, counts the number of lines containing the word "ERROR", and writes the total count to a new file.
+
+    Required behavior:
+    - Create a class named exactly `LogProcessor`.
+    - Provide `void processLogs(const std::string& inputFilename, const std::string& outputFilename)`.
+    - `processLogs` should open `inputFilename` for reading. If it fails, do nothing.
+    - Read the file line by line. Count how many lines contain the substring `"ERROR"`. You can use `line.find("ERROR") != std::string::npos`.
+    - Open `outputFilename` for writing.
+    - Write the integer count to `outputFilename`.
+  files:
+    - path: LogProcessor.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <string>
+        #include <fstream>
+
+        using namespace std;
+
+        class LogProcessor {
+        public:
+            // Implement processLogs
+            
+        };
+    - path: ProjectNotes.md
+      readOnly: true
+      content: |
+        Required names:
+        - `LogProcessor`
+        - `processLogs(string in, string out)`
+  requiredChecks:
+    - id: process-logs
+      title: processLogs works correctly
+      description: Check if errors are counted and written
+      expectedOutputContains:
+        - LOGS_OK
+      testCode: |
+        #include "LogProcessor.h"
+        #include <iostream>
+        #include <fstream>
+        #include <string>
+        using namespace std;
+        
+        int main() {
+            // Setup test file
+            ofstream out("test_in.txt");
+            out << "INFO: System started\n";
+            out << "ERROR: Disk full\n";
+            out << "WARNING: Low memory\n";
+            out << "ERROR: Timeout\n";
+            out.close();
+            
+            LogProcessor lp;
+            lp.processLogs("test_in.txt", "test_out.txt");
+            
+            ifstream in("test_out.txt");
+            string result;
+            if (in >> result && result == "2") {
+                cout << "LOGS_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }

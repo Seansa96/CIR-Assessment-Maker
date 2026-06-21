@@ -1,0 +1,88 @@
+schemaVersion: 1
+id: calc2-area-between-curves-test
+title: Area Between Curves Test
+assessmentType: test
+categoryId: calculus-2
+subcategoryId: area-between-curves
+subcategoryIds:
+  - area-between-curves
+modeDefault: practice
+randomizeQuestions: true
+questions:
+  - id: q001
+    type: numericResponse
+    prompt: |
+      Find the total area enclosed by the curves $y = x^3 - x$ and $y = 3x$.
+      
+      *Hint: Find all three points of intersection and set up two integrals.*
+    answer:
+      value: 8
+      tolerance: 0.01
+    explanation: |
+      $x^3 - x = 3x \implies x^3 - 4x = 0 \implies x(x-2)(x+2) = 0$. Intersections are at $-2, 0, 2$.
+      On $[-2, 0]$, cubic is on top: $\int_{-2}^0 (x^3 - 4x)\,dx = 4$.
+      On $[0, 2]$, line is on top: $\int_0^2 (4x - x^3)\,dx = 4$.
+      Total = $4 + 4 = 8$.
+
+  - id: q002
+    type: numericResponse
+    prompt: |
+      Find the area bounded by the curves $x = 2y^2$ and $x = y^2 + 4$.
+    answer:
+      value: 10.666
+      tolerance: 0.1
+    explanation: |
+      Intersection: $2y^2 = y^2 + 4 \implies y^2 = 4 \implies y = \pm 2$.
+      Right curve is $y^2 + 4$. Left curve is $2y^2$.
+      $A = \int_{-2}^2 (y^2 + 4 - 2y^2)\,dy = \int_{-2}^2 (4 - y^2)\,dy = 32/3 \approx 10.666$.
+
+  - id: q003
+    type: multipleChoice
+    prompt: |
+      Which integral computes the area bounded by $y = \sqrt{x}$, $y = x - 2$, and the x-axis?
+    choices:
+      - id: a
+        text: $\int_0^2 \sqrt{x}\,dx + \int_2^4 (\sqrt{x} - (x - 2))\,dx$
+      - id: b
+        text: $\int_0^4 (\sqrt{x} - (x - 2))\,dx$
+      - id: c
+        text: $\int_0^2 ((y + 2) - y^2)\,dy$
+      - id: d
+        text: Both (a) and (c) are correct.
+    answer:
+      choiceId: d
+    explanation: |
+      If sliced vertically (dx), the bottom curve changes at $x=2$ (from $y=0$ to $y=x-2$). This requires two integrals (choice a).
+      If sliced horizontally (dy), the right curve is $x = y+2$ and left is $x = y^2$, requiring only one integral from $y=0$ to $y=2$ (choice c).
+
+  - id: q004
+    type: numericResponse
+    prompt: |
+      Find the area of the region bounded by $y = 12 - x^2$ and $y = x^2 - 6$.
+    answer:
+      value: 72
+      tolerance: 0.1
+    explanation: |
+      Intersection: $12 - x^2 = x^2 - 6 \implies 2x^2 = 18 \implies x^2 = 9 \implies x = \pm 3$.
+      $A = \int_{-3}^3 (12 - x^2 - (x^2 - 6))\,dx = \int_{-3}^3 (18 - 2x^2)\,dx = [18x - 2x^3/3]_{-3}^3$.
+      At $x=3$: $54 - 18 = 36$.
+      At $x=-3$: $-54 + 18 = -36$.
+      Total: $36 - (-36) = 72$.
+
+  - id: q005
+    type: multipleChoice
+    prompt: |
+      Set up the integral for the area bounded by $y = \sec^2 x$ and $y = \sin x$ from $x = 0$ to $x = \pi/4$.
+    choices:
+      - id: a
+        text: $\int_0^{\pi/4} (\sec^2 x - \sin x)\,dx$
+      - id: b
+        text: $\int_0^{\pi/4} (\sin x - \sec^2 x)\,dx$
+      - id: c
+        text: $\int_0^1 (\sec^2 x - \sin x)\,dx$
+      - id: d
+        text: $\int_0^{\pi/4} (\sec^2 x + \sin x)\,dx$
+    answer:
+      choiceId: a
+    explanation: |
+      On $(0, \pi/4)$, $\sec^2 x > 1$ and $\sin x < 1$, so $\sec^2 x$ is the upper curve.

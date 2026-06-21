@@ -1,0 +1,106 @@
+schemaVersion: 1
+id: cpp-calculator-guided-project
+title: C++ Unit Converter Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryId: c++-types-and-variables
+subcategoryIds:
+  - c++-types-and-variables
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Build a small `UnitConverter` class that converts between miles and kilometers.
+
+    The app will handle compiling and running hidden checks. Do not write `main()`.
+
+    Required behavior:
+    - Create a class named exactly `UnitConverter`.
+    - Create a public method named exactly `milesToKm` that takes a `double miles` and returns a `double`. (Use `km = miles * 1.60934`)
+    - Create a public method named exactly `kmToMiles` that takes a `double km` and returns a `double`. (Use `miles = km / 1.60934`)
+    - Create a public method named exactly `formatOutput` that takes a `double value` and a `string unit` and returns a string like `"10.5 km"` or `"5 miles"`. (Use `to_string(value) + " " + unit`)
+  files:
+    - path: UnitConverter.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <string>
+
+        using namespace std;
+
+        class UnitConverter {
+        public:
+            // Add milesToKm(double miles)
+            
+            // Add kmToMiles(double km)
+            
+            // Add formatOutput(double value, string unit)
+        };
+    - path: ProjectNotes.md
+      readOnly: true
+      content: |
+        Required names:
+        - `UnitConverter`
+        - `milesToKm`
+        - `kmToMiles`
+        - `formatOutput`
+  requiredChecks:
+    - id: miles-to-km
+      title: milesToKm calculates correctly
+      description: Check if milesToKm(10.0) returns 16.0934
+      expectedOutputContains:
+        - MILES_OK
+      testCode: |
+        #include "UnitConverter.h"
+        #include <iostream>
+        #include <cmath>
+        
+        int main() {
+            UnitConverter uc;
+            if (abs(uc.milesToKm(10.0) - 16.0934) < 0.001) {
+                cout << "MILES_OK";
+            } else {
+                cout << "FAIL:" << uc.milesToKm(10.0);
+            }
+            return 0;
+        }
+    - id: km-to-miles
+      title: kmToMiles calculates correctly
+      description: Check if kmToMiles(16.0934) returns 10.0
+      expectedOutputContains:
+        - KM_OK
+      testCode: |
+        #include "UnitConverter.h"
+        #include <iostream>
+        #include <cmath>
+        
+        int main() {
+            UnitConverter uc;
+            if (abs(uc.kmToMiles(16.0934) - 10.0) < 0.001) {
+                cout << "KM_OK";
+            } else {
+                cout << "FAIL:" << uc.kmToMiles(16.0934);
+            }
+            return 0;
+        }
+    - id: format-output
+      title: formatOutput strings match
+      description: Check if formatOutput(5.0, "miles") combines them.
+      expectedOutputContains:
+        - FORMAT_OK
+      testCode: |
+        #include "UnitConverter.h"
+        #include <iostream>
+        
+        int main() {
+            UnitConverter uc;
+            string res = uc.formatOutput(5.0, "miles");
+            // to_string(5.0) adds trailing zeros like "5.000000 miles"
+            if (res.find("5.0") != string::npos && res.find("miles") != string::npos) {
+                cout << "FORMAT_OK";
+            } else {
+                cout << "FAIL:" << res;
+            }
+            return 0;
+        }

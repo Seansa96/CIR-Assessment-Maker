@@ -1,0 +1,85 @@
+schemaVersion: 1
+id: calc2-applied-integration-quiz
+title: Applied Integration Quiz
+assessmentType: quiz
+categoryId: calculus-2
+subcategoryId: applied-integration
+subcategoryIds:
+  - applied-integration
+modeDefault: practice
+randomizeQuestions: true
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      If $f(x) = k \sin(x)$ on $[0, \pi]$ is a probability density function, what must the constant $k$ be?
+    choices:
+      - id: a
+        text: $1/2$
+      - id: b
+        text: $1$
+      - id: c
+        text: $2$
+      - id: d
+        text: $\pi/2$
+    answer:
+      choiceId: a
+    explanation: |
+      $\int_0^\pi k \sin x dx = k[-\cos x]_0^\pi = 2k$. For a PDF, $2k = 1 \implies k = 1/2$.
+
+  - id: q002
+    type: numericResponse
+    prompt: |
+      The lifespan of a lightbulb (in thousands of hours) has PDF $f(x) = 0.5 e^{-0.5x}$ for $x \ge 0$.
+      What is the expected lifespan in thousands of hours?
+      *(Hint: evaluate $\int_0^\infty x(0.5 e^{-0.5x})\,dx$ using integration by parts).*
+    answer:
+      value: 2.0
+      tolerance: 0.1
+    explanation: |
+      $\mu = \int_0^\infty 0.5 x e^{-0.5x} dx$. Let $u = x, dv = 0.5 e^{-0.5x} dx \implies du = dx, v = -e^{-0.5x}$.
+      $\mu = [-x e^{-0.5x}]_0^\infty + \int_0^\infty e^{-0.5x} dx = 0 + [-2e^{-0.5x}]_0^\infty = 0 - (-2) = 2$.
+      This is an exponential distribution with rate parameter $\lambda = 0.5$, and the mean is $1/\lambda = 2$.
+
+  - id: q003
+    type: numericResponse
+    prompt: |
+      Find the probability $P(X \le 2)$ for the lightbulb in the previous question ($f(x) = 0.5 e^{-0.5x}$).
+      Provide the exact decimal value to 3 places.
+    answer:
+      value: 0.632
+      tolerance: 0.01
+    explanation: |
+      $P(0 \le X \le 2) = \int_0^2 0.5 e^{-0.5x}\,dx = [-e^{-0.5x}]_0^2 = -e^{-1} - (-1) = 1 - 1/e \approx 0.632$.
+
+  - id: q004
+    type: multipleChoice
+    prompt: |
+      In the formula for Total Blood Flow $F = \int_0^R 2\pi r \cdot v(r)\,dr$, what geometric method from volume of solids does this perfectly match?
+    choices:
+      - id: a
+        text: Cylindrical Shells
+      - id: b
+        text: Disks
+      - id: c
+        text: Washers
+      - id: d
+        text: Cross-sections
+    answer:
+      choiceId: a
+    explanation: |
+      $2\pi r$ is the circumference of a thin cylinder, $v(r)$ is its "height" (distance the blood travels per second), and $dr$ is the thickness. This is the shell method exactly.
+
+  - id: q005
+    type: multipleChoice
+    prompt: |
+      True or False: If a function $f(x)$ represents a valid PDF, its value $f(x)$ can never be greater than 1.
+    choices:
+      - id: a
+        text: False
+      - id: b
+        text: True
+    answer:
+      choiceId: a
+    explanation: |
+      False! The *integral* must equal 1. For example, $f(x) = 2$ on $[0, 0.5]$ has an integral of 1, but its height is 2. (Probability is area, not height).

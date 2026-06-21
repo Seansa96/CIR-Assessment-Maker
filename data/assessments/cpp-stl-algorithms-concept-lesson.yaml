@@ -1,0 +1,131 @@
+schemaVersion: 1
+id: cpp-stl-algorithms-concept-lesson
+title: C++ STL Algorithms Concept Lesson
+assessmentType: conceptLesson
+categoryId: c++
+subcategoryId: c++-standard-library
+subcategoryIds:
+  - c++-standard-library
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - stl
+    - algorithms
+    - sort
+    - find
+lesson:
+  introduction: |
+    The `<algorithm>` header in C++ provides a vast collection of functions designed to be used on ranges of elements. Instead of writing your own loops to sort, search, or count, you should use these highly optimized standard algorithms.
+  sections:
+    - id: std-sort
+      title: Sorting with std::sort
+      required: true
+      content: |
+        `std::sort` can sort any container that provides random access iterators (like `std::vector` or `std::array`). By default, it sorts in ascending order using the `<` operator.
+
+        ```cpp
+        #include <vector>
+        #include <algorithm>
+        #include <iostream>
+
+        std::vector<int> v = {5, 2, 8, 1, 9};
+        
+        // Sort from beginning to end
+        std::sort(v.begin(), v.end());
+        
+        // v is now {1, 2, 5, 8, 9}
+        ```
+
+        You can also provide a custom comparison function or lambda to sort in descending order or by a specific property.
+      check:
+        id: std-sort-check
+        type: multipleChoice
+        prompt: What does `std::sort(v.begin(), v.end(), std::greater<int>());` do?
+        choices:
+          - id: a
+            text: 'Sorts the vector in descending (largest to smallest) order.'
+          - id: b
+            text: 'Removes all elements greater than an integer.'
+          - id: c
+            text: 'Throws a compiler error because `std::greater` is not an algorithm.'
+          - id: d
+            text: 'Sorts the vector in ascending order.'
+        answer:
+          choiceId: a
+        explanation: |
+          `std::greater<int>()` is a standard functor that returns `true` if the first argument is greater than the second, causing `sort` to order elements descendingly.
+
+    - id: std-find
+      title: Searching with std::find
+      required: true
+      content: |
+        `std::find` searches a range for a specific value. It returns an iterator pointing to the first matching element, or the `end()` iterator if the value is not found.
+
+        ```cpp
+        #include <vector>
+        #include <algorithm>
+
+        std::vector<int> v = {10, 20, 30, 40};
+        
+        auto it = std::find(v.begin(), v.end(), 30);
+        
+        if (it != v.end()) {
+            std::cout << "Found: " << *it;
+        } else {
+            std::cout << "Not found";
+        }
+        ```
+      check:
+        id: std-find-check
+        type: multipleChoice
+        prompt: How do you know if `std::find` failed to locate the value in a vector `v`?
+        choices:
+          - id: a
+            text: 'It returns `v.end()`.'
+          - id: b
+            text: 'It returns `nullptr`.'
+          - id: c
+            text: 'It returns `-1`.'
+          - id: d
+            text: 'It throws a `std::out_of_range` exception.'
+        answer:
+          choiceId: a
+        explanation: |
+          Algorithms return the end iterator (which points one past the last element) to signal "not found".
+
+    - id: lambdas
+      title: Using Lambdas with Algorithms
+      required: true
+      content: |
+        Many algorithms take a predicate (a function returning `bool`). You can define these inline using lambda expressions.
+
+        ```cpp
+        std::vector<int> v = {1, 2, 3, 4, 5};
+        
+        // Count how many even numbers are in the vector
+        int evens = std::count_if(v.begin(), v.end(), [](int n) {
+            return n % 2 == 0;
+        });
+        ```
+
+        The `[](int n) { ... }` syntax creates a temporary function right where it's needed.
+      check:
+        id: lambdas-check
+        type: multipleChoice
+        prompt: What algorithm would you use with a lambda to apply a transformation to every element in a vector and store the result in another vector?
+        choices:
+          - id: a
+            text: '`std::transform`'
+          - id: b
+            text: '`std::for_each`'
+          - id: c
+            text: '`std::copy_if`'
+          - id: d
+            text: '`std::accumulate`'
+        answer:
+          choiceId: a
+        explanation: |
+          `std::transform` applies an operation to elements and writes the results to a destination.

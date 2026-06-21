@@ -1,0 +1,143 @@
+schemaVersion: 1
+id: calc2-series-convergence-tests-concept-lesson
+title: Convergence Tests Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryId: sequences-series
+subcategoryIds:
+  - sequences-series
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - series
+    - convergence-tests
+    - ratio-test
+    - alternating-series
+lesson:
+  introduction: |
+    For most series, we cannot easily find the exact sum. Instead, we use **Convergence Tests** simply to determine *whether* the series converges or diverges.
+  sections:
+    - id: integral-test
+      title: The Integral Test
+      required: true
+      content: |
+        The **Integral Test** links infinite series to improper integrals.
+        If $f(x)$ is continuous, positive, and decreasing, and $a_n = f(n)$, then:
+        
+        $\sum_{n=1}^\infty a_n$ and $\int_1^\infty f(x)\,dx$ will either *both converge* or *both diverge*.
+        
+        (This is actually how the p-series rule is proven!)
+      check:
+        id: integral-test-check
+        type: multipleChoice
+        prompt: To use the Integral Test, the function $f(x)$ must be...
+        choices:
+          - id: a
+            text: Continuous, positive, and decreasing
+          - id: b
+            text: Continuous, positive, and increasing
+          - id: c
+            text: Polynomial and positive
+          - id: d
+            text: Alternating and decreasing
+        answer:
+          choiceId: a
+        explanation: |
+          If it's not positive and decreasing, the area under the curve won't properly trap the rectangular areas of the series terms.
+
+    - id: comparison-tests
+      title: Comparison Tests
+      required: true
+      content: |
+        If you have a messy series, you can compare it to a clean one (like a geometric or p-series).
+        
+        **Direct Comparison Test:** 
+        If $0 \le a_n \le b_n$:
+        - If the "bigger" series $\sum b_n$ converges, the smaller $\sum a_n$ converges.
+        - If the "smaller" series $\sum a_n$ diverges, the bigger $\sum b_n$ diverges.
+        
+        **Limit Comparison Test:** (Often easier!)
+        If you suspect $a_n$ behaves like $b_n$, take the limit: $L = \lim_{n \to \infty} \frac{a_n}{b_n}$.
+        If $0 < L < \infty$, then both series behave the same (both converge or both diverge).
+      check:
+        id: comparison-tests-check
+        type: multipleChoice
+        prompt: If you want to use the Limit Comparison Test on $\sum \frac{3n}{n^3 + 5}$, what simple $b_n$ should you compare it to?
+        choices:
+          - id: a
+            text: $b_n = \frac{1}{n^2}$
+          - id: b
+            text: $b_n = \frac{1}{n^3}$
+          - id: c
+            text: $b_n = \frac{3}{n^3}$
+          - id: d
+            text: $b_n = \frac{1}{n}$
+        answer:
+          choiceId: a
+        explanation: |
+          Look at the dominant terms: $\frac{3n}{n^3} = \frac{3}{n^2}$. This behaves like the p-series $\frac{1}{n^2}$, which converges.
+
+    - id: ratio-test
+      title: The Ratio Test (The MVP)
+      required: true
+      content: |
+        The **Ratio Test** is the most widely used test, especially for series with **factorials** ($n!$) or **exponentials** ($2^n$).
+        
+        Compute the limit of the ratio of successive terms:
+        $$ L = \lim_{n \to \infty} \left| \frac{a_{n+1}}{a_n} \right| $$
+        
+        **Conclusion:**
+        - If $L < 1$, the series converges absolutely.
+        - If $L > 1$, the series diverges.
+        - If $L = 1$, the test is **inconclusive** (you must use a different test).
+      check:
+        id: ratio-test-check
+        type: multipleChoice
+        prompt: If you apply the Ratio Test to a p-series (like $\sum \frac{1}{n^2}$), what will the result $L$ be?
+        choices:
+          - id: a
+            text: $L = 1$ (Inconclusive)
+          - id: b
+            text: $L = 0$ (Converges)
+          - id: c
+            text: $L = \infty$ (Diverges)
+          - id: d
+            text: $L = 2$ (Diverges)
+        answer:
+          choiceId: a
+        explanation: |
+          $\lim \frac{1/(n+1)^2}{1/n^2} = \lim \frac{n^2}{(n+1)^2} = 1$. The Ratio Test always fails for p-series and rational polynomials! Save it for factorials and exponentials.
+
+    - id: alternating-series
+      title: Alternating Series Test
+      required: true
+      content: |
+        An **Alternating Series** has signs that flip back and forth, usually denoted by $(-1)^n$.
+        $\sum_{n=1}^\infty (-1)^{n-1} b_n = b_1 - b_2 + b_3 - b_4 \dots$ (where $b_n > 0$).
+        
+        **Alternating Series Test (AST):**
+        An alternating series converges if it meets two simple conditions:
+        1. The terms are decreasing in magnitude: $b_{n+1} \le b_n$.
+        2. The limit of the terms is zero: $\lim_{n \to \infty} b_n = 0$.
+        
+        For example, the Alternating Harmonic Series $\sum \frac{(-1)^{n-1}}{n} = 1 - \frac{1}{2} + \frac{1}{3} - \dots$ converges! (Even though the regular harmonic series diverges).
+      check:
+        id: alternating-series-check
+        type: multipleChoice
+        prompt: What is "Absolute Convergence"?
+        choices:
+          - id: a
+            text: When a series $\sum a_n$ converges, and its absolute value version $\sum |a_n|$ ALSO converges.
+          - id: b
+            text: When a series converges to exactly 0.
+          - id: c
+            text: When an alternating series converges, but the positive version diverges.
+          - id: d
+            text: When a series diverges absolutely.
+        answer:
+          choiceId: a
+        explanation: |
+          If $\sum |a_n|$ converges, the series is "absolutely convergent" (the strongest type of convergence). If the alternating version converges but the absolute version diverges (like the alternating harmonic series), it is "conditionally convergent".

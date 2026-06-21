@@ -247,13 +247,28 @@ public sealed class DockerWorkspaceGuidedProjectRunner : IGuidedProjectRunner
 
         if (privileged)
         {
-            var finalCommand = arguments.Count > 0 && command != "sh" && command != "/bin/bash" 
-                ? $"{command} {string.Join(" ", arguments)}" 
-                : (arguments.Count > 0 ? arguments.Last() : runCommandStr);
+            var finalCommand = "";
+            if ((command == "sh" || command == "/bin/bash") && arguments.Count > 0 && arguments[0] == "-c")
+            {
+                finalCommand = arguments.Last();
+            }
+            else if (arguments.Count > 0)
+            {
+                finalCommand = $"{command} {string.Join(" ", arguments)}";
+            }
+            else
+            {
+                finalCommand = runCommandStr;
+            }
                 
             command = "sh";
-            arguments = new List<string> { "-c", $"dockerd-entrypoint.sh dockerd > /dev/null 2>&1 & sleep 5 && {finalCommand}" };
+            arguments = new List<string> { "-c", $"DOCKER_HOST=unix:///var/run/docker.sock dockerd-entrypoint.sh dockerd > /dev/null 2>&1 & i=0; until DOCKER_HOST=unix:///var/run/docker.sock docker info > /dev/null 2>&1; do i=$((i+1)); if [ $i -ge 30 ]; then echo 'dockerd did not start in time'; exit 1; fi; sleep 1; done && DOCKER_HOST=unix:///var/run/docker.sock {finalCommand}" };
         }
+
+        var dindEnvironment = privileged
+            ? new Dictionary<string, string> { { "DOCKER_HOST", "unix:///var/run/docker.sock" } }
+            : null;
+        var runTimeoutSeconds = privileged ? 60 : 15;
 
         if (check.Run is not null)
         {
@@ -261,11 +276,12 @@ public sealed class DockerWorkspaceGuidedProjectRunner : IGuidedProjectRunner
                 image: runImage,
                 command: command,
                 arguments: arguments,
+                environment: dindEnvironment,
                 standardInput: check.Run.Stdin,
                 privileged: privileged,
                 volumeMounts: new Dictionary<string, string> { { workspaceDir, "/workspace" } },
                 workingDirectory: "/workspace",
-                timeoutSeconds: 15,
+                timeoutSeconds: runTimeoutSeconds,
                 cancellationToken: cancellationToken);
 
             processResult = new GuidedProjectProcessStageResult(

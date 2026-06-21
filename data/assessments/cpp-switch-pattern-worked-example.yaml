@@ -1,0 +1,84 @@
+schemaVersion: 1
+id: cpp-switch-pattern-worked-example
+title: C++ Menu Switch Pattern Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryId: c++-execution-flow
+subcategoryIds:
+  - c++-execution-flow
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: switch-menu
+    title: Building an Interactive Menu
+    problem: |
+      Write an interactive program that repeatedly asks the user for a command (1: Print Hello, 2: Print Time, 3: Exit). The program should use a loop and a `switch` statement to dispatch the commands, and stop when the user chooses 3.
+    steps:
+      - id: menu-loop
+        title: Set up a continuous loop
+        content: |
+          We'll use a `while (true)` loop to keep the menu running until the user explicitly chooses to exit.
+
+          ```cpp
+          #include <iostream>
+          using namespace std;
+
+          int main() {
+              int choice = 0;
+              
+              while (true) {
+                  cout << "1. Print Hello\n2. Print Time\n3. Exit\nChoice: ";
+                  cin >> choice;
+          ```
+      - id: switch-dispatch
+        title: Use a switch statement for commands
+        content: |
+          Inside the loop, we use a `switch` on the `choice` variable.
+
+          ```cpp
+                  switch (choice) {
+                      case 1:
+                          cout << "Hello!\n";
+                          break;
+                      case 2:
+                          cout << "It's 12:00 PM\n";
+                          break;
+          ```
+
+          Each case ends with `break;` so we don't accidentally execute the code for the next case.
+      - id: handle-exit
+        title: Handle the exit case and invalid input
+        content: |
+          When the user chooses 3, we can break out of the `while (true)` loop. Wait! The `break` keyword inside a switch statement only breaks out of the switch, not the loop. 
+
+          To exit the whole program from `main`, we can just `return 0;`. If we were in a different function, a boolean flag like `keepRunning = false;` would be better. For the `default` case, we handle invalid numbers.
+
+          ```cpp
+                      case 3:
+                          cout << "Goodbye.\n";
+                          return 0; // Exits the whole program
+                      default:
+                          cout << "Invalid choice.\n";
+                          break;
+                  }
+              }
+              return 0;
+          }
+          ```
+    check:
+      id: switch-break-check
+      type: multipleChoice
+      prompt: Inside a `while` loop that contains a `switch` statement, what happens if you write `break;` inside one of the `case` blocks?
+      choices:
+        - id: a
+          text: 'It exits the `switch` statement, and the `while` loop continues to its next iteration.'
+        - id: b
+          text: 'It exits the `while` loop entirely.'
+        - id: c
+          text: 'It exits the whole function.'
+        - id: d
+          text: 'It throws a compiler error.'
+      answer:
+        choiceId: a
+      explanation: |
+        `break` applies to the innermost enclosing loop or switch. Inside a switch, it only breaks the switch, allowing the surrounding while loop to continue.

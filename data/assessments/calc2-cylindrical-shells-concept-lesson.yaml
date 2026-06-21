@@ -1,0 +1,119 @@
+schemaVersion: 1
+id: calc2-cylindrical-shells-concept-lesson
+title: Volume by Cylindrical Shells Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryId: cylindrical-shells
+subcategoryIds:
+  - cylindrical-shells
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - volume
+    - solids-of-revolution
+    - shell-method
+lesson:
+  introduction: |
+    Sometimes the Disk/Washer method is extremely difficult or impossible to apply because solving the function for the other variable is impossible.
+    The **Cylindrical Shell method** provides an alternative way to calculate volumes of revolution by slicing the solid parallel to the axis of revolution instead of perpendicular to it.
+  sections:
+    - id: shell-geometry
+      title: Geometry of a Cylindrical Shell
+      required: true
+      content: |
+        Imagine taking a soup can label and unrolling it. The volume of the thin cylindrical shell (the label) can be approximated by:
+        $V \approx (\text{circumference}) \times (\text{height}) \times (\text{thickness})$
+
+        If we revolve a region around the **y-axis**, we use vertical slices (thickness $dx$).
+        - The distance from the y-axis to the slice is the radius: $r = x$.
+        - The height of the slice is the function value: $h = f(x)$.
+        - The circumference is $2\pi r = 2\pi x$.
+
+        The volume is:
+        
+        $$
+        V = 2\pi \int_a^b x \cdot f(x)\,dx
+        $$
+      check:
+        id: shell-geometry-check
+        type: multipleChoice
+        prompt: In the formula $2\pi \int_a^b x f(x) dx$ for revolution around the y-axis, what does the $x$ represent?
+        choices:
+          - id: a
+            text: The radius of the cylindrical shell
+          - id: b
+            text: The height of the cylindrical shell
+          - id: c
+            text: The circumference of the solid
+          - id: d
+            text: The thickness of the shell
+        answer:
+          choiceId: a
+        explanation: |
+          Since we are revolving around the y-axis, the distance from the y-axis to the vertical slice at position $x$ is simply $x$. Thus, $r = x$.
+
+    - id: shells-vs-washers
+      title: Shells vs. Washers
+      required: true
+      content: |
+        How do you choose between Shells and Washers? Look at the slicing!
+        
+        1. If you use vertical slices ($dx$):
+           - Revolution about **x-axis** (horizontal) $\rightarrow$ Perpendicular $\rightarrow$ **Disks/Washers**
+           - Revolution about **y-axis** (vertical) $\rightarrow$ Parallel $\rightarrow$ **Shells**
+           
+        2. If you use horizontal slices ($dy$):
+           - Revolution about **y-axis** (vertical) $\rightarrow$ Perpendicular $\rightarrow$ **Disks/Washers**
+           - Revolution about **x-axis** (horizontal) $\rightarrow$ Parallel $\rightarrow$ **Shells**
+
+        If solving your equation for $x$ (e.g., $y = x^3 - x + 1$) is impossible, you *must* use $dx$. Then the axis of revolution dictates the method.
+      check:
+        id: shells-vs-washers-check
+        type: multipleChoice
+        prompt: If you are forced to use vertical slices ($dx$) and are revolving around the y-axis, which method MUST you use?
+        choices:
+          - id: a
+            text: Cylindrical Shells
+          - id: b
+            text: Washers
+          - id: c
+            text: Disks
+          - id: d
+            text: Arc Length
+        answer:
+          choiceId: a
+        explanation: |
+          Vertical slices ($dx$) are parallel to the y-axis. When the slice is parallel to the axis of revolution, you use the Shell method.
+
+    - id: shifted-axis-shells
+      title: Shells with a Shifted Axis
+      required: true
+      content: |
+        If you revolve around a shifted vertical line like $x = c$, the height remains $f(x)$, but the radius changes.
+        
+        - If the axis $x = c$ is to the **left** of the region (e.g., $x = -2$), the radius is $x - c$.
+        - If the axis $x = c$ is to the **right** of the region (e.g., $x = 5$), the radius is $c - x$.
+
+        $$
+        V = 2\pi \int_a^b (\text{radius})(f(x))\,dx
+        $$
+      check:
+        id: shifted-axis-shells-check
+        type: multipleChoice
+        prompt: If your region lies between $x=1$ and $x=3$, and you revolve around $x=5$, what is the radius of the shell?
+        choices:
+          - id: a
+            text: $5 - x$
+          - id: b
+            text: $x - 5$
+          - id: c
+            text: $x + 5$
+          - id: d
+            text: $x$
+        answer:
+          choiceId: a
+        explanation: |
+          The distance between $x$ and $x=5$ (where $x \le 3$) is the larger value minus the smaller value: $5 - x$.

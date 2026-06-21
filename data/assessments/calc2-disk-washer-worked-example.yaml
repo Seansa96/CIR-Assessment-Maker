@@ -1,0 +1,115 @@
+schemaVersion: 1
+id: calc2-disk-washer-worked-example
+title: Disk and Washer Method Worked Examples
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryId: volumes-of-solids
+subcategoryIds:
+  - volumes-of-solids
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: basic-washer
+    title: Washer Method around the x-axis
+    problem: |
+      Find the volume of the solid formed by revolving the region bounded by $y = \sqrt{x}$ and $y = x^2$ around the x-axis.
+    steps:
+      - id: find-intersections
+        title: Find the points of intersection
+        content: |
+          Set $\sqrt{x} = x^2$.
+          Squaring both sides: $x = x^4 \implies x^4 - x = 0 \implies x(x^3 - 1) = 0$.
+          The intersection points are $x = 0$ and $x = 1$.
+      - id: identify-radii
+        title: Identify the outer and inner radii
+        content: |
+          On the interval $(0, 1)$, $\sqrt{x}$ is greater than $x^2$.
+          
+          Since we are revolving around the x-axis ($y=0$):
+          The outer radius $R(x)$ is the distance to the further curve: $R(x) = \sqrt{x}$.
+          The inner radius $r(x)$ is the distance to the closer curve: $r(x) = x^2$.
+      - id: set-up-integrate
+        title: Set up and evaluate the integral
+        content: |
+          Use the washer formula:
+          
+          $$
+          V = \pi \int_0^1 \left( [R(x)]^2 - [r(x)]^2 \right)\,dx
+          $$
+          
+          $$
+          V = \pi \int_0^1 \left( (\sqrt{x})^2 - (x^2)^2 \right)\,dx = \pi \int_0^1 (x - x^4)\,dx
+          $$
+          
+          Evaluate:
+          
+          $$
+          \pi \left[ \frac{x^2}{2} - \frac{x^5}{5} \right]_0^1 = \pi \left( \frac{1}{2} - \frac{1}{5} \right) = \pi \left( \frac{5}{10} - \frac{2}{10} \right) = \frac{3\pi}{10}
+          $$
+    check:
+      id: basic-washer-check
+      type: numericResponse
+      prompt: What is the decimal value of the volume? (Use $\pi \approx 3.14159$, 3 decimal places)
+      answer:
+        value: 0.942
+        tolerance: 0.01
+      explanation: |
+        $\frac{3(3.14159)}{10} \approx 0.942$.
+
+  - id: shifted-axis
+    title: Washer Method around a Shifted Axis
+    problem: |
+      Find the volume of the solid formed by revolving the region bounded by $y = 2x$ and $y = x^2$ around the horizontal line $y = -2$.
+    steps:
+      - id: intersections
+        title: Intersections
+        content: |
+          $2x = x^2 \implies x^2 - 2x = 0 \implies x(x - 2) = 0$.
+          Intersection points are $x = 0$ and $x = 2$.
+      - id: shifted-radii
+        title: Identify the shifted radii
+        content: |
+          On $(0, 2)$, the line $y = 2x$ is above $y = x^2$.
+          
+          Axis of revolution is $y = -2$ (which is below the region).
+          Distance from axis to top curve (outer radius): $R(x) = 2x - (-2) = 2x + 2$.
+          Distance from axis to bottom curve (inner radius): $r(x) = x^2 - (-2) = x^2 + 2$.
+      - id: integrate-shifted
+        title: Set up and evaluate the integral
+        content: |
+          $$
+          V = \pi \int_0^2 \left( (2x + 2)^2 - (x^2 + 2)^2 \right)\,dx
+          $$
+          
+          Expand the squares:
+          $(2x + 2)^2 = 4x^2 + 8x + 4$
+          $(x^2 + 2)^2 = x^4 + 4x^2 + 4$
+          
+          Subtract:
+          $(4x^2 + 8x + 4) - (x^4 + 4x^2 + 4) = 8x - x^4$
+          
+          Integrate:
+          $$
+          V = \pi \int_0^2 (8x - x^4)\,dx = \pi \left[ 4x^2 - \frac{x^5}{5} \right]_0^2
+          $$
+          
+          $$
+          \pi \left( 4(4) - \frac{32}{5} \right) = \pi \left( 16 - 6.4 \right) = 9.6\pi = \frac{48\pi}{5}
+          $$
+    check:
+      id: shifted-axis-check
+      type: multipleChoice
+      prompt: What would the outer radius $R(x)$ be if we instead revolved around the line $y = 6$ (which is above the region)?
+      choices:
+        - id: a
+          text: $R(x) = 6 - x^2$
+        - id: b
+          text: $R(x) = 6 - 2x$
+        - id: c
+          text: $R(x) = x^2 - 6$
+        - id: d
+          text: $R(x) = 2x - 6$
+      answer:
+        choiceId: a
+      explanation: |
+        If the axis is above the region, the *further* curve is the bottom curve ($y = x^2$). The distance from the axis ($y=6$) to the bottom curve is $6 - x^2$.

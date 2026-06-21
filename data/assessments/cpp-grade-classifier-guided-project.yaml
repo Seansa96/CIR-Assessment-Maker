@@ -1,0 +1,105 @@
+schemaVersion: 1
+id: cpp-grade-classifier-guided-project
+title: C++ Grade Classifier Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryId: c++-execution-flow
+subcategoryIds:
+  - c++-execution-flow
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Build a small `GradeClassifier` class that takes an array of numeric scores and calculates how many students received each letter grade.
+
+    Required behavior:
+    - Create a class named exactly `GradeClassifier`.
+    - Create a public method `classifyGrades(int scores[], int size)` that returns `void`.
+    - It must iterate through the `scores` array.
+    - Keep track of counts for A, B, C, D, and F.
+      - A: >= 90
+      - B: 80-89
+      - C: 70-79
+      - D: 60-69
+      - F: < 60
+    - If a score is outside the valid 0-100 range, it should be ignored using a `continue` statement.
+    - Provide getters for the counts: `getA()`, `getB()`, `getC()`, `getD()`, and `getF()`. All should return `int`.
+  files:
+    - path: GradeClassifier.h
+      readOnly: false
+      content: |
+        #pragma once
+
+        class GradeClassifier {
+        private:
+            // Store counts for A, B, C, D, F
+            int countA = 0;
+            int countB = 0;
+            int countC = 0;
+            int countD = 0;
+            int countF = 0;
+
+        public:
+            void classifyGrades(int scores[], int size) {
+                // Loop through the array
+                // Ignore scores < 0 or > 100
+                // Increment appropriate counts
+            }
+            
+            int getA() const { return countA; }
+            int getB() const { return countB; }
+            int getC() const { return countC; }
+            int getD() const { return countD; }
+            int getF() const { return countF; }
+        };
+    - path: ProjectNotes.md
+      readOnly: true
+      content: |
+        Required names:
+        - `GradeClassifier`
+        - `classifyGrades(int scores[], int size)`
+        - `getA()`, `getB()`, `getC()`, `getD()`, `getF()`
+  requiredChecks:
+    - id: basic-classification
+      title: classifyGrades groups scores correctly
+      description: Check if counts are correct for valid scores
+      expectedOutputContains:
+        - CLASSIFY_OK
+      testCode: |
+        #include "GradeClassifier.h"
+        #include <iostream>
+        using namespace std;
+        
+        int main() {
+            GradeClassifier gc;
+            int scores[] = {95, 82, 75, 60, 45, 90};
+            gc.classifyGrades(scores, 6);
+            if (gc.getA() == 2 && gc.getB() == 1 && gc.getC() == 1 && gc.getD() == 1 && gc.getF() == 1) {
+                cout << "CLASSIFY_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }
+    - id: handle-invalid
+      title: classifyGrades ignores invalid scores
+      description: Check if out-of-bounds scores (< 0 or > 100) are ignored
+      expectedOutputContains:
+        - IGNORE_OK
+      testCode: |
+        #include "GradeClassifier.h"
+        #include <iostream>
+        using namespace std;
+        
+        int main() {
+            GradeClassifier gc;
+            int scores[] = {105, -5, 85, 200};
+            gc.classifyGrades(scores, 4);
+            if (gc.getA() == 0 && gc.getB() == 1 && gc.getC() == 0 && gc.getD() == 0 && gc.getF() == 0) {
+                cout << "IGNORE_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }

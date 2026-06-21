@@ -1,0 +1,104 @@
+schemaVersion: 1
+id: calc2-work-worked-example
+title: Work (Physics Applications) Worked Examples
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryId: work-physics
+subcategoryIds:
+  - work-physics
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: spring-work
+    title: Work done stretching a spring
+    problem: |
+      A spring has a natural length of 1 meter. A force of 24 Newtons stretches the spring to a length of 1.8 meters. 
+      How much work is done in stretching the spring from 2 meters to 3 meters?
+    steps:
+      - id: find-k
+        title: Find the spring constant k
+        content: |
+          Hooke's Law: $F(x) = kx$.
+          The stretch distance $x$ is the current length minus the natural length.
+          When length is 1.8 m, $x = 1.8 - 1.0 = 0.8$ m.
+          
+          $$ 24 = k(0.8) \implies k = \frac{24}{0.8} = 30 \text{ N/m} $$
+      - id: setup-work
+        title: Set up the work integral
+        content: |
+          The force equation is $F(x) = 30x$.
+          We want the work done stretching from 2 meters to 3 meters.
+          Wait! $x$ is the *stretch distance* beyond natural length!
+          At 2 meters length, $x = 2 - 1 = 1$ m.
+          At 3 meters length, $x = 3 - 1 = 2$ m.
+          
+          The integral is from $x=1$ to $x=2$.
+          
+          $$ W = \int_1^2 30x\,dx $$
+      - id: evaluate
+        title: Evaluate the integral
+        content: |
+          $$ W = \left[ 15x^2 \right]_1^2 = 15(2^2) - 15(1^2) = 15(4) - 15 = 60 - 15 = 45 \text{ Joules} $$
+    check:
+      id: spring-work-check
+      type: numericResponse
+      prompt: How much work is done stretching the spring from its natural length to 2 meters?
+      answer:
+        value: 15
+        tolerance: 0.1
+      explanation: |
+        Natural length is $x=0$. 2 meters length is $x=1$. $W = \int_0^1 30x dx = 15(1) - 0 = 15$ Joules.
+
+  - id: pump-work
+    title: Work done pumping water out of a cone
+    problem: |
+      A tank in the shape of an inverted cone has a height of 10 meters and a base radius of 4 meters (at the top). It is filled with water to a depth of 8 meters.
+      Find the work required to pump all the water out over the top edge of the tank. (Use $\rho = 1000$ kg/m$^3$, $g = 9.8$ m/s$^2$).
+    steps:
+      - id: coordinate-system
+        title: Set up a coordinate system
+        content: |
+          Let the bottom vertex of the cone be at $y = 0$, and the top of the tank be at $y = 10$.
+          The water level is from $y = 0$ to $y = 8$.
+      - id: slice-area
+        title: Find the area of a cross-sectional slice
+        content: |
+          At height $y$, the slice is a circle with radius $r$. 
+          By similar triangles, the ratio of radius to height is constant:
+          $r / y = 4 / 10 \implies r = 0.4y$.
+          
+          The area of the slice is $A(y) = \pi r^2 = \pi (0.4y)^2 = 0.16\pi y^2$.
+      - id: setup-pump-integral
+        title: Set up the integral
+        content: |
+          Volume of the slice: $dV = 0.16\pi y^2 dy$.
+          Force (Weight) of the slice: $dF = \rho g \, dV = 9800 (0.16\pi y^2) dy = 1568\pi y^2 dy$.
+          Distance lifted: The slice is at height $y$, and must be lifted to the top at $y = 10$. Distance = $10 - y$.
+          
+          $$ W = \int_0^8 (1568\pi y^2) (10 - y)\,dy = 1568\pi \int_0^8 (10y^2 - y^3)\,dy $$
+      - id: evaluate-pump
+        title: Evaluate the integral
+        content: |
+          $$ W = 1568\pi \left[ \frac{10y^3}{3} - \frac{y^4}{4} \right]_0^8 $$
+          
+          At $y=8$:
+          $10(512)/3 - 4096/4 = 5120/3 - 1024 = 1706.67 - 1024 = 682.67$.
+          
+          $W = 1568\pi (682.67) \approx 1,071,061\pi \approx 3,364,883 \text{ Joules}$.
+    check:
+      id: pump-work-check
+      type: multipleChoice
+      prompt: What would change in the integral if we pumped the water to a spout 2 meters above the top of the tank?
+      choices:
+        - id: a
+          text: The distance lifted would be $12 - y$.
+        - id: b
+          text: The upper bound of the integral would change from 8 to 12.
+        - id: c
+          text: The radius equation $r = 0.4y$ would change.
+        - id: d
+          text: The distance lifted would be $y - 12$.
+      answer:
+        choiceId: a
+      explanation: |
+        The water itself still only exists from $y=0$ to $y=8$, so the bounds do not change. But every slice must now travel to height $y=12$, so the distance is $12 - y$.

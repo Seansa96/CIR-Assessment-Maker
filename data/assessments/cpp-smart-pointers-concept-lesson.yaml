@@ -1,0 +1,95 @@
+schemaVersion: 1
+id: cpp-smart-pointers-concept-lesson
+title: C++ Smart Pointers Concept Lesson
+assessmentType: conceptLesson
+categoryId: c++
+subcategoryId: c++-standard-library
+subcategoryIds:
+  - c++-standard-library
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - smart-pointers
+    - memory-management
+    - unique_ptr
+    - shared_ptr
+lesson:
+  introduction: |
+    Modern C++ discourages the use of raw pointers (`*`) and `new`/`delete` for memory management because they often lead to memory leaks and dangling pointers. Instead, C++11 introduced Smart Pointers in the `<memory>` header to automatically manage object lifetimes.
+  sections:
+    - id: unique-ptr
+      title: std::unique_ptr
+      required: true
+      content: |
+        A `std::unique_ptr` owns the object it points to exclusively. No two `unique_ptr`s can point to the same object. When the `unique_ptr` goes out of scope, the memory is automatically freed.
+
+        ```cpp
+        #include <memory>
+
+        void doWork() {
+            // Create a unique_ptr using std::make_unique
+            std::unique_ptr<int> p = std::make_unique<int>(10);
+            
+            // Use it like a normal pointer
+            cout << *p;
+            
+        } // p goes out of scope here; memory is automatically freed
+        ```
+
+        You cannot copy a `unique_ptr`. You can only *move* it using `std::move`.
+      check:
+        id: unique-ptr-check
+        type: multipleChoice
+        prompt: Why does `std::unique_ptr<int> p2 = p1;` fail to compile if `p1` is also a `unique_ptr`?
+        choices:
+          - id: a
+            text: 'Because `unique_ptr` enforces exclusive ownership and cannot be copied.'
+          - id: b
+            text: 'Because it requires `std::copy`.'
+          - id: c
+            text: 'Because `p1` is not a raw pointer.'
+          - id: d
+            text: 'Because memory must be cast first.'
+        answer:
+          choiceId: a
+        explanation: |
+          If copying were allowed, two unique pointers would think they both exclusively own the memory and would both try to delete it when going out of scope.
+
+    - id: shared-ptr
+      title: std::shared_ptr
+      required: true
+      content: |
+        If multiple parts of your code need to share ownership of an object, use `std::shared_ptr`. It keeps a "reference count" of how many shared pointers point to the object. When the last one goes out of scope (count reaches zero), the memory is freed.
+
+        ```cpp
+        #include <memory>
+
+        void shareWork() {
+            std::shared_ptr<int> p1 = std::make_shared<int>(100);
+            {
+                std::shared_ptr<int> p2 = p1; // Reference count is now 2
+                cout << *p2;
+            } // p2 goes out of scope; count drops to 1
+            
+        } // p1 goes out of scope; count drops to 0, memory is freed
+        ```
+      check:
+        id: shared-ptr-check
+        type: multipleChoice
+        prompt: When does the memory managed by a `std::shared_ptr` get deleted?
+        choices:
+          - id: a
+            text: 'When the last `shared_ptr` owning it is destroyed or reset.'
+          - id: b
+            text: 'Immediately when the first `shared_ptr` is destroyed.'
+          - id: c
+            text: 'When the garbage collector runs.'
+          - id: d
+            text: 'When `delete` is explicitly called.'
+        answer:
+          choiceId: a
+        explanation: |
+          The reference block tracks ownership, and the object is deleted only when the count hits zero.

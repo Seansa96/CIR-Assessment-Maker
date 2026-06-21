@@ -1,0 +1,105 @@
+schemaVersion: 1
+id: cpp-types-io-worked-example
+title: C++ Basic I/O Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryId: c++-types-and-variables
+subcategoryIds:
+  - c++-types-and-variables
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: basic-io
+    title: Building a Simple Formatter
+    problem: |
+      Write a program that asks the user for a product name, price, and quantity, then prints a formatted receipt.
+
+      Example interaction:
+      ```
+      Product: Apples
+      Price: 1.50
+      Quantity: 4
+      
+      --- RECEIPT ---
+      4x Apples @ $1.5
+      Total: $6
+      ---------------
+      ```
+    steps:
+      - id: includes
+        title: Include necessary headers
+        content: |
+          To use `cin`, `cout`, and `string`, we must include the appropriate standard library headers.
+
+          ```cpp
+          #include <iostream>
+          #include <string>
+
+          using namespace std;
+          ```
+      - id: declare-vars
+        title: Declare variables with appropriate types
+        content: |
+          We need to store a name (text), a price (decimal), and a quantity (whole number).
+
+          ```cpp
+          int main() {
+              string name;
+              double price;
+              int quantity;
+          ```
+
+          `string` holds the product name, `double` is standard for prices/decimals, and `int` handles the whole number of items.
+      - id: read-input
+        title: Prompt and read input
+        content: |
+          We'll print prompts using `cout` and read values using `cin`.
+
+          ```cpp
+              cout << "Product: ";
+              cin >> name;
+              
+              cout << "Price: ";
+              cin >> price;
+              
+              cout << "Quantity: ";
+              cin >> quantity;
+          ```
+
+          Note that `cin >> name` works for single-word products like "Apples". If we wanted multi-word names like "Gala Apples", we would need `getline(cin, name);`.
+      - id: calculate-print
+        title: Calculate and print output
+        content: |
+          We calculate the total and print the receipt using multiple `<<` operators to chain output together.
+
+          ```cpp
+              double total = price * quantity;
+              
+              cout << "\n--- RECEIPT ---\n";
+              cout << quantity << "x " << name << " @ $" << price << "\n";
+              cout << "Total: $" << total << "\n";
+              cout << "---------------\n";
+              
+              return 0;
+          }
+          ```
+
+          Notice we used `\n` inside the string literals for newlines instead of `endl`. This is often slightly faster and cleaner when writing many lines.
+    check:
+      id: format-check
+      type: multipleChoice
+      prompt: |
+        If `quantity` is 3 and `price` is 2.5, what does `cout << "Cost: $" << (quantity * price);` output?
+      choices:
+        - id: a
+          text: '`Cost: $7.5`'
+        - id: b
+          text: '`Cost: $ 7.5`'
+        - id: c
+          text: '`Cost: $quantity*price`'
+        - id: d
+          text: 'An error occurs'
+      answer:
+        choiceId: a
+      explanation: |
+        The expression `(quantity * price)` is evaluated to `7.5`, and the `<<` operator correctly concatenates the string literal and the numeric result.

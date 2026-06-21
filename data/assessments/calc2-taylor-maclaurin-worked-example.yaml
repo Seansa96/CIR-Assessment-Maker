@@ -1,0 +1,99 @@
+schemaVersion: 1
+id: calc2-taylor-maclaurin-worked-example
+title: Taylor and Maclaurin Series Worked Examples
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryId: taylor-maclaurin
+subcategoryIds:
+  - taylor-maclaurin
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: derive-taylor
+    title: Deriving a Taylor Series from Scratch
+    problem: |
+      Find the Taylor Series for $f(x) = \ln(x)$ centered at $a = 1$.
+    steps:
+      - id: find-derivatives
+        title: Find the derivatives and evaluate at a=1
+        content: |
+          $$ n=0: f(x) = \ln(x) \implies f(1) = 0 $$
+          $$ n=1: f'(x) = x^{-1} \implies f'(1) = 1 $$
+          $$ n=2: f''(x) = -x^{-2} \implies f''(1) = -1 $$
+          $$ n=3: f'''(x) = 2x^{-3} \implies f'''(1) = 2 $$
+          $$ n=4: f^{(4)}(x) = -6x^{-4} \implies f^{(4)}(1) = -6 $$
+      - id: find-pattern
+        title: Identify the pattern for f^(n)(1)
+        content: |
+          The sequence of values is: $1, -1, 2, -6, 24, -120 \dots$
+          This is an alternating factorial! Specifically, for $n \ge 1$:
+          $$ f^{(n)}(1) = (-1)^{n-1} (n-1)! $$
+      - id: plug-into-formula
+        title: Plug into the Taylor Series Formula
+        content: |
+          $$ f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(a)}{n!} (x-a)^n $$
+          
+          Since the $n=0$ term is 0, start the sum at $n=1$:
+          $$ \sum_{n=1}^\infty \frac{(-1)^{n-1} (n-1)!}{n!} (x-1)^n $$
+          
+          Since $n! = n \cdot (n-1)!$, the factorials cancel to leave just $n$ in the denominator:
+          $$ \ln(x) = \sum_{n=1}^\infty \frac{(-1)^{n-1}}{n} (x-1)^n $$
+    check:
+      id: derive-taylor-check
+      type: multipleChoice
+      prompt: What does this series become if you plug in $x = 2$?
+      choices:
+        - id: a
+          text: The Alternating Harmonic Series $\sum \frac{(-1)^{n-1}}{n}$, which converges to $\ln(2)$.
+        - id: b
+          text: The Harmonic Series $\sum \frac{1}{n}$, which diverges.
+        - id: c
+          text: 0
+      answer:
+        choiceId: a
+      explanation: |
+        If $x=2$, $(x-1)^n = 1^n = 1$. This leaves the famous alternating harmonic series, and proves that it converges to $\ln(2)$!
+
+  - id: evaluating-limits
+    title: Using Series to Evaluate Indeterminate Limits
+    problem: |
+      Use Maclaurin series to evaluate $\lim_{x \to 0} \frac{e^x - 1 - x}{x^2}$.
+    steps:
+      - id: series-sub
+        title: Substitute the known series
+        content: |
+          We know $e^x = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \dots$
+          
+          Substitute this into the limit:
+          $$ \lim_{x \to 0} \frac{ \left(1 + x + \frac{x^2}{2} + \frac{x^3}{6} + \dots\right) - 1 - x }{ x^2 } $$
+      - id: cancel-terms
+        title: Cancel terms
+        content: |
+          The $1$ and $x$ at the beginning cancel with the $-1$ and $-x$.
+          
+          $$ \lim_{x \to 0} \frac{ \frac{x^2}{2} + \frac{x^3}{6} + \dots }{ x^2 } $$
+      - id: divide-and-limit
+        title: Divide by x² and evaluate
+        content: |
+          Divide every remaining term in the numerator by $x^2$:
+          
+          $$ \lim_{x \to 0} \left( \frac{1}{2} + \frac{x}{6} + \frac{x^2}{24} + \dots \right) $$
+          
+          As $x \to 0$, all terms containing $x$ vanish!
+          
+          The limit is exactly $\frac{1}{2}$.
+    check:
+      id: evaluating-limits-check
+      type: multipleChoice
+      prompt: Why is this method often better than L'Hôpital's rule?
+      choices:
+        - id: a
+          text: It avoids taking multiple tedious derivatives, replacing calculus with simple algebra.
+        - id: b
+          text: L'Hôpital's rule does not work for exponential functions.
+        - id: c
+          text: The limit might not exist under L'Hôpital's rule.
+      answer:
+        choiceId: a
+      explanation: |
+        You would have to apply L'Hôpital's rule twice for this problem. For limits like $(\sin x - x + x^3/6)/x^5$, you'd need 5 derivatives! Series makes it trivial.

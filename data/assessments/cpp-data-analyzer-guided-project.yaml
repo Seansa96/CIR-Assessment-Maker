@@ -1,0 +1,96 @@
+schemaVersion: 1
+id: cpp-data-analyzer-guided-project
+title: C++ Data Analyzer Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryId: c++-standard-library
+subcategoryIds:
+  - c++-standard-library
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Build a `DataAnalyzer` class that processes a `std::vector<double>` using STL algorithms.
+
+    Required behavior:
+    - Create a class named exactly `DataAnalyzer`.
+    - Provide a constructor taking a `std::vector<double>`. Store it in a private member `data`.
+    - Provide `void sortData()` which sorts the data in ascending order using `std::sort`.
+    - Provide `int countGreaterThan(double threshold)` which returns the number of elements strictly greater than `threshold` using `std::count_if` and a lambda.
+    - Provide `double getMin()` which returns the minimum value using `std::min_element`.
+  files:
+    - path: DataAnalyzer.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <vector>
+        #include <algorithm>
+
+        using namespace std;
+
+        class DataAnalyzer {
+        private:
+            vector<double> data;
+            
+        public:
+            // Implement constructor
+            
+            // Implement sortData
+            
+            // Implement countGreaterThan
+            
+            // Implement getMin
+        };
+    - path: ProjectNotes.md
+      readOnly: true
+      content: |
+        Required names:
+        - `DataAnalyzer`
+        - `sortData`
+        - `countGreaterThan`
+        - `getMin`
+  requiredChecks:
+    - id: basic-sort-min
+      title: sortData and getMin work
+      description: Check if data can be sorted and minimum extracted
+      expectedOutputContains:
+        - SORTMIN_OK
+      testCode: |
+        #include "DataAnalyzer.h"
+        #include <iostream>
+        #include <vector>
+        using namespace std;
+        
+        int main() {
+            vector<double> vals = {5.5, 1.1, 3.3, 2.2};
+            DataAnalyzer analyzer(vals);
+            analyzer.sortData();
+            if (analyzer.getMin() == 1.1) {
+                cout << "SORTMIN_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }
+    - id: count-greater
+      title: countGreaterThan works
+      description: Check if count_if lambda works properly
+      expectedOutputContains:
+        - COUNT_OK
+      testCode: |
+        #include "DataAnalyzer.h"
+        #include <iostream>
+        #include <vector>
+        using namespace std;
+        
+        int main() {
+            vector<double> vals = {1.0, 5.0, 10.0, 15.0, 20.0};
+            DataAnalyzer analyzer(vals);
+            if (analyzer.countGreaterThan(9.0) == 3 && analyzer.countGreaterThan(25.0) == 0) {
+                cout << "COUNT_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }

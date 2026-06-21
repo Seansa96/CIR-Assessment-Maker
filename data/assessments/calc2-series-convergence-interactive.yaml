@@ -1,0 +1,70 @@
+schemaVersion: 1
+id: calc2-series-convergence-interactive
+title: Geometric Series Convergence Interactive
+assessmentType: interactiveExploration
+categoryId: calculus-2
+subcategoryId: sequences-series
+subcategoryIds:
+  - sequences-series
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: interactiveExploration
+  tags:
+    - series
+    - geometric-series
+    - partial-sums
+exploration:
+  introduction: |
+    A geometric series $\sum_{n=0}^\infty a r^n$ only converges if the common ratio $r$ falls strictly between -1 and 1 ($|r| < 1$).
+    In this interactive, you can adjust the ratio $r$ and the starting term $a$ to see how the partial sum $S_n$ behaves as $n \to \infty$.
+  sections:
+    - id: explore-ratio
+      title: Explore the Common Ratio
+      required: true
+      instruction: |
+        Use the slider to change the common ratio $r$.
+        Notice that when $|r| \ge 1$, the infinite sum "Diverges" (blows up to infinity or oscillates).
+        When $|r| < 1$, it converges to a finite number using the formula $S = \frac{a}{1-r}$.
+      controls:
+        - id: a_val
+          type: slider
+          label: Starting Term (a)
+          min: 1.0
+          max: 10.0
+          step: 1.0
+          defaultValue: '5.0'
+        - id: r_val
+          type: slider
+          label: Common Ratio (r)
+          min: -2.0
+          max: 2.0
+          step: 0.1
+          defaultValue: '0.5'
+      views:
+        - id: convergence-status
+          type: readout
+          label: Status
+          expression: "abs(r_val) < 1 ? 'Converges' : 'Diverges'"
+        - id: sum-readout
+          type: readout
+          label: Infinite Sum
+          expression: "abs(r_val) < 1 ? (a_val / (1 - r_val)) : 999999"
+      check:
+        id: explore-ratio-check
+        type: multipleChoice
+        prompt: If $a = 5$ and $r = -0.5$, what does the series converge to?
+        choices:
+          - id: a
+            text: 3.333
+          - id: b
+            text: 10
+          - id: c
+            text: Diverges
+          - id: d
+            text: 0
+        answer:
+          choiceId: a
+        explanation: |
+          $S = \frac{a}{1 - r} = \frac{5}{1 - (-0.5)} = \frac{5}{1.5} = \frac{5}{3/2} = \frac{10}{3} \approx 3.333$. Negative ratios create alternating series that can still converge!

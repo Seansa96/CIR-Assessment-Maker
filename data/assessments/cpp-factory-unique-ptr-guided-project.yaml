@@ -1,0 +1,106 @@
+schemaVersion: 1
+id: cpp-factory-unique-ptr-guided-project
+title: C++ Factory Pattern with unique_ptr
+assessmentType: guidedProject
+categoryId: c++
+subcategoryId: c++-standard-library
+subcategoryIds:
+  - c++-standard-library
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: |
+    Implement a simple Factory that creates different types of `Shape` objects and returns them using `std::unique_ptr`.
+    This demonstrates how `unique_ptr` safely transfers ownership from a factory function to the caller.
+
+    Required behavior:
+    - Create a base class `Shape` with a virtual destructor and a pure virtual `getArea()` returning `double`.
+    - Create `Circle` (inherits `Shape`) with a constructor taking `double radius`. `getArea()` = `3.14 * r * r`.
+    - Create `Square` (inherits `Shape`) with a constructor taking `double side`. `getArea()` = `side * side`.
+    - Create a `ShapeFactory` class with a static method:
+      `static std::unique_ptr<Shape> createShape(string type, double size);`
+    - `createShape` returns a `Circle` if `type` is `"circle"`, a `Square` if `type` is `"square"`, and `nullptr` otherwise.
+  files:
+    - path: Shape.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <string>
+        #include <memory>
+
+        using namespace std;
+
+        // 1. Create Shape base class
+        
+        // 2. Create Circle class
+        
+        // 3. Create Square class
+        
+        // 4. Create ShapeFactory class
+    - path: ProjectNotes.md
+      readOnly: true
+      content: |
+        Required names:
+        - `Shape` (virtual dtor, `double getArea()`)
+        - `Circle(double radius)`
+        - `Square(double side)`
+        - `ShapeFactory::createShape(string type, double size)`
+  requiredChecks:
+    - id: create-circle
+      title: createShape handles Circle
+      description: Check if factory creates a valid Circle
+      expectedOutputContains:
+        - CIRCLE_OK
+      testCode: |
+        #include "Shape.h"
+        #include <iostream>
+        using namespace std;
+        
+        int main() {
+            auto s = ShapeFactory::createShape("circle", 2.0);
+            if (s && s->getArea() > 12.0 && s->getArea() < 13.0) {
+                cout << "CIRCLE_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }
+    - id: create-square
+      title: createShape handles Square
+      description: Check if factory creates a valid Square
+      expectedOutputContains:
+        - SQUARE_OK
+      testCode: |
+        #include "Shape.h"
+        #include <iostream>
+        using namespace std;
+        
+        int main() {
+            auto s = ShapeFactory::createShape("square", 4.0);
+            if (s && s->getArea() == 16.0) {
+                cout << "SQUARE_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }
+    - id: create-invalid
+      title: createShape handles invalid input
+      description: Check if factory returns nullptr for unknown shapes
+      expectedOutputContains:
+        - INVALID_OK
+      testCode: |
+        #include "Shape.h"
+        #include <iostream>
+        using namespace std;
+        
+        int main() {
+            auto s = ShapeFactory::createShape("triangle", 4.0);
+            if (!s) {
+                cout << "INVALID_OK";
+            } else {
+                cout << "FAIL";
+            }
+            return 0;
+        }

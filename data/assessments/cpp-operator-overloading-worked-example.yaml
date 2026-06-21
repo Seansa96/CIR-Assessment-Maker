@@ -1,0 +1,80 @@
+schemaVersion: 1
+id: cpp-operator-overloading-worked-example
+title: C++ Operator Overloading Worked Example
+assessmentType: workedExample
+categoryId: c++
+subcategoryId: c++-classes-and-oop
+subcategoryIds:
+  - c++-classes-and-oop
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+  - id: complex-number
+    title: Overloading Math Operators
+    problem: |
+      We want to create a `Complex` number class that stores a `real` and `imag` part. We want to be able to add two complex numbers using `c1 + c2` and check for equality using `c1 == c2`.
+    steps:
+      - id: addition
+        title: Overload the addition operator (+)
+        content: |
+          Addition doesn't modify the existing object; it returns a new one. It should be a `const` member function.
+
+          ```cpp
+          class Complex {
+          public:
+              double real, imag;
+              
+              Complex(double r, double i) : real(r), imag(i) {}
+              
+              Complex operator+(const Complex& other) const {
+                  return Complex(real + other.real, imag + other.imag);
+              }
+          };
+          ```
+      - id: equality
+        title: Overload the equality operator (==)
+        content: |
+          Equality returns a `bool`. Two complex numbers are equal if both their real and imaginary parts match.
+
+          ```cpp
+              bool operator==(const Complex& other) const {
+                  return (real == other.real) && (imag == other.imag);
+              }
+          ```
+      - id: printing
+        title: Overload the stream insertion operator (<<)
+        content: |
+          To print using `cout << c1`, we must define a non-member function that takes `std::ostream&` and `const Complex&`.
+
+          ```cpp
+          #include <iostream>
+
+          std::ostream& operator<<(std::ostream& os, const Complex& c) {
+              os << c.real << " + " << c.imag << "i";
+              return os;
+          }
+          
+          int main() {
+              Complex c1(1, 2), c2(3, 4);
+              Complex c3 = c1 + c2;
+              std::cout << c3 << "\n"; // Prints: 4 + 6i
+              return 0;
+          }
+          ```
+    check:
+      id: member-operator
+      type: multipleChoice
+      prompt: Why is `operator+` usually declared as `const` at the end of its signature (e.g., `Complex operator+(...) const`)?
+      choices:
+        - id: a
+          text: 'Because adding two objects shouldn''t modify the original object calling the method.'
+        - id: b
+          text: 'Because it returns a constant value.'
+        - id: c
+          text: 'Because the other parameter is `const`.'
+        - id: d
+          text: 'Because it is required for all operators.'
+      answer:
+        choiceId: a
+      explanation: |
+        The `const` guarantees that `c1 + c2` does not change `c1`. It creates and returns a brand new `Complex` object instead.

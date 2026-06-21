@@ -1,0 +1,134 @@
+schemaVersion: 1
+id: cpp-abstract-classes-concept-lesson
+title: C++ Abstract Classes Concept Lesson
+assessmentType: conceptLesson
+categoryId: c++
+subcategoryId: c++-classes-and-oop
+subcategoryIds:
+  - c++-classes-and-oop
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - oop
+    - abstract-classes
+    - polymorphism
+lesson:
+  introduction: |
+    In object-oriented programming, sometimes a base class represents a general concept that shouldn't be instantiated directly. For example, you might have a `Shape` class, but you only want to create specific shapes like `Circle` or `Square`. C++ uses abstract classes and pure virtual functions to achieve this.
+  sections:
+    - id: pure-virtual
+      title: Pure Virtual Functions
+      required: true
+      content: |
+        A pure virtual function is declared by assigning `= 0` to its declaration. It has no implementation in the base class.
+
+        ```cpp
+        class Shape {
+        public:
+            // Pure virtual function
+            virtual double getArea() const = 0;
+            
+            // Virtual destructor (crucial for polymorphic base classes!)
+            virtual ~Shape() = default;
+        };
+        ```
+
+        Any class containing at least one pure virtual function is considered an **abstract class**. You cannot create objects of an abstract class.
+      check:
+        id: pure-virtual-check
+        type: multipleChoice
+        prompt: Why won't `Shape s;` compile if `Shape` contains `virtual void draw() = 0;`?
+        choices:
+          - id: a
+            text: 'Because `Shape` is an abstract class and cannot be instantiated.'
+          - id: b
+            text: 'Because the constructor is missing.'
+          - id: c
+            text: 'Because `draw` is returning `void`.'
+          - id: d
+            text: 'Because `s` must be a pointer.'
+        answer:
+          choiceId: a
+        explanation: |
+          Abstract classes define interfaces but lack complete implementation, so the compiler forbids instantiating them directly.
+
+    - id: concrete-classes
+      title: Concrete Derived Classes
+      required: true
+      content: |
+        To create a usable (concrete) object, a derived class must `override` and implement all pure virtual functions inherited from the abstract base class.
+
+        ```cpp
+        class Circle : public Shape {
+        private:
+            double radius;
+        public:
+            Circle(double r) : radius(r) {}
+            
+            // Overriding the pure virtual function
+            double getArea() const override {
+                return 3.14159 * radius * radius;
+            }
+        };
+
+        // Now we can create a Circle
+        Circle c(5.0); 
+        ```
+
+        If a derived class fails to implement even one pure virtual function, it also becomes abstract.
+      check:
+        id: concrete-classes-check
+        type: multipleChoice
+        prompt: If `Square` inherits from `Shape` but does not implement `getArea()`, what happens?
+        choices:
+          - id: a
+            text: '`Square` is also considered an abstract class.'
+          - id: b
+            text: 'The program crashes at runtime.'
+          - id: c
+            text: '`Square` inherits a default implementation of `getArea()` that returns 0.'
+          - id: d
+            text: 'The code compiles but warns you about missing methods.'
+        answer:
+          choiceId: a
+        explanation: |
+          Any class with unimplemented pure virtual functions remains abstract.
+
+    - id: polymorphism
+      title: Polymorphism via Pointers
+      required: true
+      content: |
+        Even though you can't create `Shape` objects, you can create `Shape*` (pointers) or `Shape&` (references) that point to derived objects. This allows polymorphic behavior.
+
+        ```cpp
+        void printArea(const Shape& s) {
+            // Calls the correct getArea() based on the actual object type
+            cout << "Area: " << s.getArea() << "\n";
+        }
+
+        int main() {
+            Circle c(2.0);
+            printArea(c); // Works perfectly!
+        }
+        ```
+        This is why a virtual destructor is essential: if you delete a derived object through a base pointer, the correct destructors must be called.
+      check:
+        id: polymorphism-check
+        type: multipleChoice
+        prompt: Why is a `virtual` destructor required in a base class intended for polymorphism?
+        choices:
+          - id: a
+            text: 'To ensure the derived class''s destructor is called when deleting via a base class pointer.'
+          - id: b
+            text: 'To make the base class abstract.'
+          - id: c
+            text: 'To prevent memory leaks in the base class itself.'
+          - id: d
+            text: 'Because all methods in an abstract class must be virtual.'
+        answer:
+          choiceId: a
+        explanation: |
+          Without a virtual destructor, deleting a derived object through a base pointer only calls the base destructor, leaking any resources managed by the derived class.

@@ -1,0 +1,93 @@
+schemaVersion: 1
+id: calc2-moments-mass-concept-lesson
+title: Moments and Centers of Mass Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryId: moments-mass
+subcategoryIds:
+  - moments-mass
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - centroid
+    - moments
+    - physics
+    - integration
+lesson:
+  introduction: |
+    The **Center of Mass** is the balance point of a system. If you were to support a flat plate at its center of mass, it would balance perfectly horizontally.
+    Calculus allows us to find the center of mass for plates of irregular shapes by integrating the "moments".
+  sections:
+    - id: 1d-system
+      title: 1D System (Rod)
+      required: true
+      content: |
+        For a thin rod of length $L$ lying on the x-axis from $x=a$ to $x=b$, its density might vary.
+        Let $\rho(x)$ be the linear density (mass per unit length) at position $x$.
+        
+        The total mass $m$ is the integral of the density:
+        $$ m = \int_a^b \rho(x)\,dx $$
+        
+        The **moment** $M$ about the origin is the tendency to rotate, computed as mass $\times$ distance:
+        $$ M = \int_a^b x \cdot \rho(x)\,dx $$
+        
+        The center of mass $\bar{x}$ is the Moment divided by the Mass:
+        $$ \bar{x} = \frac{M}{m} = \frac{\int_a^b x \rho(x)\,dx}{\int_a^b \rho(x)\,dx} $$
+      check:
+        id: 1d-system-check
+        type: multipleChoice
+        prompt: If a rod has uniform (constant) density, where will its center of mass be?
+        choices:
+          - id: a
+            text: Exactly in the geometric middle of the rod.
+          - id: b
+            text: At the end of the rod.
+          - id: c
+            text: Closer to the origin.
+          - id: d
+            text: It depends on the length.
+        answer:
+          choiceId: a
+        explanation: |
+          If $\rho(x) = k$, the integral simplifies to the standard midpoint formula. The center of mass of a uniform object is always its geometric center.
+
+    - id: 2d-system
+      title: 2D System (Centroids of Planar Regions)
+      required: true
+      content: |
+        For a flat 2D plate with uniform density, the center of mass $(\bar{x}, \bar{y})$ is called the **centroid**.
+        Since density is uniform, it cancels out of the equations, so we just use Area instead of Mass!
+        
+        Let the region be bounded above by $y = f(x)$ and below by $y = g(x)$ on $[a, b]$.
+        
+        **Area:** $A = \int_a^b (f(x) - g(x))\,dx$
+        
+        **Moment about y-axis ($M_y$):** measures horizontal balance. The distance is $x$.
+        $$ M_y = \int_a^b x(f(x) - g(x))\,dx $$
+        
+        **Moment about x-axis ($M_x$):** measures vertical balance. The distance to the center of a vertical strip is $\frac{f(x)+g(x)}{2}$, and its height is $f(x)-g(x)$.
+        Multiplying these gives $\frac{1}{2}(f(x)^2 - g(x)^2)$.
+        $$ M_x = \int_a^b \frac{1}{2} ( [f(x)]^2 - [g(x)]^2 )\,dx $$
+        
+        **Centroid:**
+        $$ \bar{x} = \frac{M_y}{A}, \quad \bar{y} = \frac{M_x}{A} $$
+      check:
+        id: 2d-system-check
+        type: multipleChoice
+        prompt: Why is there a $1/2$ and a difference of squares in the $M_x$ formula, but not in $M_y$?
+        choices:
+          - id: a
+            text: Because the vertical distance to the center of each vertical slice is $\frac{f(x)+g(x)}{2}$, and multiplying this by the slice's height $f(x)-g(x)$ creates a difference of squares.
+          - id: b
+            text: Because gravity only acts downwards.
+          - id: c
+            text: Because the moment of inertia formula requires squared terms.
+          - id: d
+            text: It's an arbitrary convention to avoid fractions in the answer.
+        answer:
+          choiceId: a
+        explanation: |
+          Exactly. $M_x = (\text{center } y) \times (\text{area of slice})$. The center $y$ is the midpoint between $f(x)$ and $g(x)$.

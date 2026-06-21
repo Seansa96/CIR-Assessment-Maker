@@ -1,0 +1,111 @@
+schemaVersion: 1
+id: calc2-applied-integration-concept-lesson
+title: Applied Integration (Blood Flow & PDFs) Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryId: applied-integration
+subcategoryIds:
+  - applied-integration
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - biology
+    - probability
+    - integration
+lesson:
+  introduction: |
+    Calculus is not just for physics and engineering! Two very common applications of integration are modeling blood flow in human arteries and dealing with probability density functions in statistics.
+  sections:
+    - id: blood-flow
+      title: Blood Flow (Poiseuille's Law)
+      required: true
+      content: |
+        French physician Poiseuille discovered that blood flows faster in the center of a blood vessel and slower near the walls due to friction.
+        The velocity $v(r)$ of blood at a distance $r$ from the center of a vessel of radius $R$ is given by:
+        
+        $$ v(r) = \frac{P}{4\eta l} (R^2 - r^2) $$
+        
+        where $P, \eta$, and $l$ are constants (pressure, viscosity, and length).
+        
+        The **Total Blood Flow** (volume per unit time) is the integral of the velocity across the cross-sectional area of the artery:
+        
+        $$ F = \int_0^R 2\pi r \cdot v(r)\,dr $$
+        
+        This is exactly the shell method formula! We are integrating concentric rings of blood flowing at different speeds.
+      check:
+        id: blood-flow-check
+        type: multipleChoice
+        prompt: Why is the blood velocity $v(r)$ equal to zero when $r = R$?
+        choices:
+          - id: a
+            text: Friction against the walls of the blood vessel brings the blood to a halt.
+          - id: b
+            text: Pressure is zero at the walls.
+          - id: c
+            text: The radius $R$ is zero.
+          - id: d
+            text: The heart stops beating.
+        answer:
+          choiceId: a
+        explanation: |
+          At the boundary $r=R$, the blood is in contact with the arterial walls, and friction (viscosity) causes the boundary layer of fluid to be stationary.
+
+    - id: probability-density
+      title: Probability Density Functions (PDFs)
+      required: true
+      content: |
+        In statistics, a continuous random variable (like the exact lifetime of a lightbulb) is described by a **Probability Density Function (PDF)**, $f(x)$.
+        
+        **Properties of a PDF:**
+        1. $f(x) \ge 0$ for all $x$. (You can't have negative probability).
+        2. The total area under the curve is exactly 1 (meaning a 100% chance *something* happens):
+           $$ \int_{-\infty}^\infty f(x)\,dx = 1 $$
+        
+        To find the probability that the variable falls between $a$ and $b$, you integrate the PDF over that interval:
+        $$ P(a \le X \le b) = \int_a^b f(x)\,dx $$
+      check:
+        id: probability-density-check
+        type: multipleChoice
+        prompt: If $f(x) = cx^2$ on $[0, 3]$ and $0$ everywhere else, what must the value of $c$ be for $f(x)$ to be a valid PDF?
+        choices:
+          - id: a
+            text: $1/9$
+          - id: b
+            text: $1$
+          - id: c
+            text: $1/3$
+          - id: d
+            text: $9$
+        answer:
+          choiceId: a
+        explanation: |
+          The integral from 0 to 3 must equal 1. $\int_0^3 cx^2\,dx = [cx^3/3]_0^3 = 9c$. Set $9c = 1 \implies c = 1/9$.
+
+    - id: expected-value
+      title: Mean / Expected Value
+      required: true
+      content: |
+        The **Mean** (or **Expected Value**), denoted $\mu$, of a continuous random variable is its "average" outcome over the long run.
+        It is computed similarly to the center of mass in physics!
+        
+        $$ \mu = \int_{-\infty}^\infty x \cdot f(x)\,dx $$
+      check:
+        id: expected-value-check
+        type: multipleChoice
+        prompt: What physical concept is the Expected Value of a PDF analogous to?
+        choices:
+          - id: a
+            text: The 1D Center of Mass (Centroid) of the probability distribution.
+          - id: b
+            text: The total mass of the system.
+          - id: c
+            text: The surface area of revolution.
+          - id: d
+            text: The work done by a variable force.
+        answer:
+          choiceId: a
+        explanation: |
+          Yes! The formula $\int x \cdot f(x)\,dx$ is identical to the formula for the center of mass of a 1D rod, since $\int f(x) = 1$ (mass is 1).
