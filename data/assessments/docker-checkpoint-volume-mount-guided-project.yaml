@@ -1,0 +1,47 @@
+schemaVersion: 1
+id: docker-checkpoint-volume-mount-guided-project
+title: Checkpoint Project - Volume Mounting
+assessmentType: workedExample
+categoryId: containerization
+subcategoryId: docker-volumes
+subcategoryIds:
+  - docker-volumes
+learningGoal: apply
+activityType: guidedWorkedExample
+tags:
+  - docker
+  - volumes
+  - networking
+workedExamples:
+  - id: we-volume-mount
+    title: Volume Mounting Checkpoint
+    problem: |
+      In this checkpoint, you will deploy a basic Nginx web server, but instead of using the default welcome page, you will bind mount a local directory from your host machine into the container.
+      
+      ### Required Concepts:
+      * **Port Mapping (`-p`):** Exposing a container's internal port to your host machine.
+      * **Detached Mode (`-d`):** Running the container in the background.
+      * **Bind Mounts (`-v`):** Linking a host directory to a container directory so changes on the host instantly appear in the container.
+      
+      *If you get stuck, review the **Docker Volumes and Data Persistence** and **Docker Networking Foundation** concept lessons.*
+
+    steps:
+    - id: step-run-mount
+      title: Serving Local Files
+      instruction: Construct the docker run command to mount a local volume and expose the server.
+      type: freeResponse
+      prompt: |
+        You have a directory on your host machine at `/data/project-sessions/docker/website-checkpoint` that contains an `index.html` file.
+        
+        Write the `docker run` command to:
+        1. Run an `nginx` container.
+        2. Run it in detached mode (`-d`).
+        3. Name the container `my-checkpoint-web`.
+        4. Map your host's port `8080` to the container's port `80`.
+        5. Bind mount your host directory `/data/project-sessions/docker/website-checkpoint` to the Nginx serving directory `/usr/share/nginx/html`.
+      answer:
+        gradingMode: selfCheck
+        expected: |
+          docker run -d --name my-checkpoint-web -p 8080:80 -v /data/project-sessions/docker/website-checkpoint:/usr/share/nginx/html nginx
+      explanation: |
+        By using a bind mount, Nginx serves the HTML files directly from your host machine. If you edit `index.html` in your local text editor, the changes will be instantly visible when you refresh `localhost:8080` in your browser.

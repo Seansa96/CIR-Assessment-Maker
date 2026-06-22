@@ -3,21 +3,24 @@ using System.IO;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
-class Program {
-    static void Main() {
+class Program
+{
+    static void Main(string[] args)
+    {
         var deserializer = new DeserializerBuilder()
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .IgnoreUnmatchedProperties()
             .Build();
 
-        foreach (var file in Directory.GetFiles("data/assessments", "*.yaml")) {
-            try {
-                var content = File.ReadAllText(file);
-                // We don't have the exact DTO types here, but let's just see if we can load it into dynamic or object? 
-                // Wait, without the DTO types, YamlDotNet won't throw the same exception.
-            } catch (Exception e) {
-                Console.WriteLine(file + ": " + e.Message);
-            }
+        string path = @"C:\Users\SeanS\Downloads\cir_app\data\assessments\csharp-combat-turn-guided-project.yaml";
+        try
+        {
+            string content = File.ReadAllText(path);
+            var result = deserializer.Deserialize<dynamic>(content);
+            Console.WriteLine("Parsed to dynamic successfully!");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("DYNAMIC PARSE ERROR: " + ex);
         }
     }
 }

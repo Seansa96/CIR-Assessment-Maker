@@ -1,0 +1,77 @@
+schemaVersion: 1
+id: docker-images-pulling-quiz
+title: Docker Images and Pulling
+assessmentType: quiz
+categoryId: containerization
+subcategoryId: docker-cli
+subcategoryIds:
+  - docker-cli
+modeDefault: practice
+randomizeQuestions: true
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      Which command is used to manually download a Docker image from a remote registry (such as Docker Hub) to your local machine?
+    choices:
+      - id: a
+        text: '`docker get`'
+      - id: b
+        text: '`docker fetch`'
+      - id: c
+        text: '`docker pull`'
+      - id: d
+        text: '`docker download`'
+    answer:
+      choiceId: c
+    explanation: |
+      The `docker pull` command retrieves an image from a registry and stores it in your local cache.
+      
+      Related topic: Pulling images.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      When you run `docker run ubuntu`, what does Docker do if the `ubuntu` image is not found on your local machine?
+    choices:
+      - id: a
+        text: It immediately returns an error and fails to run.
+      - id: b
+        text: It builds a new ubuntu image from scratch.
+      - id: c
+        text: It searches for an image named 'ubuntu' on your host's hard drive.
+      - id: d
+        text: It automatically pulls the image from the configured remote registry (e.g., Docker Hub) before running it.
+    answer:
+      choiceId: d
+    explanation: |
+      `docker run` is smart enough to implicitly execute a `docker pull` if the requested image is not already present locally.
+
+  - id: q003
+    type: multipleChoice
+    prompt: |
+      If you run `docker pull nginx` without specifying a tag (like `:1.21`), which version of the image is downloaded?
+    choices:
+      - id: a
+        text: The oldest available version.
+      - id: b
+        text: The `latest` tag version.
+      - id: c
+        text: A random version.
+      - id: d
+        text: It throws an error asking for a tag.
+    answer:
+      choiceId: b
+    explanation: |
+      By default, Docker implies the `:latest` tag if no tag is explicitly provided.
+
+  - id: q004
+    type: freeResponse
+    prompt: |
+      Write the exact command to pull the `alpine` image specifically tagged with version `3.14`.
+    answer:
+      expected: |
+        docker pull alpine:3.14
+      gradingMode: selfCheck
+    explanation: |
+      Images are formatted as `repository:tag`. Providing `:3.14` tells Docker to pull that specific version instead of `:latest`.

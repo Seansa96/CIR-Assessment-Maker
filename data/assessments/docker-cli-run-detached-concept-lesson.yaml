@@ -1,0 +1,94 @@
+schemaVersion: 1
+id: docker-cli-run-detached-concept-lesson
+title: 'Running Containers: Attached and Detached'
+assessmentType: conceptLesson
+categoryId: containerization
+subcategoryId: docker-cli
+subcategoryIds:
+  - docker-cli
+modeDefault: study
+randomizeQuestions: false
+sections:
+  - id: docker-run-basics
+    title: The docker run Command
+    content: |
+      The core command for interacting with Docker is `docker run`. It takes an image, creates a container from it, and starts it.
+      
+      For example:
+      `docker run ubuntu echo "Hello, World!"`
+      
+      This tells Docker to:
+      1. Create a container from the `ubuntu` image.
+      2. Execute the command `echo "Hello, World!"` inside it.
+      3. Print the output to your terminal.
+      4. Exit the container once the command finishes.
+
+  - id: detached-mode
+    title: Detached Mode (-d)
+    content: |
+      Often, you want a container to run continuously in the background (like a web server or database) rather than locking up your terminal.
+      
+      You can run a container in **detached mode** by adding the `-d` flag:
+      
+      `docker run -d nginx`
+      
+      Docker will print the new container's long ID to your terminal and immediately give you your prompt back. The container continues to run in the background.
+
+  - id: common-flags
+    title: Naming and Cleanup
+    content: |
+      By default, Docker assigns a random, quirky name to your containers (like `jovial_turing`). To make them easier to manage, use the `--name` flag:
+      
+      `docker run -d --name my-web-server nginx`
+      
+      If you are running a temporary container just to test something, you can use the `--rm` flag. This tells Docker to automatically delete the container as soon as it stops, saving you the trouble of running `docker rm` later:
+      
+      `docker run --rm ubuntu echo "Temporary container!"`
+
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      What flag is used to run a container in the background?
+    choices:
+      - id: a
+        text: '`-b`'
+      - id: b
+        text: '`--background`'
+      - id: c
+        text: '`-d`'
+      - id: d
+        text: '`-it`'
+    answer:
+      choiceId: c
+    explanation: |
+      `-d` stands for "detached". It detaches the container's output from your current terminal session.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      What does the `--rm` flag do in a `docker run` command?
+    choices:
+      - id: a
+        text: It removes the image from your local cache after the container stops.
+      - id: b
+        text: It automatically removes the container when it exits.
+      - id: c
+        text: It restarts the container if it crashes.
+      - id: d
+        text: It prevents the container from stopping.
+    answer:
+      choiceId: b
+    explanation: |
+      `--rm` is a cleanup flag that automatically deletes the container once its main process stops, preventing clutter from stopped containers.
+
+  - id: q003
+    type: freeResponse
+    prompt: |
+      Write the exact command to run a container from the `redis` image in detached mode, and name it `my-cache`.
+    answer:
+      expected: |
+        docker run -d --name my-cache redis
+      gradingMode: selfCheck
+    explanation: |
+      The `-d` flag runs it detached, and `--name my-cache` assigns the specified name.

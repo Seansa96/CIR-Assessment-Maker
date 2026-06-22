@@ -1,0 +1,83 @@
+schemaVersion: 1
+id: docker-volumes-mounting-concept-lesson
+title: Docker Volumes and Data Persistence
+assessmentType: conceptLesson
+categoryId: containerization
+subcategoryId: docker-volumes
+subcategoryIds:
+  - docker-volumes
+modeDefault: study
+randomizeQuestions: false
+sections:
+  - id: ephemeral-storage
+    title: The Ephemeral Filesystem
+    content: |
+      Containers are designed to be ephemeral (temporary). By default, any file created inside a container is written to a writable layer that is tightly coupled to that specific container.
+      
+      When the container is deleted (e.g., using `docker rm`), that writable layer is destroyed, and **all data inside it is lost forever.** If your container is running a database, losing the container means losing all your database records.
+
+  - id: volumes-and-bind-mounts
+    title: Persisting Data
+    content: |
+      To keep data safe from the container lifecycle, you must mount storage from the host machine into the container. There are two primary ways to do this:
+      
+      1. **Bind Mounts:** You map a specific, absolute path on your host machine (e.g., `C:\my-project\code`) to a path inside the container (e.g., `/app`). This is excellent for local development because changes you make on your laptop immediately appear inside the container.
+      2. **Named Volumes:** You tell Docker to create and manage a storage area somewhere on the host's hard drive, and you just refer to it by name (e.g., `my-db-data`). This is best for databases and production persistence.
+
+  - id: the-v-flag
+    title: Using the -v Flag
+    content: |
+      You mount storage using the `-v` (or `--volume`) flag during `docker run`. The syntax is `-v <HOST_PATH>:<CONTAINER_PATH>`.
+      
+      **Example (Bind Mount):**
+      `docker run -d -p 80:80 -v /home/user/website:/usr/share/nginx/html nginx`
+      
+      This tells Docker to take the `/home/user/website` folder on the host and overlay it onto the `/usr/share/nginx/html` folder inside the container. The Nginx container will now serve *your* local files instead of its default welcome page.
+
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: |
+      What happens to data written to the default container filesystem when the container is deleted?
+    choices:
+      - id: a
+        text: It is automatically backed up to a named volume.
+      - id: b
+        text: It is destroyed permanently.
+      - id: c
+        text: It is saved in the host OS's Documents folder.
+      - id: d
+        text: It remains in the image for the next container.
+    answer:
+      choiceId: b
+    explanation: |
+      Containers are ephemeral. Their internal filesystem is completely destroyed when they are removed.
+
+  - id: q002
+    type: multipleChoice
+    prompt: |
+      If you want to live-edit HTML files in your IDE and have those changes instantly reflected in a running Nginx container, which storage method should you use?
+    choices:
+      - id: a
+        text: A Named Volume
+      - id: b
+        text: A Bind Mount
+      - id: c
+        text: The default container filesystem
+      - id: d
+        text: A remote cloud bucket
+    answer:
+      choiceId: b
+    explanation: |
+      Bind mounts explicitly link a host directory to a container directory, meaning edits in your IDE (on the host) are immediately visible to the container process.
+
+  - id: q003
+    type: freeResponse
+    prompt: |
+      Write the command to run a `postgres` container in detached mode, using a bind mount to link the host directory `/data/db` to the container directory `/var/lib/postgresql/data`.
+    answer:
+      expected: |
+        docker run -d -v /data/db:/var/lib/postgresql/data postgres
+      gradingMode: selfCheck
+    explanation: |
+      Use `-d` for detached, and `-v /data/db:/var/lib/postgresql/data` to set up the bind mount correctly.

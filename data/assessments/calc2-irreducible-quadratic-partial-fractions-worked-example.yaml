@@ -1,0 +1,358 @@
+schemaVersion: 1
+id: calc2-irreducible-quadratic-partial-fractions-worked-example
+title: Irreducible Quadratics in Partial Fractions Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - rational-integration
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - rational-integration
+    - partial-fractions
+    - irreducible-quadratics
+    - completing-the-square
+    - logarithms
+    - arctangent
+workedExamples:
+  - id: linear-and-irreducible-quadratic
+    title: Decomposing a linear factor with an irreducible quadratic
+    problem: |
+      Evaluate
+
+      $$
+      \int \frac{3x^2+2x+5}{(x-1)(x^2+4)}\,dx.
+      $$
+
+      The denominator contains a linear factor and an irreducible quadratic factor.
+      The central structural skill is assigning the correct numerator to each factor:
+
+      $$
+      \frac{A}{x-1}+\frac{Bx+C}{x^2+4}.
+      $$
+
+      You will verify that template, solve its coefficients, and then separate the
+      quadratic term into logarithmic and arctangent patterns.
+    steps:
+      - id: iqpf-s001
+        title: Confirm the fraction is proper
+        instruction: |
+          Partial fraction decomposition begins only after the rational function is
+          proper. Compare the numerator and denominator degrees before doing any
+          algebra.
+        type: multipleChoice
+        prompt: |
+          What degree comparison applies to
+
+          $$
+          \frac{3x^2+2x+5}{(x-1)(x^2+4)}?
+          $$
+        choices:
+          - id: a
+            text: 'The numerator has degree $2$ and the denominator has degree $3$, so the fraction is proper.'
+          - id: b
+            text: 'Both have degree $2$, so polynomial division is required.'
+          - id: c
+            text: 'The numerator has degree $3$ and the denominator has degree $2$, so polynomial division is required.'
+          - id: d
+            text: 'Degree does not matter when an irreducible quadratic is present.'
+        answer:
+          choiceId: a
+        hint: |
+          The denominator is the product of a degree-$1$ factor and a degree-$2$
+          factor.
+        explanation: |
+          The numerator degree is $2$, while the expanded denominator has degree
+          $1+2=3$. Therefore the rational function is proper and no polynomial
+          division is needed.
+
+          **Related topic:** proper rational functions. Always perform the degree
+          check before choosing a partial-fraction template.
+
+      - id: iqpf-s002
+        title: Verify that the quadratic is irreducible
+        instruction: |
+          An irreducible quadratic has no real linear factors. Its partial-fraction
+          numerator must therefore be a general linear expression.
+        type: multipleChoice
+        prompt: |
+          Why is $x^2+4$ treated as an irreducible quadratic over the real numbers?
+        choices:
+          - id: a
+            text: 'The equation $x^2+4=0$ has no real roots because $x^2=-4$.'
+          - id: b
+            text: 'Every quadratic with two terms is irreducible.'
+          - id: c
+            text: 'Its only real factorization is $(x-2)(x+2)$.'
+          - id: d
+            text: 'Its discriminant is positive.'
+        answer:
+          choiceId: a
+        hint: |
+          Set the quadratic equal to zero and ask whether a real number can have a
+          negative square.
+        explanation: |
+          Solving $x^2+4=0$ gives $x^2=-4$, so the roots are $\pm 2i$, not real
+          numbers. Equivalently, the discriminant is
+
+          $$
+          b^2-4ac=0^2-4(1)(4)=-16<0.
+          $$
+
+          **Related topic:** irreducible quadratic factors. A negative discriminant
+          means the quadratic remains intact in a real partial-fraction decomposition.
+
+      - id: iqpf-s003
+        title: Choose the complete decomposition template
+        instruction: |
+          Use a constant numerator over each linear factor and a linear numerator
+          over each irreducible quadratic factor.
+        type: multipleChoice
+        prompt: |
+          Which template has enough numerator freedom to represent the rational
+          function?
+        choices:
+          - id: a
+            text: '$\frac{A}{x-1}+\frac{Bx+C}{x^2+4}$'
+          - id: b
+            text: '$\frac{A}{x-1}+\frac{B}{x^2+4}$'
+          - id: c
+            text: '$\frac{Ax+B}{x-1}+\frac{C}{x^2+4}$'
+          - id: d
+            text: '$\frac{A}{(x-1)(x^2+4)}$'
+        answer:
+          choiceId: a
+        hint: |
+          The numerator over a factor must have degree strictly less than that
+          factor.
+        explanation: |
+          The linear factor $x-1$ receives the constant numerator $A$. The degree-$2$
+          irreducible factor $x^2+4$ receives the most general lower-degree
+          numerator, $Bx+C$:
+
+          $$
+          \frac{3x^2+2x+5}{(x-1)(x^2+4)}
+          =
+          \frac{A}{x-1}+\frac{Bx+C}{x^2+4}.
+          $$
+
+          A constant alone over the quadratic can miss an $x$ contribution and is
+          not a complete general template.
+
+          **Related topic:** numerator degree rule for partial fractions.
+
+      - id: iqpf-s004
+        title: Clear the denominators
+        instruction: |
+          Multiply the decomposition by the complete denominator. This turns the
+          rational identity into a polynomial identity that must hold for every
+          value of $x$.
+        type: symbolicResponse
+        prompt: |
+          Enter the right-hand side after clearing denominators:
+
+          $$
+          3x^2+2x+5=\;?
+          $$
+        answer:
+          expectedLatex: 'A(x^2+4)+(Bx+C)(x-1)'
+          equivalenceMode: expression
+          variables:
+            - x
+            - A
+            - B
+            - C
+          tolerance: 0.000001
+        hint: |
+          Each numerator is multiplied by the denominator factor that was not under
+          it.
+        explanation: |
+          Multiplying by $(x-1)(x^2+4)$ gives
+
+          $$
+          3x^2+2x+5=A(x^2+4)+(Bx+C)(x-1).
+          $$
+
+          This identity is the coefficient-solving stage of the decomposition.
+
+          **Related topic:** clearing denominators and polynomial identities.
+
+      - id: iqpf-s005
+        title: Isolate the linear-factor coefficient
+        instruction: |
+          Choose a value of $x$ that makes the entire quadratic-numerator term
+          vanish. This is the cover-up idea applied to the linear factor.
+        type: numericResponse
+        prompt: |
+          Substitute $x=1$ into
+
+          $$
+          3x^2+2x+5=A(x^2+4)+(Bx+C)(x-1).
+          $$
+
+          What is $A$?
+        answer:
+          value: 2
+          tolerance: 0
+        hint: |
+          At $x=1$, the factor $x-1$ makes the second term zero.
+        explanation: |
+          Substituting $x=1$ gives
+
+          $$
+          3+2+5=A(1+4),
+          $$
+
+          so $10=5A$ and $A=2$.
+
+          **Related topic:** strategic substitution for partial-fraction
+          coefficients.
+
+      - id: iqpf-s006
+        title: Determine the quadratic numerator
+        instruction: |
+          Substitute $A=2$, expand, and compare coefficients of equal powers of
+          $x$.
+        type: symbolicResponse
+        prompt: |
+          Find the linear numerator $Bx+C$.
+        answer:
+          expectedLatex: 'x+3'
+          equivalenceMode: expression
+          variables:
+            - x
+          tolerance: 0.000001
+        hint: |
+          Expand
+
+          $$
+          3x^2+2x+5=2(x^2+4)+(Bx+C)(x-1).
+          $$
+        explanation: |
+          Expanding the right side gives
+
+          $$
+          2x^2+8+Bx^2+(C-B)x-C.
+          $$
+
+          Matching coefficients with $3x^2+2x+5$ gives
+
+          $$
+          2+B=3,\qquad C-B=2,\qquad 8-C=5.
+          $$
+
+          Therefore $B=1$ and $C=3$, so
+
+          $$
+          \frac{3x^2+2x+5}{(x-1)(x^2+4)}
+          =
+          \frac{2}{x-1}+\frac{x+3}{x^2+4}.
+          $$
+
+          **Related topic:** coefficient comparison in polynomial identities.
+
+      - id: iqpf-s007
+        title: Separate derivative and arctangent patterns
+        instruction: |
+          The numerator $x+3$ contains two different integration patterns. Split it
+          so the $x$ term matches the derivative of $x^2+4$ and the constant term
+          matches the arctangent form.
+        type: selectAll
+        prompt: |
+          Which statements correctly describe the integration of
+
+          $$
+          \frac{x+3}{x^2+4}?
+          $$
+        choices:
+          - id: a
+            text: '$\frac{x}{x^2+4}$ gives $\frac{1}{2}\ln(x^2+4)$ because $d(x^2+4)=2x\,dx$.'
+          - id: b
+            text: '$\frac{3}{x^2+4}$ gives $\frac{3}{2}\arctan\left(\frac{x}{2}\right)$.'
+          - id: c
+            text: 'The entire numerator is the derivative of $x^2+4$, so no split is needed.'
+          - id: d
+            text: '$x^2+4$ should be factored as $(x-2)(x+2)$ over the reals.'
+        answer:
+          choiceIds:
+            - a
+            - b
+        hint: |
+          Use both
+
+          $$
+          \int\frac{f'(x)}{f(x)}\,dx=\ln|f(x)|+C
+          $$
+
+          and
+
+          $$
+          \int\frac{dx}{x^2+a^2}
+          =\frac{1}{a}\arctan\left(\frac{x}{a}\right)+C.
+          $$
+        explanation: |
+          Split the term:
+
+          $$
+          \frac{x+3}{x^2+4}
+          =
+          \frac{x}{x^2+4}+\frac{3}{x^2+4}.
+          $$
+
+          The first numerator is half the derivative of the denominator, producing
+          $\frac{1}{2}\ln(x^2+4)$. The second uses $a=2$ in the arctangent pattern,
+          producing $\frac{3}{2}\arctan\left(\frac{x}{2}\right)$.
+
+          **Related topics:** logarithmic derivative pattern and arctangent
+          antiderivative.
+
+      - id: iqpf-s008
+        title: Assemble the antiderivative
+        instruction: |
+          Combine the logarithm from the linear factor with the logarithm and
+          arctangent generated by the irreducible quadratic term.
+        type: symbolicResponse
+        prompt: |
+          Evaluate
+
+          $$
+          \int \frac{3x^2+2x+5}{(x-1)(x^2+4)}\,dx.
+          $$
+        answer:
+          expectedLatex: '2\ln\left|x-1\right|+\frac{1}{2}\ln\left(x^2+4\right)+\frac{3}{2}\arctan\left(\frac{x}{2}\right)+C'
+          equivalenceMode: derivative
+          variables:
+            - x
+          tolerance: 0.000001
+        hint: |
+          Integrate the decomposition
+
+          $$
+          \frac{2}{x-1}+\frac{x}{x^2+4}+\frac{3}{x^2+4}.
+          $$
+        explanation: |
+          The complete antiderivative is
+
+          $$
+          2\ln|x-1|
+          +\frac{1}{2}\ln(x^2+4)
+          +\frac{3}{2}\arctan\left(\frac{x}{2}\right)+C.
+          $$
+
+          The exact technique order was:
+
+          1. Verify the fraction is proper.
+          2. Identify one linear factor and one irreducible quadratic.
+          3. Use $\frac{A}{x-1}+\frac{Bx+C}{x^2+4}$.
+          4. Solve $A$, $B$, and $C$.
+          5. Split the quadratic numerator into a denominator-derivative term and a
+             constant term.
+          6. Integrate using logarithm and arctangent patterns.
+
+          Differentiating this result recombines to the original rational function.
+
+          **Related topics:** partial fractions with irreducible quadratics,
+          logarithmic derivatives, and arctangent forms.
