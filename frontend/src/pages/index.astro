@@ -936,10 +936,17 @@ import "../styles/global.css";
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
       const IS_DEV = import.meta.env.DEV;
       let currentCodeEditors: EditorView[] = [];
-      let currentCodeEditor: EditorView | null = null; // Legacy
       let currentProjectEditor: EditorView | null = null;
       let activeCircuitCanvas: CircuitCanvas | null = null;
       let resultCircuitCanvases: CircuitCanvas[] = [];
+      let activeWidgets: { destroy: () => void }[] = [];
+
+      function clearActiveWidgets() {
+        activeWidgets.forEach(w => {
+          try { w?.destroy?.(); } catch (e) { console.error("Error destroying widget", e); }
+        });
+        activeWidgets = [];
+      }
       let learningStateTimer: ReturnType<typeof setTimeout> | null = null;
       let pendingLearningSectionState: {
         sectionId: string;
@@ -1681,9 +1688,13 @@ import "../styles/global.css";
         updateModeControlLock();
         attemptContent.innerHTML = `
           <div class="empty-state">
-            Progress saved. This attempt is paused and can be continued from Attempt Sessions.
+            <p>Progress saved. This attempt is paused and can be continued from Attempt Sessions.</p>
+            <div class="button-row" style="justify-content: center; margin-top: 1rem;">
+              <button type="button" class="chunky" id="close-assessment">Return to Catalog</button>
+            </div>
           </div>
         `;
+        document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
         await loadGrades();
       }
 
@@ -1697,19 +1708,40 @@ import "../styles/global.css";
         state.assessment = null;
         state.latestResults = null;
         state.guidedProjectSession = null;
-        currentCodeEditor?.destroy();
-        currentCodeEditor = null;
-        currentCircuitCanvas?.destroy();
-        currentCircuitCanvas = null;
+        currentProjectEditor = null;
+        activeCircuitCanvas = null;
+        clearActiveWidgets();
 
         updateActiveAttemptChip();
         updateModeControlLock();
-        attemptContent.innerHTML = `<div class="empty-state">Attempt deleted.</div>`;
+        attemptContent.innerHTML = `
+          <div class="empty-state">
+            <p>Attempt deleted.</p>
+            <div class="button-row" style="justify-content: center; margin-top: 1rem;">
+              <button type="button" class="chunky" id="close-assessment">Return to Catalog</button>
+            </div>
+          </div>
+        `;
+        document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
         
         await loadGrades();
         if (typeof loadRecommendations === "function") {
            await loadRecommendations();
         }
+      }
+
+      function clearAssessmentView() {
+        state.attempt = null;
+        state.assessment = null;
+        state.latestResults = null;
+        state.guidedProjectSession = null;
+        currentProjectEditor = null;
+        activeCircuitCanvas = null;
+        clearActiveWidgets();
+
+        updateActiveAttemptChip();
+        updateModeControlLock();
+        attemptContent.innerHTML = `<div class="empty-state">Choose an assessment to begin.</div>`;
       }
 
       async function deleteAttempt(attemptId: string) {
@@ -2960,6 +2992,7 @@ import "../styles/global.css";
 
       async function renderCurrentQuestion() {
         if (!state.attempt || !state.assessment) return;
+        clearActiveWidgets();
         if (state.attempt.status !== "inProgress") {
           attemptContent.innerHTML = `<div class="empty-state">This attempt is ${escapeHtml(statusLabel(state.attempt.status).toLowerCase())}. Continue it from Attempt Sessions to make changes.</div>`;
           return;
@@ -3860,14 +3893,14 @@ import "../styles/global.css";
           activeFilePath: activeFilePath,
           onChange: () => syncGuidedProjectEditor()
         });
+        activeWidgets.push(currentProjectEditor);
       }
 
       async function renderResults(alreadyCommitted: boolean) {
         if (!state.latestResults) return;
-        activeCircuitCanvas?.destroy();
         activeCircuitCanvas = null;
-        resultCircuitCanvases.forEach((canvas) => canvas.destroy());
         resultCircuitCanvases = [];
+        clearActiveWidgets();
         const results = state.latestResults;
         const isWorkedExample = results.assessmentType === "workedExample";
         const isRecallDrill = results.assessmentType === "recallDrill";
@@ -3920,11 +3953,15 @@ import "../styles/global.css";
           </div>
           ${results.hasPendingSelfChecks ? `<p class="feedback incorrect">Resolve pending free-response self-checks before committing this score.</p>` : ""}
           ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
+          <div class="button-row" style="margin-top: 1rem;">
+            ${!alreadyCommitted && !isInstructionalSession && !results.hasPendingSelfChecks && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+            <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
+          </div>
           ${renderDevAssessmentRefreshButton()}
-          ${!alreadyCommitted && !isInstructionalSession && !results.hasPendingSelfChecks && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
         `;
 
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
+        document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
         setupDevAssessmentRefresh();
         setupSelfCheckButtons();
 
@@ -3953,7 +3990,7 @@ import "../styles/global.css";
             "preview",
             () => {}
           );
-          resultCircuitCanvases.push(resultsCanvas);
+          activeWidgets.push(resultsCanvas);
 
           if (submittedAnswer?.circuitAnswer) {
             const ca = submittedAnswer.circuitAnswer;
@@ -3994,9 +4031,13 @@ import "../styles/global.css";
           </div>
           <p class="muted">${escapeHtml(assessmentTypeLabel(results.assessmentType))}. Status: ${escapeHtml(statusLabel(results.status))}.</p>
           <div class="result-list">${sectionHtml.join("")}</div>
+          <div class="button-row" style="margin-top: 1rem;">
+            <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
+          </div>
           ${renderDevAssessmentRefreshButton()}
         `;
         setupDevAssessmentRefresh();
+        document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
       }
 
       async function renderRecallResults(results: AttemptResults) {
@@ -4047,10 +4088,14 @@ import "../styles/global.css";
           <div class="result-list">
             ${itemHtml.join("")}
           </div>
+          <div class="button-row" style="margin-top: 1rem;">
+            <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
+          </div>
           ${renderDevAssessmentRefreshButton()}
         `;
 
         setupDevAssessmentRefresh();
+        document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
       }
 
       async function renderAnswerInput(question: Question, submittedAnswer: SubmittedAnswer | null = null, idPrefix: string = "") {
@@ -4515,6 +4560,7 @@ import "../styles/global.css";
           def.interactionMode,
           () => {}
         );
+        activeWidgets.push(activeCircuitCanvas);
 
         // Restore submitted state
         if (submittedAnswer?.circuitAnswer) {
@@ -4887,6 +4933,7 @@ import "../styles/global.css";
             }
           });
           currentCodeEditors.push(editor);
+          activeWidgets.push(editor);
         });
       }
 
