@@ -3,67 +3,105 @@ id: cpp-vector-deque-worked-example
 title: C++ Vector vs Deque Worked Example
 assessmentType: workedExample
 categoryId: c++
-subcategoryId: c++-standard-library
 subcategoryIds:
-  - c++-standard-library
+- c++-standard-library
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: comparing-performance
-    title: Building a Text Buffer
-    problem: |
-      Imagine we are building a text editor. We need to store lines of text. We often add lines to the end, but occasionally we need to insert a "Header" line at the very beginning of the document. Let's compare using `std::vector` vs `std::deque`.
-    steps:
-      - id: vector-approach
-        title: The Vector Approach
-        content: |
-          Using `std::vector`, adding to the end is fast. But adding to the front requires `insert()`.
+- id: comparing-performance
+  title: Building a Text Buffer
+  problem: 'Imagine we are building a text editor. We need to store lines of text.
+    We often add lines to the end, but occasionally we need to insert a "Header" line
+    at the very beginning of the document. Let''s compare using `std::vector` vs `std::deque`.
 
-          ```cpp
-          #include <vector>
-          #include <string>
-
-          std::vector<std::string> doc;
-          doc.push_back("Line 1");
-          doc.push_back("Line 2");
-          
-          // Insert at the front
-          doc.insert(doc.begin(), "Header");
-          ```
-          While this works, inserting at `doc.begin()` shifts "Line 1" and "Line 2" in memory. If the document has 10,000 lines, all 10,000 strings are shifted.
-      - id: deque-approach
-        title: The Deque Approach
-        content: |
-          Using `std::deque`, we have a dedicated `push_front` method which is highly efficient.
-
-          ```cpp
-          #include <deque>
-          #include <string>
-
-          std::deque<std::string> doc;
-          doc.push_back("Line 1");
-          doc.push_back("Line 2");
-          
-          // Insert at the front (O(1) time)
-          doc.push_front("Header");
-          ```
-          This does not shift any existing elements. `deque` allocates a new chunk of memory for the front if necessary and links it.
-    check:
-      id: deque-vs-vector
-      type: multipleChoice
-      prompt: If we NEVER needed to insert or delete from the front or middle of our document, which container would generally be better?
-      choices:
-        - id: a
-          text: '`std::vector`, because it has less memory overhead and better cache performance for continuous data.'
-        - id: b
-          text: '`std::deque`, because it is always faster.'
-        - id: c
-          text: '`std::list`, because it uses less memory.'
-        - id: d
-          text: 'It doesn''t matter, they are identical in performance.'
-      answer:
-        choiceId: a
-      explanation: |
-        If you only ever add/remove from the back (`push_back`/`pop_back`), `std::vector` is almost always the best choice due to continuous memory caching.
+    '
+  steps:
+  - id: step-comparing-performance-1
+    title: The Vector Approach
+    type: freeResponse
+    answer:
+      gradingMode: selfCheck
+    prompt: Consider the explanation and continue to the next step.
+    instruction: 'Using `std::vector`, adding to the end is fast. But adding to the
+      front requires `insert()`.
 
 
+      ```cpp
+
+      #include <vector>
+
+      #include <string>
+
+
+      std::vector<std::string> doc;
+
+      doc.push_back("Line 1");
+
+      doc.push_back("Line 2");
+
+
+      // Insert at the front
+
+      doc.insert(doc.begin(), "Header");
+
+      ```
+
+      While this works, inserting at `doc.begin()` shifts "Line 1" and "Line 2" in
+      memory. If the document has 10,000 lines, all 10,000 strings are shifted.
+
+      '
+  - id: step-comparing-performance-2
+    title: The Deque Approach
+    type: freeResponse
+    answer:
+      gradingMode: selfCheck
+    prompt: Consider the explanation and continue to the next step.
+    instruction: 'Using `std::deque`, we have a dedicated `push_front` method which
+      is highly efficient.
+
+
+      ```cpp
+
+      #include <deque>
+
+      #include <string>
+
+
+      std::deque<std::string> doc;
+
+      doc.push_back("Line 1");
+
+      doc.push_back("Line 2");
+
+
+      // Insert at the front (O(1) time)
+
+      doc.push_front("Header");
+
+      ```
+
+      This does not shift any existing elements. `deque` allocates a new chunk of
+      memory for the front if necessary and links it.
+
+      '
+  check:
+    id: deque-vs-vector
+    type: multipleChoice
+    prompt: If we NEVER needed to insert or delete from the front or middle of our
+      document, which container would generally be better?
+    choices:
+    - id: a
+      text: '`std::vector`, because it has less memory overhead and better cache performance
+        for continuous data.'
+    - id: b
+      text: '`std::deque`, because it is always faster.'
+    - id: c
+      text: '`std::list`, because it uses less memory.'
+    - id: d
+      text: It doesn't matter, they are identical in performance.
+    answer:
+      choiceId: a
+    explanation: 'If you only ever add/remove from the back (`push_back`/`pop_back`),
+      `std::vector` is almost always the best choice due to continuous memory caching.
+
+      '

@@ -3,282 +3,281 @@ id: cpp-classes-methods-properties-constructors-worked-example
 title: C++ Classes, Methods, Properties, and Constructors Worked Example
 assessmentType: workedExample
 categoryId: c++
-subcategoryId: c++-oop
 subcategoryIds:
-  - c++-oop
+- c++-oop
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Building and using a small C++ class
-    problem: |
-      Learn how a C++ class groups data and behavior together.
+- id: we001
+  title: Building and using a small C++ class
+  problem: 'Learn\rhow a C++ class groups data and behavior together.
 
-      This worked example uses a small `Student` class. You will identify member variables, call methods with dot notation, use a constructor, and then write a complete class plus a required wrapper function for the code runner.
-    steps:
-      - id: s001
-        title: Recognize the purpose of a class
-        instruction: |
-          A class is a blueprint for objects. It usually contains data members and member functions.
-        type: multipleChoice
-        prompt: |
-          Which description best matches a C++ class?
-        choices:
-          - id: a
-            text: 'A blueprint that groups related data and functions into one type.'
-          - id: b
-            text: 'A loop that repeats a block of code.'
-          - id: c
-            text: 'A file that must always contain `main()`.'
-          - id: d
-            text: 'A variable that can only store integers.'
-        answer:
-          choiceId: a
-        hint: 'Think of a class as a custom type.'
-        explanation: |
-          A class defines a custom type. Objects created from that type can hold data and run functions associated with that data.
 
-          Related topic: C++ class as a blueprint. Review the difference between a class definition and an object instance.
+    This worked example uses a small `Student` class. You will identify member variables,
+    call methods with dot notation, use a constructor, and then write a complete class
+    plus a required wrapper function for the code runner.
 
-      - id: s002
-        title: Identify members and methods
-        instruction: |
-          Data stored inside the class are often called fields, data members, or member variables. Functions inside the class are member functions or methods.
-        type: selectAll
-        prompt: |
-          In this class, which items are member functions?
+    '
+  steps:
+  - id: step-we001-1
+    title: Recognize the purpose of a class
+    instruction: 'A class is a blueprint for objects. It usually contains data members
+      and member functions.
 
-          ```cpp
-          class Student {
-          public:
-              string name;
-              int score;
+      '
+    type: multipleChoice
+    prompt: |
+      Which description best matches a C++ class?
+    choices:
+    - id: a
+      text: A blueprint that groups related data and functions into one type.
+    - id: b
+      text: A loop that repeats a block of code.
+    - id: c
+      text: A file that must always contain `main()`.
+    - id: d
+      text: A variable that can only store integers.
+    answer:
+      choiceId: a
+    hint: Think of a class as a custom type.
+    explanation: |
+      A class defines a custom type. Objects created from that type can\rhold data and run functions associated with that data.
 
-              bool passed() {
-                  return score >= 70;
-              }
+      Related topic: C++ class as a blueprint. Review the difference between a class definition and an object instance.
+  - id: step-we001-2
+    title: Identify members and methods
+    instruction: 'Data stored inside the class are often called fields, data members,
+      or member variables. Functions inside the class are member functions or methods.
 
-              string label() {
-                  return name + ": " + to_string(score);
-              }
-          };
-          ```
-        choices:
-          - id: a
-            text: '`passed()`'
-          - id: b
-            text: '`label()`'
-          - id: c
-            text: '`name`'
-          - id: d
-            text: '`score`'
-        answer:
-          choiceIds: [a, b]
-        hint: 'Methods have parentheses because they are functions.'
-        explanation: |
-          `passed()` and `label()` are member functions. `name` and `score` are data members.
+      '
+    type: selectAll
+    prompt: |
+      In this class, which items are member functions?
 
-          Related topic: Class members. The actionable distinction is that data stores state, while methods perform behavior.
+      ```cpp
+      class Student {
+      public:
+          string name;
+          int score;
 
-      - id: s003
-        title: Access public members with dot notation
-        instruction: |
-          Once you have an object, public members are accessed with the dot operator.
-        type: multipleChoice
-        prompt: |
-          If `Student s;` has already been created, which line assigns the public `score` member?
-        choices:
-          - id: a
-            text: '`s.score = 92;`'
-          - id: b
-            text: '`Student.score = 92;`'
-          - id: c
-            text: '`score.s = 92;`'
-          - id: d
-            text: '`s->score = 92;`'
-        answer:
-          choiceId: a
-        hint: 'Use object name, dot, then member name.'
-        explanation: |
-          For an ordinary object, use `s.score`. The arrow operator is for pointers, which this step is not using.
-
-          Related topic: Dot notation for objects.
-
-      - id: s004
-        title: Call a public method
-        instruction: |
-          Calling a method also uses dot notation, but the method name includes parentheses.
-        type: multipleChoice
-        prompt: |
-          If `Student s;` exists and the class has a public method named `passed`, which line calls that method?
-        choices:
-          - id: a
-            text: '`s.passed()`'
-          - id: b
-            text: '`Student.passed()`'
-          - id: c
-            text: '`passed.s()`'
-          - id: d
-            text: '`s.passed`'
-        answer:
-          choiceId: a
-        hint: 'Object, dot, method name, parentheses.'
-        explanation: |
-          `s.passed()` calls the `passed` method on the object named `s`. Without parentheses, you are not making the function call.
-
-          Related topic: Calling member functions.
-
-      - id: s005
-        title: Recognize constructor syntax
-        instruction: |
-          A constructor has the same name as the class and no return type. It initializes a new object.
-        type: multipleChoice
-        prompt: |
-          Which line is the constructor for this class?
-
-          ```cpp
-          class Student {
-          public:
-              string name;
-              int score;
-
-              Student(string n, int s) {
-                  name = n;
-                  score = s;
-              }
-          };
-          ```
-        choices:
-          - id: a
-            text: '`Student(string n, int s)`'
-          - id: b
-            text: '`string name;`'
-          - id: c
-            text: '`int score;`'
-          - id: d
-            text: '`return Student;`'
-        answer:
-          choiceId: a
-        hint: 'Constructor name matches the class name exactly.'
-        explanation: |
-          `Student(string n, int s)` is the constructor. It has the same name as the class and does not declare a return type.
-
-          Related topic: Constructors. Look for same-name-as-class initialization functions.
-
-      - id: s006
-        title: Understand what the code runner expects
-        instruction: |
-          The app's code runner does not ask you to write `main()`. It compiles your submitted code, then calls one required function by name.
-
-          For this step, submit a complete C++ answer that includes:
-
-          - a class named exactly `Student`
-          - public data members named exactly `name` and `score`
-          - a constructor `Student(string n, int s)`
-          - a public method named exactly `passed` that returns `true` when `score >= 70`
-          - a free function named exactly `studentPassed` with this signature: `bool studentPassed(string name, int score)`
-
-          The runner will call `studentPassed("Mira", 92)`, `studentPassed("Lee", 69)`, and `studentPassed("Ana", 70)`. Do not write `main()`, do not use `cout`, and do not submit only the class body.
-        type: code
-        prompt: |
-          Complete the class and wrapper function.
-
-          Your submitted answer must be the full code shown in the starter shape. Keep the names exactly as written because the test harness calls `studentPassed`.
-        language: cpp
-        functionName: studentPassed
-        starterCode: |
-          #include <string>
-          using namespace std;
-
-          class Student {
-          public:
-              string name;
-              int score;
-
-              Student(string n, int s) {
-                  // Initialize name and score.
-              }
-
-              bool passed() {
-                  // Return true when score is 70 or higher.
-                  return false;
-              }
-          };
-
-          bool studentPassed(string name, int score) {
-              // Create a Student object and return whether it passed.
-              return false;
+          bool passed() {
+              return score >= 70;
           }
-        tests:
-          - input: '"Mira", 92'
-            expected: '1'
-          - input: '"Lee", 69'
-            expected: '0'
-          - input: '"Ana", 70'
-            expected: '1'
-        answer: {}
-        hint: 'Inside `studentPassed`, create `Student student(name, score);` and return `student.passed();`.'
-        explanation: |
-          The runner expects a complete submitted C++ snippet that defines `studentPassed`. Since `studentPassed` uses the `Student` class, the class must be included in the same submission.
 
-          A correct solution initializes `name` and `score` in the constructor, checks `score >= 70` in `passed()`, creates a `Student` object in `studentPassed`, and returns `student.passed()`.
-
-          Related topic: Constructors plus method calls. The important runner rule is: submit the complete helper class and the exact wrapper function the assessment names.
-
-      - id: s007
-        title: Use a method to return formatted data
-        instruction: |
-          This coding step again expects a complete class plus a wrapper function. The required function name is `studentLabel`.
-
-          Submit:
-
-          - a class named exactly `Student`
-          - public data members named exactly `name` and `score`
-          - a constructor `Student(string n, int s)`
-          - a method named exactly `label` that returns `name + ": " + to_string(score)`
-          - a free function named exactly `studentLabel` with this signature: `string studentLabel(string name, int score)`
-
-          The runner will call `studentLabel("Mira", 92)` and similar cases. Do not write `main()` or `cout`.
-        type: code
-        prompt: |
-          Complete the `Student` class and the `studentLabel` wrapper function.
-        language: cpp
-        functionName: studentLabel
-        starterCode: |
-          #include <string>
-          using namespace std;
-
-          class Student {
-          public:
-              string name;
-              int score;
-
-              Student(string n, int s) {
-                  // Initialize both data members.
-              }
-
-              string label() {
-                  // Return name, colon-space, then score.
-                  return "";
-              }
-          };
-
-          string studentLabel(string name, int score) {
-              // Create a Student object and return its label.
-              return "";
+          string label() {
+              return name + ": " + to_string(score);
           }
-        tests:
-          - input: '"Mira", 92'
-            expected: 'Mira: 92'
-          - input: '"Lee", 69'
-            expected: 'Lee: 69'
-          - input: '"Ana", 100'
-            expected: 'Ana: 100'
-        answer: {}
-        hint: 'Use `to_string(score)` inside `label()`, then return `student.label()` from `studentLabel`.'
-        explanation: |
-          The method `label()` belongs to the object and can use that object's `name` and `score`. The wrapper function exists so the test harness has one predictable function to call.
+      };
+      ```
+    choices:
+    - id: a
+      text: '`passed()`'
+    - id: b
+      text: '`label()`'
+    - id: c
+      text: '`name`'
+    - id: d
+      text: '`score`'
+    answer:
+      choiceIds:
+      - a
+      - b
+    hint: Methods have parentheses because they are functions.
+    explanation: |
+      `passed()` and `label()` are member functions. `name` and `score` are data members.
 
-          Related topic: Calling methods that use object state.
+      Related topic: Class members. The actionable distinction is that data stores state, while methods perform behavior.
+  - id: step-we001-3
+    title: Access public members with dot notation
+    instruction: 'Once you have an object, public members are accessed with the dot
+      operator.
+
+      '
+    type: multipleChoice
+    prompt: |
+      If `Student s;` has already been created, which line assigns the public `score` member?
+    choices:
+    - id: a
+      text: '`s.score = 92;`'
+    - id: b
+      text: '`Student.score = 92;`'
+    - id: c
+      text: '`score.s = 92;`'
+    - id: d
+      text: '`s->score = 92;`'
+    answer:
+      choiceId: a
+    hint: Use object name, dot, then member name.
+    explanation: |
+      For an ordinary object, use `s.score`. The arrow operator is for pointers, which this step is not using.
+
+      Related topic: Dot notation for objects.
+  - id: step-we001-4
+    title: Call a public method
+    instruction: 'Calling a method also uses dot notation, but the method name includes
+      parentheses.
+
+      '
+    type: multipleChoice
+    prompt: |
+      If `Student s;` exists and the class has a public method named `passed`, which line calls that method?
+    choices:
+    - id: a
+      text: '`s.passed()`'
+    - id: b
+      text: '`Student.passed()`'
+    - id: c
+      text: '`passed.s()`'
+    - id: d
+      text: '`s.passed`'
+    answer:
+      choiceId: a
+    hint: Object, dot, method name, parentheses.
+    explanation: |
+      `s.passed()` calls the `passed` method on the object named `s`. Without parentheses, you are not making the function call.
+
+      Related topic: Calling member functions.
+  - id: step-we001-5
+    title: Recognize constructor syntax
+    instruction: 'A constructor has the same name as the class and no return type.
+      It initializes a new object.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which line is the constructor for this class?
+
+      ```cpp
+      class Student {
+      public:
+          string name;
+          int score;
+
+          Student(string n, int s) {
+              name = n;
+              score = s;
+          }
+      };
+      ```
+    choices:
+    - id: a
+      text: '`Student(string n, int s)`'
+    - id: b
+      text: '`string name;`'
+    - id: c
+      text: '`int score;`'
+    - id: d
+      text: '`return Student;`'
+    answer:
+      choiceId: a
+    hint: Constructor name matches the class name exactly.
+    explanation: |
+      `Student(string n, int s)` is the constructor. It has the same name as the class and does not declare a return type.
+
+      Related topic: Constructors. Look for same-name-as-class initialization functions.
+  - id: step-we001-6
+    title: Understand what the code runner expects
+    instruction: 'The app''s code runner does not ask you to write `main()`. It compiles
+      your submitted code, then calls one required function by name.
 
 
+      For this step, submit a complete C++ answer that includes:
+
+
+      - a class named exactly `Student`
+
+      - public data members named exactly `name` and `score`
+
+      - a constructor `Student(string n, int s)`
+
+      - a public method named exactly `passed` that returns `true` when `score >=
+      70`
+
+      - a free function named exactly `studentPassed` with this signature: `bool studentPassed(string
+      name, int score)`
+
+
+      The runner will call `studentPassed("Mira", 92)`, `studentPassed("Lee", 69)`,
+      and `studentPassed("Ana", 70)`. Do not write `main()`, do not use `cout`, and
+      do not submit only the class body.
+
+      '
+    type: code
+    prompt: |
+      Complete the class and wrapper function.
+
+      Your submitted answer must be the full code shown in the starter shape. Keep the names exactly as written because the test harness calls `studentPassed`.
+    language: cpp
+    functionName: studentPassed
+    starterCode: "#include <string>\nusing namespace std;\n\nclass Student {\npublic:\n\
+      \    string name;\n    int score;\n\n    Student(string n, int s) {\n      \
+      \  // Initialize name and score.\n    }\n\n    bool passed() {\n        // Return\
+      \ true when score is 70 or higher.\n        return false;\n    }\n};\n\nbool\
+      \ studentPassed(string name, int score) {\n    // Create a Student object and\
+      \ return whether it passed.\n    return false;\n}\n"
+    tests:
+    - input: '"Mira", 92'
+      expected: '1'
+    - input: '"Lee", 69'
+      expected: '0'
+    - input: '"Ana", 70'
+      expected: '1'
+    answer: {}
+    hint: Inside `studentPassed`, create `Student student(name, score);` and return
+      `student.passed();`.
+    explanation: |
+      The runner expects a complete submitted C++ snippet that defines `studentPassed`. Since `studentPassed` uses the `Student` class, the class must be included in the same submission.
+
+      A correct solution initializes `name` and `score` in the constructor, checks `score >= 70` in `passed()`, creates a `Student` object in `studentPassed`, and returns `student.passed()`.
+
+      Related topic: Constructors plus method calls. The important runner rule is: submit the complete helper class and the exact wrapper function the assessment names.
+  - id: step-we001-7
+    title: Use a method to return formatted data
+    instruction: 'This coding step again expects a complete class plus a wrapper function.
+      The required function name is `studentLabel`.
+
+
+      Submit:
+
+
+      - a class named exactly `Student`
+
+      - public data members named exactly `name` and `score`
+
+      - a constructor `Student(string n, int s)`
+
+      - a method named exactly `label` that returns `name + ": " + to_string(score)`
+
+      - a free function named exactly `studentLabel` with this signature: `string
+      studentLabel(string name, int score)`
+
+
+      The runner will call `studentLabel("Mira", 92)` and similar cases. Do not write
+      `main()` or `cout`.
+
+      '
+    type: code
+    prompt: |
+      Complete the `Student` class and the `studentLabel` wrapper function.
+    language: cpp
+    functionName: studentLabel
+    starterCode: "#include <string>\nusing namespace std;\n\nclass Student {\npublic:\n\
+      \    string name;\n    int score;\n\n    Student(string n, int s) {\n      \
+      \  // Initialize both data members.\n    }\n\n    string label() {\n       \
+      \ // Return name, colon-space, then score.\n        return \"\";\n    }\n};\n\
+      \nstring studentLabel(string name, int score) {\n    // Create a Student object\
+      \ and return its label.\n    return \"\";\n}\n"
+    tests:
+    - input: '"Mira", 92'
+      expected: 'Mira: 92'
+    - input: '"Lee", 69'
+      expected: 'Lee: 69'
+    - input: '"Ana", 100'
+      expected: 'Ana: 100'
+    answer: {}
+    hint: Use `to_string(score)` inside `label()`, then return `student.label()` from
+      `studentLabel`.
+    explanation: |
+      The method `label()` belongs to the object and can use that object's `name` and `score`. The wrapper function exists so the test harness has one predictable function to call.
+
+      Related topic: Calling methods that use object state.

@@ -3,253 +3,293 @@ id: aops-identity-engineering-interactive-exploration
 title: Identity Engineering Interactive Exploration
 assessmentType: interactiveExploration
 categoryId: art-of-problem-solving
-subcategoryId: aops-identity-engineering
 subcategoryIds:
-  - aops-symbolic-manipulation
-  - aops-identity-engineering
+- aops-identity-engineering
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: interactiveExploration
   tags:
-    - identity-engineering
-    - equivalent-expressions
-    - parameter-exploration
-    - invariant-preservation
+  - identity-engineering
+  - equivalent-expressions
+  - parameter-exploration
+  - invariant-preservation
 exploration:
-  introduction: |
-    Change the controls to manufacture alternative forms while observing what remains
+  introduction: 'Change the controls to manufacture alternative forms while observing
+    what remains
+
     invariant. Each section focuses on one legal operation: splitting a coefficient,
+
     adding zero, multiplying by one, or completing a square.
+
+    '
   sections:
-    - id: split-five-x
-      title: Split the coefficient of 5x
-      required: true
-      instruction: |
-        Choose a coefficient $a$. The expression is split as
-
-        $$
-        5x=ax+(5-a)x.
-        $$
-
-        Move the control through positive, negative, integer, and fractional values.
-        Notice that the two coefficients always sum to $5$, even when the representation
-        looks less familiar.
-      controls:
-        - id: a
-          type: slider
-          label: First coefficient a
-          min: -10
-          max: 15
-          step: 0.5
-          defaultValue: '2'
-      views:
-        - id: first-coefficient
-          type: readout
-          label: First coefficient
-          expression: a
-        - id: second-coefficient
-          type: readout
-          label: Required second coefficient
-          expression: 5-a
-        - id: coefficient-total
-          type: readout
-          label: Combined coefficient
-          expression: a+(5-a)
-        - id: unusual-split
-          type: conditionalText
-          label: Structural observation
-          condition: a<0
-          content: A negative first coefficient is still valid; the second term compensates so the total remains 5x.
-      check:
-        id: split-five-x-check
-        type: multipleChoice
-        prompt: If the first term is $-3x$, what must the second term be so the sum remains $5x$?
-        choices:
-          - id: a
-            text: '$8x$'
-          - id: b
-            text: '$2x$'
-          - id: c
-            text: '$-8x$'
-          - id: d
-            text: '$5x$'
-        answer:
-          choiceId: a
-        explanation: |
-          Solve $-3+b=5$, giving $b=8$.
-
-          Related topic: coefficient decomposition.
-
-    - id: add-a-zero-pair
-      title: Add a controlled zero pair
-      required: true
-      instruction: |
-        Select any value $z$. The engineered expression is
-
-        $$
-        5x+z-z.
-        $$
-
-        The expression may become visually complicated, but its constant contribution
-        remains zero.
-      controls:
-        - id: z
-          type: slider
-          label: Added constant z
-          min: -20
-          max: 20
-          step: 1
-          defaultValue: '4'
-      views:
-        - id: positive-added-term
-          type: readout
-          label: Added term
-          expression: z
-        - id: compensating-term
-          type: readout
-          label: Compensating term
-          expression: -z
-        - id: net-change
-          type: readout
-          label: Net change
-          expression: z-z
-      check:
-        id: add-a-zero-pair-check
-        type: multipleChoice
-        prompt: Which expression is equal to $5x$ after inserting constants?
-        choices:
-          - id: a
-            text: '$5x+7-7$'
-          - id: b
-            text: '$5x+7+7$'
-          - id: c
-            text: '$5x-7-7$'
-          - id: d
-            text: '$5x+7$'
-        answer:
-          choiceId: a
-        explanation: |
-          The inserted terms must sum to zero.
-
-          Related topic: additive identity.
-
-    - id: multiply-by-shaped-one
-      title: Scale and unscale with a form of one
-      required: true
-      instruction: |
-        Choose a nonzero value $k$. Multiplying by
-
-        $$
-        \frac{k}{k}=1
-        $$
-
-        changes the visible numerator and denominator without changing the value.
-        This is the numeric skeleton of common-denominator and conjugate techniques.
-      controls:
-        - id: k
-          type: slider
-          label: Nonzero scale factor k
-          min: 1
-          max: 12
-          step: 1
-          defaultValue: '3'
-      views:
-        - id: numerator-coefficient
-          type: readout
-          label: Numerator coefficient in 5k x
-          expression: 5*k
-        - id: denominator-factor
-          type: readout
-          label: Denominator
-          expression: k
-        - id: recovered-coefficient
-          type: readout
-          label: Recovered coefficient
-          expression: (5*k)/k
-      check:
-        id: multiply-by-shaped-one-check
-        type: multipleChoice
-        prompt: Which expression is identically equal to $5x$ when $k\ne0$?
-        choices:
-          - id: a
-            text: '$\frac{5kx}{k}$'
-          - id: b
-            text: '$\frac{5x}{k}$'
-          - id: c
-            text: '$5kx$'
-          - id: d
-            text: '$\frac{5k}{x}$'
-        answer:
-          choiceId: a
-        explanation: |
-          The factor $k/k$ equals one when $k\ne0$.
-
-          Related topic: multiplicative identity and domain conditions.
-
-    - id: complete-square-parameter
-      title: Manufacture a perfect square
-      required: true
-      instruction: |
-        Vary the linear coefficient $b$ in
-
-        $$
-        x^2+bx.
-        $$
-
-        The completing term is
-
-        $$
-        \left(\frac{b}{2}\right)^2.
-        $$
-
-        Add and subtract that same amount to create
-
-        $$
-        x^2+bx
-        =
-        \left(x+\frac{b}{2}\right)^2-\left(\frac{b}{2}\right)^2.
-        $$
-      controls:
-        - id: b
-          type: slider
-          label: Linear coefficient b
-          min: -12
-          max: 12
-          step: 1
-          defaultValue: '6'
-      views:
-        - id: half-coefficient
-          type: readout
-          label: Half of b
-          expression: b/2
-        - id: completing-term
-          type: readout
-          label: Completing term
-          expression: (b/2)^2
-        - id: zero-balance
-          type: readout
-          label: Net value of inserted pair
-          expression: (b/2)^2-(b/2)^2
-      check:
-        id: complete-square-parameter-check
-        type: multipleChoice
-        prompt: What zero pair completes the square for $x^2+10x$?
-        choices:
-          - id: a
-            text: '$+25-25$'
-          - id: b
-            text: '$+10-10$'
-          - id: c
-            text: '$+100-100$'
-          - id: d
-            text: '$+5-5$'
-        answer:
-          choiceId: a
-        explanation: |
-          Half of $10$ is $5$, and $5^2=25$.
-
-          Related topic: parameterized completing the square.
+  - id: split-five-x
+    title: Split the coefficient of 5x
+    required: true
+    instruction: 'Choose a coefficient $a$. The expression is split as
 
 
+      $$
+
+      5x=ax+(5-a)x.
+
+      $$
+
+
+      Move the control through positive, negative, integer, and fractional values.
+
+      Notice that the two coefficients always sum to $5$, even when the representation
+
+      looks less familiar.
+
+      '
+    controls:
+    - id: a
+      type: slider
+      label: First coefficient a
+      min: -10
+      max: 15
+      step: 0.5
+      defaultValue: '2'
+    views:
+    - id: first-coefficient
+      type: readout
+      label: First coefficient
+      expression: a
+    - id: second-coefficient
+      type: readout
+      label: Required second coefficient
+      expression: 5-a
+    - id: coefficient-total
+      type: readout
+      label: Combined coefficient
+      expression: a+(5-a)
+    - id: unusual-split
+      type: conditionalText
+      label: Structural observation
+      condition: a<0
+      content: A negative first coefficient is still valid; the second term compensates
+        so the total remains 5x.
+    check:
+      id: split-five-x-check
+      type: multipleChoice
+      prompt: If the first term is $-3x$, what must the second term be so the sum
+        remains $5x$?
+      choices:
+      - id: a
+        text: $8x$
+      - id: b
+        text: $2x$
+      - id: c
+        text: $-8x$
+      - id: d
+        text: $5x$
+      answer:
+        choiceId: a
+      explanation: 'Solve $-3+b=5$, giving $b=8$.
+
+
+        Related topic: coefficient decomposition.
+
+        '
+  - id: add-a-zero-pair
+    title: Add a controlled zero pair
+    required: true
+    instruction: 'Select any value $z$. The engineered expression is
+
+
+      $$
+
+      5x+z-z.
+
+      $$
+
+
+      The expression may become visually complicated, but its constant contribution
+
+      remains zero.
+
+      '
+    controls:
+    - id: z
+      type: slider
+      label: Added constant z
+      min: -20
+      max: 20
+      step: 1
+      defaultValue: '4'
+    views:
+    - id: positive-added-term
+      type: readout
+      label: Added term
+      expression: z
+    - id: compensating-term
+      type: readout
+      label: Compensating term
+      expression: -z
+    - id: net-change
+      type: readout
+      label: Net change
+      expression: z-z
+    check:
+      id: add-a-zero-pair-check
+      type: multipleChoice
+      prompt: Which expression is equal to $5x$ after inserting constants?
+      choices:
+      - id: a
+        text: $5x+7-7$
+      - id: b
+        text: $5x+7+7$
+      - id: c
+        text: $5x-7-7$
+      - id: d
+        text: $5x+7$
+      answer:
+        choiceId: a
+      explanation: 'The inserted terms must sum to zero.
+
+
+        Related topic: additive identity.
+
+        '
+  - id: multiply-by-shaped-one
+    title: Scale and unscale with a form of one
+    required: true
+    instruction: 'Choose a nonzero value $k$. Multiplying by
+
+
+      $$
+
+      \frac{k}{k}=1
+
+      $$
+
+
+      changes the visible numerator and denominator without changing the value.
+
+      This is the numeric skeleton of common-denominator and conjugate techniques.
+
+      '
+    controls:
+    - id: k
+      type: slider
+      label: Nonzero scale factor k
+      min: 1
+      max: 12
+      step: 1
+      defaultValue: '3'
+    views:
+    - id: numerator-coefficient
+      type: readout
+      label: Numerator coefficient in 5k x
+      expression: 5*k
+    - id: denominator-factor
+      type: readout
+      label: Denominator
+      expression: k
+    - id: recovered-coefficient
+      type: readout
+      label: Recovered coefficient
+      expression: (5*k)/k
+    check:
+      id: multiply-by-shaped-one-check
+      type: multipleChoice
+      prompt: Which expression is identically equal to $5x$ when $k\ne0$?
+      choices:
+      - id: a
+        text: $\frac{5kx}{k}$
+      - id: b
+        text: $\frac{5x}{k}$
+      - id: c
+        text: $5kx$
+      - id: d
+        text: $\frac{5k}{x}$
+      answer:
+        choiceId: a
+      explanation: 'The factor $k/k$ equals one when $k\ne0$.
+
+
+        Related topic: multiplicative identity and domain conditions.
+
+        '
+  - id: complete-square-parameter
+    title: Manufacture a perfect square
+    required: true
+    instruction: 'Vary the linear coefficient $b$ in
+
+
+      $$
+
+      x^2+bx.
+
+      $$
+
+
+      The completing term is
+
+
+      $$
+
+      \left(\frac{b}{2}\right)^2.
+
+      $$
+
+
+      Add and subtract that same amount to create
+
+
+      $$
+
+      x^2+bx
+
+      =
+
+      \left(x+\frac{b}{2}\right)^2-\left(\frac{b}{2}\right)^2.
+
+      $$
+
+      '
+    controls:
+    - id: b
+      type: slider
+      label: Linear coefficient b
+      min: -12
+      max: 12
+      step: 1
+      defaultValue: '6'
+    views:
+    - id: half-coefficient
+      type: readout
+      label: Half of b
+      expression: b/2
+    - id: completing-term
+      type: readout
+      label: Completing term
+      expression: (b/2)^2
+    - id: zero-balance
+      type: readout
+      label: Net value of inserted pair
+      expression: (b/2)^2-(b/2)^2
+    check:
+      id: complete-square-parameter-check
+      type: multipleChoice
+      prompt: What zero pair completes the square for $x^2+10x$?
+      choices:
+      - id: a
+        text: $+25-25$
+      - id: b
+        text: $+10-10$
+      - id: c
+        text: $+100-100$
+      - id: d
+        text: $+5-5$
+      answer:
+        choiceId: a
+      explanation: 'Half of $10$ is $5$, and $5^2=25$.
+
+
+        Related topic: parameterized completing the square.
+
+        '

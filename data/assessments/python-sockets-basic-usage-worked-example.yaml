@@ -3,150 +3,155 @@ id: python-sockets-basic-usage-worked-example
 title: Python Sockets Basic Usage Worked Example
 assessmentType: workedExample
 categoryId: python
-subcategoryId: python-networking
 subcategoryIds:
-  - python-networking
+- python-networking
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Planning a simple TCP socket connection
-    problem: "Think through the steps for connecting a Python client socket to a server."
-    steps:
-      - id: s001
-        title: Choose the socket kind
-        instruction: "Before connecting, choose the address family and communication type."
-        type: multipleChoice
-        prompt: "Which constructor creates a basic IPv4 TCP socket in Python?"
-        choices:
-          - id: a
-            text: "`socket.socket(socket.AF_INET, socket.SOCK_STREAM)`"
-          - id: b
-            text: "`socket.socket(socket.FILE, socket.READ)`"
-          - id: c
-            text: "`socket.connect(socket.AF_INET)`"
-          - id: d
-            text: "`socket.listen(socket.SOCK_STREAM)`"
-        answer:
-          choiceId: a
-        hint: "`AF_INET` means IPv4. `SOCK_STREAM` means TCP stream."
-        explanation: |
-          Use `socket.socket(socket.AF_INET, socket.SOCK_STREAM)` for a basic IPv4 TCP socket.
+- id: we001
+  title: Planning a simple TCP socket connection
+  problem: Think through the steps for connecting a Python client socket to a server.
+  steps:
+  - id: step-we001-1
+    title: Choose the socket kind
+    instruction: Before connecting, choose the address family and communication type.
+    type: multipleChoice
+    prompt: Which constructor creates a basic IPv4 TCP socket in Python?
+    choices:
+    - id: a
+      text: '`socket.socket(socket.AF_INET, socket.SOCK_STREAM)`'
+    - id: b
+      text: '`socket.socket(socket.FILE, socket.READ)`'
+    - id: c
+      text: '`socket.connect(socket.AF_INET)`'
+    - id: d
+      text: '`socket.listen(socket.SOCK_STREAM)`'
+    answer:
+      choiceId: a
+    hint: '`AF_INET` means IPv4. `SOCK_STREAM` means TCP stream.'
+    explanation: |
+      Use `socket.socket(socket.AF_INET, socket.SOCK_STREAM)` for a basic IPv4 TCP socket.
 
-          Related topic: Socket construction; pick address family first, then socket type.
-      - id: s002
-        title: Connect to a server
-        instruction: "A client socket needs the server host and port."
-        type: multipleChoice
-        prompt: "Which call connects a client socket named `client` to localhost on port `5000`?"
-        choices:
-          - id: a
-            text: "`client.connect(('127.0.0.1', 5000))`"
-          - id: b
-            text: "`client.listen(('127.0.0.1', 5000))`"
-          - id: c
-            text: "`client.accept(5000)`"
-          - id: d
-            text: "`client.bind('hello')`"
-        answer:
-          choiceId: a
-        hint: "Clients connect; servers bind/listen/accept."
-        explanation: |
-          A client uses `connect((host, port))` to initiate a connection to the server endpoint.
+      Related topic: Socket construction; pick address family first, then socket type.
+  - id: step-we001-2
+    title: Connect to a server
+    instruction: A client socket needs the server\rhost and port.
+    type: multipleChoice
+    prompt: Which call connects a client socket named `client` to localhost on port
+      `5000`?
+    choices:
+    - id: a
+      text: '`client.connect((''127.0.0.1'', 5000))`'
+    - id: b
+      text: '`client.listen((''127.0.0.1'', 5000))`'
+    - id: c
+      text: '`client.accept(5000)`'
+    - id: d
+      text: '`client.bind(''hello'')`'
+    answer:
+      choiceId: a
+    hint: Clients connect; servers bind/listen/accept.
+    explanation: |
+      A client uses `connect((host, port))` to initiate a connection to the server endpoint.
 
-          Related topic: Client connection; provide the remote address tuple to `connect`.
-      - id: s003
-        title: Send bytes
-        instruction: "Sockets transmit bytes, not ordinary Python strings."
-        type: multipleChoice
-        prompt: "Which line sends the text `hello` over a connected socket named `client`?"
-        choices:
-          - id: a
-            text: "`client.sendall(b'hello')`"
-          - id: b
-            text: "`client.sendall('hello')`"
-          - id: c
-            text: "`client.listen(b'hello')`"
-          - id: d
-            text: "`client.accept('hello')`"
-        answer:
-          choiceId: a
-        hint: "The `b` prefix creates a bytes literal."
-        explanation: |
-          `sendall` expects bytes. Use `b'hello'` or encode a string with something like `'hello'.encode('utf-8')`.
+      Related topic: Client connection; provide the remote address tuple to `connect`.
+  - id: step-we001-3
+    title: Send bytes
+    instruction: Sockets transmit bytes, not ordinary Python strings.
+    type: multipleChoice
+    prompt: Which line sends the text `hello` over a connected socket named `client`?
+    choices:
+    - id: a
+      text: '`client.sendall(b''hello'')`'
+    - id: b
+      text: '`client.sendall(''hello'')`'
+    - id: c
+      text: '`client.listen(b''hello'')`'
+    - id: d
+      text: '`client.accept(''hello'')`'
+    answer:
+      choiceId: a
+    hint: The `b` prefix creates a bytes literal.
+    explanation: |
+      `sendall` expects bytes. Use `b'hello'` or encode a string with something like `'hello'.encode('utf-8')`.
 
-          Related topic: Byte encoding; convert text to bytes before sending, and decode bytes after receiving.
-      - id: s004
-        title: Receive bytes
-        instruction: "Receiving requires choosing a maximum number of bytes to read."
-        type: multipleChoice
-        prompt: "What does `client.recv(1024)` mean?"
-        choices:
-          - id: a
-            text: "Receive up to 1024 bytes from the socket."
-          - id: b
-            text: "Send the number 1024 to the server."
-          - id: c
-            text: "Create 1024 sockets."
-          - id: d
-            text: "Listen on port 1024."
-        answer:
-          choiceId: a
-        hint: "The number is a buffer size."
-        explanation: |
-          `recv(1024)` reads up to 1024 bytes. It may return fewer bytes, so real protocols often need loops and message framing.
+      Related topic: Byte encoding; convert text to bytes before sending, and decode bytes after receiving.
+  - id: step-we001-4
+    title: Receive bytes
+    instruction: Receiving requires choosing a maximum number of bytes to read.
+    type: multipleChoice
+    prompt: What does `client.recv(1024)` mean?
+    choices:
+    - id: a
+      text: Receive up to 1024 bytes from the socket.
+    - id: b
+      text: Send the number 1024 to the server.
+    - id: c
+      text: Create 1024 sockets.
+    - id: d
+      text: Listen on port 1024.
+    answer:
+      choiceId: a
+    hint: The number is a buffer size.
+    explanation: |
+      `recv(1024)` reads up to 1024 bytes. It may return fewer bytes, so real protocols often need loops and message framing.
 
-          Related topic: Receiving data; pick a buffer size and remember that network reads may be partial.
-      - id: s005
-        title: Put the client flow in order
-        instruction: "Now arrange the basic client-side thought process."
-        type: selectAll
-        prompt: "Which steps belong in a simple client socket flow?"
-        choices:
-          - id: a
-            text: "Create the socket."
-          - id: b
-            text: "Connect to the server address."
-          - id: c
-            text: "Send and/or receive bytes."
-          - id: d
-            text: "Close the socket, often by using `with`."
-        answer:
-          choiceIds: [a, b, c, d]
-        hint: "Think lifecycle: create, connect, communicate, cleanup."
-        explanation: |
-          A simple client socket flow is create the socket, connect to the server, send/receive bytes, and close the socket when done.
+      Related topic: Receiving data; pick a buffer size and remember that network reads may be partial.
+  - id: step-we001-5
+    title: Put the client flow in order
+    instruction: Now arrange the basic client-side thought process.
+    type: selectAll
+    prompt: Which steps belong in a simple client socket flow?
+    choices:
+    - id: a
+      text: Create the socket.
+    - id: b
+      text: Connect to the server address.
+    - id: c
+      text: Send and/or receive bytes.
+    - id: d
+      text: Close the socket, often by using `with`.
+    answer:
+      choiceIds:
+      - a
+      - b
+      - c
+      - d
+    hint: 'Think lifecycle: create, connect, communicate, cleanup.'
+    explanation: |
+      A simple client socket flow is create the socket, connect to the server, send/receive bytes, and close the socket when done.
 
-          Related topic: Socket lifecycle; resource cleanup matters, so use `with socket.socket(...) as client:` when possible.
-      - id: s006
-        title: Sketch the client pattern
-        instruction: "Write the basic structure without worrying about a full server."
-        type: freeResponse
-        prompt: |
-          Sketch the client-side code pattern for connecting to `127.0.0.1` on port `5000`, sending `b'hello'`, and receiving up to 1024 bytes.
-        answer:
-          expected: |
-            Use `with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:`, call `client.connect(('127.0.0.1', 5000))`, call `client.sendall(b'hello')`, then call `response = client.recv(1024)`.
-          gradingMode: selfCheck
-          keyPoints:
-            - "Create an IPv4 TCP socket."
-            - "Use `connect((host, port))` on the client."
-            - "Send bytes with `sendall`."
-            - "Receive bytes with `recv(1024)`."
-            - "Use `with` or otherwise close the socket."
-        hint: "Use `with`, then connect, sendall, recv."
-        explanation: |
-          The client-side pattern is:
+      Related topic: Socket lifecycle; resource cleanup matters, so use `with socket.socket(...) as client:` when possible.
+  - id: step-we001-6
+    title: Sketch the client pattern
+    instruction: Write the basic structure without worrying about a full server.
+    type: freeResponse
+    prompt: |
+      Sketch the client-side code pattern for connecting to `127.0.0.1` on port `5000`, sending `b'hello'`, and receiving up to 1024 bytes.
+    answer:
+      expected: 'Use `with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:`,
+        call `client.connect((''127.0.0.1'', 5000))`, call `client.sendall(b''hello'')`,
+        then call `response = client.recv(1024)`.
 
-          ```python
-          import socket
+        '
+      gradingMode: selfCheck
+      keyPoints:
+      - Create an IPv4 TCP socket.
+      - Use `connect((host, port))` on the client.
+      - Send bytes with `sendall`.
+      - Receive bytes with `recv(1024)`.
+      - Use `with` or otherwise close the socket.
+    hint: Use `with`, then connect, sendall, recv.
+    explanation: |
+      The client-side pattern is:
 
-          with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-              client.connect(('127.0.0.1', 5000))
-              client.sendall(b'hello')
-              response = client.recv(1024)
-          ```
+      ```python
+      import socket
 
-          Related topic: Basic TCP client lifecycle; construct the socket, connect to the remote endpoint, exchange bytes, then clean up the socket.
+      with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
+          client.connect(('127.0.0.1', 5000))
+          client.sendall(b'hello')
+          response = client.recv(1024)
+      ```
 
-
+      Related topic: Basic TCP client lifecycle; construct the socket, connect to the remote endpoint, exchange bytes, then clean up the socket.

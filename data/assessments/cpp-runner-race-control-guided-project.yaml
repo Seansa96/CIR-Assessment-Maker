@@ -3,187 +3,146 @@ id: cpp-runner-race-control-guided-project
 title: C++ Runner and RaceControl Guided Project
 assessmentType: guidedProject
 categoryId: c++
-subcategoryId: c++-execution-flow
 subcategoryIds:
-  - c++-oop
+- c++-execution-flow
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: cpp
-  instructions: |
-    Build a small class-based C++ project.
+  instructions: 'Build a small class-based C++ project.
 
-    The app will handle compiling, linking, and running hidden checks. You only edit the project files. Do not add `main()` to your files; the app supplies hidden `main()` functions when you click Run Checks.
+
+    The app will handle compiling, linking, and running hidden checks. You only edit
+    the project files. Do not add `main()` to your files; the app supplies hidden
+    `main()` functions when you click Run Checks.
+
 
     Required project behavior:
 
+
     - Create a class named exactly `Runner`.
+
     - `Runner` must have private properties named exactly `name` and `distance`.
+
     - `Runner` must have a constructor `Runner(string name, double distance)`.
+
     - `Runner` must expose public getters named exactly `getName()` and `getDistance()`.
+
     - Create a class named exactly `RaceControl`.
-    - `RaceControl` must store two or more `Runner` objects and identify the winner by greatest distance.
-    - `RaceControl` must have a public method named exactly `winnerName()` that returns the winning runner's name.
+
+    - `RaceControl` must store two or more `Runner` objects and identify the winner
+    by greatest distance.
+
+    - `RaceControl` must have a public method named exactly `winnerName()` that returns
+    the winning runner''s name.
+
 
     Bonus behavior:
 
+
     - Create a class named exactly `Coach`.
-    - `Coach` should change a runner's distance through a public setter on `Runner` named exactly `setDistance(double newDistance)`.
 
-    Keep the file names and class names exactly as provided. The checks include your header files and call these exact names.
+    - `Coach` should change a runner''s distance through a public setter on `Runner`
+    named exactly `setDistance(double newDistance)`.
+
+
+    Keep the file names and class names exactly as provided. The checks include your
+    header files and call these exact names.
+
+    '
   files:
-    - path: Runner.h
-      readOnly: false
-      content: |
-        #pragma once
-        #include <string>
-        using namespace std;
+  - path: Runner.h
+    readOnly: false
+    content: "#pragma once\n#include <string>\nusing namespace std;\n\nclass Runner\
+      \ {\nprivate:\n    // Add private properties named exactly:\n    // string name;\n\
+      \    // double distance;\n\npublic:\n    Runner(string name, double distance)\
+      \ {\n        // Store both constructor arguments in the private properties.\n\
+      \    }\n\n    string getName() const {\n        // Return the runner's name.\n\
+      \        return \"\";\n    }\n\n    double getDistance() const {\n        //\
+      \ Return the runner's distance.\n        return 0;\n    }\n\n    void setDistance(double\
+      \ newDistance) {\n        // Bonus step: update the runner's distance.\n   \
+      \ }\n};\n"
+  - path: RaceControl.h
+    readOnly: false
+    content: "#pragma once\n#include <string>\n#include <vector>\n#include \"Runner.h\"\
+      \nusing namespace std;\n\nclass RaceControl {\nprivate:\n    // Store the runners\
+      \ in a private vector named exactly runners.\n\npublic:\n    RaceControl(vector<Runner>\
+      \ runners) {\n        // Store the constructor argument in the private runners\
+      \ property.\n    }\n\n    string winnerName() const {\n        // Return the\
+      \ name of the runner with the greatest distance.\n        // Assume the vector\
+      \ has at least one runner.\n        return \"\";\n    }\n};\n"
+  - path: Coach.h
+    readOnly: false
+    content: "#pragma once\n#include \"Runner.h\"\n\nclass Coach {\npublic:\n    void\
+      \ updateDistance(Runner& runner, double newDistance) const {\n        // Bonus\
+      \ step: use Runner's public setter to update distance.\n    }\n};\n"
+  - path: ProjectNotes.md
+    readOnly: true
+    content: 'This project is intentionally header-only for now so the hidden checks
+      can include your classes directly.
 
-        class Runner {
-        private:
-            // Add private properties named exactly:
-            // string name;
-            // double distance;
 
-        public:
-            Runner(string name, double distance) {
-                // Store both constructor arguments in the private properties.
-            }
+      Names that must match exactly:
 
-            string getName() const {
-                // Return the runner's name.
-                return "";
-            }
 
-            double getDistance() const {
-                // Return the runner's distance.
-                return 0;
-            }
+      - Runner
 
-            void setDistance(double newDistance) {
-                // Bonus step: update the runner's distance.
-            }
-        };
+      - private Runner properties: name, distance
 
-    - path: RaceControl.h
-      readOnly: false
-      content: |
-        #pragma once
-        #include <string>
-        #include <vector>
-        #include "Runner.h"
-        using namespace std;
+      - Runner(string name, double distance)
 
-        class RaceControl {
-        private:
-            // Store the runners in a private vector named exactly runners.
+      - getName()
 
-        public:
-            RaceControl(vector<Runner> runners) {
-                // Store the constructor argument in the private runners property.
-            }
+      - getDistance()
 
-            string winnerName() const {
-                // Return the name of the runner with the greatest distance.
-                // Assume the vector has at least one runner.
-                return "";
-            }
-        };
+      - setDistance(double newDistance)
 
-    - path: Coach.h
-      readOnly: false
-      content: |
-        #pragma once
-        #include "Runner.h"
+      - RaceControl
 
-        class Coach {
-        public:
-            void updateDistance(Runner& runner, double newDistance) const {
-                // Bonus step: use Runner's public setter to update distance.
-            }
-        };
+      - private RaceControl property: runners
 
-    - path: ProjectNotes.md
-      readOnly: true
-      content: |
-        This project is intentionally header-only for now so the hidden checks can include your classes directly.
+      - RaceControl(vector<Runner> runners)
 
-        Names that must match exactly:
+      - winnerName()
 
-        - Runner
-        - private Runner properties: name, distance
-        - Runner(string name, double distance)
-        - getName()
-        - getDistance()
-        - setDistance(double newDistance)
-        - RaceControl
-        - private RaceControl property: runners
-        - RaceControl(vector<Runner> runners)
-        - winnerName()
-        - Coach
-        - updateDistance(Runner& runner, double newDistance)
+      - Coach
 
-        Do not write main(). The app writes the hidden main() functions for each check.
+      - updateDistance(Runner& runner, double newDistance)
+
+
+      Do not write main(). The app writes the hidden main() functions for each check.
+
+      '
   requiredChecks:
-    - id: runner-constructor-getters
-      title: Runner stores constructor values
-      description: Runner must keep name and distance private, initialize them in the constructor, and expose them through getName() and getDistance().
-      expectedOutputContains:
-        - RUNNER_OK
-      testCode: |
-        int main() {
-            Runner runner("Mira", 123.5);
-            if (runner.getName() == "Mira" && abs(runner.getDistance() - 123.5) < 0.0001) {
-                cout << "RUNNER_OK";
-                return 0;
-            }
-
-            cout << "RUNNER_FAIL";
-            return 0;
-        }
-
-    - id: race-control-winner
-      title: RaceControl chooses the farthest runner
-      description: RaceControl must accept a vector of Runner objects and return the name of the runner with the greatest distance.
-      expectedOutputContains:
-        - WINNER_OK
-      testCode: |
-        int main() {
-            vector<Runner> runners = {
-                Runner("Mira", 120.0),
-                Runner("Lee", 145.25),
-                Runner("Ana", 132.5)
-            };
-
-            RaceControl race(runners);
-            if (race.winnerName() == "Lee") {
-                cout << "WINNER_OK";
-                return 0;
-            }
-
-            cout << "WINNER_FAIL:" << race.winnerName();
-            return 0;
-        }
-
+  - id: runner-constructor-getters
+    title: Runner stores constructor values
+    description: Runner must keep name and distance private, initialize them in the
+      constructor, and expose them through getName() and getDistance().
+    expectedOutputContains:
+    - RUNNER_OK
+    testCode: "int main() {\n    Runner runner(\"Mira\", 123.5);\n    if (runner.getName()\
+      \ == \"Mira\" && abs(runner.getDistance() - 123.5) < 0.0001) {\n        cout\
+      \ << \"RUNNER_OK\";\n        return 0;\n    }\n\n    cout << \"RUNNER_FAIL\"\
+      ;\n    return 0;\n}\n"
+  - id: race-control-winner
+    title: RaceControl chooses the farthest runner
+    description: RaceControl must accept a vector of Runner objects and return the
+      name of the runner with the greatest distance.
+    expectedOutputContains:
+    - WINNER_OK
+    testCode: "int main() {\n    vector<Runner> runners = {\n        Runner(\"Mira\"\
+      , 120.0),\n        Runner(\"Lee\", 145.25),\n        Runner(\"Ana\", 132.5)\n\
+      \    };\n\n    RaceControl race(runners);\n    if (race.winnerName() == \"Lee\"\
+      ) {\n        cout << \"WINNER_OK\";\n        return 0;\n    }\n\n    cout <<\
+      \ \"WINNER_FAIL:\" << race.winnerName();\n    return 0;\n}\n"
   bonusChecks:
-    - id: coach-updates-distance
-      title: Coach updates a Runner through public access
-      description: Coach should call Runner::setDistance so outside code can update distance without touching private data directly.
-      expectedOutputContains:
-        - COACH_OK
-      testCode: |
-        int main() {
-            Runner runner("Mira", 100.0);
-            Coach coach;
-            coach.updateDistance(runner, 160.0);
-
-            if (abs(runner.getDistance() - 160.0) < 0.0001) {
-                cout << "COACH_OK";
-                return 0;
-            }
-
-            cout << "COACH_FAIL";
-            return 0;
-        }
-
-
+  - id: coach-updates-distance
+    title: Coach updates a Runner through public access
+    description: Coach should call Runner::setDistance so outside code can update
+      distance without touching private data directly.
+    expectedOutputContains:
+    - COACH_OK
+    testCode: "int main() {\n    Runner runner(\"Mira\", 100.0);\n    Coach coach;\n\
+      \    coach.updateDistance(runner, 160.0);\n\n    if (abs(runner.getDistance()\
+      \ - 160.0) < 0.0001) {\n        cout << \"COACH_OK\";\n        return 0;\n \
+      \   }\n\n    cout << \"COACH_FAIL\";\n    return 0;\n}\n"

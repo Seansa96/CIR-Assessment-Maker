@@ -3,231 +3,260 @@ id: cpp-inheritance-concept-lesson
 title: C++ Inheritance Concept Lesson
 assessmentType: conceptLesson
 categoryId: c++
-subcategoryId: c++-oop
 subcategoryIds:
-  - c++-oop
+- c++-oop
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - inheritance
-    - base-classes
-    - derived-classes
-    - object-lifetime
+  - inheritance
+  - base-classes
+  - derived-classes
+  - object-lifetime
 lesson:
-  introduction: |
-    Inheritance lets a derived class reuse and specialize a base-class contract. This
-    lesson focuses on when the relationship is valid, how construction works, and which
+  introduction: 'Inheritance lets a derived class reuse and specialize a base-class
+    contract. This
+
+    lesson focuses on when the relationship is valid,\rhow construction works, and
+    which
+
     C++ rules prevent fragile hierarchies.
+
+    '
   sections:
-    - id: is-a-and-substitution
-      title: Inheritance means substitutable is-a
-      required: true
-      content: |
-        Public inheritance states that every derived object can be used where the base
-        contract is expected. If `Circle` publicly inherits `Shape`, code using a `Shape&`
-        should still behave correctly when the object is a `Circle`.
+  - id: is-a-and-substitution
+    title: Inheritance means substitutable is-a
+    required: true
+    content: 'Public inheritance states that every derived object can be used where
+      the base
 
-        Shared fields alone are not enough. Use composition when one object merely owns,
-        coordinates, or uses another.
-      check:
-        id: is-a-and-substitution-check
-        type: multipleChoice
-        prompt: Which relationship is the strongest candidate for public inheritance?
-        choices:
-          - id: a
-            text: A `Mage` is an `Entity` and satisfies the `Entity` contract
-          - id: b
-            text: A `Car` has four `Wheel` objects
-          - id: c
-            text: A `Window` uses a `Logger`
-          - id: d
-            text: A `Team` contains several `Player` objects
-        answer:
-          choiceId: a
-        explanation: |
-          `Mage` is a specialization of `Entity`; the other relationships are has-a or
-          uses-a relationships.
+      contract is expected. If `Circle` publicly inherits `Shape`, code using a `Shape&`
 
-          Related topic: Liskov substitution and composition.
-
-    - id: base-and-derived-syntax
-      title: Public base-class syntax
-      required: true
-      content: |
-        ```cpp
-        class Entity {
-        public:
-            explicit Entity(std::string name);
-            const std::string& name() const;
-
-        private:
-            std::string name_;
-        };
-
-        class Warrior : public Entity {
-        public:
-            Warrior(std::string name, int armor);
-
-        private:
-            int armor_;
-        };
-        ```
-
-        `public Entity` preserves the public base interface as public on `Warrior`.
-      check:
-        id: base-and-derived-syntax-check
-        type: multipleChoice
-        prompt: |
-          What does `class Warrior : public Entity` communicate?
-        choices:
-          - id: a
-            text: '`Warrior` is publicly substitutable for `Entity`'
-          - id: b
-            text: '`Entity` becomes a private data field'
-          - id: c
-            text: 'All private `Entity` members become directly accessible'
-          - id: d
-            text: '`Warrior` cannot define additional state'
-        answer:
-          choiceId: a
-        explanation: |
-          Public inheritance preserves the base-class public contract. Base private state
-          remains private.
-
-          Related topic: inheritance access modes.
-
-    - id: construction-order
-      title: Base construction happens first
-      required: true
-      content: |
-        A derived constructor initializes its base subobject before its own members.
-
-        ```cpp
-        Warrior::Warrior(std::string name, int armor)
-            : Entity(std::move(name)), armor_(armor) {}
-        ```
-
-        Construction proceeds from base to derived. Destruction proceeds in reverse, from
-        derived to base.
-      check:
-        id: construction-order-check
-        type: multipleChoice
-        prompt: Which order is correct when constructing a `Warrior` derived from `Entity`?
-        choices:
-          - id: a
-            text: Construct `Entity`, then initialize `Warrior` members
-          - id: b
-            text: Initialize `Warrior` members, then construct `Entity`
-          - id: c
-            text: Skip the `Entity` constructor
-          - id: d
-            text: Construction order depends on the order written in the constructor body
-        answer:
-          choiceId: a
-        explanation: |
-          The base subobject must exist before the derived portion can be initialized.
-
-          Related topic: C++ object lifetime.
-
-    - id: protected-versus-private
-      title: Protect invariants with private state
-      required: true
-      content: |
-        Derived classes cannot directly access private base members. This is often useful:
-        the base class keeps control of its invariants through protected or public
-        operations.
-
-        `protected` exposes a member to every derived class and therefore increases
-        coupling. Prefer private data with carefully chosen protected behavior when
-        extension truly requires it.
-      check:
-        id: protected-versus-private-check
-        type: multipleChoice
-        prompt: Why avoid making all base-class data `protected`?
-        choices:
-          - id: a
-            text: Derived classes become coupled to the base representation and can break its rules
-          - id: b
-            text: Protected members cannot store values
-          - id: c
-            text: Protected members are slower than public members
-          - id: d
-            text: C++ does not allow protected members
-        answer:
-          choiceId: a
-        explanation: |
-          Broad protected access weakens encapsulation across the whole hierarchy.
-
-          Related topic: fragile base classes and information hiding.
-
-    - id: slicing-and-references
-      title: Preserve the derived object through references or pointers
-      required: true
-      content: |
-        Copying a derived object into a base object by value discards the derived portion.
-        This is **object slicing**.
-
-        ```cpp
-        void draw(const Shape& shape);
-        std::vector<std::unique_ptr<Shape>> shapes;
-        ```
-
-        References and smart pointers preserve the dynamic object. Owning polymorphic
-        collections should normally use smart pointers rather than raw owning pointers.
-      check:
-        id: slicing-and-references-check
-        type: multipleChoice
-        prompt: Which container preserves different derived `Shape` objects polymorphically?
-        choices:
-          - id: a
-            text: '`std::vector<std::unique_ptr<Shape>>`'
-          - id: b
-            text: '`std::vector<Shape>`'
-          - id: c
-            text: '`std::array<Shape, 3>`'
-          - id: d
-            text: A single copied `Shape` value
-        answer:
-          choiceId: a
-        explanation: |
-          Smart pointers preserve each dynamic derived object and express ownership.
-
-          Related topic: object slicing and RAII ownership.
-
-    - id: inheritance-design-checklist
-      title: Check the contract before extending
-      required: true
-      content: |
-        Before using inheritance, ask:
-
-        1. Is the derived type valid everywhere the base is expected?
-        2. Does the base expose a stable contract rather than representation details?
-        3. Will base destruction be safe through a base pointer?
-        4. Would composition be simpler?
-
-        A shallow, intentional hierarchy is usually easier to maintain than a deep tree.
-      check:
-        id: inheritance-design-checklist-check
-        type: selectAll
-        prompt: Which signs suggest inheritance is being used appropriately?
-        choices:
-          - id: a
-            text: The derived type honors all base-class expectations
-          - id: b
-            text: Callers can use the base interface without knowing the derived type
-          - id: c
-            text: The only goal is to reuse two private data fields
-          - id: d
-            text: The hierarchy has a clear ownership and destruction policy
-        answer:
-          choiceIds: [a, b, d]
-        explanation: |
-          Behavioral substitution, a stable interface, and safe lifetime rules justify a
-          hierarchy. Incidental field reuse does not.
-
-          Related topic: inheritance design and substitutability.
+      should still behave correctly when the object is a `Circle`.
 
 
+      Shared fields alone are not enough. Use composition when one object merely owns,
+
+      coordinates, or uses another.
+
+      '
+    check:
+      id: is-a-and-substitution-check
+      type: multipleChoice
+      prompt: Which relationship is the strongest candidate for public inheritance?
+      choices:
+      - id: a
+        text: A `Mage` is an `Entity` and satisfies the `Entity` contract
+      - id: b
+        text: A `Car` has four `Wheel` objects
+      - id: c
+        text: A `Window` uses a `Logger`
+      - id: d
+        text: A `Team` contains several `Player` objects
+      answer:
+        choiceId: a
+      explanation: '`Mage` is a specialization of `Entity`; the other relationships
+        are has-a or
+
+        uses-a relationships.
+
+
+        Related topic: Liskov substitution and composition.
+
+        '
+  - id: base-and-derived-syntax
+    title: Public base-class syntax
+    required: true
+    content: "```cpp\nclass Entity {\npublic:\n    explicit Entity(std::string name);\n\
+      \    const std::string& name() const;\n\nprivate:\n    std::string name_;\n\
+      };\n\nclass Warrior : public Entity {\npublic:\n    Warrior(std::string name,\
+      \ int armor);\n\nprivate:\n    int armor_;\n};\n```\n\n`public Entity` preserves\
+      \ the public base interface as public on `Warrior`.\n"
+    check:
+      id: base-and-derived-syntax-check
+      type: multipleChoice
+      prompt: 'What does `class Warrior : public Entity` communicate?
+
+        '
+      choices:
+      - id: a
+        text: '`Warrior` is publicly substitutable for `Entity`'
+      - id: b
+        text: '`Entity` becomes a private data field'
+      - id: c
+        text: All private `Entity` members become directly accessible
+      - id: d
+        text: '`Warrior` cannot define additional state'
+      answer:
+        choiceId: a
+      explanation: 'Public inheritance preserves the base-class public contract. Base
+        private state
+
+        remains private.
+
+
+        Related topic: inheritance access modes.
+
+        '
+  - id: construction-order
+    title: Base construction happens first
+    required: true
+    content: "A derived constructor initializes its base subobject before its own\
+      \ members.\n\n```cpp\nWarrior::Warrior(std::string name, int armor)\n    : Entity(std::move(name)),\
+      \ armor_(armor) {}\n```\n\nConstruction proceeds from base to derived. Destruction\
+      \ proceeds in reverse, from\nderived to base.\n"
+    check:
+      id: construction-order-check
+      type: multipleChoice
+      prompt: Which order is correct when constructing a `Warrior` derived from `Entity`?
+      choices:
+      - id: a
+        text: Construct `Entity`, then initialize `Warrior` members
+      - id: b
+        text: Initialize `Warrior` members, then construct `Entity`
+      - id: c
+        text: Skip the `Entity` constructor
+      - id: d
+        text: Construction order depends on the order written in the constructor body
+      answer:
+        choiceId: a
+      explanation: 'The base subobject must exist before the derived portion can be
+        initialized.
+
+
+        Related topic: C++ object lifetime.
+
+        '
+  - id: protected-versus-private
+    title: Protect invariants with private state
+    required: true
+    content: 'Derived classes cannot directly access private base members. This is
+      often useful:
+
+      the base class keeps control of its invariants through protected or public
+
+      operations.
+
+
+      `protected` exposes a member to every derived class and therefore increases
+
+      coupling. Prefer private data with carefully chosen protected behavior when
+
+      extension truly requires it.
+
+      '
+    check:
+      id: protected-versus-private-check
+      type: multipleChoice
+      prompt: Why avoid making all base-class data `protected`?
+      choices:
+      - id: a
+        text: Derived classes become coupled to the base representation and can break
+          its rules
+      - id: b
+        text: Protected members cannot store values
+      - id: c
+        text: Protected members are slower than public members
+      - id: d
+        text: C++ does not allow protected members
+      answer:
+        choiceId: a
+      explanation: 'Broad protected access weakens encapsulation across the whole
+        hierarchy.
+
+
+        Related topic: fragile base classes and information hiding.
+
+        '
+  - id: slicing-and-references
+    title: Preserve the derived object through references or pointers
+    required: true
+    content: 'Copying a derived object into a base object by value discards the derived
+      portion.
+
+      This is **object slicing**.
+
+
+      ```cpp
+
+      void draw(const Shape& shape);
+
+      std::vector<std::unique_ptr<Shape>> shapes;
+
+      ```
+
+
+      References and smart pointers preserve the dynamic object. Owning polymorphic
+
+      collections should normally use smart pointers rather than raw owning pointers.
+
+      '
+    check:
+      id: slicing-and-references-check
+      type: multipleChoice
+      prompt: Which container preserves different derived `Shape` objects polymorphically?
+      choices:
+      - id: a
+        text: '`std::vector<std::unique_ptr<Shape>>`'
+      - id: b
+        text: '`std::vector<Shape>`'
+      - id: c
+        text: '`std::array<Shape, 3>`'
+      - id: d
+        text: A single copied `Shape` value
+      answer:
+        choiceId: a
+      explanation: 'Smart pointers preserve each dynamic derived object and express
+        ownership.
+
+
+        Related topic: object slicing and RAII ownership.
+
+        '
+  - id: inheritance-design-checklist
+    title: Check the contract before extending
+    required: true
+    content: 'Before using inheritance, ask:
+
+
+      1. Is the derived type valid everywhere the base is expected?
+
+      2. Does the base expose a stable contract rather than representation details?
+
+      3. Will base destruction be safe through a base pointer?
+
+      4. Would composition be simpler?
+
+
+      A shallow, intentional hierarchy is usually easier to maintain than a deep tree.
+
+      '
+    check:
+      id: inheritance-design-checklist-check
+      type: selectAll
+      prompt: Which signs suggest inheritance is being used appropriately?
+      choices:
+      - id: a
+        text: The derived type\rhonors all base-class expectations
+      - id: b
+        text: Callers can use the base interface without knowing the derived type
+      - id: c
+        text: The only goal is to reuse two private data fields
+      - id: d
+        text: The hierarchy has a clear ownership and destruction policy
+      answer:
+        choiceIds:
+        - a
+        - b
+        - d
+      explanation: 'Behavioral substitution, a stable interface, and safe lifetime
+        rules justify a
+
+        hierarchy. Incidental field reuse does not.
+
+
+        Related topic: inheritance design and substitutability.
+
+        '

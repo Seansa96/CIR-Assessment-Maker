@@ -3,95 +3,83 @@ id: docker-webserver-project
 title: Launch a Containerized Webserver
 assessmentType: guidedProject
 categoryId: containerization
-subcategoryId: docker-networking
-learningGoal: apply
-activityType: guidedProject
-tags:
-  - docker
-  - networking
-  - bash
 guidedProject:
   language: bash
   projectKind: console
   runnerMode: workspace
-  instructions: |
-    Welcome to your first Docker networking project! 
-    
-    You need to write a bash script (`run.sh`) that launches a webserver using Docker.
-    
-    **Requirements:**
-    1. Use the official `nginx` image (tag `latest` or omit for default).
-    2. Run the container in detached mode (`-d`).
-    3. Bind port `8080` on the host to port `80` inside the container.
-    4. Give the container the name `my-web-app`.
-
-    Complete `run.sh` to meet these requirements.
-    
-    *Hint: Docker commands in this environment are exactly the same as on your local machine.*
-
+  instructions: "Welcome to your first Docker networking project! \n\nYou need to\
+    \ write a bash script (`run.sh`) that launches a webserver using Docker.\n\n**Requirements:**\n\
+    1. Use the official `nginx` image (tag `latest` or omit for default).\n2. Run\
+    \ the container in detached mode (`-d`).\n3. Bind port `8080` on the\rhost to port\
+    \ `80` inside the container.\n4. Give the container the name `my-web-app`.\n\n\
+    Complete `run.sh` to meet these requirements.\n\n*Hint: Docker commands in this\
+    \ environment are exactly the same as on your local machine.*\n"
   workspace:
     entryPoint: run.sh
     allowedBaseImages:
-      - docker:dind
+    - docker:dind
     sourceGlobs:
-      - run.sh
+    - run.sh
     includePaths: []
     writablePaths: []
-
   files:
-    - path: run.sh
-      readOnly: false
-      content: |
-        #!/bin/bash
-        
-        # Write your docker run command below
-        
+  - path: run.sh
+    readOnly: false
+    content: '#!/bin/bash
 
+
+      # Write your docker run command below
+
+      '
   fixtures: []
-
   scenarios:
-    - id: verify-webserver
-      type: tcpConversation
-      learnerRole: server
-      events:
-        - type: connect
-          peer: tester
-        - type: send
-          peer: tester
-          text: "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
-        - type: expect
-          from: learner
-          text: "HTTP/1.1 200 OK"
-
+  - id: verify-webserver
+    type: tcpConversation
+    learnerRole: server
+    events:
+    - type: connect
+      peer: tester
+    - type: send
+      peer: tester
+      text: "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
+    - type: expect
+      from: learner
+      text: HTTP/1.1 200 OK
   diagnostics: []
-
   requiredChecks:
-    - id: check-docker-run
-      title: Container starts successfully
-      description: Your script must successfully execute the docker run command without errors.
-      testCode: null
-      expectedOutputContains: []
-      run:
-        arguments: []
-        stdin: null
-        scenario: null
-      expect:
-        stdoutContains: []
-        files: []
-
-    - id: check-webserver-responds
-      title: Webserver responds on port 8080
-      description: The Nginx webserver should respond to a basic HTTP GET request on port 8080.
-      testCode: null
-      expectedOutputContains: []
-      run:
-        arguments: []
-        stdin: null
-        scenario: verify-webserver
-      expect:
-        stdoutContains: []
-        files: []
-
+  - id: check-docker-run
+    title: Container starts successfully
+    description: Your script must successfully execute the docker run command without
+      errors.
+    testCode: null
+    expectedOutputContains: []
+    run:
+      arguments: []
+      stdin: null
+      scenario: null
+    expect:
+      stdoutContains: []
+      files: []
+  - id: check-webserver-responds
+    title: Webserver responds on port 8080
+    description: The Nginx webserver should respond to a basic HTTP GET request on
+      port 8080.
+    testCode: null
+    expectedOutputContains: []
+    run:
+      arguments: []
+      stdin: null
+      scenario: verify-webserver
+    expect:
+      stdoutContains: []
+      files: []
   bonusChecks: []
-
-
+subcategoryIds:
+- docker-networking
+navigation:
+  learningGoal: apply
+  activityType: guidedProject
+  tags:
+  - docker
+  - networking
+  - bash

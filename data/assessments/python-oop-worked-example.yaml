@@ -3,114 +3,90 @@ id: python-oop-worked-example
 title: Python OOP Combat Worked Example
 assessmentType: workedExample
 categoryId: python
-subcategoryId: python-oop
 subcategoryIds:
-  - python-oop
+- python-oop
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Tracing Polymorphic Combat
-    problem: |
-      We have an abstract `Character` class, and two subclasses: `Hero` and `Enemy`. We are going to trace what happens when they attack each other using polymorphism.
-    steps:
-      - id: s001
-        title: The Base Class
-        instruction: |
-          First, let's look at the base class. It defines the basic structure that both heroes and enemies will share.
-          
-          ```python
-          class Character:
-              def __init__(self, name, hp):
-                  self.name = name
-                  self.hp = hp
-                  
-              def attack(self, target):
-                  pass  # To be overridden by subclasses
-                  
-              def take_damage(self, amount):
-                  self.hp -= amount
-          ```
-        type: multipleChoice
-        prompt: |
-          If we created a generic `Character` object, what would happen if we called its `attack` method?
-        choices:
-          - id: a
-            text: It would crash because `pass` is an error.
-          - id: b
-            text: It would deal 0 damage to the target.
-          - id: c
-            text: It would execute, but absolutely nothing would happen.
-          - id: d
-            text: It automatically calls `take_damage` on the target.
-        answer:
-          choiceId: c
-        explanation: |
-          The `pass` keyword is literally a placeholder that does nothing. Calling `attack` on a raw `Character` will just execute the `pass` statement and return `None`.
+- id: we001
+  title: Tracing Polymorphic Combat
+  problem: 'We have an abstract `Character` class, and two subclasses: `Hero` and
+    `Enemy`. We are going to trace what happens when they attack each other using
+    polymorphism.
 
-      - id: s002
-        title: The Subclasses
-        instruction: |
-          Now, let's look at the subclasses:
-          
-          ```python
-          class Hero(Character):
-              def attack(self, target):
-                  print(f"{self.name} swings their sword at {target.name}!")
-                  target.take_damage(20)
-                  
-          class Enemy(Character):
-              def attack(self, target):
-                  print(f"{self.name} bites {target.name}!")
-                  target.take_damage(10)
-          ```
-        type: numericResponse
-        prompt: |
-          Let's trace this combat sequence:
-          
-          ```python
-          player = Hero("Arthur", 100)
-          monster = Enemy("Slime", 50)
-          
-          player.attack(monster)
-          monster.attack(player)
-          player.attack(monster)
-          ```
-          
-          What is the `hp` of the `monster` at the end of this sequence?
-        answer:
-          value: 10
-          tolerance: 0
-        explanation: |
-          The monster starts with 50 HP.
-          1. Player attacks monster: Monster takes 20 damage. (Monster HP = 30)
-          2. Monster attacks player: Player takes 10 damage. (Player HP = 90)
-          3. Player attacks monster: Monster takes 20 damage. (Monster HP = 10)
+    '
+  steps:
+  - id: step-we001-1
+    title: The Base Class
+    instruction: "First, let's look at the base class. It defines the basic structure\
+      \ that both heroes and enemies will share.\n\n```python\nclass Character:\n\
+      \    def __init__(self, name, hp):\n        self.name = name\n        self.hp\
+      \ = hp\n        \n    def attack(self, target):\n        pass  # To be overridden\
+      \ by subclasses\n        \n    def take_damage(self, amount):\n        self.hp\
+      \ -= amount\n```\n"
+    type: multipleChoice
+    prompt: |
+      If we created a generic `Character` object, what would happen if we called its `attack` method?
+    choices:
+    - id: a
+      text: It would crash because `pass` is an error.
+    - id: b
+      text: It would deal 0 damage to the target.
+    - id: c
+      text: It would execute, but absolutely nothing would happen.
+    - id: d
+      text: It automatically calls `take_damage` on the target.
+    answer:
+      choiceId: c
+    explanation: |
+      The `pass` keyword is literally a placeholder that does nothing. Calling `attack` on a raw `Character` will just execute the `pass` statement and return `None`.
+  - id: step-we001-2
+    title: The Subclasses
+    instruction: "Now, let's look at the subclasses:\n\n```python\nclass Hero(Character):\n\
+      \    def attack(self, target):\n        print(f\"{self.name} swings their sword\
+      \ at {target.name}!\")\n        target.take_damage(20)\n        \nclass Enemy(Character):\n\
+      \    def attack(self, target):\n        print(f\"{self.name} bites {target.name}!\"\
+      )\n        target.take_damage(10)\n```\n"
+    type: numericResponse
+    prompt: |
+      Let's trace this combat sequence:
 
-      - id: s003
-        title: Understanding Polymorphism
-        instruction: |
-          Notice how both classes have an `attack(self, target)` method. Because of this, we can write a function that works for ANY character without needing to know if they are a Hero or an Enemy.
-          
-          ```python
-          def combat_round(char_a, char_b):
-              char_a.attack(char_b)
-              if char_b.hp > 0:
-                  char_b.attack(char_a)
-          ```
-        type: multipleChoice
-        prompt: |
-          What happens if we call `combat_round(monster, player)`?
-        choices:
-          - id: a
-            text: The `monster` attacks the `player`, and then the `player` counter-attacks.
-          - id: b
-            text: The `player` attacks the `monster`, and then the `monster` counter-attacks.
-          - id: c
-            text: The code crashes because `monster` was passed as the first argument.
-        answer:
-          choiceId: a
-        explanation: |
-          The function just calls `.attack()` on whatever object is passed in as `char_a`. If `char_a` is the monster, the `Enemy.attack()` method runs! This is polymorphism in action.
+      ```python
+      player = Hero("Arthur", 100)
+      monster = Enemy("Slime", 50)
 
+      player.attack(monster)
+      monster.attack(player)
+      player.attack(monster)
+      ```
 
+      What is the `hp` of the `monster` at the end of this sequence?
+    answer:
+      value: 10
+      tolerance: 0
+    explanation: |
+      The monster starts with 50 HP.
+      1. Player attacks monster: Monster takes 20 damage. (Monster HP = 30)
+      2. Monster attacks player: Player takes 10 damage. (Player HP = 90)
+      3. Player attacks monster: Monster takes 20 damage. (Monster HP = 10)
+  - id: step-we001-3
+    title: Understanding Polymorphism
+    instruction: "Notice\rhow both classes have an `attack(self, target)` method. Because\
+      \ of this, we can write a function that works for ANY character without needing\
+      \ to know if they are a Hero or an Enemy.\n\n```python\ndef combat_round(char_a,\
+      \ char_b):\n    char_a.attack(char_b)\n    if char_b.hp > 0:\n        char_b.attack(char_a)\n\
+      ```\n"
+    type: multipleChoice
+    prompt: |
+      What happens if we call `combat_round(monster, player)`?
+    choices:
+    - id: a
+      text: The `monster` attacks the `player`, and then the `player` counter-attacks.
+    - id: b
+      text: The `player` attacks the `monster`, and then the `monster` counter-attacks.
+    - id: c
+      text: The code crashes because `monster` was passed as the first argument.
+    answer:
+      choiceId: a
+    explanation: |
+      The function just calls `.attack()` on whatever object is passed in as `char_a`. If `char_a` is the monster, the `Enemy.attack()` method runs! This is polymorphism in action.

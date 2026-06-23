@@ -3,139 +3,175 @@ id: chemistry-limiting-reactant-interactive
 title: Limiting Reactant Interactive Exploration
 assessmentType: interactiveExploration
 categoryId: chemistry
-subcategoryId: chemistry-stoichiometry
 subcategoryIds:
-  - chemistry-stoichiometry
+- chemistry-stoichiometry
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: interactiveExploration
   tags:
-    - limiting-reactant
-    - stoichiometry
-    - theoretical-yield
+  - limiting-reactant
+  - stoichiometry
+  - theoretical-yield
 exploration:
-  introduction: |
-    In the reaction 2H2 + O2 → 2H2O, hydrogen and oxygen must combine in a strict 2:1 mole ratio.
+  introduction: 'In the reaction 2H2 + O2 → 2H2O, hydrogen and oxygen must combine
+    in a strict 2:1 mole ratio.
 
-    If you have too much oxygen and not enough hydrogen, the hydrogen runs out first — it is the limiting reactant and it "limits" how much water you can make.
 
-    In this exploration, adjust the moles of H2 and O2 and watch how the theoretical yield of H2O changes. Notice how the limiting reactant switches when you change the ratio.
+    If you have too much oxygen and not enough hydrogen, the hydrogen runs out first
+    — it is the limiting reactant and it "limits"\rhow much water you can make.
+
+
+    In this exploration, adjust the moles of H2 and O2 and watch\rhow the theoretical
+    yield of H2O changes. Notice\rhow the limiting reactant switches when you change
+    the ratio.
+
+    '
   sections:
-    - id: explore-limiting
-      title: Explore the Limiting Reactant
-      required: true
-      instruction: |
-        Adjust the **moles of H2** and **moles of O2** using the sliders below.
-
-        The readouts will show:
-        - How much H2O could be made from H2 alone
-        - How much H2O could be made from O2 alone
-        - The actual theoretical yield (the smaller of the two)
-        - Which reactant is limiting
-
-        The stoichiometric requirement is: 2 mol H2 per 1 mol O2.
-        When H2 : O2 = 2:1 exactly, both reactants are consumed completely (no limiting reactant).
-      controls:
-        - id: moles_H2
-          type: slider
-          label: Moles of H2
-          min: 0.5
-          max: 10.0
-          step: 0.5
-          defaultValue: '4.0'
-        - id: moles_O2
-          type: slider
-          label: Moles of O2
-          min: 0.5
-          max: 10.0
-          step: 0.5
-          defaultValue: '3.0'
-      views:
-        - id: h2o-from-h2
-          type: readout
-          label: Mol H2O possible from H2 (using ratio 2H2:2H2O = 1:1)
-          expression: moles_H2 * 1
-        - id: h2o-from-o2
-          type: readout
-          label: Mol H2O possible from O2 (using ratio 1 O2:2 H2O)
-          expression: moles_O2 * 2
-        - id: theoretical-yield
-          type: readout
-          label: 'Theoretical yield H2O (mol) — the SMALLER of the two above'
-          expression: 'moles_H2 < moles_O2 * 2 ? moles_H2 : moles_O2 * 2'
-        - id: yield-grams
-          type: readout
-          label: Theoretical yield H2O (grams, M = 18.015 g/mol)
-          expression: '(moles_H2 < moles_O2 * 2 ? moles_H2 : moles_O2 * 2) * 18.015'
-      check:
-        id: limiting-explore-check
-        type: multipleChoice
-        prompt: |
-          You set H2 = 4.0 mol and O2 = 3.0 mol. The 2H2 + O2 → 2H2O reaction requires a 2:1 ratio of H2:O2. Which reactant is limiting and why?
-        choices:
-          - id: a
-            text: H2 is limiting. It would make 4.0 mol H2O; O2 would make 6.0 mol H2O. H2 produces less product.
-          - id: b
-            text: O2 is limiting. 3.0 mol O2 only needs 6.0 mol H2, but only 4.0 mol H2 is available.
-          - id: c
-            text: Neither is limiting — both run out at the same time with 4:3 ratio.
-          - id: d
-            text: H2 is limiting because there is less of it by moles.
-        answer:
-          choiceId: a
-        explanation: |
-          The correct method is to calculate product from each reactant separately:
-          From 4.0 mol H2 (ratio 1:1): 4.0 mol H2O.
-          From 3.0 mol O2 (ratio 1:2): 6.0 mol H2O.
-          H2 gives the smaller result → H2 is limiting. (Note: there is MORE H2 by moles than the required 2:1 ratio of H2/O2 = 4/3 = 1.33, not 2. So H2 is actually limiting. The 2:1 ratio required means we need 6 mol H2 for 3 mol O2 — but we only have 4 mol H2.)
-
-    - id: stoichiometric-point
-      title: Finding the Exact Stoichiometric Ratio
-      required: true
-      instruction: |
-        Adjust the sliders until neither reactant is in excess — both should be completely consumed.
-        This is called the **stoichiometric ratio**: 2 mol H2 per 1 mol O2.
-
-        Set H2 = 6.0 mol and O2 = 3.0 mol. Observe that both reactants produce the same theoretical yield (6.0 mol H2O), meaning neither is limiting.
-      controls:
-        - id: moles_H2_b
-          type: slider
-          label: Moles of H2
-          min: 0.5
-          max: 10.0
-          step: 0.5
-          defaultValue: '6.0'
-        - id: moles_O2_b
-          type: slider
-          label: Moles of O2
-          min: 0.5
-          max: 10.0
-          step: 0.5
-          defaultValue: '3.0'
-      views:
-        - id: h2o-from-h2-b
-          type: readout
-          label: Mol H2O from H2
-          expression: moles_H2_b
-        - id: h2o-from-o2-b
-          type: readout
-          label: Mol H2O from O2
-          expression: moles_O2_b * 2
-        - id: ratio-display
-          type: readout
-          label: Actual H2 to O2 ratio (should be 2.0 at stoichiometry)
-          expression: moles_H2_b / moles_O2_b
-      check:
-        id: stoichiometric-check
-        type: numericResponse
-        prompt: |
-          For the reaction 2H2 + O2 → 2H2O, if you start with exactly 8.0 mol H2 and 4.0 mol O2 (the exact stoichiometric ratio), how many moles of H2O are produced?
-        answer:
-          value: 8.0
-          tolerance: 0.1
-        explanation: |
-          At exact stoichiometry, neither reactant is limiting. From 8.0 mol H2 (ratio 1:1 for H2→H2O): 8.0 mol H2O. From 4.0 mol O2 (ratio 1:2): 8.0 mol H2O. Both agree → 8.0 mol H2O produced.
+  - id: explore-limiting
+    title: Explore the Limiting Reactant
+    required: true
+    instruction: 'Adjust the **moles of H2** and **moles of O2** using the sliders
+      below.
 
 
+      The readouts will show:
+
+      - How much H2O could be made from H2 alone
+
+      - How much H2O could be made from O2 alone
+
+      - The actual theoretical yield (the smaller of the two)
+
+      - Which reactant is limiting
+
+
+      The stoichiometric requirement is: 2 mol H2 per 1 mol O2.
+
+      When H2 : O2 = 2:1 exactly, both reactants are consumed completely (no limiting
+      reactant).
+
+      '
+    controls:
+    - id: moles_H2
+      type: slider
+      label: Moles of H2
+      min: 0.5
+      max: 10.0
+      step: 0.5
+      defaultValue: '4.0'
+    - id: moles_O2
+      type: slider
+      label: Moles of O2
+      min: 0.5
+      max: 10.0
+      step: 0.5
+      defaultValue: '3.0'
+    views:
+    - id: h2o-from-h2
+      type: readout
+      label: Mol H2O possible from H2 (using ratio 2H2:2H2O = 1:1)
+      expression: moles_H2 * 1
+    - id: h2o-from-o2
+      type: readout
+      label: Mol H2O possible from O2 (using ratio 1 O2:2 H2O)
+      expression: moles_O2 * 2
+    - id: theoretical-yield
+      type: readout
+      label: Theoretical yield H2O (mol) — the SMALLER of the two above
+      expression: 'moles_H2 < moles_O2 * 2 ? moles_H2 : moles_O2 * 2'
+    - id: yield-grams
+      type: readout
+      label: Theoretical yield H2O (grams, M = 18.015 g/mol)
+      expression: '(moles_H2 < moles_O2 * 2 ? moles_H2 : moles_O2 * 2) * 18.015'
+    check:
+      id: limiting-explore-check
+      type: multipleChoice
+      prompt: 'You set H2 = 4.0 mol and O2 = 3.0 mol. The 2H2 + O2 → 2H2O reaction
+        requires a 2:1 ratio of H2:O2. Which reactant is limiting and why?
+
+        '
+      choices:
+      - id: a
+        text: H2 is limiting. It would make 4.0 mol H2O; O2 would make 6.0 mol H2O.
+          H2 produces less product.
+      - id: b
+        text: O2 is limiting. 3.0 mol O2 only needs 6.0 mol H2, but only 4.0 mol H2
+          is available.
+      - id: c
+        text: Neither is limiting — both run out at the same time with 4:3 ratio.
+      - id: d
+        text: H2 is limiting because there is less of it by moles.
+      answer:
+        choiceId: a
+      explanation: 'The correct method is to calculate product from each reactant
+        separately:
+
+        From 4.0 mol H2 (ratio 1:1): 4.0 mol H2O.
+
+        From 3.0 mol O2 (ratio 1:2): 6.0 mol H2O.
+
+        H2 gives the smaller result → H2 is limiting. (Note: there is MORE H2 by moles
+        than the required 2:1 ratio of H2/O2 = 4/3 = 1.33, not 2. So H2 is actually
+        limiting. The 2:1 ratio required means we need 6 mol H2 for 3 mol O2 — but
+        we only have 4 mol H2.)
+
+        '
+  - id: stoichiometric-point
+    title: Finding the Exact Stoichiometric Ratio
+    required: true
+    instruction: 'Adjust the sliders until neither reactant is in excess — both should
+      be completely consumed.
+
+      This is called the **stoichiometric ratio**: 2 mol H2 per 1 mol O2.
+
+
+      Set H2 = 6.0 mol and O2 = 3.0 mol. Observe that both reactants produce the same
+      theoretical yield (6.0 mol H2O), meaning neither is limiting.
+
+      '
+    controls:
+    - id: moles_H2_b
+      type: slider
+      label: Moles of H2
+      min: 0.5
+      max: 10.0
+      step: 0.5
+      defaultValue: '6.0'
+    - id: moles_O2_b
+      type: slider
+      label: Moles of O2
+      min: 0.5
+      max: 10.0
+      step: 0.5
+      defaultValue: '3.0'
+    views:
+    - id: h2o-from-h2-b
+      type: readout
+      label: Mol H2O from H2
+      expression: moles_H2_b
+    - id: h2o-from-o2-b
+      type: readout
+      label: Mol H2O from O2
+      expression: moles_O2_b * 2
+    - id: ratio-display
+      type: readout
+      label: Actual H2 to O2 ratio (should be 2.0 at stoichiometry)
+      expression: moles_H2_b / moles_O2_b
+    check:
+      id: stoichiometric-check
+      type: numericResponse
+      prompt: 'For the reaction 2H2 + O2 → 2H2O, if you start with exactly 8.0 mol
+        H2 and 4.0 mol O2 (the exact stoichiometric ratio),\rhow many moles of H2O
+        are produced?
+
+        '
+      answer:
+        value: 8.0
+        tolerance: 0.1
+      explanation: 'At exact stoichiometry, neither reactant is limiting. From 8.0
+        mol H2 (ratio 1:1 for H2→H2O): 8.0 mol H2O. From 4.0 mol O2 (ratio 1:2): 8.0
+        mol H2O. Both agree → 8.0 mol H2O produced.
+
+        '

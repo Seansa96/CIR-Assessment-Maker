@@ -3,139 +3,73 @@ id: python-text-rpg-battle-engine-guided-project
 title: Python Text RPG Battle Engine Capstone
 assessmentType: guidedProject
 categoryId: python
-subcategoryId: python-oop
 subcategoryIds:
-  - python-oop
+- python-oop
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: python
-  instructions: |
-    Build the Capstone: Text RPG Battle Engine.
-
-    This project pulls together Control Flow, Functions, Collections, and OOP! You will build a polymorphic battle engine.
-
-    Required project behavior:
-
-    - Implement the classes in `rpg.py`.
-    - **`Character` (Base Class):**
-      - `__init__(self, name, hp, attack_power)`
-      - `is_alive(self)`: Returns `True` if `hp > 0`, else `False`.
-      - `take_damage(self, amount)`: Subtracts `amount` from `hp`.
-      - `attack(self, target)`: Calls `target.take_damage(self.attack_power)`.
-    - **`Hero(Character)`:**
-      - Has all `Character` properties, plus `potions` (defaults to 3).
-      - `__init__(self, name, hp, attack_power, potions=3)`: Use `super()`!
-      - `heal(self)`: If `potions > 0`, adds 20 to `hp` and subtracts 1 from `potions`. If 0 potions, does nothing.
-    - **`BattleEngine`:**
-      - `__init__(self, hero, enemy)`: Stores the references to the hero and enemy objects.
-      - `play_turn(self, hero_action)`: 
-        - If `hero_action` is `"attack"`, the hero attacks the enemy.
-        - If `hero_action` is `"heal"`, the hero heals.
-        - Regardless of the hero's action, if the enemy is still alive (`enemy.is_alive()`), the enemy attacks the hero.
-        - Returns a string: `"Victory"` if enemy is dead, `"Defeat"` if hero is dead, or `"Continue"` if both are alive.
-
-    The automated tests will simulate full battle sequences.
-
+  instructions: "Build the Capstone: Text RPG Battle Engine.\n\nThis project pulls\
+    \ together Control Flow, Functions, Collections, and OOP! You will build a polymorphic\
+    \ battle engine.\n\nRequired project behavior:\n\n- Implement the classes in `rpg.py`.\n\
+    - **`Character` (Base Class):**\n  - `__init__(self, name, hp, attack_power)`\n\
+    \  - `is_alive(self)`: Returns `True` if `hp > 0`, else `False`.\n  - `take_damage(self,\
+    \ amount)`: Subtracts `amount` from `hp`.\n  - `attack(self, target)`: Calls `target.take_damage(self.attack_power)`.\n\
+    - **`Hero(Character)`:**\n  - Has all `Character` properties, plus `potions` (defaults\
+    \ to 3).\n  - `__init__(self, name, hp, attack_power, potions=3)`: Use `super()`!\n\
+    \  - `heal(self)`: If `potions > 0`, adds 20 to `hp` and subtracts 1 from `potions`.\
+    \ If 0 potions, does nothing.\n- **`BattleEngine`:**\n  - `__init__(self, hero,\
+    \ enemy)`: Stores the references to the hero and enemy objects.\n  - `play_turn(self,\
+    \ hero_action)`: \n    - If `hero_action` is `\"attack\"`, the hero attacks the\
+    \ enemy.\n    - If `hero_action` is `\"heal\"`, the hero heals.\n    - Regardless\
+    \ of the hero's action, if the enemy is still alive (`enemy.is_alive()`), the\
+    \ enemy attacks the hero.\n    - Returns a string: `\"Victory\"` if enemy is dead,\
+    \ `\"Defeat\"` if hero is dead, or `\"Continue\"` if both are alive.\n\nThe automated\
+    \ tests will simulate full battle sequences.\n"
   requiredChecks:
-    - id: compile-check
-      title: Compile
-      description: Compiles correctly.
-      expectedOutputContains:
-        - "OK"
+  - id: compile-check
+    title: Compile
+    description: Compiles correctly.
+    expectedOutputContains:
+    - OK
   files:
-    - path: rpg.py
-      readOnly: false
-      content: |
-        class Character:
-            def __init__(self, name, hp, attack_power):
-                self.name = name
-                self.hp = hp
-                self.attack_power = attack_power
-                
-            def is_alive(self):
-                # TODO: Return True if hp > 0
-                return False
-                
-            def take_damage(self, amount):
-                # TODO: Subtract amount from hp
-                pass
-                
-            def attack(self, target):
-                # TODO: Deal damage to target
-                pass
-                
-        class Hero(Character):
-            def __init__(self, name, hp, attack_power, potions=3):
-                # TODO: Call super() and initialize potions
-                pass
-                
-            def heal(self):
-                # TODO: Use a potion if available
-                pass
-                
-        class BattleEngine:
-            def __init__(self, hero, enemy):
-                self.hero = hero
-                self.enemy = enemy
-                
-            def play_turn(self, action):
-                # TODO: Process the hero's action ("attack" or "heal")
-                
-                # TODO: Process the enemy's counter-attack if still alive
-                
-                # TODO: Return "Victory", "Defeat", or "Continue"
-                return "Continue"
-    - path: run_checks.py
-      readOnly: true
-      content: |
-        import unittest
-        from rpg import Character, Hero, BattleEngine
-
-        class TestRPG(unittest.TestCase):
-            def test_character_basics(self):
-                c = Character("Slime", 10, 2)
-                self.assertTrue(c.is_alive())
-                c.take_damage(10)
-                self.assertFalse(c.is_alive())
-
-            def test_hero_healing(self):
-                h = Hero("Arthur", 50, 10, 2)
-                h.take_damage(30)
-                self.assertEqual(h.hp, 20)
-                h.heal()
-                self.assertEqual(h.hp, 40)
-                self.assertEqual(h.potions, 1)
-                h.heal()
-                self.assertEqual(h.potions, 0)
-                h.heal() # Out of potions, shouldn't heal
-                self.assertEqual(h.hp, 60)
-
-            def test_battle_engine_victory(self):
-                hero = Hero("Arthur", 100, 20)
-                enemy = Character("Dragon", 30, 5)
-                engine = BattleEngine(hero, enemy)
-                
-                res = engine.play_turn("attack")
-                self.assertEqual(res, "Continue")
-                self.assertEqual(enemy.hp, 10)
-                self.assertEqual(hero.hp, 95) # Dragon counters
-                
-                res = engine.play_turn("attack")
-                self.assertEqual(res, "Victory")
-                self.assertEqual(enemy.hp, -10)
-                self.assertEqual(hero.hp, 95) # Dragon is dead, no counter
-
-            def test_battle_engine_defeat(self):
-                hero = Hero("Arthur", 10, 5)
-                enemy = Character("Dragon", 100, 20)
-                engine = BattleEngine(hero, enemy)
-                
-                res = engine.play_turn("attack")
-                self.assertEqual(res, "Defeat")
-                self.assertEqual(hero.hp, -10)
-
-        if __name__ == '__main__':
-            unittest.main(verbosity=2)
-
-
+  - path: rpg.py
+    readOnly: false
+    content: "class Character:\n    def __init__(self, name, hp, attack_power):\n\
+      \        self.name = name\n        self.hp = hp\n        self.attack_power =\
+      \ attack_power\n        \n    def is_alive(self):\n        # TODO: Return True\
+      \ if hp > 0\n        return False\n        \n    def take_damage(self, amount):\n\
+      \        # TODO: Subtract amount from hp\n        pass\n        \n    def attack(self,\
+      \ target):\n        # TODO: Deal damage to target\n        pass\n        \n\
+      class Hero(Character):\n    def __init__(self, name, hp, attack_power, potions=3):\n\
+      \        # TODO: Call super() and initialize potions\n        pass\n       \
+      \ \n    def heal(self):\n        # TODO: Use a potion if available\n       \
+      \ pass\n        \nclass BattleEngine:\n    def __init__(self, hero, enemy):\n\
+      \        self.hero = hero\n        self.enemy = enemy\n        \n    def play_turn(self,\
+      \ action):\n        # TODO: Process the hero's action (\"attack\" or \"heal\"\
+      )\n        \n        # TODO: Process the enemy's counter-attack if still alive\n\
+      \        \n        # TODO: Return \"Victory\", \"Defeat\", or \"Continue\"\n\
+      \        return \"Continue\"\n"
+  - path: run_checks.py
+    readOnly: true
+    content: "import unittest\nfrom rpg import Character, Hero, BattleEngine\n\nclass\
+      \ TestRPG(unittest.TestCase):\n    def test_character_basics(self):\n      \
+      \  c = Character(\"Slime\", 10, 2)\n        self.assertTrue(c.is_alive())\n\
+      \        c.take_damage(10)\n        self.assertFalse(c.is_alive())\n\n    def\
+      \ test_hero_healing(self):\n        h = Hero(\"Arthur\", 50, 10, 2)\n      \
+      \  h.take_damage(30)\n        self.assertEqual(h.hp, 20)\n        h.heal()\n\
+      \        self.assertEqual(h.hp, 40)\n        self.assertEqual(h.potions, 1)\n\
+      \        h.heal()\n        self.assertEqual(h.potions, 0)\n        h.heal()\
+      \ # Out of potions, shouldn't heal\n        self.assertEqual(h.hp, 60)\n\n \
+      \   def test_battle_engine_victory(self):\n        hero = Hero(\"Arthur\", 100,\
+      \ 20)\n        enemy = Character(\"Dragon\", 30, 5)\n        engine = BattleEngine(hero,\
+      \ enemy)\n        \n        res = engine.play_turn(\"attack\")\n        self.assertEqual(res,\
+      \ \"Continue\")\n        self.assertEqual(enemy.hp, 10)\n        self.assertEqual(hero.hp,\
+      \ 95) # Dragon counters\n        \n        res = engine.play_turn(\"attack\"\
+      )\n        self.assertEqual(res, \"Victory\")\n        self.assertEqual(enemy.hp,\
+      \ -10)\n        self.assertEqual(hero.hp, 95) # Dragon is dead, no counter\n\
+      \n    def test_battle_engine_defeat(self):\n        hero = Hero(\"Arthur\",\
+      \ 10, 5)\n        enemy = Character(\"Dragon\", 100, 20)\n        engine = BattleEngine(hero,\
+      \ enemy)\n        \n        res = engine.play_turn(\"attack\")\n        self.assertEqual(res,\
+      \ \"Defeat\")\n        self.assertEqual(hero.hp, -10)\n\nif __name__ == '__main__':\n\
+      \    unittest.main(verbosity=2)\n"

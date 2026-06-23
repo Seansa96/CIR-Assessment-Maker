@@ -3,68 +3,84 @@ id: docker-capstone-webdav-guided-project
 title: Capstone Project - WebDAV Server Configuration
 assessmentType: workedExample
 categoryId: containerization
-subcategoryId: docker-projects
 subcategoryIds:
-  - docker-projects
-learningGoal: apply
-activityType: guidedWorkedExample
-tags:
+- docker-projects
+workedExamples:
+- id: we-webdav-capstone
+  title: WebDAV Capstone Project
+  problem: 'In this Phase 1 Capstone, you will bring together everything you''ve learned
+    to configure a WebDAV server using Nginx. WebDAV allows you to collaboratively
+    edit and manage files on a remote web server.
+
+
+    To eliminate friction with Linux internals, we are using the standard `nginx`
+    image and taking advantage of its built-in WebDAV extensions. We have pre-configured
+    the necessary Nginx configuration file (`default.conf`) for you.
+
+
+    ### Required Concepts:
+
+    * **Detached Containers (`-d`):** Running the server in the background so it stays
+    alive.
+
+    * **Port Mapping (`-p`):** Exposing the container''s HTTP port to your local machine.
+
+    * **Multiple Bind Mounts (`-v`):** You can mount multiple files and directories
+    at the same time. You will mount the configuration file, and the directory where
+    your actual WebDAV files will be stored.
+
+
+    *If you get stuck, review the **Docker Networking Foundation** and **Docker Volumes
+    and Data Persistence** concept lessons, as well as the **Volume Mounting** checkpoint.*
+
+    '
+  steps:
+  - id: step-we-webdav-capstone-1
+    title: Launching the WebDAV Container
+    instruction: Construct the docker run command to deploy the WebDAV server with
+      the necessary mounts.
+    type: freeResponse
+    prompt: |
+      Your isolated project directory is located at `/data/project-sessions/docker/webdav-capstone`.
+      Inside it, there is a `default.conf` file containing the WebDAV settings, and a `webdav-data` directory where the files will be stored.
+
+      Write the `docker run` command to:
+      1. Run the `nginx` container in detached mode (`-d`).
+      2. Name the container `my-webdav`.
+      3. Map\rhost port `8080` to container port `80`.
+      4. Bind mount the\rhost file `/data/project-sessions/docker/webdav-capstone/default.conf` to `/etc/nginx/conf.d/default.conf` in the container.
+      5. Bind mount the\rhost directory `/data/project-sessions/docker/webdav-capstone/webdav-data` to `/var/www/html` in the container.
+    answer:
+      gradingMode: selfCheck
+      expected: 'docker run -d --name my-webdav -p 8080:80 -v /data/project-sessions/docker/webdav-capstone/default.conf:/etc/nginx/conf.d/default.conf
+        -v /data/project-sessions/docker/webdav-capstone/webdav-data:/var/www/html
+        nginx
+
+        '
+    explanation: |
+      By using multiple `-v` flags, you can overlay both configuration files and data directories onto the container. The `nginx` container immediately uses your custom configuration and serves the `webdav-data` folder.
+  - id: step-we-webdav-capstone-2
+    title: Verifying the Deployment
+    instruction: Use curl to verify that the WebDAV server is responding correctly.
+    type: freeResponse
+    prompt: |
+      The WebDAV server should now be running on `localhost:8080`.
+
+      Write a `curl` command to send an HTTP `OPTIONS` request to `http://localhost:8080/` to verify that WebDAV methods (like `PROPFIND`, `PUT`, `DELETE`) are allowed by the server.
+
+      *(Hint: Use `curl -X OPTIONS http://localhost:8080/ -i` to see the headers, including the `Allow` header.)*
+    answer:
+      gradingMode: selfCheck
+      expected: 'curl -X OPTIONS http://localhost:8080/ -i
+
+        '
+    explanation: |
+      The `OPTIONS` request asks the server what HTTP methods it supports. If the WebDAV configuration was mounted successfully, the response will include methods like `PROPFIND` and `MKCOL`, confirming your containerized WebDAV server is fully operational.
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
   - docker
   - capstone
   - nginx
   - webdav
-workedExamples:
-  - id: we-webdav-capstone
-    title: WebDAV Capstone Project
-    problem: |
-      In this Phase 1 Capstone, you will bring together everything you've learned to configure a WebDAV server using Nginx. WebDAV allows you to collaboratively edit and manage files on a remote web server.
-      
-      To eliminate friction with Linux internals, we are using the standard `nginx` image and taking advantage of its built-in WebDAV extensions. We have pre-configured the necessary Nginx configuration file (`default.conf`) for you.
-      
-      ### Required Concepts:
-      * **Detached Containers (`-d`):** Running the server in the background so it stays alive.
-      * **Port Mapping (`-p`):** Exposing the container's HTTP port to your local machine.
-      * **Multiple Bind Mounts (`-v`):** You can mount multiple files and directories at the same time. You will mount the configuration file, and the directory where your actual WebDAV files will be stored.
-      
-      *If you get stuck, review the **Docker Networking Foundation** and **Docker Volumes and Data Persistence** concept lessons, as well as the **Volume Mounting** checkpoint.*
-
-    steps:
-    - id: step-run-webdav
-      title: Launching the WebDAV Container
-      instruction: Construct the docker run command to deploy the WebDAV server with the necessary mounts.
-      type: freeResponse
-      prompt: |
-        Your isolated project directory is located at `/data/project-sessions/docker/webdav-capstone`.
-        Inside it, there is a `default.conf` file containing the WebDAV settings, and a `webdav-data` directory where the files will be stored.
-        
-        Write the `docker run` command to:
-        1. Run the `nginx` container in detached mode (`-d`).
-        2. Name the container `my-webdav`.
-        3. Map host port `8080` to container port `80`.
-        4. Bind mount the host file `/data/project-sessions/docker/webdav-capstone/default.conf` to `/etc/nginx/conf.d/default.conf` in the container.
-        5. Bind mount the host directory `/data/project-sessions/docker/webdav-capstone/webdav-data` to `/var/www/html` in the container.
-      answer:
-        gradingMode: selfCheck
-        expected: |
-          docker run -d --name my-webdav -p 8080:80 -v /data/project-sessions/docker/webdav-capstone/default.conf:/etc/nginx/conf.d/default.conf -v /data/project-sessions/docker/webdav-capstone/webdav-data:/var/www/html nginx
-      explanation: |
-        By using multiple `-v` flags, you can overlay both configuration files and data directories onto the container. The `nginx` container immediately uses your custom configuration and serves the `webdav-data` folder.
-
-    - id: step-verify-webdav
-      title: Verifying the Deployment
-      instruction: Use curl to verify that the WebDAV server is responding correctly.
-      type: freeResponse
-      prompt: |
-        The WebDAV server should now be running on `localhost:8080`.
-        
-        Write a `curl` command to send an HTTP `OPTIONS` request to `http://localhost:8080/` to verify that WebDAV methods (like `PROPFIND`, `PUT`, `DELETE`) are allowed by the server.
-        
-        *(Hint: Use `curl -X OPTIONS http://localhost:8080/ -i` to see the headers, including the `Allow` header.)*
-      answer:
-        gradingMode: selfCheck
-        expected: |
-          curl -X OPTIONS http://localhost:8080/ -i
-      explanation: |
-        The `OPTIONS` request asks the server what HTTP methods it supports. If the WebDAV configuration was mounted successfully, the response will include methods like `PROPFIND` and `MKCOL`, confirming your containerized WebDAV server is fully operational.
-
-

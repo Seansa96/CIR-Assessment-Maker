@@ -3,329 +3,391 @@ id: python-loops-concept-lesson
 title: Python Loops Concept Lesson
 assessmentType: conceptLesson
 categoryId: python
-subcategoryId: python-control-flow
 subcategoryIds:
-  - python-control-flow
+- python-control-flow
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - loops
-    - control-flow
-    - iteration
+  - loops
+  - control-flow
+  - iteration
 lesson:
-  introduction: |
-    Loops let a program apply the same process repeatedly while the data or state changes.
-    This lesson builds a mental model for reading loops before asking you to write them.
+  introduction: 'Loops let a program apply the same process repeatedly while the data
+    or state changes.
+
+    This lesson builds a mental model for reading loops before asking you to write
+    them.
+
+    '
   sections:
-    - id: repetition-purpose
-      title: Why repetition is useful
-      required: true
-      content: |
-        A loop replaces repeated copies of the same instruction with one block and a rule
-        describing when that block runs. The repeated block is called the **loop body**.
+  - id: repetition-purpose
+    title: Why repetition is useful
+    required: true
+    content: 'A loop replaces repeated copies of the same instruction with one block
+      and a rule
 
-        The useful question is not only "How many times does this run?" Ask:
-
-        1. What value is different on each iteration?
-        2. What work remains the same?
-        3. What condition or sequence determines when repetition stops?
-
-    - id: loop-body-indentation
-      title: Loop body and indentation
-      required: true
-      content: |
-        Python uses indentation to decide which statements belong to a loop. Every line
-        indented beneath the loop header runs once per iteration. The first line that
-        returns to the outer indentation level runs after the loop.
-      check:
-        id: loop-body-indentation-check
-        type: multipleChoice
-        prompt: |
-          Which statement runs once for every value in `names`?
-
-          ```python
-          for name in names:
-              greeting = "Hello, " + name
-              print(greeting)
-          print("Finished")
-          ```
-        choices:
-          - id: a
-            text: 'Both `greeting = ...` and `print(greeting)`'
-          - id: b
-            text: 'Only `print("Finished")`'
-          - id: c
-            text: 'Every line, including `print("Finished")`'
-          - id: d
-            text: 'Only the `for` header'
-        answer:
-          choiceId: a
-        explanation: |
-          The two indented statements form the loop body. `print("Finished")` is aligned
-          with the `for` statement, so it runs once after iteration ends.
-
-          Related topic: Python block structure and indentation.
-
-    - id: iterables-and-traversal
-      title: Iterables and sequence traversal
-      required: true
-      content: |
-        In `for item in collection`, Python asks the iterable for one value at a time.
-        The loop variable is rebound to each value in order. Lists, strings, tuples, and
-        `range` objects are common iterables.
-      check:
-        id: iterables-and-traversal-check
-        type: selectAll
-        prompt: Which objects can a basic Python `for` loop traverse directly?
-        choices:
-          - id: a
-            text: A list
-          - id: b
-            text: A string
-          - id: c
-            text: A `range` object
-          - id: d
-            text: An undefined variable
-        answer:
-          choiceIds:
-            - a
-            - b
-            - c
-        explanation: |
-          Lists, strings, and ranges are iterable. An undefined variable raises a
-          `NameError` before traversal can begin.
-
-          Related topic: Python's iterable protocol and sequence types.
-
-    - id: range-boundaries
-      title: How range controls repetition
-      required: true
-      content: |
-        `range(start, stop, step)` includes `start` and excludes `stop`. The step controls
-        the change between values. With a positive step, the produced values must remain
-        below `stop`.
-
-        For example, `range(2, 8, 2)` produces `2, 4, 6`.
-      check:
-        id: range-boundaries-check
-        type: multipleChoice
-        prompt: What sequence is produced by `range(5, 0, -2)`?
-        choices:
-          - id: a
-            text: '`5, 3, 1`'
-          - id: b
-            text: '`5, 3, 1, 0`'
-          - id: c
-            text: '`0, 2, 4`'
-          - id: d
-            text: No values
-        answer:
-          choiceId: a
-        explanation: |
-          The sequence starts at 5 and subtracts 2 while values remain greater than the
-          excluded stop value 0.
-
-          Related topic: half-open intervals and off-by-one reasoning.
-
-    - id: tracing-state
-      title: Trace loop state
-      required: true
-      content: |
-        To trace a loop, make a small table. Give each variable a column and each iteration
-        a row. Evaluate the right side of an assignment using the old state, then record the
-        new state.
-      check:
-        id: tracing-state-check
-        type: multipleChoice
-        prompt: |
-          What is printed?
-
-          ```python
-          value = 1
-          for step in range(3):
-              value = value + step
-          print(value)
-          ```
-        choices:
-          - id: a
-            text: '`4`'
-          - id: b
-            text: '`3`'
-          - id: c
-            text: '`6`'
-          - id: d
-            text: '`1`'
-        answer:
-          choiceId: a
-        explanation: |
-          `step` takes the values 0, 1, and 2. The state of `value` becomes 1, then 2,
-          then 4. The trace is more reliable than trying to mentally compress every update.
-
-          Related topic: state tracing and assignment semantics.
-
-    - id: accumulator-patterns
-      title: Accumulator patterns
-      required: true
-      content: |
-        An accumulator stores a result built across iterations. Initialize it before the
-        loop, update it inside the loop, and use it after the loop.
-
-        Common identities:
-
-        - Sum: start at `0`, then add.
-        - Product: start at `1`, then multiply.
-        - Count: start at `0`, then add one when a condition is true.
-        - Collected values: start with an empty list, then append.
-      check:
-        id: accumulator-patterns-check
-        type: multipleChoice
-        prompt: Which initial value is appropriate when multiplying all values in a nonempty list?
-        choices:
-          - id: a
-            text: '`1`'
-          - id: b
-            text: '`0`'
-          - id: c
-            text: An empty string
-          - id: d
-            text: '`False`'
-        answer:
-          choiceId: a
-        explanation: |
-          One is the multiplicative identity: multiplying by it does not alter the first
-          value. Starting at zero would force every product to remain zero.
-
-          Related topic: identity values and reduction patterns.
-
-    - id: for-versus-while
-      title: Choosing for or while
-      required: true
-      content: |
-        Prefer a `for` loop when iterating through a known sequence or range. Prefer a
-        `while` loop when repetition depends on a condition whose stopping point is
-        discovered while the program runs.
-      check:
-        id: for-versus-while-check
-        type: multipleChoice
-        prompt: Which task most naturally calls for a `while` loop?
-        choices:
-          - id: a
-            text: Keep asking for input until the user enters `quit`.
-          - id: b
-            text: Print every name in a list.
-          - id: c
-            text: Visit each character in a string once.
-          - id: d
-            text: Add the integers from 1 through 10.
-        answer:
-          choiceId: a
-        explanation: |
-          The number of attempts is not known in advance; the loop ends when a condition
-          becomes false. The other tasks already provide a finite iterable.
-
-          Related topic: sentinel-controlled versus count-controlled iteration.
-
-    - id: loop-mistakes
-      title: Infinite loops and off-by-one mistakes
-      required: true
-      content: |
-        A `while` loop must make progress toward making its condition false. If the state
-        used by the condition never changes, the loop may be infinite.
-
-        Off-by-one errors usually come from including or excluding one boundary incorrectly.
-        Write the intended first and last values before choosing `range` arguments.
-      check:
-        id: loop-mistakes-check
-        type: selectAll
-        prompt: Which changes can prevent or diagnose common loop mistakes?
-        choices:
-          - id: a
-            text: Confirm that a `while` loop updates a value used in its condition.
-          - id: b
-            text: Write the expected `range` values before coding.
-          - id: c
-            text: Assume the `stop` value is always included.
-          - id: d
-            text: Trace a few iterations in a table.
-        answer:
-          choiceIds:
-            - a
-            - b
-            - d
-        explanation: |
-          Progress checks, explicit boundary examples, and short traces expose most beginner
-          loop errors. Python ranges exclude their stop value.
-
-          Related topic: loop invariants, termination, and boundary testing.
-
-    - id: reading-complete-loop
-      title: Read a complete loop
-      required: true
-      content: |
-        Read a loop in this order: identify the input sequence, identify the state initialized
-        before the loop, describe one iteration, then determine what the final state means.
-      check:
-        id: reading-complete-loop-check
-        type: multipleChoice
-        prompt: |
-          What does this loop calculate?
-
-          ```python
-          matches = 0
-          for score in scores:
-              if score >= 70:
-                  matches += 1
-          ```
-        choices:
-          - id: a
-            text: The number of scores that are at least 70
-          - id: b
-            text: The sum of all scores
-          - id: c
-            text: The largest score
-          - id: d
-            text: The average score
-        answer:
-          choiceId: a
-        explanation: |
-          `matches` is a counting accumulator. It changes only when the current score
-          satisfies the condition.
-
-          Related topic: conditional counting and accumulator invariants.
-
-    - id: final-synthesis
-      title: Final synthesis
-      required: true
-      content: |
-        A reliable loop has a source of values or a continuation condition, a clearly
-        indented body, and state changes you can trace. Correctness comes from understanding
-        how one iteration transforms the current state.
-      check:
-        id: final-synthesis-check
-        type: selectAll
-        prompt: Which questions help you reason about an unfamiliar loop?
-        choices:
-          - id: a
-            text: What values can the loop variable take?
-          - id: b
-            text: Which statements belong to the loop body?
-          - id: c
-            text: How does each iteration change program state?
-          - id: d
-            text: What makes the loop stop?
-        answer:
-          choiceIds:
-            - a
-            - b
-            - c
-            - d
-        explanation: |
-          Together these questions describe the loop's control, body, state transition, and
-          termination. They are the core mental model for tracing and eventually writing loops.
-
-          Related topic: iteration, state transitions, and termination.
+      describing when that block runs. The repeated block is called the **loop body**.
 
 
+      The useful question is not only "How many times does this run?" Ask:
+
+
+      1. What value is different on each iteration?
+
+      2. What work remains the same?
+
+      3. What condition or sequence determines when repetition stops?
+
+      '
+  - id: loop-body-indentation
+    title: Loop body and indentation
+    required: true
+    content: 'Python uses indentation to decide which statements belong to a loop.
+      Every line
+
+      indented beneath the loop header runs once per iteration. The first line that
+
+      returns to the outer indentation level runs after the loop.
+
+      '
+    check:
+      id: loop-body-indentation-check
+      type: multipleChoice
+      prompt: "Which statement runs once for every value in `names`?\n\n```python\n\
+        for name in names:\n    greeting = \"Hello, \" + name\n    print(greeting)\n\
+        print(\"Finished\")\n```\n"
+      choices:
+      - id: a
+        text: Both `greeting = ...` and `print(greeting)`
+      - id: b
+        text: Only `print("Finished")`
+      - id: c
+        text: Every line, including `print("Finished")`
+      - id: d
+        text: Only the `for` header
+      answer:
+        choiceId: a
+      explanation: 'The two indented statements form the loop body. `print("Finished")`
+        is aligned
+
+        with the `for` statement, so it runs once after iteration ends.
+
+
+        Related topic: Python block structure and indentation.
+
+        '
+  - id: iterables-and-traversal
+    title: Iterables and sequence traversal
+    required: true
+    content: 'In `for item in collection`, Python asks the iterable for one value
+      at a time.
+
+      The loop variable is rebound to each value in order. Lists, strings, tuples,
+      and
+
+      `range` objects are common iterables.
+
+      '
+    check:
+      id: iterables-and-traversal-check
+      type: selectAll
+      prompt: Which objects can a basic Python `for` loop traverse directly?
+      choices:
+      - id: a
+        text: A list
+      - id: b
+        text: A string
+      - id: c
+        text: A `range` object
+      - id: d
+        text: An undefined variable
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+      explanation: 'Lists, strings, and ranges are iterable. An undefined variable
+        raises a
+
+        `NameError` before traversal can begin.
+
+
+        Related topic: Python''s iterable protocol and sequence types.
+
+        '
+  - id: range-boundaries
+    title: How range controls repetition
+    required: true
+    content: '`range(start, stop, step)` includes `start` and excludes `stop`. The
+      step controls
+
+      the change between values. With a positive step, the produced values must remain
+
+      below `stop`.
+
+
+      For example, `range(2, 8, 2)` produces `2, 4, 6`.
+
+      '
+    check:
+      id: range-boundaries-check
+      type: multipleChoice
+      prompt: What sequence is produced by `range(5, 0, -2)`?
+      choices:
+      - id: a
+        text: '`5, 3, 1`'
+      - id: b
+        text: '`5, 3, 1, 0`'
+      - id: c
+        text: '`0, 2, 4`'
+      - id: d
+        text: No values
+      answer:
+        choiceId: a
+      explanation: 'The sequence starts at 5 and subtracts 2 while values remain greater
+        than the
+
+        excluded stop value 0.
+
+
+        Related topic: half-open intervals and off-by-one reasoning.
+
+        '
+  - id: tracing-state
+    title: Trace loop state
+    required: true
+    content: 'To trace a loop, make a small table. Give each variable a column and
+      each iteration
+
+      a row. Evaluate the right side of an assignment using the old state, then record
+      the
+
+      new state.
+
+      '
+    check:
+      id: tracing-state-check
+      type: multipleChoice
+      prompt: "What is printed?\n\n```python\nvalue = 1\nfor step in range(3):\n \
+        \   value = value + step\nprint(value)\n```\n"
+      choices:
+      - id: a
+        text: '`4`'
+      - id: b
+        text: '`3`'
+      - id: c
+        text: '`6`'
+      - id: d
+        text: '`1`'
+      answer:
+        choiceId: a
+      explanation: '`step` takes the values 0, 1, and 2. The state of `value` becomes
+        1, then 2,
+
+        then 4. The trace is more reliable than trying to mentally compress every
+        update.
+
+
+        Related topic: state tracing and assignment semantics.
+
+        '
+  - id: accumulator-patterns
+    title: Accumulator patterns
+    required: true
+    content: 'An accumulator stores a result built across iterations. Initialize it
+      before the
+
+      loop, update it inside the loop, and use it after the loop.
+
+
+      Common identities:
+
+
+      - Sum: start at `0`, then add.
+
+      - Product: start at `1`, then multiply.
+
+      - Count: start at `0`, then add one when a condition is true.
+
+      - Collected values: start with an empty list, then append.
+
+      '
+    check:
+      id: accumulator-patterns-check
+      type: multipleChoice
+      prompt: Which initial value is appropriate when multiplying all values in a
+        nonempty list?
+      choices:
+      - id: a
+        text: '`1`'
+      - id: b
+        text: '`0`'
+      - id: c
+        text: An empty string
+      - id: d
+        text: '`False`'
+      answer:
+        choiceId: a
+      explanation: 'One is the multiplicative identity: multiplying by it does not
+        alter the first
+
+        value. Starting at zero would force every product to remain zero.
+
+
+        Related topic: identity values and reduction patterns.
+
+        '
+  - id: for-versus-while
+    title: Choosing for or while
+    required: true
+    content: 'Prefer a `for` loop when iterating through a known sequence or range.
+      Prefer a
+
+      `while` loop when repetition depends on a condition whose stopping point is
+
+      discovered while the program runs.
+
+      '
+    check:
+      id: for-versus-while-check
+      type: multipleChoice
+      prompt: Which task most naturally calls for a `while` loop?
+      choices:
+      - id: a
+        text: Keep asking for input until the user enters `quit`.
+      - id: b
+        text: Print every name in a list.
+      - id: c
+        text: Visit each character in a string once.
+      - id: d
+        text: Add the integers from 1 through 10.
+      answer:
+        choiceId: a
+      explanation: 'The number of attempts is not known in advance; the loop ends
+        when a condition
+
+        becomes false. The other tasks already provide a finite iterable.
+
+
+        Related topic: sentinel-controlled versus count-controlled iteration.
+
+        '
+  - id: loop-mistakes
+    title: Infinite loops and off-by-one mistakes
+    required: true
+    content: 'A `while` loop must make progress toward making its condition false.
+      If the state
+
+      used by the condition never changes, the loop may be infinite.
+
+
+      Off-by-one errors usually come from including or excluding one boundary incorrectly.
+
+      Write the intended first and last values before choosing `range` arguments.
+
+      '
+    check:
+      id: loop-mistakes-check
+      type: selectAll
+      prompt: Which changes can prevent or diagnose common loop mistakes?
+      choices:
+      - id: a
+        text: Confirm that a `while` loop updates a value used in its condition.
+      - id: b
+        text: Write the expected `range` values before coding.
+      - id: c
+        text: Assume the `stop` value is always included.
+      - id: d
+        text: Trace a few iterations in a table.
+      answer:
+        choiceIds:
+        - a
+        - b
+        - d
+      explanation: 'Progress checks, explicit boundary examples, and short traces
+        expose most beginner
+
+        loop errors. Python ranges exclude their stop value.
+
+
+        Related topic: loop invariants, termination, and boundary testing.
+
+        '
+  - id: reading-complete-loop
+    title: Read a complete loop
+    required: true
+    content: 'Read a loop in this order: identify the input sequence, identify the
+      state initialized
+
+      before the loop, describe one iteration, then determine what the final state
+      means.
+
+      '
+    check:
+      id: reading-complete-loop-check
+      type: multipleChoice
+      prompt: "What does this loop calculate?\n\n```python\nmatches = 0\nfor score\
+        \ in scores:\n    if score >= 70:\n        matches += 1\n```\n"
+      choices:
+      - id: a
+        text: The number of scores that are at least 70
+      - id: b
+        text: The sum of all scores
+      - id: c
+        text: The largest score
+      - id: d
+        text: The average score
+      answer:
+        choiceId: a
+      explanation: '`matches` is a counting accumulator. It changes only when the
+        current score
+
+        satisfies the condition.
+
+
+        Related topic: conditional counting and accumulator invariants.
+
+        '
+  - id: final-synthesis
+    title: Final synthesis
+    required: true
+    content: 'A reliable loop has a source of values or a continuation condition,
+      a clearly
+
+      indented body, and state changes you can trace. Correctness comes from understanding
+
+     \rhow one iteration transforms the current state.
+
+      '
+    check:
+      id: final-synthesis-check
+      type: selectAll
+      prompt: Which questions help you reason about an unfamiliar loop?
+      choices:
+      - id: a
+        text: What values can the loop variable take?
+      - id: b
+        text: Which statements belong to the loop body?
+      - id: c
+        text: How does each iteration change program state?
+      - id: d
+        text: What makes the loop stop?
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+        - d
+      explanation: 'Together these questions describe the loop''s control, body, state
+        transition, and
+
+        termination. They are the core mental model for tracing and eventually writing
+        loops.
+
+
+        Related topic: iteration, state transitions, and termination.
+
+        '

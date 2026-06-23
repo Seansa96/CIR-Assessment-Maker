@@ -3,122 +3,89 @@ id: csharp-oop-worked-example
 title: C# Polymorphic Projectiles Worked Example
 assessmentType: workedExample
 categoryId: csharp
-subcategoryId: csharp-oop
 subcategoryIds:
-  - csharp-oop
+- csharp-oop
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Tracing Interfaces in Action
-    problem: |
-      We are building a shooting mechanic. We want a projectile to deal damage to *anything* it hits, as long as that object can be damaged.
-      
-      We will use an interface called `IDamageable` to achieve this.
-    steps:
-      - id: s001
-        title: The Interface and Classes
-        instruction: |
-          We define our interface and two objects:
-          
-          ```csharp
-          public interface IDamageable
-          {
-              void TakeDamage(int amount);
-          }
-          
-          public class Goblin : IDamageable
-          {
-              public int Hp = 50;
-              public void TakeDamage(int amount) { Hp -= amount; }
-          }
-          
-          public class StoneWall
-          {
-              public int Durability = 1000;
-              // StoneWall does NOT implement IDamageable!
-          }
-          ```
-        type: multipleChoice
-        prompt: |
-          Which of the following statements about `Goblin` and `StoneWall` is true based on the code above?
-        choices:
-          - id: a
-            text: Both can be treated as `IDamageable`.
-          - id: b
-            text: Only `Goblin` can be treated as `IDamageable`.
-          - id: c
-            text: Neither can be treated as `IDamageable`.
-        answer:
-          choiceId: b
-        explanation: |
-          Because `Goblin : IDamageable` is explicitly declared, it fulfills the contract. `StoneWall` does not implement the interface, so the compiler does not recognize it as damageable.
-
-      - id: s002
-        title: The Type Check ('is' keyword)
-        instruction: |
-          Now we write the code for our `Fireball` hitting an object. We use the `is` keyword to check if the object implements the interface, and safely cast it if it does.
-          
-          ```csharp
-          public void OnHit(object target)
-          {
-              if (target is IDamageable damageableTarget)
-              {
-                  damageableTarget.TakeDamage(20);
-                  Console.WriteLine("Hit for 20!");
-              }
-              else
-              {
-                  Console.WriteLine("Target is immune.");
-              }
-          }
-          ```
-        type: multipleChoice
-        prompt: |
-          What happens if we call `OnHit(new StoneWall())`?
-        choices:
-          - id: a
-            text: It prints "Hit for 20!"
-          - id: b
-            text: It prints "Target is immune."
-          - id: c
-            text: The program throws a casting exception.
-        answer:
-          choiceId: b
-        explanation: |
-          `target is IDamageable` safely checks if `StoneWall` implements the interface. Since it doesn't, it returns `false`, gracefully falling into the `else` block without crashing.
-
-      - id: s003
-        title: Adding Another Object
-        instruction: |
-          Let's add an Exploding Barrel.
-          
-          ```csharp
-          public class Barrel : IDamageable
-          {
-              public void TakeDamage(int amount)
-              {
-                  Console.WriteLine("Barrel explodes and kills everything!");
-              }
-          }
-          ```
-        type: multipleChoice
-        prompt: |
-          What happens if we call `OnHit(new Barrel())`?
-        choices:
-          - id: a
-            text: |
-              `Hit for 20!`
-              `Barrel explodes and kills everything!`
-          - id: b
-            text: |
-              `Barrel explodes and kills everything!`
-              `Hit for 20!`
-          - id: c
-            text: It prints "Target is immune."
-        answer:
-          choiceId: b
-        explanation: |
-          `Barrel` implements `IDamageable`, so the `is` check passes. `TakeDamage(20)` is called first, which triggers the Barrel's specific implementation (printing the explosion message). Then `OnHit` continues and prints "Hit for 20!".
+- id: we001
+  title: Tracing Interfaces in Action
+  problem: 'We are building a shooting mechanic. We want a projectile to deal damage
+    to *anything* it hits, as long as that object can be damaged.
 
 
+    We will use an interface called `IDamageable` to achieve this.
+
+    '
+  steps:
+  - id: step-we001-1
+    title: The Interface and Classes
+    instruction: "We define our interface and two objects:\n\n```csharp\npublic interface\
+      \ IDamageable\n{\n    void TakeDamage(int amount);\n}\n\npublic class Goblin\
+      \ : IDamageable\n{\n    public int Hp = 50;\n    public void TakeDamage(int\
+      \ amount) { Hp -= amount; }\n}\n\npublic class StoneWall\n{\n    public int\
+      \ Durability = 1000;\n    // StoneWall does NOT implement IDamageable!\n}\n\
+      ```\n"
+    type: multipleChoice
+    prompt: |
+      Which of the following statements about `Goblin` and `StoneWall` is true based on the code above?
+    choices:
+    - id: a
+      text: Both can be treated as `IDamageable`.
+    - id: b
+      text: Only `Goblin` can be treated as `IDamageable`.
+    - id: c
+      text: Neither can be treated as `IDamageable`.
+    answer:
+      choiceId: b
+    explanation: |
+      Because `Goblin : IDamageable` is explicitly declared, it fulfills the contract. `StoneWall` does not implement the interface, so the compiler does not recognize it as damageable.
+  - id: step-we001-2
+    title: The Type Check ('is' keyword)
+    instruction: "Now we write the code for our `Fireball` hitting an object. We use\
+      \ the `is` keyword to check if the object implements the interface, and safely\
+      \ cast it if it does.\n\n```csharp\npublic void OnHit(object target)\n{\n  \
+      \  if (target is IDamageable damageableTarget)\n    {\n        damageableTarget.TakeDamage(20);\n\
+      \        Console.WriteLine(\"Hit for 20!\");\n    }\n    else\n    {\n     \
+      \   Console.WriteLine(\"Target is immune.\");\n    }\n}\n```\n"
+    type: multipleChoice
+    prompt: |
+      What happens if we call `OnHit(new StoneWall())`?
+    choices:
+    - id: a
+      text: It prints "Hit for 20!"
+    - id: b
+      text: It prints "Target is immune."
+    - id: c
+      text: The program throws a casting exception.
+    answer:
+      choiceId: b
+    explanation: |
+      `target is IDamageable` safely checks if `StoneWall` implements the interface. Since it doesn't, it returns `false`, gracefully falling into the `else` block without crashing.
+  - id: step-we001-3
+    title: Adding Another Object
+    instruction: "Let's add an Exploding Barrel.\n\n```csharp\npublic class Barrel\
+      \ : IDamageable\n{\n    public void TakeDamage(int amount)\n    {\n        Console.WriteLine(\"\
+      Barrel explodes and kills everything!\");\n    }\n}\n```\n"
+    type: multipleChoice
+    prompt: |
+      What happens if we call `OnHit(new Barrel())`?
+    choices:
+    - id: a
+      text: '`Hit for 20!`
+
+        `Barrel explodes and kills everything!`
+
+        '
+    - id: b
+      text: '`Barrel explodes and kills everything!`
+
+        `Hit for 20!`
+
+        '
+    - id: c
+      text: It prints "Target is immune."
+    answer:
+      choiceId: b
+    explanation: |
+      `Barrel` implements `IDamageable`, so the `is` check passes. `TakeDamage(20)` is called first, which triggers the Barrel's specific implementation (printing the explosion message). Then `OnHit` continues and prints "Hit for 20!".

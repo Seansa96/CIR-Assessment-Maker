@@ -3,49 +3,74 @@ id: docker-networking-foundation-concept-lesson
 title: Docker Networking Foundation
 assessmentType: conceptLesson
 categoryId: containerization
-subcategoryId: docker-networking
 subcategoryIds:
-  - docker-networking
+- docker-networking
 modeDefault: study
 randomizeQuestions: false
 sections:
-  - id: isolation
-    title: Network Isolation
-    content: |
-      By default, Docker containers are heavily isolated from the host machine's network. When you run a web server inside a container on port 80, it is **not** immediately accessible on your computer's `localhost:80`.
-      
-      Docker creates a private virtual network (the "bridge" network) inside your host machine. Containers on this bridge network can talk to each other, and they can reach out to the internet, but outside traffic cannot get in by default.
+- id: isolation
+  title: Network Isolation
+  content: 'By default, Docker containers are heavily isolated from the\rhost machine''s
+    network. When you run a web server inside a container on port 80, it is **not**
+    immediately accessible on your computer''s `localhost:80`.
 
-  - id: port-mapping
-    title: Port Mapping (-p)
-    content: |
-      To allow external access to a container, you must explicitly punch a hole through the isolation. This is called **Port Mapping** or **Port Forwarding**.
-      
-      You use the `-p` flag with the format `-p <HOST_PORT>:<CONTAINER_PORT>`:
-      
-      `docker run -d -p 8080:80 nginx`
-      
-      This command tells Docker: "Listen on port 8080 on my actual laptop (the host). Take any traffic that arrives there, and forward it to port 80 inside the isolated container."
-      
-      Now, navigating to `http://localhost:8080` in your web browser will display the Nginx welcome page.
 
-  - id: port-conflicts
-    title: Avoiding Port Conflicts
-    content: |
-      Because container ports are isolated, you can run multiple identical containers internally listening on port 80, as long as you map them to *different* host ports.
-      
-      * `docker run -d -p 8081:80 nginx`
-      * `docker run -d -p 8082:80 nginx`
-      * `docker run -d -p 8083:80 nginx`
-      
-      This allows you to scale or run multiple services without port collisions on your host operating system.
+    Docker creates a private virtual network (the "bridge" network) inside your\rhost
+    machine. Containers on this bridge network can talk to each other, and they can
+    reach out to the internet, but outside traffic cannot get in by default.
 
-questions:
-  - id: q001
-    type: multipleChoice
-    prompt: |
-      If you run `docker run -d -p 5000:3000 my-node-app`, what port should you type into your host's web browser to access the application?
-    choices:
+    '
+- id: port-mapping
+  title: Port Mapping (-p)
+  content: 'To allow external access to a container, you must explicitly punch a\rhole
+    through the isolation. This is called **Port Mapping** or **Port Forwarding**.
+
+
+    You use the `-p` flag with the format `-p <HOST_PORT>:<CONTAINER_PORT>`:
+
+
+    `docker run -d -p 8080:80 nginx`
+
+
+    This command tells Docker: "Listen on port 8080 on my actual laptop (the\rhost).
+    Take any traffic that arrives there, and forward it to port 80 inside the isolated
+    container."
+
+
+    Now, navigating to `http://localhost:8080` in your web browser will display the
+    Nginx welcome page.
+
+    '
+- id: port-conflicts
+  title: Avoiding Port Conflicts
+  content: 'Because container ports are isolated, you can run multiple identical containers
+    internally listening on port 80, as long as you map them to *different*\rhost ports.
+
+
+    * `docker run -d -p 8081:80 nginx`
+
+    * `docker run -d -p 8082:80 nginx`
+
+    * `docker run -d -p 8083:80 nginx`
+
+
+    This allows you to scale or run multiple services without port collisions on your
+   \rhost operating system.
+
+    '
+lesson:
+  introduction: Docker Networking Foundation
+  sections:
+  - id: sec-q001
+    title: If you run `docker run -d -p 5000:3000 my-node-app`, what port should you
+      type into your\rhost's web browser to access the application?
+    content: |
+      If you run `docker run -d -p 5000:3000 my-node-app`, what port should you type into your\rhost's web browser to access the application?
+    check:
+      id: check-q001
+      type: multipleChoice
+      prompt: 'Select the correct statement:'
+      choices:
       - id: a
         text: 3000
       - id: b
@@ -54,38 +79,51 @@ questions:
         text: 80
       - id: d
         text: 8080
-    answer:
-      choiceId: b
-    explanation: |
-      The format is `HOST_PORT:CONTAINER_PORT`. Since the host port is 5000, you access it via `localhost:5000` from the outside.
-
-  - id: q002
-    type: freeResponse
-    prompt: |
-      Write a command to run an `apache2` container in detached mode, mapping port 80 inside the container to port 9090 on the host machine.
-    answer:
-      expected: |
-        docker run -d -p 9090:80 apache2
-      gradingMode: selfCheck
-    explanation: |
-      Use `-d` for detached, and `-p 9090:80` to map the host port 9090 to the container port 80.
-
-  - id: q003
-    type: multipleChoice
-    prompt: |
+      answer:
+        choiceId: b
+      explanation: |
+        The format is `HOST_PORT:CONTAINER_PORT`. Since the\rhost port is 5000, you access it via `localhost:5000` from the outside.
+  - id: sec-q002
+    title: Write a command to run an `apache2` container in detached mode, mapping
+      port 80 inside the container to port 9090 on the\rhost machine.
+    content: |
+      Write a command to run an `apache2` container in detached mode, mapping port 80 inside the container to port 9090 on the\rhost machine.
+    check:
+      id: check-q002
+      type: multipleChoice
+      prompt: 'Select the correct statement:'
+      choices:
+      - id: a
+        text: Option A
+      - id: b
+        text: Option B
+      - id: c
+        text: Option C
+      - id: d
+        text: Option D
+      answer:
+        choiceId: a
+      explanation: |
+        Use `-d` for detached, and `-p 9090:80` to map the\rhost port 9090 to the container port 80.
+  - id: sec-q003
+    title: Why is port mapping necessary in Docker?
+    content: |
       Why is port mapping necessary in Docker?
-    choices:
+    check:
+      id: check-q003
+      type: multipleChoice
+      prompt: 'Select the correct statement:'
+      choices:
       - id: a
         text: Because containers do not have IP addresses.
       - id: b
-        text: To prevent the host OS from crashing.
+        text: To prevent the\rhost OS from crashing.
       - id: c
-        text: Because containers are isolated on a private virtual network, making their internal ports inaccessible from the outside by default.
+        text: Because containers are isolated on a private virtual network, making
+          their internal ports inaccessible from the outside by default.
       - id: d
-        text: To encrypt the traffic between the container and the host.
-    answer:
-      choiceId: c
-    explanation: |
-      Network isolation ensures security and prevents port collisions, requiring explicit mapping to expose services.
-
-
+        text: To encrypt the traffic between the container and the\rhost.
+      answer:
+        choiceId: c
+      explanation: |
+        Network isolation ensures security and prevents port collisions, requiring explicit mapping to expose services.

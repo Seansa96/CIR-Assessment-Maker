@@ -3,90 +3,86 @@ id: csharp-functions-worked-example
 title: C# Out Parameters Worked Example
 assessmentType: workedExample
 categoryId: csharp
-subcategoryId: csharp-functions
 subcategoryIds:
-  - csharp-functions
+- csharp-functions
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Tracing the TryParse Method
-    problem: |
-      Methods can normally only return a single value. However, `out` parameters allow methods to "return" multiple values. 
-      The most common use of `out` in C# is the `int.TryParse()` method, which safely converts strings to integers without crashing on bad input.
-    steps:
-      - id: s001
-        title: The Signature
-        instruction: |
-          The signature of `int.TryParse` looks like this:
-          
-          `public static bool TryParse(string s, out int result)`
-          
-          It returns a `bool` (true if successful, false if not) AND it sets the `result` out parameter to the converted number.
-        type: multipleChoice
-        prompt: |
-          If we pass `"100"` into `TryParse`, what will the boolean return value and the `out` result be?
-        choices:
-          - id: a
-            text: 'returns `true`, out is `100`'
-          - id: b
-            text: 'returns `100`, out is `true`'
-          - id: c
-            text: 'returns `false`, out is `0`'
-        answer:
-          choiceId: a
-        explanation: |
-          Because `"100"` is a valid integer, the method successfully parses it. It sets the `out` variable to `100` and returns `true` to indicate success.
-
-      - id: s002
-        title: Failing Gracefully
-        instruction: |
-          Unlike `int.Parse()`, which throws a runtime exception if the string is garbage (like `"apple"`), `TryParse` fails gracefully.
-          
-          ```csharp
-          string input = "apple";
-          bool success = int.TryParse(input, out int result);
-          ```
-        type: numericResponse
-        prompt: |
-          What is the value of the integer `result` after the above code executes?
-        answer:
-          value: 0
-          tolerance: 0
-        explanation: |
-          When `TryParse` fails (because "apple" is not a number), it returns `false`. But because `result` is an `out` parameter, the method is *forced* by the compiler to assign it a value anyway. It assigns the default value for an integer, which is `0`.
-
-      - id: s003
-        title: Putting it Together
-        instruction: |
-          This leads to a very common C# pattern for safely getting user input without crashing the game.
-          
-          ```csharp
-          Console.Write("Enter your bet amount: ");
-          string input = Console.ReadLine();
-          
-          if (int.TryParse(input, out int betAmount))
-          {
-              Console.WriteLine($"You bet {betAmount} gold.");
-          }
-          else
-          {
-              Console.WriteLine("Invalid input. Try again.");
-          }
-          ```
-        type: multipleChoice
-        prompt: |
-          What is the primary advantage of this pattern over using `int.Parse(Console.ReadLine())`?
-        choices:
-          - id: a
-            text: It runs much faster.
-          - id: b
-            text: It prevents the program from throwing an exception and crashing if the user types letters instead of numbers.
-          - id: c
-            text: It allows the user to bet floating-point numbers like `10.5`.
-        answer:
-          choiceId: b
-        explanation: |
-          Game loops should never crash because of bad user input. `TryParse` handles the error gracefully via the `if/else` block, ensuring the game continues running smoothly.
+- id: we001
+  title: Tracing the TryParse Method
+  problem: "Methods can normally only return a single value. However, `out` parameters\
+    \ allow methods to \"return\" multiple values. \nThe most common use of `out`\
+    \ in C# is the `int.TryParse()` method, which safely converts strings to integers\
+    \ without crashing on bad input.\n"
+  steps:
+  - id: step-we001-1
+    title: The Signature
+    instruction: 'The signature of `int.TryParse` looks like this:
 
 
+      `public static bool TryParse(string s, out int result)`
+
+
+      It returns a `bool` (true if successful, false if not) AND it sets the `result`
+      out parameter to the converted number.
+
+      '
+    type: multipleChoice
+    prompt: |
+      If we pass `"100"` into `TryParse`, what will the boolean return value and the `out` result be?
+    choices:
+    - id: a
+      text: returns `true`, out is `100`
+    - id: b
+      text: returns `100`, out is `true`
+    - id: c
+      text: returns `false`, out is `0`
+    answer:
+      choiceId: a
+    explanation: |
+      Because `"100"` is a valid integer, the method successfully parses it. It sets the `out` variable to `100` and returns `true` to indicate success.
+  - id: step-we001-2
+    title: Failing Gracefully
+    instruction: 'Unlike `int.Parse()`, which throws a runtime exception if the string
+      is garbage (like `"apple"`), `TryParse` fails gracefully.
+
+
+      ```csharp
+
+      string input = "apple";
+
+      bool success = int.TryParse(input, out int result);
+
+      ```
+
+      '
+    type: numericResponse
+    prompt: |
+      What is the value of the integer `result` after the above code executes?
+    answer:
+      value: 0
+      tolerance: 0
+    explanation: |
+      When `TryParse` fails (because "apple" is not a number), it returns `false`. But because `result` is an `out` parameter, the method is *forced* by the compiler to assign it a value anyway. It assigns the default value for an integer, which is `0`.
+  - id: step-we001-3
+    title: Putting it Together
+    instruction: "This leads to a very common C# pattern for safely getting user input\
+      \ without crashing the game.\n\n```csharp\nConsole.Write(\"Enter your bet amount:\
+      \ \");\nstring input = Console.ReadLine();\n\nif (int.TryParse(input, out int\
+      \ betAmount))\n{\n    Console.WriteLine($\"You bet {betAmount} gold.\");\n}\n\
+      else\n{\n    Console.WriteLine(\"Invalid input. Try again.\");\n}\n```\n"
+    type: multipleChoice
+    prompt: |
+      What is the primary advantage of this pattern over using `int.Parse(Console.ReadLine())`?
+    choices:
+    - id: a
+      text: It runs much faster.
+    - id: b
+      text: It prevents the program from throwing an exception and crashing if the
+        user types letters instead of numbers.
+    - id: c
+      text: It allows the user to bet floating-point numbers like `10.5`.
+    answer:
+      choiceId: b
+    explanation: |
+      Game loops should never crash because of bad user input. `TryParse` handles the error gracefully via the `if/else` block, ensuring the game continues running smoothly.

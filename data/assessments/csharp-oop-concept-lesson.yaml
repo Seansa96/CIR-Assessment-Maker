@@ -3,164 +3,135 @@ id: csharp-oop-concept-lesson
 title: C# Object-Oriented Programming Concept Lesson
 assessmentType: conceptLesson
 categoryId: csharp
-subcategoryId: csharp-oop
 subcategoryIds:
-  - csharp-oop
+- csharp-oop
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - oop
-    - classes
-    - inheritance
-    - polymorphism
-    - properties
+  - oop
+  - classes
+  - inheritance
+  - polymorphism
+  - properties
 lesson:
-  introduction: |
-    C# is a heavily Object-Oriented language. Almost everything is an object.
-    
-    In this lesson, we will cover how to design classes, encapsulate data with Properties, and use Inheritance and Polymorphism to build a robust RPG class system.
+  introduction: 'C# is a heavily Object-Oriented language. Almost everything is an
+    object.
+
+
+    In this lesson, we will cover\rhow to design classes, encapsulate data with Properties,
+    and use Inheritance and Polymorphism to build a robust RPG class system.
+
+    '
   sections:
-    - id: classes-and-properties
-      title: Classes and Properties
-      required: true
-      content: |
-        A class is a blueprint. In C#, we use **Properties** (with `get` and `set` accessors) to encapsulate data, rather than leaving fields entirely public.
+  - id: classes-and-properties
+    title: Classes and Properties
+    required: true
+    content: "A class is a blueprint. In C#, we use **Properties** (with `get` and\
+      \ `set` accessors) to encapsulate data, rather than leaving fields entirely\
+      \ public.\n\n```csharp\npublic class Player\n{\n    // Auto-implemented Property\n\
+      \    public string Name { get; set; }\n    \n    // Property with private setter\
+      \ (read-only from the outside)\n    public int Health { get; private set; }\n\
+      \n    // Constructor\n    public Player(string name, int health)\n    {\n  \
+      \      Name = name;\n        Health = health;\n    }\n    \n    public void\
+      \ TakeDamage(int amount)\n    {\n        Health -= amount;\n    }\n}\n```\n\n\
+      Using properties allows you to protect your game state (like `Health`) from\
+      \ being randomly changed by other parts of the code.\n"
+    check:
+      id: classes-properties-check
+      type: multipleChoice
+      prompt: 'If you define a property as `public int Score { get; private set; }`,
+        what does this mean?
 
-        ```csharp
-        public class Player
-        {
-            // Auto-implemented Property
-            public string Name { get; set; }
-            
-            // Property with private setter (read-only from the outside)
-            public int Health { get; private set; }
+        '
+      choices:
+      - id: a
+        text: Anyone can read the Score, but only the class itself can change the
+          Score.
+      - id: b
+        text: Only the class itself can read the Score, but anyone can change it.
+      - id: c
+        text: The Score cannot be read or changed by anyone.
+      - id: d
+        text: It causes a compiler error because `get` and `set` must have the same
+          access level.
+      answer:
+        choiceId: a
+      explanation: 'This is a common C# pattern for Encapsulation. The `public get`
+        allows external scripts (like a UI manager) to read the score, while the `private
+        set` ensures that only the player class can actually alter the score.
 
-            // Constructor
-            public Player(string name, int health)
-            {
-                Name = name;
-                Health = health;
-            }
-            
-            public void TakeDamage(int amount)
-            {
-                Health -= amount;
-            }
-        }
-        ```
-        
-        Using properties allows you to protect your game state (like `Health`) from being randomly changed by other parts of the code.
-      check:
-        id: classes-properties-check
-        type: multipleChoice
-        prompt: |
-          If you define a property as `public int Score { get; private set; }`, what does this mean?
-        choices:
-          - id: a
-            text: Anyone can read the Score, but only the class itself can change the Score.
-          - id: b
-            text: Only the class itself can read the Score, but anyone can change it.
-          - id: c
-            text: The Score cannot be read or changed by anyone.
-          - id: d
-            text: It causes a compiler error because `get` and `set` must have the same access level.
-        answer:
-          choiceId: a
-        explanation: |
-          This is a common C# pattern for Encapsulation. The `public get` allows external scripts (like a UI manager) to read the score, while the `private set` ensures that only the player class can actually alter the score.
+        '
+  - id: inheritance
+    title: Inheritance and Virtual Methods
+    required: true
+    content: "Inheritance allows a child class to inherit all the properties and methods\
+      \ of a parent class. Use a colon `:` to inherit in C#.\n\nTo allow a child class\
+      \ to override a method, the parent MUST mark it as `virtual`.\n\n```csharp\n\
+      public class Enemy\n{\n    public virtual void Attack()\n    {\n        Console.WriteLine(\"\
+      Enemy attacks for 10 damage!\");\n    }\n}\n\npublic class Dragon : Enemy\n\
+      {\n    // We use the 'override' keyword\n    public override void Attack()\n\
+      \    {\n        Console.WriteLine(\"Dragon breathes fire for 50 damage!\");\n\
+      \    }\n}\n```\n"
+    check:
+      id: inheritance-check
+      type: multipleChoice
+      prompt: 'If a parent class has a method `public void Defend()`, and the child
+        class wants to change\rhow `Defend()` works using the `override` keyword, what
+        must the parent do?
 
-    - id: inheritance
-      title: Inheritance and Virtual Methods
-      required: true
-      content: |
-        Inheritance allows a child class to inherit all the properties and methods of a parent class. Use a colon `:` to inherit in C#.
-        
-        To allow a child class to override a method, the parent MUST mark it as `virtual`.
+        '
+      choices:
+      - id: a
+        text: The parent must mark `Defend()` with the `override` keyword.
+      - id: b
+        text: The parent must mark `Defend()` with the `virtual` or `abstract` keyword.
+      - id: c
+        text: The parent must mark `Defend()` with the `static` keyword.
+      - id: d
+        text: The parent does not need to do anything.
+      answer:
+        choiceId: b
+      explanation: 'By default, C# methods cannot be overridden. The parent class
+        must explicitly give permission by marking the method as `virtual` (has a
+        default implementation) or `abstract` (no implementation).
 
-        ```csharp
-        public class Enemy
-        {
-            public virtual void Attack()
-            {
-                Console.WriteLine("Enemy attacks for 10 damage!");
-            }
-        }
+        '
+  - id: interfaces
+    title: Interfaces
+    required: true
+    content: "An **Interface** is a contract. It defines *what* a class must do, but\
+      \ not *how* it does it. Interface names conventionally start with a capital\
+      \ `I`.\n\n```csharp\npublic interface IDamageable\n{\n    int Health { get;\
+      \ set; }\n    void TakeDamage(int amount);\n}\n\n// Player implements IDamageable\n\
+      public class Player : IDamageable\n{\n    public int Health { get; set; }\n\
+      \    public void TakeDamage(int amount) { Health -= amount; }\n}\n\n// Barrel\
+      \ implements IDamageable\npublic class Barrel : IDamageable\n{\n    public int\
+      \ Health { get; set; }\n    public void TakeDamage(int amount) { Console.WriteLine(\"\
+      Barrel explodes!\"); Health = 0; }\n}\n```\n\nWhy use this? You can write a\
+      \ bullet script that says: \"If the thing I hit is `IDamageable`, call `TakeDamage()`.\"\
+      \ The bullet doesn't need to know if it hit a Player or a Barrel!\n"
+    check:
+      id: interfaces-check
+      type: multipleChoice
+      prompt: 'What happens if a class claims to implement `IDamageable`, but forgets
+        to include the `TakeDamage` method?
 
-        public class Dragon : Enemy
-        {
-            // We use the 'override' keyword
-            public override void Attack()
-            {
-                Console.WriteLine("Dragon breathes fire for 50 damage!");
-            }
-        }
-        ```
-      check:
-        id: inheritance-check
-        type: multipleChoice
-        prompt: |
-          If a parent class has a method `public void Defend()`, and the child class wants to change how `Defend()` works using the `override` keyword, what must the parent do?
-        choices:
-          - id: a
-            text: The parent must mark `Defend()` with the `override` keyword.
-          - id: b
-            text: The parent must mark `Defend()` with the `virtual` or `abstract` keyword.
-          - id: c
-            text: The parent must mark `Defend()` with the `static` keyword.
-          - id: d
-            text: The parent does not need to do anything.
-        answer:
-          choiceId: b
-        explanation: |
-          By default, C# methods cannot be overridden. The parent class must explicitly give permission by marking the method as `virtual` (has a default implementation) or `abstract` (no implementation).
+        '
+      choices:
+      - id: a
+        text: The code compiles, but crashes at runtime if `TakeDamage` is called.
+      - id: b
+        text: A compiler error occurs because the class failed to fulfill the interface
+          contract.
+      - id: c
+        text: C# automatically generates an empty `TakeDamage` method for you.
+      answer:
+        choiceId: b
+      explanation: 'Interfaces are strict contracts. The compiler enforces that any
+        class implementing an interface must explicitly define all properties and
+        methods declared in that interface.
 
-    - id: interfaces
-      title: Interfaces
-      required: true
-      content: |
-        An **Interface** is a contract. It defines *what* a class must do, but not *how* it does it. Interface names conventionally start with a capital `I`.
-
-        ```csharp
-        public interface IDamageable
-        {
-            int Health { get; set; }
-            void TakeDamage(int amount);
-        }
-        
-        // Player implements IDamageable
-        public class Player : IDamageable
-        {
-            public int Health { get; set; }
-            public void TakeDamage(int amount) { Health -= amount; }
-        }
-        
-        // Barrel implements IDamageable
-        public class Barrel : IDamageable
-        {
-            public int Health { get; set; }
-            public void TakeDamage(int amount) { Console.WriteLine("Barrel explodes!"); Health = 0; }
-        }
-        ```
-        
-        Why use this? You can write a bullet script that says: "If the thing I hit is `IDamageable`, call `TakeDamage()`." The bullet doesn't need to know if it hit a Player or a Barrel!
-      check:
-        id: interfaces-check
-        type: multipleChoice
-        prompt: |
-          What happens if a class claims to implement `IDamageable`, but forgets to include the `TakeDamage` method?
-        choices:
-          - id: a
-            text: The code compiles, but crashes at runtime if `TakeDamage` is called.
-          - id: b
-            text: A compiler error occurs because the class failed to fulfill the interface contract.
-          - id: c
-            text: C# automatically generates an empty `TakeDamage` method for you.
-        answer:
-          choiceId: b
-        explanation: |
-          Interfaces are strict contracts. The compiler enforces that any class implementing an interface must explicitly define all properties and methods declared in that interface.
-
-
+        '

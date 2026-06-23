@@ -3,129 +3,133 @@ id: cpp-intro-threads-worked-example
 title: C++ Intro to Threads Worked Example
 assessmentType: workedExample
 categoryId: c++
-subcategoryId: c++-concurrency
 subcategoryIds:
-  - c++-concurrency
+- c++-concurrency
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Understanding a basic C++ thread
-    problem: "Plan a small C++ program that runs a helper function in a separate thread."
-    steps:
-      - id: s001
-        title: Identify what a thread is
-        instruction: "Start by distinguishing a thread from an ordinary function call."
-        type: multipleChoice
-        prompt: "In C++, what does a `std::thread` usually represent?"
-        choices:
-          - id: a
-            text: "A separate flow of execution running a callable."
-          - id: b
-            text: "A replacement for every function argument."
-          - id: c
-            text: "A file stream used only for text files."
-          - id: d
-            text: "A compile-time namespace alias."
-        answer:
-          choiceId: a
-        hint: "Think execution flow, not data storage."
-        explanation: |
-          `std::thread` starts another flow of execution that runs a callable such as a function, lambda, or function object.
+- id: we001
+  title: Understanding a basic C++ thread
+  problem: Plan a small C++ program that runs a helper function in a separate thread.
+  steps:
+  - id: step-we001-1
+    title: Identify what a thread is
+    instruction: Start by distinguishing a thread from an ordinary function call.
+    type: multipleChoice
+    prompt: In C++, what does a `std::thread` usually represent?
+    choices:
+    - id: a
+      text: A separate flow of execution running a callable.
+    - id: b
+      text: A replacement for every function argument.
+    - id: c
+      text: A file stream used only for text files.
+    - id: d
+      text: A compile-time namespace alias.
+    answer:
+      choiceId: a
+    hint: Think execution flow, not data storage.
+    explanation: |
+      `std::thread` starts another flow of execution that runs a callable such as a function, lambda, or function object.
 
-          Related topic: Thread execution model; choose independent work, then run that callable in a `std::thread`.
-      - id: s002
-        title: Choose the callable
-        instruction: "A thread needs something callable to run."
-        type: multipleChoice
-        prompt: "If a function named `worker` should run in a thread, which construction is correct?"
-        choices:
-          - id: a
-            text: "`std::thread t(worker);`"
-          - id: b
-            text: "`std::thread t(worker());`"
-          - id: c
-            text: "`std::thread worker(t);`"
-          - id: d
-            text: "`worker.thread(t);`"
-        answer:
-          choiceId: a
-        hint: "Pass the callable itself, not the result of calling it."
-        explanation: |
-          `std::thread t(worker);` passes the function as the thread's callable. Writing `worker()` calls the function immediately before the thread is constructed.
+      Related topic: Thread execution model; choose independent work, then run that callable in a `std::thread`.
+  - id: step-we001-2
+    title: Choose the callable
+    instruction: A thread needs something callable to run.
+    type: multipleChoice
+    prompt: If a function named `worker` should run in a thread, which construction
+      is correct?
+    choices:
+    - id: a
+      text: '`std::thread t(worker);`'
+    - id: b
+      text: '`std::thread t(worker());`'
+    - id: c
+      text: '`std::thread worker(t);`'
+    - id: d
+      text: '`worker.thread(t);`'
+    answer:
+      choiceId: a
+    hint: Pass the callable itself, not the result of calling it.
+    explanation: |
+      `std::thread t(worker);` passes the function as the thread's callable. Writing `worker()` calls the function immediately before the thread is constructed.
 
-          Related topic: Callable targets; pass the function/lambda to `std::thread`, followed by any arguments it needs.
-      - id: s003
-        title: Wait for completion
-        instruction: "A joinable C++ thread must be joined or detached before it is destroyed."
-        type: multipleChoice
-        prompt: "What does `t.join()` do for a `std::thread t`?"
-        choices:
-          - id: a
-            text: "It waits until the thread finishes."
-          - id: b
-            text: "It starts the thread again."
-          - id: c
-            text: "It changes the thread into a file stream."
-          - id: d
-            text: "It cancels compilation."
-        answer:
-          choiceId: a
-        hint: "Join means wait for the other execution path to finish."
-        explanation: |
-          `join()` blocks the current thread until `t` finishes. This also makes the `std::thread` object no longer joinable.
+      Related topic: Callable targets; pass the function/lambda to `std::thread`, followed by any arguments it needs.
+  - id: step-we001-3
+    title: Wait for completion
+    instruction: A joinable C++ thread must be joined or detached before it is destroyed.
+    type: multipleChoice
+    prompt: What does `t.join()` do for a `std::thread t`?
+    choices:
+    - id: a
+      text: It waits until the thread finishes.
+    - id: b
+      text: It starts the thread again.
+    - id: c
+      text: It changes the thread into a file stream.
+    - id: d
+      text: It cancels compilation.
+    answer:
+      choiceId: a
+    hint: Join means wait for the other execution path to finish.
+    explanation: |
+      `join()` blocks the current thread until `t` finishes. This also makes the `std::thread` object no longer joinable.
 
-          Related topic: Thread lifetime; start work in `std::thread`, then call `join()` when the main flow must wait.
-      - id: s004
-        title: Avoid unsafe shared data
-        instruction: "Threads can make bugs harder when they access the same data."
-        type: selectAll
-        prompt: "Which are common concerns when multiple threads share data?"
-        choices:
-          - id: a
-            text: "Race conditions"
-          - id: b
-            text: "Need for synchronization such as a mutex"
-          - id: c
-            text: "Order of reads and writes"
-          - id: d
-            text: "Changing every integer into a string automatically"
-        answer:
-          choiceIds: [a, b, c]
-        hint: "The issue is simultaneous access to the same memory."
-        explanation: |
-          Shared mutable data can lead to race conditions. Synchronization tools such as `std::mutex` help control access.
+      Related topic: Thread lifetime; start work in `std::thread`, then call `join()` when the main flow must wait.
+  - id: step-we001-4
+    title: Avoid unsafe shared data
+    instruction: Threads can make bugs harder when they access the same data.
+    type: selectAll
+    prompt: Which are common concerns when multiple threads share data?
+    choices:
+    - id: a
+      text: Race conditions
+    - id: b
+      text: Need for synchronization such as a mutex
+    - id: c
+      text: Order of reads and writes
+    - id: d
+      text: Changing every integer into a string automatically
+    answer:
+      choiceIds:
+      - a
+      - b
+      - c
+    hint: The issue is simultaneous access to the same memory.
+    explanation: |
+      Shared mutable data can lead to race conditions. Synchronization tools such as `std::mutex` help control access.
 
-          Related topic: Thread safety; identify shared state and protect it before running work concurrently.
-      - id: s005
-        title: Sketch the thread setup
-        instruction: "Write the essential C++ lines for creating and joining a thread."
-        type: freeResponse
-        prompt: "In words or code, sketch the basic pattern for running a function named `worker` in a C++ thread and waiting for it to finish."
-        answer:
-          expected: |
-            Include `<thread>`, create `std::thread t(worker);`, and call `t.join()` before the thread object is destroyed.
-          gradingMode: selfCheck
-          keyPoints:
-            - "Include or use `<thread>`."
-            - "Construct `std::thread` with the callable."
-            - "Pass `worker`, not `worker()`."
-            - "Call `join()` to wait for completion."
-        hint: "The core order is construct the thread, then join it."
-        explanation: |
-          A minimal C++ thread pattern is:
+      Related topic: Thread safety; identify shared state and protect it before running work concurrently.
+  - id: step-we001-5
+    title: Sketch the thread setup
+    instruction: Write the essential C++ lines for creating and joining a thread.
+    type: freeResponse
+    prompt: In words or code, sketch the basic pattern for running a function named
+      `worker` in a C++ thread and waiting for it to finish.
+    answer:
+      expected: 'Include `<thread>`, create `std::thread t(worker);`, and call `t.join()`
+        before the thread object is destroyed.
 
-          ```cpp
-          #include <thread>
+        '
+      gradingMode: selfCheck
+      keyPoints:
+      - Include or use `<thread>`.
+      - Construct `std::thread` with the callable.
+      - Pass `worker`, not `worker()`.
+      - Call `join()` to wait for completion.
+    hint: The core order is construct the thread, then join it.
+    explanation: |
+      A minimal C++ thread pattern is:
 
-          void worker() {
-              // work here
-          }
+      ```cpp
+      #include <thread>
 
-          std::thread t(worker);
-          t.join();
-          ```
+      void worker() {
+          // work here
+      }
 
-          Related topic: Basic `std::thread` lifecycle; choose the callable, construct the thread, and join it before destruction.
+      std::thread t(worker);
+      t.join();
+      ```
 
-
+      Related topic: Basic `std::thread` lifecycle; choose the callable, construct the thread, and join it before destruction.

@@ -3,99 +3,81 @@ id: cpp-templates-concept-lesson
 title: C++ Templates Concept Lesson
 assessmentType: conceptLesson
 categoryId: c++
-subcategoryId: c++-advanced
 subcategoryIds:
-  - c++-advanced
+- c++-advanced
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - advanced
-    - templates
+  - advanced
+  - templates
 lesson:
-  introduction: |
-    Templates allow you to write generic code that works with any data type. Instead of writing separate functions or classes for `int`, `double`, and `string`, you write one template, and the compiler generates the specific versions you need.
+  introduction: 'Templates allow you to write generic code that works with any data
+    type. Instead of writing separate functions or classes for `int`, `double`, and
+    `string`, you write one template, and the compiler generates the specific versions
+    you need.
+
+    '
   sections:
-    - id: function-templates
-      title: Function Templates
-      required: true
-      content: |
-        A function template uses the `template` keyword followed by a template parameter list in angle brackets `< >`.
+  - id: function-templates
+    title: Function Templates
+    required: true
+    content: "A function template uses the `template` keyword followed by a template\
+      \ parameter list in angle brackets `< >`.\n\n```cpp\n#include <iostream>\n\n\
+      // T is a placeholder for any type\ntemplate <typename T>\nT getMax(T a, T b)\
+      \ {\n    return (a > b) ? a : b;\n}\n\nint main() {\n    // Compiler generates\
+      \ getMax(int, int)\n    std::cout << getMax<int>(5, 10) << \"\\n\";\n    \n\
+      \    // Compiler generates getMax(double, double)\n    std::cout << getMax(3.5,\
+      \ 2.1) << \"\\n\"; // Type inferred\n}\n```\n"
+    check:
+      id: function-templates-check
+      type: multipleChoice
+      prompt: In the `getMax` template above, what is `T`?
+      choices:
+      - id: a
+        text: A type parameter that the compiler replaces with the actual type at
+          compile time.
+      - id: b
+        text: A special C++ data type that\rholds any value.
+      - id: c
+        text: A runtime variable.
+      - id: d
+        text: An instance of a class.
+      answer:
+        choiceId: a
+      explanation: 'Templates are resolved at compile-time. The compiler creates a
+        separate function for each type you use.
 
-        ```cpp
-        #include <iostream>
+        '
+  - id: class-templates
+    title: Class Templates
+    required: true
+    content: "You can also make entire classes generic. This is\rhow STL containers\
+      \ like `std::vector` are implemented.\n\n```cpp\ntemplate <typename T>\nclass\
+      \ Box {\nprivate:\n    T content;\npublic:\n    Box(T val) : content(val) {}\n\
+      \    T getContent() const { return content; }\n};\n\n// Usage:\nBox<int> intBox(123);\n\
+      Box<std::string> strBox(\"Hello\");\n```\nUnlike function templates, you usually\
+      \ must explicitly specify the type in angle brackets when declaring a class\
+      \ template instance.\n"
+    check:
+      id: class-templates-check
+      type: multipleChoice
+      prompt: Why do we write `std::vector<int>` instead of just `std::vector`?
+      choices:
+      - id: a
+        text: Because `std::vector` is a class template, and we must specify the type
+          `T` it will\rhold.
+      - id: b
+        text: Because `int` is the default capacity.
+      - id: c
+        text: Because it casts the vector to an integer.
+      - id: d
+        text: Because it is a pointer.
+      answer:
+        choiceId: a
+      explanation: 'The `<int>` provides the template argument so the compiler knows
+       \rhow to build the `vector` class for integers.
 
-        // T is a placeholder for any type
-        template <typename T>
-        T getMax(T a, T b) {
-            return (a > b) ? a : b;
-        }
-
-        int main() {
-            // Compiler generates getMax(int, int)
-            std::cout << getMax<int>(5, 10) << "\n";
-            
-            // Compiler generates getMax(double, double)
-            std::cout << getMax(3.5, 2.1) << "\n"; // Type inferred
-        }
-        ```
-      check:
-        id: function-templates-check
-        type: multipleChoice
-        prompt: In the `getMax` template above, what is `T`?
-        choices:
-          - id: a
-            text: 'A type parameter that the compiler replaces with the actual type at compile time.'
-          - id: b
-            text: 'A special C++ data type that holds any value.'
-          - id: c
-            text: 'A runtime variable.'
-          - id: d
-            text: 'An instance of a class.'
-        answer:
-          choiceId: a
-        explanation: |
-          Templates are resolved at compile-time. The compiler creates a separate function for each type you use.
-
-    - id: class-templates
-      title: Class Templates
-      required: true
-      content: |
-        You can also make entire classes generic. This is how STL containers like `std::vector` are implemented.
-
-        ```cpp
-        template <typename T>
-        class Box {
-        private:
-            T content;
-        public:
-            Box(T val) : content(val) {}
-            T getContent() const { return content; }
-        };
-
-        // Usage:
-        Box<int> intBox(123);
-        Box<std::string> strBox("Hello");
-        ```
-        Unlike function templates, you usually must explicitly specify the type in angle brackets when declaring a class template instance.
-      check:
-        id: class-templates-check
-        type: multipleChoice
-        prompt: Why do we write `std::vector<int>` instead of just `std::vector`?
-        choices:
-          - id: a
-            text: 'Because `std::vector` is a class template, and we must specify the type `T` it will hold.'
-          - id: b
-            text: 'Because `int` is the default capacity.'
-          - id: c
-            text: 'Because it casts the vector to an integer.'
-          - id: d
-            text: 'Because it is a pointer.'
-        answer:
-          choiceId: a
-        explanation: |
-          The `<int>` provides the template argument so the compiler knows how to build the `vector` class for integers.
-
-
+        '

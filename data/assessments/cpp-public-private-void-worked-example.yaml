@@ -3,266 +3,250 @@ id: cpp-public-private-void-worked-example
 title: C++ Public, Private, and Void Worked Example
 assessmentType: workedExample
 categoryId: c++
-subcategoryId: c++-oop
 subcategoryIds:
-  - c++-oop
+- c++-oop
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Choosing public, private, and void in small class designs
-    problem: |
-      Learn what `public`, `private`, and `void` communicate in C++ class design.
-
-      This worked example is mostly conceptual because the current code runner expects a function with a printable return value. `void` functions are still important, but they are best practiced here by choosing the correct declaration and reasoning about what it means.
-    steps:
-      - id: s001
-        title: Choose public for the interface
-        instruction: |
-          `public` marks the part of a class that outside code is allowed to use directly.
-        type: multipleChoice
-        prompt: |
-          In a class, what should usually go in the `public` section?
-        choices:
-          - id: a
-            text: 'Methods that outside code is supposed to call.'
-          - id: b
-            text: 'Only temporary local variables.'
-          - id: c
-            text: 'Implementation details that should never be touched.'
-          - id: d
-            text: 'Only comments.'
-        answer:
-          choiceId: a
-        hint: 'Public means part of the class interface.'
-        explanation: |
-          The public section is the intentional interface. It contains constructors and methods that other code should be allowed to call.
-
-          Related topic: Encapsulation. Public is for the controlled surface area of the class.
-
-      - id: s002
-        title: Choose private for hidden state
-        instruction: |
-          `private` marks members that outside code cannot access directly. This helps protect class invariants.
-        type: multipleChoice
-        prompt: |
-          Which member is the best candidate to make `private`?
-        choices:
-          - id: a
-            text: '`int balance;` inside a `BankAccount` class'
-          - id: b
-            text: '`deposit(int amount)` method that users should call'
-          - id: c
-            text: 'The constructor used to create normal accounts'
-          - id: d
-            text: '`getBalance()` method used to read the balance safely'
-        answer:
-          choiceId: a
-        hint: 'Private is strongest for raw data that should be changed only through controlled methods.'
-        explanation: |
-          Raw balance data should usually be private so outside code cannot accidentally set it to an invalid value. Public methods can enforce rules.
-
-          Related topic: Private data members and invariants.
-
-      - id: s003
-        title: Complete the access control keyword
-        instruction: |
-          Pick the keyword that makes outside access legal.
-        type: multipleChoice
-        prompt: |
-          Complete the class so outside code can call `getName()`.
-
-          ```cpp
-          class Player {
-          ____:
-              string getName() {
-                  return name;
-              }
-
-          private:
-              string name;
-          };
-          ```
-        choices:
-          - id: a
-            text: '`public`'
-          - id: b
-            text: '`private`'
-          - id: c
-            text: '`void`'
-          - id: d
-            text: '`return`'
-        answer:
-          choiceId: a
-        hint: 'Outside code needs this method to be part of the interface.'
-        explanation: |
-          `public:` starts the public section. Since `getName()` is intended to be called from outside the class, it belongs there.
-
-          Related topic: Public interface methods.
-
-      - id: s004
-        title: Identify what void means
-        instruction: |
-          `void` is a return type. It means the function does not return a value.
-        type: multipleChoice
-        prompt: |
-          What does `void resetScore()` mean?
-        choices:
-          - id: a
-            text: '`resetScore` returns no value.'
-          - id: b
-            text: '`resetScore` must return an integer.'
-          - id: c
-            text: '`resetScore` is automatically private.'
-          - id: d
-            text: '`resetScore` cannot change object data.'
-        answer:
-          choiceId: a
-        hint: '`void` answers the question: what value comes back?'
-        explanation: |
-          `void` means no value is returned. A void method can still perform an action, such as changing member data or printing, but callers should not expect a returned value.
-
-          Related topic: Function return types.
-
-      - id: s005
-        title: Complete a void method declaration
-        instruction: |
-          Choose the best return type for a method that changes an object but does not need to send a value back.
-        type: multipleChoice
-        prompt: |
-          Complete the method header.
-
-          ```cpp
-          class Counter {
-          public:
-              ____ reset() {
-                  value = 0;
-              }
-
-          private:
-              int value;
-          };
-          ```
-        choices:
-          - id: a
-            text: '`void`'
-          - id: b
-            text: '`int`'
-          - id: c
-            text: '`private`'
-          - id: d
-            text: '`public`'
-        answer:
-          choiceId: a
-        hint: 'The method performs an action but does not return a value.'
-        explanation: |
-          The best completion is `void reset()`. It changes the object state by setting `value = 0`, but it does not return anything.
-
-          Related topic: Void mutator methods.
-
-      - id: s006
-        title: Separate command methods from query methods
-        instruction: |
-          A command changes state. A query returns information. This distinction helps you choose `void` versus a value return type.
-        type: selectAll
-        prompt: |
-          Which methods are good candidates for `void`?
-        choices:
-          - id: a
-            text: '`reset()` in a `Counter` class'
-          - id: b
-            text: '`setName(string newName)` in a `Player` class'
-          - id: c
-            text: '`getName()` in a `Player` class'
-          - id: d
-            text: '`area()` in a `Rectangle` class'
-        answer:
-          choiceIds: [a, b]
-        hint: 'Void is usually natural for commands that change state.'
-        explanation: |
-          `reset()` and `setName(...)` are command-style methods. They can change internal state without returning a value. `getName()` and `area()` are query-style methods because callers expect an answer back.
-
-          Related topic: Command-query separation.
-
-      - id: s007
-        title: Choose the best access modifier
-        instruction: |
-          Complete the class so outside code cannot directly change `balance`, but can call `deposit`.
-        type: multipleChoice
-        prompt: |
-          Which version has the best access structure?
-        choices:
-          - id: a
-            text: |
-              ```cpp
-              class BankAccount {
-              public:
-                  void deposit(int amount);
-
-              private:
-                  int balance;
-              };
-              ```
-          - id: b
-            text: |
-              ```cpp
-              class BankAccount {
-              public:
-                  int balance;
-
-              private:
-                  void deposit(int amount);
-              };
-              ```
-          - id: c
-            text: |
-              ```cpp
-              class BankAccount {
-              private:
-                  void deposit(int amount);
-                  int balance;
-              };
-              ```
-          - id: d
-            text: |
-              ```cpp
-              class BankAccount {
-              public:
-                  int balance;
-                  void deposit(int amount);
-              };
-              ```
-        answer:
-          choiceId: a
-        hint: 'Expose the safe operation, hide the raw data.'
-        explanation: |
-          Choice A exposes `deposit` while hiding `balance`. That lets the method enforce rules, such as ignoring negative deposits.
-
-          Related topic: Public behavior, private state.
-
-      - id: s008
-        title: Avoid returning from a void method
-        instruction: |
-          A `void` method should not return a value.
-        type: multipleChoice
-        prompt: |
-          Which line does not belong inside a `void reset()` method?
-        choices:
-          - id: a
-            text: '`return value;`'
-          - id: b
-            text: '`value = 0;`'
-          - id: c
-            text: '`return;`'
-          - id: d
-            text: '`count = 0;`'
-        answer:
-          choiceId: a
-        hint: 'A bare `return;` may exit a void function, but `return value;` tries to send a value back.'
-        explanation: |
-          `return value;` is incompatible with a `void` return type. A void function can use a bare `return;`, but it cannot return an expression.
-
-          Related topic: Void function return rules.
+- id: we001
+  title: Choosing public, private, and void in small class designs
+  problem: 'Learn what `public`, `private`, and `void` communicate in C++ class design.
 
 
+    This worked example is mostly conceptual because the current code runner expects
+    a function with a printable return value. `void` functions are still important,
+    but they are best practiced here by choosing the correct declaration and reasoning
+    about what it means.
 
+    '
+  steps:
+  - id: step-we001-1
+    title: Choose public for the interface
+    instruction: '`public` marks the part of a class that outside code is allowed
+      to use directly.
+
+      '
+    type: multipleChoice
+    prompt: |
+      In a class, what should usually go in the `public` section?
+    choices:
+    - id: a
+      text: Methods that outside code is supposed to call.
+    - id: b
+      text: Only temporary local variables.
+    - id: c
+      text: Implementation details that should never be touched.
+    - id: d
+      text: Only comments.
+    answer:
+      choiceId: a
+    hint: Public means part of the class interface.
+    explanation: |
+      The public section is the intentional interface. It contains constructors and methods that other code should be allowed to call.
+
+      Related topic: Encapsulation. Public is for the controlled surface area of the class.
+  - id: step-we001-2
+    title: Choose private for hidden state
+    instruction: '`private` marks members that outside code cannot access directly.
+      This helps protect class invariants.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which member is the best candidate to make `private`?
+    choices:
+    - id: a
+      text: '`int balance;` inside a `BankAccount` class'
+    - id: b
+      text: '`deposit(int amount)` method that users should call'
+    - id: c
+      text: The constructor used to create normal accounts
+    - id: d
+      text: '`getBalance()` method used to read the balance safely'
+    answer:
+      choiceId: a
+    hint: Private is strongest for raw data that should be changed only through controlled
+      methods.
+    explanation: |
+      Raw balance data should usually be private so outside code cannot accidentally set it to an invalid value. Public methods can enforce rules.
+
+      Related topic: Private data members and invariants.
+  - id: step-we001-3
+    title: Complete the access control keyword
+    instruction: 'Pick the keyword that makes outside access legal.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Complete the class so outside code can call `getName()`.
+
+      ```cpp
+      class Player {
+      ____:
+          string getName() {
+              return name;
+          }
+
+      private:
+          string name;
+      };
+      ```
+    choices:
+    - id: a
+      text: '`public`'
+    - id: b
+      text: '`private`'
+    - id: c
+      text: '`void`'
+    - id: d
+      text: '`return`'
+    answer:
+      choiceId: a
+    hint: Outside code needs this method to be part of the interface.
+    explanation: |
+      `public:` starts the public section. Since `getName()` is intended to be called from outside the class, it belongs there.
+
+      Related topic: Public interface methods.
+  - id: step-we001-4
+    title: Identify what void means
+    instruction: '`void` is a return type. It means the function does not return a
+      value.
+
+      '
+    type: multipleChoice
+    prompt: |
+      What does `void resetScore()` mean?
+    choices:
+    - id: a
+      text: '`resetScore` returns no value.'
+    - id: b
+      text: '`resetScore` must return an integer.'
+    - id: c
+      text: '`resetScore` is automatically private.'
+    - id: d
+      text: '`resetScore` cannot change object data.'
+    answer:
+      choiceId: a
+    hint: '`void` answers the question: what value comes back?'
+    explanation: |
+      `void` means no value is returned. A void method can still perform an action, such as changing member data or printing, but callers should not expect a returned value.
+
+      Related topic: Function return types.
+  - id: step-we001-5
+    title: Complete a void method declaration
+    instruction: 'Choose the best return type for a method that changes an object
+      but does not need to send a value back.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Complete the method header.
+
+      ```cpp
+      class Counter {
+      public:
+          ____ reset() {
+              value = 0;
+          }
+
+      private:
+          int value;
+      };
+      ```
+    choices:
+    - id: a
+      text: '`void`'
+    - id: b
+      text: '`int`'
+    - id: c
+      text: '`private`'
+    - id: d
+      text: '`public`'
+    answer:
+      choiceId: a
+    hint: The method performs an action but does not return a value.
+    explanation: |
+      The best completion is `void reset()`. It changes the object state by setting `value = 0`, but it does not return anything.
+
+      Related topic: Void mutator methods.
+  - id: step-we001-6
+    title: Separate command methods from query methods
+    instruction: 'A command changes state. A query returns information. This distinction
+      helps you choose `void` versus a value return type.
+
+      '
+    type: selectAll
+    prompt: |
+      Which methods are good candidates for `void`?
+    choices:
+    - id: a
+      text: '`reset()` in a `Counter` class'
+    - id: b
+      text: '`setName(string newName)` in a `Player` class'
+    - id: c
+      text: '`getName()` in a `Player` class'
+    - id: d
+      text: '`area()` in a `Rectangle` class'
+    answer:
+      choiceIds:
+      - a
+      - b
+    hint: Void is usually natural for commands that change state.
+    explanation: |
+      `reset()` and `setName(...)` are command-style methods. They can change internal state without returning a value. `getName()` and `area()` are query-style methods because callers expect an answer back.
+
+      Related topic: Command-query separation.
+  - id: step-we001-7
+    title: Choose the best access modifier
+    instruction: 'Complete the class so outside code cannot directly change `balance`,
+      but can call `deposit`.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which version has the best access structure?
+    choices:
+    - id: a
+      text: "```cpp\nclass BankAccount {\npublic:\n    void deposit(int amount);\n\
+        \nprivate:\n    int balance;\n};\n```\n"
+    - id: b
+      text: "```cpp\nclass BankAccount {\npublic:\n    int balance;\n\nprivate:\n\
+        \    void deposit(int amount);\n};\n```\n"
+    - id: c
+      text: "```cpp\nclass BankAccount {\nprivate:\n    void deposit(int amount);\n\
+        \    int balance;\n};\n```\n"
+    - id: d
+      text: "```cpp\nclass BankAccount {\npublic:\n    int balance;\n    void deposit(int\
+        \ amount);\n};\n```\n"
+    answer:
+      choiceId: a
+    hint: Expose the safe operation, hide the raw data.
+    explanation: |
+      Choice A exposes `deposit` while hiding `balance`. That lets the method enforce rules, such as ignoring negative deposits.
+
+      Related topic: Public behavior, private state.
+  - id: step-we001-8
+    title: Avoid returning from a void method
+    instruction: 'A `void` method should not return a value.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which line does not belong inside a `void reset()` method?
+    choices:
+    - id: a
+      text: '`return value;`'
+    - id: b
+      text: '`value = 0;`'
+    - id: c
+      text: '`return;`'
+    - id: d
+      text: '`count = 0;`'
+    answer:
+      choiceId: a
+    hint: A bare `return;` may exit a void function, but `return value;` tries to
+      send a value back.
+    explanation: |
+      `return value;` is incompatible with a `void` return type. A void function can use a bare `return;`, but it cannot return an expression.
+
+      Related topic: Void function return rules.

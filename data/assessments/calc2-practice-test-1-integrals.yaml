@@ -3,841 +3,1115 @@ id: calc2-practice-test-1-integrals
 title: Practice Test 1 - Integrals
 assessmentType: test
 categoryId: calculus-2
-subcategoryId: improper-integrals
 subcategoryIds:
-  - integration-techniques
+- improper-integrals
 modeDefault: scored
 randomizeQuestions: true
 attemptQuestionCount: 12
 questions:
-  - id: q001
-    type: multipleChoice
-    prompt: |
-      Concept check: which feature is the strongest signal that an integral is likely a substitution problem?
-    choices:
-      - id: a
-        text: 'The integrand contains a composed expression and a nearby derivative of the inside expression.'
-      - id: b
-        text: 'The integrand contains a product of unrelated functions with no composition.'
-      - id: c
-        text: 'The denominator factors into repeated linear terms.'
-      - id: d
-        text: 'The integrand has an infinite interval.'
-    answer:
-      choiceId: a
-    explanation: |
-      Substitution is pattern matching for chain rule reversal. Look for an inside expression $g(x)$ and a factor proportional to $g'(x)\,dx$.
-
-      Related topic: substitution pattern recognition. Technique order: identify the inside expression, compute its derivative, then adjust constants.
-
-  - id: q002
-    type: symbolicResponse
-    prompt: |
-      Use substitution to evaluate:
-
-      $$
-      \int \frac{\cos x}{\sin^2 x+1}\,dx
-      $$
-    media:
-      - type: image
-        src: /assessments/practice-test-1-integrals/testprac1.png
-        alt: Canvas substitution practice problems.
-        caption: Substitution practice source image.
-    answer:
-      expectedLatex: '\arctan(\sin x)+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=\sin x$, so $du=\cos x\,dx$. The integral becomes
-
-      $$
-      \int \frac{1}{u^2+1}\,du=\arctan u+C.
-      $$
-
-      Substitute back to get $\arctan(\sin x)+C$.
-
-      Related topic: arctangent substitution form.
-
-  - id: q003
-    type: symbolicResponse
-    prompt: |
-      Use substitution to evaluate:
-
-      $$
-      \int \frac{x}{\sqrt{81-x^4}}\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{1}{2}\arcsin\left(\frac{x^2}{9}\right)+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=x^2$, so $du=2x\,dx$. Then
-
-      $$
-      \int \frac{x}{\sqrt{81-x^4}}\,dx
-      =
-      \frac{1}{2}\int\frac{1}{\sqrt{81-u^2}}\,du.
-      $$
-
-      The inverse-sine form gives $\frac{1}{2}\arcsin(u/9)+C$.
-
-      Related topic: inverse sine integral pattern.
-
-  - id: q004
-    type: symbolicResponse
-    prompt: |
-      Use substitution to evaluate:
-
-      $$
-      \int \frac{x^3}{x^4+81}\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{1}{4}\ln\left|x^4+81\right|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=x^4+81$, so $du=4x^3\,dx$. This creates the logarithmic form
-
-      $$
-      \frac{1}{4}\int\frac{1}{u}\,du.
-      $$
-
-      Related topic: logarithmic substitution.
-
-  - id: q005
-    type: symbolicResponse
-    prompt: |
-      Use substitution to evaluate:
-
-      $$
-      \int_0^1 x^2(1-x^3)^5\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{1}{18}'
-      equivalenceMode: expression
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=1-x^3$, so $du=-3x^2\,dx$. The bounds change from $x=0$ to $u=1$ and from $x=1$ to $u=0$:
-
-      $$
-      -\frac{1}{3}\int_1^0 u^5\,du=\frac{1}{3}\int_0^1 u^5\,du=\frac{1}{18}.
-      $$
-
-      Related topic: definite substitution with changed bounds.
-
-  - id: q006
-    type: symbolicResponse
-    prompt: |
-      Use substitution to evaluate:
-
-      $$
-      \int e^{\cos x}\sin x\,dx
-      $$
-    answer:
-      expectedLatex: '-e^{\cos x}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=\cos x$, so $du=-\sin x\,dx$. The negative sign is the key bookkeeping step:
-
-      $$
-      -\int e^u\,du=-e^u+C.
-      $$
-
-      Related topic: substitution with a negative derivative.
-
-  - id: q007
-    type: symbolicResponse
-    prompt: |
-      Use substitution to evaluate:
-
-      $$
-      \int_0^1 \frac{e^x}{1+e^{2x}}\,dx
-      $$
-    answer:
-      expectedLatex: '\arctan(e)-\frac{\pi}{4}'
-      equivalenceMode: expression
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=e^x$, so $du=e^x\,dx$. The bounds become $u=1$ and $u=e$:
-
-      $$
-      \int_1^e\frac{1}{1+u^2}\,du=\arctan(e)-\arctan(1).
-      $$
-
-      Since $\arctan(1)=\pi/4$, the value is $\arctan(e)-\pi/4$.
-
-      Related topic: definite substitution into inverse tangent.
-
-  - id: q008
-    type: symbolicResponse
-    prompt: |
-      Use integration by parts to evaluate:
-
-      $$
-      \int x\sec^2 x\,dx
-      $$
-    media:
-      - type: image
-        src: /assessments/practice-test-1-integrals/testprac2.png
-        alt: Canvas integration by parts practice problems.
-        caption: Integration by parts practice source image.
-    answer:
-      expectedLatex: 'x\tan x+\ln|\cos x|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Choose $u=x$ and $dv=\sec^2x\,dx$. Then $du=dx$ and $v=\tan x$:
-
-      $$
-      \int x\sec^2x\,dx=x\tan x-\int\tan x\,dx.
-      $$
-
-      Since $\int\tan x\,dx=-\ln|\cos x|$, the result is $x\tan x+\ln|\cos x|+C$.
-
-      Related topic: LIATE-style integration by parts selection.
-
-  - id: q009
-    type: symbolicResponse
-    prompt: |
-      Use integration by parts to evaluate:
-
-      $$
-      \int x^2\ln x\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{x^3\ln x}{3}-\frac{x^3}{9}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Let $u=\ln x$ and $dv=x^2\,dx$. Then $du=\frac{1}{x}\,dx$ and $v=\frac{x^3}{3}$:
-
-      $$
-      \frac{x^3\ln x}{3}-\frac{1}{3}\int x^2\,dx.
-      $$
-
-      Related topic: logarithm as the preferred $u$ in integration by parts.
-
-  - id: q010
-    type: symbolicResponse
-    prompt: |
-      Use integration by parts to evaluate:
-
-      $$
-      \int 3xe^{5x}\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{3xe^{5x}}{5}-\frac{3e^{5x}}{25}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Let $u=3x$ and $dv=e^{5x}\,dx$. Then $du=3\,dx$ and $v=\frac{1}{5}e^{5x}$.
-
-      Related topic: integration by parts with polynomial times exponential.
-
-  - id: q011
-    type: symbolicResponse
-    prompt: |
-      Use integration by parts or the standard exponential-trig method to evaluate:
-
-      $$
-      \int e^{4x}\cos(5x)\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{e^{4x}(4\cos(5x)+5\sin(5x))}{41}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      This is the repeated integration-by-parts pattern for $e^{ax}\cos(bx)$. The denominator is $a^2+b^2=4^2+5^2=41$.
-
-      Related topic: exponential-trigonometric integration by parts cycle.
-
-  - id: q012
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric identities to evaluate:
-
-      $$
-      \int \sin^2x\cos^5x\,dx
-      $$
-    media:
-      - type: image
-        src: /assessments/practice-test-1-integrals/testprac3.png
-        alt: Canvas trigonometric identities practice problems.
-        caption: Trigonometric identities practice source image.
-    answer:
-      expectedLatex: '\frac{\sin^3x}{3}-\frac{2\sin^5x}{5}+\frac{\sin^7x}{7}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Save one $\cos x\,dx$ and rewrite the remaining even cosine power using $\cos^2x=1-\sin^2x$. Then use $u=\sin x$.
-
-      Related topic: odd cosine power in sine-cosine integrals.
-
-  - id: q013
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric identities to evaluate:
-
-      $$
-      \int \sin^5x\cos^4x\,dx
-      $$
-    answer:
-      expectedLatex: '-\frac{\cos^5x}{5}+\frac{2\cos^7x}{7}-\frac{\cos^9x}{9}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Save one $\sin x\,dx$ and rewrite $\sin^4x=(1-\cos^2x)^2$. Use $u=\cos x$, so $du=-\sin x\,dx$.
-
-      Related topic: odd sine power in sine-cosine integrals.
-
-  - id: q014
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric identities to evaluate:
-
-      $$
-      \int \tan^3x\sec^2x\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{\tan^4x}{4}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=\tan x$, so $du=\sec^2x\,dx$. This becomes $\int u^3\,du$.
-
-      Related topic: tangent substitution when a $\sec^2x$ factor is present.
-
-  - id: q015
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric identities to evaluate:
-
-      $$
-      \int \tan^3x\sec^3x\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{\sec^5x}{5}-\frac{\sec^3x}{3}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Save $\sec x\tan x\,dx$ and rewrite $\tan^2x=\sec^2x-1$. Then use $u=\sec x$.
-
-      Related topic: tangent/secant integrals with odd secant and odd tangent factors.
-
-  - id: q016
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric identities to evaluate:
-
-      $$
-      \int \sec x\tan^2x\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{1}{2}\sec x\tan x-\frac{1}{2}\ln|\sec x+\tan x|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Rewrite $\tan^2x=\sec^2x-1$. Then the integral becomes
-
-      $$
-      \int \sec^3x\,dx-\int\sec x\,dx.
-      $$
-
-      Related topic: secant reduction identity and standard $\sec^3x$ antiderivative.
-
-  - id: q017
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric substitution to evaluate:
-
-      $$
-      \int \frac{5x^2}{\sqrt{x^2-9}}\,dx
-      $$
-    media:
-      - type: image
-        src: /assessments/practice-test-1-integrals/testprac4.png
-        alt: Canvas trigonometric substitution and partial fractions practice problems.
-        caption: Trigonometric substitution and partial fractions source image.
-    answer:
-      expectedLatex: '\frac{5x\sqrt{x^2-9}}{2}+\frac{45}{2}\ln|x+\sqrt{x^2-9}|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      The radical $\sqrt{x^2-a^2}$ suggests $x=3\sec\theta$. A quicker path is to split $x^2=(x^2-9)+9$ after recognizing the standard forms.
-
-      Related topic: $\sqrt{x^2-a^2}$ trigonometric substitution.
-
-  - id: q018
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric substitution to evaluate:
-
-      $$
-      \int \frac{\sqrt{4-x^2}}{3x^2}\,dx
-      $$
-    answer:
-      expectedLatex: '-\frac{1}{3}\arcsin\left(\frac{x}{2}\right)-\frac{\sqrt{4-x^2}}{3x}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      The radical $\sqrt{a^2-x^2}$ suggests $x=2\sin\theta$. After simplifying, convert back using the reference triangle.
-
-      Related topic: $\sqrt{a^2-x^2}$ trigonometric substitution.
-
-  - id: q019
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric substitution to evaluate:
-
-      $$
-      \int \frac{9x^3}{\sqrt{x^2+16}}\,dx
-      $$
-    answer:
-      expectedLatex: '3x^2\sqrt{x^2+16}-96\sqrt{x^2+16}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      The radical $\sqrt{x^2+a^2}$ suggests $x=4\tan\theta$, but algebraic substitution with $u=x^2+16$ also works after writing $x^3=x(x^2)$.
-
-      Related topic: recognizing when a trig-substitution-looking integral also has a simpler substitution path.
-
-  - id: q020
-    type: symbolicResponse
-    prompt: |
-      Use trigonometric substitution or a tangent identity to evaluate:
-
-      $$
-      \int_0^1 \frac{1}{(x^2+1)^2}\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{1}{4}+\frac{\pi}{8}'
-      equivalenceMode: expression
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $x=\tan\theta$. Then $dx=\sec^2\theta\,d\theta$ and $(x^2+1)^2=\sec^4\theta$, so the integrand becomes $\cos^2\theta$.
-
-      Related topic: tangent substitution for $x^2+1$.
-
-  - id: q021
-    type: symbolicResponse
-    prompt: |
-      Use partial fraction decomposition to evaluate:
-
-      $$
-      \int \frac{3x-5}{x^2+3x-10}\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{1}{7}\ln|x-2|+\frac{20}{7}\ln|x+5|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Factor $x^2+3x-10=(x-2)(x+5)$, then decompose into
-
-      $$
-      \frac{A}{x-2}+\frac{B}{x+5}.
-      $$
-
-      Related topic: distinct linear factors in partial fractions.
-
-  - id: q022
-    type: symbolicResponse
-    prompt: |
-      Use partial fraction decomposition to evaluate:
-
-      $$
-      \int \frac{3x-5}{x^2-6x+9}\,dx
-      $$
-    answer:
-      expectedLatex: '3\ln|x-3|-\frac{4}{x-3}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      The denominator is $(x-3)^2$, so use repeated-linear-factor form:
-
-      $$
-      \frac{A}{x-3}+\frac{B}{(x-3)^2}.
-      $$
-
-      Related topic: repeated linear factors in partial fractions.
-
-  - id: q023
-    type: symbolicResponse
-    prompt: |
-      Use partial fraction decomposition to evaluate:
-
-      $$
-      \int \frac{3x-5}{x^3+25x}\,dx
-      $$
-    answer:
-      expectedLatex: '-\frac{1}{5}\ln|x|+\frac{1}{10}\ln(x^2+25)+\frac{3}{5}\arctan\left(\frac{x}{5}\right)+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Factor $x^3+25x=x(x^2+25)$. Use
-
-      $$
-      \frac{A}{x}+\frac{Bx+C}{x^2+25}.
-      $$
-
-      Related topic: irreducible quadratic factors in partial fractions.
-
-  - id: q024
-    type: symbolicResponse
-    prompt: |
-      Use polynomial division and partial fraction decomposition to evaluate:
-
-      $$
-      \int \frac{4x^3-x}{x^2-x-30}\,dx
-      $$
-    answer:
-      expectedLatex: '2x^2+4x+78\ln|x-6|+45\ln|x+5|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      The numerator degree is larger than the denominator degree, so divide first. Then factor $x^2-x-30=(x-6)(x+5)$ and decompose the remaining proper fraction.
-
-      Related topic: polynomial division before partial fractions.
-
-  - id: q025
-    type: symbolicResponse
-    prompt: |
-      Mixed practice: evaluate
-
-      $$
-      \int (2x-e^{4x})^2\,dx
-      $$
-    media:
-      - type: image
-        src: /assessments/practice-test-1-integrals/testprac5.png
-        alt: Canvas mixed integration practice problems.
-        caption: Mixed practice source image.
-    answer:
-      expectedLatex: '\frac{4x^3}{3}-xe^{4x}+\frac{e^{4x}}{4}+\frac{e^{8x}}{8}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Expand first:
-
-      $$
-      (2x-e^{4x})^2=4x^2-4xe^{4x}+e^{8x}.
-      $$
-
-      Then integrate term by term, using integration by parts for $\int xe^{4x}\,dx$.
-
-      Related topic: expand before integrating mixed algebraic-exponential expressions.
-
-  - id: q026
-    type: symbolicResponse
-    prompt: |
-      Mixed practice: evaluate
-
-      $$
-      \int \frac{6}{x^2+6x+10}\,dx
-      $$
-    answer:
-      expectedLatex: '6\arctan(x+3)+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Complete the square:
-
-      $$
-      x^2+6x+10=(x+3)^2+1.
-      $$
-
-      This creates an arctangent form.
-
-      Related topic: completing the square for inverse tangent integrals.
-
-  - id: q027
-    type: symbolicResponse
-    prompt: |
-      Mixed practice: evaluate
-
-      $$
-      \int (1+\tan x)^2\sec x\,dx
-      $$
-    answer:
-      expectedLatex: '2\sec x+\frac{1}{2}\sec x\tan x+\frac{1}{2}\ln|\sec x+\tan x|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Expand:
-
-      $$
-      (1+\tan x)^2\sec x=\sec x+2\sec x\tan x+\tan^2x\sec x.
-      $$
-
-      Then use $\tan^2x=\sec^2x-1$, which leaves $2\sec x\tan x+\sec^3x$.
-
-      Related topic: expanding before applying trig identities.
-
-  - id: q028
-    type: symbolicResponse
-    prompt: |
-      Mixed practice: evaluate
-
-      $$
-      \int x\sec x\tan x\,dx
-      $$
-    answer:
-      expectedLatex: 'x\sec x-\ln|\sec x+\tan x|+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use integration by parts with $u=x$ and $dv=\sec x\tan x\,dx$. Then $v=\sec x$ and the remaining integral is $\int\sec x\,dx$.
-
-      Related topic: integration by parts with a trig derivative as $dv$.
-
-  - id: q029
-    type: symbolicResponse
-    prompt: |
-      Mixed practice: evaluate
-
-      $$
-      \int \frac{\ln x}{x\sqrt{1+(\ln x)^2}}\,dx
-      $$
-    answer:
-      expectedLatex: '\sqrt{1+(\ln x)^2}+C'
-      equivalenceMode: derivative
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=1+(\ln x)^2$. Then $du=\frac{2\ln x}{x}\,dx$, leaving a power integral.
-
-      Related topic: substitution with logarithmic inside expressions.
-
-  - id: q030
-    type: symbolicResponse
-    prompt: |
-      Mixed practice: evaluate
-
-      $$
-      \int_0^{\pi^2}\cos(\sqrt{x})\,dx
-      $$
-    answer:
-      expectedLatex: '-4'
-      equivalenceMode: expression
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=\sqrt{x}$, so $x=u^2$ and $dx=2u\,du$. The bounds become $0$ and $\pi$:
-
-      $$
-      \int_0^\pi 2u\cos u\,du.
-      $$
-
-      Then use integration by parts to get $-4$.
-
-      Related topic: substitution followed by integration by parts.
-
-  - id: q031
-    type: symbolicResponse
-    prompt: |
-      Determine whether the integral converges. If it converges, evaluate:
-
-      $$
-      \int_1^\infty x^{-4}\,dx
-      $$
-    media:
-      - type: image
-        src: /assessments/practice-test-1-integrals/testprac6.png
-        alt: Canvas improper and approximate integration practice problems.
-        caption: Improper and approximate integration source image.
-    answer:
-      expectedLatex: '\frac{1}{3}'
-      equivalenceMode: expression
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      This is a Type 1 improper integral and a $p$-test tail with $p=4>1$, so it converges. Evaluating the limit gives $\frac{1}{3}$.
-
-      Related topic: improper integral $p$-test at infinity.
-
-  - id: q032
-    type: multipleChoice
-    prompt: |
-      Determine whether the integral converges:
-
-      $$
-      \int_1^\infty \frac{1}{x}\,dx
-      $$
-    choices:
-      - id: a
-        text: 'Diverges by the $p$-test boundary case $p=1$.'
-      - id: b
-        text: 'Converges to $1$.'
-      - id: c
-        text: 'Converges to $0$.'
-      - id: d
-        text: 'Converges because $\frac{1}{x}\to0$.'
-    answer:
-      choiceId: a
-    explanation: |
-      This is the harmonic tail. The fact that $\frac{1}{x}\to0$ is not enough; the area still grows without bound.
-
-      Related topic: divergent $p=1$ improper integral.
-
-  - id: q033
-    type: multipleChoice
-    prompt: |
-      Determine whether the integral converges:
-
-      $$
-      \int_1^2 \frac{1}{(x-1)^2}\,dx
-      $$
-    choices:
-      - id: a
-        text: 'Diverges because there is a Type 2 singularity at $x=1$ with power $p=2$.'
-      - id: b
-        text: 'Converges to $1$.'
-      - id: c
-        text: 'Converges because the interval is finite.'
-      - id: d
-        text: 'Converges by direct substitution.'
-    answer:
-      choiceId: a
-    explanation: |
-      This is a Type 2 improper integral at the lower endpoint. Near $x=1$, the integrand behaves like $\frac{1}{(x-1)^2}$, which diverges because $p\ge1$ for endpoint singularities.
-
-      Related topic: Type 2 improper integral and endpoint $p$-test.
-
-  - id: q034
-    type: symbolicResponse
-    prompt: |
-      Determine whether the integral converges. If it converges, evaluate:
-
-      $$
-      \int_{-\infty}^{\infty}\frac{1}{x^2+16}\,dx
-      $$
-    answer:
-      expectedLatex: '\frac{\pi}{4}'
-      equivalenceMode: expression
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Split the two tails or use the known arctangent antiderivative:
-
-      $$
-      \int\frac{1}{x^2+16}\,dx=\frac{1}{4}\arctan\left(\frac{x}{4}\right).
-      $$
-
-      Both tails converge and the total value is $\pi/4$.
-
-      Related topic: arctangent improper integral over the whole real line.
-
-  - id: q035
-    type: symbolicResponse
-    prompt: |
-      Determine whether the integral converges. If it converges, evaluate:
-
-      $$
-      \int_{-\infty}^{0}\frac{e^{1/x}}{x^2}\,dx
-      $$
-    answer:
-      expectedLatex: '1'
-      equivalenceMode: expression
-      variables:
-        - x
-      tolerance: 0.000001
-    explanation: |
-      Use $u=\frac{1}{x}$, so $du=-\frac{1}{x^2}\,dx$. The bounds change from $x=-\infty$ to $u=0^-$ and from $x\to0^-$ to $u\to-\infty$. This gives
-
-      $$
-      \int_{-\infty}^{0}e^u\,du=1.
-      $$
-
-      Related topic: improper integral with substitution and changed infinite bounds.
-
-  - id: q036
-    type: numericResponse
-    prompt: |
-      Approximate to four decimal places using midpoint, trapezoidal, Simpson's rule, or a calculator integral feature:
-
-      $$
-      \int_2^6 \frac{1}{\ln x}\,dx
-      $$
-    answer:
-      value: 3.1771
-      tolerance: 0.0005
-    explanation: |
-      This item is from the calculator-permitted section. A numerical integral gives approximately $3.1771$.
-
-      Related topic: approximate integration and calculator evaluation.
-
-  - id: q037
-    type: numericResponse
-    prompt: |
-      Approximate to four decimal places using midpoint, trapezoidal, Simpson's rule, or a calculator integral feature:
-
-      $$
-      \int_1^3 \sqrt{x}\sin x\,dx
-      $$
-    answer:
-      value: 2.0536
-      tolerance: 0.0005
-    explanation: |
-      This item is from the calculator-permitted section. A numerical integral gives approximately $2.0536$.
-
-      Related topic: approximate integration for functions without a convenient elementary antiderivative.
+- id: q001
+  type: multipleChoice
+  prompt: 'Concept check: which feature is the strongest signal that an integral is
+    likely a substitution problem?
 
+    '
+  choices:
+  - id: a
+    text: The integrand contains a composed expression and a nearby derivative of
+      the inside expression.
+  - id: b
+    text: The integrand contains a product of unrelated functions with no composition.
+  - id: c
+    text: The denominator factors into repeated linear terms.
+  - id: d
+    text: The integrand has an infinite interval.
+  answer:
+    choiceId: a
+  explanation: 'Substitution is pattern matching for chain rule reversal. Look for
+    an inside expression $g(x)$ and a factor proportional to $g''(x)\,dx$.
 
+
+    Related topic: substitution pattern recognition. Technique order: identify the
+    inside expression, compute its derivative, then adjust constants.
+
+    '
+- id: q002
+  type: symbolicResponse
+  prompt: 'Use substitution to evaluate:
+
+
+    $$
+
+    \int \frac{\cos x}{\sin^2 x+1}\,dx
+
+    $$
+
+    '
+  media:
+  - type: image
+    src: /assessments/practice-test-1-integrals/testprac1.png
+    alt: Canvas substitution practice problems.
+    caption: Substitution practice source image.
+  answer:
+    expectedLatex: \arctan(\sin x)+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=\sin x$, so $du=\cos x\,dx$. The integral becomes
+
+
+    $$
+
+    \int \frac{1}{u^2+1}\,du=\arctan u+C.
+
+    $$
+
+
+    Substitute back to get $\arctan(\sin x)+C$.
+
+
+    Related topic: arctangent substitution form.
+
+    '
+- id: q003
+  type: symbolicResponse
+  prompt: 'Use substitution to evaluate:
+
+
+    $$
+
+    \int \frac{x}{\sqrt{81-x^4}}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{1}{2}\arcsin\left(\frac{x^2}{9}\right)+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=x^2$, so $du=2x\,dx$. Then
+
+
+    $$
+
+    \int \frac{x}{\sqrt{81-x^4}}\,dx
+
+    =
+
+    \frac{1}{2}\int\frac{1}{\sqrt{81-u^2}}\,du.
+
+    $$
+
+
+    The inverse-sine form gives $\frac{1}{2}\arcsin(u/9)+C$.
+
+
+    Related topic: inverse sine integral pattern.
+
+    '
+- id: q004
+  type: symbolicResponse
+  prompt: 'Use substitution to evaluate:
+
+
+    $$
+
+    \int \frac{x^3}{x^4+81}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{1}{4}\ln\left|x^4+81\right|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=x^4+81$, so $du=4x^3\,dx$. This creates the logarithmic form
+
+
+    $$
+
+    \frac{1}{4}\int\frac{1}{u}\,du.
+
+    $$
+
+
+    Related topic: logarithmic substitution.
+
+    '
+- id: q005
+  type: symbolicResponse
+  prompt: 'Use substitution to evaluate:
+
+
+    $$
+
+    \int_0^1 x^2(1-x^3)^5\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{1}{18}
+    equivalenceMode: expression
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=1-x^3$, so $du=-3x^2\,dx$. The bounds change from $x=0$ to
+    $u=1$ and from $x=1$ to $u=0$:
+
+
+    $$
+
+    -\frac{1}{3}\int_1^0 u^5\,du=\frac{1}{3}\int_0^1 u^5\,du=\frac{1}{18}.
+
+    $$
+
+
+    Related topic: definite substitution with changed bounds.
+
+    '
+- id: q006
+  type: symbolicResponse
+  prompt: 'Use substitution to evaluate:
+
+
+    $$
+
+    \int e^{\cos x}\sin x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: -e^{\cos x}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=\cos x$, so $du=-\sin x\,dx$. The negative sign is the key
+    bookkeeping step:
+
+
+    $$
+
+    -\int e^u\,du=-e^u+C.
+
+    $$
+
+
+    Related topic: substitution with a negative derivative.
+
+    '
+- id: q007
+  type: symbolicResponse
+  prompt: 'Use substitution to evaluate:
+
+
+    $$
+
+    \int_0^1 \frac{e^x}{1+e^{2x}}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \arctan(e)-\frac{\pi}{4}
+    equivalenceMode: expression
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=e^x$, so $du=e^x\,dx$. The bounds become $u=1$ and $u=e$:
+
+
+    $$
+
+    \int_1^e\frac{1}{1+u^2}\,du=\arctan(e)-\arctan(1).
+
+    $$
+
+
+    Since $\arctan(1)=\pi/4$, the value is $\arctan(e)-\pi/4$.
+
+
+    Related topic: definite substitution into inverse tangent.
+
+    '
+- id: q008
+  type: symbolicResponse
+  prompt: 'Use integration by parts to evaluate:
+
+
+    $$
+
+    \int x\sec^2 x\,dx
+
+    $$
+
+    '
+  media:
+  - type: image
+    src: /assessments/practice-test-1-integrals/testprac2.png
+    alt: Canvas integration by parts practice problems.
+    caption: Integration by parts practice source image.
+  answer:
+    expectedLatex: x\tan x+\ln|\cos x|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Choose $u=x$ and $dv=\sec^2x\,dx$. Then $du=dx$ and $v=\tan x$:
+
+
+    $$
+
+    \int x\sec^2x\,dx=x\tan x-\int\tan x\,dx.
+
+    $$
+
+
+    Since $\int\tan x\,dx=-\ln|\cos x|$, the result is $x\tan x+\ln|\cos x|+C$.
+
+
+    Related topic: LIATE-style integration by parts selection.
+
+    '
+- id: q009
+  type: symbolicResponse
+  prompt: 'Use integration by parts to evaluate:
+
+
+    $$
+
+    \int x^2\ln x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{x^3\ln x}{3}-\frac{x^3}{9}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Let $u=\ln x$ and $dv=x^2\,dx$. Then $du=\frac{1}{x}\,dx$ and $v=\frac{x^3}{3}$:
+
+
+    $$
+
+    \frac{x^3\ln x}{3}-\frac{1}{3}\int x^2\,dx.
+
+    $$
+
+
+    Related topic: logarithm as the preferred $u$ in integration by parts.
+
+    '
+- id: q010
+  type: symbolicResponse
+  prompt: 'Use integration by parts to evaluate:
+
+
+    $$
+
+    \int 3xe^{5x}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{3xe^{5x}}{5}-\frac{3e^{5x}}{25}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Let $u=3x$ and $dv=e^{5x}\,dx$. Then $du=3\,dx$ and $v=\frac{1}{5}e^{5x}$.
+
+
+    Related topic: integration by parts with polynomial times exponential.
+
+    '
+- id: q011
+  type: symbolicResponse
+  prompt: 'Use integration by parts or the standard exponential-trig method to evaluate:
+
+
+    $$
+
+    \int e^{4x}\cos(5x)\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{e^{4x}(4\cos(5x)+5\sin(5x))}{41}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'This is the repeated integration-by-parts pattern for $e^{ax}\cos(bx)$.
+    The denominator is $a^2+b^2=4^2+5^2=41$.
+
+
+    Related topic: exponential-trigonometric integration by parts cycle.
+
+    '
+- id: q012
+  type: symbolicResponse
+  prompt: 'Use trigonometric identities to evaluate:
+
+
+    $$
+
+    \int \sin^2x\cos^5x\,dx
+
+    $$
+
+    '
+  media:
+  - type: image
+    src: /assessments/practice-test-1-integrals/testprac3.png
+    alt: Canvas trigonometric identities practice problems.
+    caption: Trigonometric identities practice source image.
+  answer:
+    expectedLatex: \frac{\sin^3x}{3}-\frac{2\sin^5x}{5}+\frac{\sin^7x}{7}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Save one $\cos x\,dx$ and rewrite the remaining even cosine power
+    using $\cos^2x=1-\sin^2x$. Then use $u=\sin x$.
+
+
+    Related topic: odd cosine power in sine-cosine integrals.
+
+    '
+- id: q013
+  type: symbolicResponse
+  prompt: 'Use trigonometric identities to evaluate:
+
+
+    $$
+
+    \int \sin^5x\cos^4x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: -\frac{\cos^5x}{5}+\frac{2\cos^7x}{7}-\frac{\cos^9x}{9}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Save one $\sin x\,dx$ and rewrite $\sin^4x=(1-\cos^2x)^2$. Use $u=\cos
+    x$, so $du=-\sin x\,dx$.
+
+
+    Related topic: odd sine power in sine-cosine integrals.
+
+    '
+- id: q014
+  type: symbolicResponse
+  prompt: 'Use trigonometric identities to evaluate:
+
+
+    $$
+
+    \int \tan^3x\sec^2x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{\tan^4x}{4}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=\tan x$, so $du=\sec^2x\,dx$. This becomes $\int u^3\,du$.
+
+
+    Related topic: tangent substitution when a $\sec^2x$ factor is present.
+
+    '
+- id: q015
+  type: symbolicResponse
+  prompt: 'Use trigonometric identities to evaluate:
+
+
+    $$
+
+    \int \tan^3x\sec^3x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{\sec^5x}{5}-\frac{\sec^3x}{3}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Save $\sec x\tan x\,dx$ and rewrite $\tan^2x=\sec^2x-1$. Then use
+    $u=\sec x$.
+
+
+    Related topic: tangent/secant integrals with odd secant and odd tangent factors.
+
+    '
+- id: q016
+  type: symbolicResponse
+  prompt: 'Use trigonometric identities to evaluate:
+
+
+    $$
+
+    \int \sec x\tan^2x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{1}{2}\sec x\tan x-\frac{1}{2}\ln|\sec x+\tan x|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Rewrite $\tan^2x=\sec^2x-1$. Then the integral becomes
+
+
+    $$
+
+    \int \sec^3x\,dx-\int\sec x\,dx.
+
+    $$
+
+
+    Related topic: secant reduction identity and standard $\sec^3x$ antiderivative.
+
+    '
+- id: q017
+  type: symbolicResponse
+  prompt: 'Use trigonometric substitution to evaluate:
+
+
+    $$
+
+    \int \frac{5x^2}{\sqrt{x^2-9}}\,dx
+
+    $$
+
+    '
+  media:
+  - type: image
+    src: /assessments/practice-test-1-integrals/testprac4.png
+    alt: Canvas trigonometric substitution and partial fractions practice problems.
+    caption: Trigonometric substitution and partial fractions source image.
+  answer:
+    expectedLatex: \frac{5x\sqrt{x^2-9}}{2}+\frac{45}{2}\ln|x+\sqrt{x^2-9}|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'The radical $\sqrt{x^2-a^2}$ suggests $x=3\sec\theta$. A quicker path
+    is to split $x^2=(x^2-9)+9$ after recognizing the standard forms.
+
+
+    Related topic: $\sqrt{x^2-a^2}$ trigonometric substitution.
+
+    '
+- id: q018
+  type: symbolicResponse
+  prompt: 'Use trigonometric substitution to evaluate:
+
+
+    $$
+
+    \int \frac{\sqrt{4-x^2}}{3x^2}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: -\frac{1}{3}\arcsin\left(\frac{x}{2}\right)-\frac{\sqrt{4-x^2}}{3x}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'The radical $\sqrt{a^2-x^2}$ suggests $x=2\sin\theta$. After simplifying,
+    convert back using the reference triangle.
+
+
+    Related topic: $\sqrt{a^2-x^2}$ trigonometric substitution.
+
+    '
+- id: q019
+  type: symbolicResponse
+  prompt: 'Use trigonometric substitution to evaluate:
+
+
+    $$
+
+    \int \frac{9x^3}{\sqrt{x^2+16}}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: 3x^2\sqrt{x^2+16}-96\sqrt{x^2+16}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'The radical $\sqrt{x^2+a^2}$ suggests $x=4\tan\theta$, but algebraic
+    substitution with $u=x^2+16$ also works after writing $x^3=x(x^2)$.
+
+
+    Related topic: recognizing when a trig-substitution-looking integral also has
+    a simpler substitution path.
+
+    '
+- id: q020
+  type: symbolicResponse
+  prompt: 'Use trigonometric substitution or a tangent identity to evaluate:
+
+
+    $$
+
+    \int_0^1 \frac{1}{(x^2+1)^2}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{1}{4}+\frac{\pi}{8}
+    equivalenceMode: expression
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $x=\tan\theta$. Then $dx=\sec^2\theta\,d\theta$ and $(x^2+1)^2=\sec^4\theta$,
+    so the integrand becomes $\cos^2\theta$.
+
+
+    Related topic: tangent substitution for $x^2+1$.
+
+    '
+- id: q021
+  type: symbolicResponse
+  prompt: 'Use partial fraction decomposition to evaluate:
+
+
+    $$
+
+    \int \frac{3x-5}{x^2+3x-10}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{1}{7}\ln|x-2|+\frac{20}{7}\ln|x+5|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Factor $x^2+3x-10=(x-2)(x+5)$, then decompose into
+
+
+    $$
+
+    \frac{A}{x-2}+\frac{B}{x+5}.
+
+    $$
+
+
+    Related topic: distinct linear factors in partial fractions.
+
+    '
+- id: q022
+  type: symbolicResponse
+  prompt: 'Use partial fraction decomposition to evaluate:
+
+
+    $$
+
+    \int \frac{3x-5}{x^2-6x+9}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: 3\ln|x-3|-\frac{4}{x-3}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'The denominator is $(x-3)^2$, so use repeated-linear-factor form:
+
+
+    $$
+
+    \frac{A}{x-3}+\frac{B}{(x-3)^2}.
+
+    $$
+
+
+    Related topic: repeated linear factors in partial fractions.
+
+    '
+- id: q023
+  type: symbolicResponse
+  prompt: 'Use partial fraction decomposition to evaluate:
+
+
+    $$
+
+    \int \frac{3x-5}{x^3+25x}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: -\frac{1}{5}\ln|x|+\frac{1}{10}\ln(x^2+25)+\frac{3}{5}\arctan\left(\frac{x}{5}\right)+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Factor $x^3+25x=x(x^2+25)$. Use
+
+
+    $$
+
+    \frac{A}{x}+\frac{Bx+C}{x^2+25}.
+
+    $$
+
+
+    Related topic: irreducible quadratic factors in partial fractions.
+
+    '
+- id: q024
+  type: symbolicResponse
+  prompt: 'Use polynomial division and partial fraction decomposition to evaluate:
+
+
+    $$
+
+    \int \frac{4x^3-x}{x^2-x-30}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: 2x^2+4x+78\ln|x-6|+45\ln|x+5|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'The numerator degree is larger than the denominator degree, so divide
+    first. Then factor $x^2-x-30=(x-6)(x+5)$ and decompose the remaining proper fraction.
+
+
+    Related topic: polynomial division before partial fractions.
+
+    '
+- id: q025
+  type: symbolicResponse
+  prompt: 'Mixed practice: evaluate
+
+
+    $$
+
+    \int (2x-e^{4x})^2\,dx
+
+    $$
+
+    '
+  media:
+  - type: image
+    src: /assessments/practice-test-1-integrals/testprac5.png
+    alt: Canvas mixed integration practice problems.
+    caption: Mixed practice source image.
+  answer:
+    expectedLatex: \frac{4x^3}{3}-xe^{4x}+\frac{e^{4x}}{4}+\frac{e^{8x}}{8}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Expand first:
+
+
+    $$
+
+    (2x-e^{4x})^2=4x^2-4xe^{4x}+e^{8x}.
+
+    $$
+
+
+    Then integrate term by term, using integration by parts for $\int xe^{4x}\,dx$.
+
+
+    Related topic: expand before integrating mixed algebraic-exponential expressions.
+
+    '
+- id: q026
+  type: symbolicResponse
+  prompt: 'Mixed practice: evaluate
+
+
+    $$
+
+    \int \frac{6}{x^2+6x+10}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: 6\arctan(x+3)+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Complete the square:
+
+
+    $$
+
+    x^2+6x+10=(x+3)^2+1.
+
+    $$
+
+
+    This creates an arctangent form.
+
+
+    Related topic: completing the square for inverse tangent integrals.
+
+    '
+- id: q027
+  type: symbolicResponse
+  prompt: 'Mixed practice: evaluate
+
+
+    $$
+
+    \int (1+\tan x)^2\sec x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: 2\sec x+\frac{1}{2}\sec x\tan x+\frac{1}{2}\ln|\sec x+\tan x|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Expand:
+
+
+    $$
+
+    (1+\tan x)^2\sec x=\sec x+2\sec x\tan x+\tan^2x\sec x.
+
+    $$
+
+
+    Then use $\tan^2x=\sec^2x-1$, which leaves $2\sec x\tan x+\sec^3x$.
+
+
+    Related topic: expanding before applying trig identities.
+
+    '
+- id: q028
+  type: symbolicResponse
+  prompt: 'Mixed practice: evaluate
+
+
+    $$
+
+    \int x\sec x\tan x\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: x\sec x-\ln|\sec x+\tan x|+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use integration by parts with $u=x$ and $dv=\sec x\tan x\,dx$. Then
+    $v=\sec x$ and the remaining integral is $\int\sec x\,dx$.
+
+
+    Related topic: integration by parts with a trig derivative as $dv$.
+
+    '
+- id: q029
+  type: symbolicResponse
+  prompt: 'Mixed practice: evaluate
+
+
+    $$
+
+    \int \frac{\ln x}{x\sqrt{1+(\ln x)^2}}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \sqrt{1+(\ln x)^2}+C
+    equivalenceMode: derivative
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=1+(\ln x)^2$. Then $du=\frac{2\ln x}{x}\,dx$, leaving a power
+    integral.
+
+
+    Related topic: substitution with logarithmic inside expressions.
+
+    '
+- id: q030
+  type: symbolicResponse
+  prompt: 'Mixed practice: evaluate
+
+
+    $$
+
+    \int_0^{\pi^2}\cos(\sqrt{x})\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: '-4'
+    equivalenceMode: expression
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=\sqrt{x}$, so $x=u^2$ and $dx=2u\,du$. The bounds become $0$
+    and $\pi$:
+
+
+    $$
+
+    \int_0^\pi 2u\cos u\,du.
+
+    $$
+
+
+    Then use integration by parts to get $-4$.
+
+
+    Related topic: substitution followed by integration by parts.
+
+    '
+- id: q031
+  type: symbolicResponse
+  prompt: 'Determine whether the integral converges. If it converges, evaluate:
+
+
+    $$
+
+    \int_1^\infty x^{-4}\,dx
+
+    $$
+
+    '
+  media:
+  - type: image
+    src: /assessments/practice-test-1-integrals/testprac6.png
+    alt: Canvas improper and a\approximate integration practice problems.
+    caption: Improper and a\approximate integration source image.
+  answer:
+    expectedLatex: \frac{1}{3}
+    equivalenceMode: expression
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'This is a Type 1 improper integral and a $p$-test tail with $p=4>1$,
+    so it converges. Evaluating the limit gives $\frac{1}{3}$.
+
+
+    Related topic: improper integral $p$-test at infinity.
+
+    '
+- id: q032
+  type: multipleChoice
+  prompt: 'Determine whether the integral converges:
+
+
+    $$
+
+    \int_1^\infty \frac{1}{x}\,dx
+
+    $$
+
+    '
+  choices:
+  - id: a
+    text: Diverges by the $p$-test boundary case $p=1$.
+  - id: b
+    text: Converges to $1$.
+  - id: c
+    text: Converges to $0$.
+  - id: d
+    text: Converges because $\frac{1}{x}\to0$.
+  answer:
+    choiceId: a
+  explanation: 'This is the harmonic tail. The fact that $\frac{1}{x}\to0$ is not
+    enough; the area still grows without bound.
+
+
+    Related topic: divergent $p=1$ improper integral.
+
+    '
+- id: q033
+  type: multipleChoice
+  prompt: 'Determine whether the integral converges:
+
+
+    $$
+
+    \int_1^2 \frac{1}{(x-1)^2}\,dx
+
+    $$
+
+    '
+  choices:
+  - id: a
+    text: Diverges because there is a Type 2 singularity at $x=1$ with power $p=2$.
+  - id: b
+    text: Converges to $1$.
+  - id: c
+    text: Converges because the interval is finite.
+  - id: d
+    text: Converges by direct substitution.
+  answer:
+    choiceId: a
+  explanation: 'This is a Type 2 improper integral at the lower endpoint. Near $x=1$,
+    the integrand behaves like $\frac{1}{(x-1)^2}$, which diverges because $p\ge1$
+    for endpoint singularities.
+
+
+    Related topic: Type 2 improper integral and endpoint $p$-test.
+
+    '
+- id: q034
+  type: symbolicResponse
+  prompt: 'Determine whether the integral converges. If it converges, evaluate:
+
+
+    $$
+
+    \int_{-\infty}^{\infty}\frac{1}{x^2+16}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: \frac{\pi}{4}
+    equivalenceMode: expression
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Split the two tails or use the known arctangent antiderivative:
+
+
+    $$
+
+    \int\frac{1}{x^2+16}\,dx=\frac{1}{4}\arctan\left(\frac{x}{4}\right).
+
+    $$
+
+
+    Both tails converge and the total value is $\pi/4$.
+
+
+    Related topic: arctangent improper integral over the whole real line.
+
+    '
+- id: q035
+  type: symbolicResponse
+  prompt: 'Determine whether the integral converges. If it converges, evaluate:
+
+
+    $$
+
+    \int_{-\infty}^{0}\frac{e^{1/x}}{x^2}\,dx
+
+    $$
+
+    '
+  answer:
+    expectedLatex: '1'
+    equivalenceMode: expression
+    variables:
+    - x
+    tolerance: 0
+  explanation: 'Use $u=\frac{1}{x}$, so $du=-\frac{1}{x^2}\,dx$. The bounds change
+    from $x=-\infty$ to $u=0^-$ and from $x\to0^-$ to $u\to-\infty$. This gives
+
+
+    $$
+
+    \int_{-\infty}^{0}e^u\,du=1.
+
+    $$
+
+
+    Related topic: improper integral with substitution and changed infinite bounds.
+
+    '
+- id: q036
+  type: numericResponse
+  prompt: 'A\approximate to four decimal places using midpoint, trapezoidal, Simpson''s
+    rule, or a calculator integral feature:
+
+
+    $$
+
+    \int_2^6 \frac{1}{\ln x}\,dx
+
+    $$
+
+    '
+  answer:
+    value: 3.1771
+    tolerance: 0.0005
+  explanation: 'This item is from the calculator-permitted section. A numerical integral
+    gives a\approximately $3.1771$.
+
+
+    Related topic: a\approximate integration and calculator evaluation.
+
+    '
+- id: q037
+  type: numericResponse
+  prompt: 'A\approximate to four decimal places using midpoint, trapezoidal, Simpson''s
+    rule, or a calculator integral feature:
+
+
+    $$
+
+    \int_1^3 \sqrt{x}\sin x\,dx
+
+    $$
+
+    '
+  answer:
+    value: 2.0536
+    tolerance: 0.0005
+  explanation: 'This item is from the calculator-permitted section. A numerical integral
+    gives a\approximately $2.0536$.
+
+
+    Related topic: a\approximate integration for functions without a convenient elementary
+    antiderivative.
+
+    '

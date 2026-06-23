@@ -3,107 +3,82 @@ id: python-collections-worked-example
 title: Python Inventory System Worked Example
 assessmentType: workedExample
 categoryId: python
-subcategoryId: python-collections
 subcategoryIds:
-  - python-collections
+- python-collections
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Tracing an Inventory Dictionary
-    problem: |
-      We are building a basic inventory system for an RPG. Instead of just a list of items, we want to keep track of *how many* of each item the player has.
-      
-      We will use a dictionary (`dict`) where the key is the item's name (string) and the value is the quantity (int).
-    steps:
-      - id: s001
-        title: Adding Items
-        instruction: |
-          Look at the function that adds an item to the inventory:
-          
-          ```python
-          inventory = {}
-          
-          def add_item(item_name, quantity):
-              if item_name in inventory:
-                  inventory[item_name] += quantity
-              else:
-                  inventory[item_name] = quantity
-                  
-          add_item("Health Potion", 2)
-          add_item("Iron Sword", 1)
-          add_item("Health Potion", 3)
-          ```
-        type: numericResponse
-        prompt: |
-          After the three `add_item` calls, what is the value of `inventory["Health Potion"]`?
-        answer:
-          value: 5
-          tolerance: 0
-        explanation: |
-          The first call adds `"Health Potion"` with a value of 2. The second adds `"Iron Sword"` with 1. The third call sees that `"Health Potion"` is already in the dictionary, so it executes `inventory["Health Potion"] += 3`, resulting in 5.
-
-      - id: s002
-        title: Removing Items
-        instruction: |
-          Now let's trace the logic for removing or using an item:
-          
-          ```python
-          def use_item(item_name):
-              if item_name in inventory and inventory[item_name] > 0:
-                  inventory[item_name] -= 1
-                  print(f"Used {item_name}.")
-                  if inventory[item_name] == 0:
-                      del inventory[item_name] # Removes the key entirely
-              else:
-                  print("You don't have any!")
-                  
-          use_item("Iron Sword")
-          use_item("Iron Sword")
-          ```
-        type: multipleChoice
-        prompt: |
-          What happens when `use_item("Iron Sword")` is called the *second* time?
-        choices:
-          - id: a
-            text: It prints "Used Iron Sword." and the quantity becomes -1.
-          - id: b
-            text: It prints "You don't have any!"
-          - id: c
-            text: The program crashes with a KeyError.
-        answer:
-          choiceId: b
-        explanation: |
-          The first time it is used, the quantity drops from 1 to 0. The `if inventory[item_name] == 0` block triggers, and the key `"Iron Sword"` is deleted. The second time it is called, `item_name in inventory` evaluates to False, so it goes to the `else` block and prints "You don't have any!".
-
-      - id: s003
-        title: Viewing the Inventory
-        instruction: |
-          Finally, we want to print out all the items the player currently has.
-        type: multipleChoice
-        prompt: |
-          Which of the following loops correctly prints both the item name and the quantity from the `inventory` dictionary?
-        choices:
-          - id: a
-            text: |
-              ```python
-              for item in inventory:
-                  print(f"{item}: {inventory[item]}")
-              ```
-          - id: b
-            text: |
-              ```python
-              for item, qty in inventory.items():
-                  print(f"{item}: {qty}")
-              ```
-          - id: c
-            text: Both A and B are correct.
-          - id: d
-            text: Neither is correct.
-        answer:
-          choiceId: c
-        explanation: |
-          Looping directly over a dict (`for item in inventory:`) loops over its keys. You can then access the value using `inventory[item]`. 
-          Alternatively, `inventory.items()` returns pairs of `(key, value)`, which you can unpack directly into `item, qty`. Both approaches work perfectly.
+- id: we001
+  title: Tracing an Inventory Dictionary
+  problem: 'We are building a basic inventory system for an RPG. Instead of just a
+    list of items, we want to keep track of *how many* of each item the player has.
 
 
+    We will use a dictionary (`dict`) where the key is the item''s name (string) and
+    the value is the quantity (int).
+
+    '
+  steps:
+  - id: step-we001-1
+    title: Adding Items
+    instruction: "Look at the function that adds an item to the inventory:\n\n```python\n\
+      inventory = {}\n\ndef add_item(item_name, quantity):\n    if item_name in inventory:\n\
+      \        inventory[item_name] += quantity\n    else:\n        inventory[item_name]\
+      \ = quantity\n        \nadd_item(\"Health Potion\", 2)\nadd_item(\"Iron Sword\"\
+      , 1)\nadd_item(\"Health Potion\", 3)\n```\n"
+    type: numericResponse
+    prompt: |
+      After the three `add_item` calls, what is the value of `inventory["Health Potion"]`?
+    answer:
+      value: 5
+      tolerance: 0
+    explanation: |
+      The first call adds `"Health Potion"` with a value of 2. The second adds `"Iron Sword"` with 1. The third call sees that `"Health Potion"` is already in the dictionary, so it executes `inventory["Health Potion"] += 3`, resulting in 5.
+  - id: step-we001-2
+    title: Removing Items
+    instruction: "Now let's trace the logic for removing or using an item:\n\n```python\n\
+      def use_item(item_name):\n    if item_name in inventory and inventory[item_name]\
+      \ > 0:\n        inventory[item_name] -= 1\n        print(f\"Used {item_name}.\"\
+      )\n        if inventory[item_name] == 0:\n            del inventory[item_name]\
+      \ # Removes the key entirely\n    else:\n        print(\"You don't have any!\"\
+      )\n        \nuse_item(\"Iron Sword\")\nuse_item(\"Iron Sword\")\n```\n"
+    type: multipleChoice
+    prompt: |
+      What happens when `use_item("Iron Sword")` is called the *second* time?
+    choices:
+    - id: a
+      text: It prints "Used Iron Sword." and the quantity becomes -1.
+    - id: b
+      text: It prints "You don't have any!"
+    - id: c
+      text: The program crashes with a KeyError.
+    answer:
+      choiceId: b
+    explanation: |
+      The first time it is used, the quantity drops from 1 to 0. The `if inventory[item_name] == 0` block triggers, and the key `"Iron Sword"` is deleted. The second time it is called, `item_name in inventory` evaluates to False, so it goes to the `else` block and prints "You don't have any!".
+  - id: step-we001-3
+    title: Viewing the Inventory
+    instruction: 'Finally, we want to print out all the items the player currently
+      has.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which of the following loops correctly prints both the item name and the quantity from the `inventory` dictionary?
+    choices:
+    - id: a
+      text: "```python\nfor item in inventory:\n    print(f\"{item}: {inventory[item]}\"\
+        )\n```\n"
+    - id: b
+      text: "```python\nfor item, qty in inventory.items():\n    print(f\"{item}:\
+        \ {qty}\")\n```\n"
+    - id: c
+      text: Both A and B are correct.
+    - id: d
+      text: Neither is correct.
+    answer:
+      choiceId: c
+    explanation: "Looping directly over a dict (`for item in inventory:`) loops over\
+      \ its keys. You can then access the value using `inventory[item]`. \nAlternatively,\
+      \ `inventory.items()` returns pairs of `(key, value)`, which you can unpack\
+      \ directly into `item, qty`. Both approaches work perfectly.\n"

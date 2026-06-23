@@ -3,264 +3,283 @@ id: python-polymorphism-concept-lesson
 title: Python Polymorphism and Protocols Concept Lesson
 assessmentType: conceptLesson
 categoryId: python
-subcategoryId: python-oop
 subcategoryIds:
-  - python-oop
+- python-oop
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - polymorphism
-    - duck-typing
-    - protocols
-    - method-overriding
+  - polymorphism
+  - duck-typing
+  - protocols
+  - method-overriding
 lesson:
-  introduction: |
-    Python polymorphism often comes from shared behavior rather than a shared base class.
+  introduction: 'Python polymorphism often comes from shared behavior rather than
+    a shared base class.
+
     This lesson connects duck typing, protocols, inheritance-based dispatch, special
+
     methods, and composition into one practical design model.
+
+    '
   sections:
-    - id: same-operation-different-objects
-      title: Polymorphism is interchangeable behavior
-      required: true
-      content: |
-        A function is polymorphic when it can perform the same operation with objects that
-        provide different implementations.
+  - id: same-operation-different-objects
+    title: Polymorphism is interchangeable behavior
+    required: true
+    content: "A function is polymorphic when it can perform the same operation with\
+      \ objects that\nprovide different implementations.\n\n```python\ndef announce(entity)\
+      \ -> str:\n    return entity.describe()\n```\n\n`announce()` may work with a\
+      \ `Player`, `Enemy`, or `Npc` if each object supports\n`describe()`. The caller\
+      \ depends on behavior, not on internal fields.\n"
+    check:
+      id: same-operation-different-objects-check
+      type: multipleChoice
+      prompt: What makes `announce()` polymorphic?
+      choices:
+      - id: a
+        text: It relies on a shared operation that different object types can implement
+      - id: b
+        text: It requires every object to store identical fields
+      - id: c
+        text: It converts every object into a dictionary
+      - id: d
+        text: It avoids calling methods
+      answer:
+        choiceId: a
+      explanation: 'The stable expectation is the `describe()` behavior, while each
+        type controls
 
-        ```python
-        def announce(entity) -> str:
-            return entity.describe()
-        ```
-
-        `announce()` may work with a `Player`, `Enemy`, or `Npc` if each object supports
-        `describe()`. The caller depends on behavior, not on internal fields.
-      check:
-        id: same-operation-different-objects-check
-        type: multipleChoice
-        prompt: What makes `announce()` polymorphic?
-        choices:
-          - id: a
-            text: It relies on a shared operation that different object types can implement
-          - id: b
-            text: It requires every object to store identical fields
-          - id: c
-            text: It converts every object into a dictionary
-          - id: d
-            text: It avoids calling methods
-        answer:
-          choiceId: a
-        explanation: |
-          The stable expectation is the `describe()` behavior, while each type controls
-          its implementation.
-
-          Related topic: interface-oriented design.
-
-    - id: duck-typing
-      title: Duck typing focuses on supported behavior
-      required: true
-      content: |
-        Python often accepts an object because it supports the operations needed now,
-        without requiring a particular inheritance relationship.
-
-        ```python
-        def save_text(destination, text: str) -> None:
-            destination.write(text)
-        ```
-
-        A real file, an in-memory string buffer, or a test double may all work if they
-        provide a compatible `write()` method.
-      check:
-        id: duck-typing-check
-        type: multipleChoice
-        prompt: Which fact matters most to `save_text()`?
-        choices:
-          - id: a
-            text: The destination provides a compatible `write()` method
-          - id: b
-            text: The destination inherits from the same application class
-          - id: c
-            text: The destination stores its data in a field named `buffer`
-          - id: d
-            text: The destination was created in the same module
-        answer:
-          choiceId: a
-        explanation: |
-          Duck typing asks whether the object supports the required operation.
-
-          Related topic: structural behavior and test doubles.
-
-    - id: protocols-for-static-clarity
-      title: Protocols document structural contracts
-      required: true
-      content: |
-        `typing.Protocol` describes required behavior for type checkers without forcing
-        classes to inherit from the protocol.
-
-        ```python
-        from typing import Protocol
-
-        class Describable(Protocol):
-            def describe(self) -> str: ...
-        ```
-
-        Any compatible class can satisfy the protocol structurally.
-      check:
-        id: protocols-for-static-clarity-check
-        type: multipleChoice
-        prompt: What is a key benefit of `Protocol`?
-        choices:
-          - id: a
-            text: It documents and type-checks required behavior without mandatory inheritance
-          - id: b
-            text: It executes every method automatically
-          - id: c
-            text: It makes attributes inaccessible at runtime
-          - id: d
-            text: It replaces unit tests
-        answer:
-          choiceId: a
-        explanation: |
-          Protocols add static clarity while preserving Python's structural style.
-
-          Related topic: structural subtyping.
-
-    - id: inheritance-dispatch
-      title: Overriding also provides polymorphism
-      required: true
-      content: |
-        Traditional inheritance can provide a common base and specialized overrides.
-
-        ```python
-        class Shape:
-            def area(self) -> float:
-                raise NotImplementedError
-
-        class Circle(Shape):
-            def area(self) -> float:
-                return math.pi * self.radius ** 2
-        ```
-
-        Calling `shape.area()` uses the implementation found on the runtime object's type.
-      check:
-        id: inheritance-dispatch-check
-        type: multipleChoice
-        prompt: If `shape` refers to a `Circle`, which implementation handles `shape.area()`?
-        choices:
-          - id: a
-            text: '`Circle.area`'
-          - id: b
-            text: The first global function named `area`
-          - id: c
-            text: No method, because the variable is named `shape`
-          - id: d
-            text: Every `area` method at the same time
-        answer:
-          choiceId: a
-        explanation: |
-          Attribute lookup begins with the runtime class and follows its method resolution
-          order.
-
-          Related topic: overriding and dynamic dispatch.
-
-    - id: special-method-polymorphism
-      title: Python protocols appear throughout the language
-      required: true
-      content: |
-        Built-in operations are polymorphic through special methods:
-
-        - `len(value)` calls `value.__len__()`.
-        - iteration uses `__iter__()` and `__next__()`.
-        - `with` uses context-manager methods.
-        - `for` works with many unrelated iterable types.
-
-        This is why a list, tuple, string, and custom collection can all participate in
-        the same language construct.
-      check:
-        id: special-method-polymorphism-check
-        type: selectAll
-        prompt: Which are examples of protocol-based polymorphism in Python?
-        choices:
-          - id: a
-            text: Calling `len()` on different sized container types
-          - id: b
-            text: Iterating over lists, files, and custom iterables with `for`
-          - id: c
-            text: Using `with` on different context managers
-          - id: d
-            text: Requiring every object to inherit from one application base class
-        answer:
-          choiceIds: [a, b, c]
-        explanation: |
-          Each operation relies on a supported protocol rather than identical
-          representation or one universal application superclass.
-
-          Related topic: Python data model.
-
-    - id: avoid-type-switches
-      title: Move varying behavior behind the interface
-      required: true
-      content: |
-        Repeated `isinstance()` chains often indicate that behavior belongs on the objects
-        or in injected strategy functions.
-
-        Instead of asking which concrete type an object is and branching, ask the object
-        to perform the operation promised by the interface. Type checks remain appropriate
-        at parsing and validation boundaries, but should not replace a useful abstraction.
-      check:
-        id: avoid-type-switches-check
-        type: multipleChoice
-        prompt: What is a common improvement for a long branch on concrete notification types?
-        choices:
-          - id: a
-            text: Give each notification a shared `send()` operation or inject sender strategies
-          - id: b
-            text: Add more global boolean flags
-          - id: c
-            text: Read every private attribute before deciding
-          - id: d
-            text: Convert all objects into strings
-        answer:
-          choiceId: a
-        explanation: |
-          A stable operation localizes each variation and keeps callers independent of
-          concrete types.
-
-          Related topic: strategy pattern and open-closed design.
-
-    - id: choose-the-lightest-contract
-      title: Choose the lightest useful abstraction
-      required: true
-      content: |
-        Use:
-
-        - duck typing for simple local behavior,
-        - a `Protocol` when static documentation and checking help,
-        - an abstract base class when nominal identity or shared implementation matters,
-        - composition when behavior should be replaceable at runtime.
-
-        The goal is not to maximize inheritance. The goal is to make assumptions visible
-        and keep collaborators interchangeable.
-      check:
-        id: choose-the-lightest-contract-check
-        type: selectAll
-        prompt: Which statements reflect sound Python polymorphism design?
-        choices:
-          - id: a
-            text: Depend on the smallest behavior the caller actually needs
-          - id: b
-            text: Use a protocol when structural type checking improves clarity
-          - id: c
-            text: Prefer composition for replaceable strategies and collaborators
-          - id: d
-            text: Require inheritance even when one method is the only shared behavior
-        answer:
-          choiceIds: [a, b, c]
-        explanation: |
-          Small contracts, structural typing, and composition preserve flexibility without
-          unnecessary hierarchy.
-
-          Related topic: interface segregation and dependency injection.
+        its implementation.
 
 
+        Related topic: interface-oriented design.
+
+        '
+  - id: duck-typing
+    title: Duck typing focuses on supported behavior
+    required: true
+    content: "Python often accepts an object because it supports the operations needed\
+      \ now,\nwithout requiring a particular inheritance relationship.\n\n```python\n\
+      def save_text(destination, text: str) -> None:\n    destination.write(text)\n\
+      ```\n\nA real file, an in-memory string buffer, or a test double may all work\
+      \ if they\nprovide a compatible `write()` method.\n"
+    check:
+      id: duck-typing-check
+      type: multipleChoice
+      prompt: Which fact matters most to `save_text()`?
+      choices:
+      - id: a
+        text: The destination provides a compatible `write()` method
+      - id: b
+        text: The destination inherits from the same application class
+      - id: c
+        text: The destination stores its data in a field named `buffer`
+      - id: d
+        text: The destination was created in the same module
+      answer:
+        choiceId: a
+      explanation: 'Duck typing asks whether the object supports the required operation.
+
+
+        Related topic: structural behavior and test doubles.
+
+        '
+  - id: protocols-for-static-clarity
+    title: Protocols document structural contracts
+    required: true
+    content: "`typing.Protocol` describes required behavior for type checkers without\
+      \ forcing\nclasses to inherit from the protocol.\n\n```python\nfrom typing import\
+      \ Protocol\n\nclass Describable(Protocol):\n    def describe(self) -> str: ...\n\
+      ```\n\nAny compatible class can satisfy the protocol structurally.\n"
+    check:
+      id: protocols-for-static-clarity-check
+      type: multipleChoice
+      prompt: What is a key benefit of `Protocol`?
+      choices:
+      - id: a
+        text: It documents and type-checks required behavior without mandatory inheritance
+      - id: b
+        text: It executes every method automatically
+      - id: c
+        text: It makes attributes inaccessible at runtime
+      - id: d
+        text: It replaces unit tests
+      answer:
+        choiceId: a
+      explanation: 'Protocols add static clarity while preserving Python''s structural
+        style.
+
+
+        Related topic: structural subtyping.
+
+        '
+  - id: inheritance-dispatch
+    title: Overriding also provides polymorphism
+    required: true
+    content: "Traditional inheritance can provide a common base and specialized overrides.\n\
+      \n```python\nclass Shape:\n    def area(self) -> float:\n        raise NotImplementedError\n\
+      \nclass Circle(Shape):\n    def area(self) -> float:\n        return math.pi\
+      \ * self.radius ** 2\n```\n\nCalling `shape.area()` uses the implementation\
+      \ found on the runtime object's type.\n"
+    check:
+      id: inheritance-dispatch-check
+      type: multipleChoice
+      prompt: If `shape` refers to a `Circle`, which implementation handles `shape.area()`?
+      choices:
+      - id: a
+        text: '`Circle.area`'
+      - id: b
+        text: The first global function named `area`
+      - id: c
+        text: No method, because the variable is named `shape`
+      - id: d
+        text: Every `area` method at the same time
+      answer:
+        choiceId: a
+      explanation: 'Attribute lookup begins with the runtime class and follows its
+        method resolution
+
+        order.
+
+
+        Related topic: overriding and dynamic dispatch.
+
+        '
+  - id: special-method-polymorphism
+    title: Python protocols appear throughout the language
+    required: true
+    content: 'Built-in operations are polymorphic through special methods:
+
+
+      - `len(value)` calls `value.__len__()`.
+
+      - iteration uses `__iter__()` and `__next__()`.
+
+      - `with` uses context-manager methods.
+
+      - `for` works with many unrelated iterable types.
+
+
+      This is why a list, tuple, string, and custom collection can all participate
+      in
+
+      the same language construct.
+
+      '
+    check:
+      id: special-method-polymorphism-check
+      type: selectAll
+      prompt: Which are examples of protocol-based polymorphism in Python?
+      choices:
+      - id: a
+        text: Calling `len()` on different sized container types
+      - id: b
+        text: Iterating over lists, files, and custom iterables with `for`
+      - id: c
+        text: Using `with` on different context managers
+      - id: d
+        text: Requiring every object to inherit from one application base class
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+      explanation: 'Each operation relies on a supported protocol rather than identical
+
+        representation or one universal application superclass.
+
+
+        Related topic: Python data model.
+
+        '
+  - id: avoid-type-switches
+    title: Move varying behavior behind the interface
+    required: true
+    content: 'Repeated `isinstance()` chains often indicate that behavior belongs
+      on the objects
+
+      or in injected strategy functions.
+
+
+      Instead of asking which concrete type an object is and branching, ask the object
+
+      to perform the operation promised by the interface. Type checks remain appropriate
+
+      at parsing and validation boundaries, but should not replace a useful abstraction.
+
+      '
+    check:
+      id: avoid-type-switches-check
+      type: multipleChoice
+      prompt: What is a common improvement for a long branch on concrete notification
+        types?
+      choices:
+      - id: a
+        text: Give each notification a shared `send()` operation or inject sender
+          strategies
+      - id: b
+        text: Add more global boolean flags
+      - id: c
+        text: Read every private attribute before deciding
+      - id: d
+        text: Convert all objects into strings
+      answer:
+        choiceId: a
+      explanation: 'A stable operation localizes each variation and keeps callers
+        independent of
+
+        concrete types.
+
+
+        Related topic: strategy pattern and open-closed design.
+
+        '
+  - id: choose-the-lightest-contract
+    title: Choose the lightest useful abstraction
+    required: true
+    content: 'Use:
+
+
+      - duck typing for simple local behavior,
+
+      - a `Protocol` when static documentation and checking help,
+
+      - an abstract base class when nominal identity or shared implementation matters,
+
+      - composition when behavior should be replaceable at runtime.
+
+
+      The goal is not to maximize inheritance. The goal is to make assumptions visible
+
+      and keep collaborators interchangeable.
+
+      '
+    check:
+      id: choose-the-lightest-contract-check
+      type: selectAll
+      prompt: Which statements reflect sound Python polymorphism design?
+      choices:
+      - id: a
+        text: Depend on the smallest behavior the caller actually needs
+      - id: b
+        text: Use a protocol when structural type checking improves clarity
+      - id: c
+        text: Prefer composition for replaceable strategies and collaborators
+      - id: d
+        text: Require inheritance even when one method is the only shared behavior
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+      explanation: 'Small contracts, structural typing, and composition preserve flexibility
+        without
+
+        unnecessary hierarchy.
+
+
+        Related topic: interface segregation and dependency injection.
+
+        '

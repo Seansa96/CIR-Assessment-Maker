@@ -1,0 +1,100 @@
+schemaVersion: 1
+id: calc2-area-curves-method-selection-quiz
+title: Area Between Curves - Method Selection
+assessmentType: quiz
+categoryId: calculus-2
+subcategoryIds:
+  - area-between-curves
+navigation:
+  learningGoal: practice
+  activityType: focusedPractice
+  tags:
+    - advanced
+    - exam-prep
+modeDefault: practice
+randomizeQuestions: true
+questions:
+  - id: area-method-1-dx-vs-dy
+    type: multipleChoice
+    prompt: |
+      Consider the region bounded by $y = \sqrt{x}$, $y = x - 2$, and the $x$-axis. You are asked to set up an integral to find the area of this region. Which of the following statements about the setup is true?
+    choices:
+      - id: a
+        text: 'Integrating with respect to $x$ requires only one integral, but integrating with respect to $y$ requires two.'
+      - id: b
+        text: 'Integrating with respect to $y$ requires only one integral, but integrating with respect to $x$ requires two.'
+      - id: c
+        text: 'Both methods require setting up two separate integrals.'
+      - id: d
+        text: 'Both methods require only one integral.'
+    answer:
+      choiceId: b
+    explanation: |
+      Let's analyze the region. The boundaries are $y = \sqrt{x}$ (top curve for some portion), $y = x - 2$ (bottom curve), and $y = 0$ ($x$-axis).
+      
+      **Integrating with respect to $x$:**
+      The region goes from $x = 0$ to $x = 4$.
+      From $x = 0$ to $x = 2$, the top boundary is $y = \sqrt{x}$ and the bottom is $y = 0$.
+      From $x = 2$ to $x = 4$, the top boundary is $y = \sqrt{x}$ and the bottom is $y = x - 2$.
+      Because the bottom boundary changes at $x = 2$, you **must split it into two integrals**:
+      $$A = \int_0^2 (\sqrt{x} - 0) \, dx + \int_2^4 (\sqrt{x} - (x - 2)) \, dx$$
+      
+      **Integrating with respect to $y$:**
+      We rewrite the equations in terms of $y$: $x = y^2$ and $x = y + 2$.
+      The region goes from $y = 0$ to $y = 2$.
+      For all $y$ in $[0, 2]$, the right boundary is always $x = y + 2$ and the left boundary is always $x = y^2$.
+      Because the boundaries do not change, you need **only one integral**:
+      $$A = \int_0^2 ((y + 2) - y^2) \, dy$$
+      
+      Thus, integrating with respect to $y$ is much more efficient here and requires only one integral.
+
+  - id: area-method-2-horizontal-slicing
+    type: multipleChoice
+    prompt: |
+      You need to find the area bounded by $x = 2y^2 - 4y$ and $x = 4y - y^2$. To find the intersection points, you should:
+    choices:
+      - id: a
+        text: 'Solve the equations for $y$ in terms of $x$, then set them equal to each other.'
+      - id: b
+        text: 'Set $2y^2 - 4y = 4y - y^2$ and solve for $y$ to find the integration limits.'
+      - id: c
+        text: 'Take the derivative of both functions and find where they are equal.'
+      - id: d
+        text: 'Integrate both functions from $x = -2$ to $x = 4$.'
+    answer:
+      choiceId: b
+    explanation: |
+      The functions are already given as $x = f(y)$ and $x = g(y)$. This strongly suggests we should use\rhorizontal slicing (integrate with respect to $y$). 
+      
+      To find the limits of integration, we must find where the curves intersect by setting the $x$-values equal to each other:
+      $$2y^2 - 4y = 4y - y^2$$
+      $$3y^2 - 8y = 0$$
+      $$y(3y - 8) = 0 \implies y = 0, y = 8/3$$
+      
+      Attempting to solve for $y$ in terms of $x$ (Choice A) would require the quadratic formula, creating multiple messy radical functions that would be exceptionally difficult to integrate.
+
+  - id: area-method-3-absolute-value
+    type: multipleChoice
+    prompt: |
+      A student sets up the integral $\int_{-2}^{3} (f(x) - g(x)) \, dx$ to find the total area between the curves $y=f(x)$ and $y=g(x)$. However, the curves cross at $x = 1$. How should the total area be correctly represented?
+    choices:
+      - id: a
+        text: '$\int_{-2}^{3} (f(x) - g(x)) \, dx$'
+      - id: b
+        text: '$\left| \int_{-2}^{3} (f(x) - g(x)) \, dx 
+ight|$'
+      - id: c
+        text: '$\int_{-2}^{1} (f(x) - g(x)) \, dx + \int_{1}^{3} (g(x) - f(x)) \, dx$ (assuming $f(x) \ge g(x)$ on $[-2, 1]$)'
+      - id: d
+        text: '$\int_{-2}^{1} (f(x) + g(x)) \, dx - \int_{1}^{3} (f(x) + g(x)) \, dx$'
+    answer:
+      choiceId: c
+    explanation: |
+      When curves cross, the "top" and "bottom" functions switch. Total area is defined as the integral of the absolute difference: $\int |f(x) - g(x)| \, dx$.
+      
+      To calculate this without absolute value bars inside the integral, we must split the integral at the intersection point $x=1$ and ensure we are always subtracting the bottom function from the top function on each interval.
+      
+      If $f(x) \ge g(x)$ on $[-2, 1]$, then on $[1, 3]$, $g(x)$ must be greater than or equal to $f(x)$ (since they crossed). Therefore, the correct setup is:
+      $$\int_{-2}^{1} (f(x) - g(x)) \, dx + \int_{1}^{3} (g(x) - f(x)) \, dx$$
+      
+      Taking the absolute value of the entire single integral (Choice B) is incorrect because the signed areas will cancel out *before* the absolute value is applied, yielding the net area instead of the total area.

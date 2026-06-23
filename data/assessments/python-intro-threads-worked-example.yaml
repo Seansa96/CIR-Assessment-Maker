@@ -3,127 +3,131 @@ id: python-intro-threads-worked-example
 title: Python Intro to Threads Worked Example
 assessmentType: workedExample
 categoryId: python
-subcategoryId: python-concurrency
 subcategoryIds:
-  - python-concurrency
+- python-concurrency
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Understanding a basic Python thread
-    problem: "Plan a small Python program that runs a helper function in a separate thread."
-    steps:
-      - id: s001
-        title: Identify what a thread is
-        instruction: "Start by distinguishing a thread from an ordinary function call."
-        type: multipleChoice
-        prompt: "In Python, what does a thread usually let a program do?"
-        choices:
-          - id: a
-            text: "Run another flow of execution while the main program continues."
-          - id: b
-            text: "Create a new Python syntax rule."
-          - id: c
-            text: "Automatically make every computation faster."
-          - id: d
-            text: "Replace functions with variables."
-        answer:
-          choiceId: a
-        hint: "A thread is about another path of execution, not a different kind of function."
-        explanation: |
-          A thread lets a program start another flow of execution. The threaded function can run while the main thread continues doing other work.
+- id: we001
+  title: Understanding a basic Python thread
+  problem: Plan a small Python program that runs a helper function in a separate thread.
+  steps:
+  - id: step-we001-1
+    title: Identify what a thread is
+    instruction: Start by distinguishing a thread from an ordinary function call.
+    type: multipleChoice
+    prompt: In Python, what does a thread usually let a program do?
+    choices:
+    - id: a
+      text: Run another flow of execution while the main program continues.
+    - id: b
+      text: Create a new Python syntax rule.
+    - id: c
+      text: Automatically make every computation faster.
+    - id: d
+      text: Replace functions with variables.
+    answer:
+      choiceId: a
+    hint: A thread is about another path of execution, not a different kind of function.
+    explanation: |
+      A thread lets a program start another flow of execution. The threaded function can run while the main thread continues doing other work.
 
-          Related topic: Thread execution model; identify the task that can run independently, then start it in a `threading.Thread`.
-      - id: s002
-        title: Choose the work function
-        instruction: "A thread needs a callable target: the function that should run in the other flow of execution."
-        type: multipleChoice
-        prompt: "Which value should be passed as the `target` when creating a Python thread?"
-        choices:
-          - id: a
-            text: "The function object, such as `worker`."
-          - id: b
-            text: "The result of calling the function, such as `worker()`."
-          - id: c
-            text: "The thread's final return value."
-          - id: d
-            text: "The name of the file as a string."
-        answer:
-          choiceId: a
-        hint: "Passing `worker()` calls the function immediately instead of giving it to the thread."
-        explanation: |
-          Use `target=worker`, not `target=worker()`. The thread needs the function object so it can call that function when the thread starts.
+      Related topic: Thread execution model; identify the task that can run independently, then start it in a `threading.Thread`.
+  - id: step-we001-2
+    title: Choose the work function
+    instruction: 'A thread needs a callable target: the function that should run in
+      the other flow of execution.'
+    type: multipleChoice
+    prompt: Which value should be passed as the `target` when creating a Python thread?
+    choices:
+    - id: a
+      text: The function object, such as `worker`.
+    - id: b
+      text: The result of calling the function, such as `worker()`.
+    - id: c
+      text: The thread's final return value.
+    - id: d
+      text: The name of the file as a string.
+    answer:
+      choiceId: a
+    hint: Passing `worker()` calls the function immediately instead of giving it to
+      the thread.
+    explanation: |
+      Use `target=worker`, not `target=worker()`. The thread needs the function object so it can call that function when the thread starts.
 
-          Related topic: Callable targets; pass the function object to `threading.Thread`, then pass arguments separately with `args`.
-      - id: s003
-        title: Start the thread
-        instruction: "After creating a `Thread` object, you must start it explicitly."
-        type: multipleChoice
-        prompt: "Which method begins execution of the thread's target function?"
-        choices:
-          - id: a
-            text: "`thread.start()`"
-          - id: b
-            text: "`thread.make()`"
-          - id: c
-            text: "`thread.call()`"
-          - id: d
-            text: "`thread.result()`"
-        answer:
-          choiceId: a
-        hint: "Creation prepares the thread. Starting actually schedules it."
-        explanation: |
-          `thread.start()` tells Python to begin running the target function in that thread.
+      Related topic: Callable targets; pass the function object to `threading.Thread`, then pass arguments separately with `args`.
+  - id: step-we001-3
+    title: Start the thread
+    instruction: After creating a `Thread` object, you must start it explicitly.
+    type: multipleChoice
+    prompt: Which method begins execution of the thread's target function?
+    choices:
+    - id: a
+      text: '`thread.start()`'
+    - id: b
+      text: '`thread.make()`'
+    - id: c
+      text: '`thread.call()`'
+    - id: d
+      text: '`thread.result()`'
+    answer:
+      choiceId: a
+    hint: Creation prepares the thread. Starting actually schedules it.
+    explanation: |
+      `thread.start()` tells Python to begin running the target function in that thread.
 
-          Related topic: Thread lifecycle; create the `Thread`, call `start()`, then decide whether the main thread should wait.
-      - id: s004
-        title: Wait for completion
-        instruction: "If the main program needs the threaded work to finish before continuing, it should join the thread."
-        type: multipleChoice
-        prompt: "What does `thread.join()` do?"
-        choices:
-          - id: a
-            text: "It waits until the thread finishes."
-          - id: b
-            text: "It starts the thread a second time."
-          - id: c
-            text: "It deletes the thread's target function."
-          - id: d
-            text: "It converts the thread into a list."
-        answer:
-          choiceId: a
-        hint: "Think of joining as waiting for the other execution path to rejoin the main one."
-        explanation: |
-          `join()` blocks the current thread until the joined thread finishes. It is useful when later code depends on the threaded work being complete.
+      Related topic: Thread lifecycle; create the `Thread`, call `start()`, then decide whether the main thread should wait.
+  - id: step-we001-4
+    title: Wait for completion
+    instruction: If the main program needs the threaded work to finish before continuing,
+      it should join the thread.
+    type: multipleChoice
+    prompt: What does `thread.join()` do?
+    choices:
+    - id: a
+      text: It waits until the thread finishes.
+    - id: b
+      text: It starts the thread a second time.
+    - id: c
+      text: It deletes the thread's target function.
+    - id: d
+      text: It converts the thread into a list.
+    answer:
+      choiceId: a
+    hint: Think of joining as waiting for the other execution path to rejoin the main
+      one.
+    explanation: |
+      `join()` blocks the current thread until the joined thread finishes. It is useful when later code depends on the threaded work being complete.
 
-          Related topic: Synchronization with `join`; start concurrent work, then wait when the result or side effect must be complete.
-      - id: s005
-        title: Sketch the thread setup
-        instruction: "Write the essential lines for creating, starting, and joining a thread."
-        type: freeResponse
-        prompt: |
-          In words or code, sketch the basic pattern for running a function named `worker` in a Python thread and waiting for it to finish.
-        answer:
-          expected: |
-            Import `threading`, create `thread = threading.Thread(target=worker)`, call `thread.start()`, and call `thread.join()` when the main program should wait for the worker to finish.
-          gradingMode: selfCheck
-          keyPoints:
-            - "Import or use the `threading` module."
-            - "Pass the function object as `target=worker`."
-            - "Call `start()` to begin execution."
-            - "Call `join()` when the main thread should wait."
-        hint: "The core order is create, start, join."
-        explanation: |
-          A minimal thread setup is:
+      Related topic: Synchronization with `join`; start concurrent work, then wait when the result or side effect must be complete.
+  - id: step-we001-5
+    title: Sketch the thread setup
+    instruction: Write the essential lines for creating, starting, and joining a thread.
+    type: freeResponse
+    prompt: |
+      In words or code, sketch the basic pattern for running a function named `worker` in a Python thread and waiting for it to finish.
+    answer:
+      expected: 'Import `threading`, create `thread = threading.Thread(target=worker)`,
+        call `thread.start()`, and call `thread.join()` when the main program should
+        wait for the worker to finish.
 
-          ```python
-          import threading
+        '
+      gradingMode: selfCheck
+      keyPoints:
+      - Import or use the `threading` module.
+      - Pass the function object as `target=worker`.
+      - Call `start()` to begin execution.
+      - Call `join()` when the main thread should wait.
+    hint: The core order is create, start, join.
+    explanation: |
+      A minimal thread setup is:
 
-          thread = threading.Thread(target=worker)
-          thread.start()
-          thread.join()
-          ```
+      ```python
+      import threading
 
-          Related topic: Basic thread lifecycle; choose a target function, start the thread, and join it when the main flow needs completion.
+      thread = threading.Thread(target=worker)
+      thread.start()
+      thread.join()
+      ```
 
-
+      Related topic: Basic thread lifecycle; choose a target function, start the thread, and join it when the main flow needs completion.

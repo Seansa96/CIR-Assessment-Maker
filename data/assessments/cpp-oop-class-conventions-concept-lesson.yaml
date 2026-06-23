@@ -3,275 +3,307 @@ id: cpp-oop-class-conventions-concept-lesson
 title: C++ Classes and Object-Oriented Conventions Concept Lesson
 assessmentType: conceptLesson
 categoryId: c++
-subcategoryId: c++-oop
 subcategoryIds:
-  - c++-oop
+- c++-oop
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - object-oriented-programming
-    - classes
-    - encapsulation
-    - constructors
+  - object-oriented-programming
+  - classes
+  - encapsulation
+  - constructors
 lesson:
-  introduction: |
-    Object-oriented C++ groups state and behavior into types with explicit ownership and
+  introduction: 'Object-oriented C++ groups state and behavior into types with explicit
+    ownership and
+
     access rules. This lesson develops the conventions that make classes predictable:
+
     invariants, constructors, `const` methods, access control, and header/source structure.
+
+    '
   sections:
-    - id: objects-model-responsibility
-      title: A class models one responsibility
-      required: true
-      content: |
-        A class should represent a coherent concept and protect rules about its state.
-        A `BankAccount` may own a balance and the operations that preserve a nonnegative
-        balance. It should not also render menus, parse files, and manage networking.
+  - id: objects-model-responsibility
+    title: A class models one responsibility
+    required: true
+    content: 'A class should represent a coherent concept and protect rules about
+      its state.
 
-        The state rules that must remain true are called **invariants**. Encapsulation is
-        valuable because outside code requests an operation instead of directly rewriting
-        the state that the invariant depends on.
-      check:
-        id: objects-model-responsibility-check
-        type: multipleChoice
-        prompt: Which class design has the clearest single responsibility?
-        choices:
-          - id: a
-            text: A `Temperature` class that stores a value and performs unit conversions
-          - id: b
-            text: A `Utility` class that stores users, opens sockets, draws buttons, and calculates taxes
-          - id: c
-            text: A `Manager` class that owns every object in the program
-          - id: d
-            text: A class with only public fields and no protected rules
-        answer:
-          choiceId: a
-        explanation: |
-          `Temperature` has one cohesive purpose and can protect its representation.
+      A `BankAccount` may own a balance and the operations that preserve a nonnegative
 
-          Related topic: single responsibility and class invariants.
-
-    - id: class-interface-and-implementation
-      title: Public interface and private representation
-      required: true
-      content: |
-        The `public` section is the contract available to callers. The `private` section
-        is the representation the class may change without forcing callers to change.
-
-        ```cpp
-        class Counter {
-        public:
-            explicit Counter(int initial);
-            void increment();
-            int value() const;
-
-        private:
-            int value_;
-        };
-        ```
-
-        A common convention marks private data members with a trailing underscore. The
-        important rule is consistency, not the particular marker.
-      check:
-        id: class-interface-and-implementation-check
-        type: selectAll
-        prompt: Which members belong naturally in the public interface?
-        choices:
-          - id: a
-            text: Operations callers are allowed to request
-          - id: b
-            text: Queries that report useful state without breaking invariants
-          - id: c
-            text: Every data field used internally
-          - id: d
-            text: Implementation helpers that no caller should depend on
-        answer:
-          choiceIds: [a, b]
-        explanation: |
-          Public members express the supported contract. Representation details and
-          internal helpers normally remain private.
-
-          Related topic: encapsulation and information hiding.
-
-    - id: constructors-establish-invariants
-      title: Constructors establish valid state
-      required: true
-      content: |
-        A constructor should leave the object ready to use. Prefer a member initializer
-        list because members are initialized before the constructor body runs.
-
-        ```cpp
-        Runner::Runner(std::string name, double distance)
-            : name_(std::move(name)), distance_(distance) {
-            if (distance_ < 0) {
-                distance_ = 0;
-            }
-        }
-        ```
-
-        Use `explicit` on a one-argument constructor unless implicit conversion is truly
-        part of the type's meaning.
-      check:
-        id: constructors-establish-invariants-check
-        type: multipleChoice
-        prompt: Why is a member initializer list preferred for data members?
-        choices:
-          - id: a
-            text: Members are initialized directly before the constructor body
-          - id: b
-            text: It makes every data member public
-          - id: c
-            text: It prevents the destructor from running
-          - id: d
-            text: It automatically makes the class polymorphic
-        answer:
-          choiceId: a
-        explanation: |
-          Assignment inside the body happens after initialization. An initializer list
-          constructs each member in its intended initial state.
-
-          Related topic: object lifetime and initialization order.
-
-    - id: const-correctness
-      title: Const methods communicate read-only behavior
-      required: true
-      content: |
-        A member function ending in `const` promises not to modify the observable state
-        of that object.
-
-        ```cpp
-        double distance() const {
-            return distance_;
-        }
-        ```
-
-        This allows the method to be called through a `const Runner&`. Pass larger objects
-        as `const T&` when a function only needs to inspect them and does not need a copy.
-      check:
-        id: const-correctness-check
-        type: multipleChoice
-        prompt: Which declaration is appropriate for a read-only query?
-        choices:
-          - id: a
-            text: '`std::string name() const;`'
-          - id: b
-            text: '`std::string name();` only, because queries must modify the object'
-          - id: c
-            text: '`private std::string name();`'
-          - id: d
-            text: '`void name(std::string);`'
-        answer:
-          choiceId: a
-        explanation: |
-          The trailing `const` makes the read-only contract explicit and permits calls on
-          const objects and references.
-
-          Related topic: const correctness.
-
-    - id: getters-setters-and-behavior
-      title: Prefer meaningful behavior over mechanical setters
-      required: true
-      content: |
-        A setter for every field often recreates public data with extra syntax. Prefer
-        operations named for the domain rule.
-
-        ```cpp
-        void BankAccount::deposit(double amount);
-        bool BankAccount::withdraw(double amount);
-        ```
-
-        These operations can reject invalid amounts and preserve the account invariant.
-        Use a setter when direct replacement is genuinely the supported operation.
-      check:
-        id: getters-setters-and-behavior-check
-        type: multipleChoice
-        prompt: Which operation best protects a nonnegative account balance?
-        choices:
-          - id: a
-            text: '`bool withdraw(double amount);` that validates the request'
-          - id: b
-            text: '`void setBalance(double value);` with no checks'
-          - id: c
-            text: A public `double balance`
-          - id: d
-            text: A global variable shared by every account
-        answer:
-          choiceId: a
-        explanation: |
-          A domain operation states intent and centralizes validation.
-
-          Related topic: tell-don't-ask design and invariant protection.
-
-    - id: header-source-organization
-      title: Separate declarations from definitions
-      required: true
-      content: |
-        Conventional multi-file C++ places the class declaration in a header and
-        nontrivial method definitions in a source file.
-
-        ```cpp
-        // Runner.h
-        #pragma once
-        class Runner { /* declaration */ };
-
-        // Runner.cpp
-        #include "Runner.h"
-        // method definitions
-        ```
-
-        Include what the header itself requires, avoid `using namespace std;` in headers,
-        and use include guards or `#pragma once`.
-      check:
-        id: header-source-organization-check
-        type: selectAll
-        prompt: Which are sound C++ class-file conventions?
-        choices:
-          - id: a
-            text: Protect headers from repeated inclusion
-          - id: b
-            text: Include dependencies required by the header itself
-          - id: c
-            text: Put `using namespace std;` in every public header
-          - id: d
-            text: Keep nontrivial implementation details in source files when practical
-        answer:
-          choiceIds: [a, b, d]
-        explanation: |
-          Protected, self-sufficient headers and separated implementation reduce coupling
-          and surprising name conflicts.
-
-          Related topic: C++ translation units and dependency hygiene.
-
-    - id: composition-first
-      title: Use composition for has-a relationships
-      required: true
-      content: |
-        A class should contain another object when the relationship is **has-a**:
-        a `RaceControl` has a collection of `Runner` objects. Inheritance is reserved for
-        a substitutable **is-a** relationship.
-
-        Composition generally exposes fewer assumptions and lets each class keep a focused
-        responsibility.
-      check:
-        id: composition-first-check
-        type: multipleChoice
-        prompt: Which relationship is best modeled with composition?
-        choices:
-          - id: a
-            text: A `Car` has an `Engine`
-          - id: b
-            text: A `Circle` is a `Shape`
-          - id: c
-            text: A `SavingsAccount` is an `Account`
-          - id: d
-            text: A `TcpConnection` is a `Connection`
-        answer:
-          choiceId: a
-        explanation: |
-          An engine is a component owned or used by a car, not a specialized kind of car.
-
-          Related topic: composition versus inheritance.
+      balance. It should not also render menus, parse files, and manage networking.
 
 
+      The state rules that must remain true are called **invariants**. Encapsulation
+      is
+
+      valuable because outside code requests an operation instead of directly rewriting
+
+      the state that the invariant depends on.
+
+      '
+    check:
+      id: objects-model-responsibility-check
+      type: multipleChoice
+      prompt: Which class design has the clearest single responsibility?
+      choices:
+      - id: a
+        text: A `Temperature` class that stores a value and performs unit conversions
+      - id: b
+        text: A `Utility` class that stores users, opens sockets, draws buttons, and
+          calculates taxes
+      - id: c
+        text: A `Manager` class that owns every object in the program
+      - id: d
+        text: A class with only public fields and no protected rules
+      answer:
+        choiceId: a
+      explanation: '`Temperature` has one cohesive purpose and can protect its representation.
+
+
+        Related topic: single responsibility and class invariants.
+
+        '
+  - id: class-interface-and-implementation
+    title: Public interface and private representation
+    required: true
+    content: "The `public` section is the contract available to callers. The `private`\
+      \ section\nis the representation the class may change without forcing callers\
+      \ to change.\n\n```cpp\nclass Counter {\npublic:\n    explicit Counter(int initial);\n\
+      \    void increment();\n    int value() const;\n\nprivate:\n    int value_;\n\
+      };\n```\n\nA common convention marks private data members with a trailing underscore.\
+      \ The\nimportant rule is consistency, not the particular marker.\n"
+    check:
+      id: class-interface-and-implementation-check
+      type: selectAll
+      prompt: Which members belong naturally in the public interface?
+      choices:
+      - id: a
+        text: Operations callers are allowed to request
+      - id: b
+        text: Queries that report useful state without breaking invariants
+      - id: c
+        text: Every data field used internally
+      - id: d
+        text: Implementation helpers that no caller should depend on
+      answer:
+        choiceIds:
+        - a
+        - b
+      explanation: 'Public members express the supported contract. Representation
+        details and
+
+        internal helpers normally remain private.
+
+
+        Related topic: encapsulation and information hiding.
+
+        '
+  - id: constructors-establish-invariants
+    title: Constructors establish valid state
+    required: true
+    content: "A constructor should leave the object ready to use. Prefer a member\
+      \ initializer\nlist because members are initialized before the constructor body\
+      \ runs.\n\n```cpp\nRunner::Runner(std::string name, double distance)\n    :\
+      \ name_(std::move(name)), distance_(distance) {\n    if (distance_ < 0) {\n\
+      \        distance_ = 0;\n    }\n}\n```\n\nUse `explicit` on a one-argument constructor\
+      \ unless implicit conversion is truly\npart of the type's meaning.\n"
+    check:
+      id: constructors-establish-invariants-check
+      type: multipleChoice
+      prompt: Why is a member initializer list preferred for data members?
+      choices:
+      - id: a
+        text: Members are initialized directly before the constructor body
+      - id: b
+        text: It makes every data member public
+      - id: c
+        text: It prevents the destructor from running
+      - id: d
+        text: It automatically makes the class polymorphic
+      answer:
+        choiceId: a
+      explanation: 'Assignment inside the body happens after initialization. An initializer
+        list
+
+        constructs each member in its intended initial state.
+
+
+        Related topic: object lifetime and initialization order.
+
+        '
+  - id: const-correctness
+    title: Const methods communicate read-only behavior
+    required: true
+    content: "A member function ending in `const` promises not to modify the observable\
+      \ state\nof that object.\n\n```cpp\ndouble distance() const {\n    return distance_;\n\
+      }\n```\n\nThis allows the method to be called through a `const Runner&`. Pass\
+      \ larger objects\nas `const T&` when a function only needs to inspect them and\
+      \ does not need a copy.\n"
+    check:
+      id: const-correctness-check
+      type: multipleChoice
+      prompt: Which declaration is appropriate for a read-only query?
+      choices:
+      - id: a
+        text: '`std::string name() const;`'
+      - id: b
+        text: '`std::string name();` only, because queries must modify the object'
+      - id: c
+        text: '`private std::string name();`'
+      - id: d
+        text: '`void name(std::string);`'
+      answer:
+        choiceId: a
+      explanation: 'The trailing `const` makes the read-only contract explicit and
+        permits calls on
+
+        const objects and references.
+
+
+        Related topic: const correctness.
+
+        '
+  - id: getters-setters-and-behavior
+    title: Prefer meaningful behavior over mechanical setters
+    required: true
+    content: 'A setter for every field often recreates public data with extra syntax.
+      Prefer
+
+      operations named for the domain rule.
+
+
+      ```cpp
+
+      void BankAccount::deposit(double amount);
+
+      bool BankAccount::withdraw(double amount);
+
+      ```
+
+
+      These operations can reject invalid amounts and preserve the account invariant.
+
+      Use a setter when direct replacement is genuinely the supported operation.
+
+      '
+    check:
+      id: getters-setters-and-behavior-check
+      type: multipleChoice
+      prompt: Which operation best protects a nonnegative account balance?
+      choices:
+      - id: a
+        text: '`bool withdraw(double amount);` that validates the request'
+      - id: b
+        text: '`void setBalance(double value);` with no checks'
+      - id: c
+        text: A public `double balance`
+      - id: d
+        text: A global variable shared by every account
+      answer:
+        choiceId: a
+      explanation: 'A domain operation states intent and centralizes validation.
+
+
+        Related topic: tell-don''t-ask design and invariant protection.
+
+        '
+  - id: header-source-organization
+    title: Separate declarations from definitions
+    required: true
+    content: 'Conventional multi-file C++ places the class declaration in a header
+      and
+
+      nontrivial method definitions in a source file.
+
+
+      ```cpp
+
+      // Runner.h
+
+      #pragma once
+
+      class Runner { /* declaration */ };
+
+
+      // Runner.cpp
+
+      #include "Runner.h"
+
+      // method definitions
+
+      ```
+
+
+      Include what the header itself requires, avoid `using namespace std;` in headers,
+
+      and use include guards or `#pragma once`.
+
+      '
+    check:
+      id: header-source-organization-check
+      type: selectAll
+      prompt: Which are sound C++ class-file conventions?
+      choices:
+      - id: a
+        text: Protect headers from repeated inclusion
+      - id: b
+        text: Include dependencies required by the header itself
+      - id: c
+        text: Put `using namespace std;` in every public header
+      - id: d
+        text: Keep nontrivial implementation details in source files when practical
+      answer:
+        choiceIds:
+        - a
+        - b
+        - d
+      explanation: 'Protected, self-sufficient headers and separated implementation
+        reduce coupling
+
+        and surprising name conflicts.
+
+
+        Related topic: C++ translation units and dependency hygiene.
+
+        '
+  - id: composition-first
+    title: Use composition for has-a relationships
+    required: true
+    content: 'A class should contain another object when the relationship is **has-a**:
+
+      a `RaceControl` has a collection of `Runner` objects. Inheritance is reserved
+      for
+
+      a substitutable **is-a** relationship.
+
+
+      Composition generally exposes fewer assumptions and lets each class keep a focused
+
+      responsibility.
+
+      '
+    check:
+      id: composition-first-check
+      type: multipleChoice
+      prompt: Which relationship is best modeled with composition?
+      choices:
+      - id: a
+        text: A `Car` has an `Engine`
+      - id: b
+        text: A `Circle` is a `Shape`
+      - id: c
+        text: A `SavingsAccount` is an `Account`
+      - id: d
+        text: A `TcpConnection` is a `Connection`
+      answer:
+        choiceId: a
+      explanation: 'An engine is a component owned or used by a car, not a specialized
+        kind of car.
+
+
+        Related topic: composition versus inheritance.
+
+        '

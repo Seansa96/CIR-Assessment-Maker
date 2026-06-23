@@ -3,174 +3,217 @@ id: csharp-collections-concept-lesson
 title: C# Collections and LINQ Concept Lesson
 assessmentType: conceptLesson
 categoryId: csharp
-subcategoryId: csharp-standard-library
 subcategoryIds:
-  - csharp-standard-library
+- csharp-standard-library
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - collections
-    - list
-    - dictionary
-    - linq
+  - collections
+  - list
+  - dictionary
+  - linq
 lesson:
-  introduction: |
-    Games are full of collections: lists of enemies, inventories of items, maps of player stats.
-    
-    C# provides powerful, strongly-typed generic collections. Furthermore, it provides **LINQ** (Language Integrated Query), which allows you to query, filter, and transform these collections with incredibly concise code.
+  introduction: 'Games are full of collections: lists of enemies, inventories of items,
+    maps of player stats.
+
+
+    C# provides powerful, strongly-typed generic collections. Furthermore, it provides
+    **LINQ** (Language Integrated Query), which allows you to query, filter, and transform
+    these collections with incredibly concise code.
+
+    '
   sections:
-    - id: generic-collections
-      title: Generic Collections (List and Dictionary)
-      required: true
-      content: |
-        Instead of basic arrays, you will mostly use `List<T>` and `Dictionary<TKey, TValue>`. 
-        The `<T>` means they are **Generic**; you tell C# exactly what type of object they hold when you create them.
+  - id: generic-collections
+    title: Generic Collections (List and Dictionary)
+    required: true
+    content: "Instead of basic arrays, you will mostly use `List<T>` and `Dictionary<TKey,\
+      \ TValue>`. \nThe `<T>` means they are **Generic**; you tell C# exactly what\
+      \ type of object they\rhold when you create them.\n\n```csharp\nusing System.Collections.Generic;\n\
+      \n// A dynamic list that\rholds ONLY strings\nList<string> inventory = new List<string>();\n\
+      inventory.Add(\"Sword\");\ninventory.Add(\"Shield\");\n\n// A dictionary mapping\
+      \ strings to integers\nDictionary<string, int> stats = new Dictionary<string,\
+      \ int>();\nstats[\"Strength\"] = 15;\nstats[\"Agility\"] = 10;\n\n// Check if\
+      \ a key exists\nif (stats.ContainsKey(\"Strength\")) { ... }\n```\n"
+    check:
+      id: generic-collections-check
+      type: multipleChoice
+      prompt: 'What happens if you try to run `inventory.Add(100);` on a `List<string>
+        inventory`?
 
-        ```csharp
-        using System.Collections.Generic;
+        '
+      choices:
+      - id: a
+        text: It converts the integer `100` to the string `"100"` and adds it.
+      - id: b
+        text: It causes a compile-time error because `100` is not a string.
+      - id: c
+        text: It dynamically changes the list type to handle both strings and ints.
+      answer:
+        choiceId: b
+      explanation: 'Generics provide strict type safety. A `List<string>` will ONLY
+        accept strings. This prevents bugs where you accidentally put a number into
+        a list of words.
 
-        // A dynamic list that holds ONLY strings
-        List<string> inventory = new List<string>();
-        inventory.Add("Sword");
-        inventory.Add("Shield");
-        
-        // A dictionary mapping strings to integers
-        Dictionary<string, int> stats = new Dictionary<string, int>();
-        stats["Strength"] = 15;
-        stats["Agility"] = 10;
-        
-        // Check if a key exists
-        if (stats.ContainsKey("Strength")) { ... }
-        ```
-      check:
-        id: generic-collections-check
-        type: multipleChoice
-        prompt: |
-          What happens if you try to run `inventory.Add(100);` on a `List<string> inventory`?
-        choices:
-          - id: a
-            text: It converts the integer `100` to the string `"100"` and adds it.
-          - id: b
-            text: It causes a compile-time error because `100` is not a string.
-          - id: c
-            text: It dynamically changes the list type to handle both strings and ints.
-        answer:
-          choiceId: b
-        explanation: |
-          Generics provide strict type safety. A `List<string>` will ONLY accept strings. This prevents bugs where you accidentally put a number into a list of words.
-
-    - id: linq-filtering
-      title: LINQ Filtering (Where)
-      required: true
-      content: |
-        **LINQ** (`System.Linq`) allows you to query collections using lambda expressions `=>`.
-        
-        Instead of writing a `foreach` loop with an `if` statement to find specific items, you use the `.Where()` extension method.
-
-        ```csharp
-        using System.Linq;
-        using System.Collections.Generic;
-
-        List<int> damageRolls = new List<int> { 5, 20, 8, 15, 2 };
-        
-        // Get all rolls greater than 10
-        // Read as: "Where roll goes to roll > 10"
-        var highRolls = damageRolls.Where(roll => roll > 10).ToList();
-        
-        // highRolls now contains { 20, 15 }
-        ```
-        
-        *Note: LINQ methods return `IEnumerable`. You usually append `.ToList()` at the end to turn the result back into a standard `List`.*
-      check:
-        id: linq-filtering-check
-        type: multipleChoice
-        prompt: |
-          Which LINQ query returns all enemies with exactly 0 Health?
-        choices:
-          - id: a
-            text: '`enemies.Where(e => e.Health == 0)`'
-          - id: b
-            text: '`enemies.Find(e == 0)`'
-          - id: c
-            text: '`enemies.Where(Health == 0)`'
-          - id: d
-            text: '`enemies.Filter(e => e.Health = 0)`'
-        answer:
-          choiceId: a
-        explanation: |
-          The syntax `e => e.Health == 0` defines a lambda function. It takes each item `e` and returns true if `e.Health == 0`. `.Where()` keeps only the items that return true.
-
-    - id: linq-transforming
-      title: LINQ Transforming (Select)
-      required: true
-      content: |
-        If you want to extract a specific property from a list of objects, or transform the data, you use `.Select()`.
-        
-        ```csharp
-        class Enemy { public string Name; public int Level; }
-        
-        List<Enemy> enemies = GetEnemies();
-        
-        // Extract just the names into a new List of strings
-        List<string> enemyNames = enemies.Select(e => e.Name).ToList();
-        
-        // Double the level of every enemy (returns a List of ints)
-        var doubledLevels = enemies.Select(e => e.Level * 2).ToList();
-        ```
-      check:
-        id: linq-transforming-check
-        type: multipleChoice
-        prompt: |
-          If `players` is a `List<Player>`, what does `players.Select(p => p.Score).ToList()` return?
-        choices:
-          - id: a
-            text: A list of `Player` objects who have a score.
-          - id: b
-            text: A single integer containing the highest score.
-          - id: c
-            text: A `List<int>` containing only the scores of all the players.
-        answer:
-          choiceId: c
-        explanation: |
-          `.Select()` projects each element into a new form. Since `p.Score` is an `int`, `.Select(p => p.Score)` transforms the `List<Player>` into an `IEnumerable<int>`, which is then converted to a `List<int>`.
-
-    - id: linq-aggregation
-      title: LINQ Aggregation (Any, First, Sum)
-      required: true
-      content: |
-        LINQ provides dozens of helper methods to aggregate or search collections instantly:
-
-        - **`.Any()`**: Returns `true` if at least one item matches a condition.
-        - **`.All()`**: Returns `true` if EVERY item matches a condition.
-        - **`.First()`**: Returns the first item that matches (crashes if none found).
-        - **`.FirstOrDefault()`**: Returns the first match, or `null` if none found.
-        - **`.Sum()`**: Adds up all the numeric values.
-
-        ```csharp
-        bool isBossAlive = enemies.Any(e => e.IsBoss && e.Health > 0);
-        
-        Enemy priorityTarget = enemies.FirstOrDefault(e => e.Health < 10);
-        
-        int totalDamage = damageRolls.Sum();
-        ```
-      check:
-        id: linq-aggregation-check
-        type: multipleChoice
-        prompt: |
-          You want to find an enemy named "Goblin". Which method is safest to use if you aren't sure if a Goblin actually exists in the list?
-        choices:
-          - id: a
-            text: '`enemies.First(e => e.Name == "Goblin")`'
-          - id: b
-            text: '`enemies.FirstOrDefault(e => e.Name == "Goblin")`'
-          - id: c
-            text: '`enemies.Where(e => e.Name == "Goblin")`'
-        answer:
-          choiceId: b
-        explanation: |
-          `.First()` will throw an exception (crash) if no item matches. `.FirstOrDefault()` will safely return `null` if no Goblin is found, allowing you to check for `null` later without crashing.
+        '
+  - id: linq-filtering
+    title: LINQ Filtering (Where)
+    required: true
+    content: '**LINQ** (`System.Linq`) allows you to query collections using lambda
+      expressions `=>`.
 
 
+      Instead of writing a `foreach` loop with an `if` statement to find specific
+      items, you use the `.Where()` extension method.
+
+
+      ```csharp
+
+      using System.Linq;
+
+      using System.Collections.Generic;
+
+
+      List<int> damageRolls = new List<int> { 5, 20, 8, 15, 2 };
+
+
+      // Get all rolls greater than 10
+
+      // Read as: "Where roll goes to roll > 10"
+
+      var highRolls = damageRolls.Where(roll => roll > 10).ToList();
+
+
+      // highRolls now contains { 20, 15 }
+
+      ```
+
+
+      *Note: LINQ methods return `IEnumerable`. You usually append `.ToList()` at
+      the end to turn the result back into a standard `List`.*
+
+      '
+    check:
+      id: linq-filtering-check
+      type: multipleChoice
+      prompt: 'Which LINQ query returns all enemies with exactly 0 Health?
+
+        '
+      choices:
+      - id: a
+        text: '`enemies.Where(e => e.Health == 0)`'
+      - id: b
+        text: '`enemies.Find(e == 0)`'
+      - id: c
+        text: '`enemies.Where(Health == 0)`'
+      - id: d
+        text: '`enemies.Filter(e => e.Health = 0)`'
+      answer:
+        choiceId: a
+      explanation: 'The syntax `e => e.Health == 0` defines a lambda function. It
+        takes each item `e` and returns true if `e.Health == 0`. `.Where()` keeps
+        only the items that return true.
+
+        '
+  - id: linq-transforming
+    title: LINQ Transforming (Select)
+    required: true
+    content: 'If you want to extract a specific property from a list of objects, or
+      transform the data, you use `.Select()`.
+
+
+      ```csharp
+
+      class Enemy { public string Name; public int Level; }
+
+
+      List<Enemy> enemies = GetEnemies();
+
+
+      // Extract just the names into a new List of strings
+
+      List<string> enemyNames = enemies.Select(e => e.Name).ToList();
+
+
+      // Double the level of every enemy (returns a List of ints)
+
+      var doubledLevels = enemies.Select(e => e.Level * 2).ToList();
+
+      ```
+
+      '
+    check:
+      id: linq-transforming-check
+      type: multipleChoice
+      prompt: 'If `players` is a `List<Player>`, what does `players.Select(p => p.Score).ToList()`
+        return?
+
+        '
+      choices:
+      - id: a
+        text: A list of `Player` objects who have a score.
+      - id: b
+        text: A single integer containing the highest score.
+      - id: c
+        text: A `List<int>` containing only the scores of all the players.
+      answer:
+        choiceId: c
+      explanation: '`.Select()` projects each element into a new form. Since `p.Score`
+        is an `int`, `.Select(p => p.Score)` transforms the `List<Player>` into an
+        `IEnumerable<int>`, which is then converted to a `List<int>`.
+
+        '
+  - id: linq-aggregation
+    title: LINQ Aggregation (Any, First, Sum)
+    required: true
+    content: 'LINQ provides dozens of helper methods to aggregate or search collections
+      instantly:
+
+
+      - **`.Any()`**: Returns `true` if at least one item matches a condition.
+
+      - **`.All()`**: Returns `true` if EVERY item matches a condition.
+
+      - **`.First()`**: Returns the first item that matches (crashes if none found).
+
+      - **`.FirstOrDefault()`**: Returns the first match, or `null` if none found.
+
+      - **`.Sum()`**: Adds up all the numeric values.
+
+
+      ```csharp
+
+      bool isBossAlive = enemies.Any(e => e.IsBoss && e.Health > 0);
+
+
+      Enemy priorityTarget = enemies.FirstOrDefault(e => e.Health < 10);
+
+
+      int totalDamage = damageRolls.Sum();
+
+      ```
+
+      '
+    check:
+      id: linq-aggregation-check
+      type: multipleChoice
+      prompt: 'You want to find an enemy named "Goblin". Which method is safest to
+        use if you aren''t sure if a Goblin actually exists in the list?
+
+        '
+      choices:
+      - id: a
+        text: '`enemies.First(e => e.Name == "Goblin")`'
+      - id: b
+        text: '`enemies.FirstOrDefault(e => e.Name == "Goblin")`'
+      - id: c
+        text: '`enemies.Where(e => e.Name == "Goblin")`'
+      answer:
+        choiceId: b
+      explanation: '`.First()` will throw an exception (crash) if no item matches.
+        `.FirstOrDefault()` will safely return `null` if no Goblin is found, allowing
+        you to check for `null` later without crashing.
+
+        '

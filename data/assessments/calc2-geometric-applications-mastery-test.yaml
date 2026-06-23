@@ -1,0 +1,156 @@
+schemaVersion: 1
+id: calc2-geometric-applications-mastery-test
+title: Geometric Applications of Integration Mastery
+assessmentType: test
+categoryId: calculus-2
+subcategoryIds:
+  - area-between-curves
+  - volumes-of-solids
+  - cylindrical-shells
+  - arc-length-surface-area
+  - average-value
+  - moments-mass
+navigation:
+  learningGoal: evaluate
+  activityType: formalTest
+  tags:
+    - advanced
+    - exam-prep
+    - cumulative
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 5
+questions:
+  - id: geom-mastery-1-area-setup
+    type: multipleChoice
+    prompt: |
+      Set up the integral(s) for the total area bounded by $y = \sin(x)$ and $y = \cos(x)$ on the interval $[0, \pi]$.
+    choices:
+      - id: a
+        text: '$\int_0^\pi (\sin(x) - \cos(x)) \, dx$'
+      - id: b
+        text: '$\int_0^{\pi/4} (\cos(x) - \sin(x)) \, dx + \int_{\pi/4}^\pi (\sin(x) - \cos(x)) \, dx$'
+      - id: c
+        text: '$\int_0^{\pi/2} (\cos(x) - \sin(x)) \, dx + \int_{\pi/2}^\pi (\sin(x) - \cos(x)) \, dx$'
+      - id: d
+        text: '$\int_0^\pi |\cos(x) - \sin(x)| \, dx$'
+    answer:
+      choiceId: b
+    explanation: |
+      The curves intersect when $\sin(x) = \cos(x)$, which on $[0, \pi]$ occurs at $x = \pi/4$.
+      
+      From $0$ to $\pi/4$, $\cos(x) > \sin(x)$.
+      From $\pi/4$ to $\pi$, $\sin(x) > \cos(x)$.
+      
+      To find the total area, we must split the integral at the intersection point and always integrate (top - bottom):
+      $$A = \int_0^{\pi/4} (\cos(x) - \sin(x)) \, dx + \int_{\pi/4}^\pi (\sin(x) - \cos(x)) \, dx$$
+      
+      Note: While Choice D is mathematically equal to the area, when "setting up the integrals" for evaluation we must resolve the absolute value into explicit piecewise integrals as shown in Choice B. Choice B is the operational setup.
+
+  - id: geom-mastery-2-volume-cross-sections
+    type: multipleChoice
+    prompt: |
+      The base of a solid is the region bounded by $y = 1 - x^2$ and the $x$-axis. Cross sections perpendicular to the $y$-axis are semi-circles. Find the volume.
+    choices:
+      - id: a
+        text: '$\frac{\pi}{4}$'
+      - id: b
+        text: '$\frac{\pi}{2}$'
+      - id: c
+        text: '$\frac{8\pi}{15}$'
+      - id: d
+        text: '$\pi$'
+    answer:
+      choiceId: a
+    explanation: |
+      Cross sections are perpendicular to the $y$-axis, so we integrate with respect to $y$.
+      The base region is bounded by $y=1-x^2$ and $y=0$. The $y$-bounds are $0 \le y \le 1$.
+      
+      The length of the base of the cross section spans\rhorizontally from $x = -\sqrt{1-y}$ to $x = \sqrt{1-y}$.
+      Therefore, the base diameter is $d = \sqrt{1-y} - (-\sqrt{1-y}) = 2\sqrt{1-y}$.
+      The radius of the semi-circle is $r = d/2 = \sqrt{1-y}$.
+      
+      Area of a semi-circle is $A = \frac{1}{2}\pi r^2$:
+      $$A(y) = \frac{1}{2}\pi (\sqrt{1-y})^2 = \frac{\pi}{2}(1-y)$$
+      
+      The volume is $V = \int_0^1 A(y) \, dy$:
+      $$V = \frac{\pi}{2} \int_0^1 (1-y) \, dy = \frac{\pi}{2} [y - \frac{1}{2}y^2]_0^1 = \frac{\pi}{2} (1 - \frac{1}{2}) = \frac{\pi}{2}(\frac{1}{2}) = \frac{\pi}{4}$$
+      
+      *Common Error Trap:* If you don't divide the diameter by 2 to get the radius, you will get $\pi/2$.
+
+  - id: geom-mastery-3-surface-area-cone
+    type: multipleChoice
+    prompt: |
+      A right circular cone of radius $r$ and height $h$ is formed by revolving a line segment about the $x$-axis. Which integral represents its lateral surface area?
+    choices:
+      - id: a
+        text: '$\int_0^h 2\pi (\frac{r}{h}x) \sqrt{1 + (\frac{r}{h})^2} \, dx$'
+      - id: b
+        text: '$\int_0^h \pi (\frac{r}{h}x)^2 \, dx$'
+      - id: c
+        text: '$\int_0^h \sqrt{1 + (\frac{r}{h})^2} \, dx$'
+      - id: d
+        text: '$\int_0^r 2\pi (\frac{h}{r}y) \sqrt{1 + (\frac{h}{r})^2} \, dy$'
+    answer:
+      choiceId: a
+    explanation: |
+      To form a cone of radius $r$ and height $h$ around the $x$-axis, the line must go from $(0,0)$ to $(h,r)$.
+      The equation of this line is $y = \frac{r}{h}x$.
+      
+      The surface area formula for revolution about the $x$-axis is $SA = \int 2\pi y \sqrt{1 + (y')^2} \, dx$.
+      Here, $y = \frac{r}{h}x$ and $y' = \frac{r}{h}$.
+      
+      Substituting these in gives:
+      $$SA = \int_0^h 2\pi (\frac{r}{h}x) \sqrt{1 + (\frac{r}{h})^2} \, dx$$
+      
+      Evaluating this actually derives the classic formula $SA = \pi r \sqrt{r^2 + h^2}$.
+      Choice B is the volume of the cone. Choice C is merely the arc length (slant height).
+
+  - id: geom-mastery-4-average-value-trap
+    type: multipleChoice
+    prompt: |
+      If the average value of $f(x)$ on $[1, 5]$ is $8$, and $\int_1^5 f(x) \, dx = 32$, what is the average value of $f(x) + 3$ on $[1, 5]$?
+    choices:
+      - id: a
+        text: '$8$'
+      - id: b
+        text: '$11$'
+      - id: c
+        text: '$24$'
+      - id: d
+        text: '$44$'
+    answer:
+      choiceId: b
+    explanation: |
+      Average value of a function $g(x)$ is $g_{avg} = \frac{1}{b-a} \int_a^b g(x) \, dx$.
+      
+      For $g(x) = f(x) + 3$:
+      $$g_{avg} = \frac{1}{5-1} \int_1^5 (f(x) + 3) \, dx$$
+      $$= \frac{1}{4} \left[ \int_1^5 f(x) \, dx + \int_1^5 3 \, dx \\right]$$
+      $$= \frac{1}{4} [32 + 3(5-1)]$$
+      $$= \frac{1}{4} [32 + 12] = \frac{44}{4} = 11$$
+      
+      Alternatively, visually shifting a function vertically by $+3$ shifts its average value vertically by $+3$. Thus, $8 + 3 = 11$.
+
+  - id: geom-mastery-5-com-semicircle
+    type: multipleChoice
+    prompt: |
+      Without integrating, determine the $x$-coordinate of the center of mass ($\bar{x}$) of a thin plate of uniform density covering the right half of the circle $x^2 + y^2 = 9$ (where $x \ge 0$).
+    choices:
+      - id: a
+        text: '$\bar{x} = 0$'
+      - id: b
+        text: '$\bar{x} > 0$'
+      - id: c
+        text: '$\bar{x} < 0$'
+      - id: d
+        text: '$\bar{x} = 3$'
+    answer:
+      choiceId: b
+    explanation: |
+      The region is the right half of a circle of radius 3 centered at the origin.
+      Since $x \ge 0$ for the entire region, all the mass is located in the right half plane.
+      
+      The center of mass represents the "balance point" of the mass. Since all the mass has a positive $x$ coordinate, the balance point MUST have a positive $x$ coordinate. Thus, $\bar{x} > 0$.
+      
+      (By symmetry across the $x$-axis, $\b\bar{y} = 0$. Using integration, you would find $\b\bar{x} = \frac{4r}{3\pi} = \frac{4}{\pi} \a\approx 1.27$, which confirms $\b\bar{x} > 0$ and $\b\bar{x} \neq 3$.)

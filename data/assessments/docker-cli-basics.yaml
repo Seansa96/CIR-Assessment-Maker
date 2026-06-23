@@ -3,75 +3,82 @@ id: docker-cli-basics
 title: Docker CLI Fundamentals
 assessmentType: workedExample
 categoryId: containerization
-subcategoryId: docker-cli
-learningGoal: learn
-activityType: guidedWorkedExample
-tags:
+workedExamples:
+- id: ex-docker-run
+  title: Running a Container
+  problem: 'Start a new detached Nginx container named `my-web` and map port 8080
+    on your\rhost to port 80 inside the container.
+
+    '
+  steps:
+  - id: step-ex-docker-run-1
+    title: The docker run command
+    instruction: Write the full docker run command.
+    type: freeResponse
+    prompt: |
+      What is the command?
+    answer:
+      gradingMode: selfCheck
+      expected: 'docker run -d --name my-web -p 8080:80 nginx
+
+        '
+    explanation: |
+      The `docker run` command creates and starts a container.
+      - `-d` runs the container in detached mode (in the background).
+      - `--name my-web` assigns a friendly name to the container instead of a random string.
+      - `-p 8080:80` maps port 8080 on the\rhost machine to port 80 inside the container.
+      - `nginx` is the name of the image to use. If it isn't available locally, Docker will pull it from Docker Hub.
+- id: ex-docker-exec
+  title: Executing Commands inside a Container
+  problem: 'Execute an interactive Bash shell inside an already running container
+    named `my-db`.
+
+    '
+  steps:
+  - id: step-ex-docker-exec-1
+    title: The docker exec command
+    instruction: Write the full docker exec command.
+    type: freeResponse
+    prompt: |
+      What is the command?
+    answer:
+      gradingMode: selfCheck
+      expected: 'docker exec -it my-db bash
+
+        '
+    explanation: |
+      The `docker exec` command runs a new command in a running container.
+      - `-i` (interactive) keeps STDIN open even if not attached.
+      - `-t` (tty) allocates a pseudo-TTY.
+      - `my-db` is the name or ID of the running container.
+      - `bash` is the command to execute.
+- id: ex-docker-logs
+  title: Viewing Container Logs
+  problem: 'View the last 50 lines of logs for a container named `api-server` and
+    follow the logs as new output is generated.
+
+    '
+  steps:
+  - id: step-ex-docker-logs-1
+    title: The docker logs command
+    instruction: Write the full docker logs command.
+    type: freeResponse
+    prompt: |
+      What is the command?
+    answer:
+      gradingMode: selfCheck
+      expected: 'docker logs -f --tail 50 api-server
+
+        '
+    explanation: |
+      The `docker logs` command fetches the logs of a container.
+      - `-f` (or `--follow`) keeps following the log output.
+      - `--tail 50` restricts the output to the last 50 lines.
+subcategoryIds:
+- docker-cli
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
   - docker
   - cli
-workedExamples:
-  - id: ex-docker-run
-    title: Running a Container
-    problem: |
-      Start a new detached Nginx container named `my-web` and map port 8080 on your host to port 80 inside the container.
-    steps:
-      - id: ex-docker-run-s1
-        title: The docker run command
-        instruction: Write the full docker run command.
-        type: freeResponse
-        prompt: |
-          What is the command?
-        answer:
-          gradingMode: selfCheck
-          expected: |
-            docker run -d --name my-web -p 8080:80 nginx
-        explanation: |
-          The `docker run` command creates and starts a container.
-          - `-d` runs the container in detached mode (in the background).
-          - `--name my-web` assigns a friendly name to the container instead of a random string.
-          - `-p 8080:80` maps port 8080 on the host machine to port 80 inside the container.
-          - `nginx` is the name of the image to use. If it isn't available locally, Docker will pull it from Docker Hub.
-
-  - id: ex-docker-exec
-    title: Executing Commands inside a Container
-    problem: |
-      Execute an interactive Bash shell inside an already running container named `my-db`.
-    steps:
-      - id: ex-docker-exec-s1
-        title: The docker exec command
-        instruction: Write the full docker exec command.
-        type: freeResponse
-        prompt: |
-          What is the command?
-        answer:
-          gradingMode: selfCheck
-          expected: |
-            docker exec -it my-db bash
-        explanation: |
-          The `docker exec` command runs a new command in a running container.
-          - `-i` (interactive) keeps STDIN open even if not attached.
-          - `-t` (tty) allocates a pseudo-TTY.
-          - `my-db` is the name or ID of the running container.
-          - `bash` is the command to execute.
-
-  - id: ex-docker-logs
-    title: Viewing Container Logs
-    problem: |
-      View the last 50 lines of logs for a container named `api-server` and follow the logs as new output is generated.
-    steps:
-      - id: ex-docker-logs-s1
-        title: The docker logs command
-        instruction: Write the full docker logs command.
-        type: freeResponse
-        prompt: |
-          What is the command?
-        answer:
-          gradingMode: selfCheck
-          expected: |
-            docker logs -f --tail 50 api-server
-        explanation: |
-          The `docker logs` command fetches the logs of a container.
-          - `-f` (or `--follow`) keeps following the log output.
-          - `--tail 50` restricts the output to the last 50 lines.
-
-

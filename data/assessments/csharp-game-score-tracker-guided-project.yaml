@@ -3,89 +3,51 @@ id: csharp-game-score-tracker-guided-project
 title: C# Game Score Tracker Capstone
 assessmentType: guidedProject
 categoryId: csharp
-subcategoryId: csharp-oop
 subcategoryIds:
-  - csharp-oop
-  - csharp-standard-library
-  - csharp-async
+- csharp-oop
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: cpp
-  instructions: |
-    Build the Capstone: Game Score Tracker.
-
-    This project pulls together Types, Control Flow, Collections, LINQ, OOP, and Async!
-    
-    You will build an async-capable `ScoreTracker` that implements an `ITracker` interface.
-
-    Required project behavior:
-    - In `ScoreTracker.cs`:
-      - Define `public interface ITracker` with:
-        - `void AddScore(string player, int score);`
-        - `List<string> GetTopPlayers(int count);`
-        - `Task SaveScoresAsync(string path);`
-      - Implement `public class ScoreTracker : ITracker`.
-      - Internally, use a `Dictionary<string, int>` to store `player -> score`.
-      - `AddScore`: If the player exists, add the score to their current score. If not, add them to the dictionary.
-      - `GetTopPlayers`: Use LINQ! Order the dictionary by the VALUE descending, select the KEY (the name), and Take the top `count`. Return it as a List.
-      - `SaveScoresAsync`: 
-        - Use `await Task.Delay(10)` to simulate disk I/O.
-        - Create a string formatted as `"Player1:100,Player2:50"`. (Hint: `string.Join(",", dictionary.Select(kvp => $"{kvp.Key}:{kvp.Value}"))`)
-        - Do not actually write to disk for this test, just return. (We don't want to pollute the test system with files).
-
+  instructions: "Build the Capstone: Game Score Tracker.\n\nThis project pulls together\
+    \ Types, Control Flow, Collections, LINQ, OOP, and Async!\n\nYou will build an\
+    \ async-capable `ScoreTracker` that implements an `ITracker` interface.\n\nRequired\
+    \ project behavior:\n- In `ScoreTracker.cs`:\n  - Define `public interface ITracker`\
+    \ with:\n    - `void AddScore(string player, int score);`\n    - `List<string>\
+    \ GetTopPlayers(int count);`\n    - `Task SaveScoresAsync(string path);`\n  -\
+    \ Implement `public class ScoreTracker : ITracker`.\n  - Internally, use a `Dictionary<string,\
+    \ int>` to store `player -> score`.\n  - `AddScore`: If the player exists, add\
+    \ the score to their current score. If not, add them to the dictionary.\n  - `GetTopPlayers`:\
+    \ Use LINQ! Order the dictionary by the VALUE descending, select the KEY (the\
+    \ name), and Take the top `count`. Return it as a List.\n  - `SaveScoresAsync`:\
+    \ \n    - Use `await Task.Delay(10)` to simulate disk I/O.\n    - Create a string\
+    \ formatted as `\"Player1:100,Player2:50\"`. (Hint: `string.Join(\",\", dictionary.Select(kvp\
+    \ => $\"{kvp.Key}:{kvp.Value}\"))`)\n    - Do not actually write to disk for this\
+    \ test, just return. (We don't want to pollute the test system with files).\n"
   requiredChecks:
-    - id: compile-check
-      title: Compile
-      description: Compiles correctly.
-      expectedOutputContains:
-        - "OK"
+  - id: compile-check
+    title: Compile
+    description: Compiles correctly.
+    expectedOutputContains:
+    - OK
   files:
-    - path: ScoreTracker.cs
-      readOnly: false
-      content: |
-        using System;
-        using System.Collections.Generic;
-        using System.Linq;
-        using System.Threading.Tasks;
-
-        // TODO: Define ITracker interface
-        
-        // TODO: Implement ScoreTracker
-        public class ScoreTracker
-        {
-            
-        }
-    - path: Program.cs
-      readOnly: true
-      content: |
-        using System;
-        using System.Collections.Generic;
-        using System.Threading.Tasks;
-
-        public class Program
-        {
-            public static async Task Main()
-            {
-                // We cast to the interface to ensure they implemented it correctly
-                ITracker tracker = new ScoreTracker();
-                
-                tracker.AddScore("Alice", 100);
-                tracker.AddScore("Bob", 50);
-                tracker.AddScore("Alice", 200); // Alice is now 300
-                tracker.AddScore("Charlie", 150);
-                
-                List<string> top2 = tracker.GetTopPlayers(2);
-                
-                if (top2.Count != 2) throw new Exception("Expected 2 players");
-                if (top2[0] != "Alice") throw new Exception($"Expected Alice first, got {top2[0]}");
-                if (top2[1] != "Charlie") throw new Exception($"Expected Charlie second, got {top2[1]}");
-                
-                // Ensure the async method can be awaited
-                await tracker.SaveScoresAsync("dummy.txt");
-                
-                Console.WriteLine("All tests passed!");
-            }
-        }
-
-
+  - path: ScoreTracker.cs
+    readOnly: false
+    content: "using System;\nusing System.Collections.Generic;\nusing System.Linq;\n\
+      using System.Threading.Tasks;\n\n// TODO: Define ITracker interface\n\n// TODO:\
+      \ Implement ScoreTracker\npublic class ScoreTracker\n{\n    \n}\n"
+  - path: Program.cs
+    readOnly: true
+    content: "using System;\nusing System.Collections.Generic;\nusing System.Threading.Tasks;\n\
+      \npublic class Program\n{\n    public static async Task Main()\n    {\n    \
+      \    // We cast to the interface to ensure they implemented it correctly\n \
+      \       ITracker tracker = new ScoreTracker();\n        \n        tracker.AddScore(\"\
+      Alice\", 100);\n        tracker.AddScore(\"Bob\", 50);\n        tracker.AddScore(\"\
+      Alice\", 200); // Alice is now 300\n        tracker.AddScore(\"Charlie\", 150);\n\
+      \        \n        List<string> top2 = tracker.GetTopPlayers(2);\n        \n\
+      \        if (top2.Count != 2) throw new Exception(\"Expected 2 players\");\n\
+      \        if (top2[0] != \"Alice\") throw new Exception($\"Expected Alice first,\
+      \ got {top2[0]}\");\n        if (top2[1] != \"Charlie\") throw new Exception($\"\
+      Expected Charlie second, got {top2[1]}\");\n        \n        // Ensure the\
+      \ async method can be awaited\n        await tracker.SaveScoresAsync(\"dummy.txt\"\
+      );\n        \n        Console.WriteLine(\"All tests passed!\");\n    }\n}\n"

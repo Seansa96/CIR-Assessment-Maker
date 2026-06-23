@@ -3,283 +3,282 @@ id: python-loops-practice-quiz
 title: Python Loops Practice Quiz
 assessmentType: quiz
 categoryId: python
-subcategoryId: python-control-flow
 subcategoryIds:
-  - python-control-flow
+- python-control-flow
 modeDefault: practice
 randomizeQuestions: true
-questionTimerSeconds:
-assessmentTimerSeconds:
+questionTimerSeconds: null
+assessmentTimerSeconds: null
 questions:
-  - id: q001
-    type: multipleChoice
-    prompt: |
-      What does this function return when called as `count_up(4)`?
-
-      ```python
-      def count_up(n):
-          total = 0
-          for i in range(1, n + 1):
-              total += i
-          return total
-      ```
-    choices:
-      - id: a
-        text: "`10`"
-      - id: b
-        text: "`6`"
-      - id: c
-        text: "`4`"
-      - id: d
-        text: "It raises a syntax error."
-    answer:
-      choiceId: a
-    explanation: |
-      `range(1, 5)` produces `1, 2, 3, 4`, and the accumulator adds them to get `10`.
-
-      Related topic: Tracing Python `for` loops with `range`.
-
-      Read further: Practice hand-tracing `range(start, stop)` and accumulator updates.
-  - id: q002
-    type: multipleChoice
-    prompt: |
-      What is wrong with this function?
-
-      ```python
-      def sum_below(n):
-          total = 0
-          for i in range(0, n + 1):
-              total += i
-          return total
-      ```
-
-      It was meant to sum integers strictly below `n`.
-    choices:
-      - id: a
-        text: "The range should be `range(0, n)`, not `range(0, n + 1)`."
-      - id: b
-        text: "The accumulator should start at `1`."
-      - id: c
-        text: "`range` cannot start at `0`."
-      - id: d
-        text: "The function needs a semicolon after each line."
-    answer:
-      choiceId: a
-    explanation: |
-      `range(0, n + 1)` includes `n`, but "strictly below `n`" should stop before `n`.
-
-      Related topic: Python range endpoints and off-by-one errors.
-
-      Read further: Review why the `stop` value in `range` is excluded.
-  - id: q003
-    type: multipleChoice
-    prompt: |
-      What happens when `first_even(5)` runs?
-
-      ```python
-      def first_even(n):
-          i = 0
-          while i < n:
-              if i % 2 == 0:
-                  return i
-          return -1
-      ```
-    choices:
-      - id: a
-        text: "It returns `0` immediately."
-      - id: b
-        text: "It loops forever."
-      - id: c
-        text: "It returns `-1`."
-      - id: d
-        text: "It raises an error because `%` is invalid."
-    answer:
-      choiceId: a
-    explanation: |
-      Since `i` starts at `0`, the condition `i % 2 == 0` is true on the first loop iteration, so the function returns `0`.
-
-      Related topic: Early returns inside `while` loops.
-
-      Read further: Review how `return` exits a function immediately and how loop updates matter only if execution reaches them.
-  - id: q004
-    type: multipleChoice
-    prompt: |
-      What is wrong with this function?
-
-      ```python
-      def product_to_n(n):
-          product = 0
-          for i in range(1, n + 1):
-              product *= i
-          return product
-      ```
-    choices:
-      - id: a
-        text: "`product` should start at `1`, not `0`."
-      - id: b
-        text: "`*=` is not valid Python."
-      - id: c
-        text: "The loop must start at `0`."
-      - id: d
-        text: "The function should use a string accumulator."
-    answer:
-      choiceId: a
-    explanation: |
-      Multiplication accumulators should start at `1`. Starting at `0` makes the product stay `0`.
-
-      Related topic: Accumulator identity values.
-
-      Read further: Compare sum accumulators, product accumulators, and counting accumulators.
-  - id: q005
-    type: multipleChoice
-    prompt: |
-      What does this function return for `has_negative([2, 5, -1, 8])`?
-
-      ```python
-      def has_negative(values):
-          for value in values:
-              if value < 0:
-                  return True
-          return False
-      ```
-    choices:
-      - id: a
-        text: "`True`"
-      - id: b
-        text: "`False`"
-      - id: c
-        text: "`-1`"
-      - id: d
-        text: "It raises an indentation error."
-    answer:
-      choiceId: a
-    explanation: |
-      The loop checks each value. When it reaches `-1`, it returns `True`.
-
-      Related topic: Searching a sequence with early return.
-
-      Read further: Study boolean functions, list iteration, and returning after a match is found.
-  - id: q006
-    type: code
-    prompt: |
-      Write a Python function `sum_even_to_n` that returns the sum of all even integers from `2` through `n`.
-    language: python
-    functionName: sum_even_to_n
-    starterCode: |
-      def sum_even_to_n(n):
-          # Return the sum of even integers from 2 through n.
-          return 0
-    tests:
-      - input: "6"
-        expected: "12"
-      - input: "1"
-        expected: "0"
-      - input: "10"
-        expected: "30"
-    answer: {}
-    explanation: |
-      Use `range(2, n + 1, 2)` to step through even numbers, or test each number with `% 2`.
-
-      Related topic: Range step values and modulo filtering.
-
-      Read further: Review `range(start, stop, step)` and the `%` remainder operator.
-  - id: q007
-    type: code
-    prompt: |
-      Write a Python function `count_digits` that returns how many decimal digits are in a positive integer.
-    language: python
-    functionName: count_digits
-    starterCode: |
-      def count_digits(n):
-          # n will be positive.
-          return 0
-    tests:
-      - input: "7"
-        expected: "1"
-      - input: "42"
-        expected: "2"
-      - input: "1005"
-        expected: "4"
-    answer: {}
-    explanation: |
-      Repeatedly use integer division by `10` and count how many times the loop runs before `n` reaches `0`.
-
-      Related topic: `while` loops with changing numeric state.
-
-      Read further: Study `//` integer division and loop termination conditions.
-  - id: q008
-    type: code
-    prompt: |
-      Write a Python function `factorial` that returns `n!` for `n >= 0`.
-    language: python
-    functionName: factorial
-    starterCode: |
-      def factorial(n):
-          # Return n factorial.
-          return 0
-    tests:
-      - input: "0"
-        expected: "1"
-      - input: "4"
-        expected: "24"
-      - input: "6"
-        expected: "720"
-    answer: {}
-    explanation: |
-      Start a product accumulator at `1`, then multiply by each integer from `2` through `n`.
-
-      Related topic: Product accumulation and base cases.
-
-      Read further: Review factorial as a classic loop problem and compare iterative and recursive solutions.
-  - id: q009
-    type: code
-    prompt: |
-      Write a Python function `count_char` that returns how many times character `target` appears in string `text`.
-    language: python
-    functionName: count_char
-    starterCode: |
-      def count_char(text, target):
-          # Count how often target appears in text.
-          return 0
-    tests:
-      - input: "\"banana\", \"a\""
-        expected: "3"
-      - input: "\"loop\", \"o\""
-        expected: "2"
-      - input: "\"test\", \"z\""
-        expected: "0"
-    answer: {}
-    explanation: |
-      Loop through the characters in `text`, compare each character to `target`, and increment a counter for each match.
-
-      Related topic: Iterating over strings and conditional counting.
-
-      Read further: Review strings as sequences and the standard count-if loop pattern.
-  - id: q010
-    type: code
-    prompt: |
-      Write a Python function `is_prime` that returns whether `n` is prime. Assume `n >= 1`.
-    language: python
-    functionName: is_prime
-    starterCode: |
-      def is_prime(n):
-          # Return True if n is prime, otherwise False.
-          return False
-    tests:
-      - input: "1"
-        expected: "False"
-      - input: "2"
-        expected: "True"
-      - input: "9"
-        expected: "False"
-      - input: "13"
-        expected: "True"
-    answer: {}
-    explanation: |
-      Handle values below `2` first. Then loop through possible divisors and return `False` as soon as one divides evenly.
-
-      Related topic: Loop-based divisibility testing and boolean returns.
-
-      Read further: Study modulo, early returns, and optimizing divisor checks up to the square root.
+- id: q001
+  type: multipleChoice
+  prompt: "What does this function return when called as `count_up(4)`?\n\n```python\n\
+    def count_up(n):\n    total = 0\n    for i in range(1, n + 1):\n        total\
+    \ += i\n    return total\n```\n"
+  choices:
+  - id: a
+    text: '`10`'
+  - id: b
+    text: '`6`'
+  - id: c
+    text: '`4`'
+  - id: d
+    text: It raises a syntax error.
+  answer:
+    choiceId: a
+  explanation: '`range(1, 5)` produces `1, 2, 3, 4`, and the accumulator adds them
+    to get `10`.
 
 
+    Related topic: Tracing Python `for` loops with `range`.
+
+
+    Read further: Practice hand-tracing `range(start, stop)` and accumulator updates.
+
+    '
+- id: q002
+  type: multipleChoice
+  prompt: "What is wrong with this function?\n\n```python\ndef sum_below(n):\n   \
+    \ total = 0\n    for i in range(0, n + 1):\n        total += i\n    return total\n\
+    ```\n\nIt was meant to sum integers strictly below `n`.\n"
+  choices:
+  - id: a
+    text: The range should be `range(0, n)`, not `range(0, n + 1)`.
+  - id: b
+    text: The accumulator should start at `1`.
+  - id: c
+    text: '`range` cannot start at `0`.'
+  - id: d
+    text: The function needs a semicolon after each line.
+  answer:
+    choiceId: a
+  explanation: '`range(0, n + 1)` includes `n`, but "strictly below `n`" should stop
+    before `n`.
+
+
+    Related topic: Python range endpoints and off-by-one errors.
+
+
+    Read further: Review why the `stop` value in `range` is excluded.
+
+    '
+- id: q003
+  type: multipleChoice
+  prompt: "What happens when `first_even(5)` runs?\n\n```python\ndef first_even(n):\n\
+    \    i = 0\n    while i < n:\n        if i % 2 == 0:\n            return i\n \
+    \   return -1\n```\n"
+  choices:
+  - id: a
+    text: It returns `0` immediately.
+  - id: b
+    text: It loops forever.
+  - id: c
+    text: It returns `-1`.
+  - id: d
+    text: It raises an error because `%` is invalid.
+  answer:
+    choiceId: a
+  explanation: 'Since `i` starts at `0`, the condition `i % 2 == 0` is true on the
+    first loop iteration, so the function returns `0`.
+
+
+    Related topic: Early returns inside `while` loops.
+
+
+    Read further: Review\rhow `return` exits a function immediately and\rhow loop updates
+    matter only if execution reaches them.
+
+    '
+- id: q004
+  type: multipleChoice
+  prompt: "What is wrong with this function?\n\n```python\ndef product_to_n(n):\n\
+    \    product = 0\n    for i in range(1, n + 1):\n        product *= i\n    return\
+    \ product\n```\n"
+  choices:
+  - id: a
+    text: '`product` should start at `1`, not `0`.'
+  - id: b
+    text: '`*=` is not valid Python.'
+  - id: c
+    text: The loop must start at `0`.
+  - id: d
+    text: The function should use a string accumulator.
+  answer:
+    choiceId: a
+  explanation: 'Multiplication accumulators should start at `1`. Starting at `0` makes
+    the product stay `0`.
+
+
+    Related topic: Accumulator identity values.
+
+
+    Read further: Compare sum accumulators, product accumulators, and counting accumulators.
+
+    '
+- id: q005
+  type: multipleChoice
+  prompt: "What does this function return for `has_negative([2, 5, -1, 8])`?\n\n```python\n\
+    def has_negative(values):\n    for value in values:\n        if value < 0:\n \
+    \           return True\n    return False\n```\n"
+  choices:
+  - id: a
+    text: '`True`'
+  - id: b
+    text: '`False`'
+  - id: c
+    text: '`-1`'
+  - id: d
+    text: It raises an indentation error.
+  answer:
+    choiceId: a
+  explanation: 'The loop checks each value. When it reaches `-1`, it returns `True`.
+
+
+    Related topic: Searching a sequence with early return.
+
+
+    Read further: Study boolean functions, list iteration, and returning after a match
+    is found.
+
+    '
+- id: q006
+  type: code
+  prompt: 'Write a Python function `sum_even_to_n` that returns the sum of all even
+    integers from `2` through `n`.
+
+    '
+  language: python
+  functionName: sum_even_to_n
+  starterCode: "def sum_even_to_n(n):\n    # Return the sum of even integers from\
+    \ 2 through n.\n    return 0\n"
+  tests:
+  - input: '6'
+    expected: '12'
+  - input: '1'
+    expected: '0'
+  - input: '10'
+    expected: '30'
+  answer: {}
+  explanation: 'Use `range(2, n + 1, 2)` to step through even numbers, or test each
+    number with `% 2`.
+
+
+    Related topic: Range step values and modulo filtering.
+
+
+    Read further: Review `range(start, stop, step)` and the `%` remainder operator.
+
+    '
+- id: q007
+  type: code
+  prompt: 'Write a Python function `count_digits` that returns\rhow many decimal digits
+    are in a positive integer.
+
+    '
+  language: python
+  functionName: count_digits
+  starterCode: "def count_digits(n):\n    # n will be positive.\n    return 0\n"
+  tests:
+  - input: '7'
+    expected: '1'
+  - input: '42'
+    expected: '2'
+  - input: '1005'
+    expected: '4'
+  answer: {}
+  explanation: 'Repeatedly use integer division by `10` and count\rhow many times the
+    loop runs before `n` reaches `0`.
+
+
+    Related topic: `while` loops with changing numeric state.
+
+
+    Read further: Study `//` integer division and loop termination conditions.
+
+    '
+- id: q008
+  type: code
+  prompt: 'Write a Python function `factorial` that returns `n!` for `n >= 0`.
+
+    '
+  language: python
+  functionName: factorial
+  starterCode: "def factorial(n):\n    # Return n factorial.\n    return 0\n"
+  tests:
+  - input: '0'
+    expected: '1'
+  - input: '4'
+    expected: '24'
+  - input: '6'
+    expected: '720'
+  answer: {}
+  explanation: 'Start a product accumulator at `1`, then multiply by each integer
+    from `2` through `n`.
+
+
+    Related topic: Product accumulation and base cases.
+
+
+    Read further: Review factorial as a classic loop problem and compare iterative
+    and recursive solutions.
+
+    '
+- id: q009
+  type: code
+  prompt: 'Write a Python function `count_char` that returns\rhow many times character
+    `target` appears in string `text`.
+
+    '
+  language: python
+  functionName: count_char
+  starterCode: "def count_char(text, target):\n    # Count\rhow often target appears\
+    \ in text.\n    return 0\n"
+  tests:
+  - input: '"banana", "a"'
+    expected: '3'
+  - input: '"loop", "o"'
+    expected: '2'
+  - input: '"test", "z"'
+    expected: '0'
+  answer: {}
+  explanation: 'Loop through the characters in `text`, compare each character to `target`,
+    and increment a counter for each match.
+
+
+    Related topic: Iterating over strings and conditional counting.
+
+
+    Read further: Review strings as sequences and the standard count-if loop pattern.
+
+    '
+- id: q010
+  type: code
+  prompt: 'Write a Python function `is_prime` that returns whether `n` is prime. Assume
+    `n >= 1`.
+
+    '
+  language: python
+  functionName: is_prime
+  starterCode: "def is_prime(n):\n    # Return True if n is prime, otherwise False.\n\
+    \    return False\n"
+  tests:
+  - input: '1'
+    expected: 'False'
+  - input: '2'
+    expected: 'True'
+  - input: '9'
+    expected: 'False'
+  - input: '13'
+    expected: 'True'
+  answer: {}
+  explanation: 'Handle values below `2` first. Then loop through possible divisors
+    and return `False` as soon as one divides evenly.
+
+
+    Related topic: Loop-based divisibility testing and boolean returns.
+
+
+    Read further: Study modulo, early returns, and optimizing divisor checks up to
+    the square root.
+
+    '

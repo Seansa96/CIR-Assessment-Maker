@@ -3,122 +3,127 @@ id: aspnet-dependency-injection-worked-example
 title: ASP.NET Dependency Injection Worked Example
 assessmentType: workedExample
 categoryId: aspnet
-subcategoryId: aspnet-dependency-injection
 subcategoryIds:
-  - aspnet-dependency-injection
+- aspnet-dependency-injection
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Using dependency injection to connect services
-    problem: "Understand why ASP.NET apps register services in a container instead of creating every dependency manually."
-    steps:
-      - id: s001
-        title: Identify the problem DI solves
-        instruction: "Dependency injection is about how objects receive the collaborators they need."
-        type: multipleChoice
-        prompt: "What is the main purpose of dependency injection?"
-        choices:
-          - id: a
-            text: "To provide required services to classes without hard-coding construction details inside those classes"
-          - id: b
-            text: "To make every class static"
-          - id: c
-            text: "To remove the need for interfaces"
-          - id: d
-            text: "To let the frontend instantiate backend repositories"
-        answer:
-          choiceId: a
-        hint: "Think about how a service gets a repository or scorer."
-        explanation: |
-          Dependency injection lets ASP.NET construct objects and pass their dependencies in. Classes ask for what they need instead of building those dependencies themselves.
+- id: we001
+  title: Using dependency injection to connect services
+  problem: Understand why ASP.NET apps register services in a container instead of
+    creating every dependency manually.
+  steps:
+  - id: step-we001-1
+    title: Identify the problem DI solves
+    instruction: Dependency injection is about\rhow objects receive the collaborators
+      they need.
+    type: multipleChoice
+    prompt: What is the main purpose of dependency injection?
+    choices:
+    - id: a
+      text: To provide required services to classes without hard-coding construction
+        details inside those classes
+    - id: b
+      text: To make every class static
+    - id: c
+      text: To remove the need for interfaces
+    - id: d
+      text: To let the frontend instantiate backend repositories
+    answer:
+      choiceId: a
+    hint: Think about\rhow a service gets a repository or scorer.
+    explanation: |
+      Dependency injection lets ASP.NET construct objects and pass their dependencies in. Classes ask for what they need instead of building those dependencies themselves.
 
-          Related topic: dependency injection. Look up "ASP.NET Core built-in dependency injection."
+      Related topic: dependency injection. Look up "ASP.NET Core built-in dependency injection."
+  - id: step-we001-2
+    title: Choose the dependency direction
+    instruction: Application services should depend on abstractions when the implementation
+      may change.
+    type: multipleChoice
+    prompt: Which constructor dependency is usually better for a service that saves
+      attempts?
+    choices:
+    - id: a
+      text: '`IAttemptRepository attemptRepository`'
+    - id: b
+      text: '`SqliteConnection connection` everywhere the service needs data'
+    - id: c
+      text: '`string pathToOneJsonFile`'
+    - id: d
+      text: '`object whatever`'
+    answer:
+      choiceId: a
+    hint: The service should know what it needs, not\rhow storage is implemented.
+    explanation: |
+      Depending on `IAttemptRepository` lets Infrastructure choose the actual implementation. Tests can also provide a fake repository.
 
-      - id: s002
-        title: Choose the dependency direction
-        instruction: "Application services should depend on abstractions when the implementation may change."
-        type: multipleChoice
-        prompt: "Which constructor dependency is usually better for a service that saves attempts?"
-        choices:
-          - id: a
-            text: "`IAttemptRepository attemptRepository`"
-          - id: b
-            text: "`SqliteConnection connection` everywhere the service needs data"
-          - id: c
-            text: "`string pathToOneJsonFile`"
-          - id: d
-            text: "`object whatever`"
-        answer:
-          choiceId: a
-        hint: "The service should know what it needs, not how storage is implemented."
-        explanation: |
-          Depending on `IAttemptRepository` lets Infrastructure choose the actual implementation. Tests can also provide a fake repository.
+      Related topic: dependency inversion. Search "depend on abstractions not concretions."
+  - id: step-we001-3
+    title: Understand registration
+    instruction: The DI container needs to know which implementation to create for
+      each interface.
+    type: multipleChoice
+    prompt: What does a registration like `AddSingleton<IAttemptRepository, SqliteAttemptRepository>()`
+      communicate?
+    choices:
+    - id: a
+      text: When code asks for `IAttemptRepository`, provide a `SqliteAttemptRepository`
+        instance.
+    - id: b
+      text: Delete all attempts when the app starts.
+    - id: c
+      text: Expose SQLite directly to the browser.
+    - id: d
+      text: Make `IAttemptRepository` inherit from `SqliteAttemptRepository`.
+    answer:
+      choiceId: a
+    hint: The registration maps abstraction to implementation.
+    explanation: |
+      DI registration tells ASP.NET\rhow to build an object graph. The endpoint asks for a service, the service asks for repositories, and the container supplies them.
 
-          Related topic: dependency inversion. Search "depend on abstractions not concretions."
+      Related topic: service registration. Look up "AddSingleton AddScoped AddTransient ASP.NET Core."
+  - id: step-we001-4
+    title: Pick an appropriate lifetime
+    instruction: The lifetime controls\rhow long a created service instance is reused.
+    type: multipleChoice
+    prompt: Which lifetime is usually safest for a service that should be created
+      once and reused for the local app process?
+    choices:
+    - id: a
+      text: '`Singleton`, if the service is thread-safe and has no per-request state'
+    - id: b
+      text: '`Transient`, always, even for expensive shared services'
+    - id: c
+      text: '`Scoped`, even in code that stores user session state globally'
+    - id: d
+      text: No lifetime is needed because ASP.NET guesses perfectly
+    answer:
+      choiceId: a
+    hint: Think about whether the object stores request-specific mutable state.
+    explanation: |
+      Singleton can be appropriate for stateless services or thread-safe shared stores. Scoped is common for request-bound resources, and transient creates a new instance each time.
 
-      - id: s003
-        title: Understand registration
-        instruction: "The DI container needs to know which implementation to create for each interface."
-        type: multipleChoice
-        prompt: "What does a registration like `AddSingleton<IAttemptRepository, SqliteAttemptRepository>()` communicate?"
-        choices:
-          - id: a
-            text: "When code asks for `IAttemptRepository`, provide a `SqliteAttemptRepository` instance."
-          - id: b
-            text: "Delete all attempts when the app starts."
-          - id: c
-            text: "Expose SQLite directly to the browser."
-          - id: d
-            text: "Make `IAttemptRepository` inherit from `SqliteAttemptRepository`."
-        answer:
-          choiceId: a
-        hint: "The registration maps abstraction to implementation."
-        explanation: |
-          DI registration tells ASP.NET how to build an object graph. The endpoint asks for a service, the service asks for repositories, and the container supplies them.
+      Related topic: DI lifetimes. Review singleton, scoped, and transient.
+  - id: step-we001-5
+    title: Summarize the DI design habit
+    instruction: Explain\rhow DI makes the app easier to change and test.
+    type: freeResponse
+    prompt: Why is dependency injection useful in an ASP.NET app?
+    answer:
+      expected: Dependency injection lets classes receive dependencies through constructors,
+        keeps implementation choices in the composition root, supports interfaces
+        for replaceable infrastructure, and makes services easier to test with fake
+        dependencies.
+      gradingMode: selfCheck
+      keyPoints:
+      - Dependencies are passed in, usually through constructors.
+      - The composition root registers implementations.
+      - Services can depend on interfaces.
+      - Implementations can be swapped for tests or new storage.
+      - Lifetimes control reuse.
+    hint: 'Think: construction outside, dependencies inside, easier replacement.'
+    explanation: |
+      DI helps keep design choices centralized. Instead of scattering `new SqliteAttemptRepository(...)` throughout the app, the composition root decides what concrete implementation backs each interface.
 
-          Related topic: service registration. Look up "AddSingleton AddScoped AddTransient ASP.NET Core."
-
-      - id: s004
-        title: Pick an appropriate lifetime
-        instruction: "The lifetime controls how long a created service instance is reused."
-        type: multipleChoice
-        prompt: "Which lifetime is usually safest for a service that should be created once and reused for the local app process?"
-        choices:
-          - id: a
-            text: "`Singleton`, if the service is thread-safe and has no per-request state"
-          - id: b
-            text: "`Transient`, always, even for expensive shared services"
-          - id: c
-            text: "`Scoped`, even in code that stores user session state globally"
-          - id: d
-            text: "No lifetime is needed because ASP.NET guesses perfectly"
-        answer:
-          choiceId: a
-        hint: "Think about whether the object stores request-specific mutable state."
-        explanation: |
-          Singleton can be appropriate for stateless services or thread-safe shared stores. Scoped is common for request-bound resources, and transient creates a new instance each time.
-
-          Related topic: DI lifetimes. Review singleton, scoped, and transient.
-
-      - id: s005
-        title: Summarize the DI design habit
-        instruction: "Explain how DI makes the app easier to change and test."
-        type: freeResponse
-        prompt: "Why is dependency injection useful in an ASP.NET app?"
-        answer:
-          expected: "Dependency injection lets classes receive dependencies through constructors, keeps implementation choices in the composition root, supports interfaces for replaceable infrastructure, and makes services easier to test with fake dependencies."
-          gradingMode: selfCheck
-          keyPoints:
-            - "Dependencies are passed in, usually through constructors."
-            - "The composition root registers implementations."
-            - "Services can depend on interfaces."
-            - "Implementations can be swapped for tests or new storage."
-            - "Lifetimes control reuse."
-        hint: "Think: construction outside, dependencies inside, easier replacement."
-        explanation: |
-          DI helps keep design choices centralized. Instead of scattering `new SqliteAttemptRepository(...)` throughout the app, the composition root decides what concrete implementation backs each interface.
-
-          Related topic: composition root. Look up "ASP.NET Core DI composition root."
-
-
+      Related topic: composition root. Look up "ASP.NET Core DI composition root."

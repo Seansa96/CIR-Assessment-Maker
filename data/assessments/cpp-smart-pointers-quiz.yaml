@@ -3,82 +3,92 @@ id: cpp-smart-pointers-quiz
 title: C++ Smart Pointers Quiz
 assessmentType: quiz
 categoryId: c++
-subcategoryId: c++-standard-library
 subcategoryIds:
-  - c++-standard-library
+- c++-standard-library
 modeDefault: practice
 randomizeQuestions: true
 questions:
-  - id: q001
-    type: multipleChoice
-    prompt: |
-      What happens if you try to assign one `std::unique_ptr` to another using the assignment operator (`=`)?
-    choices:
-      - id: a
-        text: 'The code will not compile because `std::unique_ptr` deletes its copy constructor and copy assignment operator.'
-      - id: b
-        text: 'Both pointers will point to the same memory, risking a double-free.'
-      - id: c
-        text: 'The first pointer is automatically set to `nullptr`.'
-      - id: d
-        text: 'The object is deeply copied.'
-    answer:
-      choiceId: a
-    explanation: |
-      `std::unique_ptr` enforces strict ownership. To transfer ownership, you must use `std::move()`.
+- id: q001
+  type: multipleChoice
+  prompt: 'What happens if you try to assign one `std::unique_ptr` to another using
+    the assignment operator (`=`)?
 
-  - id: q002
-    type: multipleChoice
-    prompt: |
-      When is the memory managed by a `std::shared_ptr` released?
-    choices:
-      - id: a
-        text: 'When the last `std::shared_ptr` pointing to the object goes out of scope or is reset.'
-      - id: b
-        text: 'When the first `std::shared_ptr` pointing to the object goes out of scope.'
-      - id: c
-        text: 'When `delete` is explicitly called on the pointer.'
-      - id: d
-        text: 'When the program exits.'
-    answer:
-      choiceId: a
-    explanation: |
-      `shared_ptr` maintains a reference count. Only when the count reaches zero is the memory freed.
+    '
+  choices:
+  - id: a
+    text: The code will not compile because `std::unique_ptr` deletes its copy constructor
+      and copy assignment operator.
+  - id: b
+    text: Both pointers will point to the same memory, risking a double-free.
+  - id: c
+    text: The first pointer is automatically set to `nullptr`.
+  - id: d
+    text: The object is deeply copied.
+  answer:
+    choiceId: a
+  explanation: '`std::unique_ptr` enforces strict ownership. To transfer ownership,
+    you must use `std::move()`.
 
-  - id: q003
-    type: multipleChoice
-    prompt: |
-      Which of the following is the modern, exception-safe way to create a `std::unique_ptr`?
-    choices:
-      - id: a
-        text: '`auto p = std::make_unique<MyClass>();`'
-      - id: b
-        text: '`std::unique_ptr<MyClass> p(new MyClass());`'
-      - id: c
-        text: '`std::unique_ptr<MyClass> p = new MyClass();`'
-      - id: d
-        text: '`auto p = make_ptr<MyClass>();`'
-    answer:
-      choiceId: a
-    explanation: |
-      `std::make_unique` prevents potential memory leaks that can occur if exceptions are thrown during complex expressions.
+    '
+- id: q002
+  type: multipleChoice
+  prompt: 'When is the memory managed by a `std::shared_ptr` released?
 
-  - id: q004
-    type: multipleChoice
-    prompt: |
-      What is the primary purpose of `std::weak_ptr`?
-    choices:
-      - id: a
-        text: 'To observe an object managed by `std::shared_ptr` without increasing its reference count (breaking cyclic references).'
-      - id: b
-        text: 'To temporarily disable the automatic deletion feature of a `unique_ptr`.'
-      - id: c
-        text: 'To allocate memory that can be easily overwritten.'
-      - id: d
-        text: 'To act as a generic raw pointer replacement that still requires manual deletion.'
-    answer:
-      choiceId: a
-    explanation: |
-      `weak_ptr` lets you access a shared resource safely without preventing it from being deleted if all `shared_ptr`s are destroyed.
+    '
+  choices:
+  - id: a
+    text: When the last `std::shared_ptr` pointing to the object goes out of scope
+      or is reset.
+  - id: b
+    text: When the first `std::shared_ptr` pointing to the object goes out of scope.
+  - id: c
+    text: When `delete` is explicitly called on the pointer.
+  - id: d
+    text: When the program exits.
+  answer:
+    choiceId: a
+  explanation: '`shared_ptr` maintains a reference count. Only when the count reaches
+    zero is the memory freed.
 
+    '
+- id: q003
+  type: multipleChoice
+  prompt: 'Which of the following is the modern, exception-safe way to create a `std::unique_ptr`?
 
+    '
+  choices:
+  - id: a
+    text: '`auto p = std::make_unique<MyClass>();`'
+  - id: b
+    text: '`std::unique_ptr<MyClass> p(new MyClass());`'
+  - id: c
+    text: '`std::unique_ptr<MyClass> p = new MyClass();`'
+  - id: d
+    text: '`auto p = make_ptr<MyClass>();`'
+  answer:
+    choiceId: a
+  explanation: '`std::make_unique` prevents potential memory leaks that can occur
+    if exceptions are thrown during complex expressions.
+
+    '
+- id: q004
+  type: multipleChoice
+  prompt: 'What is the primary purpose of `std::weak_ptr`?
+
+    '
+  choices:
+  - id: a
+    text: To observe an object managed by `std::shared_ptr` without increasing its
+      reference count (breaking cyclic references).
+  - id: b
+    text: To temporarily disable the automatic deletion feature of a `unique_ptr`.
+  - id: c
+    text: To allocate memory that can be easily overwritten.
+  - id: d
+    text: To act as a generic raw pointer replacement that still requires manual deletion.
+  answer:
+    choiceId: a
+  explanation: '`weak_ptr` lets you access a shared resource safely without preventing
+    it from being deleted if all `shared_ptr`s are destroyed.
+
+    '

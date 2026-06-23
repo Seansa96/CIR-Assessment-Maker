@@ -3,125 +3,126 @@ id: aspnet-request-response-lifecycle-worked-example
 title: ASP.NET Request and Response Lifecycle Worked Example
 assessmentType: workedExample
 categoryId: aspnet
-subcategoryId: aspnet-request-lifecycle
 subcategoryIds:
-  - aspnet-request-lifecycle
+- aspnet-request-lifecycle
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Following one request through a web application
-    problem: "Trace what happens when a browser sends `GET /api/assessments/calculus-2` to an ASP.NET backend."
-    steps:
-      - id: s001
-        title: Identify the client-server boundary
-        instruction: "Start by separating the user interface from the server that answers the request."
-        type: multipleChoice
-        prompt: "In a local Astro plus ASP.NET app, what is the browser usually asking the ASP.NET backend for?"
-        choices:
-          - id: a
-            text: "Data or an action, usually through an HTTP endpoint"
-          - id: b
-            text: "Direct access to C# objects in memory"
-          - id: c
-            text: "A copy of the entire backend project"
-          - id: d
-            text: "A database connection string that the browser should use directly"
-        answer:
-          choiceId: a
-        hint: "The browser communicates through HTTP, not direct object references."
-        explanation: |
-          The browser sends an HTTP request to ask for data or trigger a server-side action. It does not receive direct access to backend memory or storage.
+- id: we001
+  title: Following one request through a web application
+  problem: Trace what happens when a browser sends `GET /api/assessments/calculus-2`
+    to an ASP.NET backend.
+  steps:
+  - id: step-we001-1
+    title: Identify the client-server boundary
+    instruction: Start by separating the user interface from the server that answers
+      the request.
+    type: multipleChoice
+    prompt: In a local Astro plus ASP.NET app, what is the browser usually asking
+      the ASP.NET backend for?
+    choices:
+    - id: a
+      text: Data or an action, usually through an HTTP endpoint
+    - id: b
+      text: Direct access to C# objects in memory
+    - id: c
+      text: A copy of the entire backend project
+    - id: d
+      text: A database connection string that the browser should use directly
+    answer:
+      choiceId: a
+    hint: The browser communicates through HTTP, not direct object references.
+    explanation: |
+      The browser sends an HTTP request to ask for data or trigger a server-side action. It does not receive direct access to backend memory or storage.
 
-          Related topic: client-server architecture. Look up "HTTP request response model" and "ASP.NET minimal API endpoints."
+      Related topic: client-server architecture. Look up "HTTP request response model" and "ASP.NET minimal API endpoints."
+  - id: step-we001-2
+    title: Name the request parts
+    instruction: A request can be understood by method, path, headers, and sometimes
+      a body.
+    type: selectAll
+    prompt: Which parts help ASP.NET decide\rhow to handle `GET /api/assessments/calculus-2`?
+    choices:
+    - id: a
+      text: The HTTP method, `GET`
+    - id: b
+      text: The route path, `/api/assessments/calculus-2`
+    - id: c
+      text: Headers such as content type or authorization
+    - id: d
+      text: The color of the frontend button
+    answer:
+      choiceIds:
+      - a
+      - b
+      - c
+    hint: Think about what travels over HTTP.
+    explanation: |
+      The server routes by method and path, and headers can affect parsing, authentication, caching, or content negotiation.
 
-      - id: s002
-        title: Name the request parts
-        instruction: "A request can be understood by method, path, headers, and sometimes a body."
-        type: selectAll
-        prompt: "Which parts help ASP.NET decide how to handle `GET /api/assessments/calculus-2`?"
-        choices:
-          - id: a
-            text: "The HTTP method, `GET`"
-          - id: b
-            text: "The route path, `/api/assessments/calculus-2`"
-          - id: c
-            text: "Headers such as content type or authorization"
-          - id: d
-            text: "The color of the frontend button"
-        answer:
-          choiceIds:
-            - a
-            - b
-            - c
-        hint: "Think about what travels over HTTP."
-        explanation: |
-          The server routes by method and path, and headers can affect parsing, authentication, caching, or content negotiation.
+      Related topic: HTTP request anatomy. Review method, route/path, headers, query string, and body.
+  - id: step-we001-3
+    title: Match route to endpoint
+    instruction: ASP.NET maps the request to one endpoint based on the route pattern.
+    type: multipleChoice
+    prompt: What does routing do in the request lifecycle?
+    choices:
+    - id: a
+      text: It chooses which endpoint or controller action should handle the request.
+    - id: b
+      text: It permanently stores the user's data.
+    - id: c
+      text: It automatically designs the frontend page.
+    - id: d
+      text: It compiles TypeScript into JavaScript.
+    answer:
+      choiceId: a
+    hint: Routing is the address book for server behavior.
+    explanation: |
+      Routing connects an HTTP method and path to a handler. In minimal APIs, that handler might be declared with something like `MapGet`.
 
-          Related topic: HTTP request anatomy. Review method, route/path, headers, query string, and body.
+      Related topic: ASP.NET routing. Look up "MapGet route parameters ASP.NET Core."
+  - id: step-we001-4
+    title: Produce a response
+    instruction: The handler returns a response with a status code and usually a body.
+    type: multipleChoice
+    prompt: If an assessment is not found, which response is most appropriate?
+    choices:
+    - id: a
+      text: 404 Not Found with a small error body
+    - id: b
+      text: 200 OK with unrelated sample data
+    - id: c
+      text: 500 Internal Server Error every time
+    - id: d
+      text: No response
+    answer:
+      choiceId: a
+    hint: Use status codes to communicate the outcome.
+    explanation: |
+      A missing resource should usually return `404 Not Found`. The body can explain the error in a machine-readable shape.
 
-      - id: s003
-        title: Match route to endpoint
-        instruction: "ASP.NET maps the request to one endpoint based on the route pattern."
-        type: multipleChoice
-        prompt: "What does routing do in the request lifecycle?"
-        choices:
-          - id: a
-            text: "It chooses which endpoint or controller action should handle the request."
-          - id: b
-            text: "It permanently stores the user's data."
-          - id: c
-            text: "It automatically designs the frontend page."
-          - id: d
-            text: "It compiles TypeScript into JavaScript."
-        answer:
-          choiceId: a
-        hint: "Routing is the address book for server behavior."
-        explanation: |
-          Routing connects an HTTP method and path to a handler. In minimal APIs, that handler might be declared with something like `MapGet`.
+      Related topic: HTTP status codes. Review 2xx success, 4xx client/request problems, and 5xx server failures.
+  - id: step-we001-5
+    title: Keep the lifecycle mental model
+    instruction: Summarize the lifecycle in the order it happens.
+    type: freeResponse
+    prompt: Write the main steps of a browser request reaching an ASP.NET endpoint
+      and returning a response.
+    answer:
+      expected: The browser sends an HTTP request with a method and path. ASP.NET
+        middleware processes it, routing matches it to an endpoint, the endpoint calls
+        application services as needed, then the server returns a status code and
+        response body.
+      gradingMode: selfCheck
+      keyPoints:
+      - Browser sends an HTTP request.
+      - Middleware and routing process the request.
+      - An endpoint or controller handles the request.
+      - Services/repositories may be called behind the endpoint.
+      - The server returns a response with a status code and body.
+    hint: 'Think: request, middleware, route, handler, service, response.'
+    explanation: |
+      The lifecycle gives you a debugging map. When something breaks, ask which stage failed: did the request leave the browser, match a route, call the right service, or return the expected response?
 
-          Related topic: ASP.NET routing. Look up "MapGet route parameters ASP.NET Core."
-
-      - id: s004
-        title: Produce a response
-        instruction: "The handler returns a response with a status code and usually a body."
-        type: multipleChoice
-        prompt: "If an assessment is not found, which response is most appropriate?"
-        choices:
-          - id: a
-            text: "404 Not Found with a small error body"
-          - id: b
-            text: "200 OK with unrelated sample data"
-          - id: c
-            text: "500 Internal Server Error every time"
-          - id: d
-            text: "No response"
-        answer:
-          choiceId: a
-        hint: "Use status codes to communicate the outcome."
-        explanation: |
-          A missing resource should usually return `404 Not Found`. The body can explain the error in a machine-readable shape.
-
-          Related topic: HTTP status codes. Review 2xx success, 4xx client/request problems, and 5xx server failures.
-
-      - id: s005
-        title: Keep the lifecycle mental model
-        instruction: "Summarize the lifecycle in the order it happens."
-        type: freeResponse
-        prompt: "Write the main steps of a browser request reaching an ASP.NET endpoint and returning a response."
-        answer:
-          expected: "The browser sends an HTTP request with a method and path. ASP.NET middleware processes it, routing matches it to an endpoint, the endpoint calls application services as needed, then the server returns a status code and response body."
-          gradingMode: selfCheck
-          keyPoints:
-            - "Browser sends an HTTP request."
-            - "Middleware and routing process the request."
-            - "An endpoint or controller handles the request."
-            - "Services/repositories may be called behind the endpoint."
-            - "The server returns a response with a status code and body."
-        hint: "Think: request, middleware, route, handler, service, response."
-        explanation: |
-          The lifecycle gives you a debugging map. When something breaks, ask which stage failed: did the request leave the browser, match a route, call the right service, or return the expected response?
-
-          Related topic: ASP.NET Core request pipeline. Look up "ASP.NET Core middleware pipeline."
-
-
+      Related topic: ASP.NET Core request pipeline. Look up "ASP.NET Core middleware pipeline."

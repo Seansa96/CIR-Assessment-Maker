@@ -3,69 +3,83 @@ id: docker-container-networking
 title: Container-to-Container Networking
 assessmentType: guidedProject
 categoryId: containerization
-subcategoryId: docker-networking
-learningGoal: apply
-activityType: guidedProject
-tags:
-  - docker
-  - networking
-  - bash
 guidedProject:
   language: bash
   projectKind: console
   runnerMode: workspace
-  instructions: |
-    By default, containers cannot easily talk to each other using their names. However, if you attach them to a custom "User-Defined Bridge Network", Docker provides automatic DNS resolution!
-    
-    **Requirements:**
-    1. Create a custom network named `my-network`.
-    2. Run a detached container named `db` using the `redis:alpine` image and attach it to `my-network`.
-    3. Run a container using the `alpine` image, attach it to `my-network`, and use `ping -c 3 db` to verify that it can resolve the `db` container's IP address and communicate with it.
-    
-    Write all three commands in `run.sh`.
-    
-    *Hint: Use `docker network create <name>` and the `--network <name>` flag on `docker run`.*
+  instructions: 'By default, containers cannot easily talk to each other using their
+    names. However, if you attach them to a custom "User-Defined Bridge Network",
+    Docker provides automatic DNS resolution!
 
+
+    **Requirements:**
+
+    1. Create a custom network named `my-network`.
+
+    2. Run a detached container named `db` using the `redis:alpine` image and attach
+    it to `my-network`.
+
+    3. Run a container using the `alpine` image, attach it to `my-network`, and use
+    `ping -c 3 db` to verify that it can resolve the `db` container''s IP address
+    and communicate with it.
+
+
+    Write all three commands in `run.sh`.
+
+
+    *Hint: Use `docker network create <name>` and the `--network <name>` flag on `docker
+    run`.*
+
+    '
   workspace:
     entryPoint: run.sh
     allowedBaseImages:
-      - docker:dind
+    - docker:dind
     sourceGlobs:
-      - run.sh
+    - run.sh
     includePaths: []
     writablePaths: []
-
   files:
-    - path: run.sh
-      readOnly: false
-      content: |
-        #!/bin/bash
-        
-        # 1. Create the network
-        
-        # 2. Run the db container
-        
-        # 3. Run the alpine container and ping the db
-        
+  - path: run.sh
+    readOnly: false
+    content: '#!/bin/bash
 
+
+      # 1. Create the network
+
+
+      # 2. Run the db container
+
+
+      # 3. Run the alpine container and ping the db
+
+      '
   fixtures: []
   scenarios: []
   diagnostics: []
-
   requiredChecks:
-    - id: check-docker-network-ping
-      title: Alpine container successfully pings db container
-      description: Your script must create the network, start the db, and then successfully execute `ping -c 3 db` from the alpine container.
-      testCode: null
-      expectedOutputContains: []
-      run:
-        arguments: []
-        stdin: null
-        scenario: null
-      expect:
-        stdoutContains: 
-          - "3 packets transmitted"
-          - "0% packet loss"
-        files: []
-
+  - id: check-docker-network-ping
+    title: Alpine container successfully pings db container
+    description: Your script must create the network, start the db, and then successfully
+      execute `ping -c 3 db` from the alpine container.
+    testCode: null
+    expectedOutputContains: []
+    run:
+      arguments: []
+      stdin: null
+      scenario: null
+    expect:
+      stdoutContains:
+      - 3 packets transmitted
+      - 0% packet loss
+      files: []
   bonusChecks: []
+subcategoryIds:
+- docker-networking
+navigation:
+  learningGoal: apply
+  activityType: guidedProject
+  tags:
+  - docker
+  - networking
+  - bash

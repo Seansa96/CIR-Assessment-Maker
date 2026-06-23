@@ -3,99 +3,102 @@ id: python-standard-library-worked-example
 title: Python Random Loot Generator Worked Example
 assessmentType: workedExample
 categoryId: python
-subcategoryId: python-standard-library
 subcategoryIds:
-  - python-standard-library
+- python-standard-library
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Building a Loot Generator
-    problem: |
-      We want to build a function that generates a random piece of loot when a monster dies. 
-      However, we want some items to be rare (like a Diamond) and some to be common (like Gold).
-    steps:
-      - id: s001
-        title: Basic Random Choice
-        instruction: |
-          First, let's look at `random.choice()`.
-          
-          ```python
-          import random
-          
-          loot_table = ["Gold", "Silver", "Diamond"]
-          dropped = random.choice(loot_table)
-          ```
-        type: multipleChoice
-        prompt: |
-          Using `random.choice()`, what is the probability of getting a "Diamond"?
-        choices:
-          - id: a
-            text: 100%
-          - id: b
-            text: 33.3%
-          - id: c
-            text: 1%
-        answer:
-          choiceId: b
-        explanation: |
-          `random.choice()` picks an item with uniform probability. Since there are 3 items, each has a 1/3 (33.3%) chance of being selected. This isn't great for our game, because a Diamond shouldn't drop as often as Gold.
-
-      - id: s002
-        title: Weighted Random Choices
-        instruction: |
-          To fix this, the `random` module provides `random.choices()`, which allows us to provide a list of *weights*.
-          
-          ```python
-          import random
-          
-          loot_table = ["Gold", "Silver", "Diamond"]
-          loot_weights = [70, 25, 5]  # Out of 100%
-          
-          # k=1 means we only want to pick 1 item
-          dropped = random.choices(loot_table, weights=loot_weights, k=1)
-          
-          # random.choices always returns a list, even if k=1
-          print(f"You found: {dropped[0]}")
-          ```
-        type: multipleChoice
-        prompt: |
-          If we change the weights to `[50, 50, 0]`, what will happen?
-        choices:
-          - id: a
-            text: The program will crash.
-          - id: b
-            text: The Diamond will never drop.
-          - id: c
-            text: The Diamond will drop 50% of the time.
-        answer:
-          choiceId: b
-        explanation: |
-          A weight of `0` means that option has a 0% chance of being selected. Gold and Silver will each drop 50% of the time.
-
-      - id: s003
-        title: Adding Random Gold Amounts
-        instruction: |
-          What if the player finds gold, but we want the *amount* of gold to be random? We can use `random.randint()`.
-          
-          ```python
-          import random
-          
-          item = random.choices(["Gold", "Diamond"], weights=[90, 10], k=1)[0]
-          
-          if item == "Gold":
-              amount = random.randint(10, 50)
-              print(f"You found {amount} Gold!")
-          else:
-              print("You found a Diamond!")
-          ```
-        type: numericResponse
-        prompt: |
-          If this code is run and the item chosen is "Gold", what is the *highest* possible amount of gold the player could receive?
-        answer:
-          value: 50
-          tolerance: 0
-        explanation: |
-          `random.randint(a, b)` includes BOTH `a` and `b`. So the highest possible number returned is `50`.
+- id: we001
+  title: Building a Loot Generator
+  problem: "We want to build a function that generates a random piece of loot when\
+    \ a monster dies. \nHowever, we want some items to be rare (like a Diamond) and\
+    \ some to be common (like Gold).\n"
+  steps:
+  - id: step-we001-1
+    title: Basic Random Choice
+    instruction: 'First, let''s look at `random.choice()`.
 
 
+      ```python
+
+      import random
+
+
+      loot_table = ["Gold", "Silver", "Diamond"]
+
+      dropped = random.choice(loot_table)
+
+      ```
+
+      '
+    type: multipleChoice
+    prompt: |
+      Using `random.choice()`, what is the probability of getting a "Diamond"?
+    choices:
+    - id: a
+      text: 100%
+    - id: b
+      text: 33.3%
+    - id: c
+      text: 1%
+    answer:
+      choiceId: b
+    explanation: |
+      `random.choice()` picks an item with uniform probability. Since there are 3 items, each has a 1/3 (33.3%) chance of being selected. This isn't great for our game, because a Diamond shouldn't drop as often as Gold.
+  - id: step-we001-2
+    title: Weighted Random Choices
+    instruction: 'To fix this, the `random` module provides `random.choices()`, which
+      allows us to provide a list of *weights*.
+
+
+      ```python
+
+      import random
+
+
+      loot_table = ["Gold", "Silver", "Diamond"]
+
+      loot_weights = [70, 25, 5]  # Out of 100%
+
+
+      # k=1 means we only want to pick 1 item
+
+      dropped = random.choices(loot_table, weights=loot_weights, k=1)
+
+
+      # random.choices always returns a list, even if k=1
+
+      print(f"You found: {dropped[0]}")
+
+      ```
+
+      '
+    type: multipleChoice
+    prompt: |
+      If we change the weights to `[50, 50, 0]`, what will happen?
+    choices:
+    - id: a
+      text: The program will crash.
+    - id: b
+      text: The Diamond will never drop.
+    - id: c
+      text: The Diamond will drop 50% of the time.
+    answer:
+      choiceId: b
+    explanation: |
+      A weight of `0` means that option has a 0% chance of being selected. Gold and Silver will each drop 50% of the time.
+  - id: step-we001-3
+    title: Adding Random Gold Amounts
+    instruction: "What if the player finds gold, but we want the *amount* of gold\
+      \ to be random? We can use `random.randint()`.\n\n```python\nimport random\n\
+      \nitem = random.choices([\"Gold\", \"Diamond\"], weights=[90, 10], k=1)[0]\n\
+      \nif item == \"Gold\":\n    amount = random.randint(10, 50)\n    print(f\"You\
+      \ found {amount} Gold!\")\nelse:\n    print(\"You found a Diamond!\")\n```\n"
+    type: numericResponse
+    prompt: |
+      If this code is run and the item chosen is "Gold", what is the *highest* possible amount of gold the player could receive?
+    answer:
+      value: 50
+      tolerance: 0
+    explanation: |
+      `random.randint(a, b)` includes BOTH `a` and `b`. So the highest possible number returned is `50`.

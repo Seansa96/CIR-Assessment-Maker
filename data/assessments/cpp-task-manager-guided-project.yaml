@@ -3,99 +3,76 @@ id: cpp-task-manager-guided-project
 title: C++ STL Task Manager Guided Project
 assessmentType: guidedProject
 categoryId: c++
-subcategoryId: c++-standard-library
 subcategoryIds:
-  - c++-standard-library
+- c++-standard-library
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: cpp
-  instructions: |
-    Implement a `TaskManager` class using `std::deque` to represent a queue of tasks. High priority tasks can be pushed to the front, while normal tasks go to the back.
+  instructions: 'Implement a `TaskManager` class using `std::deque` to represent a
+    queue of tasks. High priority tasks can be pushed to the front, while normal tasks
+    go to the back.
+
 
     Required behavior:
+
     - Create a class named exactly `TaskManager`.
+
     - Use a `std::deque<std::string>` to store the tasks.
-    - Provide `void addNormalTask(const std::string& task)` which adds the task to the *back*.
-    - Provide `void addUrgentTask(const std::string& task)` which adds the task to the *front*.
-    - Provide `std::string nextTask()` which removes and returns the task at the *front*. Return `"None"` if it's empty.
+
+    - Provide `void addNormalTask(const std::string& task)` which adds the task to
+    the *back*.
+
+    - Provide `void addUrgentTask(const std::string& task)` which adds the task to
+    the *front*.
+
+    - Provide `std::string nextTask()` which removes and returns the task at the *front*.
+    Return `"None"` if it''s empty.
+
     - Provide `int getCount() const` which returns the number of tasks.
+
+    '
   files:
-    - path: TaskManager.h
-      readOnly: false
-      content: |
-        #pragma once
-        #include <string>
-        #include <deque>
+  - path: TaskManager.h
+    readOnly: false
+    content: "#pragma once\n#include <string>\n#include <deque>\n\nusing namespace\
+      \ std;\n\nclass TaskManager {\nprivate:\n    deque<string> tasks;\n\npublic:\n\
+      \    // Implement addNormalTask\n    \n    // Implement addUrgentTask\n    \n\
+      \    // Implement nextTask\n    \n    // Implement getCount\n};\n"
+  - path: ProjectNotes.md
+    readOnly: true
+    content: 'Required names:
 
-        using namespace std;
+      - `TaskManager`
 
-        class TaskManager {
-        private:
-            deque<string> tasks;
+      - `addNormalTask`
 
-        public:
-            // Implement addNormalTask
-            
-            // Implement addUrgentTask
-            
-            // Implement nextTask
-            
-            // Implement getCount
-        };
-    - path: ProjectNotes.md
-      readOnly: true
-      content: |
-        Required names:
-        - `TaskManager`
-        - `addNormalTask`
-        - `addUrgentTask`
-        - `nextTask`
-        - `getCount`
+      - `addUrgentTask`
+
+      - `nextTask`
+
+      - `getCount`
+
+      '
   requiredChecks:
-    - id: basic-queue
-      title: Tasks are queued correctly
-      description: Check if normal tasks are processed in order
-      expectedOutputContains:
-        - BASIC_OK
-      testCode: |
-        #include "TaskManager.h"
-        #include <iostream>
-        using namespace std;
-        
-        int main() {
-            TaskManager tm;
-            tm.addNormalTask("A");
-            tm.addNormalTask("B");
-            
-            if (tm.getCount() == 2 && tm.nextTask() == "A" && tm.nextTask() == "B" && tm.nextTask() == "None") {
-                cout << "BASIC_OK";
-            } else {
-                cout << "FAIL";
-            }
-            return 0;
-        }
-    - id: urgent-tasks
-      title: Urgent tasks jump the queue
-      description: Check if urgent tasks are placed at the front
-      expectedOutputContains:
-        - URGENT_OK
-      testCode: |
-        #include "TaskManager.h"
-        #include <iostream>
-        using namespace std;
-        
-        int main() {
-            TaskManager tm;
-            tm.addNormalTask("Low Priority");
-            tm.addUrgentTask("High Priority");
-            
-            if (tm.nextTask() == "High Priority" && tm.nextTask() == "Low Priority") {
-                cout << "URGENT_OK";
-            } else {
-                cout << "FAIL";
-            }
-            return 0;
-        }
-
-
+  - id: basic-queue
+    title: Tasks are queued correctly
+    description: Check if normal tasks are processed in order
+    expectedOutputContains:
+    - BASIC_OK
+    testCode: "#include \"TaskManager.h\"\n#include <iostream>\nusing namespace std;\n\
+      \nint main() {\n    TaskManager tm;\n    tm.addNormalTask(\"A\");\n    tm.addNormalTask(\"\
+      B\");\n    \n    if (tm.getCount() == 2 && tm.nextTask() == \"A\" && tm.nextTask()\
+      \ == \"B\" && tm.nextTask() == \"None\") {\n        cout << \"BASIC_OK\";\n\
+      \    } else {\n        cout << \"FAIL\";\n    }\n    return 0;\n}\n"
+  - id: urgent-tasks
+    title: Urgent tasks jump the queue
+    description: Check if urgent tasks are placed at the front
+    expectedOutputContains:
+    - URGENT_OK
+    testCode: "#include \"TaskManager.h\"\n#include <iostream>\nusing namespace std;\n\
+      \nint main() {\n    TaskManager tm;\n    tm.addNormalTask(\"Low Priority\");\n\
+      \    tm.addUrgentTask(\"High Priority\");\n    \n    if (tm.nextTask() == \"\
+      High Priority\" && tm.nextTask() == \"Low Priority\") {\n        cout << \"\
+      URGENT_OK\";\n    } else {\n        cout << \"FAIL\";\n    }\n    return 0;\n\
+      }\n"

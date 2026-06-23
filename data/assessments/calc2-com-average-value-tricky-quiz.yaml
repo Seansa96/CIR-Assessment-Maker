@@ -1,0 +1,104 @@
+schemaVersion: 1
+id: calc2-com-average-value-tricky-quiz
+title: Center of Mass & Average Value - Advanced
+assessmentType: quiz
+categoryId: calculus-2
+subcategoryIds:
+  - average-value
+  - moments-mass
+navigation:
+  learningGoal: practice
+  activityType: focusedPractice
+  tags:
+    - advanced
+    - exam-prep
+modeDefault: practice
+randomizeQuestions: true
+questions:
+  - id: avg-val-1-implicit-bounds
+    type: multipleChoice
+    prompt: |
+      Find the average value of $f(x) = 3x^2 - 2x$ on the interval defined by the roots of $f(x)$.
+    choices:
+      - id: a
+        text: '$-4/27$'
+      - id: b
+        text: '$-2/9$'
+      - id: c
+        text: '$4/27$'
+      - id: d
+        text: '$0$'
+    answer:
+      choiceId: b
+    explanation: |
+      First, find the roots of $f(x) = 3x^2 - 2x$:
+      $$x(3x - 2) = 0 \implies x = 0, x = 2/3$$
+      The interval is $[a, b] = [0, 2/3]$.
+      
+      The average value formula is $f_{avg} = \frac{1}{b-a} \int_a^b f(x) \, dx$.
+      $$f_{avg} = \frac{1}{2/3 - 0} \int_0^{2/3} (3x^2 - 2x) \, dx$$
+      $$= \frac{3}{2} [x^3 - x^2]_0^{2/3}$$
+      $$= \frac{3}{2} \left( (2/3)^3 - (2/3)^2 \right)$$
+      $$= \frac{3}{2} \left( \frac{8}{27} - \frac{4}{9} \right) = \frac{3}{2} \left( \frac{8}{27} - \frac{12}{27} \right) = \frac{3}{2} \left( -\frac{4}{27} \right) = -\frac{12}{54} = -\frac{2}{9}$$
+
+  - id: com-1-symmetry
+    type: multipleChoice
+    prompt: |
+      Find the centroid $(\bar{x}, \bar{y})$ of the region bounded by $y = 4 - x^2$ and $y = 0$.
+    choices:
+      - id: a
+        text: '$(0, 8/5)$'
+      - id: b
+        text: '$(0, 2)$'
+      - id: c
+        text: '$(0, 4/3)$'
+      - id: d
+        text: '$(8/5, 0)$'
+    answer:
+      choiceId: a
+    explanation: |
+      The region is bounded by the parabola $y = 4 - x^2$ (opening downwards, vertex at $(0,4)$) and the $x$-axis. It intersects the $x$-axis at $x = \pm 2$.
+      
+      **Symmetry Shortcut**: The region is perfectly symmetric across the $y$-axis. Therefore, the centroid must lie on the $y$-axis, meaning $\bar{x} = 0$.
+      
+      To find $\bar{y}$, we need the Area $A$ and the moment $M_x$.
+      $$A = \int_{-2}^2 (4 - x^2) \, dx = 2 \int_0^2 (4 - x^2) \, dx = 2[4x - x^3/3]_0^2 = 2(8 - 8/3) = 2(16/3) = 32/3$$
+      
+      The moment about the $x$-axis is $M_x = \frac{1}{2} \int_{-2}^2 [f(x)]^2 \, dx$:
+      $$M_x = \frac{1}{2} \int_{-2}^2 (4 - x^2)^2 \, dx = \int_0^2 (16 - 8x^2 + x^4) \, dx$$
+      $$= [16x - \frac{8}{3}x^3 + \frac{1}{5}x^5]_0^2 = 32 - \frac{64}{3} + \frac{32}{5}$$
+      $$= 32(1 - \frac{2}{3} + \frac{1}{5}) = 32(\frac{15 - 10 + 3}{15}) = 32(\frac{8}{15}) = \frac{256}{15}$$
+      
+      Now find $\bar{y} = \frac{M_x}{A}$:
+      $$\bar{y} = \frac{256/15}{32/3} = \frac{256}{15} \cdot \frac{3}{32} = \frac{256}{32} \cdot \frac{3}{15} = 8 \cdot \frac{1}{5} = \frac{8}{5}$$
+      
+      The centroid is $(0, 8/5)$. Choice B $(0,2)$ is the "midpoint" of the height, which is incorrect because the bottom of the parabola is wider and\rholds more area, pulling the centroid down below $y=2$.
+
+  - id: com-2-setup-error
+    type: multipleChoice
+    prompt: |
+      A student is setting up the integral for the moment about the $y$-axis ($M_y$) for the region bounded by $y=e^x$, $y=1$, and $x=2$ assuming constant density $\rho = 1$. The student writes:
+      $$M_y = \int_0^2 x (e^x) \, dx$$
+      What error did the student make?
+    choices:
+      - id: a
+        text: 'The student forgot the $\frac{1}{2}$ multiplier in front of the integral.'
+      - id: b
+        text: 'The student used the wrong height; the height of the region is $(e^x - 1)$, not $e^x$.'
+      - id: c
+        text: 'The student should have integrated with respect to $y$.'
+      - id: d
+        text: 'There is no error; the setup is correct.'
+    answer:
+      choiceId: b
+    explanation: |
+      The moment about the $y$-axis is given by $M_y = \int \rho x [f(x) - g(x)] \, dx$.
+      The "lever arm" distance from the $y$-axis is $x$.
+      The "mass" of a vertical slice is $\\rho \cdot (\\text{Area}) = \\rho \cdot (\\text{top} - \\text{bottom}) \cdot dx$.
+      
+      The top function is $y=e^x$ and the bottom function is $y=1$. 
+      Therefore, the height of the slice is $(e^x - 1)$.
+      
+      The correct setup is $M_y = \int_0^2 x (e^x - 1) \, dx$.
+      The student incorrectly used the distance from the $x$-axis ($e^x$) instead of the height of the bounded region.
+      (Choice A refers to the $M_x$ formula which has the $\frac{1}{2}$. Choice C is incorrect because $M_y$ can absolutely be calculated with respect to $x$.)

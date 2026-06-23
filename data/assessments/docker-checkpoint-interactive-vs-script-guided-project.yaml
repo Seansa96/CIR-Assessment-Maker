@@ -3,59 +3,72 @@ id: docker-checkpoint-interactive-vs-script-guided-project
 title: Checkpoint Project - Interactive Shells vs. Scripts
 assessmentType: workedExample
 categoryId: containerization
-subcategoryId: docker-cli
 subcategoryIds:
-  - docker-cli
-learningGoal: apply
-activityType: guidedWorkedExample
-tags:
+- docker-cli
+workedExamples:
+- id: we-interactive-vs-script
+  title: Interactive Shells vs. Scripts Checkpoint
+  problem: 'In this checkpoint, you will explore the difference between manually configuring
+    a container through an interactive shell versus passing a script to automate the
+    configuration.
+
+
+    ### Required Concepts:
+
+    * **Interactive Mode (`-it`):** Used to attach your terminal''s input and output
+    to the container so you can type commands manually.
+
+    * **Passing Commands:** Passing arguments at the end of `docker run` to execute
+    them immediately upon container startup.
+
+    * **Ephemeral Filesystem:** Understanding that manual changes made interactively
+    are lost when the container is deleted.
+
+
+    *If you get stuck, review the **Input Streams and Interactive Containers** concept
+    lesson.*
+
+    '
+  steps:
+  - id: step-we-interactive-vs-script-1
+    title: The Anti-Pattern - Manual Interactive Configuration
+    instruction: Execute an interactive shell in a new Ubuntu container and manually
+      create a file.
+    type: freeResponse
+    prompt: |
+      Write the single command to start a new `ubuntu` container in interactive mode with a terminal (`-it`), and drop into the `bash` shell.
+
+      *(Note: Once inside, you would normally type `echo "Hello" > manual.txt`, then type `exit`. But for this step, just write the `docker run` command.)*
+    answer:
+      gradingMode: selfCheck
+      expected: 'docker run -it ubuntu bash
+
+        '
+    explanation: |
+      While this works for debugging, the file you just created (`manual.txt`) only exists inside that specific container instance. If you delete it, the work is gone.
+  - id: step-we-interactive-vs-script-2
+    title: The Standard Convention - Scripted Configuration
+    instruction: Instead of going inside, pass the command directly to the container
+      so it executes automatically.
+    type: freeResponse
+    prompt: |
+      Write a single `docker run` command that uses the `ubuntu` image to execute the following bash command automatically, without dropping into an interactive shell:
+
+      `bash -c 'echo "Hello from script" > script.txt && cat script.txt'`
+
+      Also include the `--rm` flag so the container deletes itself immediately after running.
+    answer:
+      gradingMode: selfCheck
+      expected: 'docker run --rm ubuntu bash -c ''echo "Hello from script" > script.txt
+        && cat script.txt''
+
+        '
+    explanation: |
+      This is the preferred approach for automation. You define exactly what needs to happen within the command itself (or later, within a Dockerfile), ensuring that the process is completely reproducible and doesn't rely on human typing.
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
   - docker
   - cli
   - best-practices
-workedExamples:
-  - id: we-interactive-vs-script
-    title: Interactive Shells vs. Scripts Checkpoint
-    problem: |
-      In this checkpoint, you will explore the difference between manually configuring a container through an interactive shell versus passing a script to automate the configuration.
-      
-      ### Required Concepts:
-      * **Interactive Mode (`-it`):** Used to attach your terminal's input and output to the container so you can type commands manually.
-      * **Passing Commands:** Passing arguments at the end of `docker run` to execute them immediately upon container startup.
-      * **Ephemeral Filesystem:** Understanding that manual changes made interactively are lost when the container is deleted.
-      
-      *If you get stuck, review the **Input Streams and Interactive Containers** concept lesson.*
-
-    steps:
-    - id: step-manual
-      title: The Anti-Pattern - Manual Interactive Configuration
-      instruction: Execute an interactive shell in a new Ubuntu container and manually create a file.
-      type: freeResponse
-      prompt: |
-        Write the single command to start a new `ubuntu` container in interactive mode with a terminal (`-it`), and drop into the `bash` shell.
-        
-        *(Note: Once inside, you would normally type `echo "Hello" > manual.txt`, then type `exit`. But for this step, just write the `docker run` command.)*
-      answer:
-        gradingMode: selfCheck
-        expected: |
-          docker run -it ubuntu bash
-      explanation: |
-        While this works for debugging, the file you just created (`manual.txt`) only exists inside that specific container instance. If you delete it, the work is gone.
-
-    - id: step-scripted
-      title: The Standard Convention - Scripted Configuration
-      instruction: Instead of going inside, pass the command directly to the container so it executes automatically.
-      type: freeResponse
-      prompt: |
-        Write a single `docker run` command that uses the `ubuntu` image to execute the following bash command automatically, without dropping into an interactive shell:
-        
-        `bash -c 'echo "Hello from script" > script.txt && cat script.txt'`
-        
-        Also include the `--rm` flag so the container deletes itself immediately after running.
-      answer:
-        gradingMode: selfCheck
-        expected: |
-          docker run --rm ubuntu bash -c 'echo "Hello from script" > script.txt && cat script.txt'
-      explanation: |
-        This is the preferred approach for automation. You define exactly what needs to happen within the command itself (or later, within a Dockerfile), ensuring that the process is completely reproducible and doesn't rely on human typing.
-
-

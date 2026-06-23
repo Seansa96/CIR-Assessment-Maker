@@ -3,96 +3,75 @@ id: python-inventory-system-guided-project
 title: Python Inventory System Guided Project
 assessmentType: guidedProject
 categoryId: python
-subcategoryId: python-collections
 subcategoryIds:
-  - python-collections
+- python-collections
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: python
-  instructions: |
-    Build a Dictionary-based Inventory Manager.
+  instructions: 'Build a Dictionary-based Inventory Manager.
 
-    You will implement a simple class (we provide the skeleton) that uses a dictionary to track items and their quantities.
+
+    You will implement a simple class (we provide the skeleton) that uses a dictionary
+    to track items and their quantities.
+
 
     Required project behavior:
 
+
     - Implement the methods in `inventory.py`.
-    - The `Inventory` class has an `items` dictionary. Keys are item names (strings), values are quantities (ints).
-    - `add_item(self, name, quantity)`: Add the given quantity to the item. If it doesn't exist, create it.
-    - `remove_item(self, name, quantity)`: Subtract the quantity. If the quantity reaches 0 or below, remove the item from the dictionary entirely using `del`. If the item doesn't exist, do nothing.
-    - `get_quantity(self, name)`: Return the quantity of the item. Return 0 if the item is not in the dictionary.
-    - `total_items(self)`: Return the sum of ALL quantities in the inventory (e.g., 2 potions + 1 sword = 3 total).
+
+    - The `Inventory` class has an `items` dictionary. Keys are item names (strings),
+    values are quantities (ints).
+
+    - `add_item(self, name, quantity)`: Add the given quantity to the item. If it
+    doesn''t exist, create it.
+
+    - `remove_item(self, name, quantity)`: Subtract the quantity. If the quantity
+    reaches 0 or below, remove the item from the dictionary entirely using `del`.
+    If the item doesn''t exist, do nothing.
+
+    - `get_quantity(self, name)`: Return the quantity of the item. Return 0 if the
+    item is not in the dictionary.
+
+    - `total_items(self)`: Return the sum of ALL quantities in the inventory (e.g.,
+    2 potions + 1 sword = 3 total).
+
 
     The automated tests will simulate adding and removing loot.
 
+    '
   requiredChecks:
-    - id: compile-check
-      title: Compile
-      description: Compiles correctly.
-      expectedOutputContains:
-        - "OK"
+  - id: compile-check
+    title: Compile
+    description: Compiles correctly.
+    expectedOutputContains:
+    - OK
   files:
-    - path: inventory.py
-      readOnly: false
-      content: |
-        class Inventory:
-            def __init__(self):
-                self.items = {}
-                
-            def add_item(self, name, quantity):
-                # TODO: Implement add_item
-                pass
-                
-            def remove_item(self, name, quantity):
-                # TODO: Implement remove_item
-                pass
-                
-            def get_quantity(self, name):
-                # TODO: Implement get_quantity
-                return 0
-                
-            def total_items(self):
-                # TODO: Implement total_items
-                return 0
-    - path: run_checks.py
-      readOnly: true
-      content: |
-        import unittest
-        from inventory import Inventory
-
-        class TestInventory(unittest.TestCase):
-            def test_add_and_get(self):
-                inv = Inventory()
-                inv.add_item("Potion", 2)
-                self.assertEqual(inv.get_quantity("Potion"), 2)
-                inv.add_item("Potion", 3)
-                self.assertEqual(inv.get_quantity("Potion"), 5)
-                self.assertEqual(inv.get_quantity("Sword"), 0)
-
-            def test_remove_item(self):
-                inv = Inventory()
-                inv.add_item("Potion", 5)
-                inv.remove_item("Potion", 2)
-                self.assertEqual(inv.get_quantity("Potion"), 3)
-                
-                # Drop to 0 or below should delete it
-                inv.remove_item("Potion", 5)
-                self.assertEqual(inv.get_quantity("Potion"), 0)
-                self.assertNotIn("Potion", inv.items)
-                
-                # Removing non-existent shouldn't crash
-                inv.remove_item("Sword", 1)
-
-            def test_total_items(self):
-                inv = Inventory()
-                self.assertEqual(inv.total_items(), 0)
-                inv.add_item("Potion", 3)
-                inv.add_item("Sword", 1)
-                inv.add_item("Shield", 1)
-                self.assertEqual(inv.total_items(), 5)
-
-        if __name__ == '__main__':
-            unittest.main(verbosity=2)
-
-
+  - path: inventory.py
+    readOnly: false
+    content: "class Inventory:\n    def __init__(self):\n        self.items = {}\n\
+      \        \n    def add_item(self, name, quantity):\n        # TODO: Implement\
+      \ add_item\n        pass\n        \n    def remove_item(self, name, quantity):\n\
+      \        # TODO: Implement remove_item\n        pass\n        \n    def get_quantity(self,\
+      \ name):\n        # TODO: Implement get_quantity\n        return 0\n       \
+      \ \n    def total_items(self):\n        # TODO: Implement total_items\n    \
+      \    return 0\n"
+  - path: run_checks.py
+    readOnly: true
+    content: "import unittest\nfrom inventory import Inventory\n\nclass TestInventory(unittest.TestCase):\n\
+      \    def test_add_and_get(self):\n        inv = Inventory()\n        inv.add_item(\"\
+      Potion\", 2)\n        self.assertEqual(inv.get_quantity(\"Potion\"), 2)\n  \
+      \      inv.add_item(\"Potion\", 3)\n        self.assertEqual(inv.get_quantity(\"\
+      Potion\"), 5)\n        self.assertEqual(inv.get_quantity(\"Sword\"), 0)\n\n\
+      \    def test_remove_item(self):\n        inv = Inventory()\n        inv.add_item(\"\
+      Potion\", 5)\n        inv.remove_item(\"Potion\", 2)\n        self.assertEqual(inv.get_quantity(\"\
+      Potion\"), 3)\n        \n        # Drop to 0 or below should delete it\n   \
+      \     inv.remove_item(\"Potion\", 5)\n        self.assertEqual(inv.get_quantity(\"\
+      Potion\"), 0)\n        self.assertNotIn(\"Potion\", inv.items)\n        \n \
+      \       # Removing non-existent shouldn't crash\n        inv.remove_item(\"\
+      Sword\", 1)\n\n    def test_total_items(self):\n        inv = Inventory()\n\
+      \        self.assertEqual(inv.total_items(), 0)\n        inv.add_item(\"Potion\"\
+      , 3)\n        inv.add_item(\"Sword\", 1)\n        inv.add_item(\"Shield\", 1)\n\
+      \        self.assertEqual(inv.total_items(), 5)\n\nif __name__ == '__main__':\n\
+      \    unittest.main(verbosity=2)\n"

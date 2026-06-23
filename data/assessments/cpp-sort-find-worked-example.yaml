@@ -3,78 +3,69 @@ id: cpp-sort-find-worked-example
 title: C++ Sort and Find Worked Example
 assessmentType: workedExample
 categoryId: c++
-subcategoryId: c++-standard-library
 subcategoryIds:
-  - c++-standard-library
+- c++-standard-library
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: student-scores
-    title: Processing Student Scores
-    problem: |
-      We have a `std::vector` of student names and a `std::vector` of their scores. We want to sort the scores and find the highest score.
-      Wait, sorting parallel arrays is hard. Instead, let's create a `Student` struct, put them in one vector, and sort them!
-    steps:
-      - id: struct-setup
-        title: Create the struct and vector
-        content: |
-          ```cpp
-          #include <vector>
-          #include <string>
+- id: student-scores
+  title: Processing Student Scores
+  problem: 'We have a `std::vector` of student names and a `std::vector` of their
+    scores. We want to sort the scores and find the highest score.
 
-          struct Student {
-              std::string name;
-              int score;
-          };
+    Wait, sorting parallel arrays is hard. Instead, let''s create a `Student` struct,
+    put them in one vector, and sort them!
 
-          std::vector<Student> students = {
-              {"Alice", 85}, {"Bob", 92}, {"Charlie", 78}
-          };
-          ```
-      - id: custom-sort
-        title: Sort using a lambda
-        content: |
-          We want to sort by score, descending (highest first). We use `std::sort` with a custom lambda comparator.
+    '
+  steps:
+  - id: step-student-scores-1
+    title: Create the struct and vector
+    type: freeResponse
+    answer:
+      gradingMode: selfCheck
+    prompt: Consider the explanation and continue to the next step.
+    instruction: "```cpp\n#include <vector>\n#include <string>\n\nstruct Student {\n\
+      \    std::string name;\n    int score;\n};\n\nstd::vector<Student> students\
+      \ = {\n    {\"Alice\", 85}, {\"Bob\", 92}, {\"Charlie\", 78}\n};\n```\n"
+  - id: step-student-scores-2
+    title: Sort using a lambda
+    type: freeResponse
+    answer:
+      gradingMode: selfCheck
+    prompt: Consider the explanation and continue to the next step.
+    instruction: "We want to sort by score, descending (highest first). We use `std::sort`\
+      \ with a custom lambda comparator.\n\n```cpp\n#include <algorithm>\n\n// Sort\
+      \ descending by score\nstd::sort(students.begin(), students.end(), [](const\
+      \ Student& a, const Student& b) {\n    return a.score > b.score;\n});\n```\n\
+      Now Bob is at index 0, Alice at index 1, and Charlie at index 2.\n"
+  - id: step-student-scores-3
+    title: Search using find_if
+    type: freeResponse
+    answer:
+      gradingMode: selfCheck
+    prompt: Consider the explanation and continue to the next step.
+    instruction: "We want to find the first student who scored below 80. We use `std::find_if`.\n\
+      \n```cpp\nauto it = std::find_if(students.begin(), students.end(), [](const\
+      \ Student& s) {\n    return s.score < 80;\n});\n\nif (it != students.end())\
+      \ {\n    std::cout << \"Needs help: \" << it->name; // Outputs Charlie\n}\n\
+      ```\n"
+  check:
+    id: custom-sort-check
+    type: multipleChoice
+    prompt: If we wanted to sort the `students` alphabetically by name, what should
+      the lambda return?
+    choices:
+    - id: a
+      text: '`return a.name < b.name;`'
+    - id: b
+      text: '`return a.score < b.score;`'
+    - id: c
+      text: '`return a.name == b.name;`'
+    - id: d
+      text: '`return a.name > b.name;`'
+    answer:
+      choiceId: a
+    explanation: 'Returning `a.name < b.name` tells `std::sort` that `a` should come
+      before `b` if its name is alphabetically earlier (ascending order).
 
-          ```cpp
-          #include <algorithm>
-
-          // Sort descending by score
-          std::sort(students.begin(), students.end(), [](const Student& a, const Student& b) {
-              return a.score > b.score;
-          });
-          ```
-          Now Bob is at index 0, Alice at index 1, and Charlie at index 2.
-      - id: find-if
-        title: Search using find_if
-        content: |
-          We want to find the first student who scored below 80. We use `std::find_if`.
-
-          ```cpp
-          auto it = std::find_if(students.begin(), students.end(), [](const Student& s) {
-              return s.score < 80;
-          });
-
-          if (it != students.end()) {
-              std::cout << "Needs help: " << it->name; // Outputs Charlie
-          }
-          ```
-    check:
-      id: custom-sort-check
-      type: multipleChoice
-      prompt: If we wanted to sort the `students` alphabetically by name, what should the lambda return?
-      choices:
-        - id: a
-          text: '`return a.name < b.name;`'
-        - id: b
-          text: '`return a.score < b.score;`'
-        - id: c
-          text: '`return a.name == b.name;`'
-        - id: d
-          text: '`return a.name > b.name;`'
-      answer:
-        choiceId: a
-      explanation: |
-        Returning `a.name < b.name` tells `std::sort` that `a` should come before `b` if its name is alphabetically earlier (ascending order).
-
-
+      '

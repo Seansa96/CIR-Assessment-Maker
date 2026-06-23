@@ -3,94 +3,88 @@ id: python-control-flow-worked-example
 title: Python Damage Calculator Worked Example
 assessmentType: workedExample
 categoryId: python
-subcategoryId: python-control-flow
 subcategoryIds:
-  - python-control-flow
+- python-control-flow
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Tracing a Damage Calculator
-    problem: |
-      We have written a block of Python code that calculates how much damage an attack does. It considers the attacker's weapon type, the defender's armor, and whether the attack was a critical hit.
-      
-      Your goal is to trace the execution path of the code given specific inputs.
-    steps:
-      - id: s001
-        title: Reviewing the Logic
-        instruction: |
-          Here is the code we are analyzing:
-          
-          ```python
-          base_damage = 20
-          weapon_element = "fire"
-          enemy_type = "ice"
-          is_critical = False
-          
-          if weapon_element == "fire" and enemy_type == "ice":
-              base_damage = base_damage * 2
-          elif weapon_element == "ice" and enemy_type == "fire":
-              base_damage = base_damage * 2
-          elif weapon_element == enemy_type:
-              base_damage = base_damage / 2
-              
-          if is_critical:
-              base_damage = base_damage + 15
-              
-          print(base_damage)
-          ```
-        type: numericResponse
-        prompt: |
-          Based on the initial values provided in the code above, what will be printed to the console?
-        answer:
-          value: 40
-          tolerance: 0
-        explanation: |
-          The weapon is "fire" and the enemy is "ice". The very first `if` condition is `True` (`"fire" == "fire" and "ice" == "ice"`).
-          `base_damage` becomes `20 * 2 = 40`. The `elif` blocks are skipped. `is_critical` is False, so the second `if` is skipped. The final output is `40`.
-
-      - id: s002
-        title: Changing the Inputs
-        instruction: |
-          Now, let's change the scenario. The inputs are now:
-          
-          ```python
-          base_damage = 20
-          weapon_element = "water"
-          enemy_type = "water"
-          is_critical = True
-          ```
-        type: numericResponse
-        prompt: |
-          Trace the code again with these new inputs. What will be printed?
-        answer:
-          value: 25
-          tolerance: 0
-        explanation: |
-          1. The first `if` is False.
-          2. The first `elif` is False.
-          3. The second `elif` (`weapon_element == enemy_type`) is True because `"water" == "water"`.
-          4. `base_damage` is halved: `20 / 2 = 10.0`.
-          5. Next, `is_critical` is True, so the independent `if` block runs.
-          6. `base_damage` increases by 15: `10.0 + 15 = 25.0`.
-
-      - id: s003
-        title: Missing Else
-        instruction: |
-          Notice that the `if/elif` chain checking the elemental types does *not* have a final `else` block.
-        type: multipleChoice
-        prompt: |
-          What happens if `weapon_element = "fire"` and `enemy_type = "water"`, assuming `base_damage = 20` and `is_critical = False`?
-        choices:
-          - id: a
-            text: An error occurs because there is no `else` block.
-          - id: b
-            text: The `base_damage` remains `20`.
-          - id: c
-            text: The `base_damage` becomes `0`.
-        answer:
-          choiceId: b
-        explanation: |
-          An `else` block is optional. If none of the `if` or `elif` conditions are met, Python simply skips the entire structure and moves on. The `base_damage` remains unchanged at `20`.
+- id: we001
+  title: Tracing a Damage Calculator
+  problem: 'We have written a block of Python code that calculates\rhow much damage
+    an attack does. It considers the attacker''s weapon type, the defender''s armor,
+    and whether the attack was a critical hit.
 
 
+    Your goal is to trace the execution path of the code given specific inputs.
+
+    '
+  steps:
+  - id: step-we001-1
+    title: Reviewing the Logic
+    instruction: "Here is the code we are analyzing:\n\n```python\nbase_damage = 20\n\
+      weapon_element = \"fire\"\nenemy_type = \"ice\"\nis_critical = False\n\nif weapon_element\
+      \ == \"fire\" and enemy_type == \"ice\":\n    base_damage = base_damage * 2\n\
+      elif weapon_element == \"ice\" and enemy_type == \"fire\":\n    base_damage\
+      \ = base_damage * 2\nelif weapon_element == enemy_type:\n    base_damage = base_damage\
+      \ / 2\n    \nif is_critical:\n    base_damage = base_damage + 15\n    \nprint(base_damage)\n\
+      ```\n"
+    type: numericResponse
+    prompt: |
+      Based on the initial values provided in the code above, what will be printed to the console?
+    answer:
+      value: 40
+      tolerance: 0
+    explanation: |
+      The weapon is "fire" and the enemy is "ice". The very first `if` condition is `True` (`"fire" == "fire" and "ice" == "ice"`).
+      `base_damage` becomes `20 * 2 = 40`. The `elif` blocks are skipped. `is_critical` is False, so the second `if` is skipped. The final output is `40`.
+  - id: step-we001-2
+    title: Changing the Inputs
+    instruction: 'Now, let''s change the scenario. The inputs are now:
+
+
+      ```python
+
+      base_damage = 20
+
+      weapon_element = "water"
+
+      enemy_type = "water"
+
+      is_critical = True
+
+      ```
+
+      '
+    type: numericResponse
+    prompt: |
+      Trace the code again with these new inputs. What will be printed?
+    answer:
+      value: 25
+      tolerance: 0
+    explanation: |
+      1. The first `if` is False.
+      2. The first `elif` is False.
+      3. The second `elif` (`weapon_element == enemy_type`) is True because `"water" == "water"`.
+      4. `base_damage` is halved: `20 / 2 = 10.0`.
+      5. Next, `is_critical` is True, so the independent `if` block runs.
+      6. `base_damage` increases by 15: `10.0 + 15 = 25.0`.
+  - id: step-we001-3
+    title: Missing Else
+    instruction: 'Notice that the `if/elif` chain checking the elemental types does
+      *not* have a final `else` block.
+
+      '
+    type: multipleChoice
+    prompt: |
+      What happens if `weapon_element = "fire"` and `enemy_type = "water"`, assuming `base_damage = 20` and `is_critical = False`?
+    choices:
+    - id: a
+      text: An error occurs because there is no `else` block.
+    - id: b
+      text: The `base_damage` remains `20`.
+    - id: c
+      text: The `base_damage` becomes `0`.
+    answer:
+      choiceId: b
+    explanation: |
+      An `else` block is optional. If none of the `if` or `elif` conditions are met, Python simply skips the entire structure and moves on. The `base_damage` remains unchanged at `20`.

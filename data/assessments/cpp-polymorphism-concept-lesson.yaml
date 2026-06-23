@@ -3,229 +3,248 @@ id: cpp-polymorphism-concept-lesson
 title: C++ Runtime Polymorphism Concept Lesson
 assessmentType: conceptLesson
 categoryId: c++
-subcategoryId: c++-oop
 subcategoryIds:
-  - c++-oop
+- c++-oop
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - polymorphism
-    - virtual-functions
-    - abstract-classes
-    - virtual-destructors
+  - polymorphism
+  - virtual-functions
+  - abstract-classes
+  - virtual-destructors
 lesson:
-  introduction: |
-    Runtime polymorphism lets one base interface dispatch behavior to different derived
+  introduction: 'Runtime polymorphism lets one base interface dispatch behavior to
+    different derived
+
     implementations. This lesson develops virtual functions, abstract classes, override
+
     checking, safe destruction, and the tradeoff between inheritance and composition.
+
+    '
   sections:
-    - id: one-interface-many-implementations
-      title: One interface, many implementations
-      required: true
-      content: |
-        Polymorphic code depends on a base contract while each derived type supplies its
-        own behavior.
+  - id: one-interface-many-implementations
+    title: One interface, many implementations
+    required: true
+    content: "Polymorphic code depends on a base contract while each derived type\
+      \ supplies its\nown behavior.\n\n```cpp\nvoid printArea(const Shape& shape)\
+      \ {\n    std::cout << shape.area();\n}\n```\n\nThe caller does not branch on\
+      \ `Circle`, `Rectangle`, or future shape types.\n"
+    check:
+      id: one-interface-many-implementations-check
+      type: multipleChoice
+      prompt: What is the main benefit of polymorphic dispatch here?
+      choices:
+      - id: a
+        text: The caller uses one stable interface without type-specific conditionals
+      - id: b
+        text: Every derived object must have identical data fields
+      - id: c
+        text: The compiler removes all function calls
+      - id: d
+        text: Base classes no longer need constructors
+      answer:
+        choiceId: a
+      explanation: 'The abstraction separates the operation the caller needs from
+        the concrete
 
-        ```cpp
-        void printArea(const Shape& shape) {
-            std::cout << shape.area();
-        }
-        ```
-
-        The caller does not branch on `Circle`, `Rectangle`, or future shape types.
-      check:
-        id: one-interface-many-implementations-check
-        type: multipleChoice
-        prompt: What is the main benefit of polymorphic dispatch here?
-        choices:
-          - id: a
-            text: The caller uses one stable interface without type-specific conditionals
-          - id: b
-            text: Every derived object must have identical data fields
-          - id: c
-            text: The compiler removes all function calls
-          - id: d
-            text: Base classes no longer need constructors
-        answer:
-          choiceId: a
-        explanation: |
-          The abstraction separates the operation the caller needs from the concrete
-          implementation that performs it.
-
-          Related topic: dependency inversion and dynamic dispatch.
-
-    - id: virtual-and-override
-      title: Virtual enables dispatch; override verifies intent
-      required: true
-      content: |
-        ```cpp
-        class Shape {
-        public:
-            virtual double area() const = 0;
-        };
-
-        class Circle final : public Shape {
-        public:
-            double area() const override;
-        };
-        ```
-
-        `virtual` establishes dynamic dispatch. `override` asks the compiler to verify
-        that the derived signature actually overrides a base virtual function.
-      check:
-        id: virtual-and-override-check
-        type: multipleChoice
-        prompt: Why should a derived virtual implementation use `override`?
-        choices:
-          - id: a
-            text: It catches signature mismatches at compile time
-          - id: b
-            text: It makes the method private
-          - id: c
-            text: It prevents all further inheritance
-          - id: d
-            text: It converts runtime dispatch into a global function
-        answer:
-          choiceId: a
-        explanation: |
-          A missing `const`, different parameter, or typo can silently create a new
-          function without `override`.
-
-          Related topic: virtual function contracts.
-
-    - id: pure-virtual-and-abstract
-      title: Pure virtual functions define abstract contracts
-      required: true
-      content: |
-        A pure virtual function ends in `= 0`. A class with an unimplemented pure virtual
-        function is abstract and cannot be instantiated directly.
-
-        Abstract classes are useful when the base concept has a meaningful interface but
-        no complete default implementation.
-      check:
-        id: pure-virtual-and-abstract-check
-        type: multipleChoice
-        prompt: What does `virtual void update() = 0;` mean?
-        choices:
-          - id: a
-            text: The base declares a required polymorphic operation without a concrete implementation
-          - id: b
-            text: '`update` always returns zero'
-          - id: c
-            text: 'Derived classes are forbidden from defining `update`'
-          - id: d
-            text: The function runs only during construction
-        answer:
-          choiceId: a
-        explanation: |
-          The pure virtual declaration makes the base abstract and requires a concrete
-          derived implementation before an object can be instantiated.
-
-          Related topic: interfaces and abstract base classes.
-
-    - id: virtual-destructor
-      title: Polymorphic bases need virtual destructors
-      required: true
-      content: |
-        If an object may be destroyed through a base pointer, the base destructor must be
-        virtual.
-
-        ```cpp
-        class Entity {
-        public:
-            virtual ~Entity() = default;
-            virtual void update() = 0;
-        };
-        ```
-
-        This ensures the derived destructor runs before the base destructor.
-      check:
-        id: virtual-destructor-check
-        type: multipleChoice
-        prompt: What can happen when deleting a derived object through a base pointer whose destructor is not virtual?
-        choices:
-          - id: a
-            text: Behavior is undefined and derived resources may not be released correctly
-          - id: b
-            text: The compiler automatically converts the pointer to a value
-          - id: c
-            text: The derived destructor always runs first anyway
-          - id: d
-            text: Only the virtual methods are deleted
-        answer:
-          choiceId: a
-        explanation: |
-          Polymorphic destruction is part of the base contract and requires a virtual
-          destructor.
-
-          Related topic: RAII and polymorphic lifetime.
-
-    - id: dispatch-requires-reference-or-pointer
-      title: Dynamic dispatch uses the dynamic object
-      required: true
-      content: |
-        Virtual dispatch occurs when a virtual function is called through a base reference
-        or pointer that refers to a derived object.
-
-        ```cpp
-        Circle circle(2.0);
-        const Shape& shape = circle;
-        shape.area(); // calls Circle::area
-        ```
-
-        Passing by base value slices the object and loses this dynamic behavior.
-      check:
-        id: dispatch-requires-reference-or-pointer-check
-        type: multipleChoice
-        prompt: Which call preserves runtime polymorphism?
-        choices:
-          - id: a
-            text: Passing a `Circle` to a function taking `const Shape&`
-          - id: b
-            text: Copying a `Circle` into a `Shape` value
-          - id: c
-            text: Storing every object in `std::vector<Shape>`
-          - id: d
-            text: Replacing the virtual function with a field
-        answer:
-          choiceId: a
-        explanation: |
-          The base reference still refers to the complete dynamic `Circle` object.
-
-          Related topic: dynamic type and object slicing.
-
-    - id: polymorphism-or-variant
-      title: Choose the mechanism that matches the problem
-      required: true
-      content: |
-        Runtime inheritance is useful for an open family of implementations accessed
-        through a stable interface. For a small closed set of alternatives, `std::variant`
-        may be clearer. For interchangeable behavior, injecting a function or strategy
-        object may avoid a hierarchy entirely.
-
-        Polymorphism is a design tool, not a requirement for every class.
-      check:
-        id: polymorphism-or-variant-check
-        type: selectAll
-        prompt: Which questions should be asked before choosing runtime inheritance?
-        choices:
-          - id: a
-            text: Do callers need one stable interface for several implementations?
-          - id: b
-            text: Is the set of implementations expected to grow independently?
-          - id: c
-            text: Can composition or a callable strategy express the variation more simply?
-          - id: d
-            text: Can inheritance eliminate the need to define any contract?
-        answer:
-          choiceIds: [a, b, c]
-        explanation: |
-          The best mechanism depends on whether the alternatives are open-ended, how they
-          are owned, and whether a hierarchy clarifies or obscures the design.
-
-          Related topic: strategy, variant, and composition.
+        implementation that performs it.
 
 
+        Related topic: dependency inversion and dynamic dispatch.
+
+        '
+  - id: virtual-and-override
+    title: Virtual enables dispatch; override verifies intent
+    required: true
+    content: "```cpp\nclass Shape {\npublic:\n    virtual double area() const = 0;\n\
+      };\n\nclass Circle final : public Shape {\npublic:\n    double area() const\
+      \ override;\n};\n```\n\n`virtual` establishes dynamic dispatch. `override` asks\
+      \ the compiler to verify\nthat the derived signature actually overrides a base\
+      \ virtual function.\n"
+    check:
+      id: virtual-and-override-check
+      type: multipleChoice
+      prompt: Why should a derived virtual implementation use `override`?
+      choices:
+      - id: a
+        text: It catches signature mismatches at compile time
+      - id: b
+        text: It makes the method private
+      - id: c
+        text: It prevents all further inheritance
+      - id: d
+        text: It converts runtime dispatch into a global function
+      answer:
+        choiceId: a
+      explanation: 'A missing `const`, different parameter, or typo can silently create
+        a new
+
+        function without `override`.
+
+
+        Related topic: virtual function contracts.
+
+        '
+  - id: pure-virtual-and-abstract
+    title: Pure virtual functions define abstract contracts
+    required: true
+    content: 'A pure virtual function ends in `= 0`. A class with an unimplemented
+      pure virtual
+
+      function is abstract and cannot be instantiated directly.
+
+
+      Abstract classes are useful when the base concept has a meaningful interface
+      but
+
+      no complete default implementation.
+
+      '
+    check:
+      id: pure-virtual-and-abstract-check
+      type: multipleChoice
+      prompt: What does `virtual void update() = 0;` mean?
+      choices:
+      - id: a
+        text: The base declares a required polymorphic operation without a concrete
+          implementation
+      - id: b
+        text: '`update` always returns zero'
+      - id: c
+        text: Derived classes are forbidden from defining `update`
+      - id: d
+        text: The function runs only during construction
+      answer:
+        choiceId: a
+      explanation: 'The pure virtual declaration makes the base abstract and requires
+        a concrete
+
+        derived implementation before an object can be instantiated.
+
+
+        Related topic: interfaces and abstract base classes.
+
+        '
+  - id: virtual-destructor
+    title: Polymorphic bases need virtual destructors
+    required: true
+    content: "If an object may be destroyed through a base pointer, the base destructor\
+      \ must be\nvirtual.\n\n```cpp\nclass Entity {\npublic:\n    virtual ~Entity()\
+      \ = default;\n    virtual void update() = 0;\n};\n```\n\nThis ensures the derived\
+      \ destructor runs before the base destructor.\n"
+    check:
+      id: virtual-destructor-check
+      type: multipleChoice
+      prompt: What can happen when deleting a derived object through a base pointer
+        whose destructor is not virtual?
+      choices:
+      - id: a
+        text: Behavior is undefined and derived resources may not be released correctly
+      - id: b
+        text: The compiler automatically converts the pointer to a value
+      - id: c
+        text: The derived destructor always runs first anyway
+      - id: d
+        text: Only the virtual methods are deleted
+      answer:
+        choiceId: a
+      explanation: 'Polymorphic destruction is part of the base contract and requires
+        a virtual
+
+        destructor.
+
+
+        Related topic: RAII and polymorphic lifetime.
+
+        '
+  - id: dispatch-requires-reference-or-pointer
+    title: Dynamic dispatch uses the dynamic object
+    required: true
+    content: 'Virtual dispatch occurs when a virtual function is called through a
+      base reference
+
+      or pointer that refers to a derived object.
+
+
+      ```cpp
+
+      Circle circle(2.0);
+
+      const Shape& shape = circle;
+
+      shape.area(); // calls Circle::area
+
+      ```
+
+
+      Passing by base value slices the object and loses this dynamic behavior.
+
+      '
+    check:
+      id: dispatch-requires-reference-or-pointer-check
+      type: multipleChoice
+      prompt: Which call preserves runtime polymorphism?
+      choices:
+      - id: a
+        text: Passing a `Circle` to a function taking `const Shape&`
+      - id: b
+        text: Copying a `Circle` into a `Shape` value
+      - id: c
+        text: Storing every object in `std::vector<Shape>`
+      - id: d
+        text: Replacing the virtual function with a field
+      answer:
+        choiceId: a
+      explanation: 'The base reference still refers to the complete dynamic `Circle`
+        object.
+
+
+        Related topic: dynamic type and object slicing.
+
+        '
+  - id: polymorphism-or-variant
+    title: Choose the mechanism that matches the problem
+    required: true
+    content: 'Runtime inheritance is useful for an open family of implementations
+      accessed
+
+      through a stable interface. For a small closed set of alternatives, `std::variant`
+
+      may be clearer. For interchangeable behavior, injecting a function or strategy
+
+      object may avoid a hierarchy entirely.
+
+
+      Polymorphism is a design tool, not a requirement for every class.
+
+      '
+    check:
+      id: polymorphism-or-variant-check
+      type: selectAll
+      prompt: Which questions should be asked before choosing runtime inheritance?
+      choices:
+      - id: a
+        text: Do callers need one stable interface for several implementations?
+      - id: b
+        text: Is the set of implementations expected to grow independently?
+      - id: c
+        text: Can composition or a callable strategy express the variation more simply?
+      - id: d
+        text: Can inheritance eliminate the need to define any contract?
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+      explanation: 'The best mechanism depends on whether the alternatives are open-ended,
+       \rhow they
+
+        are owned, and whether a hierarchy clarifies or obscures the design.
+
+
+        Related topic: strategy, variant, and composition.
+
+        '

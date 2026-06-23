@@ -3,158 +3,149 @@ id: cpp-functions-concept-lesson
 title: C++ Functions Concept Lesson
 assessmentType: conceptLesson
 categoryId: c++
-subcategoryId: c++-functions
 subcategoryIds:
-  - c++-functions
+- c++-functions
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - functions
-    - parameters
-    - return-types
+  - functions
+  - parameters
+  - return-types
 lesson:
-  introduction: |
-    Functions allow you to organize code into reusable blocks. This lesson covers how to define functions, the different ways to pass arguments, and how C++ handles overloading and default parameters.
+  introduction: 'Functions allow you to organize code into reusable blocks. This lesson
+    covers\rhow to define functions, the different ways to pass arguments, and\rhow
+    C++ handles overloading and default parameters.
+
+    '
   sections:
-    - id: function-basics
-      title: Signatures and Definitions
-      required: true
-      content: |
-        A function has a return type, a name, and a parameter list.
+  - id: function-basics
+    title: Signatures and Definitions
+    required: true
+    content: "A function has a return type, a name, and a parameter list.\n\n```cpp\n\
+      // Declaration (often in a header file)\nint add(int a, int b);\n\n// Definition\
+      \ (implementation)\nint add(int a, int b) {\n    return a + b;\n}\n```\n\nIf\
+      \ a function doesn't return anything, its return type is `void`. You must declare\
+      \ a function before you call it.\n"
+    check:
+      id: function-basics-check
+      type: multipleChoice
+      prompt: What is the return type of a function that simply prints a message and
+        does not send a value back to the caller?
+      choices:
+      - id: a
+        text: '`void`'
+      - id: b
+        text: '`int`'
+      - id: c
+        text: '`null`'
+      - id: d
+        text: '`string`'
+      answer:
+        choiceId: a
+      explanation: '`void` indicates the function returns no value.
 
-        ```cpp
-        // Declaration (often in a header file)
-        int add(int a, int b);
+        '
+  - id: parameter-passing
+    title: Pass by Value vs. Reference
+    required: true
+    content: "By default, C++ passes arguments **by value** (makes a copy). Modifying\
+      \ the copy doesn't affect the original.\n\nTo pass **by reference**, use an\
+      \ ampersand `&`. This allows the function to modify the original variable.\n\
+      \n```cpp\nvoid incrementCopy(int x) { x++; }   // Modifies a copy\nvoid incrementReal(int&\
+      \ x) { x++; }  // Modifies the original\n```\n\nIf an object is large (like\
+      \ a `std::string`) and you don't want to copy it or modify it, pass it by **const\
+      \ reference**:\n\n```cpp\nvoid printName(const string& name) {\n    cout <<\
+      \ name;\n}\n```\n"
+    check:
+      id: parameter-passing-check
+      type: multipleChoice
+      prompt: Which parameter type is best for a function that needs to read a large
+        `std::vector` without copying it and without changing it?
+      choices:
+      - id: a
+        text: '`const std::vector<int>&`'
+      - id: b
+        text: '`std::vector<int>`'
+      - id: c
+        text: '`std::vector<int>&`'
+      - id: d
+        text: '`std::vector<int>*`'
+      answer:
+        choiceId: a
+      explanation: '`const &` avoids the expensive copy while guaranteeing the function
+        cannot modify the vector.
 
-        // Definition (implementation)
-        int add(int a, int b) {
-            return a + b;
-        }
-        ```
-
-        If a function doesn't return anything, its return type is `void`. You must declare a function before you call it.
-      check:
-        id: function-basics-check
-        type: multipleChoice
-        prompt: What is the return type of a function that simply prints a message and does not send a value back to the caller?
-        choices:
-          - id: a
-            text: '`void`'
-          - id: b
-            text: '`int`'
-          - id: c
-            text: '`null`'
-          - id: d
-            text: '`string`'
-        answer:
-          choiceId: a
-        explanation: |
-          `void` indicates the function returns no value.
-
-    - id: parameter-passing
-      title: Pass by Value vs. Reference
-      required: true
-      content: |
-        By default, C++ passes arguments **by value** (makes a copy). Modifying the copy doesn't affect the original.
-
-        To pass **by reference**, use an ampersand `&`. This allows the function to modify the original variable.
-
-        ```cpp
-        void incrementCopy(int x) { x++; }   // Modifies a copy
-        void incrementReal(int& x) { x++; }  // Modifies the original
-        ```
-
-        If an object is large (like a `std::string`) and you don't want to copy it or modify it, pass it by **const reference**:
-
-        ```cpp
-        void printName(const string& name) {
-            cout << name;
-        }
-        ```
-      check:
-        id: parameter-passing-check
-        type: multipleChoice
-        prompt: Which parameter type is best for a function that needs to read a large `std::vector` without copying it and without changing it?
-        choices:
-          - id: a
-            text: '`const std::vector<int>&`'
-          - id: b
-            text: '`std::vector<int>`'
-          - id: c
-            text: '`std::vector<int>&`'
-          - id: d
-            text: '`std::vector<int>*`'
-        answer:
-          choiceId: a
-        explanation: |
-          `const &` avoids the expensive copy while guaranteeing the function cannot modify the vector.
-
-    - id: overloading
-      title: Function Overloading
-      required: true
-      content: |
-        C++ allows multiple functions with the same name, as long as their parameter lists are different (different types or different number of parameters).
-
-        ```cpp
-        void print(int i) { cout << "Integer: " << i; }
-        void print(double d) { cout << "Double: " << d; }
-        void print(string s) { cout << "String: " << s; }
-        ```
-
-        The compiler decides which one to call based on the arguments provided. Overloading cannot be based solely on return type.
-      check:
-        id: overloading-check
-        type: multipleChoice
-        prompt: Can you have `int getVal()` and `double getVal()` in the same scope?
-        choices:
-          - id: a
-            text: 'No, because overloading requires different parameter lists, not just different return types.'
-          - id: b
-            text: 'Yes, because the return types are different.'
-          - id: c
-            text: 'Yes, but only if they are declared in separate files.'
-          - id: d
-            text: 'No, because C++ does not support function overloading.'
-        answer:
-          choiceId: a
-        explanation: |
-          C++ cannot distinguish between calls based on what the caller *might* do with the return value, so parameter lists must differ.
-
-    - id: default-parameters
-      title: Default Parameters
-      required: true
-      content: |
-        You can assign default values to parameters. If the caller omits the argument, the default is used.
-
-        ```cpp
-        void greet(string name, string greeting = "Hello") {
-            cout << greeting << " " << name;
-        }
-
-        greet("Alice");           // Prints: Hello Alice
-        greet("Bob", "Welcome");  // Prints: Welcome Bob
-        ```
-
-        Default parameters must be placed at the end of the parameter list.
-      check:
-        id: default-parameters-check
-        type: multipleChoice
-        prompt: Why is `void setSize(int width = 10, int height)` invalid?
-        choices:
-          - id: a
-            text: 'Default parameters must appear at the end of the parameter list.'
-          - id: b
-            text: 'Default parameters can only be used with strings.'
-          - id: c
-            text: '`height` must also be 10 to match `width`.'
-          - id: d
-            text: 'It is actually perfectly valid.'
-        answer:
-          choiceId: a
-        explanation: |
-          Once a parameter has a default value, all subsequent parameters must also have default values.
+        '
+  - id: overloading
+    title: Function Overloading
+    required: true
+    content: 'C++ allows multiple functions with the same name, as long as their parameter
+      lists are different (different types or different number of parameters).
 
 
+      ```cpp
+
+      void print(int i) { cout << "Integer: " << i; }
+
+      void print(double d) { cout << "Double: " << d; }
+
+      void print(string s) { cout << "String: " << s; }
+
+      ```
+
+
+      The compiler decides which one to call based on the arguments provided. Overloading
+      cannot be based solely on return type.
+
+      '
+    check:
+      id: overloading-check
+      type: multipleChoice
+      prompt: Can you have `int getVal()` and `double getVal()` in the same scope?
+      choices:
+      - id: a
+        text: No, because overloading requires different parameter lists, not just
+          different return types.
+      - id: b
+        text: Yes, because the return types are different.
+      - id: c
+        text: Yes, but only if they are declared in separate files.
+      - id: d
+        text: No, because C++ does not support function overloading.
+      answer:
+        choiceId: a
+      explanation: 'C++ cannot distinguish between calls based on what the caller
+        *might* do with the return value, so parameter lists must differ.
+
+        '
+  - id: default-parameters
+    title: Default Parameters
+    required: true
+    content: "You can assign default values to parameters. If the caller omits the\
+      \ argument, the default is used.\n\n```cpp\nvoid greet(string name, string greeting\
+      \ = \"Hello\") {\n    cout << greeting << \" \" << name;\n}\n\ngreet(\"Alice\"\
+      );           // Prints: Hello Alice\ngreet(\"Bob\", \"Welcome\");  // Prints:\
+      \ Welcome Bob\n```\n\nDefault parameters must be placed at the end of the parameter\
+      \ list.\n"
+    check:
+      id: default-parameters-check
+      type: multipleChoice
+      prompt: Why is `void setSize(int width = 10, int height)` invalid?
+      choices:
+      - id: a
+        text: Default parameters must appear at the end of the parameter list.
+      - id: b
+        text: Default parameters can only be used with strings.
+      - id: c
+        text: '`height` must also be 10 to match `width`.'
+      - id: d
+        text: It is actually perfectly valid.
+      answer:
+        choiceId: a
+      explanation: 'Once a parameter has a default value, all subsequent parameters
+        must also have default values.
+
+        '

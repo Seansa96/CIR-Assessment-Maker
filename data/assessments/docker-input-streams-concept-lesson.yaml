@@ -3,78 +3,119 @@ id: docker-input-streams-concept-lesson
 title: Input Streams and Interactive Containers
 assessmentType: conceptLesson
 categoryId: containerization
-subcategoryId: docker-cli
 subcategoryIds:
-  - docker-cli
+- docker-cli
 modeDefault: study
 randomizeQuestions: false
 sections:
-  - id: standard-streams
-    title: Standard Streams
-    content: |
-      Like any Linux process, a container has three standard streams:
-      1. **STDIN (Standard Input):** How you send data/keystrokes to the container.
-      2. **STDOUT (Standard Output):** Normal text output from the container.
-      3. **STDERR (Standard Error):** Error messages from the container.
-      
-      By default, when you run a container without `-d`, Docker attaches your terminal's STDOUT and STDERR to the container, allowing you to see logs on your screen. However, it does *not* keep STDIN open, meaning you can't type anything into the container.
+- id: standard-streams
+  title: Standard Streams
+  content: 'Like any Linux process, a container has three standard streams:
 
-  - id: interactive-tty
-    title: The -i and -t Flags
-    content: |
-      If you want to interact with a container (e.g., to run a bash shell or a python REPL), you need two flags:
-      
-      * `-i` (interactive): Keeps STDIN open even if not attached.
-      * `-t` (tty): Allocates a pseudo-TTY, tricking the container into thinking it is connected to a real terminal.
-      
-      These are almost always combined into `-it`:
-      
-      `docker run -it ubuntu bash`
-      
-      This drops you directly into a bash shell running inside an isolated Ubuntu container. When you type `exit`, the bash process ends, and the container stops.
+    1. **STDIN (Standard Input):** How you send data/keystrokes to the container.
 
-  - id: scripts-vs-interactive
-    title: Interactive vs. Scripts
-    content: |
-      While `-it` is fantastic for debugging or exploring a new image, **it is generally considered an anti-pattern for production**.
-      
-      Containers are meant to be ephemeral and reproducible. If you manually install packages via an interactive shell, those changes are lost if the container is deleted. Instead of manual manipulation, you should encode your desired state into scripts, `Dockerfile`s, or environment variables.
+    2. **STDOUT (Standard Output):** Normal text output from the container.
 
-questions:
-  - id: q001
-    type: multipleChoice
-    prompt: |
+    3. **STDERR (Standard Error):** Error messages from the container.
+
+
+    By default, when you run a container without `-d`, Docker attaches your terminal''s
+    STDOUT and STDERR to the container, allowing you to see logs on your screen. However,
+    it does *not* keep STDIN open, meaning you can''t type anything into the container.
+
+    '
+- id: interactive-tty
+  title: The -i and -t Flags
+  content: 'If you want to interact with a container (e.g., to run a bash shell or
+    a python REPL), you need two flags:
+
+
+    * `-i` (interactive): Keeps STDIN open even if not attached.
+
+    * `-t` (tty): Allocates a pseudo-TTY, tricking the container into thinking it
+    is connected to a real terminal.
+
+
+    These are almost always combined into `-it`:
+
+
+    `docker run -it ubuntu bash`
+
+
+    This drops you directly into a bash shell running inside an isolated Ubuntu container.
+    When you type `exit`, the bash process ends, and the container stops.
+
+    '
+- id: scripts-vs-interactive
+  title: Interactive vs. Scripts
+  content: 'While `-it` is fantastic for debugging or exploring a new image, **it
+    is generally considered an anti-pattern for production**.
+
+
+    Containers are meant to be ephemeral and reproducible. If you manually install
+    packages via an interactive shell, those changes are lost if the container is
+    deleted. Instead of manual manipulation, you should encode your desired state
+    into scripts, `Dockerfile`s, or environment variables.
+
+    '
+lesson:
+  introduction: Input Streams and Interactive Containers
+  sections:
+  - id: sec-q001
+    title: Why is configuring a container manually via an interactive `-it` shell
+      considered an anti-pattern for production use?
+    content: |
       Why is configuring a container manually via an interactive `-it` shell considered an anti-pattern for production use?
-    choices:
+    check:
+      id: check-q001
+      type: multipleChoice
+      prompt: 'Select the correct statement:'
+      choices:
       - id: a
         text: It requires too much memory to keep STDIN open.
       - id: b
         text: It makes the container run significantly slower.
       - id: c
-        text: Manual changes are not reproducible; if the container is destroyed, all manual work is lost.
+        text: Manual changes are not reproducible; if the container is destroyed,
+          all manual work is lost.
       - id: d
-        text: Docker will automatically kill any container left in interactive mode for more than an hour.
-    answer:
-      choiceId: c
-    explanation: |
-      Containers should be fully reproducible from automated scripts, Dockerfiles, and environment variables. Manual changes cannot be easily tracked, reviewed, or recreated.
-
-  - id: q002
-    type: freeResponse
-    prompt: |
+        text: Docker will automatically kill any container left in interactive mode
+          for more than an\rhour.
+      answer:
+        choiceId: c
+      explanation: |
+        Containers should be fully reproducible from automated scripts, Dockerfiles, and environment variables. Manual changes cannot be easily tracked, reviewed, or recreated.
+  - id: sec-q002
+    title: Write the command to run a Python container interactively so you can type
+      Python commands into the REPL.
+    content: |
       Write the command to run a Python container interactively so you can type Python commands into the REPL.
-    answer:
-      expected: |
-        docker run -it python
-      gradingMode: selfCheck
-    explanation: |
-      The `-it` flag is required to keep STDIN open and allocate a terminal, allowing you to interact with the Python REPL.
-
-  - id: q003
-    type: multipleChoice
-    prompt: |
+    check:
+      id: check-q002
+      type: multipleChoice
+      prompt: 'Select the correct statement:'
+      choices:
+      - id: a
+        text: Option A
+      - id: b
+        text: Option B
+      - id: c
+        text: Option C
+      - id: d
+        text: Option D
+      answer:
+        choiceId: a
+      explanation: |
+        The `-it` flag is required to keep STDIN open and allocate a terminal, allowing you to interact with the Python REPL.
+  - id: sec-q003
+    title: What does the `-t` flag do in the `docker run` command?
+    content: |
       What does the `-t` flag do in the `docker run` command?
-    choices:
+    check:
+      id: check-q003
+      type: multipleChoice
+      prompt: 'Select the correct statement:'
+      choices:
       - id: a
         text: It sets a timeout for the container.
       - id: b
@@ -83,9 +124,7 @@ questions:
         text: It tags the container with a specific version.
       - id: d
         text: It runs the container in a background thread.
-    answer:
-      choiceId: b
-    explanation: |
-      The `-t` flag provides a terminal interface, which is necessary for many command-line tools to display prompts and format output correctly.
-
-
+      answer:
+        choiceId: b
+      explanation: |
+        The `-t` flag provides a terminal interface, which is necessary for many command-line tools to display prompts and format output correctly.

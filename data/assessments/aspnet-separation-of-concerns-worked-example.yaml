@@ -3,126 +3,130 @@ id: aspnet-separation-of-concerns-worked-example
 title: ASP.NET Separation of Concerns Worked Example
 assessmentType: workedExample
 categoryId: aspnet
-subcategoryId: aspnet-separation-of-concerns
 subcategoryIds:
-  - aspnet-separation-of-concerns
+- aspnet-separation-of-concerns
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Deciding where web app logic belongs
-    problem: "A user submits an answer. Decide which layer should validate, score, save, and return the result."
-    steps:
-      - id: s001
-        title: Identify the layers
-        instruction: "A maintainable web app usually separates transport, application logic, domain rules, and storage."
-        type: selectAll
-        prompt: "Which are useful responsibilities to separate in an ASP.NET backend?"
-        choices:
-          - id: a
-            text: "Endpoint/controller code that handles HTTP"
-          - id: b
-            text: "Service code that coordinates the use case"
-          - id: c
-            text: "Domain code that applies scoring or validation rules"
-          - id: d
-            text: "Repository code that handles persistence"
-        answer:
-          choiceIds:
-            - a
-            - b
-            - c
-            - d
-        hint: "Each part should have one main reason to change."
-        explanation: |
-          Separating concerns keeps the endpoint from becoming a large method that knows HTTP, scoring rules, file formats, and database details all at once.
+- id: we001
+  title: Deciding where web app logic belongs
+  problem: A user submits an answer. Decide which layer should validate, score, save,
+    and return the result.
+  steps:
+  - id: step-we001-1
+    title: Identify the layers
+    instruction: A maintainable web app usually separates transport, application logic,
+      domain rules, and storage.
+    type: selectAll
+    prompt: Which are useful responsibilities to separate in an ASP.NET backend?
+    choices:
+    - id: a
+      text: Endpoint/controller code that handles HTTP
+    - id: b
+      text: Service code that coordinates the use case
+    - id: c
+      text: Domain code that applies scoring or validation rules
+    - id: d
+      text: Repository code that handles persistence
+    answer:
+      choiceIds:
+      - a
+      - b
+      - c
+      - d
+    hint: Each part should have one main reason to change.
+    explanation: |
+      Separating concerns keeps the endpoint from becoming a large method that knows HTTP, scoring rules, file formats, and database details all at once.
 
-          Related topic: layered architecture. Look up "controller service repository pattern."
+      Related topic: layered architecture. Look up "controller service repository pattern."
+  - id: step-we001-2
+    title: Keep HTTP code thin
+    instruction: An endpoint should translate HTTP into a use-case call and translate
+      the result back into HTTP.
+    type: multipleChoice
+    prompt: Where should the detailed answer-scoring logic usually live?
+    choices:
+    - id: a
+      text: In a domain/service class, not directly inside the endpoint handler
+    - id: b
+      text: In the frontend CSS file
+    - id: c
+      text: Inside every endpoint that needs a score, copied each time
+    - id: d
+      text: In the SQLite table definition
+    answer:
+      choiceId: a
+    hint: Scoring is a business/domain rule, not an HTTP parsing rule.
+    explanation: |
+      Scoring should be reusable and testable without making an HTTP request. Endpoints should call services; services can call scoring/domain logic.
 
-      - id: s002
-        title: Keep HTTP code thin
-        instruction: "An endpoint should translate HTTP into a use-case call and translate the result back into HTTP."
-        type: multipleChoice
-        prompt: "Where should the detailed answer-scoring logic usually live?"
-        choices:
-          - id: a
-            text: "In a domain/service class, not directly inside the endpoint handler"
-          - id: b
-            text: "In the frontend CSS file"
-          - id: c
-            text: "Inside every endpoint that needs a score, copied each time"
-          - id: d
-            text: "In the SQLite table definition"
-        answer:
-          choiceId: a
-        hint: "Scoring is a business/domain rule, not an HTTP parsing rule."
-        explanation: |
-          Scoring should be reusable and testable without making an HTTP request. Endpoints should call services; services can call scoring/domain logic.
+      Related topic: thin controllers. Search "thin controller fat service" with care; the deeper idea is testable use-case logic.
+  - id: step-we001-3
+    title: Hide persistence details
+    instruction: Services should depend on repository interfaces instead of file paths
+      or SQL commands directly.
+    type: multipleChoice
+    prompt: Why should a service use `IAttemptRepository` instead of opening a SQLite
+      connection directly?
+    choices:
+    - id: a
+      text: So storage can change without rewriting the service's business logic
+    - id: b
+      text: So the service can skip validation
+    - id: c
+      text: So the frontend can run SQL
+    - id: d
+      text: So all code has to be in one class
+    answer:
+      choiceId: a
+    hint: Interfaces are seams between policy and implementation.
+    explanation: |
+      Repository interfaces let the service describe what it needs, while Infrastructure decides\rhow storage works. That makes file-backed storage, SQLite, or test doubles interchangeable.
 
-          Related topic: thin controllers. Search "thin controller fat service" with care; the deeper idea is testable use-case logic.
+      Related topic: dependency inversion. Look up "repository interface application service."
+  - id: step-we001-4
+    title: Decide where validation belongs
+    instruction: 'Validation often has two layers: request shape validation and domain
+      rule validation.'
+    type: multipleChoice
+    prompt: Which split is the cleanest?
+    choices:
+    - id: a
+      text: Endpoint checks basic request shape; domain/application validation checks
+        business rules.
+    - id: b
+      text: Only the database validates everything.
+    - id: c
+      text: Only the frontend validates everything.
+    - id: d
+      text: Validation is not needed if TypeScript exists.
+    answer:
+      choiceId: a
+    hint: The frontend helps the user, but the backend must protect the system.
+    explanation: |
+      The endpoint can reject malformed input. Domain/application services should still enforce rules such as valid question IDs, allowed statuses, and scoring constraints.
 
-      - id: s003
-        title: Hide persistence details
-        instruction: "Services should depend on repository interfaces instead of file paths or SQL commands directly."
-        type: multipleChoice
-        prompt: "Why should a service use `IAttemptRepository` instead of opening a SQLite connection directly?"
-        choices:
-          - id: a
-            text: "So storage can change without rewriting the service's business logic"
-          - id: b
-            text: "So the service can skip validation"
-          - id: c
-            text: "So the frontend can run SQL"
-          - id: d
-            text: "So all code has to be in one class"
-        answer:
-          choiceId: a
-        hint: "Interfaces are seams between policy and implementation."
-        explanation: |
-          Repository interfaces let the service describe what it needs, while Infrastructure decides how storage works. That makes file-backed storage, SQLite, or test doubles interchangeable.
+      Related topic: validation boundaries. Look up "input validation versus business rule validation."
+  - id: step-we001-5
+    title: Summarize separation of concerns
+    instruction: Explain the design habit in practical terms.
+    type: freeResponse
+    prompt: How would you decide whether code belongs in an endpoint, service, domain
+      class, or repository?
+    answer:
+      expected: Endpoint code should handle HTTP input/output. Services should coordinate
+        use cases. Domain code should\rhold rules such as validation and scoring. Repositories
+        should hide persistence details. Code belongs where its main reason to change
+        naturally fits.
+      gradingMode: selfCheck
+      keyPoints:
+      - Endpoints handle HTTP.
+      - Services coordinate use cases.
+      - Domain code\rholds rules.
+      - Repositories hide storage.
+      - Place code by its reason to change.
+    hint: Think about what would force the code to change.
+    explanation: |
+      Separation of concerns is not ceremony. It is a way to make changes local: routes can change without rewriting scoring, storage can change without rewriting use cases, and rules can be tested without HTTP.
 
-          Related topic: dependency inversion. Look up "repository interface application service."
-
-      - id: s004
-        title: Decide where validation belongs
-        instruction: "Validation often has two layers: request shape validation and domain rule validation."
-        type: multipleChoice
-        prompt: "Which split is the cleanest?"
-        choices:
-          - id: a
-            text: "Endpoint checks basic request shape; domain/application validation checks business rules."
-          - id: b
-            text: "Only the database validates everything."
-          - id: c
-            text: "Only the frontend validates everything."
-          - id: d
-            text: "Validation is not needed if TypeScript exists."
-        answer:
-          choiceId: a
-        hint: "The frontend helps the user, but the backend must protect the system."
-        explanation: |
-          The endpoint can reject malformed input. Domain/application services should still enforce rules such as valid question IDs, allowed statuses, and scoring constraints.
-
-          Related topic: validation boundaries. Look up "input validation versus business rule validation."
-
-      - id: s005
-        title: Summarize separation of concerns
-        instruction: "Explain the design habit in practical terms."
-        type: freeResponse
-        prompt: "How would you decide whether code belongs in an endpoint, service, domain class, or repository?"
-        answer:
-          expected: "Endpoint code should handle HTTP input/output. Services should coordinate use cases. Domain code should hold rules such as validation and scoring. Repositories should hide persistence details. Code belongs where its main reason to change naturally fits."
-          gradingMode: selfCheck
-          keyPoints:
-            - "Endpoints handle HTTP."
-            - "Services coordinate use cases."
-            - "Domain code holds rules."
-            - "Repositories hide storage."
-            - "Place code by its reason to change."
-        hint: "Think about what would force the code to change."
-        explanation: |
-          Separation of concerns is not ceremony. It is a way to make changes local: routes can change without rewriting scoring, storage can change without rewriting use cases, and rules can be tested without HTTP.
-
-          Related topic: single responsibility principle. Look up "separation of concerns web application architecture."
-
-
+      Related topic: single responsibility principle. Look up "separation of concerns web application architecture."

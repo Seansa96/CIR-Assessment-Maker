@@ -3,385 +3,542 @@ id: aops-identity-engineering-concept-lesson
 title: Identity Engineering Concept Lesson
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
-subcategoryId: aops-identity-engineering
 subcategoryIds:
-  - aops-symbolic-manipulation
-  - aops-identity-engineering
+- aops-identity-engineering
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - identity-engineering
-    - symbolic-manipulation
-    - equivalent-expressions
-    - add-zero
-    - multiply-by-one
+  - identity-engineering
+  - symbolic-manipulation
+  - equivalent-expressions
+  - add-zero
+  - multiply-by-one
 lesson:
-  introduction: |
-    Identity engineering is the deliberate creation of a useful algebraic form without
-    changing the value of an expression. Instead of waiting for a familiar pattern to
+  introduction: 'Identity engineering is the deliberate creation of a useful algebraic
+    form without
+
+    changing the value of an expression. Instead of waiting for a familiar pattern
+    to
+
     appear, you create one by adding zero, multiplying by one, splitting a term, grouping,
+
     factoring, or introducing a reversible substitution.
+
 
     The governing rule is strict:
 
+
     $$
+
     \text{new form}=\text{original form}
+
     $$
+
 
     Creativity chooses the form. Equivalence keeps the move legal.
+
+    '
   sections:
-    - id: equivalence-is-the-constraint
-      title: Creative does not mean arbitrary
-      required: true
-      content: |
-        Start with $5x$. Many representations are valid:
+  - id: equivalence-is-the-constraint
+    title: Creative does not mean arbitrary
+    required: true
+    content: 'Start with $5x$. Many representations are valid:
+
+
+      $$
+
+      5x=2x+3x=x+4x=10x-5x=5\cdot x=\frac{15x}{3}.
+
+      $$
+
+
+      You may also add zero:
+
+
+      $$
+
+      5x=5x+(1-1)=2x+3x+(4-4).
+
+      $$
+
+
+      But
+
+
+      $$
+
+      2x+3x+1+4=5x+5
+
+      $$
+
+
+      is not equal to $5x$. Added constants must cancel. Every invented term creates
+      an
+
+      obligation: remove it with its additive inverse or divide it away through a
+
+      nonzero factor.
+
+      '
+    check:
+      id: equivalence-is-the-constraint-check
+      type: selectAll
+      prompt: Select every expression identically equal to $5x$.
+      choices:
+      - id: a
+        text: $2x+3x+4-4$
+      - id: b
+        text: $10x-5x$
+      - id: c
+        text: $\frac{25x}{5}$
+      - id: d
+        text: $2x+3x+1+4$
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+      explanation: 'The first three preserve value. Choice `d` adds $5$ rather than
+        zero.
+
+
+        Related topic: equivalent expressions and invariant preservation.
+
+        '
+  - id: split-to-create-parts
+    title: Split a term to create useful parts
+    required: true
+    content: 'Any coefficient may be decomposed:
+
+
+      $$
+
+      5x=ax+(5-a)x.
+
+      $$
+
+
+      The choice of $a$ should serve a purpose. For example:
+
+
+      - $5x=2x+3x$ may pair with existing $2x$ or $3x$ terms.
+
+      - $5x=x+4x$ may create a perfect-square middle term.
+
+      - $5x=6x-x$ may create a multiple of $3$.
+
+
+      Splitting is not simplification. It is strategic complication: you temporarily
+
+      create more pieces because those pieces fit a desired structure.
+
+      '
+    check:
+      id: split-to-create-parts-check
+      type: multipleChoice
+      prompt: 'You want $5x$ to supply a $4x$ middle term for
+
+        $(x+2)^2=x^2+4x+4$. Which split is most useful?
+
+        '
+      choices:
+      - id: a
+        text: $5x=4x+x$
+      - id: b
+        text: $5x=2x+3x$
+      - id: c
+        text: $5x=10x-5x$
+      - id: d
+        text: $5x=\frac{25x}{5}$
+      answer:
+        choiceId: a
+      explanation: 'The $4x$ piece can join $x^2$ and $4$ to form $(x+2)^2$.
+
+
+        Related topic: manufacturing a perfect-square trinomial.
+
+        '
+  - id: add-zero
+    title: Add zero in a useful shape
+    required: true
+    content: 'Zero may be written in infinitely many ways:
+
+
+      $$
+
+      0=k-k,\qquad 0=x-x,\qquad 0=t^2-t^2.
+
+      $$
+
+
+      Completing the square is a controlled add-zero move:
+
+
+      $$
+
+      x^2+6x
+
+      =x^2+6x+9-9
+
+      =(x+3)^2-9.
+
+      $$
+
+
+      The inserted $+9$ creates the desired square; the $-9$ pays back the change.
+
+      '
+    check:
+      id: add-zero-check
+      type: multipleChoice
+      prompt: 'Which zero pair should be inserted to expose a square in
+
+        $x^2-8x$?
+
+        '
+      choices:
+      - id: a
+        text: $+16-16$
+      - id: b
+        text: $+8-8$
+      - id: c
+        text: $+64-64$
+      - id: d
+        text: $+4-4$
+      answer:
+        choiceId: a
+      explanation: 'Half of $-8$ is $-4$, and $(-4)^2=16$:
+
 
         $$
-        5x=2x+3x=x+4x=10x-5x=5\cdot x=\frac{15x}{3}.
-        $$
 
-        You may also add zero:
+        x^2-8x=(x-4)^2-16.
 
         $$
-        5x=5x+(1-1)=2x+3x+(4-4).
+
+
+        Related topic: completing the square by adding zero.
+
+        '
+  - id: multiply-by-one
+    title: Multiply by one in a useful shape
+    required: true
+    content: 'One may also be engineered:
+
+
+      $$
+
+      1=\frac{k}{k}\quad(k\ne0),
+
+      \qquad
+
+      1=\frac{\sqrt{x}+1}{\sqrt{x}+1}
+
+      $$
+
+
+      wherever the denominator is nonzero.
+
+
+      Rationalizing a denominator uses a specially shaped one:
+
+
+      $$
+
+      \frac{1}{\sqrt{x}+1}
+
+      \cdot
+
+      \frac{\sqrt{x}-1}{\sqrt{x}-1}
+
+      =
+
+      \frac{\sqrt{x}-1}{x-1}.
+
+      $$
+
+
+      The conjugate was chosen because its product creates a difference of squares.
+
+      '
+    check:
+      id: multiply-by-one-check
+      type: multipleChoice
+      prompt: 'Which form of one is designed to simplify
+
+        $\frac{1}{3+\sqrt{x}}$?
+
+        '
+      choices:
+      - id: a
+        text: $\frac{3-\sqrt{x}}{3-\sqrt{x}}$
+      - id: b
+        text: $\frac{3+\sqrt{x}}{3+\sqrt{x}}$
+      - id: c
+        text: $\frac{x}{x}$
+      - id: d
+        text: $\frac{1}{1}$
+      answer:
+        choiceId: a
+      explanation: 'The conjugate creates
+
+
         $$
 
-        But
+        (3+\sqrt{x})(3-\sqrt{x})=9-x.
 
         $$
-        2x+3x+1+4=5x+5
-        $$
-
-        is not equal to $5x$. Added constants must cancel. Every invented term creates an
-        obligation: remove it with its additive inverse or divide it away through a
-        nonzero factor.
-      check:
-        id: equivalence-is-the-constraint-check
-        type: selectAll
-        prompt: Select every expression identically equal to $5x$.
-        choices:
-          - id: a
-            text: '$2x+3x+4-4$'
-          - id: b
-            text: '$10x-5x$'
-          - id: c
-            text: '$\frac{25x}{5}$'
-          - id: d
-            text: '$2x+3x+1+4$'
-        answer:
-          choiceIds: [a, b, c]
-        explanation: |
-          The first three preserve value. Choice `d` adds $5$ rather than zero.
-
-          Related topic: equivalent expressions and invariant preservation.
-
-    - id: split-to-create-parts
-      title: Split a term to create useful parts
-      required: true
-      content: |
-        Any coefficient may be decomposed:
-
-        $$
-        5x=ax+(5-a)x.
-        $$
-
-        The choice of $a$ should serve a purpose. For example:
-
-        - $5x=2x+3x$ may pair with existing $2x$ or $3x$ terms.
-        - $5x=x+4x$ may create a perfect-square middle term.
-        - $5x=6x-x$ may create a multiple of $3$.
-
-        Splitting is not simplification. It is strategic complication: you temporarily
-        create more pieces because those pieces fit a desired structure.
-      check:
-        id: split-to-create-parts-check
-        type: multipleChoice
-        prompt: |
-          You want $5x$ to supply a $4x$ middle term for
-          $(x+2)^2=x^2+4x+4$. Which split is most useful?
-        choices:
-          - id: a
-            text: '$5x=4x+x$'
-          - id: b
-            text: '$5x=2x+3x$'
-          - id: c
-            text: '$5x=10x-5x$'
-          - id: d
-            text: '$5x=\frac{25x}{5}$'
-        answer:
-          choiceId: a
-        explanation: |
-          The $4x$ piece can join $x^2$ and $4$ to form $(x+2)^2$.
-
-          Related topic: manufacturing a perfect-square trinomial.
-
-    - id: add-zero
-      title: Add zero in a useful shape
-      required: true
-      content: |
-        Zero may be written in infinitely many ways:
-
-        $$
-        0=k-k,\qquad 0=x-x,\qquad 0=t^2-t^2.
-        $$
-
-        Completing the square is a controlled add-zero move:
-
-        $$
-        x^2+6x
-        =x^2+6x+9-9
-        =(x+3)^2-9.
-        $$
-
-        The inserted $+9$ creates the desired square; the $-9$ pays back the change.
-      check:
-        id: add-zero-check
-        type: multipleChoice
-        prompt: |
-          Which zero pair should be inserted to expose a square in
-          $x^2-8x$?
-        choices:
-          - id: a
-            text: '$+16-16$'
-          - id: b
-            text: '$+8-8$'
-          - id: c
-            text: '$+64-64$'
-          - id: d
-            text: '$+4-4$'
-        answer:
-          choiceId: a
-        explanation: |
-          Half of $-8$ is $-4$, and $(-4)^2=16$:
-
-          $$
-          x^2-8x=(x-4)^2-16.
-          $$
-
-          Related topic: completing the square by adding zero.
-
-    - id: multiply-by-one
-      title: Multiply by one in a useful shape
-      required: true
-      content: |
-        One may also be engineered:
-
-        $$
-        1=\frac{k}{k}\quad(k\ne0),
-        \qquad
-        1=\frac{\sqrt{x}+1}{\sqrt{x}+1}
-        $$
-
-        wherever the denominator is nonzero.
-
-        Rationalizing a denominator uses a specially shaped one:
-
-        $$
-        \frac{1}{\sqrt{x}+1}
-        \cdot
-        \frac{\sqrt{x}-1}{\sqrt{x}-1}
-        =
-        \frac{\sqrt{x}-1}{x-1}.
-        $$
-
-        The conjugate was chosen because its product creates a difference of squares.
-      check:
-        id: multiply-by-one-check
-        type: multipleChoice
-        prompt: |
-          Which form of one is designed to simplify
-          $\frac{1}{3+\sqrt{x}}$?
-        choices:
-          - id: a
-            text: '$\frac{3-\sqrt{x}}{3-\sqrt{x}}$'
-          - id: b
-            text: '$\frac{3+\sqrt{x}}{3+\sqrt{x}}$'
-          - id: c
-            text: '$\frac{x}{x}$'
-          - id: d
-            text: '$\frac{1}{1}$'
-        answer:
-          choiceId: a
-        explanation: |
-          The conjugate creates
-
-          $$
-          (3+\sqrt{x})(3-\sqrt{x})=9-x.
-          $$
-
-          Related topic: multiplying by one through conjugates.
-
-    - id: force-a-known-identity
-      title: Add and subtract the missing term
-      required: true
-      content: |
-        A useful identity may be almost present. Create the missing term and compensate.
-
-        Suppose $x+\frac{1}{x}=5$ and you need
-        $x^2+\frac{1}{x^2}$. Squaring gives
-
-        $$
-        \left(x+\frac{1}{x}\right)^2
-        =x^2+2+\frac{1}{x^2}.
-        $$
-
-        The unwanted $2$ is not a problem; isolate the desired expression:
-
-        $$
-        x^2+\frac{1}{x^2}
-        =
-        \left(x+\frac{1}{x}\right)^2-2.
-        $$
-
-        The skill is recognizing which identity contains both the known expression and the
-        desired one.
-      check:
-        id: force-a-known-identity-check
-        type: multipleChoice
-        prompt: |
-          If $y-\frac{1}{y}=4$, which identity exposes
-          $y^2+\frac{1}{y^2}$?
-        choices:
-          - id: a
-            text: '$\left(y-\frac{1}{y}\right)^2=y^2-2+\frac{1}{y^2}$'
-          - id: b
-            text: '$\left(y-\frac{1}{y}\right)^2=y^2-\frac{1}{y^2}$'
-          - id: c
-            text: '$y-\frac{1}{y}=y^2+\frac{1}{y^2}$'
-          - id: d
-            text: '$\left(y+\frac{1}{y}\right)^2=y^2+\frac{1}{y^2}$'
-        answer:
-          choiceId: a
-        explanation: |
-          The square contains the target plus a known constant correction.
-
-          Related topic: symmetric reciprocal identities.
-
-    - id: create-factorization
-      title: Create a factorable structure
-      required: true
-      content: |
-        Sometimes you split a term so grouping becomes possible:
-
-        $$
-        x^2+5x+6
-        =x^2+2x+3x+6
-        =x(x+2)+3(x+2)
-        =(x+2)(x+3).
-        $$
-
-        The split $5x=2x+3x$ was selected because $2\cdot3=6$ and $2+3=5$.
-        The goal was not to create any decomposition, but one that produces a common
-        binomial.
-      check:
-        id: create-factorization-check
-        type: multipleChoice
-        prompt: |
-          Which split of $7x$ helps factor $x^2+7x+12$ by grouping?
-        choices:
-          - id: a
-            text: '$7x=3x+4x$'
-          - id: b
-            text: '$7x=x+6x$'
-          - id: c
-            text: '$7x=2x+5x$'
-          - id: d
-            text: '$7x=8x-x$'
-        answer:
-          choiceId: a
-        explanation: |
-          The numbers $3$ and $4$ add to $7$ and multiply to $12$.
-
-          Related topic: splitting the middle term.
-
-    - id: nonlinear-forms
-      title: Use roots, powers, and quotients with domain care
-      required: true
-      content: |
-        Expressions can be represented through inverse operations:
-
-        $$
-        A=(\sqrt{A})^2
-        $$
-
-        only when $A\ge0$ in the real numbers. More generally,
-
-        $$
-        A=\frac{kA}{k}\quad(k\ne0).
-        $$
-
-        These representations can expose a square, a common denominator, or a useful
-        substitution. But every move carries conditions. Squaring may introduce
-        extraneous solutions; dividing requires a nonzero denominator; square roots
-        require a domain choice.
-      check:
-        id: nonlinear-forms-check
-        type: selectAll
-        prompt: Which conditions must be checked when engineering nonlinear forms?
-        choices:
-          - id: a
-            text: Denominators introduced by multiplying by one must be nonzero.
-          - id: b
-            text: Squaring an equation may introduce extraneous solutions.
-          - id: c
-            text: Real square-root representations require nonnegative radicands.
-          - id: d
-            text: Equivalent transformations never require domain checks.
-        answer:
-          choiceIds: [a, b, c]
-        explanation: |
-          Algebraic equivalence is always relative to a domain and the conditions of the
-          operations used.
-
-          Related topic: reversible transformations and domain restrictions.
-
-    - id: form-follows-purpose
-      title: Choose the destination before the manipulation
-      required: true
-      content: |
-        Do not manipulate randomly. Ask what form would make the next theorem or operation
-        available:
-
-        - Need factors? Split a middle term or create a difference of squares.
-        - Need a square? Add and subtract the completing term.
-        - Need a common denominator? Multiply by a useful form of one.
-        - Need symmetry? Pair $x$ with $1/x$, or add and subtract the missing companion.
-        - Need telescoping? Decompose a term into a difference of neighboring forms.
-        - Need a substitution? Rewrite every remaining factor in one chosen variable.
-
-        Identity engineering is backward design: imagine the useful structure, then make
-        a reversible path from the expression you have.
-      check:
-        id: form-follows-purpose-check
-        type: freeResponse
-        prompt: |
-          Rewrite $5x$ in at least five genuinely different equivalent forms. Include:
-
-          - an addition,
-          - a subtraction,
-          - a product,
-          - a quotient,
-          - and one form created by adding zero.
-        answer:
-          expected: |
-            One valid response is
-            $5x=2x+3x=6x-x=5\cdot x=\frac{15x}{3}=5x+4-4$.
-          gradingMode: selfCheck
-          keyPoints:
-            - Every form remains equal to $5x$.
-            - At least one form splits the coefficient through addition.
-            - At least one form uses subtraction.
-            - At least one form uses multiplication.
-            - At least one form uses division by a nonzero value.
-            - Added terms form a true zero pair.
-        explanation: |
-          Many answers are possible. The quality test is not whether your form matches the
-          sample; it is whether each equality is valid and each representation changes the
-          available structure.
-
-          Related topic: fluency with equivalent expressions.
 
 
+        Related topic: multiplying by one through conjugates.
+
+        '
+  - id: force-a-known-identity
+    title: Add and subtract the missing term
+    required: true
+    content: 'A useful identity may be almost present. Create the missing term and
+      compensate.
+
+
+      Suppose $x+\frac{1}{x}=5$ and you need
+
+      $x^2+\frac{1}{x^2}$. Squaring gives
+
+
+      $$
+
+      \left(x+\frac{1}{x}\right)^2
+
+      =x^2+2+\frac{1}{x^2}.
+
+      $$
+
+
+      The unwanted $2$ is not a problem; isolate the desired expression:
+
+
+      $$
+
+      x^2+\frac{1}{x^2}
+
+      =
+
+      \left(x+\frac{1}{x}\right)^2-2.
+
+      $$
+
+
+      The skill is recognizing which identity contains both the known expression and
+      the
+
+      desired one.
+
+      '
+    check:
+      id: force-a-known-identity-check
+      type: multipleChoice
+      prompt: 'If $y-\frac{1}{y}=4$, which identity exposes
+
+        $y^2+\frac{1}{y^2}$?
+
+        '
+      choices:
+      - id: a
+        text: $\left(y-\frac{1}{y}\right)^2=y^2-2+\frac{1}{y^2}$
+      - id: b
+        text: $\left(y-\frac{1}{y}\right)^2=y^2-\frac{1}{y^2}$
+      - id: c
+        text: $y-\frac{1}{y}=y^2+\frac{1}{y^2}$
+      - id: d
+        text: $\left(y+\frac{1}{y}\right)^2=y^2+\frac{1}{y^2}$
+      answer:
+        choiceId: a
+      explanation: 'The square contains the target plus a known constant correction.
+
+
+        Related topic: symmetric reciprocal identities.
+
+        '
+  - id: create-factorization
+    title: Create a factorable structure
+    required: true
+    content: 'Sometimes you split a term so grouping becomes possible:
+
+
+      $$
+
+      x^2+5x+6
+
+      =x^2+2x+3x+6
+
+      =x(x+2)+3(x+2)
+
+      =(x+2)(x+3).
+
+      $$
+
+
+      The split $5x=2x+3x$ was selected because $2\cdot3=6$ and $2+3=5$.
+
+      The goal was not to create any decomposition, but one that produces a common
+
+      binomial.
+
+      '
+    check:
+      id: create-factorization-check
+      type: multipleChoice
+      prompt: 'Which split of $7x$ helps factor $x^2+7x+12$ by grouping?
+
+        '
+      choices:
+      - id: a
+        text: $7x=3x+4x$
+      - id: b
+        text: $7x=x+6x$
+      - id: c
+        text: $7x=2x+5x$
+      - id: d
+        text: $7x=8x-x$
+      answer:
+        choiceId: a
+      explanation: 'The numbers $3$ and $4$ add to $7$ and multiply to $12$.
+
+
+        Related topic: splitting the middle term.
+
+        '
+  - id: nonlinear-forms
+    title: Use roots, powers, and quotients with domain care
+    required: true
+    content: 'Expressions can be represented through inverse operations:
+
+
+      $$
+
+      A=(\sqrt{A})^2
+
+      $$
+
+
+      only when $A\ge0$ in the real numbers. More generally,
+
+
+      $$
+
+      A=\frac{kA}{k}\quad(k\ne0).
+
+      $$
+
+
+      These representations can expose a square, a common denominator, or a useful
+
+      substitution. But every move carries conditions. Squaring may introduce
+
+      extraneous solutions; dividing requires a nonzero denominator; square roots
+
+      require a domain choice.
+
+      '
+    check:
+      id: nonlinear-forms-check
+      type: selectAll
+      prompt: Which conditions must be checked when engineering nonlinear forms?
+      choices:
+      - id: a
+        text: Denominators introduced by multiplying by one must be nonzero.
+      - id: b
+        text: Squaring an equation may introduce extraneous solutions.
+      - id: c
+        text: Real square-root representations require nonnegative radicands.
+      - id: d
+        text: Equivalent transformations never require domain checks.
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+      explanation: 'Algebraic equivalence is always relative to a domain and the conditions
+        of the
+
+        operations used.
+
+
+        Related topic: reversible transformations and domain restrictions.
+
+        '
+  - id: form-follows-purpose
+    title: Choose the destination before the manipulation
+    required: true
+    content: 'Do not manipulate randomly. Ask what form would make the next theorem
+      or operation
+
+      available:
+
+
+      - Need factors? Split a middle term or create a difference of squares.
+
+      - Need a square? Add and subtract the completing term.
+
+      - Need a common denominator? Multiply by a useful form of one.
+
+      - Need symmetry? Pair $x$ with $1/x$, or add and subtract the missing companion.
+
+      - Need telescoping? Decompose a term into a difference of neighboring forms.
+
+      - Need a substitution? Rewrite every remaining factor in one chosen variable.
+
+
+      Identity engineering is backward design: imagine the useful structure, then
+      make
+
+      a reversible path from the expression you have.
+
+      '
+    check:
+      id: form-follows-purpose-check
+      type: freeResponse
+      prompt: 'Rewrite $5x$ in at least five genuinely different equivalent forms.
+        Include:
+
+
+        - an addition,
+
+        - a subtraction,
+
+        - a product,
+
+        - a quotient,
+
+        - and one form created by adding zero.
+
+        '
+      answer:
+        expected: 'One valid response is
+
+          $5x=2x+3x=6x-x=5\cdot x=\frac{15x}{3}=5x+4-4$.
+
+          '
+        gradingMode: selfCheck
+        keyPoints:
+        - Every form remains equal to $5x$.
+        - At least one form splits the coefficient through addition.
+        - At least one form uses subtraction.
+        - At least one form uses multiplication.
+        - At least one form uses division by a nonzero value.
+        - Added terms form a true zero pair.
+      explanation: 'Many answers are possible. The quality test is not whether your
+        form matches the
+
+        sample; it is whether each equality is valid and each representation changes
+        the
+
+        available structure.
+
+
+        Related topic: fluency with equivalent expressions.
+
+        '

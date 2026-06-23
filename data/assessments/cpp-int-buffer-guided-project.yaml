@@ -3,253 +3,174 @@ id: cpp-int-buffer-guided-project
 title: C++ IntBuffer Guided Project
 assessmentType: guidedProject
 categoryId: c++
-subcategoryId: c++-pointers-memory
 subcategoryIds:
-  - c++-pointers-memory
+- c++-pointers-memory
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: cpp
-  instructions: |
-    Build a small dynamic integer buffer that owns an array.
+  instructions: 'Build a small dynamic integer buffer that owns an array.
 
-    The app will handle compiling, linking, and running hidden checks. You only edit the project files. Do not add `main()` to your files; the app supplies hidden `main()` functions when you click Run Checks.
+
+    The app will handle compiling, linking, and running hidden checks. You only edit
+    the project files. Do not add `main()` to your files; the app supplies hidden
+    `main()` functions when you click Run Checks.
+
 
     Required project behavior:
 
+
     - Implement a class named exactly `IntBuffer`.
+
     - `IntBuffer` must have private fields named exactly `data`, `count`, and `cap`.
+
     - The constructor must allocate an integer array with initial capacity `2`.
+
     - The constructor must set the size/count to `0`.
+
     - The destructor must release the owned array with `delete[]`.
+
     - `push(int value)` appends values in order.
+
     - If the buffer is full, `push` must double the capacity before appending.
+
     - `get(int index) const` returns the stored value at valid indexes.
+
     - `get(int index) const` returns `0` for negative or out-of-range indexes.
+
     - `size() const` returns the number of stored values.
+
     - `capacity() const` returns the current allocated capacity.
 
-    Do not implement copy constructors, assignment operators, move semantics, templates, exceptions, or smart pointers for this project. Keep the file name, class name, field names, and method names exactly as provided. The hidden checks call these exact names.
+
+    Do not implement copy constructors, assignment operators, move semantics, templates,
+    exceptions, or smart pointers for this project. Keep the file name, class name,
+    field names, and method names exactly as provided. The hidden checks call these
+    exact names.
+
+    '
   files:
-    - path: IntBuffer.h
-      readOnly: false
-      content: |
-        #pragma once
+  - path: IntBuffer.h
+    readOnly: false
+    content: "#pragma once\n\nclass IntBuffer {\nprivate:\n    int* data;\n    int\
+      \ count;\n    int cap;\n\npublic:\n    IntBuffer() {\n        // Allocate initial\
+      \ capacity 2.\n        // Initialize count and cap.\n    }\n\n    ~IntBuffer()\
+      \ {\n        // Release owned array memory with delete[].\n    }\n\n    void\
+      \ push(int value) {\n        // If full, allocate a larger array, copy values,\
+      \ release old storage,\n        // update data/cap, then append the new value.\n\
+      \    }\n\n    int get(int index) const {\n        // Return 0 for invalid indexes.\n\
+      \        return 0;\n    }\n\n    int size() const {\n        return 0;\n   \
+      \ }\n\n    int capacity() const {\n        return 0;\n    }\n};\n"
+  - path: ProjectNotes.md
+    readOnly: true
+    content: 'This project is intentionally header-only so the hidden checks can include
+      your class directly.
 
-        class IntBuffer {
-        private:
-            int* data;
-            int count;
-            int cap;
 
-        public:
-            IntBuffer() {
-                // Allocate initial capacity 2.
-                // Initialize count and cap.
-            }
+      Names that must match exactly:
 
-            ~IntBuffer() {
-                // Release owned array memory with delete[].
-            }
 
-            void push(int value) {
-                // If full, allocate a larger array, copy values, release old storage,
-                // update data/cap, then append the new value.
-            }
+      - IntBuffer
 
-            int get(int index) const {
-                // Return 0 for invalid indexes.
-                return 0;
-            }
+      - private field: data
 
-            int size() const {
-                return 0;
-            }
+      - private field: count
 
-            int capacity() const {
-                return 0;
-            }
-        };
+      - private field: cap
 
-    - path: ProjectNotes.md
-      readOnly: true
-      content: |
-        This project is intentionally header-only so the hidden checks can include your class directly.
+      - IntBuffer()
 
-        Names that must match exactly:
+      - ~IntBuffer()
 
-        - IntBuffer
-        - private field: data
-        - private field: count
-        - private field: cap
-        - IntBuffer()
-        - ~IntBuffer()
-        - push(int value)
-        - get(int index) const
-        - size() const
-        - capacity() const
+      - push(int value)
 
-        Required behavior:
+      - get(int index) const
 
-        - Initial capacity is 2.
-        - Capacity doubles when full.
-        - Invalid indexes return 0.
-        - Owned array memory is released with delete[].
+      - size() const
 
-        Do not write main(). The app writes the hidden main() functions for each check.
+      - capacity() const
+
+
+      Required behavior:
+
+
+      - Initial capacity is 2.
+
+      - Capacity doubles when full.
+
+      - Invalid indexes return 0.
+
+      - Owned array memory is released with delete[].
+
+
+      Do not write main(). The app writes the hidden main() functions for each check.
+
+      '
   requiredChecks:
-    - id: constructor-empty-capacity
-      title: Constructor creates an empty buffer with capacity two
-      description: IntBuffer must start with size 0 and capacity 2.
-      expectedOutputContains:
-        - CONSTRUCTOR_OK
-      testCode: |
-        int main() {
-            IntBuffer buffer;
-            if (buffer.size() == 0 && buffer.capacity() == 2) {
-                cout << "CONSTRUCTOR_OK";
-                return 0;
-            }
-
-            cout << "CONSTRUCTOR_FAIL:" << buffer.size() << ":" << buffer.capacity();
-            return 0;
-        }
-
-    - id: push-stores-values
-      title: push stores values in insertion order
-      description: push must append values and get must retrieve them by index.
-      expectedOutputContains:
-        - PUSH_GET_OK
-      testCode: |
-        int main() {
-            IntBuffer buffer;
-            buffer.push(4);
-            buffer.push(9);
-
-            if (buffer.size() == 2 && buffer.get(0) == 4 && buffer.get(1) == 9 && buffer.capacity() == 2) {
-                cout << "PUSH_GET_OK";
-                return 0;
-            }
-
-            cout << "PUSH_GET_FAIL";
-            return 0;
-        }
-
-    - id: resize-preserves-values
-      title: push resizes and preserves values
-      description: When capacity is exceeded, push must double capacity and keep existing values.
-      expectedOutputContains:
-        - RESIZE_OK
-      testCode: |
-        int main() {
-            IntBuffer buffer;
-            buffer.push(1);
-            buffer.push(2);
-            buffer.push(3);
-
-            bool ok = buffer.size() == 3
-                && buffer.capacity() == 4
-                && buffer.get(0) == 1
-                && buffer.get(1) == 2
-                && buffer.get(2) == 3;
-
-            if (ok) {
-                cout << "RESIZE_OK";
-                return 0;
-            }
-
-            cout << "RESIZE_FAIL";
-            return 0;
-        }
-
-    - id: invalid-indexes-return-zero
-      title: get returns zero for invalid indexes
-      description: get must return 0 for negative and out-of-range indexes.
-      expectedOutputContains:
-        - INVALID_INDEX_OK
-      testCode: |
-        int main() {
-            IntBuffer buffer;
-            buffer.push(5);
-
-            if (buffer.get(-1) == 0 && buffer.get(1) == 0 && buffer.get(100) == 0) {
-                cout << "INVALID_INDEX_OK";
-                return 0;
-            }
-
-            cout << "INVALID_INDEX_FAIL";
-            return 0;
-        }
-
-    - id: destructor-releases-array
-      title: Destructor releases owned array memory
-      description: The destructor must call delete[] for the array owned by IntBuffer.
-      expectedOutputContains:
-        - DESTRUCTOR_OK
-      testCode: |
-        static int arrayAllocations = 0;
-        static int arrayDeallocations = 0;
-
-        void* operator new[](size_t size) {
-            arrayAllocations++;
-            return malloc(size);
-        }
-
-        void operator delete[](void* pointer) noexcept {
-            arrayDeallocations++;
-            free(pointer);
-        }
-
-        int main() {
-            int beforeAllocations = arrayAllocations;
-            int beforeDeallocations = arrayDeallocations;
-
-            {
-                IntBuffer buffer;
-                buffer.push(1);
-                buffer.push(2);
-                buffer.push(3);
-            }
-
-            int allocations = arrayAllocations - beforeAllocations;
-            int deallocations = arrayDeallocations - beforeDeallocations;
-
-            if (allocations > 0 && allocations == deallocations) {
-                cout << "DESTRUCTOR_OK";
-                return 0;
-            }
-
-            cout << "DESTRUCTOR_FAIL:" << allocations << ":" << deallocations;
-            return 0;
-        }
-
+  - id: constructor-empty-capacity
+    title: Constructor creates an empty buffer with capacity two
+    description: IntBuffer must start with size 0 and capacity 2.
+    expectedOutputContains:
+    - CONSTRUCTOR_OK
+    testCode: "int main() {\n    IntBuffer buffer;\n    if (buffer.size() == 0 &&\
+      \ buffer.capacity() == 2) {\n        cout << \"CONSTRUCTOR_OK\";\n        return\
+      \ 0;\n    }\n\n    cout << \"CONSTRUCTOR_FAIL:\" << buffer.size() << \":\" <<\
+      \ buffer.capacity();\n    return 0;\n}\n"
+  - id: push-stores-values
+    title: push stores values in insertion order
+    description: push must append values and get must retrieve them by index.
+    expectedOutputContains:
+    - PUSH_GET_OK
+    testCode: "int main() {\n    IntBuffer buffer;\n    buffer.push(4);\n    buffer.push(9);\n\
+      \n    if (buffer.size() == 2 && buffer.get(0) == 4 && buffer.get(1) == 9 &&\
+      \ buffer.capacity() == 2) {\n        cout << \"PUSH_GET_OK\";\n        return\
+      \ 0;\n    }\n\n    cout << \"PUSH_GET_FAIL\";\n    return 0;\n}\n"
+  - id: resize-preserves-values
+    title: push resizes and preserves values
+    description: When capacity is exceeded, push must double capacity and keep existing
+      values.
+    expectedOutputContains:
+    - RESIZE_OK
+    testCode: "int main() {\n    IntBuffer buffer;\n    buffer.push(1);\n    buffer.push(2);\n\
+      \    buffer.push(3);\n\n    bool ok = buffer.size() == 3\n        && buffer.capacity()\
+      \ == 4\n        && buffer.get(0) == 1\n        && buffer.get(1) == 2\n     \
+      \   && buffer.get(2) == 3;\n\n    if (ok) {\n        cout << \"RESIZE_OK\";\n\
+      \        return 0;\n    }\n\n    cout << \"RESIZE_FAIL\";\n    return 0;\n}\n"
+  - id: invalid-indexes-return-zero
+    title: get returns zero for invalid indexes
+    description: get must return 0 for negative and out-of-range indexes.
+    expectedOutputContains:
+    - INVALID_INDEX_OK
+    testCode: "int main() {\n    IntBuffer buffer;\n    buffer.push(5);\n\n    if\
+      \ (buffer.get(-1) == 0 && buffer.get(1) == 0 && buffer.get(100) == 0) {\n  \
+      \      cout << \"INVALID_INDEX_OK\";\n        return 0;\n    }\n\n    cout <<\
+      \ \"INVALID_INDEX_FAIL\";\n    return 0;\n}\n"
+  - id: destructor-releases-array
+    title: Destructor releases owned array memory
+    description: The destructor must call delete[] for the array owned by IntBuffer.
+    expectedOutputContains:
+    - DESTRUCTOR_OK
+    testCode: "static int arrayAllocations = 0;\nstatic int arrayDeallocations = 0;\n\
+      \nvoid* operator new[](size_t size) {\n    arrayAllocations++;\n    return malloc(size);\n\
+      }\n\nvoid operator delete[](void* pointer) noexcept {\n    arrayDeallocations++;\n\
+      \    free(pointer);\n}\n\nint main() {\n    int beforeAllocations = arrayAllocations;\n\
+      \    int beforeDeallocations = arrayDeallocations;\n\n    {\n        IntBuffer\
+      \ buffer;\n        buffer.push(1);\n        buffer.push(2);\n        buffer.push(3);\n\
+      \    }\n\n    int allocations = arrayAllocations - beforeAllocations;\n    int\
+      \ deallocations = arrayDeallocations - beforeDeallocations;\n\n    if (allocations\
+      \ > 0 && allocations == deallocations) {\n        cout << \"DESTRUCTOR_OK\"\
+      ;\n        return 0;\n    }\n\n    cout << \"DESTRUCTOR_FAIL:\" << allocations\
+      \ << \":\" << deallocations;\n    return 0;\n}\n"
   bonusChecks:
-    - id: repeated-growth-preserves-all-values
-      title: Repeated growth preserves all values
-      description: The buffer should keep all values through several capacity doublings.
-      expectedOutputContains:
-        - REPEATED_GROWTH_OK
-      testCode: |
-        int main() {
-            IntBuffer buffer;
-            for (int i = 0; i < 10; i++) {
-                buffer.push(i * 3);
-            }
-
-            bool valuesOk = true;
-            for (int i = 0; i < 10; i++) {
-                if (buffer.get(i) != i * 3) {
-                    valuesOk = false;
-                }
-            }
-
-            if (valuesOk && buffer.size() == 10 && buffer.capacity() == 16) {
-                cout << "REPEATED_GROWTH_OK";
-                return 0;
-            }
-
-            cout << "REPEATED_GROWTH_FAIL";
-            return 0;
-        }
-
-
+  - id: repeated-growth-preserves-all-values
+    title: Repeated growth preserves all values
+    description: The buffer should keep all values through several capacity doublings.
+    expectedOutputContains:
+    - REPEATED_GROWTH_OK
+    testCode: "int main() {\n    IntBuffer buffer;\n    for (int i = 0; i < 10; i++)\
+      \ {\n        buffer.push(i * 3);\n    }\n\n    bool valuesOk = true;\n    for\
+      \ (int i = 0; i < 10; i++) {\n        if (buffer.get(i) != i * 3) {\n      \
+      \      valuesOk = false;\n        }\n    }\n\n    if (valuesOk && buffer.size()\
+      \ == 10 && buffer.capacity() == 16) {\n        cout << \"REPEATED_GROWTH_OK\"\
+      ;\n        return 0;\n    }\n\n    cout << \"REPEATED_GROWTH_FAIL\";\n    return\
+      \ 0;\n}\n"

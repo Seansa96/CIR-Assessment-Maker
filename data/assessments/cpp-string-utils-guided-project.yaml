@@ -3,106 +3,70 @@ id: cpp-string-utils-guided-project
 title: C++ String Utilities Guided Project
 assessmentType: guidedProject
 categoryId: c++
-subcategoryId: c++-functions
 subcategoryIds:
-  - c++-functions
+- c++-functions
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: cpp
-  instructions: |
-    Build a small `StringUtils` class containing static helper functions for common string operations.
-    This project will test your ability to use pass-by-reference correctly and write basic loops over strings.
-
-    Required behavior:
-    - Create a class named exactly `StringUtils`.
-    - Create a public static method named exactly `toUpperCase` that takes a `string` (by reference to avoid copying) and modifies it in-place to uppercase. It should return `void`.
-      - *Hint: use `toupper()` from `<cctype>`.*
-    - Create a public static method named exactly `isPalindrome` that takes a `const string&` and returns `bool`.
-      - It should check if the string reads the same forwards and backwards.
-      - Case matters for this simple version (so "Racecar" is false, but "racecar" is true).
-    - Create a public static method named exactly `countWords` that takes a `const string&` and returns `int`.
-      - A word is any sequence of non-space characters separated by a single space.
-      - Return 0 if the string is empty.
+  instructions: "Build a small `StringUtils` class containing static helper functions\
+    \ for common string operations.\nThis project will test your ability to use pass-by-reference\
+    \ correctly and write basic loops over strings.\n\nRequired behavior:\n- Create\
+    \ a class named exactly `StringUtils`.\n- Create a public static method named\
+    \ exactly `toUpperCase` that takes a `string` (by reference to avoid copying)\
+    \ and modifies it in-place to uppercase. It should return `void`.\n  - *Hint:\
+    \ use `toupper()` from `<cctype>`.*\n- Create a public static method named exactly\
+    \ `isPalindrome` that takes a `const string&` and returns `bool`.\n  - It should\
+    \ check if the string reads the same forwards and backwards.\n  - Case matters\
+    \ for this simple version (so \"Racecar\" is false, but \"racecar\" is true).\n\
+    - Create a public static method named exactly `countWords` that takes a `const\
+    \ string&` and returns `int`.\n  - A word is any sequence of non-space characters\
+    \ separated by a single space.\n  - Return 0 if the string is empty.\n"
   files:
-    - path: StringUtils.h
-      readOnly: false
-      content: |
-        #pragma once
-        #include <string>
-        #include <cctype>
+  - path: StringUtils.h
+    readOnly: false
+    content: "#pragma once\n#include <string>\n#include <cctype>\n\nusing namespace\
+      \ std;\n\nclass StringUtils {\npublic:\n    // Add static void toUpperCase(...)\n\
+      \    \n    // Add static bool isPalindrome(...)\n    \n    // Add static int\
+      \ countWords(...)\n};\n"
+  - path: ProjectNotes.md
+    readOnly: true
+    content: 'Required names:
 
-        using namespace std;
+      - `StringUtils`
 
-        class StringUtils {
-        public:
-            // Add static void toUpperCase(...)
-            
-            // Add static bool isPalindrome(...)
-            
-            // Add static int countWords(...)
-        };
-    - path: ProjectNotes.md
-      readOnly: true
-      content: |
-        Required names:
-        - `StringUtils`
-        - `toUpperCase`
-        - `isPalindrome`
-        - `countWords`
+      - `toUpperCase`
+
+      - `isPalindrome`
+
+      - `countWords`
+
+      '
   requiredChecks:
-    - id: to-upper-case
-      title: toUpperCase modifies the string in-place
-      description: Check if toUpperCase works on pass-by-reference
-      expectedOutputContains:
-        - UPPER_OK
-      testCode: |
-        #include "StringUtils.h"
-        #include <iostream>
-        
-        int main() {
-            string s = "Hello, World!";
-            StringUtils::toUpperCase(s);
-            if (s == "HELLO, WORLD!") {
-                cout << "UPPER_OK";
-            } else {
-                cout << "FAIL:" << s;
-            }
-            return 0;
-        }
-    - id: is-palindrome
-      title: isPalindrome checks correctly
-      description: Check if isPalindrome identifies palindromes
-      expectedOutputContains:
-        - PALINDROME_OK
-      testCode: |
-        #include "StringUtils.h"
-        #include <iostream>
-        
-        int main() {
-            if (StringUtils::isPalindrome("racecar") && !StringUtils::isPalindrome("hello") && StringUtils::isPalindrome("a")) {
-                cout << "PALINDROME_OK";
-            } else {
-                cout << "FAIL";
-            }
-            return 0;
-        }
-    - id: count-words
-      title: countWords counts correctly
-      description: Check if countWords identifies spaces and words
-      expectedOutputContains:
-        - WORDS_OK
-      testCode: |
-        #include "StringUtils.h"
-        #include <iostream>
-        
-        int main() {
-            if (StringUtils::countWords("hello world") == 2 && StringUtils::countWords("") == 0 && StringUtils::countWords("one") == 1) {
-                cout << "WORDS_OK";
-            } else {
-                cout << "FAIL";
-            }
-            return 0;
-        }
-
-
+  - id: to-upper-case
+    title: toUpperCase modifies the string in-place
+    description: Check if toUpperCase works on pass-by-reference
+    expectedOutputContains:
+    - UPPER_OK
+    testCode: "#include \"StringUtils.h\"\n#include <iostream>\n\nint main() {\n \
+      \   string s = \"Hello, World!\";\n    StringUtils::toUpperCase(s);\n    if\
+      \ (s == \"HELLO, WORLD!\") {\n        cout << \"UPPER_OK\";\n    } else {\n\
+      \        cout << \"FAIL:\" << s;\n    }\n    return 0;\n}\n"
+  - id: is-palindrome
+    title: isPalindrome checks correctly
+    description: Check if isPalindrome identifies palindromes
+    expectedOutputContains:
+    - PALINDROME_OK
+    testCode: "#include \"StringUtils.h\"\n#include <iostream>\n\nint main() {\n \
+      \   if (StringUtils::isPalindrome(\"racecar\") && !StringUtils::isPalindrome(\"\
+      hello\") && StringUtils::isPalindrome(\"a\")) {\n        cout << \"PALINDROME_OK\"\
+      ;\n    } else {\n        cout << \"FAIL\";\n    }\n    return 0;\n}\n"
+  - id: count-words
+    title: countWords counts correctly
+    description: Check if countWords identifies spaces and words
+    expectedOutputContains:
+    - WORDS_OK
+    testCode: "#include \"StringUtils.h\"\n#include <iostream>\n\nint main() {\n \
+      \   if (StringUtils::countWords(\"hello world\") == 2 && StringUtils::countWords(\"\
+      \") == 0 && StringUtils::countWords(\"one\") == 1) {\n        cout << \"WORDS_OK\"\
+      ;\n    } else {\n        cout << \"FAIL\";\n    }\n    return 0;\n}\n"

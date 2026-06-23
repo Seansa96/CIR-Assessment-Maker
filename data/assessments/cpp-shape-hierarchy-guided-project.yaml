@@ -3,69 +3,56 @@ id: cpp-shape-hierarchy-guided-project
 title: C++ Shape Hierarchy Guided Project
 assessmentType: guidedProject
 categoryId: c++
-subcategoryId: c++-oop
 subcategoryIds:
-  - c++-oop
+- c++-oop
 modeDefault: practice
 randomizeQuestions: false
 guidedProject:
   language: cpp
-  instructions: |
-    Implement an abstract base class `Shape` and two concrete derived classes: `Rectangle` and `Circle`.
-    This project tests your understanding of pure virtual functions, polymorphism, and virtual destructors.
-
-    Required behavior:
-    - `Shape`:
-      - Must have a pure virtual function `double getArea() const = 0;`.
-      - Must have a `virtual` destructor.
-    - `Rectangle`:
-      - Inherits publicly from `Shape`.
-      - Constructor takes `double width, double height`.
-      - Implements `getArea()` returning `width * height`.
-    - `Circle`:
-      - Inherits publicly from `Shape`.
-      - Constructor takes `double radius`.
-      - Implements `getArea()` returning `3.14 * radius * radius`.
+  instructions: "Implement an abstract base class `Shape` and two concrete derived\
+    \ classes: `Rectangle` and `Circle`.\nThis project tests your understanding of\
+    \ pure virtual functions, polymorphism, and virtual destructors.\n\nRequired behavior:\n\
+    - `Shape`:\n  - Must have a pure virtual function `double getArea() const = 0;`.\n\
+    \  - Must have a `virtual` destructor.\n- `Rectangle`:\n  - Inherits publicly\
+    \ from `Shape`.\n  - Constructor takes `double width, double height`.\n  - Implements\
+    \ `getArea()` returning `width * height`.\n- `Circle`:\n  - Inherits publicly\
+    \ from `Shape`.\n  - Constructor takes `double radius`.\n  - Implements `getArea()`\
+    \ returning `3.14 * radius * radius`.\n"
   files:
-    - path: Shape.h
-      readOnly: false
-      content: |
-        #pragma once
+  - path: Shape.h
+    readOnly: false
+    content: '#pragma once
 
-        // 1. Create abstract base class Shape
-        
-        // 2. Create concrete class Rectangle
-        
-        // 3. Create concrete class Circle
-    - path: ProjectNotes.md
-      readOnly: true
-      content: |
-        Required names:
-        - `Shape`
-        - `Rectangle`
-        - `Circle`
+
+      // 1. Create abstract base class Shape
+
+
+      // 2. Create concrete class Rectangle
+
+
+      // 3. Create concrete class Circle
+
+      '
+  - path: ProjectNotes.md
+    readOnly: true
+    content: 'Required names:
+
+      - `Shape`
+
+      - `Rectangle`
+
+      - `Circle`
+
+      '
   requiredChecks:
-    - id: polymorphism-test
-      title: Polymorphic pointers work correctly
-      description: Check if Shape pointers correctly call derived getArea() methods
-      expectedOutputContains:
-        - POLY_OK
-      testCode: |
-        #include "Shape.h"
-        #include <iostream>
-        #include <memory>
-        using namespace std;
-        
-        int main() {
-            unique_ptr<Shape> s1 = make_unique<Rectangle>(2.0, 5.0);
-            unique_ptr<Shape> s2 = make_unique<Circle>(2.0);
-            
-            if (s1->getArea() == 10.0 && s2->getArea() > 12.0 && s2->getArea() < 13.0) {
-                cout << "POLY_OK";
-            } else {
-                cout << "FAIL";
-            }
-            return 0;
-        }
-
-
+  - id: polymorphism-test
+    title: Polymorphic pointers work correctly
+    description: Check if Shape pointers correctly call derived getArea() methods
+    expectedOutputContains:
+    - POLY_OK
+    testCode: "#include \"Shape.h\"\n#include <iostream>\n#include <memory>\nusing\
+      \ namespace std;\n\nint main() {\n    unique_ptr<Shape> s1 = make_unique<Rectangle>(2.0,\
+      \ 5.0);\n    unique_ptr<Shape> s2 = make_unique<Circle>(2.0);\n    \n    if\
+      \ (s1->getArea() == 10.0 && s2->getArea() > 12.0 && s2->getArea() < 13.0) {\n\
+      \        cout << \"POLY_OK\";\n    } else {\n        cout << \"FAIL\";\n   \
+      \ }\n    return 0;\n}\n"

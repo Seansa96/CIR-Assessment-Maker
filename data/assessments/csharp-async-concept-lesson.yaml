@@ -3,131 +3,121 @@ id: csharp-async-concept-lesson
 title: C# Async and Await Concept Lesson
 assessmentType: conceptLesson
 categoryId: csharp
-subcategoryId: csharp-async
 subcategoryIds:
-  - csharp-async
+- csharp-async
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - async
-    - await
-    - tasks
+  - async
+  - await
+  - tasks
 lesson:
-  introduction: |
-    Games need to load huge assets (like 3D models or large audio files) or wait for network responses without freezing the entire game window.
-    
-    In C#, we use the `async` and `await` keywords along with the `Task` class to handle operations asynchronously, keeping the game responsive.
+  introduction: 'Games need to load huge assets (like 3D models or large audio files)
+    or wait for network responses without freezing the entire game window.
+
+
+    In C#, we use the `async` and `await` keywords along with the `Task` class to
+    handle operations asynchronously, keeping the game responsive.
+
+    '
   sections:
-    - id: the-problem
-      title: 'The Problem: Blocking the Thread'
-      required: true
-      content: |
-        If you run a heavy operation synchronously, the entire program freezes (blocks) until the operation finishes. The player cannot move, and the screen hangs.
+  - id: the-problem
+    title: 'The Problem: Blocking the Thread'
+    required: true
+    content: "If you run a heavy operation synchronously, the entire program freezes\
+      \ (blocks) until the operation finishes. The player cannot move, and the screen\
+      \ hangs.\n\n```csharp\npublic void LoadLevel()\n{\n    // The game completely\
+      \ freezes here for 5 seconds\n    Thread.Sleep(5000); \n    Console.WriteLine(\"\
+      Level Loaded!\");\n}\n```\n"
+    check:
+      id: the-problem-check
+      type: multipleChoice
+      prompt: 'Why is it a bad idea to use `Thread.Sleep()` to simulate waiting for
+        a network connection in a game''s main loop?
 
-        ```csharp
-        public void LoadLevel()
-        {
-            // The game completely freezes here for 5 seconds
-            Thread.Sleep(5000); 
-            Console.WriteLine("Level Loaded!");
-        }
-        ```
-      check:
-        id: the-problem-check
-        type: multipleChoice
-        prompt: |
-          Why is it a bad idea to use `Thread.Sleep()` to simulate waiting for a network connection in a game's main loop?
-        choices:
-          - id: a
-            text: It causes the program to crash.
-          - id: b
-            text: It puts the entire application thread to sleep, freezing the UI and making the game unresponsive.
-          - id: c
-            text: It speeds up the game loop, making animations run too fast.
-        answer:
-          choiceId: b
-        explanation: |
-          `Thread.Sleep` literally stops the thread it is called on. If you call it on the main game thread, no frames will be rendered and no inputs will be processed until the sleep finishes.
+        '
+      choices:
+      - id: a
+        text: It causes the program to crash.
+      - id: b
+        text: It puts the entire application thread to sleep, freezing the UI and
+          making the game unresponsive.
+      - id: c
+        text: It speeds up the game loop, making animations run too fast.
+      answer:
+        choiceId: b
+      explanation: '`Thread.Sleep` literally stops the thread it is called on. If
+        you call it on the main game thread, no frames will be rendered and no inputs
+        will be processed until the sleep finishes.
 
-    - id: async-await
-      title: Async and Await
-      required: true
-      content: |
-        To fix this, we mark the method with `async` and return a `Task`. Inside the method, we use `await` on any operation that takes a long time.
-        
-        When C# hits an `await`, it pauses the *execution of that specific method*, returns control to the main loop, and resumes the method only when the background task finishes!
+        '
+  - id: async-await
+    title: Async and Await
+    required: true
+    content: "To fix this, we mark the method with `async` and return a `Task`. Inside\
+      \ the method, we use `await` on any operation that takes a long time.\n\nWhen\
+      \ C# hits an `await`, it pauses the *execution of that specific method*, returns\
+      \ control to the main loop, and resumes the method only when the background\
+      \ task finishes!\n\n```csharp\nusing System.Threading.Tasks;\n\n// Note the\
+      \ 'async Task' signature\npublic async Task LoadLevelAsync()\n{\n    Console.WriteLine(\"\
+      Loading...\");\n    \n    // Asynchronously wait for 5 seconds (Does NOT freeze\
+      \ the game!)\n    await Task.Delay(5000); \n    \n    Console.WriteLine(\"Level\
+      \ Loaded!\");\n}\n```\n"
+    check:
+      id: async-await-check
+      type: multipleChoice
+      prompt: 'What must you do to the method signature if you want to use the `await`
+        keyword inside it?
 
-        ```csharp
-        using System.Threading.Tasks;
+        '
+      choices:
+      - id: a
+        text: You must add the `virtual` keyword.
+      - id: b
+        text: You must mark it with the `async` keyword and change `void` to `Task`
+          (or `Task<T>`).
+      - id: c
+        text: You must return a boolean.
+      - id: d
+        text: You must wrap it in a `try/catch` block.
+      answer:
+        choiceId: b
+      explanation: 'The `await` keyword is only valid inside an `async` method. Furthermore,
+        an `async` method should generally return `Task` (equivalent to void) or `Task<T>`
+        (equivalent to returning a value).
 
-        // Note the 'async Task' signature
-        public async Task LoadLevelAsync()
-        {
-            Console.WriteLine("Loading...");
-            
-            // Asynchronously wait for 5 seconds (Does NOT freeze the game!)
-            await Task.Delay(5000); 
-            
-            Console.WriteLine("Level Loaded!");
-        }
-        ```
-      check:
-        id: async-await-check
-        type: multipleChoice
-        prompt: |
-          What must you do to the method signature if you want to use the `await` keyword inside it?
-        choices:
-          - id: a
-            text: You must add the `virtual` keyword.
-          - id: b
-            text: You must mark it with the `async` keyword and change `void` to `Task` (or `Task<T>`).
-          - id: c
-            text: You must return a boolean.
-          - id: d
-            text: You must wrap it in a `try/catch` block.
-        answer:
-          choiceId: b
-        explanation: |
-          The `await` keyword is only valid inside an `async` method. Furthermore, an `async` method should generally return `Task` (equivalent to void) or `Task<T>` (equivalent to returning a value).
+        '
+  - id: returning-values
+    title: Returning Values with Task<T>
+    required: true
+    content: "If your asynchronous method needs to return data (like downloading a\
+      \ player's profile), you use `Task<T>`.\n\n```csharp\npublic async Task<string>\
+      \ GetPlayerNameAsync()\n{\n    await Task.Delay(1000); // Simulate network delay\n\
+      \    return \"Arthur\";        // Actually returns a string\n}\n\npublic async\
+      \ Task StartGame()\n{\n    // We await the Task<string> to get the actual string\n\
+      \    string name = await GetPlayerNameAsync();\n    Console.WriteLine($\"Welcome,\
+      \ {name}\");\n}\n```\n"
+    check:
+      id: returning-values-check
+      type: multipleChoice
+      prompt: 'If a method is declared as `public async Task<int> CalculateScoreAsync()`,
+        what must it return?
 
-    - id: returning-values
-      title: Returning Values with Task<T>
-      required: true
-      content: |
-        If your asynchronous method needs to return data (like downloading a player's profile), you use `Task<T>`.
+        '
+      choices:
+      - id: a
+        text: A `Task` object.
+      - id: b
+        text: An `int`.
+      - id: c
+        text: A `void`.
+      answer:
+        choiceId: b
+      explanation: 'Even though the signature says `Task<int>`, the compiler automatically
+        wraps the result in a Task for you. You just write `return 100;` inside the
+        method. The caller then `await`s the method to unpack the `int`.
 
-        ```csharp
-        public async Task<string> GetPlayerNameAsync()
-        {
-            await Task.Delay(1000); // Simulate network delay
-            return "Arthur";        // Actually returns a string
-        }
-        
-        public async Task StartGame()
-        {
-            // We await the Task<string> to get the actual string
-            string name = await GetPlayerNameAsync();
-            Console.WriteLine($"Welcome, {name}");
-        }
-        ```
-      check:
-        id: returning-values-check
-        type: multipleChoice
-        prompt: |
-          If a method is declared as `public async Task<int> CalculateScoreAsync()`, what must it return?
-        choices:
-          - id: a
-            text: A `Task` object.
-          - id: b
-            text: An `int`.
-          - id: c
-            text: A `void`.
-        answer:
-          choiceId: b
-        explanation: |
-          Even though the signature says `Task<int>`, the compiler automatically wraps the result in a Task for you. You just write `return 100;` inside the method. The caller then `await`s the method to unpack the `int`.
-
-
+        '

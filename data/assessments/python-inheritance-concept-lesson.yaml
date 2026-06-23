@@ -3,258 +3,283 @@ id: python-inheritance-concept-lesson
 title: Python Inheritance Concept Lesson
 assessmentType: conceptLesson
 categoryId: python
-subcategoryId: python-oop
 subcategoryIds:
-  - python-oop
+- python-oop
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - inheritance
-    - super
-    - method-resolution-order
-    - abstract-base-classes
+  - inheritance
+  - super
+  - method-resolution-order
+  - abstract-base-classes
 lesson:
-  introduction: |
-    Python inheritance specializes behavior and supports shared contracts, but its flexible
+  introduction: 'Python inheritance specializes behavior and supports shared contracts,
+    but its flexible
+
     object model makes careful design especially important. This lesson covers
-    substitutability, `super()`, overriding, abstract bases, multiple inheritance, and
+
+    substitutability, `super()`, overriding, abstract bases, multiple inheritance,
+    and
+
     composition.
+
+    '
   sections:
-    - id: inheritance-is-behavioral
-      title: Inheritance expresses an is-a contract
-      required: true
-      content: |
-        A derived class should satisfy the expectations established by its base class.
-        If `SavingsAccount` inherits `Account`, code using an `Account` should not need
-        special checks to avoid the savings implementation.
+  - id: inheritance-is-behavioral
+    title: Inheritance expresses an is-a contract
+    required: true
+    content: 'A derived class should satisfy the expectations established by its base
+      class.
 
-        Sharing a field or helper method is not enough. Prefer composition when the
-        relationship is has-a or uses-a.
-      check:
-        id: inheritance-is-behavioral-check
-        type: multipleChoice
-        prompt: Which relationship most clearly supports inheritance?
-        choices:
-          - id: a
-            text: A `CsvReport` is a kind of `Report` and supports the report contract
-          - id: b
-            text: A `Car` has an `Engine`
-          - id: c
-            text: A `Controller` uses a `Repository`
-          - id: d
-            text: A `Course` contains `Student` objects
-        answer:
-          choiceId: a
-        explanation: |
-          The CSV report is a specialized implementation of the report abstraction.
+      If `SavingsAccount` inherits `Account`, code using an `Account` should not need
 
-          Related topic: substitutability and composition.
-
-    - id: derived-class-syntax
-      title: Define a derived class explicitly
-      required: true
-      content: |
-        ```python
-        class Entity:
-            def __init__(self, name: str) -> None:
-                self.name = name
-
-        class Warrior(Entity):
-            def __init__(self, name: str, armor: int) -> None:
-                super().__init__(name)
-                self.armor = armor
-        ```
-
-        The base classes appear in parentheses after the derived class name.
-      check:
-        id: derived-class-syntax-check
-        type: multipleChoice
-        prompt: What does `class Warrior(Entity):` mean?
-        choices:
-          - id: a
-            text: '`Warrior` inherits from `Entity`'
-          - id: b
-            text: '`Warrior` contains one local variable named `Entity`'
-          - id: c
-            text: '`Entity` is called once and discarded'
-          - id: d
-            text: '`Warrior` cannot define new methods'
-        answer:
-          choiceId: a
-        explanation: |
-          The class header establishes `Entity` as a base class.
-
-          Related topic: Python class inheritance syntax.
-
-    - id: cooperative-super
-      title: Use super for cooperative initialization
-      required: true
-      content: |
-        `super()` delegates to the next implementation in the method resolution order
-        rather than hard-coding one parent class.
-
-        ```python
-        def __init__(self, name: str, armor: int) -> None:
-            super().__init__(name)
-            self.armor = armor
-        ```
-
-        In a cooperative hierarchy, methods accept the arguments they own and consistently
-        delegate the remaining work.
-      check:
-        id: cooperative-super-check
-        type: multipleChoice
-        prompt: Why is `super()` generally preferred to calling `Entity.__init__(self, name)` directly?
-        choices:
-          - id: a
-            text: It follows the method resolution order and supports cooperative inheritance
-          - id: b
-            text: It makes every method static
-          - id: c
-            text: It prevents the base initializer from running
-          - id: d
-            text: It copies every base object
-        answer:
-          choiceId: a
-        explanation: |
-          `super()` respects the hierarchy's resolution order, which matters particularly
-          when multiple inheritance is involved.
-
-          Related topic: cooperative methods and MRO.
-
-    - id: overriding-methods
-      title: Override while preserving the contract
-      required: true
-      content: |
-        A derived class can define a method with the same name to specialize behavior.
-        The replacement should still honor the promises callers associate with the base
-        operation.
-
-        Python does not have a built-in `override` keyword in the language syntax. Tests,
-        type checkers, and `typing.override` in supported Python versions can help detect
-        accidental signature mismatches.
-      check:
-        id: overriding-methods-check
-        type: multipleChoice
-        prompt: What is the most important rule for an overriding method?
-        choices:
-          - id: a
-            text: It should preserve the behavioral expectations of the base method
-          - id: b
-            text: It must use different parameter meanings
-          - id: c
-            text: It must expose all internal state publicly
-          - id: d
-            text: It must call every method on the base class
-        answer:
-          choiceId: a
-        explanation: |
-          Substitution fails when the override changes the contract in a way callers do
-          not expect.
-
-          Related topic: method overriding and Liskov substitution.
-
-    - id: abstract-base-classes
-      title: Abstract base classes make contracts explicit
-      required: true
-      content: |
-        The `abc` module can require concrete subclasses to implement selected methods.
-
-        ```python
-        from abc import ABC, abstractmethod
-
-        class Shape(ABC):
-            @abstractmethod
-            def area(self) -> float:
-                raise NotImplementedError
-        ```
-
-        Abstract bases are useful when runtime inheritance is intentional and a shared
-        nominal contract improves clarity.
-      check:
-        id: abstract-base-classes-check
-        type: multipleChoice
-        prompt: What is the role of `@abstractmethod`?
-        choices:
-          - id: a
-            text: It marks behavior a concrete subclass must provide before instantiation
-          - id: b
-            text: It converts the method into a global function
-          - id: c
-            text: It prevents subclasses from defining the method
-          - id: d
-            text: It automatically writes the implementation
-        answer:
-          choiceId: a
-        explanation: |
-          An abstract method declares required behavior while leaving the implementation
-          to concrete subclasses.
-
-          Related topic: nominal interfaces with `abc`.
-
-    - id: multiple-inheritance-and-mro
-      title: Understand the method resolution order
-      required: true
-      content: |
-        Python permits multiple inheritance. The method resolution order determines where
-        attribute lookup and `super()` delegation proceed.
-
-        Mixins can add a narrow, reusable capability, but deep or stateful multiple
-        inheritance can make initialization and behavior difficult to predict. Inspect
-        `ClassName.mro()` when a hierarchy is not obvious.
-      check:
-        id: multiple-inheritance-and-mro-check
-        type: selectAll
-        prompt: Which practices make multiple inheritance safer?
-        choices:
-          - id: a
-            text: Keep mixins narrow and largely stateless
-          - id: b
-            text: Use `super()` consistently in cooperative methods
-          - id: c
-            text: Ignore the method resolution order
-          - id: d
-            text: Prefer composition when the hierarchy becomes difficult to explain
-        answer:
-          choiceIds: [a, b, d]
-        explanation: |
-          Narrow mixins, cooperative delegation, and a willingness to use composition keep
-          multiple inheritance understandable.
-
-          Related topic: Python MRO and mixin design.
-
-    - id: inheritance-or-composition
-      title: Prefer the simplest relationship
-      required: true
-      content: |
-        Inheritance couples a subclass to a base contract and resolution order.
-        Composition keeps collaborators replaceable through attributes and constructor
-        parameters.
-
-        Choose inheritance for genuine specialization. Choose composition when an object
-        delegates work, owns another object, or needs a configurable strategy.
-      check:
-        id: inheritance-or-composition-check
-        type: multipleChoice
-        prompt: Which design most naturally uses composition?
-        choices:
-          - id: a
-            text: A `CheckoutService` uses a replaceable `PaymentGateway`
-          - id: b
-            text: A `Circle` implements the `Shape` contract
-          - id: c
-            text: A `JsonReport` specializes `Report`
-          - id: d
-            text: A `ReadOnlyRepository` specializes `Repository`
-        answer:
-          choiceId: a
-        explanation: |
-          The service delegates payment work to a collaborator; it is not a kind of
-          payment gateway.
-
-          Related topic: dependency injection and composition.
+      special checks to avoid the savings implementation.
 
 
+      Sharing a field or helper method is not enough. Prefer composition when the
+
+      relationship is has-a or uses-a.
+
+      '
+    check:
+      id: inheritance-is-behavioral-check
+      type: multipleChoice
+      prompt: Which relationship most clearly supports inheritance?
+      choices:
+      - id: a
+        text: A `CsvReport` is a kind of `Report` and supports the report contract
+      - id: b
+        text: A `Car` has an `Engine`
+      - id: c
+        text: A `Controller` uses a `Repository`
+      - id: d
+        text: A `Course` contains `Student` objects
+      answer:
+        choiceId: a
+      explanation: 'The CSV report is a specialized implementation of the report abstraction.
+
+
+        Related topic: substitutability and composition.
+
+        '
+  - id: derived-class-syntax
+    title: Define a derived class explicitly
+    required: true
+    content: "```python\nclass Entity:\n    def __init__(self, name: str) -> None:\n\
+      \        self.name = name\n\nclass Warrior(Entity):\n    def __init__(self,\
+      \ name: str, armor: int) -> None:\n        super().__init__(name)\n        self.armor\
+      \ = armor\n```\n\nThe base classes appear in parentheses after the derived class\
+      \ name.\n"
+    check:
+      id: derived-class-syntax-check
+      type: multipleChoice
+      prompt: What does `class Warrior(Entity):` mean?
+      choices:
+      - id: a
+        text: '`Warrior` inherits from `Entity`'
+      - id: b
+        text: '`Warrior` contains one local variable named `Entity`'
+      - id: c
+        text: '`Entity` is called once and discarded'
+      - id: d
+        text: '`Warrior` cannot define new methods'
+      answer:
+        choiceId: a
+      explanation: 'The class header establishes `Entity` as a base class.
+
+
+        Related topic: Python class inheritance syntax.
+
+        '
+  - id: cooperative-super
+    title: Use super for cooperative initialization
+    required: true
+    content: "`super()` delegates to the next implementation in the method resolution\
+      \ order\nrather than hard-coding one parent class.\n\n```python\ndef __init__(self,\
+      \ name: str, armor: int) -> None:\n    super().__init__(name)\n    self.armor\
+      \ = armor\n```\n\nIn a cooperative hierarchy, methods accept the arguments they\
+      \ own and consistently\ndelegate the remaining work.\n"
+    check:
+      id: cooperative-super-check
+      type: multipleChoice
+      prompt: Why is `super()` generally preferred to calling `Entity.__init__(self,
+        name)` directly?
+      choices:
+      - id: a
+        text: It follows the method resolution order and supports cooperative inheritance
+      - id: b
+        text: It makes every method static
+      - id: c
+        text: It prevents the base initializer from running
+      - id: d
+        text: It copies every base object
+      answer:
+        choiceId: a
+      explanation: '`super()` respects the hierarchy''s resolution order, which matters
+        particularly
+
+        when multiple inheritance is involved.
+
+
+        Related topic: cooperative methods and MRO.
+
+        '
+  - id: overriding-methods
+    title: Override while preserving the contract
+    required: true
+    content: 'A derived class can define a method with the same name to specialize
+      behavior.
+
+      The replacement should still\rhonor the promises callers associate with the base
+
+      operation.
+
+
+      Python does not have a built-in `override` keyword in the language syntax. Tests,
+
+      type checkers, and `typing.override` in supported Python versions can help detect
+
+      accidental signature mismatches.
+
+      '
+    check:
+      id: overriding-methods-check
+      type: multipleChoice
+      prompt: What is the most important rule for an overriding method?
+      choices:
+      - id: a
+        text: It should preserve the behavioral expectations of the base method
+      - id: b
+        text: It must use different parameter meanings
+      - id: c
+        text: It must expose all internal state publicly
+      - id: d
+        text: It must call every method on the base class
+      answer:
+        choiceId: a
+      explanation: 'Substitution fails when the override changes the contract in a
+        way callers do
+
+        not expect.
+
+
+        Related topic: method overriding and Liskov substitution.
+
+        '
+  - id: abstract-base-classes
+    title: Abstract base classes make contracts explicit
+    required: true
+    content: "The `abc` module can require concrete subclasses to implement selected\
+      \ methods.\n\n```python\nfrom abc import ABC, abstractmethod\n\nclass Shape(ABC):\n\
+      \    @abstractmethod\n    def area(self) -> float:\n        raise NotImplementedError\n\
+      ```\n\nAbstract bases are useful when runtime inheritance is intentional and\
+      \ a shared\nnominal contract improves clarity.\n"
+    check:
+      id: abstract-base-classes-check
+      type: multipleChoice
+      prompt: What is the role of `@abstractmethod`?
+      choices:
+      - id: a
+        text: It marks behavior a concrete subclass must provide before instantiation
+      - id: b
+        text: It converts the method into a global function
+      - id: c
+        text: It prevents subclasses from defining the method
+      - id: d
+        text: It automatically writes the implementation
+      answer:
+        choiceId: a
+      explanation: 'An abstract method declares required behavior while leaving the
+        implementation
+
+        to concrete subclasses.
+
+
+        Related topic: nominal interfaces with `abc`.
+
+        '
+  - id: multiple-inheritance-and-mro
+    title: Understand the method resolution order
+    required: true
+    content: 'Python permits multiple inheritance. The method resolution order determines
+      where
+
+      attribute lookup and `super()` delegation proceed.
+
+
+      Mixins can add a narrow, reusable capability, but deep or stateful multiple
+
+      inheritance can make initialization and behavior difficult to predict. Inspect
+
+      `ClassName.mro()` when a hierarchy is not obvious.
+
+      '
+    check:
+      id: multiple-inheritance-and-mro-check
+      type: selectAll
+      prompt: Which practices make multiple inheritance safer?
+      choices:
+      - id: a
+        text: Keep mixins narrow and largely stateless
+      - id: b
+        text: Use `super()` consistently in cooperative methods
+      - id: c
+        text: Ignore the method resolution order
+      - id: d
+        text: Prefer composition when the hierarchy becomes difficult to explain
+      answer:
+        choiceIds:
+        - a
+        - b
+        - d
+      explanation: 'Narrow mixins, cooperative delegation, and a willingness to use
+        composition keep
+
+        multiple inheritance understandable.
+
+
+        Related topic: Python MRO and mixin design.
+
+        '
+  - id: inheritance-or-composition
+    title: Prefer the simplest relationship
+    required: true
+    content: 'Inheritance couples a subclass to a base contract and resolution order.
+
+      Composition keeps collaborators replaceable through attributes and constructor
+
+      parameters.
+
+
+      Choose inheritance for genuine specialization. Choose composition when an object
+
+      delegates work, owns another object, or needs a configurable strategy.
+
+      '
+    check:
+      id: inheritance-or-composition-check
+      type: multipleChoice
+      prompt: Which design most naturally uses composition?
+      choices:
+      - id: a
+        text: A `CheckoutService` uses a replaceable `PaymentGateway`
+      - id: b
+        text: A `Circle` implements the `Shape` contract
+      - id: c
+        text: A `JsonReport` specializes `Report`
+      - id: d
+        text: A `ReadOnlyRepository` specializes `Repository`
+      answer:
+        choiceId: a
+      explanation: 'The service delegates payment work to a collaborator; it is not
+        a kind of
+
+        payment gateway.
+
+
+        Related topic: dependency injection and composition.
+
+        '

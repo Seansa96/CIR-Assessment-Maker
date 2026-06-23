@@ -3,102 +3,84 @@ id: cpp-operator-overloading-concept-lesson
 title: C++ Operator Overloading Concept Lesson
 assessmentType: conceptLesson
 categoryId: c++
-subcategoryId: c++-oop
 subcategoryIds:
-  - c++-oop
+- c++-oop
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-    - oop
-    - operator-overloading
+  - oop
+  - operator-overloading
 lesson:
-  introduction: |
-    C++ allows you to redefine the behavior of most standard operators (like `+`, `-`, `==`, `<<`) for your own custom classes. This feature, called operator overloading, lets custom objects behave like built-in types.
+  introduction: 'C++ allows you to redefine the behavior of most standard operators
+    (like `+`, `-`, `==`, `<<`) for your own custom classes. This feature, called
+    operator overloading, lets custom objects behave like built-in types.
+
+    '
   sections:
-    - id: overloading-basics
-      title: The operator Keyword
-      required: true
-      content: |
-        You overload an operator by writing a function named `operator` followed by the symbol you want to overload.
+  - id: overloading-basics
+    title: The operator Keyword
+    required: true
+    content: "You overload an operator by writing a function named `operator` followed\
+      \ by the symbol you want to overload.\n\nFor example, a `Point` class representing\
+      \ a 2D coordinate:\n\n```cpp\nclass Point {\npublic:\n    int x, y;\n    Point(int\
+      \ x, int y) : x(x), y(y) {}\n    \n    // Overload the + operator\n    Point\
+      \ operator+(const Point& other) const {\n        return Point(this->x + other.x,\
+      \ this->y + other.y);\n    }\n};\n\n// Now we can add points!\nPoint p1(1, 2);\n\
+      Point p2(3, 4);\nPoint p3 = p1 + p2; // p3 is (4, 6)\n```\n"
+    check:
+      id: overloading-basics-check
+      type: multipleChoice
+      prompt: In `p1 + p2`, what does the compiler effectively translate this expression
+        to?
+      choices:
+      - id: a
+        text: '`p1.operator+(p2)`'
+      - id: b
+        text: '`operator+(p1, p2)` (assuming it''s a member function)'
+      - id: c
+        text: '`p1.add(p2)`'
+      - id: d
+        text: '`Math.add(p1, p2)`'
+      answer:
+        choiceId: a
+      explanation: 'As a member function, the left operand (`p1`) is the object calling
+        the method, and the right operand (`p2`) is passed as the argument.
 
-        For example, a `Point` class representing a 2D coordinate:
+        '
+  - id: non-member-overloads
+    title: Non-Member Overloads
+    required: true
+    content: "Some operators cannot be member functions, or it is better if they aren't.\
+      \ For example, overloading the stream insertion operator `<<` for `std::cout`.\
+      \ \nBecause the left operand is `std::ostream`, not your class, it must be a\
+      \ global (non-member) function.\n\n```cpp\n#include <iostream>\n\n// A non-member\
+      \ function, often made a 'friend' of the class if it needs private access\n\
+      std::ostream& operator<<(std::ostream& os, const Point& p) {\n    os << \"(\"\
+      \ << p.x << \", \" << p.y << \")\";\n    return os;\n}\n\n// Now we can print\
+      \ directly!\nPoint p(5, 10);\nstd::cout << p; // Output: (5, 10)\n```\n\nNotice\
+      \ we return `std::ostream&`. This allows chaining, like `cout << p1 << \" and\
+      \ \" << p2;`.\n"
+    check:
+      id: non-member-overloads-check
+      type: multipleChoice
+      prompt: Why must `operator<<` for `std::cout` be overloaded as a non-member
+        function for custom classes?
+      choices:
+      - id: a
+        text: Because the left operand is a `std::ostream` object, and we cannot modify
+          the `std::ostream` class to add our member function.
+      - id: b
+        text: Because `<<` is not a valid C++ operator.
+      - id: c
+        text: Because standard libraries don't allow member overloads.
+      - id: d
+        text: Because it improves performance.
+      answer:
+        choiceId: a
+      explanation: 'If it were a member function of `Point`, you would have to write
+        `p << cout;`, which is backwards and confusing.
 
-        ```cpp
-        class Point {
-        public:
-            int x, y;
-            Point(int x, int y) : x(x), y(y) {}
-            
-            // Overload the + operator
-            Point operator+(const Point& other) const {
-                return Point(this->x + other.x, this->y + other.y);
-            }
-        };
-
-        // Now we can add points!
-        Point p1(1, 2);
-        Point p2(3, 4);
-        Point p3 = p1 + p2; // p3 is (4, 6)
-        ```
-      check:
-        id: overloading-basics-check
-        type: multipleChoice
-        prompt: In `p1 + p2`, what does the compiler effectively translate this expression to?
-        choices:
-          - id: a
-            text: '`p1.operator+(p2)`'
-          - id: b
-            text: '`operator+(p1, p2)` (assuming it''s a member function)'
-          - id: c
-            text: '`p1.add(p2)`'
-          - id: d
-            text: '`Math.add(p1, p2)`'
-        answer:
-          choiceId: a
-        explanation: |
-          As a member function, the left operand (`p1`) is the object calling the method, and the right operand (`p2`) is passed as the argument.
-
-    - id: non-member-overloads
-      title: Non-Member Overloads
-      required: true
-      content: |
-        Some operators cannot be member functions, or it is better if they aren't. For example, overloading the stream insertion operator `<<` for `std::cout`. 
-        Because the left operand is `std::ostream`, not your class, it must be a global (non-member) function.
-
-        ```cpp
-        #include <iostream>
-
-        // A non-member function, often made a 'friend' of the class if it needs private access
-        std::ostream& operator<<(std::ostream& os, const Point& p) {
-            os << "(" << p.x << ", " << p.y << ")";
-            return os;
-        }
-
-        // Now we can print directly!
-        Point p(5, 10);
-        std::cout << p; // Output: (5, 10)
-        ```
-
-        Notice we return `std::ostream&`. This allows chaining, like `cout << p1 << " and " << p2;`.
-      check:
-        id: non-member-overloads-check
-        type: multipleChoice
-        prompt: Why must `operator<<` for `std::cout` be overloaded as a non-member function for custom classes?
-        choices:
-          - id: a
-            text: 'Because the left operand is a `std::ostream` object, and we cannot modify the `std::ostream` class to add our member function.'
-          - id: b
-            text: 'Because `<<` is not a valid C++ operator.'
-          - id: c
-            text: 'Because standard libraries don''t allow member overloads.'
-          - id: d
-            text: 'Because it improves performance.'
-        answer:
-          choiceId: a
-        explanation: |
-          If it were a member function of `Point`, you would have to write `p << cout;`, which is backwards and confusing.
-
-
+        '

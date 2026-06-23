@@ -3,120 +3,122 @@ id: dsa-recursion-dp-worked-example
 title: Recursion to Dynamic Programming Worked Example
 assessmentType: workedExample
 categoryId: dsa
-subcategoryId: dsa-recursion-dp
 subcategoryIds:
-  - dsa-recursion-dp
-  - dsa-complexity
+- dsa-recursion-dp
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we001
-    title: Turning repeated recursive work into memoization
-    problem: |
-      Compute the nth Fibonacci number.
-
-      The issue: the direct recursive definition is simple, but it recomputes the same smaller answers many times.
-    steps:
-      - id: s001
-        title: Find the recursive structure
-        instruction: |
-          Recursion needs a smaller version of the same problem.
-        type: multipleChoice
-        prompt: |
-          Which recurrence describes Fibonacci numbers?
-        choices:
-          - id: a
-            text: '`fib(n) = fib(n - 1) + fib(n - 2)`'
-          - id: b
-            text: '`fib(n) = fib(n) + 1`'
-          - id: c
-            text: '`fib(n) = n * n`'
-          - id: d
-            text: '`fib(n) = sort(n)`'
-        answer:
-          choiceId: a
-        explanation: |
-          Fibonacci has a natural recursive shape: each answer depends on the two previous answers.
-
-      - id: s002
-        title: Add the stopping rule
-        instruction: |
-          Recursive algorithms need base cases so they eventually stop.
-        type: multipleChoice
-        prompt: |
-          Which base cases are commonly used for Fibonacci?
-        choices:
-          - id: a
-            text: '`fib(0) = 0` and `fib(1) = 1`'
-          - id: b
-            text: '`fib(0) = fib(1) + fib(2)`'
-          - id: c
-            text: '`fib(n) = 0` for every `n`'
-          - id: d
-            text: 'No base cases are needed.'
-        answer:
-          choiceId: a
-        explanation: |
-          Base cases anchor the recursion. Without them, the calls never finish.
-
-      - id: s003
-        title: Identify repeated subproblems
-        instruction: |
-          Dynamic programming becomes useful when recursion repeats work.
-        type: freeResponse
-        prompt: |
-          Why is naive recursive Fibonacci inefficient?
-        answer:
-          expected: |
-            It recomputes the same Fibonacci values many times, such as fib(n - 2), fib(n - 3), and smaller calls appearing in multiple branches.
-          gradingMode: selfCheck
-          keyPoints:
-            - The recursion tree branches.
-            - The same subproblems appear repeatedly.
-            - Repeated computation causes exponential growth.
-        explanation: |
-          The problem is not recursion itself. The problem is repeated subproblems. Dynamic programming stores answers so each subproblem is solved once.
-
-      - id: s004
-        title: Introduce memoization
-        instruction: |
-          Memoization adds a cache to recursive code.
-        type: multipleChoice
-        prompt: |
-          What should memoization do before recursively computing `fib(n)`?
-        choices:
-          - id: a
-            text: 'Check whether `fib(n)` is already cached.'
-          - id: b
-            text: 'Delete all previous answers.'
-          - id: c
-            text: 'Sort the function calls alphabetically.'
-          - id: d
-            text: 'Ignore the base cases.'
-        answer:
-          choiceId: a
-        explanation: |
-          Memoization is a lookup table for solved subproblems. If the answer is cached, return it immediately. Otherwise compute it, store it, and return it.
-
-      - id: s005
-        title: Recognize the DP trigger
-        instruction: |
-          Connect Fibonacci to the general dynamic programming pattern.
-        type: multipleChoice
-        prompt: |
-          Which pair of signals suggests dynamic programming?
-        choices:
-          - id: a
-            text: 'Overlapping subproblems and optimal substructure or reusable recurrence.'
-          - id: b
-            text: 'Only one operation and no repeated work.'
-          - id: c
-            text: 'Purely random choices with no state.'
-          - id: d
-            text: 'A sorted array only.'
-        answer:
-          choiceId: a
-        explanation: |
-          DP is usually worth considering when the same subproblems appear repeatedly and a larger answer can be built from smaller answers.
+- id: we001
+  title: Turning repeated recursive work into memoization
+  problem: 'Compute the nth Fibonacci number.
 
 
+    The issue: the direct recursive definition is simple, but it recomputes the same
+    smaller answers many times.
+
+    '
+  steps:
+  - id: step-we001-1
+    title: Find the recursive structure
+    instruction: 'Recursion needs a smaller version of the same problem.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which recurrence describes Fibonacci numbers?
+    choices:
+    - id: a
+      text: '`fib(n) = fib(n - 1) + fib(n - 2)`'
+    - id: b
+      text: '`fib(n) = fib(n) + 1`'
+    - id: c
+      text: '`fib(n) = n * n`'
+    - id: d
+      text: '`fib(n) = sort(n)`'
+    answer:
+      choiceId: a
+    explanation: |
+      Fibonacci has a natural recursive shape: each answer depends on the two previous answers.
+  - id: step-we001-2
+    title: Add the stopping rule
+    instruction: 'Recursive algorithms need base cases so they eventually stop.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which base cases are commonly used for Fibonacci?
+    choices:
+    - id: a
+      text: '`fib(0) = 0` and `fib(1) = 1`'
+    - id: b
+      text: '`fib(0) = fib(1) + fib(2)`'
+    - id: c
+      text: '`fib(n) = 0` for every `n`'
+    - id: d
+      text: No base cases are needed.
+    answer:
+      choiceId: a
+    explanation: |
+      Base cases anchor the recursion. Without them, the calls never finish.
+  - id: step-we001-3
+    title: Identify repeated subproblems
+    instruction: 'Dynamic programming becomes useful when recursion repeats work.
+
+      '
+    type: freeResponse
+    prompt: |
+      Why is naive recursive Fibonacci inefficient?
+    answer:
+      expected: 'It recomputes the same Fibonacci values many times, such as fib(n
+        - 2), fib(n - 3), and smaller calls appearing in multiple branches.
+
+        '
+      gradingMode: selfCheck
+      keyPoints:
+      - The recursion tree branches.
+      - The same subproblems appear repeatedly.
+      - Repeated computation causes exponential growth.
+    explanation: |
+      The problem is not recursion itself. The problem is repeated subproblems. Dynamic programming stores answers so each subproblem is solved once.
+  - id: step-we001-4
+    title: Introduce memoization
+    instruction: 'Memoization adds a cache to recursive code.
+
+      '
+    type: multipleChoice
+    prompt: |
+      What should memoization do before recursively computing `fib(n)`?
+    choices:
+    - id: a
+      text: Check whether `fib(n)` is already cached.
+    - id: b
+      text: Delete all previous answers.
+    - id: c
+      text: Sort the function calls alphabetically.
+    - id: d
+      text: Ignore the base cases.
+    answer:
+      choiceId: a
+    explanation: |
+      Memoization is a lookup table for solved subproblems. If the answer is cached, return it immediately. Otherwise compute it, store it, and return it.
+  - id: step-we001-5
+    title: Recognize the DP trigger
+    instruction: 'Connect Fibonacci to the general dynamic programming pattern.
+
+      '
+    type: multipleChoice
+    prompt: |
+      Which pair of signals suggests dynamic programming?
+    choices:
+    - id: a
+      text: Overlapping subproblems and optimal substructure or reusable recurrence.
+    - id: b
+      text: Only one operation and no repeated work.
+    - id: c
+      text: Purely random choices with no state.
+    - id: d
+      text: A sorted array only.
+    answer:
+      choiceId: a
+    explanation: |
+      DP is usually worth considering when the same subproblems appear repeatedly and a larger answer can be built from smaller answers.
