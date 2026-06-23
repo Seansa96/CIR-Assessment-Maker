@@ -1,0 +1,58 @@
+schemaVersion: 1
+id: docker-lifecycle-troubleshooting
+title: Container Lifecycle and Troubleshooting
+assessmentType: quiz
+categoryId: containerization
+subcategoryId: container-basics
+learningGoal: understand
+activityType: read
+tags:
+  - docker
+  - cli
+  - troubleshooting
+questions:
+  - id: docker-ps-all
+    title: Viewing All Containers
+    type: multipleChoice
+    prompt: |
+      By default, `docker ps` only shows running containers. If a container crashes immediately after starting, it will not appear in the standard output. 
+      
+      Which command allows you to view all containers, including those that have stopped or crashed?
+    options:
+      - text: '`docker ps -a`'
+        isCorrect: true
+      - text: '`docker ps --stopped`'
+      - text: '`docker containers all`'
+      - text: '`docker status`'
+    explanation: |
+      The `-a` (or `--all`) flag tells `docker ps` to display all containers, regardless of their current status. This is the first step in troubleshooting a container that failed to start.
+
+  - id: docker-inspect
+    title: Inspecting Container Details
+    type: multipleChoice
+    prompt: |
+      You have found a crashed container named `my-web` using `docker ps -a`, but you need to see the exact exit code, the internal IP address, and the environment variables it was launched with.
+      
+      Which command provides this detailed JSON output?
+    options:
+      - text: '`docker inspect my-web`'
+        isCorrect: true
+      - text: '`docker describe my-web`'
+      - text: '`docker details my-web`'
+      - text: '`docker info my-web`'
+    explanation: |
+      `docker inspect` returns low-level information on Docker objects in JSON format. It is incredibly useful for finding out exactly how a container was configured and why it exited (by looking at the `State` object).
+
+  - id: docker-logs-stopped
+    title: Logs of a Stopped Container
+    type: multipleChoice
+    prompt: |
+      Can you view the logs of a container that has already crashed and stopped running using `docker logs`?
+    options:
+      - text: 'Yes, Docker preserves the STDOUT and STDERR logs of a container until it is removed.'
+        isCorrect: true
+      - text: 'No, logs are only available while the container is actively running.'
+      - text: 'Only if you started the container with the `--preserve-logs` flag.'
+      - text: 'Yes, but you must restart the container first.'
+    explanation: |
+      Docker captures the standard output (STDOUT) and standard error (STDERR) of the main process. These logs are preserved on disk until you explicitly delete the container using `docker rm`.

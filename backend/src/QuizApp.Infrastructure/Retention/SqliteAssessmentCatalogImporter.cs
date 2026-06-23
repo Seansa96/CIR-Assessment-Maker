@@ -49,11 +49,15 @@ public sealed class SqliteAssessmentCatalogImporter
             await using var connection = factory.CreateConnection();
             await connection.OpenAsync(cancellationToken);
 
+            var globalHash = await ComputeGlobalConfigHashAsync(cancellationToken);
+            var storedGlobalHash = await GetMetadataAsync(connection, "global_config_hash", cancellationToken);
+            var forceFullReimport = globalHash != storedGlobalHash;
+
             foreach (var path in files)
             {
                 try
                 {
-                    await ImportFileAsync(connection, path, areasBySubcategory, areasByCategory, seenIds, cancellationToken);
+                    await ImportFileAsync(connection, path, areasBySubcategory, areasByCategory, seenIds, forceFullReimport, cancellationToken);
                 }
                 catch (Exception ex)
                 {
@@ -61,6 +65,11 @@ public sealed class SqliteAssessmentCatalogImporter
                     if (existingId is not null) seenIds.Add(existingId);
                     Console.Error.WriteLine($"[CatalogImporter] Skipping invalid assessment file: {path}. {ex.Message}");
                 }
+            }
+
+            if (forceFullReimport)
+            {
+                await SetMetadataAsync(connection, "global_config_hash", globalHash, cancellationToken);
             }
 
             // Mark assessments whose source files no longer exist as inactive
@@ -123,6 +132,7 @@ public sealed class SqliteAssessmentCatalogImporter
         Dictionary<string, List<string>> areasBySubcategory,
         Dictionary<string, List<string>> areasByCategory,
         HashSet<string> seenIds,
+        bool forceFullReimport,
         CancellationToken cancellationToken)
     {
         var content = await File.ReadAllTextAsync(path, cancellationToken);
@@ -131,7 +141,7 @@ public sealed class SqliteAssessmentCatalogImporter
 
         // Check if unchanged
         var existingHash = await GetExistingHashAsync(connection, path, cancellationToken);
-        if (existingHash == hash)
+        if (!forceFullReimport && existingHash == hash)
         {
             if (existingId is not null)
                 seenIds.Add(existingId);
@@ -335,6 +345,52 @@ public sealed class SqliteAssessmentCatalogImporter
         cmd.Parameters.AddWithValue("@id", id);
         var result = await cmd.ExecuteScalarAsync(cancellationToken);
         return result as string;
+    }
+
+    private static async Task<string?> GetMetadataAsync(SqliteConnection connection, string key, CancellationToken cancellationToken)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT value FROM retention_metadata WHERE key = @key LIMIT 1;";
+        cmd.Parameters.AddWithValue("@key", key);
+        var result = await cmd.ExecuteScalarAsync(cancellationToken);
+        return result as string;
+    }
+
+    private static async Task SetMetadataAsync(SqliteConnection connection, string key, string value, CancellationToken cancellationToken)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = """
+            INSERT INTO retention_metadata (key, value, updated_at) 
+            VALUES (@key, @value, @now)
+            ON CONFLICT(key) DO UPDATE SET 
+                value = excluded.value, 
+                updated_at = excluded.updated_at;
+            """;
+        cmd.Parameters.AddWithValue("@key", key);
+        cmd.Parameters.AddWithValue("@value", value);
+        cmd.Parameters.AddWithValue("@now", DateTimeOffset.UtcNow.ToString("O"));
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    private async Task<string> ComputeGlobalConfigHashAsync(CancellationToken cancellationToken)
+    {
+        var sb = new StringBuilder();
+        
+        var areasPath = Path.Combine(storageOptions.DataRoot, "areas.yaml");
+        if (File.Exists(areasPath))
+        {
+            sb.Append(await File.ReadAllTextAsync(areasPath, cancellationToken));
+        }
+
+        if (Directory.Exists(storageOptions.CategoriesPath))
+        {
+            foreach (var file in Directory.EnumerateFiles(storageOptions.CategoriesPath, "*.yaml").OrderBy(f => f))
+            {
+                sb.Append(await File.ReadAllTextAsync(file, cancellationToken));
+            }
+        }
+
+        return ComputeHash(sb.ToString());
     }
 
     private IEnumerable<string> EnumerateAssessmentFiles()

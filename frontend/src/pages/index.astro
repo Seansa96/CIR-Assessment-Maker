@@ -42,7 +42,8 @@ import "../styles/global.css";
           <div id="nav-compact-active-session" class="compact-active-session" hidden></div>
 
           <!-- Step stages (each revealed after prior selection) -->
-          <div class="nav-stages" id="nav-stages">
+          <div class="nav-content-layout">
+            <div class="nav-stages" id="nav-stages">
             <!-- Stage 0: Subject -->
             <div class="nav-stage active" id="nav-stage-subject" data-stage="subject">
               <h3 class="nav-stage-label">Subject</h3>
@@ -73,6 +74,13 @@ import "../styles/global.css";
               <h3 class="nav-stage-label">Assessments</h3>
               <div id="nav-assessment-list" class="nav-assessment-list" role="listbox" aria-label="Select assessment"></div>
             </div>
+            <!-- Recommended Path UI -->
+            <aside class="nav-recommended-path" id="nav-recommended-path" hidden>
+              <h3 class="nav-stage-label">Recommended Path</h3>
+              <div class="recommended-path-list" id="recommended-path-list">
+                <!-- Populated by JS -->
+              </div>
+            </aside>
           </div>
 
           <!-- Mode + Start -->
@@ -276,6 +284,7 @@ import "../styles/global.css";
       import remarkMath from "remark-math";
       import remarkRehype from "remark-rehype";
       import rehypeKatex from "rehype-katex";
+      import "katex/dist/contrib/mhchem.mjs";
       import rehypeStringify from "rehype-stringify";
       import { EditorView, basicSetup } from "codemirror";
       import { createCodeEditor } from "../scripts/codeEditor";
@@ -957,7 +966,7 @@ import "../styles/global.css";
         .use(remarkParse)
         .use(remarkMath)
         .use(remarkRehype)
-        .use(rehypeKatex)
+        .use(rehypeKatex, { strict: false })
         .use(rehypeStringify);
 
       const state: {
@@ -1150,6 +1159,62 @@ import "../styles/global.css";
         }
       }
 
+      const RECOMMENDED_PATHS: Record<string, { label: string; desc: string }[]> = {
+        "physics-1": [
+          { label: "Physics Kinematics", desc: "1D and 2D motion basics" },
+          { label: "Physics Dynamics", desc: "Forces and Newton's laws" },
+          { label: "Physics Energy & Momentum", desc: "Conservation laws" },
+          { label: "Physics Rotation", desc: "Rotational kinematics and dynamics" }
+        ],
+        "calculus-2": [
+          { label: "Calculus Integration", desc: "Techniques for evaluating integrals" },
+          { label: "Calculus Geometric Applications", desc: "Area and volume" },
+          { label: "Calculus Physical Applications", desc: "Work, mass, pressure" },
+          { label: "Calculus Infinite Series", desc: "Sequences, series, Taylor" }
+        ],
+        "c++": [
+          { label: "Programming Fundamentals", desc: "Variables, flow, functions" },
+          { label: "Object-Oriented C++", desc: "Classes, encapsulation, OOP" },
+          { label: "Systems Programming", desc: "Memory, networking, file I/O" }
+        ],
+        "python": [
+          { label: "Programming Fundamentals", desc: "Python basics and OOP" },
+          { label: "Systems Programming", desc: "Concurrency and I/O" }
+        ],
+        "dsa": [
+          { label: "Data Structures", desc: "Core data types and collections" },
+          { label: "Algorithms & Complexity", desc: "Sorting, searching, Big-O" }
+        ],
+        "containerization": [
+          { label: "Container Lifecycle", desc: "Container concepts, CLI basics, and troubleshooting" },
+          { label: "Container Architecture & Networking", desc: "Running applications and connecting containers" },
+          { label: "Container Data & Workflows", desc: "Bind mounts, permissions, and capstone projects" }
+        ]
+      };
+
+      function renderRecommendedPath(subjectId: string) {
+        const container = document.getElementById("nav-recommended-path");
+        const list = document.getElementById("recommended-path-list");
+        if (!container || !list) return;
+
+        if (!subjectId || !RECOMMENDED_PATHS[subjectId]) {
+          container.hidden = true;
+          return;
+        }
+
+        container.hidden = false;
+        const path = RECOMMENDED_PATHS[subjectId];
+        list.innerHTML = path.map((step, index) => `
+          <div class="recommended-path-step">
+            <div class="step-number">${index + 1}</div>
+            <div class="step-content">
+              <h4>${escapeHtml(step.label)}</h4>
+              <p>${escapeHtml(step.desc)}</p>
+            </div>
+          </div>
+        `).join("");
+      }
+
       function renderNavigation() {
         const catalog = state.navigationCatalog;
         if (!catalog) return;
@@ -1326,6 +1391,10 @@ import "../styles/global.css";
         `}).join("");
         assessmentList.querySelectorAll<HTMLButtonElement>("[data-navigation-assessment]").forEach((button) => {
           button.addEventListener("click", () => selectNavigationStage("assessment", button.dataset.navigationAssessment ?? ""));
+          button.addEventListener("dblclick", () => {
+            selectNavigationStage("assessment", button.dataset.navigationAssessment ?? "");
+            startNavigationAttempt();
+          });
         });
 
         setNavigationStageVisible("area", Boolean(selection.subjectId));
@@ -1335,6 +1404,7 @@ import "../styles/global.css";
         setNavigationStageVisible("assessments", Boolean(selection.activityType));
         navActions.hidden = !selection.assessmentId;
         renderNavigationBreadcrumb();
+        renderRecommendedPath(selection.subjectId);
       }
 
       function renderNavigationTiles(

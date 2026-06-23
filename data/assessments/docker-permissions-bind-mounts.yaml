@@ -1,0 +1,69 @@
+schemaVersion: 1
+id: docker-permissions-bind-mounts
+title: File Permissions with Bind Mounts
+assessmentType: workedExample
+categoryId: containerization
+subcategoryId: docker-volumes
+learningGoal: apply
+activityType: guidedWorkedExample
+tags:
+  - docker
+  - volumes
+  - permissions
+workedExamples:
+  - id: we-docker-permissions
+    title: Handling Permission Denied Errors
+    problem: |
+      A very common issue when using Docker bind mounts on Linux is the `Permission Denied` error. 
+      
+      When you mount a host directory into a container, the container process accesses the files using its own User ID (UID). If the container process runs as the `nginx` user (UID 101), but your host directory is owned by your personal user (UID 1000) with strict permissions, the container will be denied write access.
+      
+      This is especially critical for services like WebDAV, which require write access to the mounted directory!
+      
+      ### Solutions:
+      1. **Change Host Permissions:** Use `chmod 777 /host/dir` (insecure) or `chown 101 /host/dir` (secure, sets owner to the container's UID).
+      2. **Run Container as Host User:** Use the `docker run -u <UID>:<GID>` flag to force the container process to run as your host user instead of its default user.
+
+    steps:
+    - id: step-docker-user-flag
+      title: The User Flag (-u)
+      instruction: Construct a docker run command using the -u flag to fix a permission issue.
+      type: freeResponse
+      prompt: |
+        You are trying to run a `node` image to build a project located at `/home/user/project`. 
+        If you run the container normally, the build artifacts will be created as the `root` user, making them uneditable on your host machine.
+        
+        Write a `docker run` command that:
+        1. Uses the `node:18` image.
+        2. Mounts `/home/user/project` to `/app`.
+        3. Uses the `-u 1000:1000` flag to run the container as your host user and group.
+        4. Executes the command `npm run build` inside the container.
+        5. Does NOT run in detached mode (we want it to run and exit).
+        
+        *(Do not include port mappings or naming for this task)*
+      answer:
+        gradingMode: selfCheck
+        expected: |
+          docker run -u 1000:1000 -v /home/user/project:/app node:18 npm run build
+      explanation: |
+        By providing `-u 1000:1000`, the `node` process runs as your host user instead of root. When it writes the build output to the `/app` directory, the files on your host machine (`/home/user/project`) will be safely owned by you, preventing annoying `sudo rm` requirements later!
+
+    - id: step-docker-chown
+      title: Changing Host Directory Ownership
+      instruction: Identify the command to fix host permissions for a WebDAV directory.
+      type: multipleChoice
+      prompt: |
+        You are running an Nginx WebDAV container. The container process runs as UID `101`. You have mounted `/data/webdav` from your host to `/var/www/html` in the container.
+        
+        When you try to upload a file via WebDAV, you get a `403 Forbidden` error because the container cannot write to `/data/webdav`.
+        
+        Which command, run on your **host machine**, safely grants the container write access without making the folder writable by everyone on the system?
+      options:
+        - text: '`sudo chown -R 101:101 /data/webdav`'
+          isCorrect: true
+        - text: '`sudo chmod -R 777 /data/webdav`'
+        - text: '`docker run -u 1000 nginx`'
+        - text: '`sudo chown -R 1000:1000 /data/webdav`'
+      explanation: |
+        Changing the ownership (`chown`) of the host directory to match the container's internal UID (`101`) is the most secure way to grant the container access. 
+        Using `chmod 777` is insecure, and forcing Nginx to run as your host user (`-u 1000`) will often break Nginx, as it needs root privileges initially to bind to port 80.
