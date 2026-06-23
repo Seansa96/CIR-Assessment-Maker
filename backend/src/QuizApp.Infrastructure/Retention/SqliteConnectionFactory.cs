@@ -2,7 +2,7 @@ using Microsoft.Data.Sqlite;
 
 namespace QuizApp.Infrastructure.Retention;
 
-internal sealed class SqliteConnectionFactory
+public sealed class SqliteConnectionFactory
 {
     private readonly SqliteRetentionOptions options;
 

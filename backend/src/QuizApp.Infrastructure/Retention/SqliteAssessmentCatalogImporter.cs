@@ -9,16 +9,18 @@ using QuizApp.Infrastructure.Files;
 
 namespace QuizApp.Infrastructure.Retention;
 
-/// <summary>
-/// Idempotent, hash-based importer that syncs YAML/JSON assessment files into the SQLite catalog.
-/// Skips unchanged files, upserts changed/new ones, marks missing ones inactive.
-/// </summary>
 public sealed class SqliteAssessmentCatalogImporter
 {
+    private const string PipelineVersion = "v2"; // Phase 7: Add pipeline version invalidation
+
     private readonly SqliteRetentionOptions retentionOptions;
     private readonly FileStorageOptions storageOptions;
     private readonly IAreaRepository areaRepository;
+    private readonly ICategoryRepository categoryRepository;
     private readonly AssessmentValidator validator;
+    private readonly IAssessmentSourceInspector sourceInspector;
+    private readonly IAssessmentTaxonomyValidator taxonomyValidator;
+    private readonly ICatalogTaxonomyValidator catalogTaxonomyValidator;
 
     public bool CatalogInitialized { get; private set; }
 
@@ -26,28 +28,53 @@ public sealed class SqliteAssessmentCatalogImporter
         SqliteRetentionOptions retentionOptions,
         FileStorageOptions storageOptions,
         IAreaRepository areaRepository,
-        AssessmentValidator validator)
+        ICategoryRepository categoryRepository,
+        AssessmentValidator validator,
+        IAssessmentSourceInspector sourceInspector,
+        IAssessmentTaxonomyValidator taxonomyValidator,
+        ICatalogTaxonomyValidator catalogTaxonomyValidator)
     {
         this.retentionOptions = retentionOptions;
         this.storageOptions = storageOptions;
         this.areaRepository = areaRepository;
+        this.categoryRepository = categoryRepository;
         this.validator = validator;
+        this.sourceInspector = sourceInspector;
+        this.taxonomyValidator = taxonomyValidator;
+        this.catalogTaxonomyValidator = catalogTaxonomyValidator;
     }
 
     public async Task ImportAsync(CancellationToken cancellationToken = default)
     {
+        var runId = Guid.NewGuid().ToString("N");
+        var factory = new SqliteConnectionFactory(retentionOptions);
+
         try
         {
-            var factory = new SqliteConnectionFactory(retentionOptions);
+            await using var connection = factory.CreateConnection();
+            await connection.OpenAsync(cancellationToken);
+
+            // 1. Record Import Run start
+            await RecordImportRunStartAsync(connection, runId, cancellationToken);
+
+            var categories = await categoryRepository.ListAsync(cancellationToken);
             var areas = await areaRepository.ListAsync(cancellationToken);
+            
+            // Validate taxonomy sources globally
+            var catalogTaxonomyResult = catalogTaxonomyValidator.Validate(categories, areas);
+            if (!catalogTaxonomyResult.IsValid)
+            {
+                foreach (var err in catalogTaxonomyResult.Errors)
+                {
+                    await InsertDiagnosticAsync(connection, runId, null, null, "Error", "TAXONOMY_SCHEMA", err, null, null, null, null, cancellationToken);
+                }
+            }
+
             var areasBySubcategory = BuildSubcategoryToAreaIndex(areas);
             var areasByCategory = BuildCategoryToAreaIndex(areas);
 
             var files = EnumerateAssessmentFiles().ToList();
             var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-            await using var connection = factory.CreateConnection();
-            await connection.OpenAsync(cancellationToken);
 
             var globalHash = await ComputeGlobalConfigHashAsync(cancellationToken);
             var storedGlobalHash = await GetMetadataAsync(connection, "global_config_hash", cancellationToken);
@@ -57,12 +84,13 @@ public sealed class SqliteAssessmentCatalogImporter
             {
                 try
                 {
-                    await ImportFileAsync(connection, path, areasBySubcategory, areasByCategory, seenIds, forceFullReimport, cancellationToken);
+                    await ImportFileAsync(connection, runId, path, categories, areas, areasBySubcategory, areasByCategory, seenIds, forceFullReimport, cancellationToken);
                 }
                 catch (Exception ex)
                 {
                     var existingId = await GetIdByPathAsync(connection, path, cancellationToken);
                     if (existingId is not null) seenIds.Add(existingId);
+                    await InsertDiagnosticAsync(connection, runId, path, existingId, "Error", "UNHANDLED_EXCEPTION", ex.Message, null, null, null, null, cancellationToken);
                     Console.Error.WriteLine($"[CatalogImporter] Skipping invalid assessment file: {path}. {ex.Message}");
                 }
             }
@@ -75,13 +103,25 @@ public sealed class SqliteAssessmentCatalogImporter
             // Mark assessments whose source files no longer exist as inactive
             await MarkMissingInactiveAsync(connection, seenIds, cancellationToken);
 
+            // Mark Import Run finished
+            await RecordImportRunEndAsync(connection, runId, "Success", cancellationToken);
+
             CatalogInitialized = true;
-            Console.WriteLine($"[CatalogImporter] Import complete. {files.Count} files processed.");
+            Console.WriteLine($"[CatalogImporter] Import complete. {files.Count} files processed. Run: {runId}");
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"[CatalogImporter] Import failed; falling back to file repository. {ex.Message}");
             CatalogInitialized = false;
+
+            // Try to record failure
+            try
+            {
+                await using var connection = factory.CreateConnection();
+                await connection.OpenAsync(cancellationToken);
+                await RecordImportRunEndAsync(connection, runId, "Failed", cancellationToken);
+            }
+            catch { }
         }
     }
 
@@ -96,9 +136,14 @@ public sealed class SqliteAssessmentCatalogImporter
 
         try
         {
+            var categories = await categoryRepository.ListAsync(cancellationToken);
+            var areas = await areaRepository.ListAsync(cancellationToken);
+
+            var taxonomyResult = taxonomyValidator.Validate(assessment, categories, areas);
+            if (!taxonomyResult.IsValid) return false;
+
             var path = Path.Combine(storageOptions.AssessmentsPath, $"{ToSafeFileName(assessment.Id)}.yaml");
             var content = await File.ReadAllTextAsync(path, cancellationToken);
-            var areas = await areaRepository.ListAsync(cancellationToken);
             var nav = NavigationInference.Infer(assessment);
             var resolvedAreas = ResolveAreas(
                 assessment,
@@ -128,7 +173,10 @@ public sealed class SqliteAssessmentCatalogImporter
 
     private async Task ImportFileAsync(
         SqliteConnection connection,
+        string runId,
         string path,
+        IReadOnlyList<Category> categories,
+        IReadOnlyList<AreaDefinition> areas,
         Dictionary<string, List<string>> areasBySubcategory,
         Dictionary<string, List<string>> areasByCategory,
         HashSet<string> seenIds,
@@ -138,6 +186,19 @@ public sealed class SqliteAssessmentCatalogImporter
         var content = await File.ReadAllTextAsync(path, cancellationToken);
         var hash = ComputeHash(content);
         var existingId = await GetIdByPathAsync(connection, path, cancellationToken);
+
+        // Preflight Source Inspection
+        var inspection = sourceInspector.Inspect(content, Path.GetExtension(path), path);
+        foreach (var diag in inspection.Diagnostics)
+        {
+            await InsertDiagnosticAsync(connection, runId, path, existingId, diag.Severity.ToString(), diag.Code, diag.Message, diag.Line, diag.Column, diag.ActualKey, diag.SuggestedKey, cancellationToken);
+        }
+
+        if (!inspection.IsValid)
+        {
+            if (existingId is not null) seenIds.Add(existingId);
+            return;
+        }
 
         // Check if unchanged
         var existingHash = await GetExistingHashAsync(connection, path, cancellationToken);
@@ -152,24 +213,42 @@ public sealed class SqliteAssessmentCatalogImporter
         if (dto is null || string.IsNullOrWhiteSpace(dto.Id))
         {
             if (existingId is not null) seenIds.Add(existingId);
+            await InsertDiagnosticAsync(connection, runId, path, existingId, "Error", "MISSING_ID", "Assessment file has no ID", null, null, null, null, cancellationToken);
             Console.Error.WriteLine($"[CatalogImporter] Assessment file has no ID, skipping: {path}");
             return;
         }
 
         var domain = dto.ToDomain();
+        
+        // 1. Domain Validation
         var validation = validator.Validate(domain);
         if (!validation.IsValid)
         {
             if (existingId is not null) seenIds.Add(existingId);
-            Console.Error.WriteLine(
-                $"[CatalogImporter] Assessment '{domain.Id}' is invalid; keeping the last valid catalog version. "
-                + string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+            foreach (var issue in validation.Issues)
+            {
+                await InsertDiagnosticAsync(connection, runId, path, domain.Id, "Error", issue.Code, issue.Message, null, null, null, null, cancellationToken);
+            }
+            return;
+        }
+
+        // 2. Taxonomy Validation
+        var taxonomyValidation = taxonomyValidator.Validate(domain, categories, areas);
+        if (!taxonomyValidation.IsValid)
+        {
+            if (existingId is not null) seenIds.Add(existingId);
+            foreach (var err in taxonomyValidation.Errors)
+            {
+                var code = err.Split(':')[0];
+                var msg = err.Contains(':') ? err.Substring(err.IndexOf(':') + 1).Trim() : err;
+                await InsertDiagnosticAsync(connection, runId, path, domain.Id, "Error", code, msg, null, null, null, null, cancellationToken);
+            }
             return;
         }
 
         if (seenIds.Contains(domain.Id))
         {
-            Console.Error.WriteLine($"[CatalogImporter] Duplicate assessment ID '{domain.Id}' in '{path}', skipping later file.");
+            await InsertDiagnosticAsync(connection, runId, path, domain.Id, "Error", "DUPLICATE_ID", $"Duplicate assessment ID '{domain.Id}' in '{path}'", null, null, null, null, cancellationToken);
             return;
         }
 
@@ -375,6 +454,7 @@ public sealed class SqliteAssessmentCatalogImporter
     private async Task<string> ComputeGlobalConfigHashAsync(CancellationToken cancellationToken)
     {
         var sb = new StringBuilder();
+        sb.Append(PipelineVersion);
         
         var areasPath = Path.Combine(storageOptions.DataRoot, "areas.yaml");
         if (File.Exists(areasPath))
@@ -454,4 +534,44 @@ public sealed class SqliteAssessmentCatalogImporter
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
     };
+
+    private static async Task RecordImportRunStartAsync(SqliteConnection connection, string runId, CancellationToken cancellationToken)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = "INSERT INTO import_runs (id, started_at, status) VALUES (@id, @now, 'Running');";
+        cmd.Parameters.AddWithValue("@id", runId);
+        cmd.Parameters.AddWithValue("@now", DateTimeOffset.UtcNow.ToString("O"));
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    private static async Task RecordImportRunEndAsync(SqliteConnection connection, string runId, string status, CancellationToken cancellationToken)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = "UPDATE import_runs SET finished_at = @now, status = @status WHERE id = @id;";
+        cmd.Parameters.AddWithValue("@id", runId);
+        cmd.Parameters.AddWithValue("@now", DateTimeOffset.UtcNow.ToString("O"));
+        cmd.Parameters.AddWithValue("@status", status);
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    private static async Task InsertDiagnosticAsync(SqliteConnection connection, string runId, string? path, string? assessmentId, string severity, string code, string message, int? line, int? column, string? actualKey, string? suggestedKey, CancellationToken cancellationToken)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = """
+            INSERT INTO import_diagnostics (id, run_id, path, assessment_id, severity, code, message, line, column, actual_key, suggested_key)
+            VALUES (@id, @runId, @path, @assessmentId, @severity, @code, @message, @line, @column, @actualKey, @suggestedKey);
+            """;
+        cmd.Parameters.AddWithValue("@id", Guid.NewGuid().ToString("N"));
+        cmd.Parameters.AddWithValue("@runId", runId);
+        cmd.Parameters.AddWithValue("@path", path ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@assessmentId", assessmentId ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@severity", severity);
+        cmd.Parameters.AddWithValue("@code", code);
+        cmd.Parameters.AddWithValue("@message", message);
+        cmd.Parameters.AddWithValue("@line", line ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@column", column ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@actualKey", actualKey ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@suggestedKey", suggestedKey ?? (object)DBNull.Value);
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
+    }
 }

@@ -1,6 +1,6 @@
 namespace QuizApp.Infrastructure.Files;
 
-internal sealed class CategoryFileDto
+public sealed class CategoryFileDto
 {
     public int SchemaVersion { get; set; }
     public string? Id { get; set; }
@@ -9,14 +9,14 @@ internal sealed class CategoryFileDto
     public List<SubCategoryFileDto>? Subcategories { get; set; }
 }
 
-internal sealed class SubCategoryFileDto
+public sealed class SubCategoryFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
 }
 
-internal sealed class SettingsFileDto
+public sealed class SettingsFileDto
 {
     public int SchemaVersion { get; set; } = 1;
     public string? DefaultMode { get; set; }
@@ -31,7 +31,7 @@ internal sealed class SettingsFileDto
     public int? CodeRunnerRunTimeoutMs { get; set; }
 }
 
-internal sealed class AssessmentFileDto
+public sealed class AssessmentFileDto
 {
     public int SchemaVersion { get; set; }
     public string? Id { get; set; }
@@ -53,13 +53,13 @@ internal sealed class AssessmentFileDto
     public NavigationFileDto? Navigation { get; set; }
 }
 
-internal sealed class ConceptLessonFileDto
+public sealed class ConceptLessonFileDto
 {
     public string? Introduction { get; set; }
     public List<LearningSectionFileDto>? Sections { get; set; }
 }
 
-internal sealed class LearningSectionFileDto
+public sealed class LearningSectionFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
@@ -69,13 +69,13 @@ internal sealed class LearningSectionFileDto
     public QuestionFileDto? Check { get; set; }
 }
 
-internal sealed class InteractiveExplorationFileDto
+public sealed class InteractiveExplorationFileDto
 {
     public string? Introduction { get; set; }
     public List<ExplorationSectionFileDto>? Sections { get; set; }
 }
 
-internal sealed class ExplorationSectionFileDto
+public sealed class ExplorationSectionFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
@@ -86,7 +86,7 @@ internal sealed class ExplorationSectionFileDto
     public QuestionFileDto? Check { get; set; }
 }
 
-internal sealed class ExplorationControlFileDto
+public sealed class ExplorationControlFileDto
 {
     public string? Id { get; set; }
     public string? Type { get; set; }
@@ -98,13 +98,13 @@ internal sealed class ExplorationControlFileDto
     public List<ExplorationOptionFileDto>? Options { get; set; }
 }
 
-internal sealed class ExplorationOptionFileDto
+public sealed class ExplorationOptionFileDto
 {
     public string? Value { get; set; }
     public string? Label { get; set; }
 }
 
-internal sealed class ExplorationViewFileDto
+public sealed class ExplorationViewFileDto
 {
     public string? Id { get; set; }
     public string? Type { get; set; }
@@ -118,7 +118,7 @@ internal sealed class ExplorationViewFileDto
     public decimal? Step { get; set; }
 }
 
-internal sealed class NavigationFileDto
+public sealed class NavigationFileDto
 {
     public string? LearningGoal { get; set; }
     public string? ActivityType { get; set; }
@@ -126,7 +126,7 @@ internal sealed class NavigationFileDto
 }
 
 
-internal sealed class RecallItemFileDto
+public sealed class RecallItemFileDto
 {
     public string? Id { get; set; }
     public string? Type { get; set; }
@@ -136,7 +136,7 @@ internal sealed class RecallItemFileDto
     public List<string>? Tags { get; set; }
 }
 
-internal sealed class RecallItemAnswerFileDto
+public sealed class RecallItemAnswerFileDto
 {
     public string? Expected { get; set; }
     public string? ExpectedLatex { get; set; }
@@ -144,7 +144,7 @@ internal sealed class RecallItemAnswerFileDto
     public List<MediaFileDto>? Media { get; set; }
 }
 
-internal sealed class GuidedProjectFileDto
+public sealed class GuidedProjectFileDto
 {
     public string? Language { get; set; }
     public string? ProjectKind { get; set; }
@@ -159,21 +159,21 @@ internal sealed class GuidedProjectFileDto
     public List<GuidedProjectCheckFileDto>? BonusChecks { get; set; }
 }
 
-internal sealed class GuidedProjectSourceFileDto
+public sealed class GuidedProjectSourceFileDto
 {
     public string? Path { get; set; }
     public string? Content { get; set; }
     public bool ReadOnly { get; set; }
 }
 
-internal sealed class GuidedProjectFixtureFileDto
+public sealed class GuidedProjectFixtureFileDto
 {
     public string? Path { get; set; }
     public string? Content { get; set; }
     public bool ReadOnly { get; set; }
 }
 
-internal sealed class GuidedProjectScenarioFileDto
+public sealed class GuidedProjectScenarioFileDto
 {
     public string? Id { get; set; }
     public string? Type { get; set; }
@@ -181,7 +181,7 @@ internal sealed class GuidedProjectScenarioFileDto
     public List<GuidedProjectNetworkEventFileDto>? Events { get; set; }
 }
 
-internal sealed class GuidedProjectNetworkEventFileDto
+public sealed class GuidedProjectNetworkEventFileDto
 {
     public string? Type { get; set; }
     public string? Peer { get; set; }
@@ -189,7 +189,7 @@ internal sealed class GuidedProjectNetworkEventFileDto
     public string? Text { get; set; }
 }
 
-internal sealed class GuidedProjectWorkspaceFileDto
+public sealed class GuidedProjectWorkspaceFileDto
 {
     public string? BuildProfile { get; set; }
     public string? EntryPoint { get; set; }
@@ -200,7 +200,7 @@ internal sealed class GuidedProjectWorkspaceFileDto
     public List<string>? AllowedBaseImages { get; set; }
 }
 
-internal sealed class GuidedProjectCheckFileDto
+public sealed class GuidedProjectCheckFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
@@ -211,26 +211,26 @@ internal sealed class GuidedProjectCheckFileDto
     public GuidedProjectCheckExpectFileDto? Expect { get; set; }
 }
 
-internal sealed class GuidedProjectCheckRunFileDto
+public sealed class GuidedProjectCheckRunFileDto
 {
     public List<string>? Arguments { get; set; }
     public string? Stdin { get; set; }
     public string? Scenario { get; set; }
 }
 
-internal sealed class GuidedProjectCheckExpectFileDto
+public sealed class GuidedProjectCheckExpectFileDto
 {
     public List<string>? StdoutContains { get; set; }
     public List<GuidedProjectFileExpectationFileDto>? Files { get; set; }
 }
 
-internal sealed class GuidedProjectFileExpectationFileDto
+public sealed class GuidedProjectFileExpectationFileDto
 {
     public string? Path { get; set; }
     public List<string>? TextContains { get; set; }
 }
 
-internal sealed class WorkedExampleFileDto
+public sealed class WorkedExampleFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
@@ -238,7 +238,7 @@ internal sealed class WorkedExampleFileDto
     public List<WorkedExampleStepFileDto>? Steps { get; set; }
 }
 
-internal sealed class WorkedExampleStepFileDto
+public sealed class WorkedExampleStepFileDto
 {
     public string? Id { get; set; }
     public string? Title { get; set; }
@@ -256,7 +256,7 @@ internal sealed class WorkedExampleStepFileDto
     public List<CodeQuestionTestFileDto>? Tests { get; set; }
 }
 
-internal sealed class QuestionFileDto
+public sealed class QuestionFileDto
 {
     public string? Id { get; set; }
     public string? Type { get; set; }
@@ -272,14 +272,14 @@ internal sealed class QuestionFileDto
     public CircuitQuestionFileDto? CircuitQuestion { get; set; }
 }
 
-internal sealed class ChoiceFileDto
+public sealed class ChoiceFileDto
 {
     public string? Id { get; set; }
     public string? Text { get; set; }
     public List<MediaFileDto>? Media { get; set; }
 }
 
-internal sealed class AnswerFileDto
+public sealed class AnswerFileDto
 {
     public string? ChoiceId { get; set; }
     public List<string>? ChoiceIds { get; set; }
@@ -295,7 +295,7 @@ internal sealed class AnswerFileDto
     public CircuitAnswerFileDto? CircuitAnswer { get; set; }
 }
 
-internal sealed class MediaFileDto
+public sealed class MediaFileDto
 {
     public string? Type { get; set; }
     public string? Src { get; set; }
@@ -303,13 +303,13 @@ internal sealed class MediaFileDto
     public string? Caption { get; set; }
 }
 
-internal sealed class CodeQuestionTestFileDto
+public sealed class CodeQuestionTestFileDto
 {
     public string? Input { get; set; }
     public string? Expected { get; set; }
 }
 
-internal sealed class CircuitQuestionFileDto
+public sealed class CircuitQuestionFileDto
 {
     public int SchemaVersion { get; set; }
     public int CatalogVersion { get; set; }
@@ -319,7 +319,7 @@ internal sealed class CircuitQuestionFileDto
     public CircuitDiagramFileDto? Diagram { get; set; }
 }
 
-internal sealed class CircuitDiagramFileDto
+public sealed class CircuitDiagramFileDto
 {
     public int Width { get; set; }
     public int Height { get; set; }
@@ -329,7 +329,7 @@ internal sealed class CircuitDiagramFileDto
     public List<CircuitAnnotationFileDto>? Annotations { get; set; }
 }
 
-internal sealed class CircuitComponentInstanceFileDto
+public sealed class CircuitComponentInstanceFileDto
 {
     public string? Id { get; set; }
     public string? SymbolId { get; set; }
@@ -341,7 +341,7 @@ internal sealed class CircuitComponentInstanceFileDto
     public Dictionary<string, string>? PropertyOverrides { get; set; }
 }
 
-internal sealed class CircuitNodeFileDto
+public sealed class CircuitNodeFileDto
 {
     public string? Id { get; set; }
     public string? Label { get; set; }
@@ -349,7 +349,7 @@ internal sealed class CircuitNodeFileDto
     public decimal? Y { get; set; }
 }
 
-internal sealed class CircuitWireFileDto
+public sealed class CircuitWireFileDto
 {
     public string? Id { get; set; }
     public string? SourceId { get; set; }
@@ -357,13 +357,13 @@ internal sealed class CircuitWireFileDto
     public List<CircuitPointFileDto>? RoutePoints { get; set; }
 }
 
-internal sealed class CircuitPointFileDto
+public sealed class CircuitPointFileDto
 {
     public decimal X { get; set; }
     public decimal Y { get; set; }
 }
 
-internal sealed class CircuitAnnotationFileDto
+public sealed class CircuitAnnotationFileDto
 {
     public string? Id { get; set; }
     public string? Type { get; set; }
@@ -372,7 +372,7 @@ internal sealed class CircuitAnnotationFileDto
     public decimal Y { get; set; }
 }
 
-internal sealed class CircuitAnswerFileDto
+public sealed class CircuitAnswerFileDto
 {
     public CircuitTopologyFileDto? Topology { get; set; }
     public List<string>? SelectedTargetIds { get; set; }
@@ -380,19 +380,19 @@ internal sealed class CircuitAnswerFileDto
     public Dictionary<string, ExpectedValueFileDto>? ExpectedValues { get; set; }
 }
 
-internal sealed class CircuitTopologyFileDto
+public sealed class CircuitTopologyFileDto
 {
     public List<RequiredComponentFileDto>? RequiredComponents { get; set; }
     public string? ConnectionMode { get; set; }
 }
 
-internal sealed class RequiredComponentFileDto
+public sealed class RequiredComponentFileDto
 {
     public string? SymbolId { get; set; }
     public int Count { get; set; }
 }
 
-internal sealed class CircuitMeterPlacementFileDto
+public sealed class CircuitMeterPlacementFileDto
 {
     public string? MeterType { get; set; }
     public string? TargetBranchId { get; set; }
@@ -402,7 +402,7 @@ internal sealed class CircuitMeterPlacementFileDto
     public string? NegativeTerminalId { get; set; }
 }
 
-internal sealed class ExpectedValueFileDto
+public sealed class ExpectedValueFileDto
 {
     public string? Mode { get; set; }
     public string? ExpectedText { get; set; }

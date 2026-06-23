@@ -86,7 +86,11 @@ navigation:
             fixture.Sqlite,
             fixture.Files,
             new FileAreaRepository(fixture.Files),
-            new AssessmentValidator());
+            new FileCategoryRepository(fixture.Files),
+            new AssessmentValidator(),
+            new AssessmentSourceInspector(),
+            new AssessmentTaxonomyValidator(),
+            new CatalogTaxonomyValidator());
         var fallback = new HybridAssessmentRepository(unavailableImporter, fixture.Sqlite, fileRepository);
         Assert.Contains(await fallback.ListByCategoryAsync("subject-one"), assessment => assessment.Id == saved.Id);
     }
@@ -124,7 +128,11 @@ areas:
             sqlite,
             files,
             new FileAreaRepository(files),
-            new AssessmentValidator());
+            new FileCategoryRepository(files),
+            new AssessmentValidator(),
+            new AssessmentSourceInspector(),
+            new AssessmentTaxonomyValidator(),
+            new CatalogTaxonomyValidator());
         return new CatalogFixture(files, sqlite, initializer, importer);
     }
 

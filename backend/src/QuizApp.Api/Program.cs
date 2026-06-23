@@ -49,6 +49,9 @@ builder.Services.AddSingleton<LegacyRetentionMigrationService>();
 builder.Services.AddSingleton<ISettingsRepository, FileSettingsRepository>();
 builder.Services.AddSingleton<ICategoryRepository, FileCategoryRepository>();
 builder.Services.AddSingleton<FileAssessmentRepository>();
+builder.Services.AddSingleton<IAssessmentSourceInspector, QuizApp.Infrastructure.Files.AssessmentSourceInspector>();
+builder.Services.AddSingleton<IAssessmentTaxonomyValidator, AssessmentTaxonomyValidator>();
+builder.Services.AddSingleton<ICatalogTaxonomyValidator, CatalogTaxonomyValidator>();
 builder.Services.AddSingleton<SqliteAssessmentCatalogImporter>();
 builder.Services.AddSingleton<HybridAssessmentRepository>();
 builder.Services.AddSingleton<IAssessmentRepository>(provider => provider.GetRequiredService<HybridAssessmentRepository>());
@@ -75,7 +78,28 @@ var app = builder.Build();
 
 await app.Services.GetRequiredService<LegacyRetentionMigrationService>().MigrateAsync();
 await app.Services.GetRequiredService<SqliteRetentionInitializer>().InitializeAsync();
-await app.Services.GetRequiredService<SqliteAssessmentCatalogImporter>().ImportAsync();
+
+var importer = app.Services.GetRequiredService<SqliteAssessmentCatalogImporter>();
+await importer.ImportAsync();
+
+if (importer.CatalogInitialized)
+{
+    var options = app.Services.GetRequiredService<SqliteRetentionOptions>();
+    await using var conn = new QuizApp.Infrastructure.Retention.SqliteConnectionFactory(options).CreateConnection();
+    await conn.OpenAsync();
+    await using var cmd = conn.CreateCommand();
+    cmd.CommandText = "SELECT severity, COUNT(*) FROM import_diagnostics WHERE run_id = (SELECT id FROM import_runs ORDER BY started_at DESC LIMIT 1) GROUP BY severity;";
+    await using var reader = await cmd.ExecuteReaderAsync();
+    var counts = new Dictionary<string, int>();
+    while (await reader.ReadAsync()) counts[reader.GetString(0)] = reader.GetInt32(1);
+    
+    var errorCount = counts.GetValueOrDefault("Error", 0);
+    var warningCount = counts.GetValueOrDefault("Warning", 0);
+    if (errorCount > 0 || warningCount > 0)
+    {
+        Console.WriteLine($"[CatalogImporter] Startup diagnostic summary: {errorCount} errors, {warningCount} warnings. Check /api/navigation/catalog/diagnostics.");
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -145,6 +169,51 @@ api.MapGet("/navigation/catalog", async (SqliteNavigationCatalogService catalogS
 
     var catalog = await catalogService.GetCatalogAsync(cancellationToken);
     return Results.Ok(catalog);
+});
+
+api.MapGet("/navigation/catalog/diagnostics", async (SqliteRetentionOptions options, CancellationToken cancellationToken) =>
+{
+    await using var connection = new QuizApp.Infrastructure.Retention.SqliteConnectionFactory(options).CreateConnection();
+    await connection.OpenAsync(cancellationToken);
+
+    await using var runCmd = connection.CreateCommand();
+    runCmd.CommandText = "SELECT id, started_at, finished_at, status FROM import_runs ORDER BY started_at DESC LIMIT 1;";
+    await using var runReader = await runCmd.ExecuteReaderAsync(cancellationToken);
+    
+    if (!await runReader.ReadAsync(cancellationToken))
+        return Results.Ok(new { run = (object?)null, diagnostics = Array.Empty<object>() });
+
+    var runId = runReader.GetString(0);
+    var run = new 
+    {
+        Id = runId,
+        StartedAt = runReader.GetString(1),
+        FinishedAt = runReader.IsDBNull(2) ? null : runReader.GetString(2),
+        Status = runReader.GetString(3)
+    };
+
+    var diagnostics = new List<object>();
+    await using var diagCmd = connection.CreateCommand();
+    diagCmd.CommandText = "SELECT path, assessment_id, severity, code, message, line, column, actual_key, suggested_key FROM import_diagnostics WHERE run_id = @runId;";
+    diagCmd.Parameters.AddWithValue("@runId", runId);
+    await using var diagReader = await diagCmd.ExecuteReaderAsync(cancellationToken);
+    while (await diagReader.ReadAsync(cancellationToken))
+    {
+        diagnostics.Add(new
+        {
+            Path = diagReader.IsDBNull(0) ? null : diagReader.GetString(0),
+            AssessmentId = diagReader.IsDBNull(1) ? null : diagReader.GetString(1),
+            Severity = diagReader.GetString(2),
+            Code = diagReader.GetString(3),
+            Message = diagReader.GetString(4),
+            Line = diagReader.IsDBNull(5) ? (int?)null : diagReader.GetInt32(5),
+            Column = diagReader.IsDBNull(6) ? (int?)null : diagReader.GetInt32(6),
+            ActualKey = diagReader.IsDBNull(7) ? null : diagReader.GetString(7),
+            SuggestedKey = diagReader.IsDBNull(8) ? null : diagReader.GetString(8)
+        });
+    }
+
+    return Results.Ok(new { run, diagnostics });
 });
 
 api.MapGet("/navigation/recommendations", async (NavigationRecommendationService recommendationService, CancellationToken cancellationToken) =>

@@ -132,6 +132,31 @@ public sealed class SqliteRetentionInitializer
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_activity ON assessments(activity_type);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_active ON assessments(is_active);", cancellationToken);
         
+        await ExecuteAsync(connection, """
+            CREATE TABLE IF NOT EXISTS import_runs (
+                id TEXT PRIMARY KEY,
+                started_at TEXT NOT NULL,
+                finished_at TEXT NULL,
+                status TEXT NOT NULL
+            );
+            """, cancellationToken);
+
+        await ExecuteAsync(connection, """
+            CREATE TABLE IF NOT EXISTS import_diagnostics (
+                id TEXT PRIMARY KEY,
+                run_id TEXT NOT NULL,
+                path TEXT NULL,
+                assessment_id TEXT NULL,
+                severity TEXT NOT NULL,
+                code TEXT NOT NULL,
+                message TEXT NOT NULL,
+                line INTEGER NULL,
+                column INTEGER NULL,
+                actual_key TEXT NULL,
+                suggested_key TEXT NULL
+            );
+            """, cancellationToken);
+        
         await RunAttemptCleanupMigrationAsync(connection, cancellationToken);
     }
 

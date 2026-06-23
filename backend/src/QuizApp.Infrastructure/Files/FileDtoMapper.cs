@@ -2,7 +2,7 @@ using QuizApp.Core.Domain;
 
 namespace QuizApp.Infrastructure.Files;
 
-internal static class FileDtoMapper
+public static class FileDtoMapper
 {
     public static Category ToDomain(this CategoryFileDto dto)
     {

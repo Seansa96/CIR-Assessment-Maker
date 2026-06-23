@@ -2,6 +2,7 @@
 
 @./AGENTS.md
 @./skills/caveman/SKILL.md
+@./docs/agent-reports/assessment-taxonomy-ingest-incident.md
 
 ## Gemini-Specific Startup
 
