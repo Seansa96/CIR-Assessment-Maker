@@ -128,7 +128,8 @@ public sealed class ScoringService
         var answersByQuestion = attempt.Answers.ToDictionary(answer => answer.QuestionId, StringComparer.OrdinalIgnoreCase);
         var assessmentItems = GetAssessmentItems(assessment);
         var orderedQuestions = attempt.QuestionOrder
-            .Select(questionId => assessmentItems.First(item => string.Equals(item.Question.Id, questionId, StringComparison.OrdinalIgnoreCase)))
+            .Select(questionId => assessmentItems.FirstOrDefault(item => string.Equals(item.Question.Id, questionId, StringComparison.OrdinalIgnoreCase)))
+            .OfType<AssessmentItem>()
             .ToList();
 
         var questionResults = orderedQuestions.Select(item =>
@@ -205,7 +206,8 @@ public sealed class ScoringService
     {
         var recallAttempts = attempt.RecallItems.ToDictionary(item => item.ItemId, StringComparer.OrdinalIgnoreCase);
         var orderedItems = attempt.QuestionOrder
-            .Select(itemId => assessment.Items.First(item => string.Equals(item.Id, itemId, StringComparison.OrdinalIgnoreCase)))
+            .Select(itemId => assessment.Items.FirstOrDefault(item => string.Equals(item.Id, itemId, StringComparison.OrdinalIgnoreCase)))
+            .OfType<RecallItemDefinition>()
             .ToList();
         var itemResults = orderedItems.Select(item =>
         {
