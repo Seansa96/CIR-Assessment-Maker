@@ -1,0 +1,183 @@
+schemaVersion: 1
+id: physics-tension-statics-hard-quiz
+title: 'String Tension and 2D Static Equilibrium — Hard Quiz'
+assessmentType: quiz
+categoryId: physics-1
+subcategoryIds:
+  - physics-newton-laws
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 10
+navigation:
+  tags:
+    - tension
+    - statics
+    - 2d-equilibrium
+questions:
+  - id: t-hard-q01
+    title: Asymmetric Angles Setup
+    type: numericResponse
+    prompt: |
+      A $10\text{ kg}$ mass hangs from a knot supported by two strings. String 1 makes an angle of $30°$ above the horizontal to the left. String 2 makes an angle of $45°$ above the horizontal to the right. Using $g = 9.8\text{ m/s}^2$, what is the tension in String 1 (in Newtons)? Round to one decimal place.
+    answer:
+      value: 71.7
+      tolerance: 1.0
+    explanation: |
+      Set up the equilibrium equations:
+      $\Sigma F_x = T_2\cos 45° - T_1\cos 30° = 0 \implies T_2 = T_1 \frac{\cos 30°}{\cos 45°} = T_1 \frac{\sqrt{3}/2}{\sqrt{2}/2} = T_1 \sqrt{\frac{3}{2}} \approx 1.2247 T_1$.
+      $\Sigma F_y = T_1\sin 30° + T_2\sin 45° - mg = 0$.
+      Substitute $T_2$: $T_1(0.5) + (1.2247 T_1)(0.7071) = 98$.
+      $0.5 T_1 + 0.866 T_1 = 98 \implies 1.366 T_1 = 98$.
+      $T_1 = \frac{98}{1.366} \approx 71.7\text{ N}$.
+
+  - id: t-hard-q02
+    title: Asymmetric Angles Setup (Tension 2)
+    type: numericResponse
+    prompt: |
+      Using the same setup as the previous question (mass = $10\text{ kg}$, String 1 is $30°$ on left, String 2 is $45°$ on right), what is the tension in String 2 (in Newtons)? Round to one decimal place.
+    answer:
+      value: 87.8
+      tolerance: 1.0
+    explanation: |
+      From the previous solution, $T_1 \approx 71.74\text{ N}$.
+      We know $T_2 = T_1 \frac{\cos 30°}{\cos 45°} = 71.74 \times \sqrt{1.5} \approx 71.74 \times 1.2247 \approx 87.9\text{ N}$.
+      Let's re-calculate precisely:
+      $T_2\cos 45° = T_1\cos 30° \implies T_2(0.7071) = 71.74(0.866) \implies T_2(0.7071) = 62.13 \implies T_2 = \frac{62.13}{0.7071} \approx 87.9\text{ N}$.
+      Actually, let's solve $T_2$ directly from $\Sigma F_y$:
+      $T_1 = T_2 \frac{\cos 45°}{\cos 30°} = T_2 \sqrt{\frac{2}{3}}$.
+      $T_2 \sqrt{\frac{2}{3}} \sin 30° + T_2\sin 45° = 98$.
+      $T_2 \left( 0.8165 \times 0.5 + 0.7071 \right) = T_2 (0.4082 + 0.7071) = 1.1153 T_2 = 98$.
+      $T_2 = 98 / 1.1153 = 87.87\text{ N}$. We'll accept 87.9.
+
+  - id: t-hard-q03
+    title: Deriving the General Formula for T1
+    type: symbolicResponse
+    prompt: |
+      Consider a mass $m$ hung from two strings. String 1 makes angle $\theta_1$ above the horizontal to the left. String 2 makes angle $\theta_2$ above the horizontal to the right. Derive the symbolic expression for the tension $T_1$. Use $g$ for gravity.
+    answer:
+      expectedLatex: m*g*\cos(\theta_2)/\sin(\theta_1 + \theta_2)
+      equivalenceMode: expression
+      tolerance: 0
+    explanation: |
+      $\Sigma F_x = 0 \implies T_1\cos\theta_1 = T_2\cos\theta_2 \implies T_2 = T_1\frac{\cos\theta_1}{\cos\theta_2}$.
+      $\Sigma F_y = 0 \implies T_1\sin\theta_1 + T_2\sin\theta_2 = mg$.
+      Substitute $T_2$: $T_1\sin\theta_1 + T_1\frac{\cos\theta_1}{\cos\theta_2}\sin\theta_2 = mg$.
+      Multiply by $\cos\theta_2$: $T_1(\sin\theta_1\cos\theta_2 + \cos\theta_1\sin\theta_2) = mg\cos\theta_2$.
+      Use the sine addition identity: $T_1\sin(\theta_1 + \theta_2) = mg\cos\theta_2$.
+      Therefore, $T_1 = \frac{mg\cos\theta_2}{\sin(\theta_1 + \theta_2)}$.
+
+  - id: t-hard-q04
+    title: Deriving the General Formula for T2
+    type: symbolicResponse
+    prompt: |
+      Using the same setup (String 1 at $\theta_1$ left, String 2 at $\theta_2$ right, mass $m$), enter the symbolic expression for $T_2$.
+    answer:
+      expectedLatex: m*g*\cos(\theta_1)/\sin(\theta_1 + \theta_2)
+      equivalenceMode: expression
+      tolerance: 0
+    explanation: |
+      The situation is perfectly symmetric. By swapping the indices 1 and 2 in the formula for $T_1$, we immediately get:
+      $T_2 = \frac{mg\cos\theta_1}{\sin(\theta_1 + \theta_2)}$.
+
+  - id: t-hard-q05
+    title: Ratio of Tensions
+    type: symbolicResponse
+    prompt: |
+      For the 2D hanging mass in equilibrium (String 1 at $\theta_1$, String 2 at $\theta_2$), what is the ratio $\frac{T_1}{T_2}$?
+    answer:
+      expectedLatex: \cos(\theta_2)/\cos(\theta_1)
+      equivalenceMode: expression
+      tolerance: 0
+    explanation: |
+      From horizontal equilibrium: $T_1\cos\theta_1 = T_2\cos\theta_2$.
+      Rearranging gives $\frac{T_1}{T_2} = \frac{\cos\theta_2}{\cos\theta_1}$.
+      Notice that the ratio of tensions is inversely proportional to the cosine of their respective angles.
+
+  - id: t-hard-q06
+    title: Maximum Safe Mass
+    type: numericResponse
+    prompt: |
+      A sign is suspended by two strings. String A is $30°$ above horizontal, and String B is $60°$ above horizontal. The strings have a maximum breaking tension of $500\text{ N}$. What is the maximum mass (in kg) the sign can have before a string breaks? Use $g = 9.8\text{ m/s}^2$. Round to one decimal place.
+    answer:
+      value: 58.9
+      tolerance: 0.5
+    explanation: |
+      First, determine which string has higher tension.
+      $T_A / T_B = \cos 60° / \cos 30° = 0.5 / 0.866 = 0.577$. Since $T_A < T_B$, String B will break first.
+      Set $T_B = 500\text{ N}$.
+      Using the formula $T_B = \frac{mg\cos\theta_A}{\sin(\theta_A+\theta_B)} = \frac{mg\cos 30°}{\sin 90°} = mg(0.866)$.
+      $500 = m(9.8)(0.866) \implies 500 = 8.487 m \implies m = \frac{500}{8.487} \approx 58.9\text{ kg}$.
+
+  - id: t-hard-q07
+    title: Extreme Angles Limit
+    type: multipleChoice
+    prompt: |
+      What happens to the required tension in the strings as the support angles $\theta_1$ and $\theta_2$ both approach $0°$ (i.e. the strings become perfectly horizontal)?
+    choices:
+      - id: a
+        text: The tension approaches infinity.
+      - id: b
+        text: The tension approaches $mg/2$.
+      - id: c
+        text: The tension approaches zero.
+      - id: d
+        text: The tension approaches $mg$.
+    answer:
+      choiceId: a
+    explanation: |
+      As $\theta \to 0$, $\sin\theta \to 0$. The vertical component of the tension is what supports the weight ($T\sin\theta \propto mg$). If $\sin\theta$ is nearly zero, $T$ must become enormously large to produce enough upward force. A perfectly horizontal string cannot support any vertical load.
+
+  - id: t-hard-q08
+    title: Hanging Mass with a Horizontal Pull
+    type: numericResponse
+    prompt: |
+      A $5.0\text{ kg}$ ball hangs from a string attached to the ceiling. A person pulls the ball horizontally to the right with a force $F$, such that the string makes an angle of $25°$ with the vertical. What is the magnitude of the horizontal pull $F$ (in Newtons)? Use $g = 9.8\text{ m/s}^2$. Round to one decimal place.
+    answer:
+      value: 22.8
+      tolerance: 0.5
+    explanation: |
+      Vertical equilibrium: The upward vertical component of tension ($T\cos 25°$) must balance gravity ($mg$).
+      $T\cos 25° = mg \implies T = \frac{5(9.8)}{\cos 25°} = \frac{49}{0.9063} \approx 54.06\text{ N}$.
+      Horizontal equilibrium: The leftward horizontal component of tension ($T\sin 25°$) must balance the rightward pull $F$.
+      $F = T\sin 25° = 54.06(0.4226) \approx 22.8\text{ N}$.
+      (Alternatively, $F = mg\tan 25° = 49(0.4663) \approx 22.8\text{ N}$).
+
+  - id: t-hard-q09
+    title: Tension and Vector Triangles
+    type: multipleChoice
+    prompt: |
+      For an object in 2D static equilibrium under the influence of exactly three forces (e.g. gravity and two string tensions), which of the following is necessarily true about the three force vectors?
+    choices:
+      - id: a
+        text: When placed head-to-tail, they must form a closed triangle.
+      - id: b
+        text: They must all be equal in magnitude.
+      - id: c
+        text: They must all point in perpendicular directions.
+      - id: d
+        text: Their magnitudes must sum to zero.
+    answer:
+      choiceId: a
+    explanation: |
+      Because the net force is zero ($\vec{F}_1 + \vec{F}_2 + \vec{F}_3 = 0$), adding the vectors graphically head-to-tail must result in a closed loop (a triangle for three forces) that ends exactly where it started.
+
+  - id: t-hard-q10
+    title: Moving the Knot
+    type: multipleChoice
+    prompt: |
+      A mass hangs from two strings of unequal length attached to a flat ceiling. If the knot is in equilibrium, which string will always have the greater tension?
+    choices:
+      - id: a
+        text: The string that is steeper (makes a larger angle with the horizontal).
+      - id: b
+        text: The string that is shallower (makes a smaller angle with the horizontal).
+      - id: c
+        text: Both strings will always have the same tension.
+      - id: d
+        text: The longer string.
+    answer:
+      choiceId: a
+    explanation: |
+      Horizontal equilibrium requires $T_1\cos\theta_1 = T_2\cos\theta_2$.
+      If $\theta_1 > \theta_2$ (steeper), then $\cos\theta_1 < \cos\theta_2$.
+      To compensate and keep the horizontal forces equal, $T_1$ must be greater than $T_2$. The steeper string supports more of the vertical load.

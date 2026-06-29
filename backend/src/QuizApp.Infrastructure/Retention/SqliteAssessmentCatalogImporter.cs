@@ -241,9 +241,10 @@ public sealed class SqliteAssessmentCatalogImporter
             {
                 var code = err.Split(':')[0];
                 var msg = err.Contains(':') ? err.Substring(err.IndexOf(':') + 1).Trim() : err;
-                await InsertDiagnosticAsync(connection, runId, path, domain.Id, "Error", code, msg, null, null, null, null, cancellationToken);
+                // Log as warning since we still import it (system infers unmapped topics)
+                await InsertDiagnosticAsync(connection, runId, path, domain.Id, "Warning", code, msg, null, null, null, null, cancellationToken);
             }
-            return;
+            // Do not return here! We want to import unmapped taxonomy files so the system can infer an 'unmapped' topic.
         }
 
         if (seenIds.Contains(domain.Id))

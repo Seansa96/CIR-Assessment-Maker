@@ -24,6 +24,7 @@ import "../styles/global.css";
         <button class="tab" data-tab="create">Create Quiz/Test</button>
         <button class="tab" data-tab="settings">Settings</button>
         <button class="tab" data-tab="grades">Grade Log</button>
+        <button class="tab" data-tab="diagnostics">Diagnostics</button>
       </nav>
 
       <section class="view active" id="view-load" aria-labelledby="load-title">
@@ -274,6 +275,31 @@ import "../styles/global.css";
             <h3>Attempt History</h3>
             <div id="attempt-history" class="empty-state">No attempts loaded yet.</div>
           </section>
+        </section>
+      </section>
+
+      <section class="view" id="view-diagnostics" aria-labelledby="diagnostics-title">
+        <section class="panel">
+          <div class="section-header">
+            <h2 id="diagnostics-title">Catalog Diagnostics</h2>
+            <button id="refresh-diagnostics">Refresh</button>
+          </div>
+          <p class="quiet-hint">View import errors for assessments that failed to load into the catalog.</p>
+          <div id="diagnostics-run-info" style="margin-bottom: 1rem; font-size: 0.9em; color: var(--text-muted);"></div>
+          <div class="table-container">
+            <table class="data-table" id="diagnostics-table" hidden>
+              <thead>
+                <tr>
+                  <th>Severity</th>
+                  <th>Code</th>
+                  <th>Path</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody id="diagnostics-tbody"></tbody>
+            </table>
+          </div>
+          <div id="diagnostics-empty" class="empty-state">No diagnostics available.</div>
         </section>
       </section>
     </main>
@@ -1076,6 +1102,7 @@ import "../styles/global.css";
       document.querySelector<HTMLButtonElement>("#start-attempt")!.addEventListener("click", startAttempt);
       document.querySelector<HTMLButtonElement>("#nav-start-attempt")!.addEventListener("click", startNavigationAttempt);
       document.querySelector<HTMLButtonElement>("#refresh-grades")!.addEventListener("click", loadGrades);
+      document.querySelector<HTMLButtonElement>("#refresh-diagnostics")?.addEventListener("click", loadDiagnostics);
       settingsForm.addEventListener("submit", saveSettings);
       document.addEventListener("keydown", handleAnswerShortcut);
       createForm.addEventListener("submit", saveDraftAssessment);
@@ -1898,6 +1925,51 @@ import "../styles/global.css";
           body: JSON.stringify(settings)
         });
         settingsStatus.textContent = "Settings saved.";
+      }
+
+      async function loadDiagnostics() {
+        const result = await api<{ run: any; diagnostics: any[] }>("/navigation/catalog/diagnostics");
+        
+        const runInfo = document.getElementById("diagnostics-run-info");
+        const table = document.getElementById("diagnostics-table");
+        const tbody = document.getElementById("diagnostics-tbody");
+        const emptyState = document.getElementById("diagnostics-empty");
+
+        if (!runInfo || !table || !tbody || !emptyState) return;
+
+        if (!result.run) {
+          runInfo.textContent = "No import runs have occurred.";
+          table.hidden = true;
+          emptyState.hidden = false;
+          return;
+        }
+
+        const date = result.run.startedAt ? new Date(result.run.startedAt).toLocaleString() : "Unknown";
+        runInfo.textContent = `Last run: ${date} (${result.run.status}). ${result.diagnostics.length} diagnostic(s) found.`;
+
+        if (result.diagnostics.length === 0) {
+          table.hidden = true;
+          emptyState.hidden = false;
+        } else {
+          emptyState.hidden = true;
+          table.hidden = false;
+          tbody.innerHTML = result.diagnostics.map((d: any) => `
+            <tr>
+              <td style="color: ${d.severity === 'Error' ? 'var(--color-error, #d32f2f)' : 'var(--color-warning, #f57c00)'}; font-weight: 600;">
+                ${escapeHtml(d.severity || 'Unknown')}
+              </td>
+              <td><code style="font-size: 0.85em;">${escapeHtml(d.code || '-')}</code></td>
+              <td>
+                <div style="word-break: break-all;">${escapeHtml(d.path || d.assessmentId || '-')}</div>
+                ${d.line ? `<div style="font-size: 0.8em; color: var(--text-muted); margin-top: 4px;">Line ${d.line}${d.column ? ` Col ${d.column}` : ''}</div>` : ''}
+              </td>
+              <td>
+                <div style="margin-bottom: 4px;">${escapeHtml(d.message || '-')}</div>
+                ${d.suggestedKey ? `<div style="font-size: 0.85em; color: var(--text-muted); padding: 4px; background: rgba(0,0,0,0.05); border-radius: 4px;">Found: <code>${escapeHtml(d.actualKey || '')}</code> &rarr; Try: <code>${escapeHtml(d.suggestedKey)}</code></div>` : ''}
+              </td>
+            </tr>
+          `).join("");
+        }
       }
 
       async function loadGrades() {

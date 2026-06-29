@@ -1,0 +1,58 @@
+schemaVersion: 1
+id: physics-linear-drag-velocity-derivation-worked-example
+title: Deriving Linear Drag Velocity
+assessmentType: workedExample
+categoryId: physics-1
+subcategoryIds:
+- physics-newton-laws
+modeDefault: practice
+randomizeQuestions: false
+workedExamples:
+- id: ex-linear-drag-velocity
+  title: Coasting with Air Resistance
+  problem: |
+    Let's derive the velocity as a function of time for an object coasting horizontally with only a linear drag force acting on it.
+  steps:
+  - id: step-1
+    title: Step 1 — Set up the Differential Equation
+    instruction: |
+      We start with Newton's second law ($F_{\text{net}} = m \frac{dv}{dt}$) and the linear resistive force $\vec F_d = -b\vec v$.
+      Since drag is the only force, $m \frac{dv}{dt} = -bv$.
+    type: multipleChoice
+    prompt: Why can't we use the standard kinematic equation $v = v_0 + at$ here?
+    choices:
+    - id: a
+      text: Because the acceleration $a$ is not constant; it depends on velocity.
+    - id: b
+      text: Because the mass is changing.
+    - id: c
+      text: Because drag only happens in fluids.
+    answer:
+      choiceId: a
+    explanation: Since $a = -bv/m$, the acceleration changes continuously as the object slows down. Algebraic kinematics only works for constant acceleration. We must use calculus.
+  - id: step-2
+    title: Step 2 — Separate Variables
+    instruction: |
+      To solve the differential equation $m \frac{dv}{dt} = -bv$, we separate the variables by moving all $v$ terms to the left and $t$ terms to the right.
+    type: symbolicResponse
+    prompt: What is the resulting equation if we isolate $dv/v$ on the left side? (Write the expression for the right side)
+    answer:
+      gradingMode: auto
+      expectedLatex: -\frac{b}{m} dt
+      equivalenceMode: expression
+      tolerance: 0
+    explanation: Dividing by $v$ and multiplying by $dt/m$ gives $dv/v = -(b/m) dt$.
+  - id: step-3
+    title: Step 3 — Integrate and Exponentiate
+    instruction: |
+      Integrate the left side from $v_0$ to $v$, and the right side from $0$ to $t$.
+      $\int_{v_0}^v \frac{1}{v} dv = \int_0^t -\frac{b}{m} dt$
+      This yields $\ln(v) - \ln(v_0) = -\frac{b}{m} t$, which simplifies to $\ln(v/v_0) = -\frac{b}{m} t$.
+    type: symbolicResponse
+    prompt: To remove the natural log, we raise $e$ to the power of both sides. What is the final formula for $v(t)$?
+    answer:
+      gradingMode: auto
+      expectedLatex: v_0 e^{-bt/m}
+      equivalenceMode: expression
+      tolerance: 0
+    explanation: Exponentiating gives $v/v_0 = e^{-bt/m}$, so $v(t) = v_0 e^{-bt/m}$. The velocity decays exponentially!
