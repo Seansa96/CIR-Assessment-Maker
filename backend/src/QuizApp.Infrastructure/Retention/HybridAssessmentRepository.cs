@@ -71,7 +71,8 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
                     await GetAreaIdsAsync(connection, row.Id, cancellationToken),
                     row.Goal,
                     row.Activity,
-                    await GetTagsAsync(connection, row.Id, cancellationToken)));
+                    await GetTagsAsync(connection, row.Id, cancellationToken),
+                    await GetSkillsAsync(connection, row.Id, cancellationToken)));
             }
 
             return assessments;
@@ -159,13 +160,26 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
         return result;
     }
 
+    private static async Task<List<string>> GetSkillsAsync(SqliteConnection connection, string id, CancellationToken cancellationToken)
+    {
+        var result = new List<string>();
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = "SELECT skill_id FROM assessment_skills WHERE assessment_id = @id;";
+        cmd.Parameters.AddWithValue("@id", id);
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+            result.Add(reader.GetString(0));
+        return result;
+    }
+
     private static AssessmentSummary CreateSummary(
         AssessmentDefinition assessment,
         List<string> subcatIds,
         List<string> areaIds,
         string learningGoal,
         string activityType,
-        List<string> tags)
+        List<string> tags,
+        List<string> skills)
     {
         var authoredCount = CountItems(assessment);
         var effectiveCount = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
@@ -185,7 +199,8 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
             AreaIds = areaIds,
             LearningGoal = learningGoal,
             ActivityType = activityType,
-            Tags = tags
+            Tags = tags,
+            Skills = skills
         };
     }
 

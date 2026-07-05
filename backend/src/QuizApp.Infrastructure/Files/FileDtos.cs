@@ -51,6 +51,7 @@ public sealed class AssessmentFileDto
     public ConceptLessonFileDto? Lesson { get; set; }
     public InteractiveExplorationFileDto? Exploration { get; set; }
     public NavigationFileDto? Navigation { get; set; }
+    public List<string>? Skills { get; set; }
 }
 
 public sealed class ConceptLessonFileDto
@@ -134,6 +135,7 @@ public sealed class RecallItemFileDto
     public RecallItemAnswerFileDto? Answer { get; set; }
     public string? Explanation { get; set; }
     public List<string>? Tags { get; set; }
+    public List<string>? Skills { get; set; }
 }
 
 public sealed class RecallItemAnswerFileDto
@@ -270,6 +272,7 @@ public sealed class QuestionFileDto
     public string? StarterCode { get; set; }
     public List<CodeQuestionTestFileDto>? Tests { get; set; }
     public CircuitQuestionFileDto? CircuitQuestion { get; set; }
+    public List<string>? Skills { get; set; }
 }
 
 public sealed class ChoiceFileDto

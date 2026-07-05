@@ -43,7 +43,8 @@ public sealed record NavigationAssessmentSummary(
     IReadOnlyList<string> Tags,
     int QuestionCount,
     int AuthoredQuestionCount,
-    int? AttemptQuestionCount);
+    int? AttemptQuestionCount,
+    IReadOnlyList<string> Skills);
 
 /// <summary>Known learning-goal IDs.</summary>
 public static class LearningGoals

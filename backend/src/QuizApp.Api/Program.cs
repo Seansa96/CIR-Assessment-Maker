@@ -63,6 +63,7 @@ builder.Services.AddSingleton<IGuidedProjectSessionRepository, FileGuidedProject
 builder.Services.AddSingleton<SqliteNavigationCatalogService>();
 builder.Services.AddSingleton<INavigationCatalogService>(sp => sp.GetRequiredService<SqliteNavigationCatalogService>());
 builder.Services.AddSingleton<NavigationRecommendationService>();
+builder.Services.AddSingleton<SqliteAssessmentSearchService>();
 
 builder.Services.AddCors(options =>
 {
@@ -220,6 +221,58 @@ api.MapGet("/navigation/recommendations", async (NavigationRecommendationService
 {
     var recommendations = await recommendationService.GetRecommendationsAsync(cancellationToken);
     return Results.Ok(recommendations);
+});
+
+api.MapGet("/search/assessments", async (
+    string? q,
+    string? subjectId,
+    string? areaId,
+    string? topicId,
+    string? learningGoal,
+    string? activityType,
+    string? assessmentType,
+    string? tag,
+    string? skill,
+    int? limit,
+    SqliteAssessmentSearchService searchService,
+    CancellationToken cancellationToken) =>
+{
+    if (!searchService.IsAvailable)
+    {
+        return Results.Json(
+            ApiError("SEARCH_UNAVAILABLE", "Search is currently unavailable."),
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+
+    var tags = string.IsNullOrWhiteSpace(tag) ? null : new[] { tag };
+    var skills = string.IsNullOrWhiteSpace(skill) ? null : new[] { skill };
+    
+    var request = new AssessmentSearchRequest(
+        q, subjectId, areaId, topicId, learningGoal, activityType, assessmentType,
+        tags, skills, limit ?? 25);
+
+    var results = await searchService.SearchAsync(request, cancellationToken);
+    return Results.Ok(results);
+});
+
+api.MapGet("/search/suggestions", async (
+    string? q,
+    string? subjectId,
+    string? areaId,
+    string? topicId,
+    int? limit,
+    SqliteAssessmentSearchService searchService,
+    CancellationToken cancellationToken) =>
+{
+    if (!searchService.IsAvailable)
+    {
+        return Results.Json(
+            ApiError("SEARCH_UNAVAILABLE", "Search is currently unavailable."),
+            statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+
+    var results = await searchService.GetSuggestionsAsync(q, subjectId, areaId, topicId, limit ?? 12, cancellationToken);
+    return Results.Ok(results);
 });
 
 
@@ -382,6 +435,20 @@ api.MapPost("/attempts/{attemptId}/answers", async (string attemptId, SubmitAnsw
     catch (InvalidOperationException ex)
     {
         return Results.BadRequest(ApiError("ANSWER_SUBMIT_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/answers/{questionId}/override", async (string attemptId, string questionId, AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        await attemptService.OverrideAnswerEvaluationAsync(attemptId, questionId, true, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ANSWER_OVERRIDE_FAILED", ex.Message));
     }
 });
 

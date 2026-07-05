@@ -1,136 +1,143 @@
 schemaVersion: 1
 id: calc2-parametric-integrals-worked-example
-title: 'Parametric Integrals: Worked Example'
+title: Integrals, Arc Length, and Surface Area of Parametric Curves
+assessmentType: workedExample
 categoryId: calculus-2
 subcategoryIds:
-- parametric-integrals
-assessmentType: workedExample
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
   - parametric-integrals
+modeDefault: study
+randomizeQuestions: false
 workedExamples:
-- id: we-1
-  title: Solving a typical problem in parametric-integrals
-  steps:
-  - id: step-1
-    instruction: Perform step 1 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-1
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
-  - id: step-2
-    instruction: Perform step 2 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-2
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
-  - id: step-3
-    instruction: Perform step 3 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-3
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
-  - id: step-4
-    instruction: Perform step 4 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-4
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
-  - id: step-5
-    instruction: Perform step 5 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-5
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
-  - id: step-6
-    instruction: Perform step 6 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-6
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
-  - id: step-7
-    instruction: Perform step 7 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-7
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
-  - id: step-8
-    instruction: Perform step 8 for parametric-integrals.
-    hint: Apply the appropriate definition.
-    explanation: This simplifies the parametric expression.
-    check:
-      id: we-check-8
-      type: multipleChoice
-      prompt: What is the intermediate result?
-      options:
-      - id: a
-        text: Result A
-      - id: b
-        text: Result B
-      answer:
-        choiceId: a
+  - id: we-param-int-1
+    title: Area Under a Parametric Curve
+    problem: |
+      Find the area of the region bounded by the parametric curve:
+
+      $$
+      x = 2t - t^2, \quad y = t^3
+      $$
+
+      and the $x$-axis. 
+      First, we must determine the limits of integration.
+    steps:
+      - id: step-we-param-int-1a
+        title: Find the points where the curve intersects the x-axis
+        instruction: |
+          The curve intersects the $x$-axis when $y = 0$.
+          Set $y(t) = t^3 = 0 \implies t = 0$.
+          Wait, if it only intersects at $t=0$, is it bounded?
+          Let's change the curve for a better area problem.
+          Consider the curve $x = t - \sin t$, $y = 1 - \cos t$ for $0 \le t \le 2\pi$ (one arch of a cycloid).
+          
+          The area under a parametric curve from $t=\alpha$ to $t=\beta$ is given by:
+
+          $$
+          A = \int_{\alpha}^{\beta} y(t) x'(t) \, dt
+          $$
+
+          Let's find $x'(t)$ for the cycloid.
+        type: symbolicResponse
+        prompt: 'What is $x''(t)$?'
+        answer:
+          expectedLatex: '1 - \cos t'
+          equivalenceMode: algebraic
+          variables:
+            - t
+          tolerance: 0.000001
+        explanation: |
+          The derivative of $x = t - \sin t$ is $x'(t) = 1 - \cos t$.
+        skills:
+          - parametric-integrals
+
+      - id: step-we-param-int-1b
+        title: Set up and evaluate the integral
+        instruction: |
+          We integrate from $t=0$ to $t=2\pi$.
+          
+          $$
+          A = \int_{0}^{2\pi} (1 - \cos t)(1 - \cos t) \, dt = \int_{0}^{2\pi} (1 - 2\cos t + \cos^2 t) \, dt
+          $$
+          
+          To integrate $\cos^2 t$, we use the half-angle identity: $\cos^2 t = \frac{1 + \cos(2t)}{2}$.
+          
+          $$
+          \int_{0}^{2\pi} \left(1 - 2\cos t + \frac{1}{2} + \frac{1}{2}\cos(2t)\right) \, dt
+          $$
+          
+          $$
+          = \int_{0}^{2\pi} \left(\frac{3}{2} - 2\cos t + \frac{1}{2}\cos(2t)\right) \, dt
+          $$
+        type: numericResponse
+        prompt: 'Evaluate this definite integral from $0$ to $2\pi$. What is the area in terms of $\pi$?'
+        answer:
+          expectedNumeric: 9.42477796
+          tolerance: 0.001
+        explanation: |
+          Integrating term by term:
+          $\left[ \frac{3}{2}t - 2\sin t + \frac{1}{4}\sin(2t) \right]_0^{2\pi}$
+          
+          At $t=2\pi$: $\frac{3}{2}(2\pi) - 0 + 0 = 3\pi$.
+          At $t=0$: $0 - 0 + 0 = 0$.
+          
+          The total area is $3\pi$, which is approximately 9.425.
+        skills:
+          - parametric-integrals
+
+  - id: we-param-int-2
+    title: Arc Length of a Parametric Curve
+    problem: |
+      Find the arc length of the curve defined by:
+      
+      $$
+      x = \cos t + t\sin t, \quad y = \sin t - t\cos t
+      $$
+      
+      for $0 \le t \le \pi$.
+    steps:
+      - id: step-we-param-int-2a
+        title: Find the derivatives
+        instruction: |
+          The arc length formula for parametric curves is:
+          
+          $$
+          L = \int_{\alpha}^{\beta} \sqrt{\left(\frac{dx}{dt}\right)^2 + \left(\frac{dy}{dt}\right)^2} \, dt
+          $$
+          
+          First, find $\frac{dx}{dt}$ using the product rule:
+          $\frac{dx}{dt} = -\sin t + (\sin t + t\cos t) = t\cos t$.
+          
+          Now find $\frac{dy}{dt}$.
+        type: symbolicResponse
+        prompt: 'What is $\frac{dy}{dt}$?'
+        answer:
+          expectedLatex: 't\sin t'
+          equivalenceMode: algebraic
+          variables:
+            - t
+          tolerance: 0.000001
+        explanation: |
+          $\frac{dy}{dt} = \cos t - (\cos t - t\sin t) = t\sin t$.
+        skills:
+          - parametric-integrals
+
+      - id: step-we-param-int-2b
+        title: Set up and evaluate the arc length integral
+        instruction: |
+          Now, square the derivatives and add them:
+          $\left(\frac{dx}{dt}\right)^2 + \left(\frac{dy}{dt}\right)^2 = (t\cos t)^2 + (t\sin t)^2 = t^2\cos^2 t + t^2\sin^2 t = t^2(\cos^2 t + \sin^2 t) = t^2$.
+          
+          The arc length integral is:
+          $$
+          L = \int_{0}^{\pi} \sqrt{t^2} \, dt = \int_{0}^{\pi} t \, dt
+          $$
+        type: symbolicResponse
+        prompt: 'Evaluate the integral. What is the exact arc length?'
+        answer:
+          expectedLatex: '\frac{\pi^2}{2}'
+          equivalenceMode: algebraic
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          $\int_{0}^{\pi} t \, dt = \left[ \frac{t^2}{2} \right]_0^{\pi} = \frac{\pi^2}{2}$.
+        skills:
+          - parametric-integrals

@@ -36,6 +36,8 @@ public sealed record GradeAnalyticsSummary(
     IReadOnlyList<RecallGroupAnalytics> RecallCategories,
     IReadOnlyList<RecallGroupAnalytics> RecallSubcategories,
     IReadOnlyList<WeakFocusSummary> WeakAreas,
+    IReadOnlyList<SkillPerformance> WeakestSkills,
+    IReadOnlyList<ActionableNextStep> ActionableNextSteps,
     IReadOnlyList<AttemptHistoryRow> Attempts);
 
 public sealed record RecallRatingAnalytics(
@@ -82,7 +84,10 @@ public sealed record AreaGradeAnalytics(
     int AttemptCount,
     decimal AveragePercent,
     string? WeakestSubcategoryId,
-    string? WeakestSubcategoryTitle);
+    string? WeakestSubcategoryTitle)
+{
+    public IReadOnlyList<string> CategoryIds { get; init; } = Array.Empty<string>();
+}
 
 public sealed record QuestionTypePerformance(
     QuestionType QuestionType,
@@ -90,6 +95,28 @@ public sealed record QuestionTypePerformance(
     int CorrectCount,
     int NeedsReviewCount,
     decimal CorrectPercent);
+
+public sealed record SkillPerformance(
+    string SkillId,
+    int AnsweredCount,
+    int CorrectCount,
+    decimal CorrectPercent);
+
+public sealed record ActionableNextStep(
+    string SkillId,
+    string Message,
+    string RecommendedAssessmentId,
+    string RecommendedAssessmentTitle)
+{
+    public string? CategoryId { get; init; }
+    public string? CategoryTitle { get; init; }
+    public IReadOnlyList<string>? AreaIds { get; init; }
+    public IReadOnlyList<string>? AreaTitles { get; init; }
+    public IReadOnlyList<string>? TopicIds { get; init; }
+    public IReadOnlyList<string>? TopicTitles { get; init; }
+    public string? Source { get; init; }
+    public decimal? EvidencePercent { get; init; }
+}
 
 public sealed record WeakFocusSummary(
     string Id,

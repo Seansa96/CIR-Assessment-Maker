@@ -24,6 +24,7 @@ import "../styles/global.css";
         <button class="tab" data-tab="create">Create Quiz/Test</button>
         <button class="tab" data-tab="settings">Settings</button>
         <button class="tab" data-tab="grades">Grade Log</button>
+        <button class="tab" data-tab="sessions">Attempt Sessions</button>
         <button class="tab" data-tab="diagnostics">Diagnostics</button>
       </nav>
 
@@ -35,6 +36,21 @@ import "../styles/global.css";
             <div class="attempt-chip" id="active-attempt-chip">No active attempt</div>
           </div>
           <p class="quiet-hint">Switch assessments whenever you need a different path.</p>
+
+          <div class="nav-search" id="nav-search" role="search">
+            <div class="search-input-wrapper">
+               <input type="search" id="assessment-search-input" placeholder="Search topics, tags, or assessments..." autocomplete="off" aria-autocomplete="list" aria-controls="search-suggestions" />
+               <div id="search-suggestions" class="search-suggestions" hidden role="listbox"></div>
+            </div>
+            <div id="search-filters" class="search-filters" hidden>
+                <!-- populated by js -->
+            </div>
+          </div>
+
+          <div id="search-results-container" class="search-results-container" hidden>
+             <h3 class="nav-stage-label" id="search-results-label">Search Results</h3>
+             <div id="search-results-list" class="nav-assessment-list" role="listbox" aria-label="Search results"></div>
+          </div>
 
           <!-- Breadcrumb path -->
           <nav class="nav-breadcrumb" id="nav-breadcrumb" aria-label="Navigator path" hidden></nav>
@@ -271,10 +287,16 @@ import "../styles/global.css";
             <button id="refresh-grades">Refresh</button>
           </div>
           <div id="grade-summary" class="empty-state">No grade entries loaded yet.</div>
-          <section class="author-section">
-            <h3>Attempt History</h3>
-            <div id="attempt-history" class="empty-state">No attempts loaded yet.</div>
-          </section>
+        </section>
+      </section>
+
+      <section class="view" id="view-sessions" aria-labelledby="sessions-title">
+        <section class="panel">
+          <div class="section-header">
+            <h2 id="sessions-title">Attempt Sessions</h2>
+            <button id="refresh-sessions">Refresh</button>
+          </div>
+          <div id="attempt-history" class="empty-state">No attempts loaded yet.</div>
         </section>
       </section>
 
@@ -789,6 +811,7 @@ import "../styles/global.css";
         earnedPoints?: number;
         possiblePoints?: number;
         partResults?: QuestionResult[];
+        userOverriddenCorrect?: boolean | null;
       }
 
       interface AttemptResults {
@@ -965,7 +988,23 @@ import "../styles/global.css";
         recallCategories: RecallGroupAnalytics[];
         recallSubcategories: RecallGroupAnalytics[];
         weakAreas: WeakFocusSummary[];
+        weakestSkills: SkillPerformance[];
+        actionableNextSteps: ActionableNextStep[];
         attempts: AttemptHistoryRow[];
+      }
+
+      interface SkillPerformance {
+        skillId: string;
+        answeredCount: number;
+        correctCount: number;
+        correctPercent: number;
+      }
+
+      interface ActionableNextStep {
+        skillId: string;
+        message: string;
+        recommendedAssessmentId: string;
+        recommendedAssessmentTitle: string;
       }
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
@@ -1007,6 +1046,8 @@ import "../styles/global.css";
         guidedProjectActiveFile: string;
         committedAttemptIds: Set<string>;
         analytics: GradeAnalyticsSummary | null;
+        gradeLogEntries: GradeLogEntry[];
+        activeAnalyticsCategory: string | null;
         historyFilters: {
           status: string;
           mode: string;
@@ -1043,6 +1084,8 @@ import "../styles/global.css";
         guidedProjectActiveFile: "",
         committedAttemptIds: new Set(),
         analytics: null,
+        gradeLogEntries: [],
+        activeAnalyticsCategory: null,
         historyFilters: {
           status: "",
           mode: "",
@@ -1102,6 +1145,7 @@ import "../styles/global.css";
       document.querySelector<HTMLButtonElement>("#start-attempt")!.addEventListener("click", startAttempt);
       document.querySelector<HTMLButtonElement>("#nav-start-attempt")!.addEventListener("click", startNavigationAttempt);
       document.querySelector<HTMLButtonElement>("#refresh-grades")!.addEventListener("click", loadGrades);
+      document.querySelector<HTMLButtonElement>("#refresh-sessions")!.addEventListener("click", loadGrades);
       document.querySelector<HTMLButtonElement>("#refresh-diagnostics")?.addEventListener("click", loadDiagnostics);
       settingsForm.addEventListener("submit", saveSettings);
       document.addEventListener("keydown", handleAnswerShortcut);
@@ -1172,6 +1216,7 @@ import "../styles/global.css";
 
       async function initializeNavigation() {
         try {
+          setupSearch();
           const catalog = await api<NavigationCatalog>("/navigation/catalog");
           if (!catalog.assessments.length) throw new Error("The assessment catalog is empty.");
           state.navigationCatalog = catalog;
@@ -1184,6 +1229,139 @@ import "../styles/global.css";
           navError.hidden = false;
           classicPicker.open = true;
         }
+      }
+
+      function setupSearch() {
+        const searchInput = document.getElementById("assessment-search-input") as HTMLInputElement | null;
+        const suggestionsBox = document.getElementById("search-suggestions");
+        const resultsContainer = document.getElementById("search-results-container");
+        const resultsList = document.getElementById("search-results-list");
+        const navStages = document.getElementById("nav-stages");
+        
+        if (!searchInput || !suggestionsBox || !resultsContainer || !resultsList || !navStages) return;
+
+        let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+        
+        searchInput.addEventListener("input", () => {
+          const query = searchInput.value.trim();
+          if (debounceTimer) clearTimeout(debounceTimer);
+
+          if (query.length === 0) {
+            suggestionsBox.hidden = true;
+            if (resultsContainer.hidden === false) {
+               resultsContainer.hidden = true;
+               navStages.style.display = ""; // restore stages
+            }
+            return;
+          }
+
+          debounceTimer = setTimeout(async () => {
+            try {
+              let url = `/search/suggestions?q=${encodeURIComponent(query)}`;
+              if (state.navigationSelection.subjectId) url += `&subjectId=${encodeURIComponent(state.navigationSelection.subjectId)}`;
+              const suggestions = await api<AssessmentSearchSuggestion[]>(url);
+              
+              if (suggestions.length > 0) {
+                suggestionsBox.innerHTML = suggestions.map(s => `
+                  <div class="search-suggestion-item" data-term="${escapeHtml(s.label)}" data-kind="${escapeHtml(s.kind)}">
+                    <span class="suggestion-kind">${escapeHtml(s.kind)}</span>
+                    <span class="suggestion-term">${escapeHtml(s.label)}</span>
+                  </div>
+                `).join("");
+                suggestionsBox.hidden = false;
+              } else {
+                suggestionsBox.innerHTML = `<div class="search-suggestion-item muted">No suggestions found</div>`;
+                suggestionsBox.hidden = false;
+              }
+            } catch (e) {
+              console.error("Search suggestion failed", e);
+            }
+          }, 300);
+        });
+
+        suggestionsBox.addEventListener("click", (e) => {
+          const item = (e.target as HTMLElement).closest(".search-suggestion-item");
+          if (!item) return;
+          const term = item.getAttribute("data-term");
+          if (term) {
+             searchInput.value = term;
+             suggestionsBox.hidden = true;
+             performSearch(term);
+          }
+        });
+
+        searchInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+             e.preventDefault();
+             suggestionsBox.hidden = true;
+             performSearch(searchInput.value.trim());
+          } else if (e.key === "Escape") {
+             suggestionsBox.hidden = true;
+          }
+        });
+
+        // Hide suggestions when clicking outside
+        document.addEventListener("click", (e) => {
+           if (!searchInput.contains(e.target as Node) && !suggestionsBox.contains(e.target as Node)) {
+              suggestionsBox.hidden = true;
+           }
+        });
+
+        async function performSearch(query: string) {
+          if (!query) return;
+          try {
+            let url = `/search/assessments?q=${encodeURIComponent(query)}`;
+            if (state.navigationSelection.subjectId) url += `&subjectId=${encodeURIComponent(state.navigationSelection.subjectId)}`;
+            const results = await api<AssessmentSearchResult[]>(url);
+            
+            navStages.style.display = "none";
+            resultsContainer.hidden = false;
+            
+            if (results.length === 0) {
+              resultsList.innerHTML = `<p class="muted" style="padding: 1rem;">No assessments found matching "${escapeHtml(query)}".</p>`;
+              return;
+            }
+
+            resultsList.innerHTML = results.map(r => {
+              const tagsHtml = r.tags.map(t => `<span class="assessment-chip tag">${escapeHtml(t)}</span>`).join("");
+              return `
+              <div class="nav-tile" role="option" tabindex="0" data-assessment-id="${escapeHtml(r.id)}">
+                <div class="tile-header">
+                  <h4>${escapeHtml(r.title)}</h4>
+                </div>
+                <div class="tile-meta">
+                  <span class="assessment-chip format">${escapeHtml(r.assessmentType)}</span>
+                  <span class="assessment-chip count">${r.questionCount} questions</span>
+                  ${tagsHtml}
+                </div>
+              </div>
+            `}).join("");
+          } catch (e) {
+            console.error("Search failed", e);
+            resultsList.innerHTML = `<p class="nav-error">Search failed: ${escapeHtml(readableError(e))}</p>`;
+          }
+        }
+
+        // Handle clicking on search result
+        resultsList.addEventListener("click", (e) => {
+           const tile = (e.target as HTMLElement).closest(".nav-tile");
+           if (!tile) return;
+           const id = tile.getAttribute("data-assessment-id");
+           if (id) {
+               // Update selection state and unhide start button
+               document.querySelectorAll("#search-results-list .nav-tile").forEach(t => t.classList.remove("selected"));
+               tile.classList.add("selected");
+               state.navigationSelection.assessmentId = id;
+               navActions.hidden = false;
+           }
+        });
+        
+        resultsList.addEventListener("keydown", (e) => {
+           if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              (e.target as HTMLElement).click();
+           }
+        });
       }
 
       const RECOMMENDED_PATHS: Record<string, { label: string; desc: string }[]> = {
@@ -1640,10 +1818,23 @@ import "../styles/global.css";
           if (typeof loadRecommendations === "function") {
             await loadRecommendations();
           }
+          state.historyRows = [];
+          
+
+        } catch (e) {
+          console.error(e);
+          alert("Failed to load assessment.");
         } finally {
           clearBusy(startButton, "Start Selected");
         }
       }
+
+      // Export a global helper to jump into a specific assessment (used from Grade Log Actionable Steps)
+      (window as any).startAssessmentDirectly = async (assessmentId: string) => {
+        // Just use a dummy button to satisfy the API
+        const dummyButton = document.createElement("button");
+        await startSelectedAssessment(assessmentId, "practice", dummyButton);
+      };
 
       async function submitCurrentAnswer() {
         if (!state.attempt || !state.assessment) return;
@@ -1797,33 +1988,100 @@ import "../styles/global.css";
 
       async function abandonAttempt() {
         if (!state.attempt) return;
-        if (!confirm("Quit this assessment early? This attempt and all unsaved progress will be permanently deleted.")) return;
 
-        await api(`/attempts/${state.attempt.id}`, { method: "DELETE" });
-        
-        state.attempt = null;
-        state.assessment = null;
-        state.latestResults = null;
-        state.guidedProjectSession = null;
-        currentProjectEditor = null;
-        activeCircuitCanvas = null;
-        clearActiveWidgets();
+        // Show an inline three-option panel instead of a blocking confirm().
+        // Capture identifiers now so they remain available in the click handlers.
+        const attemptId = state.attempt.id;
 
-        updateActiveAttemptChip();
-        updateModeControlLock();
         attemptContent.innerHTML = `
           <div class="empty-state">
-            <p>Attempt deleted.</p>
-            <div class="button-row" style="justify-content: center; margin-top: 1rem;">
-              <button type="button" class="chunky" id="close-assessment">Return to Catalog</button>
+            <p><strong>Quit this assessment?</strong></p>
+            <p class="muted">All unsaved progress will be permanently deleted.</p>
+            <div class="button-row" style="justify-content: center; margin-top: 1.5rem; flex-wrap: wrap; gap: 0.5rem;">
+              <button type="button" class="chunky danger-action" id="confirm-quit-attempt">Quit Assessment</button>
+              <button type="button" class="chunky" id="confirm-reset-restart">Reset &amp; Restart</button>
+              <button type="button" id="cancel-quit-attempt">Cancel</button>
             </div>
           </div>
         `;
-        document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
-        
-        await loadGrades();
-        if (typeof loadRecommendations === "function") {
-           await loadRecommendations();
+
+        document.querySelector<HTMLButtonElement>("#confirm-quit-attempt")?.addEventListener("click", async () => {
+          try {
+            await api(`/attempts/${encodeURIComponent(attemptId)}`, { method: "DELETE" });
+          } catch (e) {
+            console.error(e);
+          }
+          state.attempt = null;
+          state.assessment = null;
+          state.latestResults = null;
+          state.guidedProjectSession = null;
+          currentProjectEditor = null;
+          activeCircuitCanvas = null;
+          clearActiveWidgets();
+          updateActiveAttemptChip();
+          updateModeControlLock();
+          attemptContent.innerHTML = `
+            <div class="empty-state">
+              <p>Attempt deleted.</p>
+              <div class="button-row" style="justify-content: center; margin-top: 1rem;">
+                <button type="button" class="chunky" id="close-assessment">Return to Catalog</button>
+              </div>
+            </div>
+          `;
+          document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
+          await loadGrades();
+          if (typeof loadRecommendations === "function") {
+            await loadRecommendations();
+          }
+        });
+
+        document.querySelector<HTMLButtonElement>("#confirm-reset-restart")?.addEventListener("click", async () => {
+          await redoAssessment();
+        });
+
+        document.querySelector<HTMLButtonElement>("#cancel-quit-attempt")?.addEventListener("click", () => {
+          void renderCurrentQuestion();
+        });
+      }
+
+      async function redoAssessment() {
+        if (!state.assessment) return;
+        const assessmentId = state.assessment.id;
+        const mode = state.attempt?.mode ?? "practice";
+
+        const redoBtn = document.querySelector<HTMLButtonElement>("#redo-assessment");
+        if (redoBtn) setBusy(redoBtn, "Starting");
+
+        try {
+          if (state.attempt) {
+            await api(`/attempts/${encodeURIComponent(state.attempt.id)}`, { method: "DELETE" });
+          }
+
+          state.assessment = await api<Assessment>(`/assessments/${encodeURIComponent(assessmentId)}`);
+          state.attempt = await api<Attempt>("/attempts", {
+            method: "POST",
+            body: JSON.stringify({ assessmentId, mode })
+          });
+          state.currentIndex = 0;
+          state.latestResults = null;
+          state.guidedProjectSession = null;
+          state.guidedProjectActiveFile = "";
+          currentProjectEditor = null;
+          activeCircuitCanvas = null;
+          clearActiveWidgets();
+
+          updateActiveAttemptChip();
+          updateModeControlLock();
+          await renderCurrentQuestion();
+
+          if (typeof loadRecommendations === "function") {
+            await loadRecommendations();
+          }
+          state.historyRows = [];
+        } catch (e) {
+          console.error(e);
+          alert("Failed to restart the assessment.");
+          if (redoBtn) clearBusy(redoBtn, "Redo Assessment");
         }
       }
 
@@ -1978,6 +2236,7 @@ import "../styles/global.css";
           api<GradeAnalyticsSummary>("/analytics/grades")
         ]);
         state.analytics = analytics;
+        state.gradeLogEntries = summary.entries;
         state.committedAttemptIds = new Set(summary.entries.map((entry) => entry.attemptId));
         const currentAttemptIds = new Set(analytics.attempts.map((attempt) => attempt.attemptId));
         state.selectedAttemptIds.forEach((attemptId) => {
@@ -1994,36 +2253,146 @@ import "../styles/global.css";
         const weakestArea = analytics.weakestArea ? `${analytics.weakestArea.title} (${analytics.weakestArea.averagePercent}%)` : "Not enough data";
         const weakestQuestionType = analytics.weakestQuestionType ? `${questionTypeLabel(analytics.weakestQuestionType.questionType)} (${analytics.weakestQuestionType.correctPercent}%)` : "Not enough data";
 
-        return `
-          <section class="analytics-dashboard">
-            <div class="metric-row analytics-metrics">
-              <div><span>${analytics.committedEntryCount}</span><small>Committed scores</small></div>
-              <div><span>${analytics.overallCommittedAverage ?? 0}%</span><small>Overall average</small></div>
-              <div><span>${analytics.attempts.length}</span><small>Attempt sessions</small></div>
-              <div><span>${analytics.weakAreas.length}</span><small>Focus signals</small></div>
+        const categoriesHtml = analytics.categories.map(c => `
+          <button type="button" class="analytics-category-btn ${state.activeAnalyticsCategory === c.categoryId ? 'active' : ''}" data-category-id="${escapeHtml(c.categoryId)}">
+            ${escapeHtml(c.categoryTitle)}
+          </button>
+        `).join("");
+
+        const sidebar = `
+          <aside class="grade-log-sidebar">
+            <p class="eyebrow">Grade Log</p>
+            <div class="guided-check-list" style="margin-top: 1rem;">
+              <button type="button" class="analytics-category-btn ${state.activeAnalyticsCategory === null ? 'active' : ''}" data-category-id="">Overview</button>
+              ${categoriesHtml}
             </div>
-            <div class="analytics-focus-grid">
-              <article><small>Weakest category</small><strong>${escapeHtml(weakestCategory)}</strong></article>
-              <article><small>Weakest area</small><strong>${escapeHtml(weakestArea)}</strong></article>
-              <article><small>Weakest question type</small><strong>${escapeHtml(weakestQuestionType)}</strong></article>
-            </div>
-            ${analytics.weakAreas.length > 0 ? `
-              <div class="focus-callout">
-                ${analytics.weakAreas.map((weak) => `<p>${escapeHtml(weak.message)}</p>`).join("")}
+          </aside>
+        `;
+
+        let content = "";
+
+        if (state.activeAnalyticsCategory === null) {
+          content = `
+            <section class="analytics-dashboard">
+              <div class="metric-row analytics-metrics">
+                <div><span>${analytics.committedEntryCount}</span><small>Committed scores</small></div>
+                <div><span>${analytics.overallCommittedAverage ?? 0}%</span><small>Overall average<br/>(Includes weighted recall drills)</small></div>
+                <div><span>${analytics.attempts.length}</span><small>Attempt sessions</small></div>
+                <div><span>${analytics.weakAreas.length}</span><small>Focus signals</small></div>
               </div>
-            ` : `<div class="empty-state">Commit a few completed attempts to start surfacing weak topics.</div>`}
-            <div class="analytics-table-grid">
-              ${renderCategoryAnalyticsTable(analytics.categories)}
-              ${renderAreaAnalyticsTable(analytics.areas)}
-              ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
+              <div class="analytics-focus-grid">
+                <article><small>Weakest category</small><strong>${escapeHtml(weakestCategory)}</strong></article>
+                <article><small>Weakest area</small><strong>${escapeHtml(weakestArea)}</strong></article>
+                <article><small>Weakest question type</small><strong>${escapeHtml(weakestQuestionType)}</strong></article>
+               ${analytics.weakAreas.length > 0 ? `
+                <div class="focus-callout">
+                  ${analytics.weakAreas.map((weak) => `<p>${escapeHtml(weak.message)}</p>`).join("")}
+                </div>
+              ` : ""}
+              ${analytics.actionableNextSteps && analytics.actionableNextSteps.length > 0 ? `
+                <div class="actionable-next-steps">
+                  <h3>Recommended Next Steps</h3>
+                  <ul>
+                    ${analytics.actionableNextSteps.map((step) => `
+                      <li>
+                        <strong>${escapeHtml(step.skillId)}:</strong> ${escapeHtml(step.message)}
+                        <br />
+                        <a href="#view-attempt" onclick="window.startAssessmentDirectly('${escapeHtml(step.recommendedAssessmentId)}')">
+                          &#10148; Go to ${escapeHtml(step.recommendedAssessmentTitle)}
+                        </a>
+                      </li>
+                    `).join("")}
+                  </ul>
+                </div>
+              ` : ""}
+              ${analytics.weakestSkills && analytics.weakestSkills.length > 0 ? `
+                <div class="weakest-skills-section">
+                  <h3>Weakest Skills</h3>
+                  <table class="data-table">
+                    <thead>
+                      <tr>
+                        <th>Skill</th>
+                        <th>Answered</th>
+                        <th>Correct %</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${analytics.weakestSkills.map(skill => `
+                        <tr>
+                          <td>${escapeHtml(skill.skillId)}</td>
+                          <td>${skill.answeredCount}</td>
+                          <td>${skill.correctPercent}%</td>
+                        </tr>
+                      `).join("")}
+                    </tbody>
+                  </table>
+                </div>
+              ` : ""}
+              </div>
+              ${analytics.attempts.length > 0 ? "" : `<div class="empty-state">Commit a few completed attempts to start surfacing weak topics.</div>`}
+              <div class="analytics-table-grid">
+                ${renderCategoryAnalyticsTable(analytics.categories)}
+                ${renderAreaAnalyticsTable(analytics.areas)}
+                ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
+              </div>
+              <div class="analytics-table-grid recall-analytics-grid">
+                ${renderRecallRatingAnalyticsTable(analytics.recallRatings)}
+                ${renderRecallTagAnalyticsTable(analytics.recallTags)}
+                ${renderRecallGroupAnalyticsTable("Recall Categories", analytics.recallCategories)}
+              </div>
+              ${renderCommittedEntries(entries)}
+            </section>
+          `;
+        } else {
+          const category = analytics.categories.find(c => c.categoryId === state.activeAnalyticsCategory);
+          const categoryAreas = analytics.areas.filter(a => a.categoryId === state.activeAnalyticsCategory || a.categoryIds?.includes(state.activeAnalyticsCategory));
+          const categorySteps = analytics.actionableNextSteps?.filter(step => step.categoryId === state.activeAnalyticsCategory) || [];
+          
+          const categoryEntries = entries.filter(e => {
+            const assmt = state.assessments.find(a => a.id === e.assessmentId);
+            return assmt?.categoryId === state.activeAnalyticsCategory;
+          });
+
+          content = `
+            <section class="analytics-dashboard">
+              <h3>${escapeHtml(category?.categoryTitle ?? state.activeAnalyticsCategory)} Analytics</h3>
+              ${category ? `
+                <div class="metric-row analytics-metrics" style="margin-bottom: 2rem;">
+                  <div><span>${category.attemptCount}</span><small>Category Attempts</small></div>
+                  <div><span>${category.averagePercent}%</span><small>Category Average</small></div>
+                </div>
+              ` : ""}
+              ${categorySteps.length > 0 ? `
+                <div class="actionable-next-steps">
+                  <h3>Recommended Next Steps</h3>
+                  <ul>
+                    ${categorySteps.map((step) => `
+                      <li>
+                        <strong>${escapeHtml(step.source === "recall" ? step.skillId : step.skillId)}:</strong> ${escapeHtml(step.message)}
+                        <br />
+                        <a href="#view-attempt" onclick="window.startAssessmentDirectly('${escapeHtml(step.recommendedAssessmentId)}')">
+                          &#10148; Go to ${escapeHtml(step.recommendedAssessmentTitle)}
+                        </a>
+                      </li>
+                    `).join("")}
+                  </ul>
+                </div>
+              ` : ""}
+              <div class="analytics-table-grid">
+                ${renderAreaAnalyticsTable(categoryAreas)}
+              </div>
+              ${renderCommittedEntries(categoryEntries)}
+            </section>
+          `;
+        }
+
+        return `
+          <div class="grade-log-shell">
+            ${sidebar}
+            <div class="grade-log-content">
+              ${content}
             </div>
-            <div class="analytics-table-grid recall-analytics-grid">
-              ${renderRecallRatingAnalyticsTable(analytics.recallRatings)}
-              ${renderRecallTagAnalyticsTable(analytics.recallTags)}
-              ${renderRecallGroupAnalyticsTable("Recall Categories", analytics.recallCategories)}
-            </div>
-            ${renderCommittedEntries(entries)}
-          </section>
+          </div>
         `;
       }
 
@@ -2201,6 +2570,18 @@ import "../styles/global.css";
         gradeSummary.querySelectorAll<HTMLButtonElement>("[data-delete-grade]").forEach((button) => {
           button.addEventListener("click", () => deleteGrade(button.dataset.deleteGrade ?? ""));
         });
+        
+        gradeSummary.querySelectorAll<HTMLButtonElement>(".analytics-category-btn").forEach((button) => {
+          button.addEventListener("click", () => {
+            const categoryId = button.dataset.categoryId;
+            state.activeAnalyticsCategory = categoryId ? categoryId : null;
+            if (state.analytics) {
+              gradeSummary.innerHTML = renderAnalyticsDashboard(state.analytics, state.gradeLogEntries);
+              setupGradeLogInteractions();
+            }
+          });
+        });
+
         attemptHistory.querySelectorAll<HTMLButtonElement>("[data-attempt-action]").forEach((button) => {
           button.addEventListener("click", () => handleAttemptAction(button.dataset.attemptAction ?? "", button.dataset.attemptId ?? ""));
         });
@@ -3611,6 +3992,7 @@ import "../styles/global.css";
                       ${isReviewingPreviousStep ? `<button type="button" id="return-current-step">Return to Current Step</button>` : ""}
                       <button type="button" id="previous-worked-step" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Step</button>
                       <button class="primary chunky" id="submit-answer" type="submit" ${isReviewingPreviousStep || isLockedFutureStep ? "disabled" : ""}>${result?.isCorrect ? "Continue" : "Check Step"}</button>
+                      ${IS_DEV && !result?.isCorrect && !isReviewingPreviousStep && !isLockedFutureStep ? `<button type="button" id="dev-override-step" class="danger-action" title="Force override this step as correct">Override (Dev)</button>` : ""}
                       ${renderDevAssessmentRefreshButton()}
                       <button type="button" id="pause-attempt">Save and Quit</button>
                     </div>
@@ -3638,6 +4020,20 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#return-current-step")?.addEventListener("click", () => {
           state.currentIndex = currentUnlockedIndex;
           void renderCurrentWorkedExampleStep();
+        });
+        document.querySelector<HTMLButtonElement>("#dev-override-step")?.addEventListener("click", async () => {
+          if (!state.attempt) return;
+          const button = document.querySelector<HTMLButtonElement>("#dev-override-step")!;
+          setBusy(button, "Overriding");
+          try {
+            await api(`/attempts/${encodeURIComponent(state.attempt.id)}/answers/${encodeURIComponent(question.id)}/override`, { method: "POST" });
+            state.latestResults = await api<AttemptResults>(`/attempts/${encodeURIComponent(state.attempt.id)}/results`);
+            void renderCurrentWorkedExampleStep();
+          } catch (e) {
+            console.error(e);
+            alert("Failed to override step.");
+            clearBusy(button, "Override (Dev)");
+          }
         });
         document.querySelectorAll<HTMLButtonElement>("[data-worked-step-index]").forEach((button) => {
           button.addEventListener("click", () => {
@@ -4049,7 +4445,7 @@ import "../styles/global.css";
         const isLearningSession = results.assessmentType === "conceptLesson" || results.assessmentType === "interactiveExploration";
         const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject" || isRecallDrill || isLearningSession;
         if (isRecallDrill) {
-          await renderRecallResults(results);
+          await renderRecallResults(results, alreadyCommitted);
           return;
         }
         if (isLearningSession) {
@@ -4071,7 +4467,10 @@ import "../styles/global.css";
               ${instructionHtml ? `<div class="result-detail"><strong>Step:</strong><div class="markdown">${instructionHtml}</div></div>` : ""}
               <div class="markdown">${promptHtml}</div>
               ${renderMedia(question.media ?? [])}
-              <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong></p>
+              <p><strong>${question.isCorrect ? "Correct" : "Needs review"}</strong>
+                ${question.userOverriddenCorrect === true ? `<span class="badge" style="margin-left:8px;font-size:0.8em;opacity:0.8;">(Manually Marked Correct)</span>` : ""}
+                ${!question.isCorrect && !alreadyCommitted && results.status === "completed" ? `<button type="button" class="override-correct-btn" data-question-id="${question.questionId}" style="margin-left: 1rem; padding: 2px 8px; font-size: 0.8rem;">Mark as Correct</button>` : ""}
+              </p>
               ${renderCodeFeedback(question.codeFeedback)}
               ${symbolicFeedbackHtml}
               ${renderCircuitFeedback(question.circuitFeedback)}
@@ -4097,15 +4496,32 @@ import "../styles/global.css";
           ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
           <div class="button-row" style="margin-top: 1rem;">
             ${!alreadyCommitted && !isInstructionalSession && !results.hasPendingSelfChecks && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+            <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>
           ${renderDevAssessmentRefreshButton()}
         `;
 
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
+        document.querySelector<HTMLButtonElement>("#redo-assessment")?.addEventListener("click", redoAssessment);
         document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
         setupDevAssessmentRefresh();
         setupSelfCheckButtons();
+
+        document.querySelectorAll<HTMLButtonElement>(".override-correct-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            const qId = btn.dataset.questionId;
+            if (!qId || !state.latestResults) return;
+            setBusy(btn, "Marking");
+            try {
+              const res = await api<{ results: AttemptResults }>(`/attempts/${state.latestResults.attemptId}/answers/${encodeURIComponent(qId)}/override`, { method: "POST" });
+              state.latestResults = res.results;
+              await renderResults(false);
+            } finally {
+              clearBusy(btn, "Mark as Correct");
+            }
+          });
+        });
 
         document.querySelectorAll<HTMLElement>(".circuit-result-mount").forEach((mount) => {
           const questionId = mount.dataset.questionId;
@@ -4174,15 +4590,17 @@ import "../styles/global.css";
           <p class="muted">${escapeHtml(assessmentTypeLabel(results.assessmentType))}. Status: ${escapeHtml(statusLabel(results.status))}.</p>
           <div class="result-list">${sectionHtml.join("")}</div>
           <div class="button-row" style="margin-top: 1rem;">
+            <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>
           ${renderDevAssessmentRefreshButton()}
         `;
         setupDevAssessmentRefresh();
+        document.querySelector<HTMLButtonElement>("#redo-assessment")?.addEventListener("click", redoAssessment);
         document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
       }
 
-      async function renderRecallResults(results: AttemptResults) {
+      async function renderRecallResults(results: AttemptResults, alreadyCommitted: boolean) {
         const summary = results.recallSummary;
         const itemHtml = await Promise.all(results.recallItems.map(async (item) => {
           const promptHtml = await renderMarkdown(item.prompt);
@@ -4209,7 +4627,7 @@ import "../styles/global.css";
         attemptContent.innerHTML = `
           <div class="results-header">
             <h2>${escapeHtml(results.assessmentTitle)}</h2>
-            <div class="score-badge">Complete</div>
+            <div class="score-badge">${results.percentScore}%</div>
           </div>
           <p class="muted">Recall Drill. Status: ${escapeHtml(statusLabel(results.status))}.</p>
           ${summary ? `
@@ -4230,13 +4648,19 @@ import "../styles/global.css";
           <div class="result-list">
             ${itemHtml.join("")}
           </div>
+          ${(summary?.itemsReviewed ?? 0) < results.totalQuestions ? `<p class="feedback incorrect">Resolve all recall ratings before committing this score.</p>` : ""}
+          ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
           <div class="button-row" style="margin-top: 1rem;">
+            ${!alreadyCommitted && (summary?.itemsReviewed ?? 0) >= results.totalQuestions && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+            <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>
           ${renderDevAssessmentRefreshButton()}
         `;
 
         setupDevAssessmentRefresh();
+        document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
+        document.querySelector<HTMLButtonElement>("#redo-assessment")?.addEventListener("click", redoAssessment);
         document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
       }
 

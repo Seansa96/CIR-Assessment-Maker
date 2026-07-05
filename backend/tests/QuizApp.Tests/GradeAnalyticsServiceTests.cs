@@ -119,7 +119,21 @@ public sealed class GradeAnalyticsServiceTests
             new MultiAssessmentRepository(assessments),
             new AnalyticsCategoryRepository(),
             new AnalyticsAreaRepository(),
+            new DummyNavigationCatalogService(),
             new ScoringService(null!, null!, null!));
+    }
+
+    private sealed class DummyNavigationCatalogService : INavigationCatalogService
+    {
+        public Task<NavigationCatalog> GetCatalogAsync(CancellationToken cancellationToken = default)
+        {
+            return Task.FromResult(new NavigationCatalog(
+                Array.Empty<NavigationSubject>(),
+                Array.Empty<NavigationArea>(),
+                Array.Empty<NavigationTopic>(),
+                Array.Empty<NavigationGoal>(),
+                Array.Empty<NavigationAssessmentSummary>()));
+        }
     }
 
     private static GradeAnalyticsFilter EmptyFilter()

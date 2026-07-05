@@ -145,6 +145,7 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
             var areaIds = await GetListAsync(connection, "assessment_areas", "area_id", row.id, cancellationToken);
             var subcatIds = await GetListAsync(connection, "assessment_subcategories", "subcategory_id", row.id, cancellationToken);
             var tags = await GetListAsync(connection, "assessment_tags", "tag", row.id, cancellationToken);
+            var skills = await GetListAsync(connection, "assessment_skills", "skill_id", row.id, cancellationToken);
 
             // Parse authored/attempt count from definition_json briefly
             var (authored, attemptCount) = ParseCounts(row.json, row.typeStr);
@@ -164,7 +165,8 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
                 tags,
                 QuestionCount: attemptCount.HasValue ? Math.Min(attemptCount.Value, authored) : authored,
                 AuthoredQuestionCount: authored,
-                AttemptQuestionCount: attemptCount));
+                AttemptQuestionCount: attemptCount,
+                Skills: skills));
         }
 
         return result;

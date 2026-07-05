@@ -11,7 +11,7 @@ namespace QuizApp.Infrastructure.Retention;
 
 public sealed class SqliteAssessmentCatalogImporter
 {
-    private const string PipelineVersion = "v2"; // Phase 7: Add pipeline version invalidation
+    private const string PipelineVersion = "v3"; // Phase 7: Add pipeline version invalidation
 
     private readonly SqliteRetentionOptions retentionOptions;
     private readonly FileStorageOptions storageOptions;
@@ -149,6 +149,9 @@ public sealed class SqliteAssessmentCatalogImporter
                 assessment,
                 BuildSubcategoryToAreaIndex(areas),
                 BuildCategoryToAreaIndex(areas));
+            var subjectTitle = categories.FirstOrDefault(c => c.Id == assessment.CategoryId)?.Title ?? string.Empty;
+            var areaTitles = areas.Where(a => resolvedAreas.Contains(a.Id)).Select(a => a.Title).ToList();
+            var topicTitles = categories.SelectMany(c => c.Subcategories).Where(s => assessment.SubcategoryIds.Contains(s.Id)).Select(s => s.Title).ToList();
 
             await using var connection = new SqliteConnectionFactory(retentionOptions).CreateConnection();
             await connection.OpenAsync(cancellationToken);
@@ -157,6 +160,9 @@ public sealed class SqliteAssessmentCatalogImporter
                 assessment,
                 nav,
                 resolvedAreas,
+                subjectTitle,
+                areaTitles,
+                topicTitles,
                 JsonSerializer.Serialize(assessment, JsonOptions),
                 path,
                 ComputeHash(content),
@@ -256,12 +262,16 @@ public sealed class SqliteAssessmentCatalogImporter
         var nav = NavigationInference.Infer(domain);
 
         var resolvedAreas = ResolveAreas(domain, areasBySubcategory, areasByCategory);
+        var subjectTitle = categories.FirstOrDefault(c => c.Id == domain.CategoryId)?.Title ?? string.Empty;
+        var areaTitles = areas.Where(a => resolvedAreas.Contains(a.Id)).Select(a => a.Title).ToList();
+        var topicTitles = categories.SelectMany(c => c.Subcategories).Where(s => domain.SubcategoryIds.Contains(s.Id)).Select(s => s.Title).ToList();
+        
         var definitionJson = JsonSerializer.Serialize(domain, JsonOptions);
         var now = DateTimeOffset.UtcNow.ToString("O");
 
         seenIds.Add(domain.Id);
 
-        await UpsertAssessmentAsync(connection, domain, nav, resolvedAreas, definitionJson, path, hash, now, cancellationToken);
+        await UpsertAssessmentAsync(connection, domain, nav, resolvedAreas, subjectTitle, areaTitles, topicTitles, definitionJson, path, hash, now, cancellationToken);
     }
 
     private static List<string> ResolveAreas(
@@ -294,6 +304,9 @@ public sealed class SqliteAssessmentCatalogImporter
         AssessmentDefinition domain,
         NavigationMetadata nav,
         List<string> areaIds,
+        string subjectTitle,
+        List<string> areaTitles,
+        List<string> topicTitles,
         string definitionJson,
         string path,
         string hash,
@@ -348,6 +361,87 @@ public sealed class SqliteAssessmentCatalogImporter
         await DeleteAndInsertRelationsAsync(connection, tx, domain.Id, "assessment_tags", "tag",
             nav.Tags, cancellationToken);
 
+        // Replace skill rows
+        await DeleteAndInsertRelationsAsync(connection, tx, domain.Id, "assessment_skills", "skill_id",
+            domain.Skills, cancellationToken);
+
+        // Update Search FTS
+        await using var delFtsCmd = connection.CreateCommand();
+        delFtsCmd.Transaction = tx;
+        delFtsCmd.CommandText = "DELETE FROM assessment_search_fts WHERE assessment_id = @id;";
+        delFtsCmd.Parameters.AddWithValue("@id", domain.Id);
+        await delFtsCmd.ExecuteNonQueryAsync(cancellationToken);
+
+        await using var insFtsCmd = connection.CreateCommand();
+        insFtsCmd.Transaction = tx;
+        insFtsCmd.CommandText = """
+            INSERT INTO assessment_search_fts(
+                assessment_id, title, normalized_title, assessment_type, subject_title,
+                area_titles, topic_titles, learning_goal, activity_type, tags, skills, prompt_terms
+            ) VALUES (
+                @id, @title, @normalizedTitle, @type, @subjectTitle,
+                @areaTitles, @topicTitles, @goal, @activity, @tags, @skills, @promptTerms
+            );
+            """;
+        insFtsCmd.Parameters.AddWithValue("@id", domain.Id);
+        insFtsCmd.Parameters.AddWithValue("@title", domain.Title);
+        insFtsCmd.Parameters.AddWithValue("@normalizedTitle", SearchNormalizer.Normalize(domain.Title));
+        insFtsCmd.Parameters.AddWithValue("@type", domain.AssessmentType.ToString());
+        insFtsCmd.Parameters.AddWithValue("@subjectTitle", SearchNormalizer.Normalize(subjectTitle));
+        insFtsCmd.Parameters.AddWithValue("@areaTitles", SearchNormalizer.Normalize(string.Join(" ", areaTitles)));
+        insFtsCmd.Parameters.AddWithValue("@topicTitles", SearchNormalizer.Normalize(string.Join(" ", topicTitles)));
+        insFtsCmd.Parameters.AddWithValue("@goal", nav.LearningGoal ?? string.Empty);
+        insFtsCmd.Parameters.AddWithValue("@activity", nav.ActivityType ?? string.Empty);
+        insFtsCmd.Parameters.AddWithValue("@tags", SearchNormalizer.Normalize(string.Join(" ", nav.Tags)));
+        insFtsCmd.Parameters.AddWithValue("@skills", SearchNormalizer.Normalize(string.Join(" ", domain.Skills)));
+        insFtsCmd.Parameters.AddWithValue("@promptTerms", ""); // omitted for v1
+        await insFtsCmd.ExecuteNonQueryAsync(cancellationToken);
+
+        // Update Search Terms
+        await using var delTermsCmd = connection.CreateCommand();
+        delTermsCmd.Transaction = tx;
+        delTermsCmd.CommandText = "DELETE FROM assessment_search_terms WHERE source_id = @id;";
+        delTermsCmd.Parameters.AddWithValue("@id", domain.Id);
+        await delTermsCmd.ExecuteNonQueryAsync(cancellationToken);
+
+        // Term Population
+        var termsToInsert = new Dictionary<(string Term, string Kind), int>(); // Term/Kind -> Weight
+        void AddTerm(string term, string kind, int weight)
+        {
+            if (string.IsNullOrWhiteSpace(term)) return;
+            var norm = SearchNormalizer.Normalize(term);
+            if (string.IsNullOrWhiteSpace(norm)) return;
+            
+            // Allow duplicate term insertions to just take max weight (handled in SQL)
+            if (!termsToInsert.ContainsKey((term, kind)))
+                termsToInsert[(term, kind)] = weight;
+            else
+                termsToInsert[(term, kind)] = Math.Max(termsToInsert[(term, kind)], weight);
+        }
+
+        AddTerm(domain.Title, "assessment", 100);
+        foreach (var t in topicTitles) AddTerm(t, "topic", 80);
+        foreach (var a in areaTitles) AddTerm(a, "area", 60);
+        foreach (var t in nav.Tags) AddTerm(t, "tag", 70);
+        foreach (var s in domain.Skills) AddTerm(s, "skill", 75);
+
+        foreach (var kvp in termsToInsert)
+        {
+            await using var insTermCmd = connection.CreateCommand();
+            insTermCmd.Transaction = tx;
+            insTermCmd.CommandText = """
+                INSERT OR REPLACE INTO assessment_search_terms (term, normalized_term, kind, source_id, subject_id, weight)
+                VALUES (@term, @norm, @kind, @source, @subject, @weight);
+                """;
+            insTermCmd.Parameters.AddWithValue("@term", kvp.Key.Term);
+            insTermCmd.Parameters.AddWithValue("@norm", SearchNormalizer.Normalize(kvp.Key.Term));
+            insTermCmd.Parameters.AddWithValue("@kind", kvp.Key.Kind);
+            insTermCmd.Parameters.AddWithValue("@source", domain.Id);
+            insTermCmd.Parameters.AddWithValue("@subject", domain.CategoryId);
+            insTermCmd.Parameters.AddWithValue("@weight", kvp.Value);
+            await insTermCmd.ExecuteNonQueryAsync(cancellationToken);
+        }
+
         await tx.CommitAsync(cancellationToken);
     }
 
@@ -397,6 +491,17 @@ public sealed class SqliteAssessmentCatalogImporter
             updateCmd.Parameters.AddWithValue("@now", DateTimeOffset.UtcNow.ToString("O"));
             updateCmd.Parameters.AddWithValue("@id", id);
             await updateCmd.ExecuteNonQueryAsync(cancellationToken);
+            
+            // Remove from FTS and Terms if inactive
+            await using var delFtsCmd = connection.CreateCommand();
+            delFtsCmd.CommandText = "DELETE FROM assessment_search_fts WHERE assessment_id = @id;";
+            delFtsCmd.Parameters.AddWithValue("@id", id);
+            await delFtsCmd.ExecuteNonQueryAsync(cancellationToken);
+
+            await using var delTermsCmd = connection.CreateCommand();
+            delTermsCmd.CommandText = "DELETE FROM assessment_search_terms WHERE source_id = @id;";
+            delTermsCmd.Parameters.AddWithValue("@id", id);
+            await delTermsCmd.ExecuteNonQueryAsync(cancellationToken);
         }
     }
 

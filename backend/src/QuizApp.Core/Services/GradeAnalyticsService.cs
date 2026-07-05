@@ -11,6 +11,7 @@ public sealed class GradeAnalyticsService
     private readonly IAssessmentRepository assessmentRepository;
     private readonly ICategoryRepository categoryRepository;
     private readonly IAreaRepository areaRepository;
+    private readonly INavigationCatalogService catalogService;
     private readonly ScoringService scoringService;
 
     public GradeAnalyticsService(
@@ -20,6 +21,7 @@ public sealed class GradeAnalyticsService
         IAssessmentRepository assessmentRepository,
         ICategoryRepository categoryRepository,
         IAreaRepository areaRepository,
+        INavigationCatalogService catalogService,
         ScoringService scoringService)
     {
         this.gradeLogRepository = gradeLogRepository;
@@ -28,6 +30,7 @@ public sealed class GradeAnalyticsService
         this.assessmentRepository = assessmentRepository;
         this.categoryRepository = categoryRepository;
         this.areaRepository = areaRepository;
+        this.catalogService = catalogService;
         this.scoringService = scoringService;
     }
 
@@ -60,10 +63,13 @@ public sealed class GradeAnalyticsService
         var recallCategorySummaries = BuildRecallCategorySummaries(historyRows, attempts, assessmentLookup, categories);
         var recallSubcategorySummaries = BuildRecallSubcategorySummaries(historyRows, attempts, assessmentLookup, categories);
         var weakAreas = BuildWeakFocusSummaries(categorySummaries, areaSummaries);
+        var skillSummaries = BuildSkillPerformanceSummaries(historyRows, attempts, assessmentLookup);
+        var catalog = await catalogService.GetCatalogAsync(cancellationToken);
+        var actionableNextSteps = BuildActionableNextSteps(skillSummaries, recallTagSummaries, catalog, assessmentLookup, categories, areas);
 
         return new GradeAnalyticsSummary(
             filteredCommittedEntries.Count,
-            filteredCommittedEntries.Count == 0 ? null : Math.Round(filteredCommittedEntries.Average(entry => entry.PercentScore), 2),
+            ComputeWeightedAverage(filteredCommittedEntries, assessmentLookup),
             categorySummaries.OrderBy(summary => summary.AveragePercent).ThenByDescending(summary => summary.AttemptCount)
                 .Select(summary => new AnalyticsFocus(summary.CategoryId, summary.CategoryTitle, summary.AttemptCount, summary.AveragePercent))
                 .FirstOrDefault(),
@@ -83,6 +89,8 @@ public sealed class GradeAnalyticsService
             recallCategorySummaries,
             recallSubcategorySummaries,
             weakAreas,
+            skillSummaries,
+            actionableNextSteps,
             historyRows);
     }
 
@@ -269,7 +277,7 @@ public sealed class GradeAnalyticsService
                     group.Key,
                     category?.Title ?? group.Key,
                     ordered.Count,
-                    Math.Round(ordered.Average(entry => entry.PercentScore), 2),
+                    ComputeWeightedAverage(ordered, assessments) ?? 0m,
                     ordered.FirstOrDefault()?.PercentScore);
             })
             .OrderBy(summary => summary.CategoryTitle)
@@ -294,7 +302,7 @@ public sealed class GradeAnalyticsService
                     subcategoryTitle,
                     group.Key.CategoryId,
                     ordered.Count,
-                    Math.Round(ordered.Average(entry => entry.PercentScore), 2),
+                    ComputeWeightedAverage(ordered, assessments) ?? 0m,
                     ordered.FirstOrDefault()?.PercentScore);
             })
             .OrderBy(summary => summary.SubcategoryTitle)
@@ -324,7 +332,7 @@ public sealed class GradeAnalyticsService
                     area.Id,
                     area.Title,
                     ordered.Count,
-                    Math.Round(ordered.Average(entry => entry.PercentScore), 2),
+                    ComputeWeightedAverage(ordered, assessments) ?? 0m,
                     weakestSubcategory?.SubcategoryId,
                     weakestSubcategory?.SubcategoryTitle);
             })
@@ -511,5 +519,160 @@ public sealed class GradeAnalyticsService
         if (filter.MaxScore is not null && row.PercentScore > filter.MaxScore) return false;
 
         return true;
+    }
+
+    private IReadOnlyList<SkillPerformance> BuildSkillPerformanceSummaries(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments)
+    {
+        var includedAttemptIds = rows
+            .Where(row => row.Status is AttemptStatus.Completed)
+            .Select(row => row.AttemptId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var stats = new Dictionary<string, (int Answered, int Correct)>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var attempt in attempts.Where(attempt => includedAttemptIds.Contains(attempt.Id)))
+        {
+            if (!assessments.TryGetValue(attempt.AssessmentId, out var assessment)) continue;
+            
+            var questionSkills = new Dictionary<string, IReadOnlyList<string>>(StringComparer.OrdinalIgnoreCase);
+            
+            foreach (var q in assessment.Questions)
+                questionSkills[q.Id] = q.Skills;
+            foreach (var we in assessment.WorkedExamples)
+                foreach (var step in we.Steps)
+                    questionSkills[step.Id] = step.Question.Skills;
+            if (assessment.Lesson != null)
+                foreach (var sec in assessment.Lesson.Sections.Where(s => s.Check != null))
+                    questionSkills[sec.Check!.Id] = sec.Check.Skills;
+            if (assessment.Exploration != null)
+                foreach (var sec in assessment.Exploration.Sections.Where(s => s.Check != null))
+                    questionSkills[sec.Check!.Id] = sec.Check.Skills;
+            
+            var results = scoringService.BuildResults(assessment, attempt);
+            foreach (var question in results.Questions.Where(q => q.SubmittedAnswer is not null))
+            {
+                if (!questionSkills.TryGetValue(question.QuestionId, out var skills)) continue;
+                
+                foreach (var skill in skills)
+                {
+                    var current = stats.TryGetValue(skill, out var value) ? value : (Answered: 0, Correct: 0);
+                    stats[skill] = (
+                        current.Answered + 1,
+                        current.Correct + (question.IsCorrect == true ? 1 : 0));
+                }
+            }
+        }
+
+        return stats
+            .Select(pair => new SkillPerformance(
+                pair.Key,
+                pair.Value.Answered,
+                pair.Value.Correct,
+                pair.Value.Answered == 0 ? 0 : Math.Round(pair.Value.Correct * 100m / pair.Value.Answered, 2)))
+            .OrderBy(summary => summary.CorrectPercent)
+            .ThenByDescending(summary => summary.AnsweredCount)
+            .ToList();
+    }
+
+    private static decimal? ComputeWeightedAverage(IEnumerable<GradeLogEntry> entries, IReadOnlyDictionary<string, AssessmentDefinition> assessments)
+    {
+        var validEntries = entries.Where(e => assessments.ContainsKey(e.AssessmentId)).ToList();
+        if (validEntries.Count == 0) return null;
+
+        var totalWeight = validEntries.Sum(e => GradeContributionPolicy.WeightFor(assessments[e.AssessmentId].AssessmentType) * Math.Max(1m, e.PossiblePoints));
+        if (totalWeight == 0m) return null;
+
+        var totalScore = validEntries.Sum(e => e.PercentScore * GradeContributionPolicy.WeightFor(assessments[e.AssessmentId].AssessmentType) * Math.Max(1m, e.PossiblePoints));
+        return Math.Round(totalScore / totalWeight, 2);
+    }
+
+    private static IReadOnlyList<ActionableNextStep> BuildActionableNextSteps(
+        IReadOnlyList<SkillPerformance> skills,
+        IReadOnlyList<RecallTagAnalytics> recallTags,
+        NavigationCatalog catalog,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments,
+        IReadOnlyList<Category> categories,
+        IReadOnlyList<AreaDefinition> areas)
+    {
+        var steps = new List<ActionableNextStep>();
+        foreach (var weakSkill in skills.Where(s => s.CorrectPercent < 80))
+        {
+            var targetActivity = weakSkill.CorrectPercent < 60 ? "conceptLesson" : "guidedWorkedExample";
+            
+            var assessment = catalog.Assessments
+                .FirstOrDefault(a => string.Equals(a.ActivityType, targetActivity, StringComparison.OrdinalIgnoreCase)
+                    && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase));
+            
+            assessment ??= catalog.Assessments
+                .FirstOrDefault(a => a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase));
+            
+            if (assessment is not null)
+            {
+                var message = weakSkill.CorrectPercent < 60 
+                    ? $"Review the fundamental concepts for {weakSkill.SkillId}." 
+                    : $"Practice more examples for {weakSkill.SkillId}.";
+
+                assessments.TryGetValue(assessment.Id, out var def);
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, def?.CategoryId, StringComparison.OrdinalIgnoreCase));
+                var matchingAreas = def is not null ? MatchAreas(def, areas).ToList() : new List<AreaDefinition>();
+                var matchingTopics = catalog.Topics.Where(t => assessment.TopicIds.Contains(t.Id, StringComparer.OrdinalIgnoreCase)).ToList();
+
+                steps.Add(new ActionableNextStep(
+                    weakSkill.SkillId,
+                    message,
+                    assessment.Id,
+                    assessment.Title)
+                {
+                    CategoryId = def?.CategoryId,
+                    CategoryTitle = category?.Title ?? def?.CategoryId,
+                    AreaIds = matchingAreas.Select(a => a.Id).ToList(),
+                    AreaTitles = matchingAreas.Select(a => a.Title).ToList(),
+                    TopicIds = matchingTopics.Select(t => t.Id).ToList(),
+                    TopicTitles = matchingTopics.Select(t => t.Title).ToList(),
+                    Source = "skill",
+                    EvidencePercent = weakSkill.CorrectPercent
+                });
+            }
+        }
+
+        foreach (var weakTag in recallTags.Where(t => t.AverageRating < 3.0m))
+        {
+            var assessment = catalog.Assessments
+                .FirstOrDefault(a => string.Equals(a.ActivityType, "conceptLesson", StringComparison.OrdinalIgnoreCase)
+                    && a.Tags.Contains(weakTag.Tag, StringComparer.OrdinalIgnoreCase));
+            
+            assessment ??= catalog.Assessments
+                .FirstOrDefault(a => a.Tags.Contains(weakTag.Tag, StringComparer.OrdinalIgnoreCase));
+            
+            if (assessment is not null)
+            {
+                var message = $"Review the fundamental concepts for {weakTag.Tag}.";
+
+                assessments.TryGetValue(assessment.Id, out var def);
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, def?.CategoryId, StringComparison.OrdinalIgnoreCase));
+                var matchingAreas = def is not null ? MatchAreas(def, areas).ToList() : new List<AreaDefinition>();
+                var matchingTopics = catalog.Topics.Where(t => assessment.TopicIds.Contains(t.Id, StringComparer.OrdinalIgnoreCase)).ToList();
+
+                steps.Add(new ActionableNextStep(
+                    weakTag.Tag,
+                    message,
+                    assessment.Id,
+                    assessment.Title)
+                {
+                    CategoryId = def?.CategoryId,
+                    CategoryTitle = category?.Title ?? def?.CategoryId,
+                    AreaIds = matchingAreas.Select(a => a.Id).ToList(),
+                    AreaTitles = matchingAreas.Select(a => a.Title).ToList(),
+                    TopicIds = matchingTopics.Select(t => t.Id).ToList(),
+                    TopicTitles = matchingTopics.Select(t => t.Title).ToList(),
+                    Source = "recall",
+                    EvidencePercent = Math.Round(weakTag.AverageRating * 25m, 2)
+                });
+            }
+        }
+
+        return steps;
     }
 }

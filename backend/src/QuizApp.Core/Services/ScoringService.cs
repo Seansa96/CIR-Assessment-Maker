@@ -147,12 +147,13 @@ public sealed class ScoringService
                 question.Type,
                 question.Media,
                 answer?.Answer,
-                showFeedback ? answer?.Evaluation?.IsCorrect : null,
+                showFeedback ? (answer?.UserOverriddenCorrect ?? answer?.Evaluation?.IsCorrect) : null,
                 showFeedback ? question.Explanation : null,
                 showFeedback ? DescribeExpectedAnswer(question) : null,
                 showFeedback ? answer?.Evaluation?.CodeFeedback : null,
                 showFeedback ? answer?.Evaluation?.SymbolicFeedback : null,
-                showFeedback ? answer?.Evaluation?.CircuitFeedback : null)
+                showFeedback ? answer?.Evaluation?.CircuitFeedback : null,
+                answer?.UserOverriddenCorrect)
             {
                 Title = item.Step?.Title,
                 Instruction = item.Step?.Instruction,
@@ -161,13 +162,15 @@ public sealed class ScoringService
                 ExampleTitle = item.Example?.Title,
                 Problem = item.Example?.Problem,
                 KeyPoints = showFeedback ? question.Answer.KeyPoints : Array.Empty<string>(),
-                IsPendingSelfCheck = isPendingSelfCheck
+                IsPendingSelfCheck = isPendingSelfCheck,
+                EarnedPoints = answer?.UserOverriddenCorrect == true ? (answer?.Evaluation?.PossiblePoints ?? 1m) : (answer?.Evaluation?.EarnedPoints ?? 0m),
+                PossiblePoints = answer?.Evaluation?.PossiblePoints ?? 1m
             };
         }).ToList();
 
-        var correctCount = attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
+        var correctCount = attempt.Answers.Count(answer => (answer.UserOverriddenCorrect ?? answer.Evaluation?.IsCorrect) == true);
         var totalQuestions = attempt.QuestionOrder.Count;
-        var earnedPoints = attempt.Answers.Sum(answer => answer.Evaluation?.EarnedPoints ?? 0m);
+        var earnedPoints = attempt.Answers.Sum(answer => answer.UserOverriddenCorrect == true ? (answer.Evaluation?.PossiblePoints ?? 1m) : (answer.Evaluation?.EarnedPoints ?? 0m));
         var possiblePoints = (decimal)totalQuestions;
         var percentScore = possiblePoints == 0m ? 0m : Math.Round(earnedPoints * 100m / possiblePoints, 2);
 
@@ -235,7 +238,7 @@ public sealed class ScoringService
         var needsReviewCount = itemResults.Count(item => item.Rating is RecallRating.NeedsReview);
         var forgotCount = itemResults.Count(item => item.Rating is RecallRating.ForgotCompletely);
         var weakTags = itemResults
-            .Where(item => item.Rating is RecallRating.NeedsReview or RecallRating.ForgotCompletely)
+            .Where(item => RecallScoringPolicy.IsWeak(item.Rating))
             .SelectMany(item => item.Tags)
             .Where(tag => !string.IsNullOrWhiteSpace(tag))
             .GroupBy(tag => tag, StringComparer.OrdinalIgnoreCase)
@@ -245,7 +248,7 @@ public sealed class ScoringService
             .ToList();
         var reviewedCount = itemResults.Count(item => item.Rating is not RecallRating.Unknown);
         var totalItems = attempt.QuestionOrder.Count;
-        var earnedPoints = (decimal)(easyCount + correctCount);
+        var earnedPoints = itemResults.Sum(item => RecallScoringPolicy.GradeValue(item.Rating));
         var possiblePoints = (decimal)totalItems;
 
         return new AttemptResults(
@@ -386,16 +389,17 @@ public sealed class ScoringService
             question.Type,
             question.Media,
             answer?.Answer,
-            showFeedback ? answer?.Evaluation?.IsCorrect : null,
+            showFeedback ? (answer?.UserOverriddenCorrect ?? answer?.Evaluation?.IsCorrect) : null,
             showFeedback ? question.Explanation : null,
             showFeedback ? DescribeExpectedAnswer(question) : null,
             showFeedback ? answer?.Evaluation?.CodeFeedback : null,
             showFeedback ? answer?.Evaluation?.SymbolicFeedback : null,
-            showFeedback ? answer?.Evaluation?.CircuitFeedback : null)
+            showFeedback ? answer?.Evaluation?.CircuitFeedback : null,
+            answer?.UserOverriddenCorrect)
         {
             KeyPoints = showFeedback ? question.Answer.KeyPoints : Array.Empty<string>(),
             IsPendingSelfCheck = isPendingSelfCheck,
-            EarnedPoints = answer?.Evaluation?.EarnedPoints ?? 0m,
+            EarnedPoints = answer?.UserOverriddenCorrect == true ? (answer?.Evaluation?.PossiblePoints ?? 1m) : (answer?.Evaluation?.EarnedPoints ?? 0m),
             PossiblePoints = answer?.Evaluation?.PossiblePoints ?? 1m,
             PartResults = partResults
         };

@@ -135,6 +135,58 @@ public sealed class AttemptService
         return updatedAttempt;
     }
 
+    public async Task<Attempt> OverrideAnswerEvaluationAsync(
+        string attemptId,
+        string questionId,
+        bool correct,
+        CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        
+        if (attempt.Status is not AttemptStatus.Completed and not AttemptStatus.InProgress)
+        {
+            throw new InvalidOperationException("Can only override answers on an in-progress or completed attempt.");
+        }
+
+        var existingAnswerIndex = attempt.Answers.ToList().FindLastIndex(answer => 
+            string.Equals(answer.QuestionId, questionId, StringComparison.OrdinalIgnoreCase));
+            
+        var newAnswers = attempt.Answers.ToList();
+
+        if (existingAnswerIndex < 0)
+        {
+            var dummySubmitted = new SubmittedAnswer(questionId, null, Array.Empty<string>(), null, null, null);
+            var newAnswer = new AttemptAnswer(questionId, dummySubmitted, null, DateTimeOffset.UtcNow, correct);
+            newAnswers.Add(newAnswer);
+        }
+        else
+        {
+            var existingAnswer = attempt.Answers[existingAnswerIndex];
+            newAnswers[existingAnswerIndex] = existingAnswer with { UserOverriddenCorrect = correct };
+        }
+
+        Attempt updatedAttempt;
+        if (attempt.Status is AttemptStatus.InProgress)
+        {
+            // For in-progress Worked Examples: auto-complete the attempt if all steps are now resolved.
+            var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+            var shouldComplete = assessment.AssessmentType is AssessmentType.WorkedExample
+                && attempt.QuestionOrder.All(qId => newAnswers.Any(a =>
+                    string.Equals(a.QuestionId, qId, StringComparison.OrdinalIgnoreCase)
+                    && IsResolved(a)));
+            updatedAttempt = shouldComplete
+                ? attempt with { Answers = newAnswers, Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
+                : attempt with { Answers = newAnswers };
+        }
+        else
+        {
+            updatedAttempt = attempt with { Answers = newAnswers };
+        }
+
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
     public async Task<Attempt> UpdateLearningSectionStateAsync(
         string attemptId,
         string sectionId,
@@ -607,7 +659,8 @@ public sealed class AttemptService
 
     private static bool IsResolved(AttemptAnswer answer)
     {
-        return answer.Evaluation?.IsCorrect == true
+        return answer.UserOverriddenCorrect == true
+            || answer.Evaluation?.IsCorrect == true
             || (answer.Answer.FreeResponseText is not null && answer.Answer.SelfCheckCorrect is not null);
     }
 

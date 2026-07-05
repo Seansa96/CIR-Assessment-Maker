@@ -146,6 +146,12 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             assessment.SubcategoryIds,
             effectiveCount,
             authoredCount,
-            assessment.AttemptQuestionCount);
+            assessment.AttemptQuestionCount)
+        {
+            LearningGoal = assessment.Navigation?.LearningGoal,
+            ActivityType = assessment.Navigation?.ActivityType,
+            Tags = assessment.Navigation?.Tags ?? Array.Empty<string>(),
+            Skills = assessment.Skills
+        };
     }
 }

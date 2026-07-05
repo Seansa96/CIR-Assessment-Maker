@@ -127,10 +127,53 @@ public sealed class SqliteRetentionInitializer
             );
             """, cancellationToken);
 
+        await ExecuteAsync(connection, """
+            CREATE TABLE IF NOT EXISTS assessment_skills (
+                assessment_id TEXT NOT NULL,
+                skill_id TEXT NOT NULL,
+                PRIMARY KEY (assessment_id, skill_id)
+            );
+            """, cancellationToken);
+
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_category ON assessments(category_id);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_goal ON assessments(learning_goal);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_activity ON assessments(activity_type);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_active ON assessments(is_active);", cancellationToken);
+        
+        await ExecuteAsync(connection, """
+            CREATE VIRTUAL TABLE IF NOT EXISTS assessment_search_fts
+            USING fts5(
+                assessment_id UNINDEXED,
+                title,
+                normalized_title,
+                assessment_type,
+                subject_title,
+                area_titles,
+                topic_titles,
+                learning_goal,
+                activity_type,
+                tags,
+                skills,
+                prompt_terms,
+                tokenize = 'unicode61 remove_diacritics 2'
+            );
+            """, cancellationToken);
+
+        await ExecuteAsync(connection, """
+            CREATE TABLE IF NOT EXISTS assessment_search_terms (
+                term TEXT NOT NULL,
+                normalized_term TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                source_id TEXT NOT NULL,
+                subject_id TEXT NULL,
+                weight INTEGER NOT NULL,
+                PRIMARY KEY (normalized_term, kind, source_id)
+            );
+            """, cancellationToken);
+
+        await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessment_search_terms_prefix ON assessment_search_terms(normalized_term);", cancellationToken);
+        await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessment_search_terms_subject ON assessment_search_terms(subject_id);", cancellationToken);
+
         
         await ExecuteAsync(connection, """
             CREATE TABLE IF NOT EXISTS import_runs (

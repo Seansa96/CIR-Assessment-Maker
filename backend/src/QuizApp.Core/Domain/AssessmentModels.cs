@@ -95,6 +95,7 @@ public sealed record AssessmentDefinition(
     public ConceptLessonDefinition? Lesson { get; init; }
     public InteractiveExplorationDefinition? Exploration { get; init; }
     public NavigationMetadata? Navigation { get; init; }
+    public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
 
 public sealed record ConceptLessonDefinition(
@@ -152,7 +153,10 @@ public sealed record RecallItemDefinition(
     string Prompt,
     RecallItemAnswerDefinition Answer,
     string? Explanation,
-    IReadOnlyList<string> Tags);
+    IReadOnlyList<string> Tags)
+{
+    public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+}
 
 public sealed record RecallItemAnswerDefinition(
     string? Expected,
@@ -314,6 +318,7 @@ public sealed record QuestionDefinition(
     public CodeQuestionDefinition? CodeQuestion { get; init; }
     public CircuitQuestionDefinition? CircuitQuestion { get; init; }
     public IReadOnlyList<MultipartPartDefinition> Parts { get; init; } = Array.Empty<MultipartPartDefinition>();
+    public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
 
 public sealed record MultipartPartDefinition(
@@ -327,6 +332,7 @@ public sealed record MultipartPartDefinition(
 {
     public CodeQuestionDefinition? CodeQuestion { get; init; }
     public CircuitQuestionDefinition? CircuitQuestion { get; init; }
+    public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
 
 public sealed record ChoiceOption(
@@ -433,6 +439,7 @@ public sealed record AssessmentSummary(
     public string? LearningGoal { get; init; }
     public string? ActivityType { get; init; }
     public IReadOnlyList<string> Tags { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
 
 public sealed record CircuitQuestionDefinition(

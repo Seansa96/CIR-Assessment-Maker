@@ -79,7 +79,8 @@ public static class FileDtoMapper
             Navigation = dto.Navigation is null ? null : new NavigationMetadata(
                 dto.Navigation.LearningGoal,
                 dto.Navigation.ActivityType,
-                dto.Navigation.Tags ?? new List<string>())
+                dto.Navigation.Tags ?? new List<string>()),
+            Skills = dto.Skills ?? new List<string>()
         };
     }
 
@@ -109,7 +110,8 @@ public static class FileDtoMapper
                 LearningGoal = assessment.Navigation.LearningGoal,
                 ActivityType = assessment.Navigation.ActivityType,
                 Tags = assessment.Navigation.Tags.ToList()
-            }
+            },
+            Skills = assessment.Skills.ToList()
         };
     }
 
@@ -241,7 +243,10 @@ public static class FileDtoMapper
                 dto.Answer?.Aliases ?? new List<string>(),
                 (dto.Answer?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()),
             dto.Explanation,
-            dto.Tags ?? new List<string>());
+            dto.Tags ?? new List<string>())
+        {
+            Skills = dto.Skills ?? new List<string>()
+        };
     }
 
     private static RecallItemFileDto ToDto(RecallItemDefinition item)
@@ -259,7 +264,8 @@ public static class FileDtoMapper
                 Media = item.Answer.Media.Select(ToDto).ToList()
             },
             Explanation = item.Explanation,
-            Tags = item.Tags.ToList()
+            Tags = item.Tags.ToList(),
+            Skills = item.Skills.ToList()
         };
     }
 
@@ -509,7 +515,8 @@ public static class FileDtoMapper
             (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
         {
             CodeQuestion = ToCodeQuestion(dto),
-            CircuitQuestion = ToDomain(dto.CircuitQuestion)
+            CircuitQuestion = ToDomain(dto.CircuitQuestion),
+            Skills = dto.Skills ?? new List<string>()
         };
     }
 
@@ -551,7 +558,8 @@ public static class FileDtoMapper
                 Input = test.Input,
                 Expected = test.Expected
             }).ToList(),
-            CircuitQuestion = ToDto(question.CircuitQuestion)
+            CircuitQuestion = ToDto(question.CircuitQuestion),
+            Skills = question.Skills.ToList()
         };
     }
 

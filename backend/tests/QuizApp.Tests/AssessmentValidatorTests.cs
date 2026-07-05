@@ -362,4 +362,94 @@ public sealed class AssessmentValidatorTests
 
         Assert.Contains(result.Issues, issue => issue.Code == "MISSING_RECALL_EXPECTED_LATEX");
     }
+
+    [Fact]
+    public void Validate_rejects_concept_lesson_without_lesson()
+    {
+        var assessment = TestData.Assessment(AssessmentType.ConceptLesson, Array.Empty<QuestionDefinition>());
+        var result = validator.Validate(assessment);
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_CONCEPT_LESSON");
+    }
+
+    [Fact]
+    public void Validate_rejects_worked_example_without_problem()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+        var we = assessment.WorkedExamples[0] with { Problem = "" };
+        var assessmentWithoutProblem = assessment with { WorkedExamples = new[] { we } };
+        var result = validator.Validate(assessmentWithoutProblem);
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_WORKED_EXAMPLE_PROBLEM");
+    }
+
+    [Fact]
+    public void Validate_rejects_worked_example_step_without_title()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+        var step = assessment.WorkedExamples[0].Steps[0] with { Title = "" };
+        var we = assessment.WorkedExamples[0] with { Steps = new[] { step } };
+        var assessmentWithoutTitle = assessment with { WorkedExamples = new[] { we } };
+        var result = validator.Validate(assessmentWithoutTitle);
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_WORKED_EXAMPLE_STEP_TITLE");
+    }
+
+    [Fact]
+    public void Validate_rejects_multiple_choice_without_choices()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.MultipleChoiceQuestion("q001") with { Choices = Array.Empty<ChoiceOption>() }
+        });
+        var result = validator.Validate(assessment);
+        Assert.Contains(result.Issues, issue => issue.Code == "MULTIPLE_CHOICE_WITHOUT_CHOICES");
+    }
+
+    [Fact]
+    public void Validate_rejects_recall_drill_missing_expected()
+    {
+        var assessment = TestData.Assessment(AssessmentType.RecallDrill, Array.Empty<QuestionDefinition>()) with
+        {
+            Items = new[]
+            {
+                new RecallItemDefinition("i1", RecallItemType.Typed, "Prompt", new RecallItemAnswerDefinition("", null, Array.Empty<string>(), Array.Empty<MediaAsset>()), "", Array.Empty<string>())
+            }
+        };
+        var result = validator.Validate(assessment);
+        Assert.Contains(result.Issues, issue => issue.Code == "MISSING_RECALL_EXPECTED");
+    }
+
+    [Fact]
+    public void Validate_rejects_recall_drill_invalid_item_type()
+    {
+        var assessment = TestData.Assessment(AssessmentType.RecallDrill, Array.Empty<QuestionDefinition>()) with
+        {
+            Items = new[]
+            {
+                new RecallItemDefinition("i1", RecallItemType.Unknown, "Prompt", new RecallItemAnswerDefinition("ans", null, Array.Empty<string>(), Array.Empty<MediaAsset>()), "", Array.Empty<string>())
+            }
+        };
+        var result = validator.Validate(assessment);
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_RECALL_ITEM_TYPE");
+    }
+
+    [Fact]
+    public void Validate_rejects_invalid_question_type()
+    {
+        var assessment = TestData.Assessment(questions: new[]
+        {
+            TestData.MultipleChoiceQuestion("q001") with { Type = QuestionType.Unknown }
+        });
+        var result = validator.Validate(assessment);
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_QUESTION_TYPE");
+    }
+
+    [Fact]
+    public void Validate_rejects_invalid_navigation_activity_type()
+    {
+        var assessment = TestData.Assessment(AssessmentType.Quiz, Array.Empty<QuestionDefinition>()) with
+        {
+            Navigation = new NavigationMetadata("learn", "invalid-activity", Array.Empty<string>())
+        };
+        var result = validator.Validate(assessment);
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_ACTIVITY_TYPE");
+    }
 }

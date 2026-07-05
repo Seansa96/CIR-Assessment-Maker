@@ -48,7 +48,8 @@ public sealed record AttemptAnswer(
     string QuestionId,
     SubmittedAnswer Answer,
     AnswerEvaluation? Evaluation,
-    DateTimeOffset SubmittedAt);
+    DateTimeOffset SubmittedAt,
+    bool? UserOverriddenCorrect = null);
 
 public sealed record RecallItemAttempt(
     string ItemId,
@@ -122,7 +123,8 @@ public sealed record QuestionResult(
     string? ExpectedAnswer,
     CodeFeedback? CodeFeedback,
     SymbolicFeedback? SymbolicFeedback,
-    CircuitFeedback? CircuitFeedback = null)
+    CircuitFeedback? CircuitFeedback = null,
+    bool? UserOverriddenCorrect = null)
 {
     public string? Title { get; init; }
     public string? Instruction { get; init; }

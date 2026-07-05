@@ -24,7 +24,6 @@ public sealed class GradeLogService
 
         if (results.AssessmentType is AssessmentType.WorkedExample
             or AssessmentType.GuidedProject
-            or AssessmentType.RecallDrill
             or AssessmentType.ConceptLesson
             or AssessmentType.InteractiveExploration)
         {
@@ -34,6 +33,11 @@ public sealed class GradeLogService
         if (results.HasPendingSelfChecks)
         {
             throw new InvalidOperationException("Resolve all free response self-checks before committing this attempt to the grade log.");
+        }
+
+        if (results.AssessmentType is AssessmentType.RecallDrill && results.RecallSummary?.ItemsReviewed < results.TotalQuestions)
+        {
+            throw new InvalidOperationException("Resolve all recall ratings before committing this attempt to the grade log.");
         }
 
         var existingEntries = await gradeLogRepository.ListAsync(cancellationToken);
