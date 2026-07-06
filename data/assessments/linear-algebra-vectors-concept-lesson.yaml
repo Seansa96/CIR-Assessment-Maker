@@ -1,0 +1,142 @@
+schemaVersion: 1
+id: linear-algebra-vectors-concept-lesson
+title: Vectors and Matrix Basics Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-vectors
+modeDefault: study
+randomizeQuestions: false
+
+skills:
+  - vector-addition
+  - scalar-multiplication
+  - linear-combinations
+  - matrix-vector-product
+  - matrix-multiplication
+lesson:
+  introduction: "In this lesson, we cover the foundations of vectors, matrices, and linear combinations."
+  sections:
+    - id: vectors-intro
+      title: What is a Vector?
+      content: |
+        In linear algebra, a **vector** in $\mathbb{R}^n$ is an ordered list of $n$ real numbers. We usually write vectors as column matrices:
+        
+        $$
+        \vec{v} = \begin{bmatrix} v_1 \\ v_2 \\ \vdots \\ v_n \end{bmatrix}
+        $$
+
+        Geometrically in $\mathbb{R}^2$ or $\mathbb{R}^3$, we can think of a vector as an arrow pointing from the origin to a specific coordinate point.
+
+        Two fundamental operations can be performed on vectors:
+        1. **Scalar Multiplication**: Multiplying a vector by a real number $c$ scales its length. $c\vec{v}$ multiplies every entry of $\vec{v}$ by $c$.
+        2. **Vector Addition**: Adding two vectors $\vec{u} + \vec{v}$ means adding their corresponding entries. Geometrically, this is the "tip-to-tail" rule.
+      check:
+        id: check-vectors-intro
+        type: multipleChoice
+        prompt: |
+          If $\vec{u} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$ and $\vec{v} = \begin{bmatrix} -3 \\ 4 \end{bmatrix}$, what is $2\vec{u} + \vec{v}$?
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix} -1 \\ 8 \end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix} -2 \\ 6 \end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix} -1 \\ 6 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} 5 \\ 0 \end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          $2\vec{u} = \begin{bmatrix} 2 \\ 4 \end{bmatrix}$. Then $\begin{bmatrix} 2 \\ 4 \end{bmatrix} + \begin{bmatrix} -3 \\ 4 \end{bmatrix} = \begin{bmatrix} -1 \\ 8 \end{bmatrix}$.
+
+    - id: linear-combinations-intro
+      title: Linear Combinations
+      content: |
+        Combining scalar multiplication and vector addition gives us the central concept of linear algebra: the **linear combination**.
+        
+        Given a set of vectors $\vec{v}_1, \vec{v}_2, \dots, \vec{v}_p$ and scalars (weights) $c_1, c_2, \dots, c_p$, a linear combination is:
+        
+        $$
+        \vec{y} = c_1\vec{v}_1 + c_2\vec{v}_2 + \dots + c_p\vec{v}_p
+        $$
+      check:
+        id: check-linear-combinations-intro
+        type: symbolicResponse
+        prompt: |
+          Write an expression for the linear combination of vectors $\vec{u}$ and $\vec{v}$ using weights $3$ and $-5$ respectively. (Use `u` and `v` for the vectors).
+        answer:
+          expectedLatex: '3u - 5v'
+          equivalenceMode: expression
+          tolerance: 0
+        explanation: |
+          The linear combination is simply $3\vec{u} + (-5)\vec{v}$, which we write as $3\vec{u} - 5\vec{v}$.
+
+    - id: matrix-vector-product
+      title: Matrix-Vector Product
+      content: |
+        A matrix $A$ is a rectangular array of numbers. When we multiply a matrix $A$ by a vector $\vec{x}$, we are compactly writing a **linear combination of the columns of $A$**.
+
+        If $A = [\vec{a}_1 \ \vec{a}_2 \ \dots \ \vec{a}_n]$ and $\vec{x} = \begin{bmatrix} x_1 \\ x_2 \\ \vdots \\ x_n \end{bmatrix}$, then:
+
+        $$
+        A\vec{x} = x_1\vec{a}_1 + x_2\vec{a}_2 + \dots + x_n\vec{a}_n
+        $$
+
+        For this to work, the number of columns in $A$ must equal the number of entries in $\vec{x}$.
+
+        **Common Trap**: Trying to compute $A\vec{x}$ as a combination of rows. Always remember: the entries of $\vec{x}$ are weights for the **columns** of $A$.
+      check:
+        id: check-matrix-vector-product
+        type: selectAll
+        prompt: |
+          Which of the following are true about the matrix-vector product $A\vec{x}$? (Select all that apply)
+        choices:
+          - id: c1
+            text: 'It is a linear combination of the columns of $A$.'
+          - id: c2
+            text: 'The number of columns in $A$ must equal the number of entries in $\vec{x}$.'
+          - id: c3
+            text: 'The result is a matrix of the same dimension as $A$.'
+          - id: c4
+            text: 'It represents a linear combination of the rows of $A$.'
+        answer:
+          choiceIds:
+            - c1
+            - c2
+        explanation: |
+          The vector $\vec{x}$ provides the weights for the columns of $A$. You need exactly one weight for each column.
+
+    - id: matrix-multiplication-intro
+      title: Matrix Multiplication
+      content: |
+        If you multiply two matrices $AB$, think of it as applying $A$ to each column of $B$ individually. 
+
+        If $B = [\vec{b}_1 \ \vec{b}_2 \ \dots \ \vec{b}_p]$, then:
+        $$
+        AB = [A\vec{b}_1 \ A\vec{b}_2 \ \dots \ A\vec{b}_p]
+        $$
+
+        Alternatively, the row-column rule states that the entry $C_{ij}$ of the product $C=AB$ is the dot product of the $i$-th row of $A$ and the $j$-th column of $B$.
+
+        Because we need the inner dimensions to match, if $A$ is an $m \times n$ matrix, $B$ must be an $n \times p$ matrix. The result $C$ will be $m \times p$.
+
+        **Important Property**: Matrix multiplication is **not commutative** ($AB \neq BA$ generally).
+      check:
+        id: check-matrix-multiplication-intro
+        type: multipleChoice
+        prompt: |
+          If matrix $A$ is $3 \times 5$ and matrix $B$ is $5 \times 2$, what are the dimensions of the product $AB$?
+        choices:
+          - id: c1
+            text: '$3 \times 2$'
+          - id: c2
+            text: '$5 \times 5$'
+          - id: c3
+            text: '$2 \times 3$'
+          - id: c4
+            text: 'The product is undefined.'
+        answer:
+          choiceId: c1
+        explanation: |
+          The inner dimensions ($5$) cancel out, leaving the outer dimensions $3 \times 2$.

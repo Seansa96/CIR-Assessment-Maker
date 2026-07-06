@@ -1,0 +1,88 @@
+schemaVersion: 1
+id: linear-algebra-vectors-worked-example
+title: Solving a Matrix-Vector Equation
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-vectors
+modeDefault: study
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - linear-algebra-vectors
+skills:
+  - matrix-vector-product
+  - linear-combinations
+workedExamples:
+  - id: ex1
+    title: Writing a System as a Matrix Equation
+    problem: |
+      Let $\vec{v}_1 = \begin{bmatrix} 1 \\ -2 \end{bmatrix}$, $\vec{v}_2 = \begin{bmatrix} 3 \\ 1 \end{bmatrix}$, and $\vec{b} = \begin{bmatrix} 11 \\ -8 \end{bmatrix}$. 
+      
+      Determine if $\vec{b}$ is a linear combination of $\vec{v}_1$ and $\vec{v}_2$. If so, find the weights $x_1$ and $x_2$.
+    steps:
+      - id: we-q1
+        title: Set up the vector equation
+        instruction: |
+          Write the condition that $\vec{b}$ is a linear combination of $\vec{v}_1$ and $\vec{v}_2$.
+        type: multipleChoice
+        prompt: |
+          Which equation correctly represents the problem?
+        choices:
+          - id: c1
+            text: '$x_1\begin{bmatrix} 1 \\ -2 \end{bmatrix} + x_2\begin{bmatrix} 3 \\ 1 \end{bmatrix} = \begin{bmatrix} 11 \\ -8 \end{bmatrix}$'
+          - id: c2
+            text: '$x_1\begin{bmatrix} 1 \\ 3 \end{bmatrix} + x_2\begin{bmatrix} -2 \\ 1 \end{bmatrix} = \begin{bmatrix} 11 \\ -8 \end{bmatrix}$'
+          - id: c3
+            text: '$x_1\begin{bmatrix} 11 \\ -8 \end{bmatrix} + x_2\begin{bmatrix} 1 \\ -2 \end{bmatrix} = \begin{bmatrix} 3 \\ 1 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} x_1 \\ x_2 \end{bmatrix} \begin{bmatrix} 1 \\ -2 \end{bmatrix} = \begin{bmatrix} 11 \\ -8 \end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          A linear combination multiplies each vector by a scalar weight and adds them together: $x_1\vec{v}_1 + x_2\vec{v}_2 = \vec{b}$.
+
+      - id: we-q2
+        title: Convert to a matrix equation
+        instruction: |
+          A vector equation $x_1\vec{v}_1 + x_2\vec{v}_2 = \vec{b}$ can be written as a matrix equation $A\vec{x} = \vec{b}$.
+        type: symbolicResponse
+        prompt: |
+          What is the matrix $A$? Format your answer as a $2 \times 2$ matrix, e.g., `[[1, 3], [-2, 1]]` (in LaTeX it's `\begin{bmatrix} ... \end{bmatrix}`).
+        answer:
+          expectedLatex: '\begin{bmatrix} 1 & 3 \\ -2 & 1 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 1 & 3 \\ -2 & 1 \end{pmatrix}'
+        explanation: |
+          The vectors $\vec{v}_1$ and $\vec{v}_2$ become the columns of the matrix $A$.
+
+      - id: we-q3
+        title: Solve the system
+        instruction: |
+          Now, solve the resulting system of linear equations:
+          $1x_1 + 3x_2 = 11$
+          $-2x_1 + 1x_2 = -8$
+        hint: |
+          Try multiplying the first equation by 2 and adding it to the second equation.
+        type: multipleChoice
+        prompt: |
+          What are the values of $x_1$ and $x_2$?
+        choices:
+          - id: c1
+            text: '$x_1 = 5, x_2 = 2$'
+          - id: c2
+            text: '$x_1 = 2, x_2 = 3$'
+          - id: c3
+            text: '$x_1 = 3, x_2 = -2$'
+          - id: c4
+            text: 'The system has no solution.'
+        answer:
+          choiceId: c1
+        explanation: |
+          Multiply Eq 1 by 2: $2x_1 + 6x_2 = 22$.
+          Add to Eq 2: $(-2x_1 + x_2) + (2x_1 + 6x_2) = -8 + 22 \implies 7x_2 = 14 \implies x_2 = 2$.
+          Substitute $x_2 = 2$ back into Eq 1: $x_1 + 3(2) = 11 \implies x_1 = 5$.
