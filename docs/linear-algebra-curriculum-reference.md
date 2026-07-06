@@ -56,3 +56,42 @@ This document outlines the assessment structure, topics, and question archetypes
 - Formula for the transpose of a product: $(AB)^T = B^TA^T$.
 - Definition of a linear combination.
 - The equivalent form of $A\vec{x}$ as $x_1\vec{a}_1 + \dots + x_n\vec{a}_n$.
+
+---
+
+## Topic 2: Systems and RREF
+
+**Subtopic**: `linear-algebra-systems-rref`
+**Skill Tags**: `augmented-matrices`, `row-operations`, `echelon-form`, `reduced-row-echelon-form`, `pivots`, `free-variables`, `solution-sets`
+
+### Definitions & Notation
+- **Augmented Matrix**: A matrix representing a system of equations, combining the coefficient matrix and the constant vector.
+- **Elementary Row Operations**: Scaling a row, swapping rows, or adding a multiple of one row to another.
+- **Echelon Form (REF)**: A matrix where all nonzero rows are above any rows of all zeros, and each leading entry of a row is in a column to the right of the leading entry of the row above it.
+- **Reduced Row Echelon Form (RREF)**: An REF matrix where every leading entry is 1, and each leading 1 is the only nonzero entry in its column.
+- **Pivots**: The leading entries of the rows in an echelon form matrix.
+- **Free Variables**: Variables corresponding to columns in the coefficient matrix that do not contain a pivot.
+
+### Common Traps / Mistakes
+- **Row Operations Errors**: Simple arithmetic errors during row reduction, especially with negative signs.
+- **Interpreting Solutions**: Confusing a row like `[0 0 0 | 5]` (no solution) with `[0 0 0 | 0]` (infinite solutions or dependent equation).
+- **Free vs. Basic Variables**: Incorrectly identifying which variables are free and which are basic from the RREF matrix.
+
+### Easy Problem Archetypes (Easy Quizzes)
+- **Identify REF/RREF**: Given a matrix, determine if it is in REF, RREF, or neither.
+- **Perform one row operation**: Given a matrix and an operation (e.g., $R_2 \leftarrow R_2 - 2R_1$), compute the result.
+- **Interpret a simple augmented matrix**: Convert a small $2 \times 3$ augmented matrix into its corresponding system of equations.
+
+### Hard Problem Archetypes (Hard Quizzes)
+- **Solve a system completely**: Given a system of 3 equations and 3 variables, find the solution set using row reduction.
+- **Parameterize infinite solutions**: Given an RREF matrix with free variables, write the general solution in parametric vector form.
+- **Determine consistency conditions**: Find the value of a parameter $h$ such that a given system is consistent or inconsistent.
+
+### Worked-Example Patterns
+- **Full Row Reduction Process**: Guide the user through the exact sequence of elementary row operations to reach RREF and extract the solution.
+
+### Recall Targets (Recall Drills)
+- The three elementary row operations.
+- The conditions for a matrix to be in RREF.
+- The meaning of a row of zeros in an augmented matrix.
+- How to identify basic vs. free variables.

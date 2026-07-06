@@ -1,0 +1,122 @@
+schemaVersion: 1
+id: linear-algebra-systems-worked-example
+title: Solving a System by Row Reduction
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-systems-rref
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - augmented-matrices
+  - row-operations
+  - reduced-row-echelon-form
+  - solution-sets
+workedExamples:
+  - id: ex1
+    title: Using RREF to solve a 2x3 System
+    problem: |
+      Use elementary row operations to reduce the following augmented matrix to Reduced Row Echelon Form (RREF) and find the solution.
+
+      $$ \begin{bmatrix} 1 & 2 & | & 5 \\ 2 & 3 & | & 8 \end{bmatrix} $$
+    steps:
+      - id: step1
+        title: Eliminate the entry below the first pivot
+        instruction: |
+          The first pivot is in row 1, column 1 (value 1). We need to eliminate the 2 below it in row 2.
+          What row operation will achieve this?
+        type: multipleChoice
+        prompt: |
+          Select the correct row operation:
+        choices:
+          - id: c1
+            text: '$R_2 \leftarrow R_2 - 2R_1$'
+          - id: c2
+            text: '$R_2 \leftarrow R_2 + 2R_1$'
+          - id: c3
+            text: '$R_1 \leftarrow R_1 - 2R_2$'
+          - id: c4
+            text: '$R_2 \leftarrow \frac{1}{2}R_2$'
+        answer:
+          choiceId: c1
+        explanation: |
+          To eliminate the 2, we subtract 2 times the first row from the second row: $R_2 - 2R_1$.
+
+      - id: step2
+        title: Perform the operation
+        instruction: |
+          Apply $R_2 \leftarrow R_2 - 2R_1$ to the matrix.
+        type: symbolicResponse
+        prompt: |
+          What is the new second row? Format your answer as a $1 \times 3$ matrix, e.g., `[[0, 1, 2]]`.
+        answer:
+          expectedLatex: '\begin{bmatrix} 0 & -1 & -2 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 0 & -1 & -2 \end{pmatrix}'
+        explanation: |
+          Row 2 is $[2 \ \ 3 \ \ | \ \ 8]$. Subtract $2 \times [1 \ \ 2 \ \ | \ \ 5] = [2 \ \ 4 \ \ | \ \ 10]$.
+          Result: $[2-2 \ \ 3-4 \ \ | \ \ 8-10] = [0 \ \ -1 \ \ | \ \ -2]$.
+
+      - id: step3
+        title: Create a pivot of 1
+        instruction: |
+          The matrix is now $\begin{bmatrix} 1 & 2 & | & 5 \\ 0 & -1 & | & -2 \end{bmatrix}$.
+          The second pivot is $-1$. To reach RREF, every pivot must be exactly 1.
+          Apply the operation $R_2 \leftarrow -R_2$.
+        type: symbolicResponse
+        prompt: |
+          What is the new second row? Format your answer as a $1 \times 3$ matrix.
+        answer:
+          expectedLatex: '\begin{bmatrix} 0 & 1 & 2 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 0 & 1 & 2 \end{pmatrix}'
+        explanation: |
+          Multiply all entries in row 2 by $-1$. $[-0 \ \ -(-1) \ \ | \ \ -(-2)] = [0 \ \ 1 \ \ | \ \ 2]$.
+
+      - id: step4
+        title: Eliminate entries above the pivot
+        instruction: |
+          The matrix is now in REF: $\begin{bmatrix} 1 & 2 & | & 5 \\ 0 & 1 & | & 2 \end{bmatrix}$.
+          To reach RREF, we must eliminate the 2 above the second pivot.
+        hint: |
+          Use the second row to modify the first row without affecting the first column.
+        type: multipleChoice
+        prompt: |
+          Which row operation eliminates the 2?
+        choices:
+          - id: c1
+            text: '$R_1 \leftarrow R_1 - 2R_2$'
+          - id: c2
+            text: '$R_1 \leftarrow R_1 + 2R_2$'
+          - id: c3
+            text: '$R_1 \leftarrow \frac{1}{2}R_1$'
+          - id: c4
+            text: '$R_2 \leftarrow R_2 - 2R_1$'
+        answer:
+          choiceId: c1
+        explanation: |
+          Subtract 2 times row 2 from row 1. Since row 2 has a 0 in the first column, it won't ruin our first pivot.
+
+      - id: step5
+        title: Find the final solution
+        instruction: |
+          Apply $R_1 \leftarrow R_1 - 2R_2$ to find the final RREF matrix.
+          Row 1 is $[1 \ \ 2 \ \ | \ \ 5]$. Subtract $2 \times [0 \ \ 1 \ \ | \ \ 2] = [0 \ \ 2 \ \ | \ \ 4]$.
+          Result: $[1 \ \ 0 \ \ | \ \ 1]$.
+          
+          The final RREF matrix is $\begin{bmatrix} 1 & 0 & | & 1 \\ 0 & 1 & | & 2 \end{bmatrix}$.
+        type: symbolicResponse
+        prompt: |
+          What is the solution to the system? Express your answer as a column vector $\begin{bmatrix} x_1 \\ x_2 \end{bmatrix}$.
+        answer:
+          expectedLatex: '\begin{bmatrix} 1 \\ 2 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 1 \\ 2 \end{pmatrix}'
+        explanation: |
+          The RREF matrix corresponds to the equations $1x_1 + 0x_2 = 1$ and $0x_1 + 1x_2 = 2$. Thus, $x_1 = 1$ and $x_2 = 2$.

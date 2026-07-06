@@ -1,0 +1,76 @@
+schemaVersion: 1
+id: linear-algebra-systems-hard-quiz
+title: Systems of Equations and RREF Hard Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-systems-rref
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - augmented-matrices
+  - row-operations
+  - free-variables
+  - solution-sets
+questions:
+  - id: hard-parametric-solution
+    type: multipleChoice
+    prompt: |
+      An augmented matrix for a system with variables $x_1, x_2, x_3$ is reduced to the following RREF:
+      $\begin{bmatrix} 1 & 0 & -2 & | & 5 \\ 0 & 1 & 4 & | & -1 \\ 0 & 0 & 0 & | & 0 \end{bmatrix}$
+      
+      Which of the following describes the general solution in parametric form?
+    choices:
+      - id: c1
+        text: '$\begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix} = \begin{bmatrix} 5 \\ -1 \\ 0 \end{bmatrix} + x_3 \begin{bmatrix} 2 \\ -4 \\ 1 \end{bmatrix}$'
+      - id: c2
+        text: '$\begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix} = \begin{bmatrix} 5 \\ -1 \\ 0 \end{bmatrix} + x_3 \begin{bmatrix} -2 \\ 4 \\ 1 \end{bmatrix}$'
+      - id: c3
+        text: '$\begin{bmatrix} x_1 \\ x_2 \\ x_3 \end{bmatrix} = \begin{bmatrix} 5 \\ -1 \\ 0 \end{bmatrix} + x_3 \begin{bmatrix} 2 \\ -4 \\ 0 \end{bmatrix}$'
+      - id: c4
+        text: 'The system is inconsistent.'
+    answer:
+      choiceId: c1
+    explanation: |
+      The matrix gives $x_1 - 2x_3 = 5 \Rightarrow x_1 = 5 + 2x_3$. 
+      And $x_2 + 4x_3 = -1 \Rightarrow x_2 = -1 - 4x_3$. 
+      $x_3$ is free, so $x_3 = 0 + 1x_3$. 
+      Combining these gives the vector $[5, -1, 0]^T + x_3 [2, -4, 1]^T$.
+
+  - id: hard-consistency-parameter
+    type: symbolicResponse
+    prompt: |
+      For what value of $h$ is the following system consistent?
+      $$ x_1 + 2x_2 = 5 $$
+      $$ 3x_1 + 6x_2 = h $$
+      
+      Provide your answer as a number.
+    answer:
+      expectedLatex: '15'
+      equivalenceMode: expression
+      tolerance: 0
+    explanation: |
+      The augmented matrix is $\begin{bmatrix} 1 & 2 & | & 5 \\ 3 & 6 & | & h \end{bmatrix}$. 
+      Applying $R_2 \leftarrow R_2 - 3R_1$, the second row becomes $[0 \ \ 0 \ \ | \ \ h - 15]$. 
+      For the system to be consistent, this row cannot be $[0 \ \ 0 \ \ | \ \ b]$ where $b \neq 0$. 
+      Therefore, $h - 15 = 0$, which means $h = 15$.
+
+  - id: hard-find-unknown-matrix
+    type: symbolicResponse
+    prompt: |
+      You are given that a $2 \times 3$ matrix $A$ can be row reduced to:
+      $\begin{bmatrix} 1 & 2 & 0 \\ 0 & 0 & 1 \end{bmatrix}$
+      using only the operation $R_2 \leftarrow R_2 - 3R_1$.
+      
+      What was the original matrix $A$? Format your answer as a $2 \times 3$ matrix.
+    answer:
+      expectedLatex: '\begin{bmatrix} 1 & 2 & 0 \\ 3 & 6 & 1 \end{bmatrix}'
+      equivalenceMode: expression
+      tolerance: 0
+      aliases:
+        - '\begin{pmatrix} 1 & 2 & 0 \\ 3 & 6 & 1 \end{pmatrix}'
+    explanation: |
+      To reverse the row operation $R_2 \leftarrow R_2 - 3R_1$, we must apply $R_2 \leftarrow R_2 + 3R_1$ to the final matrix.
+      Row 1 is $[1 \ \ 2 \ \ 0]$.
+      The original row 2 is $[0 \ \ 0 \ \ 1] + 3[1 \ \ 2 \ \ 0] = [3 \ \ 6 \ \ 1]$.

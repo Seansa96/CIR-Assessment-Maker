@@ -1,0 +1,142 @@
+schemaVersion: 1
+id: linear-algebra-systems-concept-lesson
+title: Systems of Equations and RREF Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-systems-rref
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - augmented-matrices
+  - row-operations
+  - echelon-form
+  - reduced-row-echelon-form
+lesson:
+  introduction: "In this lesson, we explore how to represent and solve systems of linear equations using augmented matrices and row reduction."
+  sections:
+    - id: augmented-matrices
+      title: Augmented Matrices
+      content: |
+        A system of linear equations can be compactly written using an **augmented matrix**. We write the coefficients of the variables on the left side of a vertical bar, and the constants from the right side of the equals sign on the right.
+
+        For example, the system:
+        $$ \begin{aligned} x_1 - 2x_2 + 3x_3 &= 9 \\ -x_1 + 3x_2 &= -4 \\ 2x_1 - 5x_2 + 5x_3 &= 17 \end{aligned} $$
+
+        becomes the augmented matrix:
+        $$ \begin{bmatrix} 1 & -2 & 3 & | & 9 \\ -1 & 3 & 0 & | & -4 \\ 2 & -5 & 5 & | & 17 \end{bmatrix} $$
+        
+        Notice that any missing variable (like $x_3$ in the second equation) is represented by a $0$ in the matrix.
+      check:
+        id: check-augmented-matrices
+        type: symbolicResponse
+        prompt: |
+          What is the augmented matrix for the following system?
+          $2x_1 + x_2 = 5$
+          $-3x_1 = 7$
+          Format your answer as a $2 \times 3$ matrix, e.g., `[[2, 1, 5], [-3, 0, 7]]`.
+        answer:
+          expectedLatex: '\begin{bmatrix} 2 & 1 & 5 \\ -3 & 0 & 7 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 2 & 1 & 5 \\ -3 & 0 & 7 \end{pmatrix}'
+        explanation: |
+          The first row is $2x_1 + 1x_2 = 5 \rightarrow [2 \ 1 \ | \ 5]$. The second row is $-3x_1 + 0x_2 = 7 \rightarrow [-3 \ 0 \ | \ 7]$.
+
+    - id: row-operations
+      title: Elementary Row Operations
+      content: |
+        To solve the system, we apply **elementary row operations** to the augmented matrix. These operations change the matrix but **do not change the solution set** of the underlying system.
+        
+        The three valid operations are:
+        1. **Replacement**: Add a multiple of one row to another row ($R_i \leftarrow R_i + cR_j$).
+        2. **Interchange**: Swap two rows ($R_i \leftrightarrow R_j$).
+        3. **Scaling**: Multiply all entries in a row by a nonzero constant ($R_i \leftarrow cR_i$).
+
+        Our goal is to use these operations to simplify the matrix into a form where the solutions are obvious.
+      check:
+        id: check-row-operations
+        type: multipleChoice
+        prompt: |
+          If we apply the row operation $R_2 \leftarrow R_2 + 2R_1$ to the matrix $\begin{bmatrix} 1 & 3 \\ -2 & 4 \end{bmatrix}$, what is the new second row?
+        choices:
+          - id: c1
+            text: '$[0 \ \ 10]$'
+          - id: c2
+            text: '$[0 \ \ -2]$'
+          - id: c3
+            text: '$[-4 \ \ 10]$'
+          - id: c4
+            text: '$[1 \ \ 3]$'
+        answer:
+          choiceId: c1
+        explanation: |
+          Multiply row 1 by 2 to get $[2 \ \ 6]$. Add this to row 2 ($[-2 \ \ 4]$): $[-2+2 \ \ 4+6] = [0 \ \ 10]$.
+
+    - id: ref-rref
+      title: REF and RREF
+      content: |
+        We apply row operations until the matrix reaches a specific "staircase" shape. 
+        
+        A matrix is in **Row Echelon Form (REF)** if:
+        1. All nonzero rows are above any rows of all zeros.
+        2. Each leading entry (pivot) of a row is in a column to the right of the leading entry of the row above it.
+        3. All entries in a column below a leading entry are zeros.
+
+        A matrix is in **Reduced Row Echelon Form (RREF)** if it satisfies all REF conditions, PLUS:
+        4. The leading entry in each nonzero row is 1.
+        5. Each leading 1 is the **only** nonzero entry in its column.
+
+        Any matrix can be reduced to exactly one unique RREF matrix.
+      check:
+        id: check-ref-rref
+        type: selectAll
+        prompt: |
+          Which of the following matrices are in Reduced Row Echelon Form (RREF)? (Select all that apply)
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix} 1 & 0 & 5 \\ 0 & 1 & -2 \end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix} 1 & 2 & 0 \\ 0 & 0 & 1 \end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix} 1 & 0 & 0 \\ 0 & 2 & 0 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \end{bmatrix}$'
+        answer:
+          choiceIds:
+            - c1
+            - c2
+        explanation: |
+          C is not RREF because the leading entry in row 2 is a 2, not a 1. D is not RREF because the leading entry of row 2 is to the left of the leading entry of row 1. A and B satisfy all conditions.
+
+    - id: pivots-free-variables
+      title: Pivots and Solution Sets
+      content: |
+        Once an augmented matrix is in REF or RREF, we can immediately classify the solution set.
+
+        First, check for consistency. If there is a row like $[0 \ 0 \ \dots \ 0 \ | \ b]$ where $b$ is nonzero, the system has **no solution** (inconsistent) because it implies $0 = b$.
+
+        If the system is consistent, we look at the variables.
+        - **Basic Variables**: Variables corresponding to columns with pivot positions.
+        - **Free Variables**: Variables corresponding to columns *without* pivot positions.
+
+        If there are any free variables, the system has **infinitely many solutions**. If every variable is a basic variable (no free variables), the system has exactly **one unique solution**.
+      check:
+        id: check-pivots-free
+        type: multipleChoice
+        prompt: |
+          Suppose the augmented matrix of a consistent system with variables $x_1, x_2, x_3, x_4$ has pivots in columns 1, 2, and 4. Which variable is a free variable?
+        choices:
+          - id: c1
+            text: '$x_3$'
+          - id: c2
+            text: '$x_4$'
+          - id: c3
+            text: '$x_1$'
+          - id: c4
+            text: 'There are no free variables.'
+        answer:
+          choiceId: c1
+        explanation: |
+          The basic variables correspond to pivot columns: $x_1, x_2$, and $x_4$. The column without a pivot is column 3, so $x_3$ is the free variable.
