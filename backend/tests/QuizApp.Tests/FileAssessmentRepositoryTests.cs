@@ -325,6 +325,7 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("precalculus-binomial-theorem-worked-example")]
     [InlineData("precalculus-binomial-theorem-recall")]
     [InlineData("precalculus-binomial-theorem-quiz")]
+    [InlineData("precalculus-parametric-standard-forms-recall")]
     [InlineData("physics-two-vehicle-problems-worked-example")]
     [InlineData("physics-two-vehicle-problems-quiz")]
     [InlineData("calc2-improper-integrals-types-recall")]

@@ -334,7 +334,10 @@ public sealed class GradeAnalyticsService
                     ordered.Count,
                     ComputeWeightedAverage(ordered, assessments) ?? 0m,
                     weakestSubcategory?.SubcategoryId,
-                    weakestSubcategory?.SubcategoryTitle);
+                    weakestSubcategory?.SubcategoryTitle)
+                {
+                    CategoryIds = area.CategoryIds
+                };
             })
             .OrderBy(summary => summary.AreaTitle)
             .ToList();

@@ -2152,13 +2152,22 @@ import "../styles/global.css";
       }
 
       async function commitGrade() {
-        if (!state.attempt || state.latestResults?.assessmentType === "workedExample" || state.latestResults?.assessmentType === "guidedProject" || state.latestResults?.assessmentType === "recallDrill") return;
-        await api("/grades/commit", {
-          method: "POST",
-          body: JSON.stringify({ attemptId: state.attempt.id })
-        });
-        await loadGrades();
-        if (state.latestResults) await renderResults(true);
+        if (!state.attempt || state.latestResults?.assessmentType === "workedExample" || state.latestResults?.assessmentType === "guidedProject") return;
+        const btn = document.querySelector<HTMLButtonElement>("#commit-grade");
+        if (btn) setBusy(btn, "Committing");
+        try {
+          await api("/grades/commit", {
+            method: "POST",
+            body: JSON.stringify({ attemptId: state.attempt.id })
+          });
+          await loadGrades();
+          if (state.latestResults) await renderResults(true);
+        } catch (error) {
+          console.error("Failed to commit grade:", error);
+          alert("Failed to commit score. Please try again.");
+        } finally {
+          if (btn) clearBusy(btn, "Commit Score");
+        }
       }
 
       async function saveSettings(event: Event) {
@@ -2349,8 +2358,8 @@ import "../styles/global.css";
           const categorySteps = analytics.actionableNextSteps?.filter(step => step.categoryId === state.activeAnalyticsCategory) || [];
           
           const categoryEntries = entries.filter(e => {
-            const assmt = state.assessments.find(a => a.id === e.assessmentId);
-            return assmt?.categoryId === state.activeAnalyticsCategory;
+            const attempt = analytics.attempts.find(a => a.attemptId === e.attemptId);
+            return attempt?.categoryId === state.activeAnalyticsCategory;
           });
 
           content = `
@@ -2653,7 +2662,7 @@ import "../styles/global.css";
           actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
         }
 
-        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && attempt.assessmentType !== "guidedProject" && attempt.assessmentType !== "recallDrill" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
+        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && attempt.assessmentType !== "guidedProject" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
           actions.push(`<button type="button" data-attempt-action="commit" data-attempt-id="${id}">Commit</button>`);
         }
 
@@ -5537,6 +5546,9 @@ import "../styles/global.css";
           alpha: "\\alpha",
           beta: "\\beta",
           int: "\\int \\placeholder{}\\,d\\placeholder{}",
+          intab: "\\int_{\\placeholder{}}^{\\placeholder{}} \\placeholder{}\\,d\\placeholder{}",
+          dint: "\\int_{\\placeholder{}}^{\\placeholder{}} \\placeholder{}\\,d\\placeholder{}",
+          choose: "\\binom{\\placeholder{}}{\\placeholder{}}",
           infinity: "\\infty"
         };
 
