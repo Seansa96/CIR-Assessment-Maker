@@ -1,0 +1,108 @@
+schemaVersion: 1
+id: linear-algebra-eigenvalues-worked-example
+title: Finding Eigenvalues and Eigenspaces
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-eigenvalues-eigenvectors
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - characteristic-equation
+  - eigenvalues
+  - eigenspace
+  - basis
+workedExamples:
+  - id: ex-eigenvalues-2x2
+    title: Finding Eigenvalues and Eigenspaces for a 2x2 Matrix
+    problem: |
+      Let $A = \begin{bmatrix}4 & 1 \\ 3 & 2\end{bmatrix}$.
+
+      Find the eigenvalues of $A$, and find a basis for the eigenspace corresponding to the largest eigenvalue.
+    steps:
+      - id: step1
+        title: Set up the characteristic equation
+        instruction: |
+          To find the eigenvalues, we must solve the characteristic equation $\det(A - \lambda I) = 0$.
+          First, construct $A - \lambda I$ by subtracting $\lambda$ from the main diagonal of $A$.
+        type: multipleChoice
+        prompt: |
+          What is the characteristic polynomial $\det(A - \lambda I)$?
+        choices:
+          - id: c1
+            text: '$\lambda^2 - 6\lambda + 8$'
+          - id: c2
+            text: '$\lambda^2 - 6\lambda + 5$'
+          - id: c3
+            text: '$\lambda^2 + 6\lambda + 5$'
+          - id: c4
+            text: '$\lambda^2 - 2\lambda + 3$'
+        answer:
+          choiceId: c2
+        explanation: |
+          $A - \lambda I = \begin{bmatrix}4-\lambda & 1 \\ 3 & 2-\lambda\end{bmatrix}$.
+          The determinant is $(4-\lambda)(2-\lambda) - (1)(3)$.
+          Expanding: $(8 - 4\lambda - 2\lambda + \lambda^2) - 3 = \lambda^2 - 6\lambda + 5$.
+
+      - id: step2
+        title: Find the eigenvalues
+        instruction: |
+          Set the characteristic polynomial to 0 and solve for $\lambda$:
+          $\lambda^2 - 6\lambda + 5 = 0$
+        type: multipleChoice
+        prompt: |
+          What are the eigenvalues of $A$?
+        choices:
+          - id: c1
+            text: '$\lambda = 2, 4$'
+          - id: c2
+            text: '$\lambda = -1, -5$'
+          - id: c3
+            text: '$\lambda = 1, 5$'
+          - id: c4
+            text: '$\lambda = 0, 6$'
+        answer:
+          choiceId: c3
+        explanation: |
+          The polynomial factors as $(\lambda - 1)(\lambda - 5) = 0$.
+          Therefore, the roots (and the eigenvalues) are $\lambda = 1$ and $\lambda = 5$.
+          The largest eigenvalue is $\lambda = 5$.
+
+      - id: step3
+        title: Find the eigenspace for λ = 5
+        instruction: |
+          The eigenspace corresponding to $\lambda = 5$ is exactly the null space of the matrix $(A - 5I)$.
+          First, compute $A - 5I$:
+          $$A - 5I = \begin{bmatrix}4-5 & 1 \\ 3 & 2-5\end{bmatrix} = \begin{bmatrix}-1 & 1 \\ 3 & -3\end{bmatrix}$$
+
+          Next, we find a basis for $\text{Nul}(A - 5I)$ by solving $(A - 5I)\vec{x} = \vec{0}$.
+          Row reducing $\begin{bmatrix}-1 & 1 \\ 3 & -3\end{bmatrix}$ yields $\begin{bmatrix}1 & -1 \\ 0 & 0\end{bmatrix}$.
+          This gives the equation $x_1 - x_2 = 0$, or $x_1 = x_2$.
+          With $x_2$ as the free variable, the parametric vector form is $\vec{x} = x_2 \begin{bmatrix}1 \\ 1\end{bmatrix}$.
+        type: symbolicResponse
+        prompt: |
+          What is a basis for the eigenspace corresponding to $\lambda = 5$? Enter the basis vector.
+        answer:
+          expectedLatex: '\begin{bmatrix} 1 \\ 1 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 1 \\ 1 \end{pmatrix}'
+        explanation: |
+          The vector $\begin{bmatrix}1\\1\end{bmatrix}$ (or any nonzero scalar multiple of it) forms a basis for this eigenspace.
+
+      - id: step4
+        title: Verify the eigenvector
+        instruction: |
+          To double-check our work, we should verify that our basis vector $\vec{v} = \begin{bmatrix}1\\1\end{bmatrix}$ is indeed an eigenvector of the original matrix $A$ with eigenvalue $\lambda = 5$.
+
+          We compute $A\vec{v}$:
+          $\begin{bmatrix}4 & 1 \\ 3 & 2\end{bmatrix}\begin{bmatrix}1\\1\end{bmatrix} = \begin{bmatrix}4(1)+1(1) \\ 3(1)+2(1)\end{bmatrix} = \begin{bmatrix}5\\5\end{bmatrix}$.
+        type: numericResponse
+        prompt: |
+          The result is $\begin{bmatrix}5\\5\end{bmatrix}$. What scalar $\lambda$ must we multiply $\begin{bmatrix}1\\1\end{bmatrix}$ by to get this result?
+        answer:
+          value: 5
+          tolerance: 0
+        explanation: |
+          $\begin{bmatrix}5\\5\end{bmatrix} = 5\begin{bmatrix}1\\1\end{bmatrix}$. Since $A\vec{v} = 5\vec{v}$, we have verified that $\vec{v}$ is an eigenvector corresponding to $\lambda = 5$.

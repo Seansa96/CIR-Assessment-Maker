@@ -1,0 +1,101 @@
+schemaVersion: 1
+id: linear-algebra-orthogonality-worked-example
+title: Gram-Schmidt Orthogonalization
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-orthogonality-projections
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - gram-schmidt
+  - orthogonality
+  - projection
+workedExamples:
+  - id: ex-gram-schmidt
+    title: Gram-Schmidt Process on Two Vectors
+    problem: |
+      Apply the Gram-Schmidt process to the linearly independent set
+      $\left\{ \vec{x}_1 = \begin{bmatrix}3\\1\end{bmatrix},\ \vec{x}_2 = \begin{bmatrix}2\\2\end{bmatrix} \right\}$
+      to produce an **orthogonal** basis $\{\vec{v}_1, \vec{v}_2\}$ for $\mathbb{R}^2$.
+    steps:
+      - id: step1
+        title: Set the first orthogonal vector
+        instruction: |
+          The Gram-Schmidt process builds an orthogonal basis one vector at a time. The first vector is unchanged:
+          $$\vec{v}_1 = \vec{x}_1 = \begin{bmatrix}3\\1\end{bmatrix}$$
+
+          Every subsequent vector is obtained by subtracting the projection of the new vector onto all previously constructed orthogonal vectors. This removes the "component" that would cause non-orthogonality.
+        type: multipleChoice
+        prompt: |
+          What is $\vec{v}_1$?
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix}3\\1\end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix}2\\2\end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix}1\\0\end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix}1\\3\end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          In Gram-Schmidt, $\vec{v}_1 = \vec{x}_1$ always. The first vector needs no adjustment since there are no prior vectors to be orthogonal to.
+
+      - id: step2
+        title: Compute the projection of x₂ onto v₁
+        instruction: |
+          To find $\vec{v}_2$, we subtract from $\vec{x}_2$ its projection onto the already-chosen $\vec{v}_1$:
+          $$\text{proj}_{\vec{v}_1}\vec{x}_2 = \frac{\vec{x}_2 \cdot \vec{v}_1}{\vec{v}_1 \cdot \vec{v}_1}\vec{v}_1$$
+
+          Compute $\vec{x}_2 \cdot \vec{v}_1 = (2)(3) + (2)(1) = 6 + 2 = 8$.
+          Compute $\vec{v}_1 \cdot \vec{v}_1 = (3)^2 + (1)^2 = 9 + 1 = 10$.
+        type: symbolicResponse
+        prompt: |
+          What is $\text{proj}_{\vec{v}_1}\vec{x}_2$? Express as a column vector (fractions are fine).
+        answer:
+          expectedLatex: '\begin{bmatrix} 12/5 \\ 4/5 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{bmatrix} 2.4 \\ 0.8 \end{bmatrix}'
+            - '\begin{pmatrix} 12/5 \\ 4/5 \end{pmatrix}'
+        explanation: |
+          $\text{proj}_{\vec{v}_1}\vec{x}_2 = \frac{8}{10}\begin{bmatrix}3\\1\end{bmatrix} = \frac{4}{5}\begin{bmatrix}3\\1\end{bmatrix} = \begin{bmatrix}12/5\\4/5\end{bmatrix}$.
+
+      - id: step3
+        title: Compute the second orthogonal vector
+        instruction: |
+          Now subtract the projection from $\vec{x}_2$:
+          $$\vec{v}_2 = \vec{x}_2 - \text{proj}_{\vec{v}_1}\vec{x}_2 = \begin{bmatrix}2\\2\end{bmatrix} - \begin{bmatrix}12/5\\4/5\end{bmatrix}$$
+        type: symbolicResponse
+        prompt: |
+          What is $\vec{v}_2$?
+        answer:
+          expectedLatex: '\begin{bmatrix} -2/5 \\ 6/5 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{bmatrix} -0.4 \\ 1.2 \end{bmatrix}'
+            - '\begin{pmatrix} -2/5 \\ 6/5 \end{pmatrix}'
+        explanation: |
+          $\vec{v}_2 = \begin{bmatrix}2-12/5\\2-4/5\end{bmatrix} = \begin{bmatrix}10/5-12/5\\10/5-4/5\end{bmatrix} = \begin{bmatrix}-2/5\\6/5\end{bmatrix}$.
+
+      - id: step4
+        title: Verify orthogonality
+        instruction: |
+          We must confirm that $\vec{v}_1 \cdot \vec{v}_2 = 0$.
+
+          The orthogonal basis is $\left\{ \begin{bmatrix}3\\1\end{bmatrix},\ \begin{bmatrix}-2/5\\6/5\end{bmatrix} \right\}$.
+
+          Note: you may scale $\vec{v}_2$ by any nonzero scalar and it remains valid. Multiplying by 5 gives the cleaner equivalent $\begin{bmatrix}-2\\6\end{bmatrix}$.
+        type: numericResponse
+        prompt: |
+          Compute $\vec{v}_1 \cdot \vec{v}_2$. What value confirms orthogonality?
+        answer:
+          value: 0
+          tolerance: 0
+        explanation: |
+          $\vec{v}_1 \cdot \vec{v}_2 = (3)(-2/5) + (1)(6/5) = -6/5 + 6/5 = 0$. ✓
+          The vectors are orthogonal. The Gram-Schmidt process guarantees this by construction — subtracting the projection removes exactly the component that would cause a non-zero dot product.

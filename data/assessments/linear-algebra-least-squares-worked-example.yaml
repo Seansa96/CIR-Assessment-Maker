@@ -1,0 +1,110 @@
+schemaVersion: 1
+id: linear-algebra-least-squares-worked-example
+title: Finding a Least-Squares Line
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-least-squares
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - least-squares
+  - normal-equations
+workedExamples:
+  - id: ex-ls-line
+    title: Best-Fit Line using Normal Equations
+    problem: |
+      Find the least-squares line $y = \beta_0 + \beta_1 x$ that best fits the data points:
+      $(-1, 0), (0, 1), (1, 2), (2, 4)$.
+    steps:
+      - id: step1
+        title: Set up the design matrix and observation vector
+        instruction: |
+          First, translate the problem into the matrix equation $X\vec{\beta} = \vec{y}$.
+          Plug each $(x_i, y_i)$ pair into $y = \beta_0 + \beta_1 x$:
+          $\beta_0 + \beta_1(-1) = 0$
+          $\beta_0 + \beta_1(0) = 1$
+          $\beta_0 + \beta_1(1) = 2$
+          $\beta_0 + \beta_1(2) = 4$
+
+          The design matrix $X$ contains a column of 1s and a column of the $x$-values.
+        type: multipleChoice
+        prompt: |
+          What are $X$ and $\vec{y}$?
+        choices:
+          - id: c1
+            text: '$X = \begin{bmatrix}-1\\0\\1\\2\end{bmatrix}, \vec{y} = \begin{bmatrix}0\\1\\2\\4\end{bmatrix}$'
+          - id: c2
+            text: '$X = \begin{bmatrix}1 & -1 \\ 1 & 0 \\ 1 & 1 \\ 1 & 2\end{bmatrix}, \vec{y} = \begin{bmatrix}0\\1\\2\\4\end{bmatrix}$'
+          - id: c3
+            text: '$X = \begin{bmatrix}0\\1\\2\\4\end{bmatrix}, \vec{y} = \begin{bmatrix}-1\\0\\1\\2\end{bmatrix}$'
+          - id: c4
+            text: '$X = \begin{bmatrix}-1 & 1 \\ 0 & 1 \\ 1 & 1 \\ 2 & 1\end{bmatrix}, \vec{y} = \begin{bmatrix}0\\1\\2\\4\end{bmatrix}$'
+        answer:
+          choiceId: c2
+        explanation: |
+          The first column corresponds to the constant term $\beta_0$, so it is all 1s. The second column corresponds to the $\beta_1$ coefficient, which are the $x$-coordinates. The right-hand side $\vec{y}$ holds the $y$-coordinates.
+
+      - id: step2
+        title: Compute XᵀX and Xᵀy
+        instruction: |
+          To solve the normal equations $X^TX\hat{\vec{\beta}} = X^T\vec{y}$, we must compute the matrix products.
+
+          $X^TX = \begin{bmatrix} 1 & 1 & 1 & 1 \\ -1 & 0 & 1 & 2 \end{bmatrix} \begin{bmatrix} 1 & -1 \\ 1 & 0 \\ 1 & 1 \\ 1 & 2 \end{bmatrix} = \begin{bmatrix} 4 & 2 \\ 2 & 6 \end{bmatrix}$
+
+          Now compute $X^T\vec{y}$.
+        type: symbolicResponse
+        prompt: |
+          What is $X^T\vec{y}$? Express as a column vector.
+        answer:
+          expectedLatex: '\begin{bmatrix} 7 \\ 10 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 7 \\ 10 \end{pmatrix}'
+        explanation: |
+          $X^T\vec{y} = \begin{bmatrix} 1 & 1 & 1 & 1 \\ -1 & 0 & 1 & 2 \end{bmatrix} \begin{bmatrix} 0 \\ 1 \\ 2 \\ 4 \end{bmatrix} = \begin{bmatrix} 1(0)+1(1)+1(2)+1(4) \\ -1(0)+0(1)+1(2)+2(4) \end{bmatrix} = \begin{bmatrix} 7 \\ 10 \end{bmatrix}$.
+
+      - id: step3
+        title: Solve the normal equations
+        instruction: |
+          We must solve $X^TX\hat{\vec{\beta}} = X^T\vec{y}$, which is:
+          $$\begin{bmatrix} 4 & 2 \\ 2 & 6 \end{bmatrix} \begin{bmatrix} \beta_0 \\ \beta_1 \end{bmatrix} = \begin{bmatrix} 7 \\ 10 \end{bmatrix}$$
+
+          Since $X^TX$ is invertible, we can use its inverse.
+          $\det(X^TX) = 4(6) - 2(2) = 24 - 4 = 20$.
+          $(X^TX)^{-1} = \frac{1}{20}\begin{bmatrix} 6 & -2 \\ -2 & 4 \end{bmatrix}$.
+
+          Multiply: $\hat{\vec{\beta}} = (X^TX)^{-1}X^T\vec{y} = \frac{1}{20}\begin{bmatrix} 6 & -2 \\ -2 & 4 \end{bmatrix} \begin{bmatrix} 7 \\ 10 \end{bmatrix}$.
+        type: symbolicResponse
+        prompt: |
+          What is $\hat{\vec{\beta}} = \begin{bmatrix} \beta_0 \\ \beta_1 \end{bmatrix}$? Enter as a column vector (decimals or fractions).
+        answer:
+          expectedLatex: '\begin{bmatrix} 11/10 \\ 13/10 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{bmatrix} 1.1 \\ 1.3 \end{bmatrix}'
+            - '\begin{pmatrix} 1.1 \\ 1.3 \end{pmatrix}'
+        explanation: |
+          $\hat{\vec{\beta}} = \frac{1}{20}\begin{bmatrix} 6(7) - 2(10) \\ -2(7) + 4(10) \end{bmatrix} = \frac{1}{20}\begin{bmatrix} 42-20 \\ -14+40 \end{bmatrix} = \frac{1}{20}\begin{bmatrix} 22 \\ 26 \end{bmatrix} = \begin{bmatrix} 11/10 \\ 13/10 \end{bmatrix} = \begin{bmatrix} 1.1 \\ 1.3 \end{bmatrix}$.
+          The best-fit line is $y = 1.1 + 1.3x$.
+
+      - id: step4
+        title: Check the residual vector
+        instruction: |
+          The least-squares approximation is $\hat{\vec{y}} = X\hat{\vec{\beta}} = \begin{bmatrix} 1 & -1 \\ 1 & 0 \\ 1 & 1 \\ 1 & 2 \end{bmatrix} \begin{bmatrix} 1.1 \\ 1.3 \end{bmatrix} = \begin{bmatrix} -0.2 \\ 1.1 \\ 2.4 \\ 3.7 \end{bmatrix}$.
+          These are the predicted $y$-values on the line.
+
+          The residual vector (the errors) is $\vec{z} = \vec{y} - \hat{\vec{y}} = \begin{bmatrix} 0 \\ 1 \\ 2 \\ 4 \end{bmatrix} - \begin{bmatrix} -0.2 \\ 1.1 \\ 2.4 \\ 3.7 \end{bmatrix} = \begin{bmatrix} 0.2 \\ -0.1 \\ -0.4 \\ 0.3 \end{bmatrix}$.
+
+          According to theory, $\vec{z}$ must be orthogonal to the columns of $X$.
+        type: numericResponse
+        prompt: |
+          Compute the dot product of the residual $\vec{z}$ with the first column of $X$ (which is $\begin{bmatrix} 1 & 1 & 1 & 1 \end{bmatrix}^T$). What is the result?
+        answer:
+          value: 0
+          tolerance: 0
+        explanation: |
+          $\vec{z} \cdot \vec{x}_1 = (0.2)(1) + (-0.1)(1) + (-0.4)(1) + (0.3)(1) = 0.2 - 0.1 - 0.4 + 0.3 = 0$. ✓
+          The sum of the residuals is exactly zero, which is a guaranteed property when fitting a model that includes a constant term $\beta_0$.

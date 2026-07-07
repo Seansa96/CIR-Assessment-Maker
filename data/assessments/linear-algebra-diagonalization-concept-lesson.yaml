@@ -1,0 +1,109 @@
+schemaVersion: 1
+id: linear-algebra-diagonalization-concept-lesson
+title: Diagonalization Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-diagonalization
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - diagonalization
+  - eigen-decomposition
+  - matrix-powers
+lesson:
+  introduction: >-
+    Computing large powers of a matrix, such as $A^{100}$, by direct multiplication is computationally exhausting. However, for a diagonal matrix, computing powers is trivial: you just raise each diagonal entry to the power. Diagonalization is a powerful factorization technique that allows us to decompose a square matrix $A$ into a form that acts exactly like a diagonal matrix, drastically simplifying calculations and revealing the matrix's core behavior.
+  sections:
+    - id: diagonalization-def
+      title: The Diagonalization Factorization
+      content: |
+        A square $n \times n$ matrix $A$ is said to be **diagonalizable** if it can be factored as:
+        $$A = PDP^{-1}$$
+        where $D$ is a diagonal matrix and $P$ is an invertible matrix.
+
+        This is known as an **eigen-decomposition** because:
+        - The diagonal entries of $D$ are exactly the **eigenvalues** of $A$.
+        - The columns of $P$ are exactly the corresponding **eigenvectors** of $A$.
+
+        The order matters! The $i$-th column of $P$ must be the eigenvector that corresponds to the eigenvalue in the $i$-th column of $D$.
+      check:
+        id: check-p-and-d
+        type: multipleChoice
+        prompt: |
+          If $A = PDP^{-1}$, what do the columns of the matrix $P$ represent?
+        choices:
+          - id: c1
+            text: 'The eigenvalues of $A$.'
+          - id: c2
+            text: 'The eigenvectors of $A$.'
+          - id: c3
+            text: 'A basis for the column space of $A$.'
+          - id: c4
+            text: 'The pivot columns of $A$.'
+        answer:
+          choiceId: c2
+        explanation: |
+          The columns of $P$ are the eigenvectors of $A$. The diagonal matrix $D$ contains the corresponding eigenvalues.
+
+    - id: the-diagonalization-theorem
+      title: The Diagonalization Theorem
+      content: |
+        When is a matrix diagonalizable? The factorization requires $P$ to be an invertible $n \times n$ matrix. A matrix is invertible if and only if its columns form a basis for $\mathbb{R}^n$ (i.e., they are linearly independent).
+
+        **The Diagonalization Theorem**: An $n \times n$ matrix $A$ is diagonalizable if and only if $A$ has $n$ linearly independent eigenvectors.
+
+        **A useful shortcut**: If an $n \times n$ matrix has $n$ **distinct** (different) eigenvalues, the corresponding eigenvectors are guaranteed to be linearly independent. Therefore, any matrix with distinct eigenvalues is automatically diagonalizable.
+
+        *Note*: If a matrix has repeated eigenvalues, it *might* still be diagonalizable, but only if the dimension of the eigenspace for the repeated eigenvalue is large enough to supply enough independent eigenvectors to "fill" the columns of $P$.
+      check:
+        id: check-distinct-eigenvalues
+        type: multipleChoice
+        prompt: |
+          Suppose a $3 \times 3$ matrix $A$ has eigenvalues $\lambda = 2, 5, 8$. Is $A$ diagonalizable?
+        choices:
+          - id: c1
+            text: 'Yes, because it has 3 distinct eigenvalues.'
+          - id: c2
+            text: 'No, because none of the eigenvalues are 0.'
+          - id: c3
+            text: 'Maybe, it depends on whether the eigenvectors are linearly independent.'
+          - id: c4
+            text: 'Yes, because $2+5+8 = 15$.'
+        answer:
+          choiceId: c1
+        explanation: |
+          Because the matrix is $3 \times 3$ and has 3 distinct eigenvalues, we are guaranteed to have 3 linearly independent eigenvectors. Therefore, the matrix $P$ will be invertible, and $A$ is definitely diagonalizable.
+
+    - id: matrix-powers
+      title: Computing Matrix Powers
+      content: |
+        The true power of diagonalization is revealed when computing matrix powers.
+        Consider $A^2$:
+        $$A^2 = (PDP^{-1})(PDP^{-1}) = PD(P^{-1}P)DP^{-1}$$
+
+        Because $P^{-1}P = I$ (the identity matrix), they cancel out!
+        $$A^2 = PDIDP^{-1} = PD^2P^{-1}$$
+
+        This pattern continues for any positive integer $k$:
+        $$A^k = PD^kP^{-1}$$
+
+        Since $D$ is a diagonal matrix, $D^k$ is simply the matrix formed by raising each diagonal entry to the power of $k$. This reduces $A^{100}$ from 99 tedious matrix multiplications to just a few simple exponentiations and two matrix multiplications.
+      check:
+        id: check-matrix-power-formula
+        type: multipleChoice
+        prompt: |
+          If $A = PDP^{-1}$, what is the formula for $A^3$?
+        choices:
+          - id: c1
+            text: '$A^3 = P^3 D^3 P^{-3}$'
+          - id: c2
+            text: '$A^3 = P^3 D P^{-1}$'
+          - id: c3
+            text: '$A^3 = P D^3 P^{-1}$'
+          - id: c4
+            text: '$A^3 = P^{-1} D^3 P$'
+        answer:
+          choiceId: c3
+        explanation: |
+          The $P^{-1}$ and $P$ pairs cancel out in the middle of the product: $A^3 = (PDP^{-1})(PDP^{-1})(PDP^{-1}) = PD(P^{-1}P)D(P^{-1}P)DP^{-1} = PDDDP^{-1} = PD^3P^{-1}$.

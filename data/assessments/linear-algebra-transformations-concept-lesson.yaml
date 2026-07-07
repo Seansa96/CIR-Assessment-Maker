@@ -1,0 +1,116 @@
+schemaVersion: 1
+id: linear-algebra-transformations-concept-lesson
+title: Linear Transformations Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-linear-transformations
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - linear-transformation
+  - standard-matrix
+  - one-to-one
+  - onto
+lesson:
+  introduction: "In this lesson, we learn about Linear Transformations. Think of a transformation as a function that maps a vector from one space to another. When this mapping respects vector addition and scalar multiplication, it is called linear, and it can always be represented by a matrix."
+  sections:
+    - id: intro-linear-transformations
+      title: What is a Linear Transformation?
+      content: |
+        A **transformation** (or function/mapping) $T$ from $\mathbb{R}^n$ to $\mathbb{R}^m$ assigns to each vector $\vec{x}$ in $\mathbb{R}^n$ a unique vector $T(\vec{x})$ in $\mathbb{R}^m$.
+        - $\mathbb{R}^n$ is the **domain**.
+        - $\mathbb{R}^m$ is the **codomain**.
+
+        A transformation is **linear** if it preserves the operations of vector addition and scalar multiplication:
+        1. $T(\vec{u} + \vec{v}) = T(\vec{u}) + T(\vec{v})$ for all $\vec{u}, \vec{v}$ in the domain.
+        2. $T(c\vec{u}) = cT(\vec{u})$ for all scalars $c$ and all $\vec{u}$ in the domain.
+
+        Because it preserves these operations, a linear transformation must always map the zero vector to the zero vector: $T(\vec{0}) = \vec{0}$.
+      check:
+        id: check-linearity
+        type: multipleChoice
+        prompt: |
+          Consider the transformation $T: \mathbb{R}^2 \to \mathbb{R}^2$ defined by $T(x, y) = (x + y, x - 1)$. Is $T$ a linear transformation?
+        choices:
+          - id: c1
+            text: 'Yes, because both components are linear polynomials.'
+          - id: c2
+            text: 'Yes, because $T(\vec{0}) = \vec{0}$.'
+          - id: c3
+            text: 'No, because $T(0, 0) = (0, -1)$, which is not the zero vector.'
+          - id: c4
+            text: 'No, because it does not have a standard matrix.'
+        answer:
+          choiceId: c3
+        explanation: |
+          A necessary condition for linearity is that $T(\vec{0}) = \vec{0}$. Here, $T(0, 0) = (0 + 0, 0 - 1) = (0, -1) \neq \vec{0}$. The presence of the constant $-1$ breaks the linearity.
+
+    - id: standard-matrix
+      title: The Standard Matrix
+      content: |
+        The incredible power of linear transformations is that **every** linear transformation from $\mathbb{R}^n$ to $\mathbb{R}^m$ can be executed simply by multiplying the input vector by an $m \times n$ matrix $A$.
+        
+        $$ T(\vec{x}) = A\vec{x} $$
+
+        How do we find this matrix $A$? It's completely determined by what $T$ does to the columns of the identity matrix (the standard basis vectors).
+
+        The **standard matrix** $A$ is built by placing the transformed basis vectors $T(\vec{e}_1), T(\vec{e}_2), \dots, T(\vec{e}_n)$ into the columns of the matrix:
+        $$ A = \begin{bmatrix} T(\vec{e}_1) & T(\vec{e}_2) & \dots & T(\vec{e}_n) \end{bmatrix} $$
+      check:
+        id: check-standard-matrix
+        type: multipleChoice
+        prompt: |
+          Let $T: \mathbb{R}^2 \to \mathbb{R}^2$ be a linear transformation that rotates points $90^\circ$ counterclockwise around the origin. What is the standard matrix $A$ for $T$?
+          *Hint: Where do $\vec{e}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\vec{e}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$ go?*
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix} -1 & 0 \\ 0 & 1 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          Rotating $\vec{e}_1$ (the point $(1, 0)$) by $90^\circ$ counterclockwise lands it at $(0, 1)$. So the first column is $\begin{bmatrix} 0 \\ 1 \end{bmatrix}$. 
+          Rotating $\vec{e}_2$ (the point $(0, 1)$) lands it at $(-1, 0)$. So the second column is $\begin{bmatrix} -1 \\ 0 \end{bmatrix}$.
+          Putting them together gives $\begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$.
+
+    - id: onto-and-one-to-one
+      title: Onto and One-to-One
+      content: |
+        Two important properties describe how a transformation covers its codomain and distinguishes its inputs.
+
+        **Onto (Surjective):**
+        $T$ is **onto** $\mathbb{R}^m$ if its image is the *entire* codomain. This means for every possible $\vec{b}$ in $\mathbb{R}^m$, the equation $T(\vec{x}) = \vec{b}$ has *at least one* solution.
+        - Matrix condition: The columns of $A$ must **span** $\mathbb{R}^m$. Thus, $A$ must have a pivot position in **every row**.
+
+        **One-to-One (Injective):**
+        $T$ is **one-to-one** if it maps distinct inputs to distinct outputs. This means the equation $T(\vec{x}) = \vec{b}$ has *at most one* solution.
+        - Matrix condition: The columns of $A$ must be **linearly independent**. Thus, $A$ must have a pivot position in **every column** (no free variables).
+        - Equivalently, the **kernel** (the set of vectors where $T(\vec{x}) = \vec{0}$) must contain *only* the zero vector.
+      check:
+        id: check-properties
+        type: selectAll
+        prompt: |
+          Let $T: \mathbb{R}^3 \to \mathbb{R}^4$ be a linear transformation. Which of the following statements are true? (Select all that apply)
+        choices:
+          - id: c1
+            text: '$T$ could potentially be onto $\mathbb{R}^4$.'
+          - id: c2
+            text: '$T$ cannot possibly be onto $\mathbb{R}^4$.'
+          - id: c3
+            text: '$T$ could potentially be one-to-one.'
+          - id: c4
+            text: '$T$ cannot possibly be one-to-one.'
+        answer:
+          choiceIds:
+            - c2
+            - c3
+        explanation: |
+          The standard matrix $A$ is $4 \times 3$ (4 rows, 3 columns). 
+          Onto requires a pivot in every row. Since there are only 3 columns, there can be at most 3 pivots, so it is impossible to have a pivot in all 4 rows. Thus, $T$ cannot be onto.
+          One-to-one requires a pivot in every column. It is entirely possible for a $4 \times 3$ matrix to have 3 pivots, so $T$ *could* be one-to-one.

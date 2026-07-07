@@ -1,0 +1,69 @@
+schemaVersion: 1
+id: linear-algebra-diagonalization-hard-quiz
+title: Diagonalization Advanced Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-diagonalization
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - diagonalization
+  - eigen-decomposition
+  - matrix-powers
+questions:
+  - id: hq-compute-a-from-pd
+    type: multipleChoice
+    prompt: |
+      Suppose $A = PDP^{-1}$, where $P = \begin{bmatrix}1 & 2 \\ 1 & 1\end{bmatrix}$ and $D = \begin{bmatrix}2 & 0 \\ 0 & 3\end{bmatrix}$. 
+      What is the matrix $A$?
+    choices:
+      - id: c1
+        text: '$\begin{bmatrix}4 & -2 \\ 1 & 1\end{bmatrix}$'
+      - id: c2
+        text: '$\begin{bmatrix}2 & 6 \\ 2 & 3\end{bmatrix}$'
+      - id: c3
+        text: '$\begin{bmatrix}2 & 0 \\ 0 & 3\end{bmatrix}$'
+      - id: c4
+        text: '$\begin{bmatrix}1 & -2 \\ -1 & 4\end{bmatrix}$'
+    answer:
+      choiceId: c1
+    explanation: |
+      First, find $P^{-1}$. The determinant of $P$ is $1(1) - 2(1) = -1$.
+      $P^{-1} = \frac{1}{-1}\begin{bmatrix}1 & -2 \\ -1 & 1\end{bmatrix} = \begin{bmatrix}-1 & 2 \\ 1 & -1\end{bmatrix}$.
+      Now compute $PDP^{-1}$:
+      $PD = \begin{bmatrix}1 & 2 \\ 1 & 1\end{bmatrix}\begin{bmatrix}2 & 0 \\ 0 & 3\end{bmatrix} = \begin{bmatrix}2 & 6 \\ 2 & 3\end{bmatrix}$.
+      $(PD)P^{-1} = \begin{bmatrix}2 & 6 \\ 2 & 3\end{bmatrix}\begin{bmatrix}-1 & 2 \\ 1 & -1\end{bmatrix} = \begin{bmatrix}-2+6 & 4-6 \\ -2+3 & 4-3\end{bmatrix} = \begin{bmatrix}4 & -2 \\ 1 & 1\end{bmatrix}$.
+
+  - id: hq-compute-power-from-pd
+    type: numericResponse
+    prompt: |
+      Using the same matrices from the previous question, $P = \begin{bmatrix}1 & 2 \\ 1 & 1\end{bmatrix}$ and $D = \begin{bmatrix}2 & 0 \\ 0 & 3\end{bmatrix}$, and knowing $A = \begin{bmatrix}4 & -2 \\ 1 & 1\end{bmatrix}$.
+      What is the top-left entry of the matrix $A^2$?
+    answer:
+      value: 14
+      tolerance: 0
+    explanation: |
+      You can compute this directly since it's just $A^2$:
+      $A^2 = \begin{bmatrix}4 & -2 \\ 1 & 1\end{bmatrix} \begin{bmatrix}4 & -2 \\ 1 & 1\end{bmatrix}$.
+      The top-left entry is $4(4) + (-2)(1) = 16 - 2 = 14$.
+      (Alternatively, using $PD^2P^{-1}$ gives the same result).
+
+  - id: hq-not-diagonalizable-condition
+    type: multipleChoice
+    prompt: |
+      Which of the following describes a situation where an $n \times n$ matrix is **definitely NOT** diagonalizable?
+    choices:
+      - id: c1
+        text: 'It has an eigenvalue of 0.'
+      - id: c2
+        text: 'It has an eigenvalue that is repeated as a root of the characteristic equation.'
+      - id: c3
+        text: 'The total number of linearly independent eigenvectors is less than $n$.'
+      - id: c4
+        text: 'The matrix is not invertible.'
+    answer:
+      choiceId: c3
+    explanation: |
+      By the Diagonalization Theorem, a matrix is diagonalizable if and only if it has $n$ linearly independent eigenvectors. If it has fewer than $n$, the matrix $P$ cannot be formed (or won't be invertible), so the matrix is not diagonalizable. A repeated eigenvalue is a warning sign, but the matrix *might* still be diagonalizable if the eigenspace is large enough. Invertibility and zero eigenvalues have no direct bearing on diagonalizability.

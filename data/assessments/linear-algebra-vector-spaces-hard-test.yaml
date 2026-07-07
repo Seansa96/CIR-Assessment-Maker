@@ -1,0 +1,82 @@
+schemaVersion: 1
+id: linear-algebra-vector-spaces-hard-test
+title: Vector Spaces and Subspaces Advanced Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-vector-spaces-subspaces
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - subspace
+  - column-space
+  - null-space
+  - basis
+questions:
+  - id: ht-subspace-span
+    type: multipleChoice
+    prompt: |
+      Let $\vec{v}_1, \vec{v}_2, \vec{v}_3$ be vectors in $\mathbb{R}^n$. Is $H = \text{Span}\{\vec{v}_1, \vec{v}_2, \vec{v}_3\}$ always a subspace of $\mathbb{R}^n$?
+    choices:
+      - id: c1
+        text: 'Yes, always — the span of any set of vectors is a subspace.'
+      - id: c2
+        text: 'Only if the vectors are linearly independent.'
+      - id: c3
+        text: 'Only if the vectors are nonzero.'
+      - id: c4
+        text: 'No — spans are not subspaces unless the set contains the zero vector.'
+    answer:
+      choiceId: c1
+    explanation: |
+      The span of any collection of vectors is always a subspace:
+      - **Zero vector**: $0\vec{v}_1 + 0\vec{v}_2 + 0\vec{v}_3 = \vec{0} \in \text{Span}$. ✓
+      - **Closed under addition**: A sum of two linear combinations is again a linear combination. ✓
+      - **Closed under scalar multiplication**: A scalar multiple of a linear combination is again a linear combination. ✓
+      Linear independence is NOT required — a span can have redundant vectors and still be a perfectly valid subspace.
+
+  - id: ht-null-to-col-link
+    type: multipleChoice
+    prompt: |
+      For a square $n \times n$ matrix $A$, which statement is equivalent to "$\text{Nul}(A)$ contains only the zero vector"?
+    choices:
+      - id: c1
+        text: '$\text{Col}(A)$ is a proper subspace of $\mathbb{R}^n$ (i.e., $\text{Col}(A) \neq \mathbb{R}^n$).'
+      - id: c2
+        text: '$A$ is invertible and $\text{Col}(A) = \mathbb{R}^n$.'
+      - id: c3
+        text: '$\text{Nul}(A)$ and $\text{Col}(A)$ are the same subspace.'
+      - id: c4
+        text: '$\det(A) = 0$.'
+    answer:
+      choiceId: c2
+    explanation: |
+      For a square matrix $A$, the following are all equivalent:
+      - $\text{Nul}(A) = \{\vec{0}\}$ (trivial null space)
+      - $A$ has $n$ pivot positions
+      - $A$ is invertible
+      - $\text{Col}(A) = \mathbb{R}^n$ (the columns span all of $\mathbb{R}^n$)
+      - $\det(A) \neq 0$
+      These equivalences are part of the Invertible Matrix Theorem. Option D is the **opposite** — $\det(A) = 0$ would mean $A$ is NOT invertible.
+
+  - id: ht-dim-from-matrix
+    type: freeResponse
+    prompt: |
+      Let $A = \begin{bmatrix} 1 & 0 & -3 & 0 \\ 0 & 1 & 5 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}$ (already in RREF).
+
+      (a) State a basis for $\text{Col}(A)$.
+      (b) State a basis for $\text{Nul}(A)$.
+      (c) Verify the Rank-Nullity Theorem.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+        - |
+          (a) The pivot columns are columns 1, 2, and 4 (where the leading 1s appear). A basis for $\text{Col}(A)$ uses those columns from the **original** matrix $A$:
+          $\left\{ \begin{bmatrix}1\\0\\0\end{bmatrix}, \begin{bmatrix}0\\1\\0\end{bmatrix}, \begin{bmatrix}0\\0\\1\end{bmatrix} \right\}$. (These are the standard basis vectors in $\mathbb{R}^3$, confirming $\text{Col}(A) = \mathbb{R}^3$.)
+        - |
+          (b) The free variable is $x_3$ (column 3 has no pivot). From RREF: $x_1 = 3x_3$, $x_2 = -5x_3$, $x_4 = 0$.
+          Parametric form: $\vec{x} = x_3\begin{bmatrix}3\\-5\\1\\0\end{bmatrix}$.
+          Basis for $\text{Nul}(A)$: $\left\{ \begin{bmatrix}3\\-5\\1\\0\end{bmatrix} \right\}$.
+        - |
+          (c) Rank = 3, Nullity = 1. Rank + Nullity = 3 + 1 = 4 = number of columns. ✓

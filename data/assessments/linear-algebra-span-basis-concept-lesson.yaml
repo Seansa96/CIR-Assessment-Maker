@@ -1,0 +1,105 @@
+schemaVersion: 1
+id: linear-algebra-span-basis-concept-lesson
+title: Span, Independence, and Basis Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-linear-combinations-span
+  - linear-algebra-linear-independence-basis
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - span
+  - linear-independence
+  - basis
+lesson:
+  introduction: "In this lesson, we explore three of the most important concepts in linear algebra: Span, Linear Independence, and Basis. These ideas help us understand the fundamental structure of vector spaces."
+  sections:
+    - id: span-intro
+      title: The Span of a Set of Vectors
+      content: |
+        The **span** of a set of vectors $\{\vec{v}_1, \vec{v}_2, \dots, \vec{v}_p\}$ is the collection of **all possible linear combinations** of those vectors. 
+
+        Geometrically:
+        - The span of a single nonzero vector in $\mathbb{R}^3$ is a **line** passing through the origin.
+        - The span of two non-collinear vectors in $\mathbb{R}^3$ is a **plane** passing through the origin.
+        
+        If the span of a set of vectors equals the entire vector space (e.g., $\mathbb{R}^3$), we say that the vectors **span the space**.
+      check:
+        id: check-span
+        type: multipleChoice
+        prompt: |
+          If $\vec{v}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\vec{v}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$, what is the span of $\{\vec{v}_1, \vec{v}_2\}$?
+        choices:
+          - id: c1
+            text: 'A single point at the origin.'
+          - id: c2
+            text: 'A line passing through the origin.'
+          - id: c3
+            text: 'The entire $\mathbb{R}^2$ plane.'
+          - id: c4
+            text: 'The entire $\mathbb{R}^3$ space.'
+        answer:
+          choiceId: c3
+        explanation: |
+          Any vector $\begin{bmatrix} x \\ y \end{bmatrix}$ in $\mathbb{R}^2$ can be written as $x\vec{v}_1 + y\vec{v}_2$. Thus, their span is all of $\mathbb{R}^2$.
+
+    - id: linear-independence-intro
+      title: Linear Independence
+      content: |
+        A set of vectors is **linearly independent** if no vector in the set can be written as a linear combination of the others. In other words, every vector in the set provides a "new direction".
+
+        Formally, the set $\{\vec{v}_1, \dots, \vec{v}_p\}$ is linearly independent if the vector equation:
+        $$ c_1\vec{v}_1 + c_2\vec{v}_2 + \dots + c_p\vec{v}_p = \vec{0} $$
+        has **only the trivial solution** ($c_1 = 0, c_2 = 0, \dots, c_p = 0$).
+
+        If there are any non-zero weights that satisfy this equation, the vectors are **linearly dependent**.
+      check:
+        id: check-linear-independence
+        type: multipleChoice
+        prompt: |
+          Consider the vectors $\vec{u} = \begin{bmatrix} 2 \\ 4 \end{bmatrix}$ and $\vec{v} = \begin{bmatrix} -1 \\ -2 \end{bmatrix}$. Are they linearly independent or dependent?
+        choices:
+          - id: c1
+            text: 'Independent, because they point in different directions.'
+          - id: c2
+            text: 'Dependent, because $\vec{u} = -2\vec{v}$.'
+          - id: c3
+            text: 'Independent, because neither is the zero vector.'
+          - id: c4
+            text: 'Dependent, because they span all of $\mathbb{R}^2$.'
+        answer:
+          choiceId: c2
+        explanation: |
+          Since $\vec{u}$ is a scalar multiple of $\vec{v}$, they lie on the same line and do not provide new directions. The equation $1\vec{u} + 2\vec{v} = \vec{0}$ has a non-trivial solution ($c_1=1, c_2=2$), so they are dependent.
+
+    - id: basis-intro
+      title: Basis
+      content: |
+        A **basis** for a vector space is a set of vectors that perfectly describes the space without any redundancy. 
+
+        To be a basis, a set of vectors must satisfy two conditions simultaneously:
+        1. They must **span** the space (enough vectors to reach everywhere).
+        2. They must be **linearly independent** (no redundant vectors).
+
+        The number of vectors in a basis is called the **dimension** of the space. For example, any basis for $\mathbb{R}^3$ must contain exactly 3 vectors.
+      check:
+        id: check-basis
+        type: selectAll
+        prompt: |
+          Which of the following must be true for a set of vectors $B = \{\vec{b}_1, \vec{b}_2, \dots, \vec{b}_p\}$ to be a basis for a vector space $V$? (Select all that apply)
+        choices:
+          - id: c1
+            text: 'The vectors in $B$ must span $V$.'
+          - id: c2
+            text: 'The vectors in $B$ must be linearly independent.'
+          - id: c3
+            text: 'The vectors must be orthogonal to each other.'
+          - id: c4
+            text: 'The set $B$ must contain the zero vector.'
+        answer:
+          choiceIds:
+            - c1
+            - c2
+        explanation: |
+          A basis requires exactly two conditions: the vectors must span the space and be linearly independent. Orthogonality is nice but not required for a general basis, and a set containing the zero vector is always linearly dependent!

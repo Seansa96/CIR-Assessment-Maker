@@ -1,0 +1,97 @@
+schemaVersion: 1
+id: linear-algebra-inner-product-concept-lesson
+title: Inner Product Spaces Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-inner-product-spaces
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - inner-product-axioms
+  - general-orthogonality
+  - cauchy-schwarz
+lesson:
+  introduction: >-
+    In $\mathbb{R}^n$, the dot product allows us to measure lengths, distances, and angles (specifically orthogonality). But vector spaces can contain objects like polynomials, continuous functions, or matrices. Can we measure the "length" of a polynomial or the "angle" between two functions? Yes! An inner product is a generalization of the dot product to abstract vector spaces, defined strictly by a set of axioms. Any vector space equipped with an inner product is called an Inner Product Space.
+  sections:
+    - id: inner-product-axioms
+      title: Axioms of an Inner Product
+      content: |
+        An **inner product** on a vector space $V$ is a rule that assigns to each pair of vectors $\vec{u}$ and $\vec{v}$ a real number, denoted $\langle \vec{u}, \vec{v} \rangle$, such that the following four axioms hold for all vectors $\vec{u}, \vec{v}, \vec{w}$ and all scalars $c$:
+
+        1. **Symmetry**: $\langle \vec{u}, \vec{v} \rangle = \langle \vec{v}, \vec{u} \rangle$
+        2. **Additivity**: $\langle \vec{u} + \vec{v}, \vec{w} \rangle = \langle \vec{u}, \vec{w} \rangle + \langle \vec{v}, \vec{w} \rangle$
+        3. **Homogeneity**: $\langle c\vec{u}, \vec{v} \rangle = c\langle \vec{u}, \vec{v} \rangle$
+        4. **Positivity**: $\langle \vec{u}, \vec{u} \rangle \geq 0$, and $\langle \vec{u}, \vec{u} \rangle = 0$ if and only if $\vec{u} = \vec{0}$.
+
+        The standard dot product in $\mathbb{R}^n$ trivially satisfies these. But we can invent *other* rules that also satisfy them.
+      check:
+        id: check-axioms
+        type: multipleChoice
+        prompt: |
+          Which axiom ensures that the "length" of a nonzero vector is always a positive real number?
+        choices:
+          - id: c1
+            text: 'Symmetry'
+          - id: c2
+            text: 'Additivity'
+          - id: c3
+            text: 'Homogeneity'
+          - id: c4
+            text: 'Positivity'
+        answer:
+          choiceId: c4
+        explanation: |
+          Positivity guarantees that $\langle \vec{u}, \vec{u} \rangle > 0$ for any nonzero vector $\vec{u}$. Because length is defined as the square root of this inner product, it guarantees we are taking the square root of a positive number.
+
+    - id: continuous-functions
+      title: Inner Products of Functions
+      content: |
+        Let $C[a, b]$ be the vector space of all continuous real-valued functions on the interval $[a, b]$. We can define a valid inner product for two functions $f$ and $g$ using integration:
+        $$\langle f, g \rangle = \int_a^b f(t)g(t) \, dt$$
+
+        This integral satisfies all four axioms! For instance, $\langle f, f \rangle = \int_a^b [f(t)]^2 \, dt \geq 0$, because the integral of a squared (non-negative) function must be non-negative.
+
+        Just like in $\mathbb{R}^n$, two functions are **orthogonal** if their inner product is exactly 0.
+      check:
+        id: check-function-orthogonality
+        type: numericResponse
+        prompt: |
+          Consider the functions $f(t) = 1$ and $g(t) = t$ in the space $C[-1, 1]$. 
+          Calculate their inner product: $\int_{-1}^1 (1)(t) \, dt$. What is the result?
+        answer:
+          value: 0
+          tolerance: 0
+        explanation: |
+          $\int_{-1}^1 t \, dt = \left[ \frac{1}{2}t^2 \right]_{-1}^1 = \frac{1}{2}(1) - \frac{1}{2}(1) = 0$. 
+          Because their inner product is 0, the functions $f(t)=1$ and $g(t)=t$ are orthogonal on the interval $[-1, 1]$.
+
+    - id: cauchy-schwarz
+      title: The Cauchy-Schwarz Inequality
+      content: |
+        Because an inner product space satisfies the core axioms, all the geometric concepts from $\mathbb{R}^n$ carry over:
+        - **Length (Norm)**: $\| \vec{u} \| = \sqrt{\langle \vec{u}, \vec{u} \rangle}$
+        - **Distance**: $\text{dist}(\vec{u}, \vec{v}) = \| \vec{u} - \vec{v} \| = \sqrt{\langle \vec{u} - \vec{v}, \vec{u} - \vec{v} \rangle}$
+
+        The most famous and powerful theorem in any inner product space is the **Cauchy-Schwarz Inequality**:
+        $$|\langle \vec{u}, \vec{v} \rangle| \leq \| \vec{u} \| \| \vec{v} \|$$
+        For any two vectors in the space, the absolute value of their inner product is less than or equal to the product of their lengths.
+      check:
+        id: check-cauchy-schwarz
+        type: multipleChoice
+        prompt: |
+          If $\| \vec{u} \| = 3$ and $\| \vec{v} \| = 4$ in some inner product space, what is the maximum possible value for their inner product $\langle \vec{u}, \vec{v} \rangle$?
+        choices:
+          - id: c1
+            text: '7'
+          - id: c2
+            text: '12'
+          - id: c3
+            text: '25'
+          - id: c4
+            text: 'It could be infinity'
+        answer:
+          choiceId: c2
+        explanation: |
+          By the Cauchy-Schwarz inequality, $|\langle \vec{u}, \vec{v} \rangle| \leq \| \vec{u} \| \| \vec{v} \| = 3 \times 4 = 12$. The maximum possible value is 12 (which occurs if $\vec{u}$ and $\vec{v}$ point in the exact same direction).

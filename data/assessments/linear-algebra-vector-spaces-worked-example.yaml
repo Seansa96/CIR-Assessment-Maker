@@ -1,0 +1,139 @@
+schemaVersion: 1
+id: linear-algebra-vector-spaces-worked-example
+title: Finding Bases for Column Space and Null Space
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-vector-spaces-subspaces
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - column-space
+  - null-space
+  - basis
+workedExamples:
+  - id: ex-col-null-basis
+    title: Finding Bases for Col(A) and Nul(A)
+    problem: |
+      Let $A = \begin{bmatrix} 1 & 2 & 0 & -1 \\ 2 & 4 & 1 & 0 \\ -1 & -2 & 1 & 2 \end{bmatrix}$.
+
+      Find bases for $\text{Col}(A)$ and $\text{Nul}(A)$, and state the dimensions of each.
+    steps:
+      - id: step1
+        title: Row reduce A to echelon form
+        instruction: |
+          To find both the column space basis and the null space basis, our first step is to row reduce $A$.
+
+          Apply $R_2 \leftarrow R_2 - 2R_1$ and $R_3 \leftarrow R_3 + R_1$:
+          $$\begin{bmatrix} 1 & 2 & 0 & -1 \\ 0 & 0 & 1 & 2 \\ 0 & 0 & 1 & 1 \end{bmatrix}$$
+
+          Then apply $R_3 \leftarrow R_3 - R_2$:
+          $$\begin{bmatrix} 1 & 2 & 0 & -1 \\ 0 & 0 & 1 & 2 \\ 0 & 0 & 0 & -1 \end{bmatrix}$$
+        type: multipleChoice
+        prompt: |
+          After row reducing $A$ to echelon form, which columns contain pivot positions?
+        choices:
+          - id: c1
+            text: 'Columns 1, 2, and 3'
+          - id: c2
+            text: 'Columns 1, 3, and 4'
+          - id: c3
+            text: 'Columns 1, 2, and 4'
+          - id: c4
+            text: 'Columns 2, 3, and 4'
+        answer:
+          choiceId: c2
+        explanation: |
+          In the echelon form, the leading entries (pivots) appear in:
+          - Row 1: column 1
+          - Row 2: column 3
+          - Row 3: column 4
+          Column 2 has no pivot — it is a free variable column.
+
+      - id: step2
+        title: Find a basis for Col(A)
+        instruction: |
+          **Key rule**: A basis for $\text{Col}(A)$ consists of the pivot columns of the **original** matrix $A$ (not the row-reduced version).
+
+          The pivot columns are columns 1, 3, and 4 of $A$:
+          - Column 1: $\begin{bmatrix} 1 \\ 2 \\ -1 \end{bmatrix}$
+          - Column 3: $\begin{bmatrix} 0 \\ 1 \\ 1 \end{bmatrix}$
+          - Column 4: $\begin{bmatrix} -1 \\ 0 \\ 2 \end{bmatrix}$
+
+          **Why not the row-reduced columns?** Row operations change the column space of a matrix. The column relationships are preserved, but the actual column vectors change. Always go back to the original $A$ for the basis vectors.
+        type: multipleChoice
+        prompt: |
+          What is $\dim(\text{Col}(A))$ (the rank of $A$)?
+        choices:
+          - id: c1
+            text: '2'
+          - id: c2
+            text: '3'
+          - id: c3
+            text: '4'
+          - id: c4
+            text: '1'
+        answer:
+          choiceId: c2
+        explanation: |
+          The rank equals the number of pivot columns. There are 3 pivots (in columns 1, 3, 4), so $\text{rank}(A) = \dim(\text{Col}(A)) = 3$.
+
+      - id: step3
+        title: Set up the parametric form of Nul(A)
+        instruction: |
+          To find $\text{Nul}(A)$, we solve $A\vec{x} = \vec{0}$. Reduce to RREF and express basic variables in terms of free variables.
+
+          From the echelon form, continue to RREF:
+          $R_3 \leftarrow -R_3$, then eliminate above pivots in columns 3 and 4:
+
+          $$\text{RREF}: \begin{bmatrix} 1 & 2 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \end{bmatrix}$$
+
+          The free variable is $x_2$ (column 2 has no pivot).
+          From the RREF: $x_1 = -2x_2$, $x_3 = 0$, $x_4 = 0$.
+
+          In parametric vector form: $\vec{x} = x_2 \begin{bmatrix} -2 \\ 1 \\ 0 \\ 0 \end{bmatrix}$.
+        type: multipleChoice
+        prompt: |
+          What is $\dim(\text{Nul}(A))$ (the nullity of $A$)?
+        choices:
+          - id: c1
+            text: '0'
+          - id: c2
+            text: '1'
+          - id: c3
+            text: '2'
+          - id: c4
+            text: '3'
+        answer:
+          choiceId: c2
+        explanation: |
+          Nullity = number of free variables = 1 (only $x_2$ is free). This confirms the Rank-Nullity Theorem: $\text{rank} + \text{nullity} = 3 + 1 = 4 = $ number of columns. ✓
+
+      - id: step4
+        title: State the complete answer
+        instruction: |
+          We now have everything:
+
+          **Basis for $\text{Col}(A)$**: The pivot columns of $A$ — columns 1, 3, 4:
+          $$\left\{ \begin{bmatrix}1\\2\\-1\end{bmatrix},\ \begin{bmatrix}0\\1\\1\end{bmatrix},\ \begin{bmatrix}-1\\0\\2\end{bmatrix} \right\}$$
+
+          **Basis for $\text{Nul}(A)$**: The parametric vectors (one per free variable):
+          $$\left\{ \begin{bmatrix}-2\\1\\0\\0\end{bmatrix} \right\}$$
+
+          **Rank-Nullity check**: $\text{rank}(A) + \text{nullity}(A) = 3 + 1 = 4$ ✓ (4 columns in $A$)
+        type: multipleChoice
+        prompt: |
+          Which space does the basis for $\text{Nul}(A)$ live in?
+        choices:
+          - id: c1
+            text: '$\mathbb{R}^3$, because $A$ has 3 rows.'
+          - id: c2
+            text: '$\mathbb{R}^4$, because $A$ has 4 columns.'
+          - id: c3
+            text: '$\mathbb{R}^3$, because the rank is 3.'
+          - id: c4
+            text: '$\mathbb{R}^4$, because nullity is 1 and 4 rows exist.'
+        answer:
+          choiceId: c2
+        explanation: |
+          The null space consists of solutions $\vec{x}$ to $A\vec{x} = \vec{0}$. Since $A$ is $3 \times 4$, the variable vector $\vec{x}$ has 4 entries, so $\text{Nul}(A) \subseteq \mathbb{R}^4$. The column space, by contrast, lives in $\mathbb{R}^3$ (the output space).

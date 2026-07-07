@@ -1,0 +1,74 @@
+schemaVersion: 1
+id: linear-algebra-span-basis-hard-quiz
+title: Span, Independence, and Basis Hard Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-linear-combinations-span
+  - linear-algebra-linear-independence-basis
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - span
+  - linear-independence
+  - basis
+  - dimension
+questions:
+  - id: hard-parametric-independence
+    type: multipleChoice
+    prompt: |
+      For what value(s) of $h$ is the set of vectors $\{\vec{v}_1, \vec{v}_2, \vec{v}_3\}$ linearly dependent?
+      $\vec{v}_1 = \begin{bmatrix} 1 \\ -1 \\ 4 \end{bmatrix}, \vec{v}_2 = \begin{bmatrix} 3 \\ -5 \\ 7 \end{bmatrix}, \vec{v}_3 = \begin{bmatrix} -1 \\ 5 \\ h \end{bmatrix}$
+
+    choices:
+      - id: c1
+        text: '$h = 6$'
+      - id: c2
+        text: '$h = -6$'
+      - id: c3
+        text: '$h = 10$'
+      - id: c4
+        text: 'The vectors are linearly independent for all $h$.'
+    answer:
+      choiceId: c1
+    explanation: |
+      Setting the determinant of the matrix $[\vec{v}_1 \ \vec{v}_2 \ \vec{v}_3]$ to zero:
+      $1(-5h - 35) - 3(-h - 20) - 1(-7 - (-20)) = -5h - 35 + 3h + 60 - 13 = -2h + 12 = 0$.
+      Solving for $h$ gives $h = 6$. At $h=6$, the vectors are linearly dependent.
+
+  - id: hard-coordinate-vector
+    type: symbolicResponse
+    prompt: |
+      Let $\mathcal{B} = \{\vec{b}_1, \vec{b}_2\}$ be a basis for $\mathbb{R}^2$, where $\vec{b}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\vec{b}_2 = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$. 
+      Find the coordinate vector $[\vec{x}]_{\mathcal{B}}$ for $\vec{x} = \begin{bmatrix} -3 \\ 4 \end{bmatrix}$.
+      Format your answer as a column vector $\begin{bmatrix} c_1 \\ c_2 \end{bmatrix}$.
+    answer:
+      expectedLatex: '\begin{bmatrix} -5 \\ 2 \end{bmatrix}'
+      equivalenceMode: expression
+      tolerance: 0
+      aliases:
+        - '\begin{pmatrix} -5 \\ 2 \end{pmatrix}'
+    explanation: |
+      We need to solve $c_1\vec{b}_1 + c_2\vec{b}_2 = \vec{x}$, which is the matrix equation $\begin{bmatrix} 1 & 1 \\ 0 & 2 \end{bmatrix}\begin{bmatrix} c_1 \\ c_2 \end{bmatrix} = \begin{bmatrix} -3 \\ 4 \end{bmatrix}$.
+      From the second row, $2c_2 = 4 \implies c_2 = 2$.
+      From the first row, $c_1 + c_2 = -3 \implies c_1 + 2 = -3 \implies c_1 = -5$.
+      Thus, $[\vec{x}]_{\mathcal{B}} = \begin{bmatrix} -5 \\ 2 \end{bmatrix}$.
+
+  - id: hard-abstract-basis
+    type: multipleChoice
+    prompt: |
+      Let $V$ be a vector space of dimension $n$. Which of the following statements is FALSE?
+    choices:
+      - id: c1
+        text: 'Any set of $n$ linearly independent vectors in $V$ spans $V$.'
+      - id: c2
+        text: 'Any set of $n$ vectors that spans $V$ is linearly independent.'
+      - id: c3
+        text: 'A set of $n+1$ vectors in $V$ must be linearly dependent.'
+      - id: c4
+        text: 'A set of $n-1$ vectors in $V$ can span $V$ if they are chosen carefully.'
+    answer:
+      choiceId: c4
+    explanation: |
+      By definition, the dimension $n$ is the number of vectors in a basis. A basis is a minimal spanning set; you cannot span an $n$-dimensional space with fewer than $n$ vectors. Therefore, $n-1$ vectors can never span $V$. Statements A, B, and C are true properties of $n$-dimensional spaces.

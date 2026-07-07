@@ -1,0 +1,84 @@
+schemaVersion: 1
+id: linear-algebra-transformations-easy-quiz
+title: Linear Transformations Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-linear-transformations
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 4
+skills:
+  - linear-transformation
+  - standard-matrix
+  - one-to-one
+  - onto
+questions:
+  - id: easy-check-linearity
+    type: multipleChoice
+    prompt: |
+      Which of the following functions $T: \mathbb{R}^2 \to \mathbb{R}^2$ is a linear transformation?
+    choices:
+      - id: c1
+        text: '$T(x, y) = (x^2, y)$'
+      - id: c2
+        text: '$T(x, y) = (x + 1, y - 1)$'
+      - id: c3
+        text: '$T(x, y) = (3x, -y)$'
+      - id: c4
+        text: '$T(x, y) = (xy, 0)$'
+    answer:
+      choiceId: c3
+    explanation: |
+      A linear transformation must map the zero vector to the zero vector, which eliminates B. It must also preserve scalar multiplication, which eliminates A (since $(cx)^2 \neq cx^2$) and D (since $(cx)(cy) \neq c(xy)$). Only C is composed entirely of linear combinations of variables.
+
+  - id: easy-dimensions
+    type: multipleChoice
+    prompt: |
+      Suppose $T: \mathbb{R}^3 \to \mathbb{R}^5$ is a linear transformation. What are the dimensions of its standard matrix $A$?
+    choices:
+      - id: c1
+        text: '$3 \times 3$'
+      - id: c2
+        text: '$5 \times 5$'
+      - id: c3
+        text: '$3 \times 5$'
+      - id: c4
+        text: '$5 \times 3$'
+    answer:
+      choiceId: c4
+    explanation: |
+      For $T(\vec{x}) = A\vec{x}$ to work, the vector $\vec{x}$ must have 3 entries (so $A$ needs 3 columns), and the output must have 5 entries (so $A$ needs 5 rows). The matrix is $5 \times 3$.
+
+  - id: easy-evaluate-transformation
+    type: symbolicResponse
+    prompt: |
+      Let $T(\vec{x}) = A\vec{x}$ where $A = \begin{bmatrix} 1 & -2 \\ 3 & 0 \end{bmatrix}$. 
+      Find $T(\vec{x})$ when $\vec{x} = \begin{bmatrix} 2 \\ 4 \end{bmatrix}$. Format your answer as a column vector.
+    answer:
+      expectedLatex: '\begin{bmatrix} -6 \\ 6 \end{bmatrix}'
+      equivalenceMode: expression
+      tolerance: 0
+      aliases:
+        - '\begin{pmatrix} -6 \\ 6 \end{pmatrix}'
+    explanation: |
+      We compute the matrix-vector product:
+      $\begin{bmatrix} 1 & -2 \\ 3 & 0 \end{bmatrix} \begin{bmatrix} 2 \\ 4 \end{bmatrix} = \begin{bmatrix} 1(2) - 2(4) \\ 3(2) + 0(4) \end{bmatrix} = \begin{bmatrix} -6 \\ 6 \end{bmatrix}$.
+
+  - id: easy-onto-impossibility
+    type: multipleChoice
+    prompt: |
+      Consider a linear transformation $T: \mathbb{R}^2 \to \mathbb{R}^4$. Is it possible for this transformation to be **onto** $\mathbb{R}^4$?
+    choices:
+      - id: c1
+        text: 'Yes, if the columns of the standard matrix are linearly independent.'
+      - id: c2
+        text: 'Yes, if the standard matrix has 4 pivots.'
+      - id: c3
+        text: 'No, because a $4 \times 2$ matrix can have at most 2 pivots, so it cannot have a pivot in every row.'
+      - id: c4
+        text: 'No, because the codomain is always smaller than the domain.'
+    answer:
+      choiceId: c3
+    explanation: |
+      To be onto, the $4 \times 2$ standard matrix needs a pivot in every row (4 pivots). Since there are only 2 columns, there can be at most 2 pivots. It is physically impossible to cover the entire 4D space using only 2 basis vectors!

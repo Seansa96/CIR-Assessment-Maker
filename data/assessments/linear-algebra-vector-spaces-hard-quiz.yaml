@@ -1,0 +1,75 @@
+schemaVersion: 1
+id: linear-algebra-vector-spaces-hard-quiz
+title: Vector Spaces and Subspaces Advanced Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-vector-spaces-subspaces
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - subspace
+  - column-space
+  - null-space
+  - basis
+questions:
+  - id: hq-col-null-intersection
+    type: multipleChoice
+    prompt: |
+      For any $m \times n$ matrix $A$, the null space $\text{Nul}(A)$ and the column space $\text{Col}(A)$ always have what in common?
+    choices:
+      - id: c1
+        text: 'They are always equal.'
+      - id: c2
+        text: 'They always have the same dimension.'
+      - id: c3
+        text: 'They are always orthogonal complements of each other.'
+      - id: c4
+        text: 'They both always contain the zero vector.'
+    answer:
+      choiceId: c4
+    explanation: |
+      Every subspace must contain the zero vector. $\text{Nul}(A)$ contains $\vec{0}$ because $A\vec{0}=\vec{0}$, and $\text{Col}(A)$ contains $\vec{0}$ because $A\vec{0} = 0 \cdot \vec{a}_1 + \dots = \vec{0}$ is in $\text{Col}(A)$.
+      The other options are generally false: they live in different ambient spaces ($\mathbb{R}^n$ vs $\mathbb{R}^m$), so they can't be directly compared unless $m = n$. Even then, they are not always equal or orthogonal complements (that's the row space and null space that are orthogonal complements).
+
+  - id: hq-subspace-proof
+    type: multipleChoice
+    prompt: |
+      Which of the following subsets of $\mathbb{R}^{2 \times 2}$ (the space of all $2\times 2$ matrices) is a subspace?
+    choices:
+      - id: c1
+        text: 'The set of all $2 \times 2$ matrices with determinant 0.'
+      - id: c2
+        text: 'The set of all $2 \times 2$ matrices with trace 0 (i.e., $a_{11} + a_{22} = 0$).'
+      - id: c3
+        text: 'The set of all $2 \times 2$ matrices with all positive entries.'
+      - id: c4
+        text: 'The set of all $2 \times 2$ invertible matrices.'
+    answer:
+      choiceId: c2
+    explanation: |
+      **Option B (trace = 0)**: If $\text{tr}(A) = 0$ and $\text{tr}(B) = 0$, then $\text{tr}(A+B) = 0$ and $\text{tr}(cA) = c\cdot\text{tr}(A) = 0$. Also $\text{tr}(0) = 0$. All three subspace conditions hold. ✓
+      **Option A (det = 0)**: Fails closure under addition. $\begin{bmatrix}1&0\\0&0\end{bmatrix}$ and $\begin{bmatrix}0&0\\0&1\end{bmatrix}$ each have det 0, but their sum $I$ has det 1 ≠ 0.
+      **Option C (positive entries)**: Fails the zero vector test ($0$ entries are not positive) and closure under scalar multiplication (negative scalars).
+      **Option D (invertible)**: Fails the zero vector test (the zero matrix is not invertible).
+
+  - id: hq-col-space-in-b
+    type: multipleChoice
+    prompt: |
+      Consider $A = \begin{bmatrix} 1 & 3 \\ 2 & 6 \\ -1 & -3 \end{bmatrix}$ and $\vec{b} = \begin{bmatrix} 2 \\ 4 \\ -2 \end{bmatrix}$.
+      Is $\vec{b}$ in $\text{Col}(A)$?
+    choices:
+      - id: c1
+        text: 'Yes — $\vec{b}$ is a scalar multiple of the first column of $A$.'
+      - id: c2
+        text: 'No — $\vec{b}$ has three components but $A$ only has two columns.'
+      - id: c3
+        text: 'Yes — $A\vec{x} = \vec{b}$ has a unique solution.'
+      - id: c4
+        text: 'No — the system $A\vec{x} = \vec{b}$ is inconsistent.'
+    answer:
+      choiceId: c1
+    explanation: |
+      Notice that $\vec{b} = 2 \begin{bmatrix}1\\2\\-1\end{bmatrix}$, which is exactly 2 times the first column of $A$. Therefore $\vec{b} = A\begin{bmatrix}2\\0\end{bmatrix}$, confirming $\vec{b} \in \text{Col}(A)$.
+      Note also that the two columns of $A$ are proportional (column 2 = 3 × column 1), so $\text{Col}(A)$ is actually a 1-dimensional subspace (a line through the origin in $\mathbb{R}^3$). The system $A\vec{x} = \vec{b}$ is consistent but does NOT have a unique solution — it has infinitely many.

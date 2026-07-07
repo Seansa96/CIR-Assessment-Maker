@@ -1,0 +1,88 @@
+schemaVersion: 1
+id: linear-algebra-applications-worked-example
+title: Finding a Markov Chain Steady State
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-applications
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - markov-chains
+workedExamples:
+  - id: ex-markov-steady-state
+    title: Finding the Steady-State Vector
+    problem: |
+      Suppose the weather in a city behaves as a Markov chain. If it is sunny today, there is an 80% chance it will be sunny tomorrow (and a 20% chance of rain). If it is rainy today, there is a 70% chance it will be rainy tomorrow (and a 30% chance of sun).
+
+      The stochastic transition matrix $P$ (where column 1 is "Sunny" and column 2 is "Rainy") is:
+      $P = \begin{bmatrix} 0.8 & 0.3 \\ 0.2 & 0.7 \end{bmatrix}$
+
+      Find the steady-state probability vector $\vec{q}$, representing the long-term weather probabilities.
+    steps:
+      - id: step1
+        title: Set up the eigenvalue equation
+        instruction: |
+          The steady-state vector $\vec{q}$ satisfies $P\vec{q} = \vec{q}$, which is the same as $P\vec{q} = 1\vec{q}$.
+          We must find the eigenspace for $\lambda = 1$ by solving $(P - I)\vec{q} = \vec{0}$.
+
+          Compute $P - I$:
+          $P - I = \begin{bmatrix} 0.8 & 0.3 \\ 0.2 & 0.7 \end{bmatrix} - \begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix} = \begin{bmatrix} -0.2 & 0.3 \\ 0.2 & -0.3 \end{bmatrix}$.
+        type: multipleChoice
+        prompt: |
+          Row reduce the matrix $P - I$. What equation represents the relationship between the components $q_1$ and $q_2$?
+        choices:
+          - id: c1
+            text: '$0.8q_1 + 0.7q_2 = 0$'
+          - id: c2
+            text: '$q_1 + q_2 = 1$'
+          - id: c3
+            text: '$-0.2q_1 + 0.3q_2 = 0$'
+          - id: c4
+            text: '$0.2q_1 + 0.7q_2 = 0$'
+        answer:
+          choiceId: c3
+        explanation: |
+          Setting $(P-I)\vec{q} = \vec{0}$ gives the system of equations. Both rows represent the same line. From the first row, we get $-0.2q_1 + 0.3q_2 = 0$. (Multiplying by 10, this is equivalent to $-2q_1 + 3q_2 = 0$).
+
+      - id: step2
+        title: Find a basis vector
+        instruction: |
+          We have the equation $2q_1 = 3q_2$.
+          To find a basis vector for this eigenspace, we can choose an arbitrary value for $q_2$ that avoids fractions.
+          Let's choose $q_2 = 2$.
+        type: symbolicResponse
+        prompt: |
+          If $q_2 = 2$, what is $q_1$? Enter the full vector $\vec{v} = \begin{bmatrix} q_1 \\ q_2 \end{bmatrix}$.
+        answer:
+          expectedLatex: '\begin{bmatrix} 3 \\ 2 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 3 \\ 2 \end{pmatrix}'
+        explanation: |
+          If $q_2 = 2$, then $2q_1 = 3(2) = 6$, so $q_1 = 3$. 
+          The basis vector is $\vec{v} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$.
+
+      - id: step3
+        title: Scale to a probability vector
+        instruction: |
+          Any scalar multiple of $\vec{v} = \begin{bmatrix} 3 \\ 2 \end{bmatrix}$ is an eigenvector for $\lambda = 1$.
+          However, a steady-state vector MUST be a probability vector—its entries must sum to exactly $1$.
+          
+          The sum of the entries in $\vec{v}$ is $3 + 2 = 5$.
+          To make the sum 1, we must divide the vector by 5.
+        type: symbolicResponse
+        prompt: |
+          What is the final steady-state probability vector $\vec{q}$? (Enter fractions or decimals).
+        answer:
+          expectedLatex: '\begin{bmatrix} 0.6 \\ 0.4 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{bmatrix} 3/5 \\ 2/5 \end{bmatrix}'
+            - '\begin{pmatrix} 0.6 \\ 0.4 \end{pmatrix}'
+            - '\begin{pmatrix} 3/5 \\ 2/5 \end{pmatrix}'
+        explanation: |
+          $\vec{q} = \frac{1}{5}\begin{bmatrix} 3 \\ 2 \end{bmatrix} = \begin{bmatrix} 3/5 \\ 2/5 \end{bmatrix} = \begin{bmatrix} 0.6 \\ 0.4 \end{bmatrix}$.
+          In the long run, the weather will be sunny 60% of the time and rainy 40% of the time.

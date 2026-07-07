@@ -1,0 +1,121 @@
+schemaVersion: 1
+id: linear-algebra-eigenvalues-concept-lesson
+title: Eigenvalues and Eigenvectors Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-eigenvalues-eigenvectors
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - eigenvalues
+  - eigenvectors
+  - characteristic-equation
+lesson:
+  introduction: >-
+    When a matrix multiplies a vector, it typically changes both the vector's
+    length and direction. But for a given square matrix $A$, there are special
+    vectors whose direction is perfectly preserved. The matrix only stretches,
+    shrinks, or reverses them. These are the **eigenvectors** of $A$, and the
+    scalar by which they are stretched is the **eigenvalue**. Understanding them
+    unlocks the deep structure of linear transformations.
+  sections:
+    - id: eigen-def
+      title: Definition of Eigenvectors and Eigenvalues
+      content: |
+        An **eigenvector** of an $n \times n$ matrix $A$ is a **nonzero** vector $\vec{x}$ such that $A\vec{x} = \lambda\vec{x}$ for some scalar $\lambda$.
+
+        A scalar $\lambda$ is called an **eigenvalue** of $A$ if there is a nontrivial solution $\vec{x}$ to $A\vec{x} = \lambda\vec{x}$. Such an $\vec{x}$ is called an eigenvector corresponding to $\lambda$.
+
+        Geometrically, applying the transformation $A$ to an eigenvector $\vec{x}$ just scales it by the factor $\lambda$. It does not rotate or skew it off its original line.
+
+        **Note**: The zero vector is never considered an eigenvector. However, an eigenvalue $\lambda$ can be $0$ (which happens exactly when $A$ is not invertible, since $A\vec{x} = 0\vec{x} = \vec{0}$ means there is a nontrivial solution to the homogeneous equation).
+      check:
+        id: check-eigenvector-verify
+        type: multipleChoice
+        prompt: |
+          Let $A = \begin{bmatrix}1 & 6 \\ 5 & 2\end{bmatrix}$ and $\vec{u} = \begin{bmatrix}6\\-5\end{bmatrix}$. Is $\vec{u}$ an eigenvector of $A$?
+        choices:
+          - id: c1
+            text: 'Yes, with eigenvalue $\lambda = -4$.'
+          - id: c2
+            text: 'Yes, with eigenvalue $\lambda = 7$.'
+          - id: c3
+            text: 'No, because $A\vec{u}$ is not a scalar multiple of $\vec{u}$.'
+          - id: c4
+            text: 'No, because $\vec{u}$ has negative entries.'
+        answer:
+          choiceId: c1
+        explanation: |
+          Compute $A\vec{u} = \begin{bmatrix}1 & 6 \\ 5 & 2\end{bmatrix}\begin{bmatrix}6\\-5\end{bmatrix} = \begin{bmatrix}6 - 30 \\ 30 - 10\end{bmatrix} = \begin{bmatrix}-24\\20\end{bmatrix}$.
+          Notice that $\begin{bmatrix}-24\\20\end{bmatrix} = -4\begin{bmatrix}6\\-5\end{bmatrix}$.
+          So $A\vec{u} = -4\vec{u}$. Yes, it is an eigenvector with eigenvalue $\lambda = -4$.
+
+    - id: char-equation
+      title: The Characteristic Equation
+      content: |
+        How do we find eigenvalues from scratch? We rewrite the definition:
+        $A\vec{x} = \lambda\vec{x}$
+        $A\vec{x} - \lambda I\vec{x} = \vec{0}$
+        $(A - \lambda I)\vec{x} = \vec{0}$
+
+        For this to have a **nonzero** solution $\vec{x}$, the matrix $(A - \lambda I)$ must **not** be invertible. A matrix is not invertible if and only if its determinant is zero. This gives us the **characteristic equation**:
+        $$\det(A - \lambda I) = 0$$
+
+        For an $n \times n$ matrix, $\det(A - \lambda I)$ is a polynomial of degree $n$, called the **characteristic polynomial**. Its roots are exactly the eigenvalues of $A$.
+      check:
+        id: check-char-eq-2x2
+        type: multipleChoice
+        prompt: |
+          Find the characteristic equation of $A = \begin{bmatrix}5 & 3 \\ 3 & 5\end{bmatrix}$.
+        choices:
+          - id: c1
+            text: '$\lambda^2 - 10\lambda + 16 = 0$'
+          - id: c2
+            text: '$\lambda^2 + 10\lambda + 16 = 0$'
+          - id: c3
+            text: '$\lambda^2 - 25\lambda + 9 = 0$'
+          - id: c4
+            text: '$\lambda^2 - 10\lambda + 34 = 0$'
+        answer:
+          choiceId: c1
+        explanation: |
+          $A - \lambda I = \begin{bmatrix}5-\lambda & 3 \\ 3 & 5-\lambda\end{bmatrix}$.
+          $\det(A - \lambda I) = (5-\lambda)(5-\lambda) - (3)(3)$
+          $= 25 - 10\lambda + \lambda^2 - 9$
+          $= \lambda^2 - 10\lambda + 16$.
+          Setting this to $0$ gives the characteristic equation. (Its roots are $\lambda=2$ and $\lambda=8$).
+
+    - id: triangular-matrices
+      title: Eigenvalues of Triangular Matrices
+      content: |
+        There is a very useful shortcut for finding the eigenvalues of triangular matrices (upper triangular, lower triangular, or diagonal matrices).
+
+        **Theorem**: The eigenvalues of a triangular matrix are simply the entries on its main diagonal.
+
+        Why? Because if $A$ is triangular, then $A - \lambda I$ is also triangular. The determinant of a triangular matrix is the product of its diagonal entries:
+        $\det(A - \lambda I) = (a_{11} - \lambda)(a_{22} - \lambda) \dots (a_{nn} - \lambda) = 0$
+        This clearly has roots exactly at $\lambda = a_{11}, a_{22}, \dots, a_{nn}$.
+      check:
+        id: check-triangular-eigenvalues
+        type: selectAll
+        prompt: |
+          What are the eigenvalues of $A = \begin{bmatrix}3 & 6 & -8 \\ 0 & 0 & 6 \\ 0 & 0 & 2\end{bmatrix}$? (Select all that apply)
+        choices:
+          - id: c1
+            text: '3'
+          - id: c2
+            text: '6'
+          - id: c3
+            text: '0'
+          - id: c4
+            text: '2'
+          - id: c5
+            text: '-8'
+        answer:
+          choiceIds:
+            - c1
+            - c3
+            - c4
+        explanation: |
+          Because $A$ is an upper triangular matrix, its eigenvalues are exactly the numbers on its main diagonal: $3$, $0$, and $2$. The entries above the diagonal ($6, -8, 6$) do not affect the eigenvalues.

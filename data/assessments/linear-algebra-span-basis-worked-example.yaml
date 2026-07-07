@@ -1,0 +1,129 @@
+schemaVersion: 1
+id: linear-algebra-span-basis-worked-example
+title: Finding a Basis for the Null Space
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-linear-independence-basis
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - basis
+  - nullity
+  - row-operations
+workedExamples:
+  - id: ex1
+    title: Finding a Basis for Nul A
+    problem: |
+      Find a basis for the null space of the matrix $A = \begin{bmatrix} 1 & -3 & -2 & 0 \\ 0 & 0 & 1 & 5 \\ 2 & -6 & -4 & 0 \end{bmatrix}$.
+    steps:
+      - id: step1
+        title: Set up the augmented matrix
+        instruction: |
+          The null space of $A$, denoted $\text{Nul } A$, is the set of all solutions to the homogeneous equation $A\vec{x} = \vec{0}$.
+          To find it, we first set up the augmented matrix $[A \ | \ \vec{0}]$.
+        type: multipleChoice
+        prompt: |
+          Which of the following is the correct augmented matrix to row reduce?
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix} 1 & -3 & -2 & 0 & | & 0 \\ 0 & 0 & 1 & 5 & | & 0 \\ 2 & -6 & -4 & 0 & | & 0 \end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix} 1 & 0 & 2 & | & 0 \\ -3 & 0 & -6 & | & 0 \\ -2 & 1 & -4 & | & 0 \\ 0 & 5 & 0 & | & 0 \end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix} 1 & -3 & -2 & 0 \\ 0 & 0 & 1 & 5 \\ 2 & -6 & -4 & 0 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} 1 & -3 & -2 & 0 & | & 1 \\ 0 & 0 & 1 & 5 & | & 1 \\ 2 & -6 & -4 & 0 & | & 1 \end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          We append a column of zeros to the right of $A$ to represent the constant vector $\vec{0}$.
+
+      - id: step2
+        title: Row reduce to RREF
+        instruction: |
+          Apply elementary row operations to $[A \ | \ \vec{0}]$ to reach Reduced Row Echelon Form.
+          Notice that $R_3$ is exactly $2$ times $R_1$. If we do $R_3 \leftarrow R_3 - 2R_1$, row 3 becomes all zeros.
+          The matrix is $\begin{bmatrix} 1 & -3 & -2 & 0 & | & 0 \\ 0 & 0 & 1 & 5 & | & 0 \\ 0 & 0 & 0 & 0 & | & 0 \end{bmatrix}$.
+          Now, eliminate the $-2$ in the first row above the pivot $1$ using $R_1 \leftarrow R_1 + 2R_2$.
+        type: symbolicResponse
+        prompt: |
+          What is the first row of the final RREF matrix? Format your answer as a $1 \times 5$ matrix.
+        answer:
+          expectedLatex: '\begin{bmatrix} 1 & -3 & 0 & 10 & 0 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 1 & -3 & 0 & 10 & 0 \end{pmatrix}'
+        explanation: |
+          $R_1 \leftarrow [1 \ \ -3 \ \ -2 \ \ 0 \ \ | \ \ 0] + 2[0 \ \ 0 \ \ 1 \ \ 5 \ \ | \ \ 0] = [1 \ \ -3 \ \ 0 \ \ 10 \ \ | \ \ 0]$.
+
+      - id: step3
+        title: Identify free variables
+        instruction: |
+          The RREF matrix is:
+          $\begin{bmatrix} 1 & -3 & 0 & 10 & | & 0 \\ 0 & 0 & 1 & 5 & | & 0 \\ 0 & 0 & 0 & 0 & | & 0 \end{bmatrix}$
+        type: selectAll
+        prompt: |
+          Which variables are the free variables? (Select all that apply)
+        choices:
+          - id: c1
+            text: '$x_1$'
+          - id: c2
+            text: '$x_2$'
+          - id: c3
+            text: '$x_3$'
+          - id: c4
+            text: '$x_4$'
+        answer:
+          choiceIds:
+            - c2
+            - c4
+        explanation: |
+          The pivots are in column 1 and column 3, corresponding to the basic variables $x_1$ and $x_3$. The free variables correspond to columns without pivots: column 2 ($x_2$) and column 4 ($x_4$).
+
+      - id: step4
+        title: Express basic variables in terms of free variables
+        instruction: |
+          Write the equations corresponding to the non-zero rows of the RREF matrix, and solve for the basic variables ($x_1$ and $x_3$) in terms of the free variables ($x_2$ and $x_4$).
+          Row 1 gives: $x_1 - 3x_2 + 10x_4 = 0$
+          Row 2 gives: $x_3 + 5x_4 = 0$
+        type: multipleChoice
+        prompt: |
+          Which of the following correctly isolates the basic variables?
+        choices:
+          - id: c1
+            text: '$x_1 = 3x_2 - 10x_4$ and $x_3 = -5x_4$'
+          - id: c2
+            text: '$x_1 = -3x_2 + 10x_4$ and $x_3 = 5x_4$'
+          - id: c3
+            text: '$x_2 = \frac{1}{3}x_1 + \frac{10}{3}x_4$ and $x_4 = -\frac{1}{5}x_3$'
+          - id: c4
+            text: '$x_1 = 3x_2 + 10x_4$ and $x_3 = 5x_4$'
+        answer:
+          choiceId: c1
+        explanation: |
+          Moving the free variables to the right side of the equations: $x_1 = 3x_2 - 10x_4$ and $x_3 = -5x_4$.
+
+      - id: step5
+        title: Write the general solution in parametric vector form
+        instruction: |
+          Now, construct the vector $\vec{x}$ using the equations you just found.
+          $$ \vec{x} = \begin{bmatrix} x_1 \\ x_2 \\ x_3 \\ x_4 \end{bmatrix} = \begin{bmatrix} 3x_2 - 10x_4 \\ x_2 \\ -5x_4 \\ x_4 \end{bmatrix} $$
+          Factor out $x_2$ and $x_4$ to write this as a linear combination of two vectors.
+        type: multipleChoice
+        prompt: |
+          What are the vectors that span $\text{Nul } A$?
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix} 3 \\ 1 \\ 0 \\ 0 \end{bmatrix}$ and $\begin{bmatrix} -10 \\ 0 \\ -5 \\ 1 \end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix} 1 \\ -3 \\ 0 \\ 10 \end{bmatrix}$ and $\begin{bmatrix} 0 \\ 0 \\ 1 \\ 5 \end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix} 3 \\ 0 \\ -5 \\ 0 \end{bmatrix}$ and $\begin{bmatrix} -10 \\ 1 \\ 0 \\ 1 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} -3 \\ 1 \\ 0 \\ 0 \end{bmatrix}$ and $\begin{bmatrix} 10 \\ 0 \\ 5 \\ 1 \end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          Splitting the vector gives $x_2\begin{bmatrix} 3 \\ 1 \\ 0 \\ 0 \end{bmatrix} + x_4\begin{bmatrix} -10 \\ 0 \\ -5 \\ 1 \end{bmatrix}$. The basis consists of these two vectors! Because they correspond to distinct free variables, they are automatically linearly independent.

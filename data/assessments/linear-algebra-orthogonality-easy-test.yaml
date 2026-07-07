@@ -1,0 +1,97 @@
+schemaVersion: 1
+id: linear-algebra-orthogonality-easy-test
+title: Orthogonality and Projections Standard Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-orthogonality-projections
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 5
+skills:
+  - dot-product
+  - orthogonality
+  - orthogonal-complement
+  - projection
+questions:
+  - id: et-dot-product-formula
+    type: multipleChoice
+    prompt: |
+      For $\vec{u}, \vec{v} \in \mathbb{R}^n$, the dot product $\vec{u} \cdot \vec{v}$ equals:
+    choices:
+      - id: c1
+        text: '$\|\vec{u}\| \cdot \|\vec{v}\|$'
+      - id: c2
+        text: '$u_1 v_1 + u_2 v_2 + \dots + u_n v_n$'
+      - id: c3
+        text: '$\|\vec{u} + \vec{v}\|$'
+      - id: c4
+        text: '$\vec{u}\vec{v}^T$'
+    answer:
+      choiceId: c2
+    explanation: |
+      The dot product is the sum of component-wise products: $\vec{u}\cdot\vec{v} = \sum_{i=1}^n u_i v_i$. Note that $\|\vec{u}\|\|\vec{v}\|$ equals $|\vec{u}\cdot\vec{v}|$ only when the vectors are parallel (not in general). And $\vec{u}\vec{v}^T$ would be an outer product (a matrix), not a scalar.
+
+  - id: et-orthogonality-condition
+    type: multipleChoice
+    prompt: |
+      Vectors $\vec{u}$ and $\vec{v}$ are orthogonal if and only if:
+    choices:
+      - id: c1
+        text: '$\|\vec{u}\| = \|\vec{v}\|$'
+      - id: c2
+        text: '$\vec{u} = -\vec{v}$'
+      - id: c3
+        text: '$\vec{u} \cdot \vec{v} = 0$'
+      - id: c4
+        text: '$\vec{u} \cdot \vec{v} = 1$'
+    answer:
+      choiceId: c3
+    explanation: |
+      Two vectors are orthogonal iff their dot product is zero — equivalently, the angle between them is $90°$. Equal lengths is not sufficient (e.g., $(1,0)$ and $(0,1)$ are orthogonal and happen to have equal lengths, but $(3,0)$ and $(0,4)$ are also orthogonal with unequal lengths).
+
+  - id: et-orthogonal-comp-dim
+    type: numericResponse
+    prompt: |
+      Let $W$ be a 2-dimensional subspace of $\mathbb{R}^5$. What is $\dim(W^\perp)$?
+    answer:
+      value: 3
+      tolerance: 0
+    explanation: |
+      $\dim(W) + \dim(W^\perp) = n = 5$, so $\dim(W^\perp) = 5 - 2 = 3$.
+
+  - id: et-projection-formula-check
+    type: multipleChoice
+    prompt: |
+      Let $\vec{y} = \begin{bmatrix}5\\2\end{bmatrix}$ and $\vec{u} = \begin{bmatrix}1\\0\end{bmatrix}$. What is $\text{proj}_{\vec{u}}\vec{y}$?
+    choices:
+      - id: c1
+        text: '$\begin{bmatrix}5\\0\end{bmatrix}$'
+      - id: c2
+        text: '$\begin{bmatrix}5\\2\end{bmatrix}$'
+      - id: c3
+        text: '$\begin{bmatrix}1\\0\end{bmatrix}$'
+      - id: c4
+        text: '$\begin{bmatrix}0\\2\end{bmatrix}$'
+    answer:
+      choiceId: c1
+    explanation: |
+      $\text{proj}_{\vec{u}}\vec{y} = \frac{\vec{y}\cdot\vec{u}}{\vec{u}\cdot\vec{u}}\vec{u} = \frac{5}{1}\begin{bmatrix}1\\0\end{bmatrix} = \begin{bmatrix}5\\0\end{bmatrix}$. Projecting onto the $x$-axis drops the $y$-component.
+
+  - id: et-residual-orthogonal
+    type: multipleChoice
+    prompt: |
+      Let $\hat{\vec{y}} = \text{proj}_W\vec{y}$ be the projection of $\vec{y}$ onto a subspace $W$. Which statement is always true about the residual $\vec{z} = \vec{y} - \hat{\vec{y}}$?
+    choices:
+      - id: c1
+        text: '$\vec{z}$ is in $W$.'
+      - id: c2
+        text: '$\vec{z}$ is orthogonal to every vector in $W$ (i.e., $\vec{z} \in W^\perp$).'
+      - id: c3
+        text: '$\vec{z} = \vec{0}$ always.'
+      - id: c4
+        text: '$\|\vec{z}\| = \|\hat{\vec{y}}\|$ always.'
+    answer:
+      choiceId: c2
+    explanation: |
+      The fundamental property of orthogonal projection is that the residual (error) $\vec{z} = \vec{y} - \hat{\vec{y}}$ is always in $W^\perp$ — it is orthogonal to every vector in the subspace $W$. This is the geometric essence of orthogonal projection: $\hat{\vec{y}}$ is the unique point in $W$ closest to $\vec{y}$, and the line from $\hat{\vec{y}}$ to $\vec{y}$ is perpendicular to $W$.

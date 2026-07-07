@@ -1,0 +1,103 @@
+schemaVersion: 1
+id: linear-algebra-eigenvalues-easy-test
+title: Eigenvalues and Eigenvectors Standard Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-eigenvalues-eigenvectors
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 5
+skills:
+  - eigenvalues
+  - eigenvectors
+  - characteristic-equation
+questions:
+  - id: et-eigenvector-geometric
+    type: multipleChoice
+    prompt: |
+      Geometrically, what does an $n \times n$ matrix $A$ do to its eigenvectors?
+    choices:
+      - id: c1
+        text: 'It rotates them by 90 degrees.'
+      - id: c2
+        text: 'It maps them to the zero vector.'
+      - id: c3
+        text: 'It scales them by a factor $\lambda$ without changing their line of direction.'
+      - id: c4
+        text: 'It projects them onto the column space.'
+    answer:
+      choiceId: c3
+    explanation: |
+      The definition $A\vec{x} = \lambda\vec{x}$ means that applying the transformation $A$ to $\vec{x}$ results in a scalar multiple of $\vec{x}$. This represents a stretch, shrink, or reversal along the exact same line.
+
+  - id: et-eigenvector-definition
+    type: multipleChoice
+    prompt: |
+      Which of the following is the correct definition of an eigenvalue $\lambda$ of a matrix $A$?
+    choices:
+      - id: c1
+        text: 'A scalar $\lambda$ such that $A\vec{x} = \lambda\vec{x}$ has a nontrivial (nonzero) solution $\vec{x}$.'
+      - id: c2
+        text: 'A scalar $\lambda$ such that $\det(A) = \lambda$.'
+      - id: c3
+        text: 'A scalar $\lambda$ such that $A\vec{x} = \lambda\vec{x}$ for every vector $\vec{x}$.'
+      - id: c4
+        text: 'A scalar $\lambda$ such that the matrix $(A - \lambda I)$ is invertible.'
+    answer:
+      choiceId: c1
+    explanation: |
+      By definition, $\lambda$ is an eigenvalue if there exists some nonzero vector $\vec{x}$ such that $A\vec{x} = \lambda\vec{x}$. For this to happen, the matrix $(A - \lambda I)$ must actually be **not** invertible (so its null space contains more than just the zero vector).
+
+  - id: et-triangular-matrix-eigenvalues
+    type: selectAll
+    prompt: |
+      What are the eigenvalues of the lower triangular matrix $A = \begin{bmatrix}-4 & 0 & 0 \\ 1 & 2 & 0 \\ 5 & 8 & 0\end{bmatrix}$? (Select all that apply)
+    choices:
+      - id: c1
+        text: '-4'
+      - id: c2
+        text: '1'
+      - id: c3
+        text: '2'
+      - id: c4
+        text: '5'
+      - id: c5
+        text: '0'
+    answer:
+      choiceIds:
+        - c1
+        - c3
+        - c5
+    explanation: |
+      For any triangular matrix (upper or lower), the eigenvalues are exactly the entries on the main diagonal. The diagonal entries here are -4, 2, and 0.
+
+  - id: et-char-eq-solve
+    type: numericResponse
+    prompt: |
+      The characteristic equation of a $2 \times 2$ matrix $A$ is $\lambda^2 - 7\lambda + 10 = 0$.
+      What is the largest eigenvalue of $A$?
+    answer:
+      value: 5
+      tolerance: 0
+    explanation: |
+      Factoring the characteristic polynomial gives $(\lambda - 5)(\lambda - 2) = 0$.
+      The eigenvalues are $\lambda = 5$ and $\lambda = 2$. The largest is 5.
+
+  - id: et-eigenspace-definition
+    type: multipleChoice
+    prompt: |
+      The eigenspace of a matrix $A$ corresponding to an eigenvalue $\lambda$ is defined as the set of all solutions to which equation?
+    choices:
+      - id: c1
+        text: '$A\vec{x} = \vec{0}$'
+      - id: c2
+        text: '$(A - \lambda I)\vec{x} = \vec{0}$'
+      - id: c3
+        text: '$\det(A - \lambda I) = 0$'
+      - id: c4
+        text: '$A^T A\vec{x} = \lambda\vec{x}$'
+    answer:
+      choiceId: c2
+    explanation: |
+      The eigenspace is exactly the null space of the matrix $(A - \lambda I)$. It consists of the zero vector and all eigenvectors that correspond to the specific eigenvalue $\lambda$.

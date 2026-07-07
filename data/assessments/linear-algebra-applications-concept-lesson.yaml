@@ -1,0 +1,93 @@
+schemaVersion: 1
+id: linear-algebra-applications-concept-lesson
+title: Applications of Linear Algebra Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-applications
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - markov-chains
+  - pagerank
+  - principal-component-analysis
+lesson:
+  introduction: >-
+    Linear algebra is not just an abstract mathematical theory; it is the computational engine powering the modern world. From the algorithms that organize the internet to the machine learning models that recognize faces and generate text, the concepts of vectors, matrices, and eigenvalues are applied everywhere. In this lesson, we will explore three prominent applications: Markov Chains, the Google PageRank algorithm, and Principal Component Analysis (PCA).
+  sections:
+    - id: markov-chains
+      title: Markov Chains and Steady States
+      content: |
+        A **Markov Chain** is a mathematical model that describes a sequence of possible events where the probability of each event depends only on the state attained in the previous event. We represent the probabilities of transitioning between states using a **stochastic matrix** $P$, where every column is a probability vector (its entries are non-negative and sum to 1).
+
+        If $\vec{x}_k$ is the state vector at time step $k$, the next state is calculated simply by matrix multiplication:
+        $$\vec{x}_{k+1} = P\vec{x}_k$$
+
+        Over time, many Markov chains settle into a **steady-state vector** $\vec{q}$, where the state no longer changes:
+        $$P\vec{q} = \vec{q}$$
+
+        Notice that this equation is exactly $P\vec{q} = 1\vec{q}$. The steady-state vector is just an eigenvector of $P$ corresponding to the eigenvalue $\lambda = 1$!
+      check:
+        id: check-stochastic-column
+        type: numericResponse
+        prompt: |
+          By definition, what must the sum of the entries in any column of a stochastic matrix be?
+        answer:
+          value: 1
+          tolerance: 0
+        explanation: |
+          Each column represents the probabilities of transitioning from one specific state to all possible next states. Since some transition must happen, these probabilities must sum to $1$ (or $100\%$).
+
+    - id: pagerank-algorithm
+      title: The Google PageRank Algorithm
+      content: |
+        In its early days, Google revolutionized web search using the **PageRank algorithm**. PageRank models the entire internet as a gigantic Markov chain.
+        
+        Imagine a "random surfer" who clicks links randomly from page to page. If a page has many links pointing to it, or if it has links pointing to it from other highly-ranked pages, the surfer is more likely to end up there. 
+        
+        We construct a massive transition matrix $G$ based on the hyperlink structure of the web. The "importance" or "rank" of every web page is determined by finding the steady-state vector $\vec{v}$ such that $G\vec{v} = \vec{v}$. Finding the most important pages on the internet is, fundamentally, computing the $\lambda=1$ eigenvector of a matrix with billions of rows and columns.
+      check:
+        id: check-pagerank-concept
+        type: multipleChoice
+        prompt: |
+          In the context of linear algebra, what does the PageRank vector mathematically represent?
+        choices:
+          - id: c1
+            text: 'The determinant of the internet matrix.'
+          - id: c2
+            text: 'The inverse of the adjacency matrix.'
+          - id: c3
+            text: 'An eigenvector corresponding to $\lambda = 1$.'
+          - id: c4
+            text: 'The null space of the transition matrix.'
+        answer:
+          choiceId: c3
+        explanation: |
+          Because PageRank seeks a steady state where the ranks no longer change after being multiplied by the transition matrix ($G\vec{v} = \vec{v}$), the PageRank vector is an eigenvector for the eigenvalue $\lambda = 1$.
+
+    - id: pca
+      title: Principal Component Analysis (PCA)
+      content: |
+        **Principal Component Analysis (PCA)** is a cornerstone algorithm in data science and machine learning for dimensionality reduction. Suppose you have a dataset with hundreds of features (like pixels in an image). Many of these features are highly correlated or contain mostly noise.
+
+        PCA computes the **covariance matrix** of the data, which captures how all the features vary together. Because the covariance matrix is symmetric, it can be orthogonally diagonalized.
+        
+        The **eigenvectors** of this matrix are called the "principal components"—they represent the directions of maximum variance (the most important patterns) in the data. The corresponding **eigenvalues** tell us how much variance is captured along that direction. By keeping only the eigenvectors with the largest eigenvalues and projecting the data onto them, we can compress a 100-dimensional dataset down to 2 or 3 dimensions while retaining the most important information.
+      check:
+        id: check-pca-eigen
+        type: multipleChoice
+        prompt: |
+          In PCA, how do we determine which principal components (eigenvectors) are the most important to keep?
+        choices:
+          - id: c1
+            text: 'We keep the eigenvectors that correspond to the largest eigenvalues.'
+          - id: c2
+            text: 'We keep the eigenvectors that correspond to eigenvalues closest to zero.'
+          - id: c3
+            text: 'We keep the eigenvectors with the smallest length.'
+          - id: c4
+            text: 'We keep the eigenvectors that are linearly dependent.'
+        answer:
+          choiceId: c1
+        explanation: |
+          The eigenvalues in PCA represent the amount of variance (information) captured in the direction of the eigenvector. To retain the most information while reducing dimensions, we keep the eigenvectors with the largest eigenvalues.

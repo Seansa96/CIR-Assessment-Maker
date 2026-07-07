@@ -1,0 +1,79 @@
+schemaVersion: 1
+id: linear-algebra-least-squares-hard-test
+title: Least Squares and Approximations Advanced Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-least-squares
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - least-squares
+  - normal-equations
+  - projection
+questions:
+  - id: ht-ls-dependent-columns
+    type: multipleChoice
+    prompt: |
+      Suppose $A$ is an $m \times n$ matrix whose columns are linearly **dependent**. 
+      Which of the following is true regarding the least-squares solutions to $A\vec{x} = \vec{b}$?
+    choices:
+      - id: c1
+        text: 'There is no least-squares solution because $A^TA$ is not invertible.'
+      - id: c2
+        text: 'There are infinitely many least-squares solutions, but the projected point $A\hat{\vec{x}}$ is unique.'
+      - id: c3
+        text: 'There is exactly one unique least-squares solution.'
+      - id: c4
+        text: 'There are infinitely many least-squares solutions, and they produce different projections $A\hat{\vec{x}}$.'
+    answer:
+      choiceId: c2
+    explanation: |
+      If the columns of $A$ are dependent, $A^TA$ is not invertible, which means the normal equations $A^TA\hat{\vec{x}} = A^T\vec{b}$ have infinitely many solutions for $\hat{\vec{x}}$. However, every single one of those solutions maps to the exact same vector $A\hat{\vec{x}}$ — which is the unique orthogonal projection of $\vec{b}$ onto $\text{Col}(A)$.
+
+  - id: ht-ls-orthogonal-computation
+    type: freeResponse
+    prompt: |
+      Let $A = \begin{bmatrix}1 & -1 \\ 1 & 1 \\ 0 & 0\end{bmatrix}$ and $\vec{b} = \begin{bmatrix}2\\4\\3\end{bmatrix}$.
+      Notice that the columns of $A$ are orthogonal. 
+      Find the least-squares solution $\hat{\vec{x}}$ and compute the least-squares error.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+        - |
+          **Set up Normal Equations**: Compute $A^TA = \begin{bmatrix}2 & 0 \\ 0 & 2\end{bmatrix}$.
+          Because the columns are orthogonal, $A^TA$ is diagonal!
+        - |
+          **Right Side**: Compute $A^T\vec{b} = \begin{bmatrix}1(2)+1(4)+0 \\ -1(2)+1(4)+0\end{bmatrix} = \begin{bmatrix}6\\2\end{bmatrix}$.
+        - |
+          **Solve**: $\begin{bmatrix}2 & 0 \\ 0 & 2\end{bmatrix} \begin{bmatrix}\hat{x}_1 \\ \hat{x}_2\end{bmatrix} = \begin{bmatrix}6\\2\end{bmatrix}$. 
+          So $2\hat{x}_1 = 6 \implies \hat{x}_1 = 3$.
+          $2\hat{x}_2 = 2 \implies \hat{x}_2 = 1$.
+          $\hat{\vec{x}} = \begin{bmatrix}3\\1\end{bmatrix}$.
+        - |
+          **Error**: The projection is $A\hat{\vec{x}} = \begin{bmatrix}1 & -1 \\ 1 & 1 \\ 0 & 0\end{bmatrix}\begin{bmatrix}3\\1\end{bmatrix} = \begin{bmatrix}2\\4\\0\end{bmatrix}$.
+          The residual is $\vec{z} = \vec{b} - A\hat{\vec{x}} = \begin{bmatrix}2\\4\\3\end{bmatrix} - \begin{bmatrix}2\\4\\0\end{bmatrix} = \begin{bmatrix}0\\0\\3\end{bmatrix}$.
+          The least-squares error is $\|\vec{z}\| = \sqrt{0^2+0^2+3^2} = 3$.
+
+  - id: ht-ls-quadratic-design
+    type: multipleChoice
+    prompt: |
+      Suppose you want to fit a **parabola** $y = \beta_0 + \beta_1 x + \beta_2 x^2$ to the points $(-1, 0), (0, 1), (1, 0)$.
+      What are the dimensions of the design matrix $X$?
+    choices:
+      - id: c1
+        text: '$3 \times 2$'
+      - id: c2
+        text: '$3 \times 3$'
+      - id: c3
+        text: '$4 \times 3$'
+      - id: c4
+        text: '$2 \times 3$'
+    answer:
+      choiceId: c2
+    explanation: |
+      We have $m=3$ data points, so $X$ will have 3 rows.
+      We have 3 parameters ($\beta_0, \beta_1, \beta_2$), so $X$ will have 3 columns.
+      Specifically, the columns correspond to $1$, $x$, and $x^2$. The matrix is $3 \times 3$.
+      Because $X$ is square and its columns are linearly independent (the $x$-values are distinct), $X$ is invertible, meaning the parabola will fit the 3 points exactly (error = 0).

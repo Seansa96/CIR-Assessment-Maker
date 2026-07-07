@@ -1,0 +1,110 @@
+schemaVersion: 1
+id: linear-algebra-vector-spaces-easy-test
+title: Vector Spaces and Subspaces Standard Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-vector-spaces-subspaces
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 5
+skills:
+  - vector-space
+  - subspace
+  - column-space
+  - null-space
+questions:
+  - id: et-subspace-conditions
+    type: selectAll
+    prompt: |
+      Which of the following are required conditions for a subset $H$ of a vector space $V$ to be a subspace? (Select all that apply)
+    choices:
+      - id: c1
+        text: 'The zero vector of $V$ is in $H$.'
+      - id: c2
+        text: '$H$ is closed under vector addition.'
+      - id: c3
+        text: '$H$ is closed under scalar multiplication.'
+      - id: c4
+        text: '$H$ has a finite number of elements.'
+    answer:
+      choiceIds:
+        - c1
+        - c2
+        - c3
+    explanation: |
+      The three conditions of the Subspace Test are: (1) the zero vector is in $H$, (2) closure under addition, and (3) closure under scalar multiplication. Finiteness is not required — in fact most subspaces are infinite sets.
+
+  - id: et-null-space-contains-zero
+    type: multipleChoice
+    prompt: |
+      Why is the null space $\text{Nul}(A)$ always a subspace of $\mathbb{R}^n$?
+    choices:
+      - id: c1
+        text: 'Because it always contains the zero vector, which is sufficient.'
+      - id: c2
+        text: 'Because it is defined using row reduction, which preserves subspace structure.'
+      - id: c3
+        text: 'Because it contains $\vec{0}$ (since $A\vec{0}=\vec{0}$), and the solution set of a homogeneous system is closed under addition and scalar multiplication.'
+      - id: c4
+        text: 'Because all solution sets of linear systems are subspaces.'
+    answer:
+      choiceId: c3
+    explanation: |
+      We verify all three subspace conditions: (1) $A\vec{0} = \vec{0}$ so $\vec{0} \in \text{Nul}(A)$. (2) If $A\vec{u} = \vec{0}$ and $A\vec{v} = \vec{0}$, then $A(\vec{u}+\vec{v}) = A\vec{u}+A\vec{v} = \vec{0}+\vec{0} = \vec{0}$. (3) If $A\vec{v}=\vec{0}$, then $A(c\vec{v}) = cA\vec{v} = c\vec{0} = \vec{0}$. Note: non-homogeneous systems ($A\vec{x}=\vec{b}$, $\vec{b}\neq\vec{0}$) do NOT have solution sets that are subspaces.
+
+  - id: et-col-space-interpretation
+    type: multipleChoice
+    prompt: |
+      What does $\vec{b} \in \text{Col}(A)$ tell us about the system $A\vec{x} = \vec{b}$?
+    choices:
+      - id: c1
+        text: 'The system has a unique solution.'
+      - id: c2
+        text: 'The system has no solution.'
+      - id: c3
+        text: 'The system has at least one solution (it is consistent).'
+      - id: c4
+        text: 'The system has infinitely many solutions.'
+    answer:
+      choiceId: c3
+    explanation: |
+      $\vec{b} \in \text{Col}(A)$ means $\vec{b}$ can be expressed as a linear combination of the columns of $A$, which is exactly the definition of $A\vec{x} = \vec{b}$ having a solution. It does not tell us whether the solution is unique — that depends on whether the columns are linearly independent (whether $\text{Nul}(A) = \{\vec{0}\}$).
+
+  - id: et-rank-nullity-dimensions
+    type: multipleChoice
+    prompt: |
+      Suppose $A$ is a $3 \times 5$ matrix and $\text{Nul}(A)$ is 2-dimensional. What is $\dim(\text{Col}(A))$?
+    choices:
+      - id: c1
+        text: '2'
+      - id: c2
+        text: '3'
+      - id: c3
+        text: '5'
+      - id: c4
+        text: 'It cannot be determined from this information.'
+    answer:
+      choiceId: c2
+    explanation: |
+      By the Rank-Nullity Theorem: $\text{rank}(A) + \text{nullity}(A) = $ number of columns $= 5$.
+      $\text{rank}(A) = 5 - 2 = 3$.
+      Note: $\text{rank}(A) = 3$, and since $A$ is $3\times 5$, the maximum possible rank is $\min(3,5) = 3$. So the column space fills all of $\mathbb{R}^3$, meaning $A\vec{x} = \vec{b}$ is consistent for every $\vec{b}$.
+
+  - id: et-basis-for-col
+    type: multipleChoice
+    prompt: |
+      To find a basis for $\text{Col}(A)$, you should take the pivot columns of:
+    choices:
+      - id: c1
+        text: 'The row-reduced form of $A$ (REF or RREF).'
+      - id: c2
+        text: 'The original matrix $A$.'
+      - id: c3
+        text: 'The transpose $A^T$.'
+      - id: c4
+        text: 'The augmented matrix $[A | \vec{0}]$.'
+    answer:
+      choiceId: c2
+    explanation: |
+      Row operations change the column vectors themselves, so you cannot use the pivot columns of the row-reduced form as basis vectors for $\text{Col}(A)$ — they would span a different space. The correct procedure is: row reduce to identify **which** columns are pivot columns, then return to the **original** matrix $A$ and take those columns as the basis.

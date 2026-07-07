@@ -1,0 +1,98 @@
+schemaVersion: 1
+id: linear-algebra-least-squares-easy-test
+title: Least Squares and Approximations Standard Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-least-squares
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 5
+skills:
+  - least-squares
+  - normal-equations
+  - projection
+questions:
+  - id: et-ls-goal
+    type: multipleChoice
+    prompt: |
+      What is the primary goal of finding a least-squares solution to $A\vec{x} = \vec{b}$?
+    choices:
+      - id: c1
+        text: 'To find a vector $\vec{x}$ that makes $A\vec{x}$ exactly equal to $\vec{b}$.'
+      - id: c2
+        text: 'To find a vector $\hat{\vec{x}}$ that minimizes the distance between $A\hat{\vec{x}}$ and $\vec{b}$.'
+      - id: c3
+        text: 'To find a vector $\hat{\vec{x}}$ that minimizes the distance between $\hat{\vec{x}}$ and the origin.'
+      - id: c4
+        text: 'To find the projection of $\vec{x}$ onto the column space of $A$.'
+    answer:
+      choiceId: c2
+    explanation: |
+      The least-squares method seeks to minimize the error $\|A\vec{x} - \vec{b}\|$, which is the distance between the model's prediction $A\vec{x}$ and the actual observation vector $\vec{b}$. If the system is inconsistent, $A\vec{x}$ can never exactly equal $\vec{b}$.
+
+  - id: et-normal-eq-form
+    type: multipleChoice
+    prompt: |
+      Which matrix equation represents the normal equations for the system $A\vec{x} = \vec{b}$?
+    choices:
+      - id: c1
+        text: '$AA^T\hat{\vec{x}} = A\vec{b}$'
+      - id: c2
+        text: '$A^TA\hat{\vec{x}} = A^T\vec{b}$'
+      - id: c3
+        text: '$A^TA\hat{\vec{x}} = \vec{b}$'
+      - id: c4
+        text: '$A\hat{\vec{x}} = A^T\vec{b}$'
+    answer:
+      choiceId: c2
+    explanation: |
+      The normal equations are derived by multiplying both sides of $A\vec{x} \approx \vec{b}$ by $A^T$ on the left, yielding $A^TA\hat{\vec{x}} = A^T\vec{b}$. This projects the problem into a space where an exact solution is guaranteed to exist.
+
+  - id: et-unique-solution-condition
+    type: multipleChoice
+    prompt: |
+      The normal equations $A^TA\hat{\vec{x}} = A^T\vec{b}$ have a **unique** solution if and only if:
+    choices:
+      - id: c1
+        text: 'The matrix $A$ is square.'
+      - id: c2
+        text: 'The columns of $A$ are linearly independent.'
+      - id: c3
+        text: 'The columns of $A$ are orthogonal.'
+      - id: c4
+        text: 'The system $A\vec{x} = \vec{b}$ is consistent.'
+    answer:
+      choiceId: c2
+    explanation: |
+      The normal equations have a unique solution when $A^TA$ is invertible. A fundamental theorem states that $A^TA$ is invertible if and only if the columns of $A$ are linearly independent.
+
+  - id: et-ls-line-design-matrix
+    type: multipleChoice
+    prompt: |
+      When fitting a line $y = \beta_0 + \beta_1 x$ to a set of $m$ data points $(x_i, y_i)$, what does the first column of the design matrix $X$ consist of?
+    choices:
+      - id: c1
+        text: 'The $x$-coordinates of the data points.'
+      - id: c2
+        text: 'The $y$-coordinates of the data points.'
+      - id: c3
+        text: 'All 0s.'
+      - id: c4
+        text: 'All 1s.'
+    answer:
+      choiceId: c4
+    explanation: |
+      The equation $y = \beta_0(1) + \beta_1(x)$ means the coefficient for $\beta_0$ is 1 for every data point. Therefore, the first column of $X$ is a column of 1s.
+
+  - id: et-residual-dot-product
+    type: numericResponse
+    prompt: |
+      Let $\hat{\vec{x}}$ be the least-squares solution to $A\vec{x} = \vec{b}$. 
+      Let $\vec{a}_1$ be the first column of $A$, and $\vec{z} = \vec{b} - A\hat{\vec{x}}$ be the residual vector.
+      What is the value of the dot product $\vec{a}_1 \cdot \vec{z}$?
+    answer:
+      value: 0
+      tolerance: 0
+    explanation: |
+      The residual vector $\vec{z}$ must be orthogonal to the column space of $A$. Since $\vec{a}_1$ is in the column space, their dot product is exactly 0.

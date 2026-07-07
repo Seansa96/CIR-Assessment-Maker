@@ -1,0 +1,132 @@
+schemaVersion: 1
+id: linear-algebra-vector-spaces-concept-lesson
+title: Vector Spaces and Subspaces Concept Lesson
+assessmentType: conceptLesson
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-vector-spaces-subspaces
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - vector-space
+  - subspace
+  - column-space
+  - null-space
+  - row-space
+lesson:
+  introduction: >-
+    So far we have worked exclusively in $\mathbb{R}^n$. But the ideas of span,
+    linear independence, and basis apply far more broadly. A vector space is any
+    collection of objects that behaves like $\mathbb{R}^n$ under addition and
+    scalar multiplication. Subspaces are special subsets that are themselves
+    vector spaces. Understanding these structures unlocks the deeper geometry of
+    linear algebra.
+  sections:
+    - id: vector-space-def
+      title: What is a Vector Space?
+      content: |
+        A **vector space** is a set $V$ together with two operations — addition and scalar multiplication — that satisfy ten axioms. The axioms ensure the operations behave "nicely":
+
+        - **Closure**: The sum of two vectors in $V$ is in $V$; a scalar multiple of a vector in $V$ is in $V$.
+        - **Commutativity** of addition: $\vec{u} + \vec{v} = \vec{v} + \vec{u}$.
+        - **Associativity**: $(\vec{u} + \vec{v}) + \vec{w} = \vec{u} + (\vec{v} + \vec{w})$.
+        - **Zero vector**: There exists a $\vec{0}$ such that $\vec{v} + \vec{0} = \vec{v}$.
+        - **Additive inverse**: For each $\vec{v}$, there exists $-\vec{v}$ such that $\vec{v} + (-\vec{v}) = \vec{0}$.
+        - **Scalar identity**: $1\vec{v} = \vec{v}$.
+        - **Distributive laws** for scalars and vectors.
+
+        **Examples of vector spaces**:
+        - $\mathbb{R}^n$ (the primary example from this course)
+        - $\mathbb{P}_n$ — the set of all polynomials of degree $\leq n$
+        - $M_{m \times n}$ — the set of all $m \times n$ matrices
+      check:
+        id: check-vector-space
+        type: multipleChoice
+        prompt: |
+          Which of the following is NOT a valid vector space under the standard operations?
+        choices:
+          - id: c1
+            text: 'The set of all $2 \times 2$ matrices with real entries.'
+          - id: c2
+            text: 'The set of all polynomials of degree exactly 2.'
+          - id: c3
+            text: 'The set $\mathbb{R}^3$.'
+          - id: c4
+            text: 'The set of all polynomials of degree at most 3.'
+        answer:
+          choiceId: c2
+        explanation: |
+          The set of polynomials of **exactly** degree 2 fails closure under addition: $(x^2) + (-x^2 + 1) = 1$, which has degree 0, not 2. A vector space must be closed under all additions, so this set fails. The others are all standard vector spaces.
+
+    - id: subspace-def
+      title: Subspaces and the Subspace Test
+      content: |
+        A **subspace** $H$ of a vector space $V$ is a subset of $V$ that is itself a vector space. Rather than checking all ten axioms, we use the **Subspace Test** — a subset $H$ is a subspace if and only if:
+
+        1. **Zero vector**: $\vec{0} \in H$.
+        2. **Closed under addition**: If $\vec{u}, \vec{v} \in H$, then $\vec{u} + \vec{v} \in H$.
+        3. **Closed under scalar multiplication**: If $\vec{v} \in H$ and $c$ is a scalar, then $c\vec{v} \in H$.
+
+        The other axioms are automatically inherited from the parent space $V$.
+
+        **Key examples of subspaces of $\mathbb{R}^n$**:
+        - The trivial subspace $\{\vec{0}\}$
+        - $\mathbb{R}^n$ itself
+        - Any line or plane through the origin
+      check:
+        id: check-subspace-test
+        type: multipleChoice
+        prompt: |
+          Let $H = \{(x, y) \in \mathbb{R}^2 : x \geq 0\}$ (the right half-plane). Is $H$ a subspace of $\mathbb{R}^2$?
+        choices:
+          - id: c1
+            text: 'Yes, because it contains the zero vector and is geometrically a half-plane.'
+          - id: c2
+            text: 'No, because it does not contain the zero vector.'
+          - id: c3
+            text: 'No, because it fails closure under scalar multiplication: $-1 \cdot (1, 0) = (-1, 0) \notin H$.'
+          - id: c4
+            text: 'Yes, because any two vectors in $H$ sum to a vector in $H$.'
+        answer:
+          choiceId: c3
+        explanation: |
+          The zero vector $(0,0)$ is in $H$, and $H$ is closed under addition (sums of non-negative $x$-coordinates are non-negative). However, scalar multiplication fails: taking $c = -1$ and $\vec{v} = (1,0) \in H$ gives $-1 \cdot (1,0) = (-1, 0)$, which has a negative $x$-coordinate and is not in $H$. Subspaces must be symmetric around the origin.
+
+    - id: column-null-spaces
+      title: Column Space and Null Space
+      content: |
+        Two of the most important subspaces associated with a matrix $A$ are:
+
+        **Column Space** $\text{Col}(A)$:
+        The set of all linear combinations of the columns of $A$. Equivalently, it is the set of all vectors $\vec{b}$ for which $A\vec{x} = \vec{b}$ has at least one solution.
+        - $\text{Col}(A)$ is a subspace of $\mathbb{R}^m$ (where $A$ is $m \times n$).
+        - Its dimension is the **rank** of $A$.
+
+        **Null Space** $\text{Nul}(A)$:
+        The set of all solutions to the homogeneous equation $A\vec{x} = \vec{0}$.
+        - $\text{Nul}(A)$ is a subspace of $\mathbb{R}^n$.
+        - Its dimension is the **nullity** of $A$.
+
+        **The Rank-Nullity Theorem** (restated): $\text{rank}(A) + \text{nullity}(A) = n$ (the number of columns).
+      check:
+        id: check-col-null
+        type: selectAll
+        prompt: |
+          Let $A$ be a $5 \times 3$ matrix of rank 2. Select all true statements.
+        choices:
+          - id: c1
+            text: '$\text{Col}(A)$ is a 2-dimensional subspace of $\mathbb{R}^5$.'
+          - id: c2
+            text: '$\text{Col}(A)$ is a 2-dimensional subspace of $\mathbb{R}^3$.'
+          - id: c3
+            text: '$\text{Nul}(A)$ is a 1-dimensional subspace of $\mathbb{R}^3$.'
+          - id: c4
+            text: '$\text{Nul}(A)$ is a 3-dimensional subspace of $\mathbb{R}^5$.'
+        answer:
+          choiceIds:
+            - c1
+            - c3
+        explanation: |
+          $A$ is $5 \times 3$, so it maps $\mathbb{R}^3 \to \mathbb{R}^5$. 
+          **Col(A)**: The column space lives in the codomain $\mathbb{R}^5$. With rank 2, it is 2-dimensional. ✓ (c1 correct, c2 wrong — wrong ambient space)
+          **Nul(A)**: The null space lives in the domain $\mathbb{R}^3$. By Rank-Nullity: nullity = 3 − 2 = 1. So it is 1-dimensional in $\mathbb{R}^3$. ✓ (c3 correct, c4 wrong — wrong ambient space and wrong dimension)

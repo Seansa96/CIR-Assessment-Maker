@@ -1,0 +1,76 @@
+schemaVersion: 1
+id: linear-algebra-applications-hard-quiz
+title: Applications of Linear Algebra Advanced Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-applications
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - markov-chains
+  - pagerank
+  - principal-component-analysis
+questions:
+  - id: hq-steady-state-calc
+    type: multipleChoice
+    prompt: |
+      Consider the stochastic matrix $P = \begin{bmatrix} 0.7 & 0.2 \\ 0.3 & 0.8 \end{bmatrix}$.
+      What is its steady-state vector $\vec{q}$?
+    choices:
+      - id: c1
+        text: '$\begin{bmatrix} 0.5 \\ 0.5 \end{bmatrix}$'
+      - id: c2
+        text: '$\begin{bmatrix} 0.4 \\ 0.6 \end{bmatrix}$'
+      - id: c3
+        text: '$\begin{bmatrix} 0.2 \\ 0.8 \end{bmatrix}$'
+      - id: c4
+        text: '$\begin{bmatrix} 2 \\ 3 \end{bmatrix}$'
+    answer:
+      choiceId: c2
+    explanation: |
+      We solve $(P - I)\vec{q} = \vec{0}$.
+      $P - I = \begin{bmatrix} -0.3 & 0.2 \\ 0.3 & -0.2 \end{bmatrix}$.
+      The equation $-0.3q_1 + 0.2q_2 = 0$ implies $3q_1 = 2q_2$.
+      A basis vector is $\begin{bmatrix} 2 \\ 3 \end{bmatrix}$. 
+      To make it a probability vector, divide by the sum ($2+3=5$).
+      $\vec{q} = \begin{bmatrix} 2/5 \\ 3/5 \end{bmatrix} = \begin{bmatrix} 0.4 \\ 0.6 \end{bmatrix}$.
+
+  - id: hq-pagerank-damping
+    type: multipleChoice
+    prompt: |
+      In the Google PageRank algorithm, a "damping factor" (often denoted as $p \approx 0.85$) is introduced to modify the transition matrix. 
+      What is the primary mathematical necessity of adding this damping factor?
+    choices:
+      - id: c1
+        text: 'To ensure the matrix is symmetric so it can be diagonalized.'
+      - id: c2
+        text: 'To speed up the computation of the eigenvalues.'
+      - id: c3
+        text: 'To handle "sink" nodes (pages with no outbound links) and guarantee the existence of a unique steady-state vector.'
+      - id: c4
+        text: 'To prevent the eigenvalues from exceeding 1.'
+    answer:
+      choiceId: c3
+    explanation: |
+      Without the damping factor, surfers could get stuck in "sink" pages (no links out) or small disconnected webs, meaning the transition matrix wouldn't be "regular." A regular stochastic matrix is mathematically guaranteed to have a unique steady-state vector. The damping factor simulates a user randomly typing a new URL, forcing all states to be connected and making the matrix regular.
+
+  - id: hq-pca-matrix-size
+    type: multipleChoice
+    prompt: |
+      Suppose you have a dataset consisting of $10,000$ images, where each image is represented by a vector of $400$ features (e.g., $20 \times 20$ pixels).
+      When performing PCA on this data, what are the dimensions of the covariance matrix that will be diagonalized?
+    choices:
+      - id: c1
+        text: '$10,000 \times 10,000$'
+      - id: c2
+        text: '$400 \times 400$'
+      - id: c3
+        text: '$10,000 \times 400$'
+      - id: c4
+        text: '$400 \times 10,000$'
+    answer:
+      choiceId: c2
+    explanation: |
+      The covariance matrix measures the relationship between the *features*, not the samples. Since there are 400 features, the covariance matrix will be a $400 \times 400$ square matrix. (Its eigenvectors will also be 400-dimensional).

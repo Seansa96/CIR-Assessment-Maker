@@ -1,0 +1,104 @@
+schemaVersion: 1
+id: linear-algebra-determinants-worked-example
+title: Computing a 3x3 Determinant by Row Reduction
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-determinants
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - determinant
+  - cofactor-expansion
+workedExamples:
+  - id: ex1-row-reduction-det
+    title: Computing a Determinant Using Row Reduction
+    problem: |
+      Use row operations to compute $\det(A)$ where
+      $$A = \begin{bmatrix} 1 & 2 & -1 \\ 2 & 5 & 0 \\ -1 & 3 & 2 \end{bmatrix}$$
+
+      Since each elementary row operation has a known effect on the determinant, we can reduce $A$ to an echelon form (or triangular form) and then use the fact that the determinant of a triangular matrix is the product of its diagonal entries.
+    steps:
+      - id: step1
+        title: Identify how row operations affect the determinant
+        instruction: |
+          Before we begin, recall the three types of row operations and their effects on $\det$:
+          - **Row Replacement** ($R_i \leftarrow R_i + kR_j$): No change to $\det$.
+          - **Row Swap** ($R_i \leftrightarrow R_j$): Multiplies $\det$ by $-1$.
+          - **Row Scaling** ($R_i \leftarrow kR_i$): Multiplies $\det$ by $k$.
+        type: multipleChoice
+        prompt: |
+          We plan to use only **row replacement** operations. After all such operations, what will happen to the determinant?
+        choices:
+          - id: c1
+            text: 'The determinant will not change.'
+          - id: c2
+            text: 'The determinant will be negated.'
+          - id: c3
+            text: 'The determinant will be multiplied by the number of row replacements performed.'
+          - id: c4
+            text: 'The determinant will become zero.'
+        answer:
+          choiceId: c1
+        explanation: |
+          Row replacement operations — adding a multiple of one row to another — do **not** change the determinant. This makes them ideal for reducing a matrix to triangular form without tracking scale factors.
+
+      - id: step2
+        title: Eliminate below the first pivot
+        instruction: |
+          Our first pivot is the $1$ in position $(1,1)$. We will use row replacement to eliminate the entries below it.
+          - $R_2 \leftarrow R_2 - 2R_1$ eliminates the $2$ in position $(2,1)$.
+          - $R_3 \leftarrow R_3 + R_1$ eliminates the $-1$ in position $(3,1)$.
+
+          After these two operations:
+          $$\begin{bmatrix} 1 & 2 & -1 \\ 0 & 1 & 2 \\ 0 & 5 & 1 \end{bmatrix}$$
+        type: multipleChoice
+        prompt: |
+          After applying $R_2 \leftarrow R_2 - 2R_1$ to the original matrix, what is the new row 2?
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix} 0 & 1 & 2 \end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix} 0 & 1 & -2 \end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix} 0 & 9 & 2 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} 4 & 9 & 2 \end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          $R_2 - 2R_1 = [2-2(1), 5-2(2), 0-2(-1)] = [0, 1, 2]$. ✓
+
+      - id: step3
+        title: Eliminate below the second pivot
+        instruction: |
+          The matrix is now $\begin{bmatrix} 1 & 2 & -1 \\ 0 & 1 & 2 \\ 0 & 5 & 1 \end{bmatrix}$.
+          Our second pivot is the $1$ in position $(2,2)$.
+          Apply $R_3 \leftarrow R_3 - 5R_2$ to eliminate the $5$ below it.
+        type: numericResponse
+        prompt: |
+          After applying $R_3 \leftarrow R_3 - 5R_2$, what is the $(3,3)$ entry of the resulting upper-triangular matrix?
+        answer:
+          value: -9
+          tolerance: 0
+        explanation: |
+          $R_3 - 5R_2 = [0-5(0), 5-5(1), 1-5(2)] = [0, 0, 1-10] = [0, 0, -9]$.
+          The $(3,3)$ entry is $-9$.
+
+      - id: step4
+        title: Read off the determinant
+        instruction: |
+          The matrix is now in upper-triangular form:
+          $$U = \begin{bmatrix} 1 & 2 & -1 \\ 0 & 1 & 2 \\ 0 & 0 & -9 \end{bmatrix}$$
+
+          Since we used only row replacement operations, $\det(A) = \det(U)$.
+          For a triangular matrix, the determinant is simply the product of the diagonal entries.
+        type: numericResponse
+        prompt: |
+          What is $\det(A)$?
+        answer:
+          value: -9
+          tolerance: 0
+        explanation: |
+          $\det(U) = 1 \times 1 \times (-9) = -9$.
+          Therefore, $\det(A) = -9$. This could also be verified by cofactor expansion along the first row.

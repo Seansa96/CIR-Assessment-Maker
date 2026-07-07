@@ -1,0 +1,80 @@
+schemaVersion: 1
+id: linear-algebra-inner-product-hard-quiz
+title: Inner Product Spaces Advanced Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-inner-product-spaces
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - general-orthogonality
+  - inner-product-axioms
+  - cauchy-schwarz
+questions:
+  - id: hq-pythagorean-theorem
+    type: multipleChoice
+    prompt: |
+      Let $\vec{u}$ and $\vec{v}$ be vectors in an inner product space. 
+      If $\vec{u}$ and $\vec{v}$ are **orthogonal**, which of the following equations must be true?
+      *(Hint: expand $\|\vec{u} + \vec{v}\|^2 = \langle \vec{u} + \vec{v}, \vec{u} + \vec{v} \rangle$)*
+    choices:
+      - id: c1
+        text: '$\|\vec{u} + \vec{v}\|^2 = \|\vec{u}\|^2 + \|\vec{v}\|^2$'
+      - id: c2
+        text: '$\|\vec{u} + \vec{v}\| = \|\vec{u}\| + \|\vec{v}\|$'
+      - id: c3
+        text: '$\|\vec{u} + \vec{v}\|^2 = 0$'
+      - id: c4
+        text: '$\langle \vec{u}, \vec{v} \rangle = \|\vec{u}\| \|\vec{v}\|$'
+    answer:
+      choiceId: c1
+    explanation: |
+      Expanding the inner product: 
+      $\langle \vec{u} + \vec{v}, \vec{u} + \vec{v} \rangle = \langle \vec{u}, \vec{u} \rangle + \langle \vec{u}, \vec{v} \rangle + \langle \vec{v}, \vec{u} \rangle + \langle \vec{v}, \vec{v} \rangle$.
+      Since they are orthogonal, $\langle \vec{u}, \vec{v} \rangle = 0$ and $\langle \vec{v}, \vec{u} \rangle = 0$.
+      This leaves $\langle \vec{u}, \vec{u} \rangle + \langle \vec{v}, \vec{v} \rangle$, which is exactly $\|\vec{u}\|^2 + \|\vec{v}\|^2$.
+      This is the general Pythagorean Theorem for inner product spaces!
+
+  - id: hq-matrix-trace-inner-product
+    type: multipleChoice
+    prompt: |
+      Let $M_{2 \times 2}$ be the vector space of $2 \times 2$ matrices. A standard inner product for this space is $\langle A, B \rangle = \text{tr}(A^T B)$, which is equivalent to multiplying corresponding entries of $A$ and $B$ and summing them up.
+
+      Let $A = \begin{bmatrix}1 & -1 \\ 2 & 0\end{bmatrix}$ and $B = \begin{bmatrix}1 & 1 \\ 0 & 3\end{bmatrix}$. 
+      Are matrices $A$ and $B$ orthogonal in this inner product space?
+    choices:
+      - id: c1
+        text: 'Yes, because their inner product is 0.'
+      - id: c2
+        text: 'No, because their inner product is 3.'
+      - id: c3
+        text: 'No, because neither matrix is the zero matrix.'
+      - id: c4
+        text: 'Yes, because $AB = BA$.'
+    answer:
+      choiceId: c1
+    explanation: |
+      Computing the inner product by summing the products of corresponding entries:
+      $(1)(1) + (-1)(1) + (2)(0) + (0)(3) = 1 - 1 + 0 + 0 = 0$.
+      Because $\langle A, B \rangle = 0$, the matrices $A$ and $B$ are indeed orthogonal!
+
+  - id: hq-cauchy-schwarz-equality
+    type: multipleChoice
+    prompt: |
+      The Cauchy-Schwarz inequality states $|\langle \vec{u}, \vec{v} \rangle| \leq \|\vec{u}\| \|\vec{v}\|$.
+      Under what specific condition does the equality hold (meaning $|\langle \vec{u}, \vec{v} \rangle| = \|\vec{u}\| \|\vec{v}\|$)?
+    choices:
+      - id: c1
+        text: 'When $\vec{u}$ and $\vec{v}$ are orthogonal.'
+      - id: c2
+        text: 'When $\vec{u}$ and $\vec{v}$ are linearly dependent (one is a scalar multiple of the other).'
+      - id: c3
+        text: 'When $\|\vec{u}\| = \|\vec{v}\|$.'
+      - id: c4
+        text: 'When $\vec{u}$ and $\vec{v}$ are both unit vectors.'
+    answer:
+      choiceId: c2
+    explanation: |
+      The equality holds if and only if one vector is a scalar multiple of the other (they are linearly dependent). For instance, if $\vec{v} = c\vec{u}$, then $|\langle \vec{u}, c\vec{u} \rangle| = |c|\langle \vec{u}, \vec{u} \rangle = |c|\|\vec{u}\|^2$. The right side of the inequality is $\|\vec{u}\| \|c\vec{u}\| = \|\vec{u}\| |c| \|\vec{u}\| = |c|\|\vec{u}\|^2$, which exactly matches. If they are orthogonal, the inner product is 0, which is the *minimum* possible absolute value, not the maximum.

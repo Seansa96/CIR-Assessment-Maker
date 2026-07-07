@@ -1,0 +1,81 @@
+schemaVersion: 1
+id: linear-algebra-least-squares-easy-quiz
+title: Least Squares and Approximations Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-least-squares
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - least-squares
+  - normal-equations
+questions:
+  - id: eq-ls-dimension
+    type: multipleChoice
+    prompt: |
+      If $A$ is a $5 \times 3$ matrix, what are the dimensions of the normal equations system $A^TA\hat{\vec{x}} = A^T\vec{b}$?
+    choices:
+      - id: c1
+        text: 'It is a system of 5 equations in 3 variables.'
+      - id: c2
+        text: 'It is a system of 3 equations in 5 variables.'
+      - id: c3
+        text: 'It is a system of 3 equations in 3 variables.'
+      - id: c4
+        text: 'It is a system of 5 equations in 5 variables.'
+    answer:
+      choiceId: c3
+    explanation: |
+      $A^T$ is $3 \times 5$ and $A$ is $5 \times 3$, so their product $A^TA$ is a $3 \times 3$ matrix. Therefore, the normal equations form a $3 \times 3$ system (3 equations, 3 variables).
+
+  - id: eq-ls-1d-setup
+    type: multipleChoice
+    prompt: |
+      Suppose you want to find the least-squares solution to $A\vec{x} = \vec{b}$ where $A = \begin{bmatrix}1\\2\\2\end{bmatrix}$ and $\vec{b} = \begin{bmatrix}3\\3\\6\end{bmatrix}$. 
+      What is the value of $A^TA$?
+    choices:
+      - id: c1
+        text: '9'
+      - id: c2
+        text: '3'
+      - id: c3
+        text: '5'
+      - id: c4
+        text: '21'
+    answer:
+      choiceId: c1
+    explanation: |
+      $A^TA$ is the dot product of the column with itself: $1^2 + 2^2 + 2^2 = 1 + 4 + 4 = 9$. Note that since $A$ is $3 \times 1$, $A^TA$ is a $1 \times 1$ matrix (a scalar).
+
+  - id: eq-ls-1d-solve
+    type: numericResponse
+    prompt: |
+      Continuing from the previous question, where $A = \begin{bmatrix}1\\2\\2\end{bmatrix}$ and $\vec{b} = \begin{bmatrix}3\\3\\6\end{bmatrix}$.
+      $A^TA = 9$. Now compute $A^T\vec{b}$ and find the least-squares solution $\hat{x}$.
+    answer:
+      value: 2.3333333333
+      tolerance: 0.01
+    explanation: |
+      $A^T\vec{b} = (1)(3) + (2)(3) + (2)(6) = 3 + 6 + 12 = 21$.
+      The normal equation is $9\hat{x} = 21$.
+      Solving for $\hat{x}$ gives $\frac{21}{9} = \frac{7}{3} \approx 2.333$.
+
+  - id: eq-ls-zero-residual
+    type: multipleChoice
+    prompt: |
+      If a system $A\vec{x} = \vec{b}$ is already consistent (has an exact solution), what is the least-squares error?
+    choices:
+      - id: c1
+        text: 'It depends on the matrix $A$.'
+      - id: c2
+        text: '0'
+      - id: c3
+        text: '1'
+      - id: c4
+        text: 'It is the norm of $\vec{b}$.'
+    answer:
+      choiceId: c2
+    explanation: |
+      If the system is consistent, there is an exact solution $\vec{x}$ where $A\vec{x} = \vec{b}$. The distance between $A\vec{x}$ and $\vec{b}$ is therefore zero. The least-squares method will just find this exact solution.

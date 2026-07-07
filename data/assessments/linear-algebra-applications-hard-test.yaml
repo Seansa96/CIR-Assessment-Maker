@@ -1,0 +1,68 @@
+schemaVersion: 1
+id: linear-algebra-applications-hard-test
+title: Applications of Linear Algebra Advanced Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-applications
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - markov-chains
+  - principal-component-analysis
+questions:
+  - id: ht-markov-step-calc
+    type: numericResponse
+    prompt: |
+      Let $P = \begin{bmatrix} 0.6 & 0.5 \\ 0.4 & 0.5 \end{bmatrix}$ be a transition matrix for a Markov chain.
+      Suppose the initial state vector is $\vec{x}_0 = \begin{bmatrix} 0.1 \\ 0.9 \end{bmatrix}$.
+      Calculate the first component of the state vector at step 1 ($\vec{x}_1$).
+    answer:
+      value: 0.51
+      tolerance: 0
+    explanation: |
+      $\vec{x}_1 = P\vec{x}_0 = \begin{bmatrix} 0.6 & 0.5 \\ 0.4 & 0.5 \end{bmatrix} \begin{bmatrix} 0.1 \\ 0.9 \end{bmatrix}$.
+      The first component is $(0.6)(0.1) + (0.5)(0.9) = 0.06 + 0.45 = 0.51$.
+      (The second component would be $0.4(0.1) + 0.5(0.9) = 0.04 + 0.45 = 0.49$).
+
+  - id: ht-pca-spectral-theorem
+    type: multipleChoice
+    prompt: |
+      In PCA, we rely heavily on the fact that the covariance matrix can be orthogonally diagonalized (its eigenvectors can be chosen to be mutually orthogonal). 
+      What fundamental theorem of linear algebra guarantees that this is always possible for a covariance matrix?
+    choices:
+      - id: c1
+        text: 'The Spectral Theorem for Symmetric Matrices'
+      - id: c2
+        text: 'The Invertible Matrix Theorem'
+      - id: c3
+        text: 'The Rank-Nullity Theorem'
+      - id: c4
+        text: 'The Gram-Schmidt Process'
+    answer:
+      choiceId: c1
+    explanation: |
+      By definition, a covariance matrix is always symmetric (the covariance between feature X and Y is the same as Y and X). The Spectral Theorem guarantees that every real symmetric matrix is orthogonally diagonalizable and has real eigenvalues. This mathematical guarantee is what makes PCA possible.
+
+  - id: ht-steady-state-fractional
+    type: freeResponse
+    prompt: |
+      A Markov chain has the transition matrix $P = \begin{bmatrix} 1/2 & 1/4 \\ 1/2 & 3/4 \end{bmatrix}$.
+      Find the steady-state probability vector $\vec{q}$.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+        - |
+          **Set up the equation**: We must solve $(P - I)\vec{q} = \vec{0}$.
+          $P - I = \begin{bmatrix} -1/2 & 1/4 \\ 1/2 & -1/4 \end{bmatrix}$.
+        - |
+          **Find the relationship**: The first row gives $-\frac{1}{2}q_1 + \frac{1}{4}q_2 = 0$.
+          Multiplying by 4 yields $-2q_1 + q_2 = 0$, or $q_2 = 2q_1$.
+        - |
+          **Find a basis vector**: If we choose $q_1 = 1$, then $q_2 = 2$.
+          A basis vector for the eigenspace is $\vec{v} = \begin{bmatrix}1 \\ 2\end{bmatrix}$.
+        - |
+          **Scale to a probability vector**: The sum of the entries is $1 + 2 = 3$.
+          Divide the vector by 3 to get the steady-state vector:
+          $\vec{q} = \begin{bmatrix}1/3 \\ 2/3\end{bmatrix}$.

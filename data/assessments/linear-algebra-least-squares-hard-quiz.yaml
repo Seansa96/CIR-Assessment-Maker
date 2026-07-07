@@ -1,0 +1,76 @@
+schemaVersion: 1
+id: linear-algebra-least-squares-hard-quiz
+title: Least Squares and Approximations Advanced Quiz
+assessmentType: quiz
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-least-squares
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - least-squares
+  - normal-equations
+  - projection
+questions:
+  - id: hq-orthogonal-columns-ls
+    type: multipleChoice
+    prompt: |
+      Suppose the columns of an $m \times n$ matrix $A$ are mutually orthogonal nonzero vectors.
+      How does this simplify the normal equations $A^TA\hat{\vec{x}} = A^T\vec{b}$?
+    choices:
+      - id: c1
+        text: 'The matrix $A^TA$ becomes the identity matrix $I$.'
+      - id: c2
+        text: 'The matrix $A^TA$ becomes a diagonal matrix.'
+      - id: c3
+        text: 'The least-squares solution becomes exactly $\vec{0}$.'
+      - id: c4
+        text: 'The normal equations have infinitely many solutions.'
+    answer:
+      choiceId: c2
+    explanation: |
+      The entries of $A^TA$ are the dot products of the columns of $A$. If the columns are mutually orthogonal, all off-diagonal entries (where $i \neq j$) are $\vec{a}_i \cdot \vec{a}_j = 0$. The diagonal entries are $\|\vec{a}_i\|^2$. Thus $A^TA$ is a diagonal matrix. (It would only be the identity matrix if the columns were orthonormal, meaning length 1).
+
+  - id: hq-ls-line-centered
+    type: multipleChoice
+    prompt: |
+      Find the least-squares line $y = \beta_0 + \beta_1 x$ for the data points $(-2, 0)$, $(0, 1)$, and $(2, 3)$.
+    choices:
+      - id: c1
+        text: '$y = 1 + \frac{3}{4}x$'
+      - id: c2
+        text: '$y = \frac{4}{3} + \frac{3}{4}x$'
+      - id: c3
+        text: '$y = \frac{4}{3} + x$'
+      - id: c4
+        text: '$y = 1 + x$'
+    answer:
+      choiceId: c2
+    explanation: |
+      The design matrix $X = \begin{bmatrix}1 & -2 \\ 1 & 0 \\ 1 & 2\end{bmatrix}$ and $\vec{y} = \begin{bmatrix}0\\1\\3\end{bmatrix}$.
+      Because the $x$-values sum to 0, the columns of $X$ are orthogonal!
+      $X^TX = \begin{bmatrix}3 & 0 \\ 0 & 8\end{bmatrix}$.
+      $X^T\vec{y} = \begin{bmatrix}1(0)+1(1)+1(3) \\ -2(0)+0(1)+2(3)\end{bmatrix} = \begin{bmatrix}4 \\ 6\end{bmatrix}$.
+      The normal equations are $\begin{bmatrix}3 & 0 \\ 0 & 8\end{bmatrix} \begin{bmatrix}\beta_0 \\ \beta_1\end{bmatrix} = \begin{bmatrix}4 \\ 6\end{bmatrix}$.
+      So $3\beta_0 = 4 \implies \beta_0 = \frac{4}{3}$ and $8\beta_1 = 6 \implies \beta_1 = \frac{6}{8} = \frac{3}{4}$.
+
+  - id: hq-ls-error-meaning
+    type: multipleChoice
+    prompt: |
+      Let $\hat{\vec{x}}$ be the unique least-squares solution to $A\vec{x} = \vec{b}$.
+      Which of the following is equivalent to the least-squares error $\|A\hat{\vec{x}} - \vec{b}\|$?
+    choices:
+      - id: c1
+        text: 'The distance from $\vec{b}$ to the null space of $A$.'
+      - id: c2
+        text: 'The distance from $\vec{b}$ to the origin.'
+      - id: c3
+        text: 'The length of the projection of $\vec{b}$ onto $\text{Col}(A)$.'
+      - id: c4
+        text: 'The length of the projection of $\vec{b}$ onto $[\text{Col}(A)]^\perp$.'
+    answer:
+      choiceId: c4
+    explanation: |
+      The vector $\vec{b}$ can be orthogonally decomposed as $\vec{b} = \hat{\vec{b}} + \vec{z}$, where $\hat{\vec{b}} = A\hat{\vec{x}}$ is in $\text{Col}(A)$ and $\vec{z}$ is the residual in $[\text{Col}(A)]^\perp$.
+      The error is $\|\vec{z}\|$. Because $\vec{z}$ is exactly the orthogonal projection of $\vec{b}$ onto $[\text{Col}(A)]^\perp$, the least-squares error is the length of this projection.

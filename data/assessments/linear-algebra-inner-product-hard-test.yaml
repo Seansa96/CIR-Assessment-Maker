@@ -1,0 +1,84 @@
+schemaVersion: 1
+id: linear-algebra-inner-product-hard-test
+title: Inner Product Spaces Advanced Test
+assessmentType: test
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-inner-product-spaces
+modeDefault: evaluate
+randomizeQuestions: true
+attemptQuestionCount: 3
+skills:
+  - general-orthogonality
+  - inner-product-axioms
+  - cauchy-schwarz
+questions:
+  - id: ht-triangle-inequality-proof
+    type: multipleChoice
+    prompt: |
+      The **Triangle Inequality** states that $\|\vec{u} + \vec{v}\| \leq \|\vec{u}\| + \|\vec{v}\|$.
+      In a general inner product space, the proof of the Triangle Inequality relies fundamentally on which of the following?
+    choices:
+      - id: c1
+        text: 'The Pythagorean Theorem'
+      - id: c2
+        text: 'The Cauchy-Schwarz Inequality'
+      - id: c3
+        text: 'The Homogeneity Axiom'
+      - id: c4
+        text: 'The fact that matrices are diagonalizable'
+    answer:
+      choiceId: c2
+    explanation: |
+      To prove the Triangle Inequality, we expand the squared norm: 
+      $\|\vec{u} + \vec{v}\|^2 = \|\vec{u}\|^2 + 2\langle \vec{u}, \vec{v} \rangle + \|\vec{v}\|^2$.
+      Then, we apply the Cauchy-Schwarz inequality: $\langle \vec{u}, \vec{v} \rangle \leq |\langle \vec{u}, \vec{v} \rangle| \leq \|\vec{u}\|\|\vec{v}\|$.
+      Substituting this into the expansion gives:
+      $\|\vec{u} + \vec{v}\|^2 \leq \|\vec{u}\|^2 + 2\|\vec{u}\|\|\vec{v}\| + \|\vec{v}\|^2 = (\|\vec{u}\| + \|\vec{v}\|)^2$.
+      Taking the square root of both sides gives the Triangle Inequality!
+
+  - id: ht-custom-inner-product
+    type: multipleChoice
+    prompt: |
+      An inner product on $\mathbb{R}^2$ does not have to be the standard dot product. Suppose we define a custom inner product as:
+      $\langle \vec{u}, \vec{v} \rangle = 3u_1v_1 + 2u_2v_2$.
+
+      Under this specific inner product, which of the following vectors is **orthogonal** to $\vec{u} = \begin{bmatrix}2\\-3\end{bmatrix}$?
+    choices:
+      - id: c1
+        text: '$\vec{v} = \begin{bmatrix}3\\2\end{bmatrix}$'
+      - id: c2
+        text: '$\vec{v} = \begin{bmatrix}1\\1\end{bmatrix}$'
+      - id: c3
+        text: '$\vec{v} = \begin{bmatrix}0\\0\end{bmatrix}$'
+      - id: c4
+        text: 'Both B and C'
+    answer:
+      choiceId: c4
+    explanation: |
+      We need $\langle \vec{u}, \vec{v} \rangle = 0$.
+      For option A: $3(2)(3) + 2(-3)(2) = 18 - 12 = 6 \neq 0$.
+      For option B: $3(2)(1) + 2(-3)(1) = 6 - 6 = 0$. So $\begin{bmatrix}1\\1\end{bmatrix}$ is orthogonal.
+      For option C: The zero vector is always orthogonal to every vector because the inner product evaluates to 0. 
+      Therefore, both B and C are correct.
+
+  - id: ht-distance-squared-functions
+    type: freeResponse
+    prompt: |
+      Let $V = C[-1, 1]$ with $\langle f, g \rangle = \int_{-1}^1 f(t)g(t) \, dt$.
+      Let $f(t) = 1$ and $g(t) = t$. 
+      Find the squared distance between these two functions, $\|\vec{f} - \vec{g}\|^2$.
+      *(Hint: You can use the Pythagorean theorem since we know from the lesson that $\langle f, g \rangle = 0$)*
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+        - |
+          **Length of f squared**: $\|f\|^2 = \int_{-1}^1 (1)^2 \, dt = [t]_{-1}^1 = 1 - (-1) = 2$.
+        - |
+          **Length of g squared**: $\|g\|^2 = \int_{-1}^1 (t)^2 \, dt = \left[ \frac{1}{3}t^3 \right]_{-1}^1 = \frac{1}{3} - \left(-\frac{1}{3}\right) = \frac{2}{3}$.
+        - |
+          **Apply Pythagoras**: Since $f$ and $g$ are orthogonal ($\langle f, g \rangle = 0$), we can use the Pythagorean Theorem:
+          $\|f - g\|^2 = \|f\|^2 + \|g\|^2$.
+        - |
+          **Final Sum**: $\|f - g\|^2 = 2 + \frac{2}{3} = \frac{8}{3}$.
+          *(Note: The actual distance is $\sqrt{8/3}$)*

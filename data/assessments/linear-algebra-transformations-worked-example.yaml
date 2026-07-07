@@ -1,0 +1,99 @@
+schemaVersion: 1
+id: linear-algebra-transformations-worked-example
+title: Finding the Standard Matrix of a Transformation
+assessmentType: workedExample
+categoryId: linear-algebra
+subcategoryIds:
+  - linear-algebra-linear-transformations
+modeDefault: study
+randomizeQuestions: false
+skills:
+  - linear-transformation
+  - standard-matrix
+workedExamples:
+  - id: ex1
+    title: Constructing the Standard Matrix Geometrically
+    problem: |
+      Let $T: \mathbb{R}^2 \to \mathbb{R}^2$ be a linear transformation that first reflects points across the $x_1$-axis and then rotates points $\frac{\pi}{2}$ radians ($90^\circ$) counterclockwise around the origin.
+      Find the standard matrix $A$ for this transformation.
+    steps:
+      - id: step1
+        title: Identify the goal
+        instruction: |
+          To find the standard matrix $A$ of a linear transformation $T: \mathbb{R}^n \to \mathbb{R}^m$, we need to determine what the transformation does to the standard basis vectors. 
+          The columns of $A$ will simply be the transformed basis vectors.
+        type: multipleChoice
+        prompt: |
+          For a transformation from $\mathbb{R}^2$ to $\mathbb{R}^2$, what are the columns of the standard matrix $A$?
+        choices:
+          - id: c1
+            text: '$A = \begin{bmatrix} T(\vec{e}_1) & T(\vec{e}_2) \end{bmatrix}$'
+          - id: c2
+            text: '$A = \begin{bmatrix} \vec{e}_1 & \vec{e}_2 \end{bmatrix}$'
+          - id: c3
+            text: 'The first row is $T(\vec{e}_1)$ and the second row is $T(\vec{e}_2)$.'
+          - id: c4
+            text: '$A = T(\vec{e}_1) \cdot T(\vec{e}_2)$'
+        answer:
+          choiceId: c1
+        explanation: |
+          The standard matrix is always constructed by placing the transformed basis vectors into the **columns** of the matrix.
+
+      - id: step2
+        title: Transform the first basis vector
+        instruction: |
+          The first standard basis vector is $\vec{e}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$. 
+          We must track what happens to this vector through the two steps of the transformation $T$:
+          1. **Reflect across the $x_1$-axis**: A reflection across the $x_1$-axis flips the $x_2$ coordinate. The point $(1, 0)$ lies exactly on the $x_1$-axis, so its $x_2$ coordinate is $0$. Thus, it stays at $\begin{bmatrix} 1 \\ 0 \end{bmatrix}$.
+          2. **Rotate $\frac{\pi}{2}$ counterclockwise**: Now we rotate $\begin{bmatrix} 1 \\ 0 \end{bmatrix}$ by $90^\circ$ counterclockwise around the origin.
+        type: symbolicResponse
+        prompt: |
+          What is the final result $T(\vec{e}_1)$? Format your answer as a column vector.
+        answer:
+          expectedLatex: '\begin{bmatrix} 0 \\ 1 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 0 \\ 1 \end{pmatrix}'
+        explanation: |
+          Rotating the point $(1, 0)$ counterclockwise by $90^\circ$ moves it to the positive $x_2$-axis, landing at $(0, 1)$. Therefore, the first column of $A$ is $\begin{bmatrix} 0 \\ 1 \end{bmatrix}$.
+
+      - id: step3
+        title: Transform the second basis vector
+        instruction: |
+          The second standard basis vector is $\vec{e}_2 = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$. 
+          We track what happens to this vector through the same two steps:
+          1. **Reflect across the $x_1$-axis**: The point $(0, 1)$ is on the positive $x_2$-axis. Reflecting it across the $x_1$-axis negates the $x_2$ coordinate, sending it to $\begin{bmatrix} 0 \\ -1 \end{bmatrix}$.
+          2. **Rotate $\frac{\pi}{2}$ counterclockwise**: Now we must rotate the vector $\begin{bmatrix} 0 \\ -1 \end{bmatrix}$ by $90^\circ$ counterclockwise.
+        type: symbolicResponse
+        prompt: |
+          What is the final result $T(\vec{e}_2)$? Format your answer as a column vector.
+        answer:
+          expectedLatex: '\begin{bmatrix} 1 \\ 0 \end{bmatrix}'
+          equivalenceMode: expression
+          tolerance: 0
+          aliases:
+            - '\begin{pmatrix} 1 \\ 0 \end{pmatrix}'
+        explanation: |
+          The vector $\begin{bmatrix} 0 \\ -1 \end{bmatrix}$ points straight down. Rotating it $90^\circ$ counterclockwise swings it to point directly right, landing at $(1, 0)$. Therefore, the second column of $A$ is $\begin{bmatrix} 1 \\ 0 \end{bmatrix}$.
+
+      - id: step4
+        title: Construct the final matrix
+        instruction: |
+          Now that we have computed both $T(\vec{e}_1) = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$ and $T(\vec{e}_2) = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$, we can assemble the standard matrix $A$.
+        type: multipleChoice
+        prompt: |
+          What is the standard matrix $A$?
+        choices:
+          - id: c1
+            text: '$\begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}$'
+          - id: c2
+            text: '$\begin{bmatrix} 0 & -1 \\ 1 & 0 \end{bmatrix}$'
+          - id: c3
+            text: '$\begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix}$'
+          - id: c4
+            text: '$\begin{bmatrix} 1 & 0 \\ 0 & 1 \end{bmatrix}$'
+        answer:
+          choiceId: c1
+        explanation: |
+          Placing $T(\vec{e}_1)$ as the first column and $T(\vec{e}_2)$ as the second column gives $A = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix}$. Interestingly, this combined matrix is identical to a simple reflection across the line $x_2 = x_1$!
