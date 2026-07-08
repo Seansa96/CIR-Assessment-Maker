@@ -433,7 +433,8 @@ public sealed record AssessmentSummary(
     IReadOnlyList<string> SubcategoryIds,
     int QuestionCount,
     int AuthoredQuestionCount = 0,
-    int? AttemptQuestionCount = null)
+    int? AttemptQuestionCount = null,
+    bool HasCompletedAttempt = false)
 {
     public IReadOnlyList<string> AreaIds { get; init; } = Array.Empty<string>();
     public string? LearningGoal { get; init; }

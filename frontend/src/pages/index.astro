@@ -421,6 +421,7 @@ import "../styles/global.css";
         questionCount: number;
         authoredQuestionCount?: number;
         attemptQuestionCount?: number | null;
+        hasCompletedAttempt?: boolean;
       }
 
       interface NavigationCatalog {
@@ -1044,6 +1045,7 @@ import "../styles/global.css";
         latestResults: AttemptResults | null;
         guidedProjectSession: GuidedProjectSession | null;
         guidedProjectActiveFile: string;
+        completedAssessmentIds: string[];
         committedAttemptIds: Set<string>;
         analytics: GradeAnalyticsSummary | null;
         gradeLogEntries: GradeLogEntry[];
@@ -1082,6 +1084,7 @@ import "../styles/global.css";
         latestResults: null,
         guidedProjectSession: null,
         guidedProjectActiveFile: "",
+        completedAssessmentIds: [],
         committedAttemptIds: new Set(),
         analytics: null,
         gradeLogEntries: [],
@@ -1202,6 +1205,9 @@ import "../styles/global.css";
         }
 
         state.assessments = await api<AssessmentSummary[]>(`/assessments?categoryId=${encodeURIComponent(categoryId)}`);
+        state.assessments.forEach(a => {
+          a.hasCompletedAttempt = state.completedAssessmentIds.includes(a.id);
+        });
         renderAssessmentOptions();
       }
 
@@ -1394,6 +1400,23 @@ import "../styles/global.css";
           { label: "Container Lifecycle", desc: "Container concepts, CLI basics, and troubleshooting" },
           { label: "Container Architecture & Networking", desc: "Running applications and connecting containers" },
           { label: "Container Data & Workflows", desc: "Bind mounts, permissions, and capstone projects" }
+        ],
+        "geometry": [
+          { label: "Geometry Foundations", desc: "Fundamental concepts of points, lines, angles, and basic geometric reasoning." },
+          { label: "Triangle Geometry", desc: "In-depth study of triangle properties, congruence, similarity, right triangles, centers, and area." },
+          { label: "Circle Geometry", desc: "Arc length, sectors, inscribed angles, chords, tangents, and power of a point theorems." },
+          { label: "Quadrilateral Geometry", desc: "Classification, properties, and area formulas for polygons with a focus on cyclic quadrilaterals." },
+          { label: "Coordinate Geometry", desc: "Representing and proving geometric properties on the Cartesian plane, including circle equations." },
+          { label: "Geometric Modeling", desc: "Translating real-world scenarios into geometric models and diagrams." },
+          { label: "Physics Geometry Applications", desc: "Applying geometric models to physical vectors, forces, torque, and circular motion." }
+        ],
+        "linear-algebra": [
+          { label: "Matrix And System Foundations", desc: "Fundamental operations, matrix algebra, and solving systems of linear equations using row reduction." },
+          { label: "Vector Spaces And Structure", desc: "Understanding the abstract structure of vector spaces, subspaces, span, and linear independence." },
+          { label: "Linear Transformations And Geometry", desc: "Linear mappings between vector spaces, matrix representations, and geometric properties." },
+          { label: "Orthogonality And Approximation", desc: "Dot products, orthogonal bases, projections, and least squares solutions." },
+          { label: "Eigenstructure And Diagonalization", desc: "Eigenvalues, eigenvectors, characteristic equations, and diagonalizing matrices." },
+          { label: "Linear Algebra Applications", desc: "Inner product spaces and real-world applications of linear algebra concepts." }
         ]
       };
 
@@ -1589,6 +1612,7 @@ import "../styles/global.css";
           >
             <span class="nav-assessment-name">
               ${escapeHtml(assessment.title)}
+              ${assessment.hasCompletedAttempt ? `<span class="nav-tile-completed" style="position: static; display: inline-flex; margin-left: 0.35rem; vertical-align: middle;">✔ Completed</span>` : ""}
               ${isSuggested ? `<span class="nav-tile-suggested" style="position: static; display: inline-flex; margin-left: 0.35rem; vertical-align: middle;">★ Suggested</span>` : ""}
             </span>
             <span class="nav-assessment-meta">${escapeHtml(assessmentTypeLabel(assessment.assessmentType))} · ${escapeHtml(assessmentCountLabel(assessment))} items</span>
@@ -2239,11 +2263,42 @@ import "../styles/global.css";
         }
       }
 
+      async function updateCompletedAssessments() {
+        try {
+          state.completedAssessmentIds = await api<string[]>("/attempts/completed-assessments");
+          let updated = false;
+          
+          if (state.assessments) {
+            state.assessments.forEach(a => {
+              a.hasCompletedAttempt = state.completedAssessmentIds.includes(a.id);
+            });
+            updated = true;
+          }
+          
+          if (state.navigationCatalog) {
+            state.navigationCatalog.assessments.forEach(a => {
+              a.hasCompletedAttempt = state.completedAssessmentIds.includes(a.id);
+            });
+            updated = true;
+          }
+
+          if (updated) {
+            renderAssessmentOptions();
+            if (state.navigationCatalog) {
+              renderNavigation();
+            }
+          }
+        } catch (err) {
+          console.error("Failed to update completed assessments:", err);
+        }
+      }
+
       async function loadGrades() {
         const [summary, analytics] = await Promise.all([
           api<{ entryCount: number; averagePercentScore: number | null; entries: GradeLogEntry[] }>("/grades/summary"),
           api<GradeAnalyticsSummary>("/analytics/grades")
         ]);
+        await updateCompletedAssessments();
         state.analytics = analytics;
         state.gradeLogEntries = summary.entries;
         state.committedAttemptIds = new Set(summary.entries.map((entry) => entry.attemptId));

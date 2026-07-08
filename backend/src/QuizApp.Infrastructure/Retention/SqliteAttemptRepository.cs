@@ -100,6 +100,29 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<string>> GetCompletedAssessmentIdsAsync(CancellationToken cancellationToken = default)
+    {
+        await initializer.InitializeAsync(cancellationToken);
+        await using var connection = connectionFactory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT DISTINCT assessment_id
+            FROM attempts
+            WHERE status = $status;
+            """;
+        command.Parameters.AddWithValue("$status", AttemptStatus.Completed.ToString());
+
+        var ids = new List<string>();
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            ids.Add(reader.GetString(0));
+        }
+
+        return ids;
+    }
+
     private static void AddAttemptParameters(SqliteCommand command, Attempt attempt)
     {
         command.Parameters.AddWithValue("$id", attempt.Id);

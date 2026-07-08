@@ -682,4 +682,9 @@ public sealed class AttemptService
             (values[index], values[swapIndex]) = (values[swapIndex], values[index]);
         }
     }
+
+    public Task<IReadOnlyList<string>> GetCompletedAssessmentIdsAsync(CancellationToken cancellationToken = default)
+    {
+        return attemptRepository.GetCompletedAssessmentIdsAsync(cancellationToken);
+    }
 }

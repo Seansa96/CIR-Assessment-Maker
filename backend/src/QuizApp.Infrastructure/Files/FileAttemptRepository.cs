@@ -52,6 +52,16 @@ public sealed class FileAttemptRepository : IAttemptRepository
         return Task.CompletedTask;
     }
 
+    public async Task<IReadOnlyList<string>> GetCompletedAssessmentIdsAsync(CancellationToken cancellationToken = default)
+    {
+        var attempts = await ListAsync(cancellationToken);
+        return attempts
+            .Where(a => a.Status == AttemptStatus.Completed)
+            .Select(a => a.AssessmentId)
+            .Distinct()
+            .ToList();
+    }
+
     private string GetAttemptPath(string attemptId)
     {
         return Path.Combine(options.AttemptsPath, $"{Path.GetFileName(attemptId)}.json");

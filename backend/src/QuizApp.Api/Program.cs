@@ -342,6 +342,11 @@ api.MapGet("/attempts", async (AttemptService attemptService, CancellationToken 
     return Results.Ok(await attemptService.ListResultsAsync(cancellationToken));
 });
 
+api.MapGet("/attempts/completed-assessments", async (AttemptService attemptService, CancellationToken cancellationToken) =>
+{
+    return Results.Ok(await attemptService.GetCompletedAssessmentIdsAsync(cancellationToken));
+});
+
 api.MapGet("/attempts/{attemptId}/session", async (
     string attemptId,
     AttemptService attemptService,

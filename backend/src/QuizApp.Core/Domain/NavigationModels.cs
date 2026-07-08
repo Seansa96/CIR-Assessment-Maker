@@ -44,6 +44,7 @@ public sealed record NavigationAssessmentSummary(
     int QuestionCount,
     int AuthoredQuestionCount,
     int? AttemptQuestionCount,
+    bool HasCompletedAttempt,
     IReadOnlyList<string> Skills);
 
 /// <summary>Known learning-goal IDs.</summary>

@@ -926,6 +926,16 @@ internal sealed class InMemoryAttemptRepository : IAttemptRepository
         attempts.Remove(attemptId);
         return Task.CompletedTask;
     }
+
+    public Task<IReadOnlyList<string>> GetCompletedAssessmentIdsAsync(CancellationToken cancellationToken = default)
+    {
+        var ids = attempts.Values
+            .Where(a => a.Status == AttemptStatus.Completed)
+            .Select(a => a.AssessmentId)
+            .Distinct()
+            .ToList();
+        return Task.FromResult<IReadOnlyList<string>>(ids);
+    }
 }
 
 internal sealed class InMemoryAttemptSessionStore : IAttemptSessionStore

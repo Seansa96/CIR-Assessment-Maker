@@ -8,4 +8,5 @@ public interface IAttemptRepository
     Task<Attempt?> GetByIdAsync(string attemptId, CancellationToken cancellationToken = default);
     Task SaveAsync(Attempt attempt, CancellationToken cancellationToken = default);
     Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<string>> GetCompletedAssessmentIdsAsync(CancellationToken cancellationToken = default);
 }

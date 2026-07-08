@@ -118,15 +118,16 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
 
         await using var cmd = connection.CreateCommand();
         cmd.CommandText = """
-            SELECT id, title, assessment_type, category_id, learning_goal, activity_type,
-                   definition_json
-            FROM assessments
-            WHERE is_active = 1
-            ORDER BY title;
+            SELECT a.id, a.title, a.assessment_type, a.category_id, a.learning_goal, a.activity_type,
+                   a.definition_json,
+                   EXISTS(SELECT 1 FROM attempts att WHERE att.assessment_id = a.id AND att.status = 3) AS has_completed_attempt
+            FROM assessments a
+            WHERE a.is_active = 1
+            ORDER BY a.title;
             """;
 
         await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
-        var tempRows = new List<(string id, string title, string typeStr, string catId, string goal, string activity, string json)>();
+        var tempRows = new List<(string id, string title, string typeStr, string catId, string goal, string activity, string json, bool hasCompleted)>();
         while (await reader.ReadAsync(cancellationToken))
         {
             tempRows.Add((
@@ -136,7 +137,8 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
                 reader.GetString(3),
                 reader.GetString(4),
                 reader.GetString(5),
-                reader.GetString(6)));
+                reader.GetString(6),
+                reader.GetBoolean(7)));
         }
 
         var result = new List<NavigationAssessmentSummary>();
@@ -166,6 +168,7 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
                 QuestionCount: attemptCount.HasValue ? Math.Min(attemptCount.Value, authored) : authored,
                 AuthoredQuestionCount: authored,
                 AttemptQuestionCount: attemptCount,
+                HasCompletedAttempt: row.hasCompleted,
                 Skills: skills));
         }
 
