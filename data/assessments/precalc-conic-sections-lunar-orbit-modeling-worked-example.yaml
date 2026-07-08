@@ -1,0 +1,191 @@
+schemaVersion: 1
+id: precalc-conic-sections-lunar-orbit-modeling-worked-example
+title: Ellipse Modeling - Apollo 11 Lunar Orbit
+assessmentType: workedExample
+categoryId: precalculus
+subcategoryIds:
+  - precalc-conics
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - conic-sections
+    - ellipses
+    - conic-modeling
+    - orbital-geometry
+    - ellipse-standard-form
+skills:
+  - conic-modeling
+  - ellipse-standard-form
+  - ellipse-focus-geometry
+workedExamples:
+  - id: apollo-lunar-orbit
+    title: Model perilune and apolune with an ellipse
+    problem: |
+      Apollo 11 entered an elliptical lunar orbit with perilune altitude $110$ km and apolune altitude $314$ km. The Moon's radius is $1728$ km, and the Moon's center is one focus.
+
+      Place the Moon at $(0,0)$, put the major axis on the $x$-axis, and place perilune to the left. Find an equation of the orbit.
+    steps:
+      - id: lunar-interpret
+        title: Distinguish altitude from focal distance
+        instruction: |
+          Perilune and apolune altitudes are measured from the Moon's surface. The ellipse geometry needs distances from the Moon's center, which is the focus. Add the lunar radius to each altitude.
+        type: multipleChoice
+        prompt: Which pair gives the focus-to-spacecraft distances?
+        choices:
+          - id: correct
+            text: '$1838$ km and $2042$ km'
+          - id: altitudes
+            text: '$110$ km and $314$ km'
+          - id: doubled
+            text: '$3566$ km and $3770$ km'
+        answer:
+          choiceId: correct
+        hint: Radius plus altitude gives distance from the center.
+        explanation: |
+          $1728+110=1838$ and $1728+314=2042$.
+
+      - id: lunar-relations
+        title: Connect nearest and farthest distances to a and c
+        instruction: |
+          Along an ellipse's major axis, distances from one focus to the two vertices are
+
+          $$
+          a-c
+          \quad\text{and}\quad
+          a+c.
+          $$
+
+          Here the nearer distance is perilune and the farther distance is apolune.
+        type: multipleChoice
+        prompt: Which system models the data?
+        choices:
+          - id: correct
+            text: '$a-c=1838$ and $a+c=2042$'
+          - id: reversed
+            text: '$a+c=1838$ and $a-c=2042$'
+          - id: axes
+            text: '$a=1838$ and $c=2042$'
+        answer:
+          choiceId: correct
+        hint: Since $c>0$, $a-c$ must be the smaller distance.
+        explanation: |
+          The focus is displaced $c$ from the center, making one vertex $c$ closer and the other $c$ farther than the semi-major distance $a$.
+
+      - id: lunar-a
+        title: Average to find the semi-major axis
+        instruction: |
+          Add the two equations:
+
+          $$
+          2a=1838+2042=3880.
+          $$
+        type: numericResponse
+        prompt: What is $a$ in kilometers?
+        answer:
+          value: 1940
+          tolerance: 0
+        hint: Divide the total by $2$.
+        explanation: |
+          The semi-major axis is the average of the near and far focus-to-vertex distances: $a=1940$ km.
+
+      - id: lunar-c
+        title: Use half the difference for focal offset
+        instruction: |
+          Subtract the equations:
+
+          $$
+          2c=2042-1838=204.
+          $$
+        type: numericResponse
+        prompt: What is $c$ in kilometers?
+        answer:
+          value: 102
+          tolerance: 0
+        hint: Divide the difference by $2$.
+        explanation: |
+          The ellipse center lies $102$ km from the Moon's center along the major axis.
+
+      - id: lunar-b
+        title: Recover the semi-minor axis
+        instruction: |
+          Ellipse parameters satisfy
+
+          $$
+          c^2=a^2-b^2,
+          $$
+
+          so
+
+          $$
+          b^2=a^2-c^2.
+          $$
+        type: numericResponse
+        prompt: Compute $b^2$.
+        answer:
+          value: 3753196
+          tolerance: 0
+        hint: Evaluate $1940^2-102^2$.
+        explanation: |
+          $1940^2=3{,}763{,}600$ and $102^2=10{,}404$, so $b^2=3{,}753{,}196$.
+
+      - id: lunar-center
+        title: Place the ellipse center consistently
+        instruction: |
+          Perilune is to the left at $x=-1838$, while apolune is to the right at $x=2042$. Their midpoint is
+
+          $$
+          \frac{-1838+2042}{2}=102.
+          $$
+
+          Thus the ellipse center is $(102,0)$. The Moon at $(0,0)$ is the left focus because $102-102=0$.
+        type: multipleChoice
+        prompt: Why is the ellipse not centered at the origin?
+        choices:
+          - id: correct
+            text: The origin is specified as a focus, and a noncircular ellipse's focus is offset from its center.
+          - id: altitude
+            text: Altitudes can never be measured from the origin.
+          - id: arbitrary
+            text: Every orbital ellipse is centered at $(102,0)$.
+        answer:
+          choiceId: correct
+        hint: Distinguish the center of the Moon from the center of the orbital ellipse.
+        explanation: |
+          The physical body occupies a focus, not the geometric center of the orbit.
+
+      - id: lunar-equation
+        title: Assemble and verify the orbital model
+        instruction: |
+          A horizontal ellipse centered at $(102,0)$ has form
+
+          $$
+          \frac{(x-102)^2}{a^2}+\frac{y^2}{b^2}=1.
+          $$
+
+          Insert $a^2=3{,}763{,}600$ and $b^2=3{,}753{,}196$.
+        type: symbolicResponse
+        prompt: Write the final equation.
+        answer:
+          expectedLatex: '\frac{(x-102)^2}{3763600}+\frac{y^2}{3753196}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: The major-axis denominator is $a^2$, not $a$.
+        explanation: |
+          The model is
+
+          $$
+          \frac{(x-102)^2}{3{,}763{,}600}
+          +
+          \frac{y^2}{3{,}753{,}196}
+          =1.
+          $$
+
+          Its left vertex is $102-1940=-1838$, its right vertex is $102+1940=2042$, and its left focus is $102-102=0$. These checks reproduce the selected coordinate convention and both orbital distances.
+
+          Related topic: translating physical periapsis and apoapsis data into ellipse parameters.

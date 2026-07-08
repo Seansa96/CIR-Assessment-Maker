@@ -1,0 +1,377 @@
+schemaVersion: 1
+id: precalc-conic-sections-hyperbola-worked-example
+title: Hyperbolas - Analysis, Asymptotes, and Construction
+assessmentType: workedExample
+categoryId: precalculus
+subcategoryIds:
+  - precalc-conics
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - conic-sections
+    - hyperbolas
+    - hyperbola-standard-form
+    - completing-the-square
+    - asymptotes
+    - conic-equation-construction
+skills:
+  - hyperbola-standard-form
+  - completing-the-square
+  - hyperbola-asymptotes
+  - conic-equation-construction
+workedExamples:
+  - id: hyperbola-general-form
+    title: Analyze a translated hyperbola
+    problem: |
+      Convert to standard form and find the center, vertices, foci, and asymptotes.
+
+      $$
+      x^2-y^2+2y=2
+      $$
+    steps:
+      - id: hgf-sign
+        title: Protect the subtraction sign
+        instruction: |
+          Group the $y$ terms while keeping their leading negative outside:
+
+          $$
+          x^2-(y^2-2y)=2.
+          $$
+
+          This matters because completing the square inside a subtracted group changes the outside balance in the opposite direction.
+        type: multipleChoice
+        prompt: What completes $y^2-2y$?
+        choices:
+          - id: one
+            text: '$+1$, producing $(y-1)^2$'
+          - id: minus
+            text: '$-1$, producing $(y+1)^2$'
+          - id: two
+            text: '$+2$, producing $(y-2)^2$'
+        answer:
+          choiceId: one
+        hint: Square half of $-2$.
+        explanation: |
+          $y^2-2y+1=(y-1)^2$.
+
+      - id: hgf-standard
+        title: Balance the outer equation
+        instruction: |
+          Write
+
+          $$
+          y^2-2y=(y-1)^2-1.
+          $$
+
+          Substitution gives
+
+          $$
+          x^2-\left((y-1)^2-1\right)=2,
+          $$
+
+          so $x^2-(y-1)^2=1$.
+        type: symbolicResponse
+        prompt: Enter the standard-form equation.
+        answer:
+          expectedLatex: 'x^2-(y-1)^2=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: Distribute the negative sign across the completed-square decomposition.
+        explanation: |
+          The standard form is $x^2-(y-1)^2=1$.
+
+      - id: hgf-features
+        title: Read the transverse geometry
+        instruction: |
+          The positive $x$ term makes the transverse axis horizontal. Both implicit denominators are $1$, so $a=b=1$, while
+
+          $$
+          c^2=a^2+b^2=2.
+          $$
+        type: multipleChoice
+        prompt: Which feature set is correct?
+        choices:
+          - id: correct
+            text: 'Center $(0,1)$; vertices $(\pm1,1)$; foci $(\pm\sqrt2,1)$'
+          - id: vertical
+            text: 'Center $(0,1)$; vertices $(0,0)$ and $(0,2)$'
+          - id: origin
+            text: 'Center $(0,0)$; vertices $(\pm1,0)$'
+        answer:
+          choiceId: correct
+        hint: Translate horizontal offsets from $(0,1)$.
+        explanation: |
+          All transverse-axis points share $y=1$.
+
+      - id: hgf-asymptotes
+        title: Translate the asymptotes
+        instruction: |
+          The asymptotes pass through the center and use slopes $\pm\frac ba=\pm1$.
+        type: freeResponse
+        prompt: Give both asymptotes and explain how they guide the sketch.
+        answer:
+          expected: |
+            The asymptotes are $y-1=\pm x$. Draw their crossing at $(0,1)$, place vertices at $(\pm1,1)$, and draw the two branches opening left and right while approaching the asymptotes.
+          gradingMode: selfCheck
+          keyPoints:
+            - Both lines pass through $(0,1)$.
+            - Slopes are $1$ and $-1$.
+            - Branches open along the horizontal transverse axis.
+        hint: Use point-slope form through the center.
+        explanation: |
+          Hyperbola asymptotes come from the diagonals of the fundamental rectangle and control the branches' long-run direction.
+
+  - id: hyperbola-vertices-foci
+    title: Construct a translated hyperbola from vertices and foci
+    problem: |
+      Find an equation with vertices $(-3,-4)$ and $(-3,6)$ and foci $(-3,-7)$ and $(-3,9)$.
+    steps:
+      - id: hvf-center
+        title: Find the shared midpoint
+        instruction: |
+          The midpoint of either symmetric pair is
+
+          $$
+          \left(-3,\frac{-4+6}{2}\right)=(-3,1).
+          $$
+
+          Their shared $x=-3$ shows that the transverse axis is vertical.
+        type: multipleChoice
+        prompt: Which standard-form template is required?
+        choices:
+          - id: vertical
+            text: '$\frac{(y-k)^2}{a^2}-\frac{(x-h)^2}{b^2}=1$'
+          - id: horizontal
+            text: '$\frac{(x-h)^2}{a^2}-\frac{(y-k)^2}{b^2}=1$'
+          - id: ellipse
+            text: '$\frac{(x-h)^2}{a^2}+\frac{(y-k)^2}{b^2}=1$'
+        answer:
+          choiceId: vertical
+        hint: The positive term follows the transverse axis.
+        explanation: |
+          A vertical hyperbola has the positive $y$ term first.
+
+      - id: hvf-distances
+        title: Extract a and c from coordinates
+        instruction: |
+          The center-to-vertex distance is $a=5$. The center-to-focus distance is $c=8$.
+        type: multipleChoice
+        prompt: What is $b^2$?
+        choices:
+          - id: correct
+            text: '$39$'
+          - id: difference
+            text: '$25-64=-39$'
+          - id: sum
+            text: '$89$'
+        answer:
+          choiceId: correct
+        hint: For a hyperbola, $c^2=a^2+b^2$.
+        explanation: |
+          $b^2=c^2-a^2=64-25=39$.
+
+      - id: hvf-equation
+        title: Place the translated terms
+        instruction: |
+          Use center $(h,k)=(-3,1)$, $a^2=25$, and $b^2=39$.
+        type: symbolicResponse
+        prompt: Write the hyperbola's equation.
+        answer:
+          expectedLatex: '\frac{(y-1)^2}{25}-\frac{(x+3)^2}{39}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: $x-h=x+3$.
+        explanation: |
+          The equation is $\frac{(y-1)^2}{25}-\frac{(x+3)^2}{39}=1$.
+
+      - id: hvf-check
+        title: Verify against the supplied geometry
+        instruction: |
+          Setting the negative term to zero gives $y-1=\pm5$, recovering $y=-4$ and $y=6$. Also,
+
+          $$
+          c^2=25+39=64,
+          $$
+
+          recovering focal offsets $\pm8$.
+        type: freeResponse
+        prompt: State the asymptotes.
+        answer:
+          expected: |
+            $y-1=\pm\frac{5}{\sqrt{39}}(x+3)$.
+          gradingMode: selfCheck
+          keyPoints:
+            - Lines pass through $(-3,1)$.
+            - Uses vertical-form slope magnitude $\frac ab$.
+        hint: The vertical rectangle has rise $a=5$ and run $b=\sqrt{39}$.
+        explanation: |
+          The asymptotes provide a final orientation and scale check.
+
+  - id: hyperbola-vertices-asymptotes
+    title: Construct from vertices and asymptotes
+    problem: |
+      Find an equation with vertices $(\pm3,0)$ and asymptotes $y=\pm2x$.
+    steps:
+      - id: hva-template
+        title: Read center, orientation, and a
+        instruction: |
+          The symmetric vertices show center $(0,0)$, horizontal orientation, and $a=3$. Begin with
+
+          $$
+          \frac{x^2}{9}-\frac{y^2}{b^2}=1.
+          $$
+        type: multipleChoice
+        prompt: What is the asymptote slope formula for this orientation?
+        choices:
+          - id: correct
+            text: '$m=\pm\frac ba$'
+          - id: inverse
+            text: '$m=\pm\frac ab$'
+          - id: focal
+            text: '$m=\pm\frac ca$'
+        answer:
+          choiceId: correct
+        hint: The rectangle rises by $b$ while running by $a$.
+        explanation: |
+          For a horizontal hyperbola, asymptotes are $y-k=\pm\frac ba(x-h)$.
+
+      - id: hva-b
+        title: Solve the slope condition
+        instruction: |
+          Match the supplied slope magnitude:
+
+          $$
+          \frac b3=2.
+          $$
+        type: numericResponse
+        prompt: What is $b$?
+        answer:
+          value: 6
+          tolerance: 0
+        hint: Multiply both sides by $3$.
+        explanation: |
+          $b=6$, so $b^2=36$.
+
+      - id: hva-equation
+        title: Assemble the standard form
+        instruction: |
+          Use $a^2=9$ and $b^2=36$.
+        type: symbolicResponse
+        prompt: Write the equation.
+        answer:
+          expectedLatex: '\frac{x^2}{9}-\frac{y^2}{36}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: The vertex direction determines which term is positive.
+        explanation: |
+          The resulting asymptotes have slopes $\pm\sqrt{36/9}=\pm2$, and its vertices are $(\pm3,0)$.
+
+  - id: hyperbola-foci-asymptotes
+    title: Construct from foci and translated asymptotes
+    problem: |
+      Find an equation with foci $(2,0)$ and $(2,8)$ and asymptotes
+
+      $$
+      y=3+\frac12x,
+      \qquad
+      y=5-\frac12x.
+      $$
+    steps:
+      - id: hfa-center
+        title: Find the asymptote intersection
+        instruction: |
+          The center of a hyperbola is where its asymptotes intersect. Set the lines equal:
+
+          $$
+          3+\frac12x=5-\frac12x.
+          $$
+        type: multipleChoice
+        prompt: What is the center?
+        choices:
+          - id: correct
+            text: '$(2,4)$'
+          - id: midpointwrong
+            text: '$(0,4)$'
+          - id: intercept
+            text: '$(2,3)$'
+        answer:
+          choiceId: correct
+        hint: Solve for $x$, then substitute into either line.
+        explanation: |
+          The lines intersect at $(2,4)$, which also matches the midpoint of the foci.
+
+      - id: hfa-orientation
+        title: Use the foci to choose orientation
+        instruction: |
+          The foci share $x=2$ and sit four units above and below the center, so the hyperbola is vertical and $c=4$.
+        type: multipleChoice
+        prompt: For a vertical hyperbola, what does asymptote slope magnitude $\frac12$ equal?
+        choices:
+          - id: correct
+            text: '$\frac ab$'
+          - id: inverse
+            text: '$\frac ba$'
+          - id: focal
+            text: '$\frac cb$'
+        answer:
+          choiceId: correct
+        hint: Vertical form has rise $a$ and run $b$.
+        explanation: |
+          The asymptotes of $\frac{(y-k)^2}{a^2}-\frac{(x-h)^2}{b^2}=1$ have slopes $\pm\frac ab$.
+
+      - id: hfa-parameters
+        title: Combine slope and focal equations
+        instruction: |
+          Since $\frac ab=\frac12$, let $b=2a$. Use the hyperbola relation:
+
+          $$
+          c^2=a^2+b^2.
+          $$
+
+          With $c=4$,
+
+          $$
+          16=a^2+4a^2=5a^2.
+          $$
+        type: freeResponse
+        prompt: Find $a^2$ and $b^2$.
+        answer:
+          expected: |
+            $a^2=\frac{16}{5}$ and $b^2=\frac{64}{5}$.
+          gradingMode: selfCheck
+          keyPoints:
+            - Uses $b=2a$ from the slope.
+            - Uses addition in the focal relation.
+            - Squares the scale relationship correctly.
+        hint: If $b=2a$, then $b^2=4a^2$.
+        explanation: |
+          Solving $16=5a^2$ gives $a^2=\frac{16}{5}$; multiplying by $4$ gives $b^2=\frac{64}{5}$.
+
+      - id: hfa-equation
+        title: Write and inspect the result
+        instruction: |
+          Insert center $(2,4)$ into the vertical template.
+        type: symbolicResponse
+        prompt: Write the final equation.
+        answer:
+          expectedLatex: '\frac{(y-4)^2}{16/5}-\frac{(x-2)^2}{64/5}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: The positive term follows the vertical transverse axis.
+        explanation: |
+          The equation has center $(2,4)$, focal distance $\sqrt{\frac{16}{5}+\frac{64}{5}}=4$, and asymptote slopes $\pm\sqrt{\frac{16/5}{64/5}}=\pm\frac12$.

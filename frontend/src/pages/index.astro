@@ -5813,7 +5813,14 @@ import "../styles/global.css";
 
       function readSymbolicLatex(idPrefix: string = "") {
         const mathField = document.querySelector<HTMLElement & { value?: string }>(`#${idPrefix}symbolic-response`);
-        return mathField?.value ?? mathField?.textContent ?? "";
+        let latex = mathField?.value ?? mathField?.textContent ?? "";
+        
+        // Normalize common math functions that were typed as text (without a backslash)
+        // e.g. "sin" -> "\sin", so the equivalence engine evaluates them as operators rather than variables
+        const regex = /(?<![a-zA-Z\\])(sin|cos|tan|sec|csc|cot|arcsin|arccos|arctan|ln|log)(?![a-zA-Z])/g;
+        latex = latex.replace(regex, "\\$1");
+        
+        return latex;
       }
 
       function setupChoiceCards(question: Question) {
@@ -5890,7 +5897,7 @@ import "../styles/global.css";
         if (!mathField) return;
 
         mathField.smartFence = true;
-        mathField.smartMode = true;
+        mathField.smartMode = false;
         mathField.smartSuperscript = false;
         mathField.mathVirtualKeyboardPolicy = "manual";
         mathField.placeholderSymbol = "□";

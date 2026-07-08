@@ -1,0 +1,337 @@
+schemaVersion: 1
+id: precalc-conic-sections-ellipse-analysis-construction-worked-example
+title: Ellipses - Analysis, Graphs, and Construction
+assessmentType: workedExample
+categoryId: precalculus
+subcategoryIds:
+  - precalc-conics
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - conic-sections
+    - ellipses
+    - ellipse-standard-form
+    - completing-the-square
+    - conic-graphing
+    - conic-equation-construction
+skills:
+  - ellipse-standard-form
+  - completing-the-square
+  - conic-graphing
+  - conic-equation-construction
+workedExamples:
+  - id: ellipse-general-form
+    title: Analyze an ellipse from general form
+    problem: |
+      Convert to standard form and find the center, vertices, co-vertices, and foci.
+
+      $$
+      4x^2+25y^2-50y=75
+      $$
+    steps:
+      - id: egf-group
+        title: Isolate the incomplete square
+        instruction: |
+          The $x$ term is already a square. Group the $y$ terms and factor their leading coefficient:
+
+          $$
+          4x^2+25(y^2-2y)=75.
+          $$
+
+          Complete the square inside the parentheses.
+        type: multipleChoice
+        prompt: What must be added inside $y^2-2y$?
+        choices:
+          - id: one
+            text: '$1$'
+          - id: twentyfive
+            text: '$25$'
+          - id: negative
+            text: '$-1$'
+        answer:
+          choiceId: one
+        hint: Square half of $-2$.
+        explanation: |
+          Half of $-2$ is $-1$, and its square is $1$. Because the group is multiplied by $25$, adding $1$ inside adds $25$ to the left side.
+
+      - id: egf-balance
+        title: Balance before normalizing
+        instruction: |
+          Add $25$ to the right side to match the completed $y$ square:
+
+          $$
+          4x^2+25(y-1)^2=100.
+          $$
+
+          Divide every term by $100$.
+        type: symbolicResponse
+        prompt: Write the ellipse in standard form.
+        answer:
+          expectedLatex: '\frac{x^2}{25}+\frac{(y-1)^2}{4}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: Each coefficient becomes the reciprocal of its denominator after division.
+        explanation: |
+          The standard form is $\frac{x^2}{25}+\frac{(y-1)^2}{4}=1$.
+
+      - id: egf-axes
+        title: Read center and axes
+        instruction: |
+          The center is $(0,1)$. The larger denominator $25$ lies under $x^2$, so $a=5$ is horizontal and $b=2$ is vertical.
+        type: multipleChoice
+        prompt: Which set gives the vertices and co-vertices?
+        choices:
+          - id: correct
+            text: 'Vertices $(\pm5,1)$; co-vertices $(0,3)$ and $(0,-1)$'
+          - id: swapped
+            text: 'Vertices $(0,6)$ and $(0,-4)$; co-vertices $(\pm2,1)$'
+          - id: origin
+            text: 'Vertices $(\pm5,0)$; co-vertices $(0,\pm2)$'
+        answer:
+          choiceId: correct
+        hint: Translate every feature from the center $(0,1)$.
+        explanation: |
+          Move $a=5$ horizontally for vertices and $b=2$ vertically for co-vertices.
+
+      - id: egf-foci
+        title: Locate the foci
+        instruction: |
+          Ellipse focal distance satisfies
+
+          $$
+          c^2=a^2-b^2=25-4=21.
+          $$
+        type: freeResponse
+        prompt: State the foci and explain why they lie on the horizontal axis.
+        answer:
+          expected: |
+            The foci are $(\pm\sqrt{21},1)$. They lie horizontally because the major axis corresponds to the larger denominator under $x^2$.
+          gradingMode: selfCheck
+          keyPoints:
+            - Uses subtraction rather than addition for $c^2$.
+            - Translates the foci from $(0,1)$.
+            - Connects focal orientation to the major axis.
+        hint: Foci always lie on the major axis.
+        explanation: |
+          The foci are inside the ellipse and closer to the center than the vertices because $c<a$.
+
+  - id: ellipse-from-graph
+    title: Recover an ellipse from a translated graph
+    problem: |
+      Find the equation and foci of the displayed ellipse.
+    steps:
+      - id: egraph-center
+        title: Use opposite extrema to find the center
+        instruction: |
+          The left and right vertices are $(-1,1)$ and $(5,1)$, whose midpoint is $(2,1)$. The top and bottom co-vertices confirm the same center.
+        media:
+          - type: image
+            src: /assessments/precalc-conics/ellipse-translated-horizontal.svg
+            alt: Horizontal ellipse centered at two comma one.
+            caption: Opposite extrema reveal the center and semi-axis lengths.
+        type: multipleChoice
+        prompt: What are the center and semi-axis lengths?
+        choices:
+          - id: correct
+            text: 'Center $(2,1)$, horizontal radius $3$, vertical radius $2$'
+          - id: origin
+            text: 'Center $(0,0)$, horizontal radius $5$, vertical radius $3$'
+          - id: swapped
+            text: 'Center $(2,1)$, horizontal radius $2$, vertical radius $3$'
+        answer:
+          choiceId: correct
+        hint: Measure from the midpoint, not from an axis.
+        explanation: |
+          Translation changes the center but not how semi-axis lengths are measured from that center.
+
+      - id: egraph-equation
+        title: Place each radius under its variable
+        instruction: |
+          A horizontal radius of $3$ gives $a^2=9$ under $(x-2)^2$. A vertical radius of $2$ gives $b^2=4$ under $(y-1)^2$.
+        type: symbolicResponse
+        prompt: Write the ellipse's equation.
+        answer:
+          expectedLatex: '\frac{(x-2)^2}{9}+\frac{(y-1)^2}{4}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: Denominators are squared semi-axis lengths.
+        explanation: |
+          The equation is $\frac{(x-2)^2}{9}+\frac{(y-1)^2}{4}=1$.
+
+      - id: egraph-foci
+        title: Translate the focal offsets
+        instruction: |
+          Compute
+
+          $$
+          c^2=9-4=5.
+          $$
+
+          Move $\sqrt5$ units horizontally from the center.
+        type: multipleChoice
+        prompt: Which pair gives the foci?
+        choices:
+          - id: correct
+            text: '$(2\pm\sqrt5,1)$'
+          - id: vertical
+            text: '$(2,1\pm\sqrt5)$'
+          - id: unshifted
+            text: '$(\pm\sqrt5,0)$'
+        answer:
+          choiceId: correct
+        hint: Follow the horizontal major axis through the translated center.
+        explanation: |
+          Translation must be applied to the foci as well as to the vertices.
+
+  - id: ellipse-foci-vertices
+    title: Construct an ellipse from foci and vertices
+    problem: |
+      Find an equation of the ellipse with foci $(\pm2,0)$ and vertices $(\pm5,0)$.
+    steps:
+      - id: efv-read
+        title: Extract center, orientation, a, and c
+        instruction: |
+          Both symmetric pairs have midpoint $(0,0)$ and lie on the $x$-axis. Therefore the major axis is horizontal, $a=5$, and $c=2$.
+        type: multipleChoice
+        prompt: Which relationship determines $b^2$ for an ellipse?
+        choices:
+          - id: correct
+            text: '$b^2=a^2-c^2$'
+          - id: hyperbola
+            text: '$b^2=c^2-a^2$'
+          - id: product
+            text: '$b^2=a^2c^2$'
+        answer:
+          choiceId: correct
+        hint: Ellipse foci lie inside the vertices, so $c<a$.
+        explanation: |
+          The ellipse relation $c^2=a^2-b^2$ rearranges to $b^2=a^2-c^2$.
+
+      - id: efv-b
+        title: Compute the missing semi-axis
+        instruction: |
+          Substitute $a=5$ and $c=2$:
+
+          $$
+          b^2=25-4=21.
+          $$
+        type: multipleChoice
+        prompt: Where does $21$ belong in the standard form?
+        choices:
+          - id: correct
+            text: Under $y^2$, because it is the squared vertical semi-axis.
+          - id: x
+            text: Under $x^2$, because it was computed second.
+          - id: right
+            text: On the right side in place of $1$.
+        answer:
+          choiceId: correct
+        hint: The major-axis denominator $25$ already belongs under $x^2$.
+        explanation: |
+          In a horizontal ellipse, $a^2$ lies under $x^2$ and $b^2$ lies under $y^2$.
+
+      - id: efv-equation
+        title: Assemble and verify
+        instruction: |
+          Use the center at the origin and the two squared semi-axis lengths.
+        type: symbolicResponse
+        prompt: Write the final equation.
+        answer:
+          expectedLatex: '\frac{x^2}{25}+\frac{y^2}{21}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: Both terms are added for an ellipse.
+        explanation: |
+          The equation is $\frac{x^2}{25}+\frac{y^2}{21}=1$. It has vertices at $(\pm5,0)$ and foci at $(\pm2,0)$ because $25-21=4$.
+
+  - id: ellipse-foci-point
+    title: Construct an ellipse from foci and one point
+    problem: |
+      Find an equation of the ellipse with foci $(\pm4,0)$ that passes through $\left(-4,\frac95\right)$.
+    steps:
+      - id: efp-model
+        title: Establish the unknown parameters
+        instruction: |
+          The center is $(0,0)$, the major axis is horizontal, and $c=4$. Let $a^2=A$. Then
+
+          $$
+          b^2=A-c^2=A-16.
+          $$
+
+          The equation is
+
+          $$
+          \frac{x^2}{A}+\frac{y^2}{A-16}=1.
+          $$
+        type: multipleChoice
+        prompt: Why must $A>16$?
+        choices:
+          - id: correct
+            text: Because $a>c$ for an ellipse, and $b^2=A-16$ must be positive.
+          - id: point
+            text: Because the point has a negative x-coordinate.
+          - id: arbitrary
+            text: Because every conic denominator exceeds $16$.
+        answer:
+          choiceId: correct
+        hint: The foci must lie inside the ellipse.
+        explanation: |
+          An ellipse requires $a>c$, so $a^2>c^2=16$.
+
+      - id: efp-substitute
+        title: Use the point as an equation
+        instruction: |
+          Substitute $x=-4$ and $y=\frac95$:
+
+          $$
+          \frac{16}{A}+\frac{81/25}{A-16}=1.
+          $$
+
+          Clearing denominators yields
+
+          $$
+          25A^2-881A+6400=0.
+          $$
+        type: multipleChoice
+        prompt: Which root is geometrically valid?
+        choices:
+          - id: correct
+            text: '$A=25$, because it is greater than $16$'
+          - id: small
+            text: '$A=\frac{256}{25}$, because it is smaller'
+          - id: both
+            text: Both roots define the requested ellipse.
+        answer:
+          choiceId: correct
+        hint: Apply the requirement $A>16$.
+        explanation: |
+          Algebra can produce a root that violates the geometry. Only $A=25$ keeps $b^2=A-16$ positive.
+
+      - id: efp-equation
+        title: Finish and verify
+        instruction: |
+          With $a^2=25$ and $c^2=16$, obtain $b^2=9$.
+        type: symbolicResponse
+        prompt: Write the ellipse's equation.
+        answer:
+          expectedLatex: '\frac{x^2}{25}+\frac{y^2}{9}=1'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: Substitute the point afterward to check the result.
+        explanation: |
+          The point check gives $\frac{16}{25}+\frac{81/25}{9}=\frac{16}{25}+\frac9{25}=1$. The focal check gives $25-9=16$, so $c=4$.

@@ -1,0 +1,373 @@
+schemaVersion: 1
+id: precalc-conic-sections-parabola-worked-example
+title: Parabolas - Analysis, Graphs, and Construction
+assessmentType: workedExample
+categoryId: precalculus
+subcategoryIds:
+  - precalc-conics
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - conic-sections
+    - parabolas
+    - parabola-standard-form
+    - focus-directrix
+    - completing-the-square
+    - conic-graphing
+    - conic-equation-construction
+skills:
+  - parabola-standard-form
+  - focus-directrix
+  - completing-the-square
+  - conic-graphing
+  - conic-equation-construction
+workedExamples:
+  - id: parabola-general-form
+    title: Analyze a parabola from general form
+    problem: |
+      Convert the equation to standard form and recover all of its geometric features.
+
+      $$
+      y^2+6y+2x+1=0
+      $$
+    steps:
+      - id: pgf-identify
+        title: Identify the axis before doing algebra
+        instruction: |
+          Only $y$ is squared. A parabola with squared $y$ has a horizontal axis, so its target form is
+
+          $$
+          (y-k)^2=4p(x-h).
+          $$
+
+          This prediction helps catch sign and variable-placement errors later.
+        type: multipleChoice
+        prompt: Which orientation must this parabola have?
+        choices:
+          - id: horizontal
+            text: Horizontal, because $y$ is the squared variable.
+          - id: vertical
+            text: Vertical, because $x$ appears linearly.
+          - id: circle
+            text: It is a circle because both variables appear.
+        answer:
+          choiceId: horizontal
+        hint: The variable that is not squared lies along the axis of opening.
+        explanation: |
+          A squared $y$ paired with linear $x$ matches the horizontal form $(y-k)^2=4p(x-h)$.
+
+      - id: pgf-complete-square
+        title: Complete the square without losing the x-term
+        instruction: |
+          Move the terms that do not contain $y$:
+
+          $$
+          y^2+6y=-2x-1.
+          $$
+
+          Add $9$ to both sides:
+
+          $$
+          (y+3)^2=-2x+8.
+          $$
+
+          The right side still must be factored to expose $(x-h)$.
+        type: symbolicResponse
+        prompt: Write the equation in fully factored parabola standard form.
+        answer:
+          expectedLatex: '(y+3)^2=-2(x-4)'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: Factor $-2$ from both terms on the right.
+        explanation: |
+          Since $-2x+8=-2(x-4)$, the standard form is $(y+3)^2=-2(x-4)$.
+
+      - id: pgf-read-p
+        title: Interpret the directed focal distance
+        instruction: |
+          Compare $(y+3)^2=-2(x-4)$ with $(y-k)^2=4p(x-h)$. The coefficient is $4p$, so
+
+          $$
+          4p=-2
+          \quad\Longrightarrow\quad
+          p=-\frac12.
+          $$
+        type: multipleChoice
+        prompt: Where are the focus and directrix?
+        choices:
+          - id: correct
+            text: 'Focus $\left(\frac72,-3\right)$; directrix $x=\frac92$'
+          - id: swapped
+            text: 'Focus $\left(\frac92,-3\right)$; directrix $x=\frac72$'
+          - id: fourp
+            text: 'Focus $(2,-3)$; directrix $x=6$'
+        answer:
+          choiceId: correct
+        hint: Add $p$ to the vertex's x-coordinate for the focus.
+        explanation: |
+          The vertex is $(4,-3)$. Adding $p=-\frac12$ gives the focus's x-coordinate $\frac72$; reflecting that distance across the vertex gives directrix $x=\frac92$.
+
+      - id: pgf-synthesis
+        title: Assemble the full graph
+        instruction: |
+          Plot the vertex first, then the focus and directrix. Draw a left-opening curve symmetric about $y=-3$. The focus must lie inside the bowl and the directrix outside it.
+        type: freeResponse
+        prompt: State the standard form, vertex, focus, directrix, axis, and opening direction.
+        answer:
+          expected: |
+            $(y+3)^2=-2(x-4)$; vertex $(4,-3)$; focus $\left(\frac72,-3\right)$; directrix $x=\frac92$; axis $y=-3$; opens left.
+          gradingMode: selfCheck
+          keyPoints:
+            - Includes the fully factored standard form.
+            - Keeps all features on or perpendicular to $y=-3$.
+            - Uses the negative sign to select leftward opening.
+        hint: Use the geometry already established rather than recomputing it.
+        explanation: |
+          The sign of $p$ controls direction, while $|p|$ controls both vertex-to-focus and vertex-to-directrix distance.
+
+  - id: parabola-from-graph
+    title: Recover a parabola from a graph
+    problem: |
+      Determine the equation, focus, and directrix of the graphed parabola.
+    steps:
+      - id: pgraph-read
+        title: Read invariant features first
+        instruction: |
+          The graph has vertex $(0,0)$ and opens left. Therefore use
+
+          $$
+          y^2=4px
+          $$
+
+          with $p<0$. A visible point such as $(-1,1)$ will determine the scale.
+        media:
+          - type: image
+            src: /assessments/precalc-conics/parabola-y2-negative-x.svg
+            alt: Left-opening parabola with vertex at the origin.
+            caption: Read the vertex, orientation, and a convenient grid point.
+        type: multipleChoice
+        prompt: Which template matches the graph?
+        choices:
+          - id: correct
+            text: '$y^2=4px$ with $p<0$'
+          - id: vertical
+            text: '$x^2=4py$ with $p<0$'
+          - id: positive
+            text: '$y^2=4px$ with $p>0$'
+        answer:
+          choiceId: correct
+        hint: The curve opens along the x-axis.
+        explanation: |
+          A horizontal axis requires squared $y$. Leftward opening requires negative $p$.
+
+      - id: pgraph-scale
+        title: Use one point to determine the scale
+        instruction: |
+          Substitute $(-1,1)$ into $y^2=4px$:
+
+          $$
+          1=4p(-1).
+          $$
+
+          Therefore $4p=-1$.
+        type: symbolicResponse
+        prompt: Write the parabola's equation.
+        answer:
+          expectedLatex: 'y^2=-x'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: The coefficient $4p$ has already been found.
+        explanation: |
+          Substituting $4p=-1$ into the template gives $y^2=-x$.
+
+      - id: pgraph-features
+        title: Recover the focus-directrix pair
+        instruction: |
+          From $4p=-1$, obtain $p=-\frac14$. Move that directed distance from the origin along the horizontal axis.
+        type: multipleChoice
+        prompt: Which focus-directrix pair is correct?
+        choices:
+          - id: correct
+            text: 'Focus $\left(-\frac14,0\right)$ and directrix $x=\frac14$'
+          - id: unit
+            text: 'Focus $(-1,0)$ and directrix $x=1$'
+          - id: reversed
+            text: 'Focus $\left(\frac14,0\right)$ and directrix $x=-\frac14$'
+        answer:
+          choiceId: correct
+        hint: The focus must lie inside the left-opening curve.
+        explanation: |
+          The focus lies in the opening direction; the directrix lies the same distance on the opposite side.
+
+  - id: parabola-focus-directrix
+    title: Construct a parabola from a focus and directrix
+    problem: |
+      Find an equation of the parabola with focus $(-4,0)$ and directrix $x=2$.
+    steps:
+      - id: pfd-vertex
+        title: Find the midpoint geometry
+        instruction: |
+          The vertex lies halfway between the focus and directrix along a line perpendicular to the directrix. The midpoint of $x=-4$ and $x=2$ is $x=-1$.
+        type: multipleChoice
+        prompt: What is the vertex?
+        choices:
+          - id: correct
+            text: '$(-1,0)$'
+          - id: focus
+            text: '$(-4,0)$'
+          - id: wrongmid
+            text: '$(1,0)$'
+        answer:
+          choiceId: correct
+        hint: Average the two x-coordinates that bound the equal-distance location.
+        explanation: |
+          The vertex is equidistant from the focus and directrix, so it lies at $x=\frac{-4+2}{2}=-1$.
+
+      - id: pfd-p
+        title: Keep p directed
+        instruction: |
+          From vertex $(-1,0)$ to focus $(-4,0)$ is three units left, so $p=-3$. The horizontal template is
+
+          $$
+          (y-k)^2=4p(x-h).
+          $$
+        type: multipleChoice
+        prompt: Why must $p$ be negative?
+        choices:
+          - id: correct
+            text: The focus is left of the vertex, so the parabola opens left.
+          - id: directrix
+            text: The directrix has a positive x-coordinate.
+          - id: squared
+            text: The y-variable is squared.
+        answer:
+          choiceId: correct
+        hint: The sign records direction, not merely distance.
+        explanation: |
+          $|p|$ is a distance, but $p$ itself is directed. Leftward motion along the x-axis is negative.
+
+      - id: pfd-equation
+        title: Substitute into standard form
+        instruction: |
+          Use $(h,k)=(-1,0)$ and $p=-3$ in $(y-k)^2=4p(x-h)$.
+        type: symbolicResponse
+        prompt: Write the final equation.
+        answer:
+          expectedLatex: 'y^2=-12(x+1)'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: $x-h=x-(-1)=x+1$.
+        explanation: |
+          The equation is $y^2=-12(x+1)$. Its vertex is $(-1,0)$, its focus is $(-4,0)$, and its directrix is $x=2$, so it reproduces all supplied data.
+
+  - id: parabola-three-points
+    title: Construct a parabola from three points
+    problem: |
+      Find the vertical-axis parabola passing through $(0,4)$, $(1,3)$, and $(-2,-6)$.
+    steps:
+      - id: p3-template
+        title: Choose a model with three unknowns
+        instruction: |
+          A vertical-axis parabola can be written
+
+          $$
+          y=ax^2+bx+c.
+          $$
+
+          Three points provide three equations for the three unknown coefficients.
+        type: multipleChoice
+        prompt: What does the point $(0,4)$ determine immediately?
+        choices:
+          - id: c
+            text: '$c=4$'
+          - id: a
+            text: '$a=4$'
+          - id: b
+            text: '$b=4$'
+        answer:
+          choiceId: c
+        hint: Substitute $x=0$.
+        explanation: |
+          At $x=0$, both the quadratic and linear terms vanish, leaving $y=c$.
+
+      - id: p3-system
+        title: Build the remaining system
+        instruction: |
+          Substituting $(1,3)$ with $c=4$ gives $a+b=-1$. Substituting $(-2,-6)$ gives
+
+          $$
+          4a-2b+4=-6,
+          $$
+
+          or $2a-b=-5$.
+        type: multipleChoice
+        prompt: Which solution satisfies both equations?
+        choices:
+          - id: correct
+            text: '$a=-2,\ b=1$'
+          - id: sign
+            text: '$a=2,\ b=-3$'
+          - id: linear
+            text: '$a=-1,\ b=0$'
+        answer:
+          choiceId: correct
+        hint: Add a suitable multiple of $a+b=-1$ to eliminate $b$.
+        explanation: |
+          Solving $a+b=-1$ and $2a-b=-5$ gives $3a=-6$, hence $a=-2$ and $b=1$.
+
+      - id: p3-equation
+        title: Write and verify the model
+        instruction: |
+          Substitute the coefficients into the quadratic and verify all three points before converting to vertex form.
+        type: symbolicResponse
+        prompt: Write the parabola in quadratic function form.
+        answer:
+          expectedLatex: 'y=-2x^2+x+4'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+          tolerance: 0.000001
+        hint: Use $a=-2$, $b=1$, and $c=4$.
+        explanation: |
+          The model is $y=-2x^2+x+4$. Substitution returns $4$, $3$, and $-6$ at the three supplied x-values.
+
+      - id: p3-geometry
+        title: Recover the conic geometry
+        instruction: |
+          Complete the square:
+
+          $$
+          y=-2\left(x-\frac14\right)^2+\frac{33}{8}.
+          $$
+
+          Equivalently,
+
+          $$
+          \left(x-\frac14\right)^2=-\frac12\left(y-\frac{33}{8}\right).
+          $$
+        type: freeResponse
+        prompt: State the vertex, value of $p$, focus, and directrix.
+        answer:
+          expected: |
+            Vertex $\left(\frac14,\frac{33}{8}\right)$; $p=-\frac18$; focus $\left(\frac14,4\right)$; directrix $y=\frac{17}{4}$.
+          gradingMode: selfCheck
+          keyPoints:
+            - Uses $4p=-\frac12$.
+            - Moves vertically from the vertex.
+            - Places the focus below and directrix above the vertex.
+        hint: The standard-form coefficient is $4p$.
+        explanation: |
+          Converting the fitted function to conic standard form connects algebraic interpolation with focus-directrix geometry.
