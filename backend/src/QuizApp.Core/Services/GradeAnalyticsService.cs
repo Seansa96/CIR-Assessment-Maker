@@ -618,7 +618,8 @@ public sealed class GradeAnalyticsService
                     : $"Practice more examples for {weakSkill.SkillId}.";
 
                 assessments.TryGetValue(assessment.Id, out var def);
-                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, def?.CategoryId, StringComparison.OrdinalIgnoreCase));
+                var categoryId = def?.CategoryId ?? assessment.SubjectId;
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, categoryId, StringComparison.OrdinalIgnoreCase));
                 var matchingAreas = def is not null ? MatchAreas(def, areas).ToList() : new List<AreaDefinition>();
                 var matchingTopics = catalog.Topics.Where(t => assessment.TopicIds.Contains(t.Id, StringComparer.OrdinalIgnoreCase)).ToList();
 
@@ -628,8 +629,8 @@ public sealed class GradeAnalyticsService
                     assessment.Id,
                     assessment.Title)
                 {
-                    CategoryId = def?.CategoryId,
-                    CategoryTitle = category?.Title ?? def?.CategoryId,
+                    CategoryId = categoryId,
+                    CategoryTitle = category?.Title ?? categoryId,
                     AreaIds = matchingAreas.Select(a => a.Id).ToList(),
                     AreaTitles = matchingAreas.Select(a => a.Title).ToList(),
                     TopicIds = matchingTopics.Select(t => t.Id).ToList(),
@@ -654,7 +655,8 @@ public sealed class GradeAnalyticsService
                 var message = $"Review the fundamental concepts for {weakTag.Tag}.";
 
                 assessments.TryGetValue(assessment.Id, out var def);
-                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, def?.CategoryId, StringComparison.OrdinalIgnoreCase));
+                var categoryId = def?.CategoryId ?? assessment.SubjectId;
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, categoryId, StringComparison.OrdinalIgnoreCase));
                 var matchingAreas = def is not null ? MatchAreas(def, areas).ToList() : new List<AreaDefinition>();
                 var matchingTopics = catalog.Topics.Where(t => assessment.TopicIds.Contains(t.Id, StringComparer.OrdinalIgnoreCase)).ToList();
 
@@ -664,8 +666,8 @@ public sealed class GradeAnalyticsService
                     assessment.Id,
                     assessment.Title)
                 {
-                    CategoryId = def?.CategoryId,
-                    CategoryTitle = category?.Title ?? def?.CategoryId,
+                    CategoryId = categoryId,
+                    CategoryTitle = category?.Title ?? categoryId,
                     AreaIds = matchingAreas.Select(a => a.Id).ToList(),
                     AreaTitles = matchingAreas.Select(a => a.Title).ToList(),
                     TopicIds = matchingTopics.Select(t => t.Id).ToList(),
