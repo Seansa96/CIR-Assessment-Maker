@@ -76,6 +76,7 @@ public static class FileDtoMapper
             Items = (dto.Items ?? new List<RecallItemFileDto>()).Select(ToDomain).ToList(),
             Lesson = dto.Lesson is null ? null : ToDomain(dto.Lesson),
             Exploration = dto.Exploration is null ? null : ToDomain(dto.Exploration),
+            DirectedProject = dto.DirectedProject is null ? null : ToDomain(dto.DirectedProject),
             Navigation = dto.Navigation is null ? null : new NavigationMetadata(
                 dto.Navigation.LearningGoal,
                 dto.Navigation.ActivityType,
@@ -105,6 +106,7 @@ public static class FileDtoMapper
             Items = assessment.Items.Select(ToDto).ToList(),
             Lesson = assessment.Lesson is null ? null : ToDto(assessment.Lesson),
             Exploration = assessment.Exploration is null ? null : ToDto(assessment.Exploration),
+            DirectedProject = assessment.DirectedProject is null ? null : ToDto(assessment.DirectedProject),
             Navigation = assessment.Navigation is null ? null : new NavigationFileDto
             {
                 LearningGoal = assessment.Navigation.LearningGoal,
@@ -610,6 +612,7 @@ public static class FileDtoMapper
             "recalldrill" => AssessmentType.RecallDrill,
             "conceptlesson" => AssessmentType.ConceptLesson,
             "interactiveexploration" => AssessmentType.InteractiveExploration,
+            "directedproject" => AssessmentType.DirectedProject,
             _ => AssessmentType.Unknown
         };
     }
@@ -675,6 +678,7 @@ public static class FileDtoMapper
             AssessmentType.RecallDrill => "recallDrill",
             AssessmentType.ConceptLesson => "conceptLesson",
             AssessmentType.InteractiveExploration => "interactiveExploration",
+            AssessmentType.DirectedProject => "directedProject",
             _ => "quiz"
         };
     }
@@ -962,6 +966,199 @@ public static class FileDtoMapper
             SymbolicEquivalenceMode = domain.SymbolicEquivalenceMode,
             SymbolicVariables = domain.SymbolicVariables?.ToList(),
             SymbolicTolerance = domain.SymbolicTolerance
+        };
+    }
+
+    // ─── Directed Project Mappers ──────────────────────────────────────────────────────
+
+    private static DirectedProjectDefinition ToDomain(DirectedProjectFileDto dto)
+    {
+        return new DirectedProjectDefinition(
+            dto.Summary ?? string.Empty,
+            dto.Outcomes ?? new List<string>(),
+            (dto.Phases ?? new List<DirectedProjectPhaseFileDto>()).Select(ToDomain).ToList())
+        {
+            EstimatedTimeMinutes = dto.EstimatedTimeMinutes,
+            Environment = dto.Environment is null ? null : ToDomain(dto.Environment),
+            Resources = (dto.Resources ?? new List<DirectedProjectResourceFileDto>()).Select(ToDomain).ToList()
+        };
+    }
+
+    private static DirectedProjectEnvironmentDefinition ToDomain(DirectedProjectEnvironmentFileDto dto)
+    {
+        return new DirectedProjectEnvironmentDefinition(dto.Name ?? string.Empty)
+        {
+            Platform = dto.Platform ?? new List<string>(),
+            ToolVersion = dto.ToolVersion,
+            RequiredAccounts = dto.RequiredAccounts ?? new List<string>(),
+            Prerequisites = dto.Prerequisites ?? new List<string>(),
+            InstallLinks = (dto.InstallLinks ?? new List<DirectedProjectResourceFileDto>()).Select(ToDomain).ToList()
+        };
+    }
+
+    private static DirectedProjectResourceDefinition ToDomain(DirectedProjectResourceFileDto dto)
+    {
+        return new DirectedProjectResourceDefinition(
+            dto.Label ?? string.Empty,
+            dto.Kind ?? "external")
+        {
+            Url = dto.Url,
+            Target = dto.Target
+        };
+    }
+
+    private static DirectedProjectPhaseDefinition ToDomain(DirectedProjectPhaseFileDto dto)
+    {
+        return new DirectedProjectPhaseDefinition(
+            dto.Id ?? string.Empty,
+            dto.Title ?? string.Empty,
+            dto.Required ?? true,
+            (dto.Steps ?? new List<DirectedProjectStepFileDto>()).Select(ToDomain).ToList())
+        {
+            Goal = dto.Goal
+        };
+    }
+
+    private static DirectedProjectStepDefinition ToDomain(DirectedProjectStepFileDto dto)
+    {
+        return new DirectedProjectStepDefinition(
+            dto.Id ?? string.Empty,
+            dto.Title ?? string.Empty,
+            dto.Instruction ?? string.Empty)
+        {
+            ExpectedObservation = dto.ExpectedObservation,
+            Commands = (dto.Commands ?? new List<DirectedProjectCommandFileDto>()).Select(ToDomain).ToList(),
+            Files = (dto.Files ?? new List<DirectedProjectFileReferenceFileDto>()).Select(ToDomain).ToList(),
+            Media = (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList(),
+            Checklist = (dto.Checklist ?? new List<DirectedProjectChecklistItemFileDto>()).Select(ToDomain).ToList(),
+            Troubleshooting = (dto.Troubleshooting ?? new List<DirectedProjectTroubleshootingFileDto>()).Select(ToDomain).ToList(),
+            Resources = (dto.Resources ?? new List<DirectedProjectResourceFileDto>()).Select(ToDomain).ToList()
+        };
+    }
+
+    private static DirectedProjectChecklistItemDefinition ToDomain(DirectedProjectChecklistItemFileDto dto)
+        => new(dto.Id ?? string.Empty, dto.Text ?? string.Empty);
+
+    private static DirectedProjectTroubleshootingDefinition ToDomain(DirectedProjectTroubleshootingFileDto dto)
+        => new(dto.Problem ?? string.Empty, dto.Suggestion ?? string.Empty);
+
+    private static DirectedProjectCommandDefinition ToDomain(DirectedProjectCommandFileDto dto)
+    {
+        return new DirectedProjectCommandDefinition(
+            dto.Label ?? string.Empty,
+            dto.Command ?? string.Empty)
+        {
+            Shell = dto.Shell,
+            WorkingDirectory = dto.WorkingDirectory,
+            ExpectedOutput = dto.ExpectedOutput,
+            Notes = dto.Notes
+        };
+    }
+
+    private static DirectedProjectFileDefinition ToDomain(DirectedProjectFileReferenceFileDto dto)
+    {
+        return new DirectedProjectFileDefinition(
+            dto.Path ?? string.Empty,
+            dto.Purpose ?? string.Empty)
+        {
+            SuggestedContent = dto.SuggestedContent,
+            ReadOnly = dto.ReadOnly
+        };
+    }
+
+    private static DirectedProjectFileDto ToDto(DirectedProjectDefinition domain)
+    {
+        return new DirectedProjectFileDto
+        {
+            Summary = domain.Summary,
+            EstimatedTimeMinutes = domain.EstimatedTimeMinutes,
+            Environment = domain.Environment is null ? null : ToDto(domain.Environment),
+            Outcomes = domain.Outcomes.ToList(),
+            Resources = domain.Resources.Select(ToDto).ToList(),
+            Phases = domain.Phases.Select(ToDto).ToList()
+        };
+    }
+
+    private static DirectedProjectEnvironmentFileDto ToDto(DirectedProjectEnvironmentDefinition domain)
+    {
+        return new DirectedProjectEnvironmentFileDto
+        {
+            Name = domain.Name,
+            Platform = domain.Platform.ToList(),
+            ToolVersion = domain.ToolVersion,
+            RequiredAccounts = domain.RequiredAccounts.ToList(),
+            Prerequisites = domain.Prerequisites.ToList(),
+            InstallLinks = domain.InstallLinks.Select(ToDto).ToList()
+        };
+    }
+
+    private static DirectedProjectResourceFileDto ToDto(DirectedProjectResourceDefinition domain)
+    {
+        return new DirectedProjectResourceFileDto
+        {
+            Label = domain.Label,
+            Kind = domain.Kind,
+            Url = domain.Url,
+            Target = domain.Target
+        };
+    }
+
+    private static DirectedProjectPhaseFileDto ToDto(DirectedProjectPhaseDefinition domain)
+    {
+        return new DirectedProjectPhaseFileDto
+        {
+            Id = domain.Id,
+            Title = domain.Title,
+            Required = domain.Required,
+            Goal = domain.Goal,
+            Steps = domain.Steps.Select(ToDto).ToList()
+        };
+    }
+
+    private static DirectedProjectStepFileDto ToDto(DirectedProjectStepDefinition domain)
+    {
+        return new DirectedProjectStepFileDto
+        {
+            Id = domain.Id,
+            Title = domain.Title,
+            Instruction = domain.Instruction,
+            ExpectedObservation = domain.ExpectedObservation,
+            Commands = domain.Commands.Select(ToDto).ToList(),
+            Files = domain.Files.Select(ToDto).ToList(),
+            Media = domain.Media.Select(ToDto).ToList(),
+            Checklist = domain.Checklist.Select(ToDto).ToList(),
+            Troubleshooting = domain.Troubleshooting.Select(ToDto).ToList(),
+            Resources = domain.Resources.Select(ToDto).ToList()
+        };
+    }
+
+    private static DirectedProjectChecklistItemFileDto ToDto(DirectedProjectChecklistItemDefinition domain)
+        => new() { Id = domain.Id, Text = domain.Text };
+
+    private static DirectedProjectTroubleshootingFileDto ToDto(DirectedProjectTroubleshootingDefinition domain)
+        => new() { Problem = domain.Problem, Suggestion = domain.Suggestion };
+
+    private static DirectedProjectCommandFileDto ToDto(DirectedProjectCommandDefinition domain)
+    {
+        return new DirectedProjectCommandFileDto
+        {
+            Label = domain.Label,
+            Command = domain.Command,
+            Shell = domain.Shell,
+            WorkingDirectory = domain.WorkingDirectory,
+            ExpectedOutput = domain.ExpectedOutput,
+            Notes = domain.Notes
+        };
+    }
+
+    private static DirectedProjectFileReferenceFileDto ToDto(DirectedProjectFileDefinition domain)
+    {
+        return new DirectedProjectFileReferenceFileDto
+        {
+            Path = domain.Path,
+            Purpose = domain.Purpose,
+            SuggestedContent = domain.SuggestedContent,
+            ReadOnly = domain.ReadOnly
         };
     }
 }

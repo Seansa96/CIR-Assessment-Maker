@@ -34,6 +34,7 @@ public sealed record Attempt(
 {
     public IReadOnlyList<RecallItemAttempt> RecallItems { get; init; } = Array.Empty<RecallItemAttempt>();
     public IReadOnlyList<LearningSectionAttempt> LearningSections { get; init; } = Array.Empty<LearningSectionAttempt>();
+    public IReadOnlyList<DirectedProjectStepAttempt> DirectedProjectSteps { get; init; } = Array.Empty<DirectedProjectStepAttempt>();
 }
 
 public sealed record LearningSectionAttempt(
@@ -58,6 +59,14 @@ public sealed record RecallItemAttempt(
     RecallRating Rating,
     DateTimeOffset UpdatedAt);
 
+public sealed record DirectedProjectStepAttempt(
+    string StepId,
+    bool Visited,
+    bool Completed,
+    IReadOnlyList<string> CompletedChecklistItemIds,
+    string? Notes,
+    DateTimeOffset UpdatedAt);
+
 public sealed record AttemptResults(
     string AttemptId,
     string AssessmentId,
@@ -77,6 +86,7 @@ public sealed record AttemptResults(
     public RecallDrillSummary? RecallSummary { get; init; }
     public IReadOnlyList<RecallItemResult> RecallItems { get; init; } = Array.Empty<RecallItemResult>();
     public IReadOnlyList<LearningSectionResult> LearningSections { get; init; } = Array.Empty<LearningSectionResult>();
+    public IReadOnlyList<DirectedProjectStepResult> DirectedProjectSteps { get; init; } = Array.Empty<DirectedProjectStepResult>();
 }
 
 public sealed record LearningSectionResult(
@@ -89,6 +99,17 @@ public sealed record LearningSectionResult(
     bool Unlocked,
     IReadOnlyDictionary<string, JsonElement> ControlValues,
     QuestionResult? Check);
+
+public sealed record DirectedProjectStepResult(
+    string StepId,
+    string PhaseId,
+    string PhaseTitle,
+    string StepTitle,
+    bool Required,
+    bool Visited,
+    bool Completed,
+    IReadOnlyList<string> CompletedChecklistItemIds,
+    string? Notes);
 
 public sealed record RecallDrillSummary(
     int ItemsReviewed,

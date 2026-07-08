@@ -455,8 +455,42 @@ public sealed class AttemptFlowTests
             await attemptService.RevealRecallItemAsync(attempt.Id, itemId, "response");
             await attemptService.RateRecallItemAsync(attempt.Id, itemId, RecallRating.Correct);
         }
-
         await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+    }
+
+    [Fact]
+    public async Task DirectedProject_start_and_track_steps()
+    {
+        var assessment = TestData.DirectedProjectAssessment();
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        Assert.Equal(AssessmentMode.Practice, attempt.Mode);
+        Assert.Equal(AttemptStatus.InProgress, attempt.Status);
+
+        var step1 = await service.UpdateDirectedProjectStepStateAsync(
+            attempt.Id,
+            "step-1",
+            visited: true,
+            completed: true,
+            completedChecklistItemIds: new[] { "chk-1" },
+            notes: "Installed successfully."
+        );
+
+        Assert.Equal(AttemptStatus.InProgress, step1.Status);
+        
+        var results = await service.GetResultsAsync(attempt.Id);
+        Assert.False(results.IsComplete);
+        Assert.Single(results.DirectedProjectSteps);
+        
+        var res = results.DirectedProjectSteps[0];
+        Assert.Equal("step-1", res.StepId);
+        Assert.True(res.Completed);
+        Assert.Contains("chk-1", res.CompletedChecklistItemIds);
+        Assert.Equal("Installed successfully.", res.Notes);
+
+        var completed = await service.CompleteAsync(attempt.Id);
+        Assert.Equal(AttemptStatus.Completed, completed.Status);
     }
 
     [Fact]
@@ -741,6 +775,44 @@ internal static class TestData
                 })
         };
     }
+
+    public static AssessmentDefinition DirectedProjectAssessment()
+    {
+        return Assessment(AssessmentType.DirectedProject, Array.Empty<QuestionDefinition>()) with
+        {
+            Id = "dp-test",
+            Title = "Test Directed Project",
+            DirectedProject = new DirectedProjectDefinition(
+                "A test directed project.",
+                Array.Empty<string>(),
+                new[]
+                {
+                    new DirectedProjectPhaseDefinition(
+                        "phase-1",
+                        "Phase 1",
+                        true,
+                        new[]
+                        {
+                            new DirectedProjectStepDefinition(
+                                "step-1",
+                                "Step 1",
+                                "Do the first thing.")
+                            {
+                                Checklist = new[]
+                                {
+                                    new DirectedProjectChecklistItemDefinition("chk-1", "Done thing 1")
+                                },
+                                NotesPrompt = "Any notes?"
+                            }
+                        })
+                })
+            {
+                EstimatedTimeMinutes = 10,
+                Resources = Array.Empty<DirectedProjectResourceDefinition>()
+            }
+        };
+    }
+
 
     public static QuestionDefinition MultipleChoiceQuestion(string id)
     {

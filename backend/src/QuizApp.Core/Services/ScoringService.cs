@@ -125,6 +125,11 @@ public sealed class ScoringService
             return BuildLearningResults(assessment, attempt);
         }
 
+        if (assessment.AssessmentType is AssessmentType.DirectedProject)
+        {
+            return BuildDirectedProjectResults(assessment, attempt);
+        }
+
         var answersByQuestion = attempt.Answers.ToDictionary(answer => answer.QuestionId, StringComparer.OrdinalIgnoreCase);
         var assessmentItems = GetAssessmentItems(assessment);
         var orderedQuestions = attempt.QuestionOrder
@@ -334,6 +339,50 @@ public sealed class ScoringService
             EarnedPoints = earnedPoints,
             PossiblePoints = possiblePoints,
             LearningSections = sectionResults
+        };
+    }
+
+    private static AttemptResults BuildDirectedProjectResults(AssessmentDefinition assessment, Attempt attempt)
+    {
+        var progressByStep = attempt.DirectedProjectSteps.ToDictionary(
+            step => step.StepId,
+            StringComparer.OrdinalIgnoreCase);
+
+        var stepResults = new List<DirectedProjectStepResult>();
+        foreach (var phase in assessment.DirectedProject!.Phases)
+        {
+            foreach (var step in phase.Steps)
+            {
+                progressByStep.TryGetValue(step.Id, out var progress);
+                stepResults.Add(new DirectedProjectStepResult(
+                    step.Id,
+                    phase.Id,
+                    phase.Title,
+                    step.Title,
+                    phase.Required,
+                    progress?.Visited == true,
+                    progress?.Completed == true,
+                    progress?.CompletedChecklistItemIds ?? Array.Empty<string>(),
+                    progress?.Notes));
+            }
+        }
+
+        return new AttemptResults(
+            attempt.Id,
+            assessment.Id,
+            assessment.Title,
+            attempt.Mode,
+            attempt.Status,
+            0,
+            0,
+            0m,
+            attempt.Status is AttemptStatus.Completed,
+            Array.Empty<QuestionResult>())
+        {
+            AssessmentType = assessment.AssessmentType,
+            EarnedPoints = 0m,
+            PossiblePoints = 0m,
+            DirectedProjectSteps = stepResults
         };
     }
 

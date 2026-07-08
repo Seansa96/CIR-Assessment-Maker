@@ -25,7 +25,8 @@ public sealed class GradeLogService
         if (results.AssessmentType is AssessmentType.WorkedExample
             or AssessmentType.GuidedProject
             or AssessmentType.ConceptLesson
-            or AssessmentType.InteractiveExploration)
+            or AssessmentType.InteractiveExploration
+            or AssessmentType.DirectedProject)
         {
             throw new InvalidOperationException("Instructional sessions cannot be committed to the grade log.");
         }

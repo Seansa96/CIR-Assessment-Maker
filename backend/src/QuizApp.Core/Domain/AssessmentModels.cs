@@ -9,7 +9,8 @@ public enum AssessmentType
     GuidedProject,
     RecallDrill,
     ConceptLesson,
-    InteractiveExploration
+    InteractiveExploration,
+    DirectedProject
 }
 
 public enum AssessmentMode
@@ -94,6 +95,7 @@ public sealed record AssessmentDefinition(
     public IReadOnlyList<RecallItemDefinition> Items { get; init; } = Array.Empty<RecallItemDefinition>();
     public ConceptLessonDefinition? Lesson { get; init; }
     public InteractiveExplorationDefinition? Exploration { get; init; }
+    public DirectedProjectDefinition? DirectedProject { get; init; }
     public NavigationMetadata? Navigation { get; init; }
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
@@ -292,6 +294,90 @@ public sealed record GuidedProjectDiagnosticFinding(
 public sealed record GuidedProjectRunResult(
     GuidedProjectSession Session,
     bool AllRequiredPassed);
+
+// ─── Directed Project ──────────────────────────────────────────────────────
+
+public sealed record DirectedProjectDefinition(
+    string Summary,
+    IReadOnlyList<string> Outcomes,
+    IReadOnlyList<DirectedProjectPhaseDefinition> Phases)
+{
+    public int? EstimatedTimeMinutes { get; init; }
+    public DirectedProjectEnvironmentDefinition? Environment { get; init; }
+    public IReadOnlyList<DirectedProjectResourceDefinition> Resources { get; init; } = Array.Empty<DirectedProjectResourceDefinition>();
+}
+
+public sealed record DirectedProjectEnvironmentDefinition(
+    string Name)
+{
+    public IReadOnlyList<string> Platform { get; init; } = Array.Empty<string>();
+    public string? ToolVersion { get; init; }
+    public IReadOnlyList<string> RequiredAccounts { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> Prerequisites { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<DirectedProjectResourceDefinition> InstallLinks { get; init; } = Array.Empty<DirectedProjectResourceDefinition>();
+}
+
+public sealed record DirectedProjectResourceDefinition(
+    string Label,
+    string Kind)
+{
+    /// <summary>URL for external resources.</summary>
+    public string? Url { get; init; }
+    /// <summary>Category/subcategory target for internal resources.</summary>
+    public string? Target { get; init; }
+}
+
+public sealed record DirectedProjectPhaseDefinition(
+    string Id,
+    string Title,
+    bool Required,
+    IReadOnlyList<DirectedProjectStepDefinition> Steps)
+{
+    public string? Goal { get; init; }
+}
+
+public sealed record DirectedProjectStepDefinition(
+    string Id,
+    string Title,
+    string Instruction)
+{
+    public string? ExpectedObservation { get; init; }
+    public IReadOnlyList<DirectedProjectCommandDefinition> Commands { get; init; } = Array.Empty<DirectedProjectCommandDefinition>();
+    public IReadOnlyList<DirectedProjectFileDefinition> Files { get; init; } = Array.Empty<DirectedProjectFileDefinition>();
+    public IReadOnlyList<MediaAsset> Media { get; init; } = Array.Empty<MediaAsset>();
+    public IReadOnlyList<DirectedProjectChecklistItemDefinition> Checklist { get; init; } = Array.Empty<DirectedProjectChecklistItemDefinition>();
+    public IReadOnlyList<DirectedProjectTroubleshootingDefinition> Troubleshooting { get; init; } = Array.Empty<DirectedProjectTroubleshootingDefinition>();
+    public IReadOnlyList<DirectedProjectResourceDefinition> Resources { get; init; } = Array.Empty<DirectedProjectResourceDefinition>();
+    public string? NotesPrompt { get; init; }
+}
+
+public sealed record DirectedProjectChecklistItemDefinition(
+    string Id,
+    string Text);
+
+public sealed record DirectedProjectTroubleshootingDefinition(
+    string Problem,
+    string Suggestion);
+
+public sealed record DirectedProjectCommandDefinition(
+    string Label,
+    string Command)
+{
+    public string? Shell { get; init; }
+    public string? WorkingDirectory { get; init; }
+    public string? ExpectedOutput { get; init; }
+    public string? Notes { get; init; }
+}
+
+public sealed record DirectedProjectFileDefinition(
+    string Path,
+    string Purpose)
+{
+    public string? SuggestedContent { get; init; }
+    public bool ReadOnly { get; init; }
+}
+
+// ─── Worked Example ─────────────────────────────────────────────────────────
 
 public sealed record WorkedExampleDefinition(
     string Id,

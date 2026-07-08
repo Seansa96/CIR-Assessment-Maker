@@ -54,6 +54,10 @@ public sealed class SqliteRetentionInitializer
         {
             await ExecuteAsync(connection, "ALTER TABLE attempts ADD COLUMN learning_sections_json TEXT NOT NULL DEFAULT '[]';", cancellationToken);
         }
+        if (!await ColumnExistsAsync(connection, "attempts", "directed_project_steps_json", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE attempts ADD COLUMN directed_project_steps_json TEXT NOT NULL DEFAULT '[]';", cancellationToken);
+        }
 
         await ExecuteAsync(connection, """
             CREATE TABLE IF NOT EXISTS grade_log_entries (

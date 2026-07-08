@@ -538,6 +538,50 @@ api.MapPost("/attempts/{attemptId}/learn/sections/{sectionId}/complete", async (
     }
 });
 
+api.MapPut("/attempts/{attemptId}/directed-project/steps/{stepId}/state", async (
+    string attemptId,
+    string stepId,
+    UpdateDirectedProjectStepStateRequest request,
+    AttemptService attemptService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.UpdateDirectedProjectStepStateAsync(
+            attemptId,
+            stepId,
+            request.Visited,
+            request.Completed,
+            request.CompletedChecklistItemIds ?? Array.Empty<string>(),
+            request.Notes,
+            cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("DIRECTED_PROJECT_STEP_STATE_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/directed-project/steps/{stepId}/complete", async (
+    string attemptId,
+    string stepId,
+    AttemptService attemptService,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.CompleteDirectedProjectStepAsync(attemptId, stepId, cancellationToken);
+        var results = await attemptService.GetResultsAsync(attemptId, cancellationToken);
+        return Results.Ok(new { attempt, results });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("DIRECTED_PROJECT_STEP_COMPLETE_FAILED", ex.Message));
+    }
+});
+
 api.MapGet("/attempts/{attemptId}/guided-project", async (
     string attemptId,
     GuidedProjectService guidedProjectService,

@@ -50,6 +50,7 @@ public sealed class AssessmentFileDto
     public List<RecallItemFileDto>? Items { get; set; }
     public ConceptLessonFileDto? Lesson { get; set; }
     public InteractiveExplorationFileDto? Exploration { get; set; }
+    public DirectedProjectFileDto? DirectedProject { get; set; }
     public NavigationFileDto? Navigation { get; set; }
     public List<string>? Skills { get; set; }
 }
@@ -126,6 +127,90 @@ public sealed class NavigationFileDto
     public List<string>? Tags { get; set; }
 }
 
+// ─── Directed Project DTOs ───────────────────────────────────────────────────
+
+public sealed class DirectedProjectFileDto
+{
+    public string? Summary { get; set; }
+    public int? EstimatedTimeMinutes { get; set; }
+    public DirectedProjectEnvironmentFileDto? Environment { get; set; }
+    public List<string>? Outcomes { get; set; }
+    public List<DirectedProjectResourceFileDto>? Resources { get; set; }
+    public List<DirectedProjectPhaseFileDto>? Phases { get; set; }
+}
+
+public sealed class DirectedProjectEnvironmentFileDto
+{
+    public string? Name { get; set; }
+    public List<string>? Platform { get; set; }
+    public string? ToolVersion { get; set; }
+    public List<string>? RequiredAccounts { get; set; }
+    public List<string>? Prerequisites { get; set; }
+    public List<DirectedProjectResourceFileDto>? InstallLinks { get; set; }
+}
+
+public sealed class DirectedProjectResourceFileDto
+{
+    public string? Label { get; set; }
+    public string? Kind { get; set; }
+    public string? Url { get; set; }
+    public string? Target { get; set; }
+}
+
+public sealed class DirectedProjectPhaseFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public bool? Required { get; set; }
+    public string? Goal { get; set; }
+    public List<DirectedProjectStepFileDto>? Steps { get; set; }
+}
+
+public sealed class DirectedProjectStepFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public string? Instruction { get; set; }
+    public string? ExpectedObservation { get; set; }
+    public List<DirectedProjectCommandFileDto>? Commands { get; set; }
+    public List<DirectedProjectFileReferenceFileDto>? Files { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
+    public List<DirectedProjectChecklistItemFileDto>? Checklist { get; set; }
+    public List<DirectedProjectTroubleshootingFileDto>? Troubleshooting { get; set; }
+    public List<DirectedProjectResourceFileDto>? Resources { get; set; }
+}
+
+public sealed class DirectedProjectChecklistItemFileDto
+{
+    public string? Id { get; set; }
+    public string? Text { get; set; }
+}
+
+public sealed class DirectedProjectTroubleshootingFileDto
+{
+    public string? Problem { get; set; }
+    public string? Suggestion { get; set; }
+}
+
+public sealed class DirectedProjectCommandFileDto
+{
+    public string? Label { get; set; }
+    public string? Command { get; set; }
+    public string? Shell { get; set; }
+    public string? WorkingDirectory { get; set; }
+    public string? ExpectedOutput { get; set; }
+    public string? Notes { get; set; }
+}
+
+public sealed class DirectedProjectFileReferenceFileDto
+{
+    public string? Path { get; set; }
+    public string? Purpose { get; set; }
+    public string? SuggestedContent { get; set; }
+    public bool ReadOnly { get; set; }
+}
+
+// ─── Recall Item DTOs ────────────────────────────────────────────────────────
 
 public sealed class RecallItemFileDto
 {

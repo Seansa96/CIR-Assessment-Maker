@@ -47,6 +47,7 @@ public sealed class AttemptService
             AssessmentType.RecallDrill => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
             AssessmentType.ConceptLesson => assessment.Lesson!.Sections.Select(section => section.Id).ToList(),
             AssessmentType.InteractiveExploration => assessment.Exploration!.Sections.Select(section => section.Id).ToList(),
+            AssessmentType.DirectedProject => assessment.DirectedProject!.Phases.SelectMany(phase => phase.Steps).Select(step => step.Id).ToList(),
             _ => scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList()
         };
 
@@ -275,6 +276,116 @@ public sealed class AttemptService
         return updatedAttempt;
     }
 
+    public async Task<Attempt> UpdateDirectedProjectStepStateAsync(
+        string attemptId,
+        string stepId,
+        bool visited,
+        bool completed,
+        IReadOnlyList<string> completedChecklistItemIds,
+        string? notes,
+        CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+        
+        if (assessment.AssessmentType is not AssessmentType.DirectedProject)
+        {
+            throw new InvalidOperationException("Only directed projects use directed project step state.");
+        }
+        
+        if (attempt.Status is not AttemptStatus.InProgress)
+        {
+            throw new InvalidOperationException("Directed project state can only be changed on an in-progress attempt.");
+        }
+
+        var stepExists = assessment.DirectedProject!.Phases.SelectMany(p => p.Steps).Any(s => string.Equals(s.Id, stepId, StringComparison.OrdinalIgnoreCase));
+        if (!stepExists)
+        {
+            throw new InvalidOperationException($"Directed project step '{stepId}' does not exist on this assessment.");
+        }
+
+        var existing = attempt.DirectedProjectSteps.FirstOrDefault(candidate =>
+            string.Equals(candidate.StepId, stepId, StringComparison.OrdinalIgnoreCase));
+            
+        var updated = new DirectedProjectStepAttempt(
+            stepId,
+            visited || existing?.Visited == true,
+            completed || existing?.Completed == true,
+            completedChecklistItemIds,
+            notes ?? existing?.Notes,
+            DateTimeOffset.UtcNow);
+
+        var updatedAttempt = attempt with
+        {
+            DirectedProjectSteps = attempt.DirectedProjectSteps
+                .Where(s => !string.Equals(s.StepId, stepId, StringComparison.OrdinalIgnoreCase))
+                .Append(updated)
+                .ToList()
+        };
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
+    public async Task<Attempt> CompleteDirectedProjectStepAsync(
+        string attemptId,
+        string stepId,
+        CancellationToken cancellationToken = default)
+    {
+        var attempt = await GetAttemptAsync(attemptId, cancellationToken);
+        var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
+        
+        if (assessment.AssessmentType is not AssessmentType.DirectedProject)
+        {
+            throw new InvalidOperationException("Only directed projects use directed project step state.");
+        }
+
+        if (attempt.Status is not AttemptStatus.InProgress)
+        {
+            throw new InvalidOperationException("Directed project state can only be changed on an in-progress attempt.");
+        }
+
+        var stepExists = assessment.DirectedProject!.Phases.SelectMany(p => p.Steps).Any(s => string.Equals(s.Id, stepId, StringComparison.OrdinalIgnoreCase));
+        if (!stepExists)
+        {
+            throw new InvalidOperationException($"Directed project step '{stepId}' does not exist on this assessment.");
+        }
+
+        var existing = attempt.DirectedProjectSteps.FirstOrDefault(candidate =>
+            string.Equals(candidate.StepId, stepId, StringComparison.OrdinalIgnoreCase));
+            
+        var updated = new DirectedProjectStepAttempt(
+            stepId,
+            true,
+            true,
+            existing?.CompletedChecklistItemIds ?? Array.Empty<string>(),
+            existing?.Notes,
+            DateTimeOffset.UtcNow);
+
+        var directedProjectSteps = attempt.DirectedProjectSteps
+            .Where(s => !string.Equals(s.StepId, stepId, StringComparison.OrdinalIgnoreCase))
+            .Append(updated)
+            .ToList();
+
+        var requiredComplete = assessment.DirectedProject!.Phases
+            .Where(p => p.Required)
+            .SelectMany(p => p.Steps)
+            .All(s => directedProjectSteps.Any(ds => string.Equals(ds.StepId, s.Id, StringComparison.OrdinalIgnoreCase) && ds.Completed));
+
+        var updatedAttempt = requiredComplete
+            ? attempt with
+            {
+                DirectedProjectSteps = directedProjectSteps,
+                Status = AttemptStatus.Completed,
+                CompletedAt = DateTimeOffset.UtcNow,
+                PausedAt = null
+            }
+            : attempt with { DirectedProjectSteps = directedProjectSteps };
+
+        await SaveAttemptAsync(updatedAttempt, cancellationToken);
+        return updatedAttempt;
+    }
+
+
     public async Task<Attempt> RevealRecallItemAsync(string attemptId, string itemId, string? userResponse, CancellationToken cancellationToken = default)
     {
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
@@ -447,6 +558,17 @@ public sealed class AttemptService
             }
         }
 
+        if (assessment.AssessmentType is AssessmentType.DirectedProject)
+        {
+            var requiredSteps = assessment.DirectedProject!.Phases.Where(p => p.Required).SelectMany(p => p.Steps).ToList();
+            if (!requiredSteps.All(step => attempt.DirectedProjectSteps.Any(progress =>
+                string.Equals(progress.StepId, step.Id, StringComparison.OrdinalIgnoreCase)
+                && progress.Completed)))
+            {
+                throw new InvalidOperationException("Directed projects can only be completed after every required step is complete.");
+            }
+        }
+
         var completedAttempt = attempt.Status is not AttemptStatus.Completed
             ? attempt with { Status = AttemptStatus.Completed, CompletedAt = DateTimeOffset.UtcNow, PausedAt = null }
             : attempt;
@@ -520,7 +642,8 @@ public sealed class AttemptService
             or AssessmentType.GuidedProject
             or AssessmentType.RecallDrill
             or AssessmentType.ConceptLesson
-            or AssessmentType.InteractiveExploration;
+            or AssessmentType.InteractiveExploration
+            or AssessmentType.DirectedProject;
     }
 
     private static void EnsureLearningAssessment(AssessmentDefinition assessment)

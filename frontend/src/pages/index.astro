@@ -346,7 +346,7 @@ import "../styles/global.css";
       import type { CircuitDiagram, CircuitComponent, CircuitNode, CircuitWire } from "../scripts/CircuitCanvas";
 
       type AssessmentMode = "practice" | "scored";
-      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "conceptLesson" | "interactiveExploration";
+      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "conceptLesson" | "interactiveExploration" | "directedProject";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit" | "multipart";
 
       interface CircuitQuestionDefinition {
@@ -713,6 +713,50 @@ import "../styles/global.css";
         sections: ExplorationSection[];
       }
 
+      interface DirectedProjectResource {
+        kind: "internal" | "external";
+        label: string;
+        description: string | null;
+        url: string | null;
+        target: string | null;
+      }
+
+      interface DirectedProjectChecklistItem {
+        id: string;
+        text: string;
+      }
+
+      interface DirectedProjectStep {
+        id: string;
+        title: string;
+        instruction: string;
+        media: MediaAsset[];
+        checklist: DirectedProjectChecklistItem[];
+        resources: DirectedProjectResource[];
+        notesPrompt: string | null;
+      }
+
+      interface DirectedProjectPhase {
+        id: string;
+        title: string;
+        required: boolean;
+        steps: DirectedProjectStep[];
+      }
+
+      interface DirectedProjectEnvironment {
+        name: string;
+        description: string;
+        installLinks: DirectedProjectResource[];
+      }
+
+      interface DirectedProject {
+        summary: string;
+        estimatedTimeMinutes: number | null;
+        environment: DirectedProjectEnvironment | null;
+        resources: DirectedProjectResource[];
+        phases: DirectedProjectPhase[];
+      }
+
       interface Assessment {
         id: string;
         title: string;
@@ -724,6 +768,7 @@ import "../styles/global.css";
         items?: RecallItem[];
         lesson?: ConceptLesson | null;
         exploration?: InteractiveExploration | null;
+        directedProject?: DirectedProject | null;
       }
 
       interface Attempt {
@@ -734,6 +779,7 @@ import "../styles/global.css";
         questionOrder: string[];
         recallItems?: RecallItemAttempt[];
         learningSections?: LearningSectionAttempt[];
+        directedProjectSteps?: DirectedProjectStepAttempt[];
       }
 
       interface LearningSectionAttempt {
@@ -750,6 +796,15 @@ import "../styles/global.css";
         userResponse: string | null;
         answerRevealed: boolean;
         rating: RecallRating;
+        updatedAt: string;
+      }
+
+      interface DirectedProjectStepAttempt {
+        stepId: string;
+        visited: boolean;
+        completed: boolean;
+        completedChecklistItemIds: string[];
+        notes: string | null;
         updatedAt: string;
       }
 
@@ -832,6 +887,7 @@ import "../styles/global.css";
         recallSummary: RecallDrillSummary | null;
         recallItems: RecallItemResult[];
         learningSections: LearningSectionResult[];
+        directedProjectSteps?: DirectedProjectStepResult[];
       }
 
       interface LearningSectionResult {
@@ -844,6 +900,18 @@ import "../styles/global.css";
         unlocked: boolean;
         controlValues: Record<string, unknown>;
         check: QuestionResult | null;
+      }
+
+      interface DirectedProjectStepResult {
+        stepId: string;
+        phaseId: string;
+        phaseTitle: string;
+        stepTitle: string;
+        required: boolean;
+        visited: boolean;
+        completed: boolean;
+        completedChecklistItemIds: string[];
+        notes: string | null;
       }
 
       interface RecallDrillSummary {
@@ -1045,6 +1113,8 @@ import "../styles/global.css";
         latestResults: AttemptResults | null;
         guidedProjectSession: GuidedProjectSession | null;
         guidedProjectActiveFile: string;
+        directedProjectActivePhaseId: string | null;
+        directedProjectActiveStepId: string | null;
         completedAssessmentIds: string[];
         committedAttemptIds: Set<string>;
         analytics: GradeAnalyticsSummary | null;
@@ -1084,6 +1154,8 @@ import "../styles/global.css";
         latestResults: null,
         guidedProjectSession: null,
         guidedProjectActiveFile: "",
+        directedProjectActivePhaseId: null,
+        directedProjectActiveStepId: null,
         completedAssessmentIds: [],
         committedAttemptIds: new Set(),
         analytics: null,
@@ -3595,6 +3667,11 @@ import "../styles/global.css";
           return;
         }
 
+        if (state.assessment.assessmentType === "directedProject") {
+          await renderDirectedProject();
+          return;
+        }
+
         if (state.assessment.assessmentType === "recallDrill") {
           await renderCurrentRecallItem();
           return;
@@ -4202,6 +4279,234 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupDevAssessmentRefresh();
+      }
+
+      async function renderDirectedProject() {
+        if (!state.attempt || !state.assessment?.directedProject) return;
+        if (state.attempt.status !== "inProgress") {
+          attemptContent.innerHTML = `<div class="empty-state">This directed project is ${escapeHtml(statusLabel(state.attempt.status).toLowerCase())}. Continue it from Attempt Sessions to make changes.</div>`;
+          return;
+        }
+
+        const project = state.assessment.directedProject;
+        const results = state.latestResults?.directedProjectSteps ?? [];
+        
+        let activePhaseId = state.directedProjectActivePhaseId;
+        let activeStepId = state.directedProjectActiveStepId;
+        
+        if (!activePhaseId || !activeStepId) {
+          for (const phase of project.phases) {
+            for (const step of phase.steps) {
+              const res = results.find(r => r.stepId === step.id);
+              if (!res?.completed) {
+                activePhaseId = phase.id;
+                activeStepId = step.id;
+                break;
+              }
+            }
+            if (activePhaseId) break;
+          }
+          if (!activePhaseId) {
+            activePhaseId = project.phases[0]?.id;
+            activeStepId = project.phases[0]?.steps[0]?.id;
+          }
+          state.directedProjectActivePhaseId = activePhaseId;
+          state.directedProjectActiveStepId = activeStepId;
+        }
+
+        const activePhase = project.phases.find(p => p.id === activePhaseId);
+        const activeStep = activePhase?.steps.find(s => s.id === activeStepId);
+        const activeResult = results.find(r => r.stepId === activeStepId);
+
+        const summaryHtml = await renderMarkdown(project.summary);
+        
+        const navHtml = project.phases.map((phase, pIdx) => `
+          <div class="directed-project-phase">
+            <h4 class="phase-title">Phase ${pIdx + 1}: ${escapeHtml(phase.title)}</h4>
+            <div class="phase-steps">
+              ${phase.steps.map((step, sIdx) => {
+                const res = results.find(r => r.stepId === step.id);
+                const isCompleted = res?.completed ?? false;
+                const isActive = step.id === activeStepId;
+                return `
+                  <button type="button" 
+                    class="step-nav-btn ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}"
+                    data-dp-phase="${escapeHtml(phase.id)}"
+                    data-dp-step="${escapeHtml(step.id)}"
+                    style="display: block; width: 100%; text-align: left; padding: 0.5rem; margin-bottom: 0.25rem; background: ${isActive ? 'var(--bg-active)' : 'transparent'}; border: 1px solid ${isActive ? 'var(--border-active)' : 'transparent'}; border-radius: 4px; cursor: pointer;">
+                    <span class="step-icon">${isCompleted ? '✔' : (sIdx + 1)}</span>
+                    <span class="step-title">${escapeHtml(step.title)}</span>
+                  </button>
+                `;
+              }).join("")}
+            </div>
+          </div>
+        `).join("");
+
+        let contentHtml = "";
+        if (activeStep) {
+          const instructionHtml = await renderMarkdown(activeStep.instruction);
+          const mediaHtml = activeStep.media ? renderMedia(activeStep.media) : "";
+          const completedChecklistIds = activeResult?.completedChecklistItemIds ?? [];
+          
+          const checklistHtml = activeStep.checklist.length > 0 ? `
+            <div class="directed-project-checklist" style="margin-top: 1.5rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 6px;">
+              <h4>Checklist</h4>
+              <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+              ${activeStep.checklist.map(item => `
+                <label class="checklist-item" style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer;">
+                  <input type="checkbox" data-dp-checklist="${escapeHtml(item.id)}" ${completedChecklistIds.includes(item.id) ? "checked" : ""} style="margin-top: 0.25rem;">
+                  <span>${escapeHtml(item.text)}</span>
+                </label>
+              `).join("")}
+              </div>
+            </div>
+          ` : "";
+
+          const resourcesHtml = activeStep.resources.length > 0 ? `
+            <div class="directed-project-resources" style="margin-top: 1.5rem;">
+              <h4>Resources</h4>
+              <ul>
+                ${activeStep.resources.map(res => `
+                  <li>
+                    <a href="${escapeHtml(res.url ?? '#')}" ${res.kind === 'external' ? 'target="_blank" rel="noopener"' : `data-dp-internal-target="${escapeHtml(res.target ?? '')}"`}>${escapeHtml(res.label)}</a>
+                    ${res.description ? `<span> - ${escapeHtml(res.description)}</span>` : ""}
+                  </li>
+                `).join("")}
+              </ul>
+            </div>
+          ` : "";
+
+          const notesHtml = activeStep.notesPrompt ? `
+            <div class="directed-project-notes" style="margin-top: 1.5rem;">
+              <label for="dp-notes" style="display: block; font-weight: 500; margin-bottom: 0.5rem;">${escapeHtml(activeStep.notesPrompt)}</label>
+              <textarea id="dp-notes" rows="4" style="width: 100%; padding: 0.5rem; font-family: inherit; border: 1px solid var(--border-color); border-radius: 4px;" placeholder="Enter your observations here...">${escapeHtml(activeResult?.notes ?? "")}</textarea>
+            </div>
+          ` : "";
+
+          contentHtml = `
+            <div class="step-header" style="margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+              <h3 style="margin: 0; font-size: 1.5rem;">${escapeHtml(activeStep.title)}</h3>
+            </div>
+            <div class="step-content markdown">
+              ${instructionHtml}
+              ${mediaHtml}
+            </div>
+            ${checklistHtml}
+            ${resourcesHtml}
+            ${notesHtml}
+            
+            <div class="step-actions" style="margin-top: 2rem;">
+              <button class="primary chunky" type="button" id="dp-complete-step">
+                ${activeResult?.completed ? "Mark as Incomplete" : "Mark Step Complete"}
+              </button>
+            </div>
+          `;
+        }
+
+        const projectResourcesHtml = project.resources.length > 0 ? `
+          <div class="project-global-resources" style="margin-top: 2rem;">
+            <h4>Project Resources</h4>
+            <ul style="font-size: 0.9em; padding-left: 1.25rem;">
+              ${project.resources.map(res => `
+                <li>
+                  <a href="${escapeHtml(res.url ?? '#')}" ${res.kind === 'external' ? 'target="_blank" rel="noopener"' : `data-dp-internal-target="${escapeHtml(res.target ?? '')}"`}>${escapeHtml(res.label)}</a>
+                  ${res.description ? `<span> - ${escapeHtml(res.description)}</span>` : ""}
+                </li>
+              `).join("")}
+            </ul>
+          </div>
+        ` : "";
+
+        attemptContent.innerHTML = `
+          <div class="directed-project-shell" style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
+            <aside class="directed-project-sidebar" style="flex: 1 1 300px; max-width: 350px; padding-right: 1rem; border-right: 1px solid var(--border-color);">
+              <p class="eyebrow">Directed Project</p>
+              <h2 style="margin-top: 0;">${escapeHtml(state.assessment.title)}</h2>
+              ${project.estimatedTimeMinutes ? `<p class="quiet-hint">⏱ Estimated time: ${project.estimatedTimeMinutes} min</p>` : ""}
+              <div class="markdown" style="font-size: 0.9em; margin-bottom: 1.5rem;">${summaryHtml}</div>
+              
+              <div class="directed-project-nav">
+                ${navHtml}
+              </div>
+              
+              ${projectResourcesHtml}
+              
+              <div class="assessment-control-bar" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                <button class="chunky complete-action" type="button" id="complete-attempt" style="width: 100%;">Complete Project</button>
+                <div style="text-align: center;">
+                  <button type="button" class="danger-action" id="abandon-attempt" style="background: none; border: none; font-size: 0.9rem; padding: 0.5rem; cursor: pointer;">Quit Early</button>
+                </div>
+              </div>
+            </aside>
+            <section class="directed-project-workspace" style="flex: 2 1 500px;">
+              ${contentHtml}
+            </section>
+          </div>
+        `;
+
+        document.querySelectorAll<HTMLButtonElement>(".step-nav-btn").forEach(btn => {
+          btn.addEventListener("click", async () => {
+            if (activeStepId) {
+              const prevCompleted = activeResult?.completed ?? false;
+              await saveDirectedProjectStepState(activeStepId, prevCompleted);
+            }
+            state.directedProjectActivePhaseId = btn.dataset.dpPhase ?? null;
+            state.directedProjectActiveStepId = btn.dataset.dpStep ?? null;
+            void renderDirectedProject();
+          });
+        });
+
+        document.querySelector<HTMLButtonElement>("#dp-complete-step")?.addEventListener("click", async () => {
+          if (!activeStepId) return;
+          const isCompleting = !(activeResult?.completed ?? false);
+          await saveDirectedProjectStepState(activeStepId, isCompleting);
+          if (isCompleting) {
+            advanceDirectedProjectStep(project);
+          }
+          void renderDirectedProject();
+        });
+
+        document.querySelector<HTMLButtonElement>("#complete-attempt")?.addEventListener("click", completeAttempt);
+        document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
+      }
+
+      function advanceDirectedProjectStep(project: DirectedProject) {
+        let foundCurrent = false;
+        for (const phase of project.phases) {
+          for (const step of phase.steps) {
+            if (foundCurrent) {
+              state.directedProjectActivePhaseId = phase.id;
+              state.directedProjectActiveStepId = step.id;
+              return;
+            }
+            if (step.id === state.directedProjectActiveStepId) {
+              foundCurrent = true;
+            }
+          }
+        }
+      }
+
+      async function saveDirectedProjectStepState(stepId: string, completed: boolean) {
+        if (!state.attempt) return;
+        const checklists = Array.from(document.querySelectorAll<HTMLInputElement>("input[data-dp-checklist]:checked")).map(el => el.dataset.dpChecklist!);
+        const notes = document.querySelector<HTMLTextAreaElement>("#dp-notes")?.value || null;
+
+        try {
+          const res = await api<{ attempt: Attempt, results: AttemptResults }>(`/attempts/${encodeURIComponent(state.attempt.id)}/directed-project/steps/${encodeURIComponent(stepId)}/state`, {
+            method: "PUT",
+            body: JSON.stringify({
+              visited: true,
+              completed: completed,
+              completedChecklistItemIds: checklists,
+              notes: notes
+            })
+          });
+          state.attempt = res.attempt;
+          state.latestResults = res.results;
+        } catch (e) {
+          console.error("Failed to save directed project step state", e);
+        }
       }
 
       async function renderCurrentRecallItem() {

@@ -53,6 +53,12 @@ public sealed record UpdateLearningSectionStateRequest(
     bool InteractionChanged,
     IReadOnlyDictionary<string, JsonElement>? ControlValues);
 
+public sealed record UpdateDirectedProjectStepStateRequest(
+    bool Visited,
+    bool Completed,
+    IReadOnlyList<string>? CompletedChecklistItemIds,
+    string? Notes);
+
 public sealed record GuidedProjectFileStateRequest(
     string Path,
     string Content);
@@ -85,6 +91,7 @@ public sealed record SaveAssessmentRequest(
     IReadOnlyList<RecallItemDefinition>? Items,
     ConceptLessonDefinition? Lesson,
     InteractiveExplorationDefinition? Exploration,
+    DirectedProjectDefinition? DirectedProject,
     NavigationMetadata? Navigation = null)
 {
     public AssessmentDefinition ToDomain()
@@ -108,6 +115,7 @@ public sealed record SaveAssessmentRequest(
             Items = Items ?? Array.Empty<RecallItemDefinition>(),
             Lesson = Lesson,
             Exploration = Exploration,
+            DirectedProject = DirectedProject,
             Navigation = Navigation
         };
     }

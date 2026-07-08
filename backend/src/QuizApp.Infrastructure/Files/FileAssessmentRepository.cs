@@ -127,6 +127,7 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             AssessmentType.RecallDrill => assessment.Items.Count,
             AssessmentType.ConceptLesson => assessment.Lesson?.Sections.Count ?? 0,
             AssessmentType.InteractiveExploration => assessment.Exploration?.Sections.Count ?? 0,
+            AssessmentType.DirectedProject => assessment.DirectedProject?.Phases.Sum(p => p.Steps.Count) ?? 0,
             _ => assessment.Questions.Count
         };
     }

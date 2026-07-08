@@ -23,7 +23,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, conceptLesson, or interactiveExploration."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, conceptLesson, interactiveExploration, or directedProject."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -63,6 +63,12 @@ public sealed class AssessmentValidator
         if (assessment.AssessmentType is AssessmentType.InteractiveExploration)
         {
             ValidateInteractiveExploration(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        if (assessment.AssessmentType is AssessmentType.DirectedProject)
+        {
+            ValidateDirectedProject(assessment, issues);
             return new AssessmentValidationResult(issues);
         }
 
@@ -928,6 +934,104 @@ public sealed class AssessmentValidator
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private static void ValidateDirectedProject(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        if (assessment.AttemptQuestionCount is not null)
+        {
+            issues.Add(new ValidationIssue("INVALID_ATTEMPT_QUESTION_COUNT", "attemptQuestionCount is not supported for directedProject assessments."));
+        }
+
+        var project = assessment.DirectedProject;
+        if (project is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_DIRECTED_PROJECT", "Directed projects must define the 'directedProject' field."));
+            return;
+        }
+
+        RequireText(project.Summary, "MISSING_SUMMARY", "Directed project summary is required.", issues);
+
+        if (project.EstimatedTimeMinutes.HasValue && project.EstimatedTimeMinutes.Value <= 0)
+        {
+            issues.Add(new ValidationIssue("INVALID_ESTIMATED_TIME", "Estimated time minutes must be greater than zero."));
+        }
+
+        if (project.Phases.Count == 0)
+        {
+            issues.Add(new ValidationIssue("DIRECTED_PROJECT_NO_PHASES", "Directed project must contain at least one phase."));
+            return;
+        }
+
+        var phaseIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var stepIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var phase in project.Phases)
+        {
+            RequireText(phase.Id, "MISSING_PHASE_ID", "Directed project phases must have an id.", issues);
+            RequireText(phase.Title, "MISSING_PHASE_TITLE", $"Phase '{phase.Id}' must have a title.", issues);
+
+            if (!phaseIds.Add(phase.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_PHASE_ID", $"Phase id '{phase.Id}' must be unique across the project."));
+            }
+
+            if (phase.Steps.Count == 0)
+            {
+                issues.Add(new ValidationIssue("PHASE_NO_STEPS", $"Phase '{phase.Id}' must contain at least one step."));
+            }
+
+            foreach (var step in phase.Steps)
+            {
+                RequireText(step.Id, "MISSING_STEP_ID", $"Step in phase '{phase.Id}' must have an id.", issues);
+                RequireText(step.Title, "MISSING_STEP_TITLE", $"Step '{step.Id}' must have a title.", issues);
+                RequireText(step.Instruction, "MISSING_STEP_INSTRUCTION", $"Step '{step.Id}' must have an instruction.", issues);
+
+                if (!stepIds.Add(step.Id))
+                {
+                    issues.Add(new ValidationIssue("DUPLICATE_STEP_ID", $"Step id '{step.Id}' must be unique across the project."));
+                }
+
+                ValidateMedia(step.Media, issues, step.Id);
+
+                var checklistIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var item in step.Checklist)
+                {
+                    RequireText(item.Id, "MISSING_CHECKLIST_ID", $"Checklist item in step '{step.Id}' must have an id.", issues);
+                    RequireText(item.Text, "MISSING_CHECKLIST_TEXT", $"Checklist item '{item.Id}' must have text.", issues);
+
+                    if (!checklistIds.Add(item.Id))
+                    {
+                        issues.Add(new ValidationIssue("DUPLICATE_CHECKLIST_ID", $"Checklist id '{item.Id}' must be unique within step '{step.Id}'."));
+                    }
+                }
+
+                ValidateDirectedProjectResources(step.Resources, issues);
+            }
+        }
+
+        ValidateDirectedProjectResources(project.Resources, issues);
+        if (project.Environment is not null)
+        {
+            ValidateDirectedProjectResources(project.Environment.InstallLinks, issues);
+        }
+    }
+
+    private static void ValidateDirectedProjectResources(IReadOnlyList<DirectedProjectResourceDefinition> resources, List<ValidationIssue> issues)
+    {
+        foreach (var resource in resources)
+        {
+            RequireText(resource.Label, "MISSING_RESOURCE_LABEL", "Directed project resource must have a label.", issues);
+            
+            if (string.Equals(resource.Kind, "internal", StringComparison.OrdinalIgnoreCase))
+            {
+                RequireText(resource.Target, "MISSING_RESOURCE_TARGET", $"Internal resource '{resource.Label}' must have a target.", issues);
+            }
+            else
+            {
+                RequireText(resource.Url, "MISSING_RESOURCE_URL", $"External resource '{resource.Label}' must have a url.", issues);
             }
         }
     }
