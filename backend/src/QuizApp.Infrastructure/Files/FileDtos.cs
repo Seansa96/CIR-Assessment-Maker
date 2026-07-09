@@ -48,6 +48,7 @@ public sealed class AssessmentFileDto
     public List<WorkedExampleFileDto>? WorkedExamples { get; set; }
     public GuidedProjectFileDto? GuidedProject { get; set; }
     public List<RecallItemFileDto>? Items { get; set; }
+    public GlossaryFileDto? Glossary { get; set; }
     public ConceptLessonFileDto? Lesson { get; set; }
     public InteractiveExplorationFileDto? Exploration { get; set; }
     public DirectedProjectFileDto? DirectedProject { get; set; }
@@ -59,6 +60,34 @@ public sealed class ConceptLessonFileDto
 {
     public string? Introduction { get; set; }
     public List<LearningSectionFileDto>? Sections { get; set; }
+}
+
+public sealed class GlossaryFileDto
+{
+    public string? Introduction { get; set; }
+    public List<GlossarySectionFileDto>? Sections { get; set; }
+}
+
+public sealed class GlossarySectionFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public bool? Required { get; set; }
+    public string? Content { get; set; }
+    public List<GlossaryEntryFileDto>? Entries { get; set; }
+}
+
+public sealed class GlossaryEntryFileDto
+{
+    public string? Id { get; set; }
+    public string? Term { get; set; }
+    public string? Definition { get; set; }
+    public string? Notation { get; set; }
+    public List<string>? Examples { get; set; }
+    public List<string>? Aliases { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
+    public List<string>? Tags { get; set; }
+    public List<RecallItemFileDto>? Drills { get; set; }
 }
 
 public sealed class LearningSectionFileDto
@@ -221,6 +250,7 @@ public sealed class RecallItemFileDto
     public string? Explanation { get; set; }
     public List<string>? Tags { get; set; }
     public List<string>? Skills { get; set; }
+    public List<ChoiceFileDto>? Choices { get; set; }
 }
 
 public sealed class RecallItemAnswerFileDto
@@ -229,6 +259,7 @@ public sealed class RecallItemAnswerFileDto
     public string? ExpectedLatex { get; set; }
     public List<string>? Aliases { get; set; }
     public List<MediaFileDto>? Media { get; set; }
+    public string? ChoiceId { get; set; }
 }
 
 public sealed class GuidedProjectFileDto

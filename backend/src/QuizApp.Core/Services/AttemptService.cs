@@ -45,15 +45,17 @@ public sealed class AttemptService
         var questionOrder = assessment.AssessmentType switch
         {
             AssessmentType.RecallDrill => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
+            AssessmentType.Glossary => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
             AssessmentType.ConceptLesson => assessment.Lesson!.Sections.Select(section => section.Id).ToList(),
             AssessmentType.InteractiveExploration => assessment.Exploration!.Sections.Select(section => section.Id).ToList(),
             AssessmentType.DirectedProject => assessment.DirectedProject!.Phases.SelectMany(phase => phase.Steps).Select(step => step.Id).ToList(),
             _ => scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList()
         };
 
-        if (!IsInstructionalAssessment(assessment.AssessmentType)
+        if ((assessment.AssessmentType is AssessmentType.Glossary && assessment.RandomizeQuestions)
+            || (!IsInstructionalAssessment(assessment.AssessmentType)
             && assessment.RandomizeQuestions
-            && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized)
+            && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized))
         {
             Shuffle(questionOrder);
         }
@@ -263,7 +265,7 @@ public sealed class AttemptService
             .All(candidate => learningSections.Any(progress =>
                 string.Equals(progress.SectionId, candidate.Id, StringComparison.OrdinalIgnoreCase)
                 && progress.Completed));
-        var updatedAttempt = requiredComplete
+        var updatedAttempt = requiredComplete && assessment.AssessmentType is not AssessmentType.Glossary
             ? attempt with
             {
                 LearningSections = learningSections,
@@ -390,9 +392,9 @@ public sealed class AttemptService
     {
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
         var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
-        if (assessment.AssessmentType is not AssessmentType.RecallDrill)
+        if (assessment.AssessmentType is not AssessmentType.RecallDrill and not AssessmentType.Glossary)
         {
-            throw new InvalidOperationException("Only recall drill attempts can reveal recall answers.");
+            throw new InvalidOperationException("Only recall drill and glossary attempts can reveal recall answers.");
         }
 
         if (attempt.Status is not AttemptStatus.InProgress)
@@ -400,7 +402,8 @@ public sealed class AttemptService
             throw new InvalidOperationException("Can only reveal recall answers on an in-progress attempt.");
         }
 
-        var item = assessment.Items.FirstOrDefault(candidate => string.Equals(candidate.Id, itemId, StringComparison.OrdinalIgnoreCase))
+        EnsureGlossaryStudyComplete(assessment, attempt);
+        var item = scoringService.GetRecallItems(assessment).FirstOrDefault(candidate => string.Equals(candidate.Id, itemId, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Recall item '{itemId}' does not exist on this assessment.");
         if (!attempt.QuestionOrder.Contains(item.Id, StringComparer.OrdinalIgnoreCase))
         {
@@ -435,9 +438,9 @@ public sealed class AttemptService
 
         var attempt = await GetAttemptAsync(attemptId, cancellationToken);
         var assessment = await GetValidAssessmentAsync(attempt.AssessmentId, cancellationToken);
-        if (assessment.AssessmentType is not AssessmentType.RecallDrill)
+        if (assessment.AssessmentType is not AssessmentType.RecallDrill and not AssessmentType.Glossary)
         {
-            throw new InvalidOperationException("Only recall drill attempts can rate recall answers.");
+            throw new InvalidOperationException("Only recall drill and glossary attempts can rate recall answers.");
         }
 
         if (attempt.Status is not AttemptStatus.InProgress)
@@ -445,7 +448,8 @@ public sealed class AttemptService
             throw new InvalidOperationException("Can only rate recall answers on an in-progress attempt.");
         }
 
-        var item = assessment.Items.FirstOrDefault(candidate => string.Equals(candidate.Id, itemId, StringComparison.OrdinalIgnoreCase))
+        EnsureGlossaryStudyComplete(assessment, attempt);
+        var item = scoringService.GetRecallItems(assessment).FirstOrDefault(candidate => string.Equals(candidate.Id, itemId, StringComparison.OrdinalIgnoreCase))
             ?? throw new InvalidOperationException($"Recall item '{itemId}' does not exist on this assessment.");
         var existing = attempt.RecallItems.FirstOrDefault(candidate => string.Equals(candidate.ItemId, item.Id, StringComparison.OrdinalIgnoreCase));
         if (existing?.AnswerRevealed != true)
@@ -547,6 +551,17 @@ public sealed class AttemptService
             throw new InvalidOperationException("Recall drills can only be completed after every item is rated.");
         }
 
+        if (assessment.AssessmentType is AssessmentType.Glossary)
+        {
+            EnsureGlossaryStudyComplete(assessment, attempt);
+            if (!attempt.QuestionOrder.All(itemId => attempt.RecallItems.Any(item =>
+                string.Equals(item.ItemId, itemId, StringComparison.OrdinalIgnoreCase)
+                && item.Rating is not RecallRating.Unknown)))
+            {
+                throw new InvalidOperationException("Glossaries can only be completed after every drill is rated.");
+            }
+        }
+
         if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration)
         {
             var requiredSections = GetLearningSections(assessment).Where(section => section.Required).ToList();
@@ -641,6 +656,7 @@ public sealed class AttemptService
         return type is AssessmentType.WorkedExample
             or AssessmentType.GuidedProject
             or AssessmentType.RecallDrill
+            or AssessmentType.Glossary
             or AssessmentType.ConceptLesson
             or AssessmentType.InteractiveExploration
             or AssessmentType.DirectedProject;
@@ -648,9 +664,11 @@ public sealed class AttemptService
 
     private static void EnsureLearningAssessment(AssessmentDefinition assessment)
     {
-        if (assessment.AssessmentType is not AssessmentType.ConceptLesson and not AssessmentType.InteractiveExploration)
+        if (assessment.AssessmentType is not AssessmentType.ConceptLesson
+            and not AssessmentType.InteractiveExploration
+            and not AssessmentType.Glossary)
         {
-            throw new InvalidOperationException("Only concept lessons and interactive explorations use learning section state.");
+            throw new InvalidOperationException("Only concept lessons, interactive explorations, and glossaries use learning section state.");
         }
     }
 
@@ -672,8 +690,29 @@ public sealed class AttemptService
             AssessmentType.InteractiveExploration => assessment.Exploration!.Sections
                 .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, section.Check))
                 .ToList(),
+            AssessmentType.Glossary => assessment.Glossary!.Sections
+                .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, null))
+                .ToList(),
             _ => Array.Empty<LearningSectionInfo>()
         };
+    }
+
+    private static void EnsureGlossaryStudyComplete(AssessmentDefinition assessment, Attempt attempt)
+    {
+        if (assessment.AssessmentType is not AssessmentType.Glossary)
+        {
+            return;
+        }
+
+        var incomplete = assessment.Glossary!.Sections
+            .Where(section => section.Required)
+            .Any(section => !attempt.LearningSections.Any(progress =>
+                string.Equals(progress.SectionId, section.Id, StringComparison.OrdinalIgnoreCase)
+                && progress.Completed));
+        if (incomplete)
+        {
+            throw new InvalidOperationException("Review every required glossary section before beginning recall.");
+        }
     }
 
     private static void EnsureLearningSectionUnlocked(AssessmentDefinition assessment, Attempt attempt, string sectionId)

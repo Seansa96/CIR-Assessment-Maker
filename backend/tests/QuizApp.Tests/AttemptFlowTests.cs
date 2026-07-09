@@ -459,6 +459,37 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
+    public async Task Glossary_requires_study_before_recall_and_never_commits_to_grade_log()
+    {
+        var assessment = TestData.GlossaryAssessment();
+        var attemptService = CreateAttemptService(assessment);
+        var gradeService = new GradeLogService(new InMemoryGradeLogRepository(), attemptService);
+        var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        Assert.Equal(AssessmentMode.Practice, attempt.Mode);
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            attemptService.RevealRecallItemAsync(attempt.Id, "acute-recall", "Acute angle"));
+
+        await attemptService.CompleteLearningSectionAsync(attempt.Id, "classifications");
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            attemptService.RevealRecallItemAsync(attempt.Id, "acute-recall", "Acute angle"));
+        var studied = await attemptService.CompleteLearningSectionAsync(attempt.Id, "relationships");
+
+        Assert.Equal(AttemptStatus.InProgress, studied.Status);
+        await attemptService.RevealRecallItemAsync(attempt.Id, "acute-recall", "Acute angle");
+        await attemptService.RateRecallItemAsync(attempt.Id, "acute-recall", RecallRating.Correct);
+        await attemptService.RevealRecallItemAsync(attempt.Id, "vertical-recognition", "Vertical angles");
+        var completed = await attemptService.RateRecallItemAsync(attempt.Id, "vertical-recognition", RecallRating.Easy);
+        var results = await attemptService.GetResultsAsync(attempt.Id);
+
+        Assert.Equal(AttemptStatus.Completed, completed.Status);
+        Assert.Equal(AssessmentType.Glossary, results.AssessmentType);
+        Assert.All(results.LearningSections, section => Assert.True(section.Completed));
+        Assert.Equal(2, results.RecallSummary?.ItemsReviewed);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+    }
+
+    [Fact]
     public async Task DirectedProject_start_and_track_steps()
     {
         var assessment = TestData.DirectedProjectAssessment();
@@ -714,6 +745,80 @@ internal static class TestData
                     "The missing term is the complementary square.",
                     new[] { "trig" })
             }
+        };
+    }
+
+    public static AssessmentDefinition GlossaryAssessment()
+    {
+        var acuteDrill = new RecallItemDefinition(
+            "acute-recall",
+            RecallItemType.Typed,
+            "What angle is less than 90 degrees?",
+            new RecallItemAnswerDefinition("Acute angle", null, Array.Empty<string>(), Array.Empty<MediaAsset>()),
+            "Acute angles are strictly between zero and ninety degrees.",
+            new[] { "acute-angle" });
+        var recognitionDrill = new RecallItemDefinition(
+            "vertical-recognition",
+            RecallItemType.Recognition,
+            "Which opposite angles are congruent?",
+            new RecallItemAnswerDefinition("Vertical angles", null, Array.Empty<string>(), Array.Empty<MediaAsset>()),
+            "Vertical angles are opposite angles at an intersection.",
+            new[] { "vertical-angles" })
+        {
+            ChoiceId = "vertical",
+            Choices = new[]
+            {
+                new ChoiceOption("adjacent", "Adjacent angles", Array.Empty<MediaAsset>()),
+                new ChoiceOption("vertical", "Vertical angles", Array.Empty<MediaAsset>())
+            }
+        };
+
+        return Assessment(AssessmentType.Glossary, Array.Empty<QuestionDefinition>()) with
+        {
+            Id = "geometry-angle-glossary",
+            Title = "Geometry Angle Glossary",
+            RandomizeQuestions = false,
+            Glossary = new GlossaryDefinition(
+                "Study the terms, then recall them.",
+                new[]
+                {
+                    new GlossarySectionDefinition(
+                        "classifications",
+                        "Classifications",
+                        true,
+                        "Classify individual angles.",
+                        new[]
+                        {
+                            new GlossaryEntryDefinition(
+                                "acute",
+                                "Acute Angle",
+                                "An angle between zero and ninety degrees.",
+                                null,
+                                Array.Empty<string>(),
+                                Array.Empty<string>(),
+                                Array.Empty<MediaAsset>(),
+                                new[] { "acute-angle" },
+                                new[] { acuteDrill })
+                        }),
+                    new GlossarySectionDefinition(
+                        "relationships",
+                        "Relationships",
+                        true,
+                        "Compare angle pairs.",
+                        new[]
+                        {
+                            new GlossaryEntryDefinition(
+                                "vertical",
+                                "Vertical Angles",
+                                "Opposite angles formed by intersecting lines.",
+                                null,
+                                Array.Empty<string>(),
+                                Array.Empty<string>(),
+                                Array.Empty<MediaAsset>(),
+                                new[] { "vertical-angles" },
+                                new[] { recognitionDrill })
+                        })
+                })
         };
     }
 

@@ -8,6 +8,7 @@ public enum AssessmentType
     WorkedExample,
     GuidedProject,
     RecallDrill,
+    Glossary,
     ConceptLesson,
     InteractiveExploration,
     DirectedProject
@@ -45,7 +46,8 @@ public enum RecallItemType
     Typed,
     Symbolic,
     Flashcard,
-    Cloze
+    Cloze,
+    Recognition
 }
 
 public sealed record Category(
@@ -94,6 +96,7 @@ public sealed record AssessmentDefinition(
     public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
     public GuidedProjectDefinition? GuidedProject { get; init; }
     public IReadOnlyList<RecallItemDefinition> Items { get; init; } = Array.Empty<RecallItemDefinition>();
+    public GlossaryDefinition? Glossary { get; init; }
     public ConceptLessonDefinition? Lesson { get; init; }
     public InteractiveExplorationDefinition? Exploration { get; init; }
     public DirectedProjectDefinition? DirectedProject { get; init; }
@@ -104,6 +107,28 @@ public sealed record AssessmentDefinition(
 public sealed record ConceptLessonDefinition(
     string Introduction,
     IReadOnlyList<LearningSectionDefinition> Sections);
+
+public sealed record GlossaryDefinition(
+    string Introduction,
+    IReadOnlyList<GlossarySectionDefinition> Sections);
+
+public sealed record GlossarySectionDefinition(
+    string Id,
+    string Title,
+    bool Required,
+    string Content,
+    IReadOnlyList<GlossaryEntryDefinition> Entries);
+
+public sealed record GlossaryEntryDefinition(
+    string Id,
+    string Term,
+    string Definition,
+    string? Notation,
+    IReadOnlyList<string> Examples,
+    IReadOnlyList<string> Aliases,
+    IReadOnlyList<MediaAsset> Media,
+    IReadOnlyList<string> Tags,
+    IReadOnlyList<RecallItemDefinition> Drills);
 
 public sealed record InteractiveExplorationDefinition(
     string Introduction,
@@ -159,6 +184,8 @@ public sealed record RecallItemDefinition(
     IReadOnlyList<string> Tags)
 {
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<ChoiceOption> Choices { get; init; } = Array.Empty<ChoiceOption>();
+    public string? ChoiceId { get; init; }
 }
 
 public sealed record RecallItemAnswerDefinition(

@@ -1,6 +1,6 @@
 # CIR Assessment Maker
 
-CIR Assessment Maker is a local-first quiz, test, Worked Example, Recall Drill, Guided Project, and grade-tracking app for personal STEM study.
+CIR Assessment Maker is a local-first quiz, test, Worked Example, Recall Drill, Glossary, Guided Project, and grade-tracking app for personal STEM study.
 
 The core learning loop is:
 
@@ -30,6 +30,7 @@ Implemented:
 * Quiz and test assessments
 * Schema-only Worked Example assessments
 * Recall Drill assessments
+* Two-phase Glossary assessments
 * Guided Project assessments
 * Resumable attempt sessions
 * Save and quit, quit early, review, delete, and bulk delete attempt flows
@@ -164,6 +165,33 @@ Good for:
 * Definitions and syntax patterns
 * Concept relationships
 * Recognizing which technique applies
+
+### Glossary
+
+Use `glossary` for supplemental vocabulary, notation, and relationship study. Users first review organized entries, then complete a reveal-and-rate recall phase. Glossaries are resumable but never contribute to the grade log.
+
+```yaml
+assessmentType: glossary
+glossary:
+  introduction: Study each term before beginning recall.
+  sections:
+    - id: core-terms
+      title: Core Terms
+      required: true
+      content: Review the defining conditions.
+      entries:
+        - id: vertical-angles
+          term: Vertical Angles
+          definition: Opposite angles formed by intersecting lines.
+          drills:
+            - id: vertical-angles-recall
+              type: typed
+              prompt: What are opposite angles at an intersection called?
+              answer:
+                expected: Vertical angles
+```
+
+Glossary drills support `typed`, `symbolic`, `flashcard`, `cloze`, and `recognition`.
 
 ### Guided Project
 
@@ -309,6 +337,7 @@ Required top-level fields:
 * `workedExamples` for worked examples
 * `guidedProject` for Guided Projects
 * `items` for Recall Drills
+* `glossary` for Glossaries
 
 ## Markdown And LaTeX Formatting
 

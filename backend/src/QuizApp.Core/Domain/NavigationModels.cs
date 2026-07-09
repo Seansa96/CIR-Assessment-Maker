@@ -59,7 +59,7 @@ public static class LearningGoals
 
     public static readonly IReadOnlyList<(string Id, string Label, string[] ActivityTypes)> All =
     [
-        (Learn,    "Learn",    ["conceptLesson", "guidedWorkedExample", "interactiveExploration", "directedProject"]),
+        (Learn,    "Learn",    ["conceptLesson", "glossary", "guidedWorkedExample", "interactiveExploration", "directedProject"]),
         (Recall,   "Recall",   ["recognitionDrill", "clozeDrill", "mixedRecallSet"]),
         (Practice, "Practice", ["focusedPractice", "mixedPractice"]),
         (Apply,    "Apply",    ["guidedProject", "codingApplication", "circuitApplication"]),
@@ -94,6 +94,7 @@ public static class NavigationInference
         {
             AssessmentType.WorkedExample  => (LearningGoals.Learn, "guidedWorkedExample"),
             AssessmentType.ConceptLesson => (LearningGoals.Learn, "conceptLesson"),
+            AssessmentType.Glossary => (LearningGoals.Learn, "glossary"),
             AssessmentType.InteractiveExploration => (LearningGoals.Learn, "interactiveExploration"),
             AssessmentType.DirectedProject => (LearningGoals.Learn, "directedProject"),
             AssessmentType.GuidedProject  => (LearningGoals.Apply, "guidedProject"),

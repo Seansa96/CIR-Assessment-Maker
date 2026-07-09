@@ -66,6 +66,7 @@ Supported assessment types:
 - `workedExample`
 - `guidedProject`
 - `recallDrill`
+- `glossary`
 
 Supported question types:
 
@@ -84,6 +85,7 @@ Important rules:
 - Worked Examples use `workedExamples`.
 - Guided Projects use `guidedProject`.
 - Recall Drills use `items`.
+- Glossaries use `glossary` sections containing entries and recall drills.
 - `attemptQuestionCount` may limit a quiz/test attempt to a sampled subset of a larger authored bank.
 - Randomized question IDs are saved in the attempt and are part of attempt history.
 - Worked Examples and Recall Drills are practice-oriented and follow their dedicated completion rules.

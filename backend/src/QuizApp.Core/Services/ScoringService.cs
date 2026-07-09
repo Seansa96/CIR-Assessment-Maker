@@ -119,7 +119,7 @@ public sealed class ScoringService
 
     public AttemptResults BuildResults(AssessmentDefinition assessment, Attempt attempt)
     {
-        if (assessment.AssessmentType is AssessmentType.RecallDrill)
+        if (assessment.AssessmentType is AssessmentType.RecallDrill or AssessmentType.Glossary)
         {
             return BuildRecallResults(assessment, attempt);
         }
@@ -209,16 +209,25 @@ public sealed class ScoringService
 
     public IReadOnlyList<RecallItemDefinition> GetRecallItems(AssessmentDefinition assessment)
     {
-        return assessment.AssessmentType is AssessmentType.RecallDrill
-            ? assessment.Items.ToList()
-            : Array.Empty<RecallItemDefinition>();
+        return assessment.AssessmentType switch
+        {
+            AssessmentType.RecallDrill => assessment.Items.ToList(),
+            AssessmentType.Glossary => assessment.Glossary!.Sections
+                .SelectMany(section => section.Entries)
+                .SelectMany(entry => entry.Drills)
+                .ToList(),
+            _ => Array.Empty<RecallItemDefinition>()
+        };
     }
 
     private static AttemptResults BuildRecallResults(AssessmentDefinition assessment, Attempt attempt)
     {
         var recallAttempts = attempt.RecallItems.ToDictionary(item => item.ItemId, StringComparer.OrdinalIgnoreCase);
+        var definitions = assessment.AssessmentType is AssessmentType.Glossary
+            ? assessment.Glossary!.Sections.SelectMany(section => section.Entries).SelectMany(entry => entry.Drills).ToList()
+            : assessment.Items.ToList();
         var orderedItems = attempt.QuestionOrder
-            .Select(itemId => assessment.Items.FirstOrDefault(item => string.Equals(item.Id, itemId, StringComparison.OrdinalIgnoreCase)))
+            .Select(itemId => definitions.FirstOrDefault(item => string.Equals(item.Id, itemId, StringComparison.OrdinalIgnoreCase)))
             .OfType<RecallItemDefinition>()
             .ToList();
         var itemResults = orderedItems.Select(item =>
@@ -276,8 +285,43 @@ public sealed class ScoringService
             EarnedPoints = earnedPoints,
             PossiblePoints = possiblePoints,
             RecallSummary = new RecallDrillSummary(reviewedCount, easyCount, correctCount, needsReviewCount, forgotCount, weakTags),
-            RecallItems = itemResults
+            RecallItems = itemResults,
+            LearningSections = assessment.AssessmentType is AssessmentType.Glossary
+                ? BuildGlossaryLearningResults(assessment, attempt)
+                : Array.Empty<LearningSectionResult>()
         };
+    }
+
+    private static IReadOnlyList<LearningSectionResult> BuildGlossaryLearningResults(
+        AssessmentDefinition assessment,
+        Attempt attempt)
+    {
+        var progressBySection = attempt.LearningSections.ToDictionary(
+            section => section.SectionId,
+            StringComparer.OrdinalIgnoreCase);
+        var previousRequiredComplete = true;
+        var results = new List<LearningSectionResult>();
+
+        foreach (var section in assessment.Glossary!.Sections)
+        {
+            progressBySection.TryGetValue(section.Id, out var progress);
+            results.Add(new LearningSectionResult(
+                section.Id,
+                section.Title,
+                section.Required,
+                progress?.Visited == true,
+                false,
+                progress?.Completed == true,
+                previousRequiredComplete,
+                progress?.ControlValues ?? new Dictionary<string, System.Text.Json.JsonElement>(),
+                null));
+            if (section.Required && progress?.Completed != true)
+            {
+                previousRequiredComplete = false;
+            }
+        }
+
+        return results;
     }
 
     private static AttemptResults BuildLearningResults(AssessmentDefinition assessment, Attempt attempt)
@@ -496,7 +540,7 @@ public sealed class ScoringService
             return Array.Empty<AssessmentItem>();
         }
 
-        if (assessment.AssessmentType is AssessmentType.RecallDrill)
+        if (assessment.AssessmentType is AssessmentType.RecallDrill or AssessmentType.Glossary)
         {
             return Array.Empty<AssessmentItem>();
         }

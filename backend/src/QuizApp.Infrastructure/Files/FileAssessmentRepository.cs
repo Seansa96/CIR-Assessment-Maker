@@ -125,6 +125,9 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             AssessmentType.WorkedExample => assessment.WorkedExamples.Sum(example => example.Steps.Count),
             AssessmentType.GuidedProject => assessment.GuidedProject?.RequiredChecks.Count ?? 0,
             AssessmentType.RecallDrill => assessment.Items.Count,
+            AssessmentType.Glossary => assessment.Glossary?.Sections
+                .SelectMany(section => section.Entries)
+                .Sum(entry => entry.Drills.Count) ?? 0,
             AssessmentType.ConceptLesson => assessment.Lesson?.Sections.Count ?? 0,
             AssessmentType.InteractiveExploration => assessment.Exploration?.Sections.Count ?? 0,
             AssessmentType.DirectedProject => assessment.DirectedProject?.Phases.Sum(p => p.Steps.Count) ?? 0,

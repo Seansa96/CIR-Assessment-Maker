@@ -220,7 +220,7 @@ public sealed class NavigationRecommendationService
     {
         return goal switch
         {
-            "learn" => ["conceptLesson", "guidedWorkedExample", "interactiveExploration"],
+            "learn" => ["conceptLesson", "glossary", "guidedWorkedExample", "interactiveExploration"],
             "recall" => ["mixedRecallSet", "clozeDrill", "recognitionDrill"],
             "practice" => ["focusedPractice", "mixedPractice"],
             "apply" => ["guidedProject", "codingApplication", "circuitApplication"],
@@ -234,7 +234,7 @@ public sealed class NavigationRecommendationService
     {
         return goal switch
         {
-            "learn" => ["conceptLesson", "guidedWorkedExample", "interactiveExploration"],
+            "learn" => ["conceptLesson", "glossary", "guidedWorkedExample", "interactiveExploration"],
             "recall" => ["mixedRecallSet", "clozeDrill", "recognitionDrill"],
             "practice" => ["focusedPractice", "mixedPractice"],
             "review" => ["mixedRecallSet", "clozeDrill", "recognitionDrill", "focusedPractice", "mixedPractice", "conceptLesson", "guidedWorkedExample", "interactiveExploration"],

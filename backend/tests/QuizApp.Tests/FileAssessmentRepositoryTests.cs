@@ -358,6 +358,7 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("physics-propagation-of-errors-worked-example")]
     [InlineData("physics-propagation-of-errors-quiz")]
     [InlineData("physics-speed-displacement-basics-quiz")]
+    [InlineData("geometry-angle-relationships-glossary")]
     [InlineData("aops-symbolic-manipulation-worked-example")]
     [InlineData("calc2-integration-geometric-applications-transcribed-test")]
     [InlineData("calc2-practice-test-1-integrals")]

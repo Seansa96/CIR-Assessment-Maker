@@ -23,7 +23,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, conceptLesson, interactiveExploration, or directedProject."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, glossary, conceptLesson, interactiveExploration, or directedProject."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -51,6 +51,12 @@ public sealed class AssessmentValidator
         if (assessment.AssessmentType is AssessmentType.RecallDrill)
         {
             ValidateRecallDrill(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        if (assessment.AssessmentType is AssessmentType.Glossary)
+        {
+            ValidateGlossary(assessment, issues);
             return new AssessmentValidationResult(issues);
         }
 
@@ -124,6 +130,80 @@ public sealed class AssessmentValidator
             "lesson",
             assessment.AssessmentType,
             issues);
+    }
+
+    private static void ValidateGlossary(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        var glossary = assessment.Glossary;
+        if (glossary is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_GLOSSARY", "Glossary assessments must include glossary."));
+            return;
+        }
+
+        if (assessment.ModeDefault is AssessmentMode.Scored)
+        {
+            issues.Add(new ValidationIssue("INVALID_GLOSSARY_MODE", "Glossary assessments must use practice mode."));
+        }
+
+        if (assessment.QuestionTimerSeconds is not null || assessment.AssessmentTimerSeconds is not null)
+        {
+            issues.Add(new ValidationIssue("INVALID_GLOSSARY_TIMER", "Glossary assessments do not support timers."));
+        }
+        if (assessment.AttemptQuestionCount is not null)
+        {
+            issues.Add(new ValidationIssue("INVALID_GLOSSARY_QUESTION_COUNT", "Glossary assessments do not support attemptQuestionCount."));
+        }
+
+        RequireText(glossary.Introduction, "MISSING_GLOSSARY_INTRODUCTION", "Glossaries must include an introduction.", issues);
+        if (glossary.Sections.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_GLOSSARY_SECTIONS", "Glossaries must include at least one section."));
+            return;
+        }
+
+        AddDuplicateIssues(
+            glossary.Sections.Select(section => section.Id),
+            "DUPLICATE_GLOSSARY_SECTION_ID",
+            "Glossary section id",
+            issues);
+        AddDuplicateIssues(
+            glossary.Sections.SelectMany(section => section.Entries).Select(entry => entry.Id),
+            "DUPLICATE_GLOSSARY_ENTRY_ID",
+            "Glossary entry id",
+            issues);
+        AddDuplicateIssues(
+            glossary.Sections.SelectMany(section => section.Entries).SelectMany(entry => entry.Drills).Select(drill => drill.Id),
+            "DUPLICATE_GLOSSARY_DRILL_ID",
+            "Glossary drill id",
+            issues);
+
+        foreach (var section in glossary.Sections)
+        {
+            RequireText(section.Id, "MISSING_GLOSSARY_SECTION_ID", "Glossary sections must include an id.", issues);
+            RequireText(section.Title, "MISSING_GLOSSARY_SECTION_TITLE", "Glossary sections must include a title.", issues, section.Id);
+            if (section.Entries.Count == 0)
+            {
+                issues.Add(new ValidationIssue("MISSING_GLOSSARY_ENTRIES", "Glossary sections must include at least one entry.", section.Id));
+            }
+
+            foreach (var entry in section.Entries)
+            {
+                RequireText(entry.Id, "MISSING_GLOSSARY_ENTRY_ID", "Glossary entries must include an id.", issues);
+                RequireText(entry.Term, "MISSING_GLOSSARY_TERM", "Glossary entries must include a term.", issues, entry.Id);
+                RequireText(entry.Definition, "MISSING_GLOSSARY_DEFINITION", "Glossary entries must include a definition.", issues, entry.Id);
+                ValidateMedia(entry.Media, issues, entry.Id);
+                if (entry.Drills.Count == 0)
+                {
+                    issues.Add(new ValidationIssue("MISSING_GLOSSARY_DRILLS", "Each glossary entry must include at least one drill.", entry.Id));
+                }
+
+                foreach (var drill in entry.Drills)
+                {
+                    ValidateRecallItem(drill, issues, "Glossary drill");
+                }
+            }
+        }
     }
 
     private static void ValidateInteractiveExploration(AssessmentDefinition assessment, List<ValidationIssue> issues)
@@ -319,28 +399,76 @@ public sealed class AssessmentValidator
 
         foreach (var item in assessment.Items)
         {
-            RequireText(item.Id, "MISSING_RECALL_ITEM_ID", "Recall items must include an id.", issues);
-            RequireText(item.Prompt, "MISSING_RECALL_PROMPT", "Recall items must include a prompt.", issues, item.Id);
+            ValidateRecallItem(item, issues, "Recall item");
+        }
+    }
 
-            if (item.Type is RecallItemType.Unknown)
-            {
-                issues.Add(new ValidationIssue("INVALID_RECALL_ITEM_TYPE", "Recall item type must be typed, symbolic, flashcard, or cloze.", item.Id));
-            }
+    private static void ValidateRecallItem(RecallItemDefinition item, List<ValidationIssue> issues, string label)
+    {
+        RequireText(item.Id, "MISSING_RECALL_ITEM_ID", $"{label}s must include an id.", issues);
+        RequireText(item.Prompt, "MISSING_RECALL_PROMPT", $"{label}s must include a prompt.", issues, item.Id);
 
-            if (item.Type is RecallItemType.Symbolic)
-            {
-                RequireText(item.Answer.ExpectedLatex, "MISSING_RECALL_EXPECTED_LATEX", "Symbolic recall items must include answer.expectedLatex.", issues, item.Id);
-            }
-            else if (item.Type is not RecallItemType.Flashcard)
-            {
-                RequireText(item.Answer.Expected, "MISSING_RECALL_EXPECTED", "Recall items must include answer.expected.", issues, item.Id);
-            }
-            else if (string.IsNullOrWhiteSpace(item.Answer.Expected) && string.IsNullOrWhiteSpace(item.Answer.ExpectedLatex))
-            {
-                issues.Add(new ValidationIssue("MISSING_RECALL_EXPECTED", "Flashcard recall items must include answer.expected or answer.expectedLatex.", item.Id));
-            }
+        if (item.Type is RecallItemType.Unknown)
+        {
+            issues.Add(new ValidationIssue("INVALID_RECALL_ITEM_TYPE", "Recall item type must be typed, symbolic, flashcard, cloze, or recognition.", item.Id));
+        }
 
-            ValidateMedia(item.Answer.Media, issues, item.Id);
+        if (item.Type is RecallItemType.Symbolic)
+        {
+            RequireText(item.Answer.ExpectedLatex, "MISSING_RECALL_EXPECTED_LATEX", "Symbolic recall items must include answer.expectedLatex.", issues, item.Id);
+        }
+        else if (item.Type is RecallItemType.Recognition)
+        {
+            if (item.Choices.Count < 2)
+            {
+                issues.Add(new ValidationIssue("MISSING_RECOGNITION_CHOICES", "Recognition items must include at least two choices.", item.Id));
+            }
+            RequireText(item.ChoiceId, "MISSING_RECOGNITION_ANSWER", "Recognition items must include answer.choiceId.", issues, item.Id);
+            if (!string.IsNullOrWhiteSpace(item.ChoiceId)
+                && !item.Choices.Any(choice => string.Equals(choice.Id, item.ChoiceId, StringComparison.OrdinalIgnoreCase)))
+            {
+                issues.Add(new ValidationIssue("RECOGNITION_ANSWER_NOT_FOUND", "Recognition answer.choiceId must match a choice id.", item.Id));
+            }
+        }
+        else if (item.Type is not RecallItemType.Flashcard)
+        {
+            RequireText(item.Answer.Expected, "MISSING_RECALL_EXPECTED", "Recall items must include answer.expected.", issues, item.Id);
+        }
+        else if (string.IsNullOrWhiteSpace(item.Answer.Expected) && string.IsNullOrWhiteSpace(item.Answer.ExpectedLatex))
+        {
+            issues.Add(new ValidationIssue("MISSING_RECALL_EXPECTED", "Flashcard recall items must include answer.expected or answer.expectedLatex.", item.Id));
+        }
+
+        ValidateMedia(item.Answer.Media, issues, item.Id);
+        foreach (var choice in item.Choices)
+        {
+            RequireText(choice.Id, "MISSING_CHOICE_ID", "Recognition choices must include an id.", issues, item.Id);
+            RequireText(choice.Text, "MISSING_CHOICE_TEXT", "Recognition choices must include text.", issues, item.Id);
+            ValidateMedia(choice.Media, issues, item.Id);
+        }
+        foreach (var duplicateChoiceId in item.Choices
+            .Where(choice => !string.IsNullOrWhiteSpace(choice.Id))
+            .GroupBy(choice => choice.Id, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key))
+        {
+            issues.Add(new ValidationIssue("DUPLICATE_RECOGNITION_CHOICE_ID", $"Recognition choice id '{duplicateChoiceId}' is duplicated.", item.Id));
+        }
+    }
+
+    private static void AddDuplicateIssues(
+        IEnumerable<string> ids,
+        string code,
+        string label,
+        List<ValidationIssue> issues)
+    {
+        foreach (var duplicateId in ids
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .GroupBy(id => id, StringComparer.OrdinalIgnoreCase)
+            .Where(group => group.Count() > 1)
+            .Select(group => group.Key))
+        {
+            issues.Add(new ValidationIssue(code, $"{label} '{duplicateId}' is duplicated.", duplicateId));
         }
     }
 

@@ -209,6 +209,9 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
         AssessmentType.WorkedExample => assessment.WorkedExamples.Sum(e => e.Steps.Count),
         AssessmentType.GuidedProject => assessment.GuidedProject?.RequiredChecks.Count ?? 0,
         AssessmentType.RecallDrill   => assessment.Items.Count,
+        AssessmentType.Glossary      => assessment.Glossary?.Sections
+            .SelectMany(section => section.Entries)
+            .Sum(entry => entry.Drills.Count) ?? 0,
         AssessmentType.ConceptLesson => assessment.Lesson?.Sections.Count ?? 0,
         AssessmentType.InteractiveExploration => assessment.Exploration?.Sections.Count ?? 0,
         _                            => assessment.Questions.Count

@@ -137,13 +137,13 @@ public sealed class GradeAnalyticsService
                     .Select(subcategoryId => category?.Subcategories.FirstOrDefault(subcategory => string.Equals(subcategory.Id, subcategoryId, StringComparison.OrdinalIgnoreCase))?.Title ?? subcategoryId)
                     .ToList();
                 var matchingAreas = MatchAreas(assessment, areas).ToList();
-                var correctCount = assessment.AssessmentType is AssessmentType.RecallDrill
+                var correctCount = assessment.AssessmentType is AssessmentType.RecallDrill or AssessmentType.Glossary
                     ? attempt.RecallItems.Count(item => item.Rating is RecallRating.Easy or RecallRating.Correct)
                     : assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration
                         ? attempt.LearningSections.Count(section => section.Completed)
                     : attempt.Answers.Count(answer => answer.Evaluation?.IsCorrect == true);
                 var totalQuestions = attempt.QuestionOrder.Count;
-                var answeredCount = assessment.AssessmentType is AssessmentType.RecallDrill
+                var answeredCount = assessment.AssessmentType is AssessmentType.RecallDrill or AssessmentType.Glossary
                     ? attempt.RecallItems.Count(item => item.Rating is not RecallRating.Unknown)
                     : assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration
                         ? attempt.LearningSections.Count(section => section.Visited)
@@ -425,7 +425,7 @@ public sealed class GradeAnalyticsService
                 .SelectMany(example => example.Steps.Select(step => step.Question.Type))
                 .Distinct()
                 .ToList(),
-            AssessmentType.RecallDrill => Array.Empty<QuestionType>(),
+            AssessmentType.RecallDrill or AssessmentType.Glossary => Array.Empty<QuestionType>(),
             AssessmentType.ConceptLesson => assessment.Lesson is null
                 ? Array.Empty<QuestionType>()
                 : assessment.Lesson.Sections

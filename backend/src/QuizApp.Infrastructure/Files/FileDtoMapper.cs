@@ -74,6 +74,7 @@ public static class FileDtoMapper
             WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList(),
             GuidedProject = dto.GuidedProject is null ? null : ToDomain(dto.GuidedProject),
             Items = (dto.Items ?? new List<RecallItemFileDto>()).Select(ToDomain).ToList(),
+            Glossary = dto.Glossary is null ? null : ToDomain(dto.Glossary),
             Lesson = dto.Lesson is null ? null : ToDomain(dto.Lesson),
             Exploration = dto.Exploration is null ? null : ToDomain(dto.Exploration),
             DirectedProject = dto.DirectedProject is null ? null : ToDomain(dto.DirectedProject),
@@ -104,6 +105,7 @@ public static class FileDtoMapper
             WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList(),
             GuidedProject = assessment.GuidedProject is null ? null : ToDto(assessment.GuidedProject),
             Items = assessment.Items.Select(ToDto).ToList(),
+            Glossary = assessment.Glossary is null ? null : ToDto(assessment.Glossary),
             Lesson = assessment.Lesson is null ? null : ToDto(assessment.Lesson),
             Exploration = assessment.Exploration is null ? null : ToDto(assessment.Exploration),
             DirectedProject = assessment.DirectedProject is null ? null : ToDto(assessment.DirectedProject),
@@ -130,6 +132,58 @@ public static class FileDtoMapper
                     (section.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList(),
                     section.Check is null ? null : ToDomain(section.Check)))
                 .ToList());
+    }
+
+    private static GlossaryDefinition ToDomain(GlossaryFileDto dto)
+    {
+        return new GlossaryDefinition(
+            dto.Introduction ?? string.Empty,
+            (dto.Sections ?? new List<GlossarySectionFileDto>())
+                .Select(section => new GlossarySectionDefinition(
+                    section.Id ?? string.Empty,
+                    section.Title ?? string.Empty,
+                    section.Required ?? true,
+                    section.Content ?? string.Empty,
+                    (section.Entries ?? new List<GlossaryEntryFileDto>())
+                        .Select(entry => new GlossaryEntryDefinition(
+                            entry.Id ?? string.Empty,
+                            entry.Term ?? string.Empty,
+                            entry.Definition ?? string.Empty,
+                            entry.Notation,
+                            entry.Examples ?? new List<string>(),
+                            entry.Aliases ?? new List<string>(),
+                            (entry.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList(),
+                            entry.Tags ?? new List<string>(),
+                            (entry.Drills ?? new List<RecallItemFileDto>()).Select(ToDomain).ToList()))
+                        .ToList()))
+                .ToList());
+    }
+
+    private static GlossaryFileDto ToDto(GlossaryDefinition glossary)
+    {
+        return new GlossaryFileDto
+        {
+            Introduction = glossary.Introduction,
+            Sections = glossary.Sections.Select(section => new GlossarySectionFileDto
+            {
+                Id = section.Id,
+                Title = section.Title,
+                Required = section.Required,
+                Content = section.Content,
+                Entries = section.Entries.Select(entry => new GlossaryEntryFileDto
+                {
+                    Id = entry.Id,
+                    Term = entry.Term,
+                    Definition = entry.Definition,
+                    Notation = entry.Notation,
+                    Examples = entry.Examples.ToList(),
+                    Aliases = entry.Aliases.ToList(),
+                    Media = entry.Media.Select(ToDto).ToList(),
+                    Tags = entry.Tags.ToList(),
+                    Drills = entry.Drills.Select(ToDto).ToList()
+                }).ToList()
+            }).ToList()
+        };
     }
 
     private static ConceptLessonFileDto ToDto(ConceptLessonDefinition lesson)
@@ -247,7 +301,14 @@ public static class FileDtoMapper
             dto.Explanation,
             dto.Tags ?? new List<string>())
         {
-            Skills = dto.Skills ?? new List<string>()
+            Skills = dto.Skills ?? new List<string>(),
+            Choices = (dto.Choices ?? new List<ChoiceFileDto>())
+                .Select(choice => new ChoiceOption(
+                    choice.Id ?? string.Empty,
+                    choice.Text ?? string.Empty,
+                    (choice.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()))
+                .ToList(),
+            ChoiceId = dto.Answer?.ChoiceId
         };
     }
 
@@ -263,11 +324,18 @@ public static class FileDtoMapper
                 Expected = item.Answer.Expected,
                 ExpectedLatex = item.Answer.ExpectedLatex,
                 Aliases = item.Answer.Aliases.ToList(),
-                Media = item.Answer.Media.Select(ToDto).ToList()
+                Media = item.Answer.Media.Select(ToDto).ToList(),
+                ChoiceId = item.ChoiceId
             },
             Explanation = item.Explanation,
             Tags = item.Tags.ToList(),
-            Skills = item.Skills.ToList()
+            Skills = item.Skills.ToList(),
+            Choices = item.Choices.Select(choice => new ChoiceFileDto
+            {
+                Id = choice.Id,
+                Text = choice.Text,
+                Media = choice.Media.Select(ToDto).ToList()
+            }).ToList()
         };
     }
 
@@ -612,6 +680,7 @@ public static class FileDtoMapper
             "workedexample" => AssessmentType.WorkedExample,
             "guidedproject" => AssessmentType.GuidedProject,
             "recalldrill" => AssessmentType.RecallDrill,
+            "glossary" => AssessmentType.Glossary,
             "conceptlesson" => AssessmentType.ConceptLesson,
             "interactiveexploration" => AssessmentType.InteractiveExploration,
             "directedproject" => AssessmentType.DirectedProject,
@@ -627,6 +696,7 @@ public static class FileDtoMapper
             "symbolic" => RecallItemType.Symbolic,
             "flashcard" => RecallItemType.Flashcard,
             "cloze" => RecallItemType.Cloze,
+            "recognition" => RecallItemType.Recognition,
             _ => RecallItemType.Unknown
         };
     }
@@ -680,6 +750,7 @@ public static class FileDtoMapper
             AssessmentType.WorkedExample => "workedExample",
             AssessmentType.GuidedProject => "guidedProject",
             AssessmentType.RecallDrill => "recallDrill",
+            AssessmentType.Glossary => "glossary",
             AssessmentType.ConceptLesson => "conceptLesson",
             AssessmentType.InteractiveExploration => "interactiveExploration",
             AssessmentType.DirectedProject => "directedProject",
@@ -694,6 +765,7 @@ public static class FileDtoMapper
             RecallItemType.Symbolic => "symbolic",
             RecallItemType.Flashcard => "flashcard",
             RecallItemType.Cloze => "cloze",
+            RecallItemType.Recognition => "recognition",
             RecallItemType.Typed => "typed",
             _ => "typed"
         };

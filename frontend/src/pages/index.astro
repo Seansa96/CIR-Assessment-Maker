@@ -349,7 +349,7 @@ import "../styles/global.css";
       import type { SubmittedGraphAnswer, GraphPoint } from "../scripts/GraphingCanvas";
 
       type AssessmentMode = "practice" | "scored";
-      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "conceptLesson" | "interactiveExploration" | "directedProject";
+      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "glossary" | "conceptLesson" | "interactiveExploration" | "directedProject";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit" | "multipart" | "graphingResponse";
 
       interface CircuitQuestionDefinition {
@@ -398,7 +398,7 @@ import "../styles/global.css";
       }
 
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
-      type RecallItemType = "typed" | "symbolic" | "flashcard" | "cloze";
+      type RecallItemType = "typed" | "symbolic" | "flashcard" | "cloze" | "recognition";
       type RecallRating = "unknown" | "easy" | "correct" | "needsReview" | "forgotCompletely";
 
       interface AppSettings {
@@ -665,9 +665,36 @@ import "../styles/global.css";
           expectedLatex?: string | null;
           aliases?: string[];
           media?: MediaAsset[];
+          choiceId?: string | null;
         };
         explanation?: string | null;
         tags: string[];
+        choices?: Choice[];
+      }
+
+      interface GlossaryEntry {
+        id: string;
+        term: string;
+        definition: string;
+        notation?: string | null;
+        examples: string[];
+        aliases: string[];
+        media: MediaAsset[];
+        tags: string[];
+        drills: RecallItem[];
+      }
+
+      interface GlossarySection {
+        id: string;
+        title: string;
+        required: boolean;
+        content: string;
+        entries: GlossaryEntry[];
+      }
+
+      interface Glossary {
+        introduction: string;
+        sections: GlossarySection[];
       }
 
       interface LearningSection {
@@ -781,6 +808,7 @@ import "../styles/global.css";
         workedExamples?: WorkedExample[];
         guidedProject?: GuidedProject | null;
         items?: RecallItem[];
+        glossary?: Glossary | null;
         lesson?: ConceptLesson | null;
         exploration?: InteractiveExploration | null;
         directedProject?: DirectedProject | null;
@@ -1869,6 +1897,7 @@ import "../styles/global.css";
       function activityTypeLabel(activityType: string) {
         return {
           conceptLesson: "Concept Lesson",
+          glossary: "Glossary",
           guidedWorkedExample: "Guided Worked Example",
           interactiveExploration: "Interactive Exploration",
           recognitionDrill: "Recognition Drill",
@@ -2676,7 +2705,7 @@ import "../styles/global.css";
               <div class="history-filter-grid">
                 ${renderHistorySelect("status", "Status", [["", "Any"], ["inProgress", "In progress"], ["paused", "Paused"], ["completed", "Complete"]])}
                 ${renderHistorySelect("mode", "Mode", [["", "Any"], ["practice", "Practice"], ["scored", "Scored"]])}
-                ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"], ["guidedProject", "Guided Project"], ["recallDrill", "Recall Drill"]])}
+                ${renderHistorySelect("assessmentType", "Type", [["", "Any"], ["quiz", "Quiz"], ["test", "Test"], ["workedExample", "Worked Example"], ["guidedProject", "Guided Project"], ["recallDrill", "Recall Drill"], ["glossary", "Glossary"]])}
                 ${renderHistorySelect("categoryId", "Category", [["", "Any"], ...uniqueOptions(analytics.attempts.map((row) => [row.categoryId, row.categoryTitle]))])}
                 ${renderHistorySelect("areaId", "Area", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.areaIds.map((areaId, index) => [areaId, row.areaTitles[index] ?? areaId])))])}
                 ${renderHistorySelect("questionType", "Question Type", [["", "Any"], ...uniqueOptions(analytics.attempts.flatMap((row) => row.questionTypes.map((type) => [type, questionTypeLabel(type)] as [string, string])))])}
@@ -2714,7 +2743,7 @@ import "../styles/global.css";
                     </td>
                     <td>${escapeHtml(modeLabel(attempt.mode))}</td>
                     <td>${escapeHtml(statusLabel(attempt.status))}</td>
-                    <td>${attempt.assessmentType === "recallDrill" ? `${attempt.answeredCount}/${attempt.totalQuestions} rated` : `${attempt.correctCount}/${attempt.totalQuestions} (${attempt.percentScore}%)`}<small>${attempt.answeredCount}/${attempt.totalQuestions} answered</small></td>
+                    <td>${attempt.assessmentType === "recallDrill" || attempt.assessmentType === "glossary" ? `${attempt.answeredCount}/${attempt.totalQuestions} rated` : `${attempt.correctCount}/${attempt.totalQuestions} (${attempt.percentScore}%)`}<small>${attempt.answeredCount}/${attempt.totalQuestions} answered</small></td>
                     <td>${formatDate(attempt.lastActivityAt ?? attempt.startedAt)}</td>
                     <td class="table-actions">${renderAttemptActions(attempt)}</td>
                   </tr>
@@ -2856,6 +2885,18 @@ import "../styles/global.css";
       }
 
       function firstUnansweredIndex(results: AttemptResults, attempt: Attempt) {
+        if (results.assessmentType === "glossary") {
+          const sections = state.assessment?.glossary?.sections ?? [];
+          const firstIncomplete = results.learningSections.find((section) => section.unlocked && !section.completed);
+          if (firstIncomplete) {
+            const index = sections.findIndex((section) => section.id === firstIncomplete.sectionId);
+            return index < 0 ? 0 : index;
+          }
+          const firstUnrated = attempt.questionOrder.findIndex((itemId) =>
+            results.recallItems.find((item) => item.itemId === itemId)?.rating === "unknown");
+          return firstUnrated < 0 ? 0 : firstUnrated;
+        }
+
         if (results.assessmentType === "conceptLesson" || results.assessmentType === "interactiveExploration") {
           const firstIncomplete = results.learningSections.find((section) => section.unlocked && !section.completed);
           const index = attempt.questionOrder.findIndex((sectionId) => sectionId === firstIncomplete?.sectionId);
@@ -3735,6 +3776,11 @@ import "../styles/global.css";
           return;
         }
 
+        if (state.assessment.assessmentType === "glossary") {
+          await renderGlossarySession();
+          return;
+        }
+
         if (state.assessment.assessmentType === "conceptLesson" || state.assessment.assessmentType === "interactiveExploration") {
           await renderCurrentLearningSection();
           return;
@@ -3836,6 +3882,114 @@ import "../styles/global.css";
         setupSelfCheckButtons();
         setupCircuitEditor(question, results?.submittedAnswer ?? null);
         setupGraphingEditor(question, results?.submittedAnswer ?? null);
+      }
+
+      async function renderGlossarySession() {
+        if (!state.attempt || !state.assessment?.glossary) return;
+        if (!state.latestResults) {
+          state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+        }
+
+        const glossary = state.assessment.glossary;
+        const requiredStudyComplete = glossary.sections
+          .filter((section) => section.required)
+          .every((section) => state.latestResults!.learningSections
+            .some((progress) => progress.sectionId === section.id && progress.completed));
+        if (requiredStudyComplete) {
+          const nextUnrated = state.attempt.questionOrder.findIndex((itemId) =>
+            state.latestResults!.recallItems.find((item) => item.itemId === itemId)?.rating === "unknown");
+          if (nextUnrated >= 0 && state.currentIndex >= state.attempt.questionOrder.length) {
+            state.currentIndex = nextUnrated;
+          }
+          await renderCurrentRecallItem();
+          return;
+        }
+
+        const section = glossary.sections[state.currentIndex] ?? glossary.sections[0];
+        if (!section) return;
+        let progress = state.latestResults.learningSections.find((item) => item.sectionId === section.id);
+        if (!progress?.visited) {
+          await saveLearningSectionState(section.id, true, false, {});
+          progress = state.latestResults?.learningSections.find((item) => item.sectionId === section.id);
+        }
+        const intro = state.currentIndex === 0 ? await renderMarkdown(glossary.introduction) : "";
+        const content = await renderMarkdown(section.content ?? "");
+        const entries = await Promise.all(section.entries.map(async (entry) => {
+          const definition = await renderMarkdown(entry.definition);
+          const notation = entry.notation ? await renderMarkdown(entry.notation) : "";
+          const examples = await Promise.all((entry.examples ?? []).map((example) => renderMarkdown(example)));
+          return `
+            <article class="glossary-entry">
+              <header>
+                <h3>${escapeHtml(entry.term)}</h3>
+                ${(entry.aliases ?? []).length ? `<span>${entry.aliases.map(escapeHtml).join(", ")}</span>` : ""}
+              </header>
+              <div class="markdown">${definition}</div>
+              ${notation ? `<div class="glossary-notation markdown">${notation}</div>` : ""}
+              ${examples.length ? `<div class="glossary-examples"><strong>Examples</strong>${examples.map((example) => `<div class="markdown">${example}</div>`).join("")}</div>` : ""}
+              ${renderMedia(entry.media ?? [])}
+            </article>
+          `;
+        }));
+
+        attemptContent.classList.remove("empty-state");
+        attemptContent.innerHTML = `
+          <div class="learning-session-shell glossary-session-shell">
+            <aside class="learning-progress" aria-label="Glossary sections">
+              <p class="eyebrow">Glossary · Study</p>
+              <h2>${escapeHtml(state.assessment.title)}</h2>
+              <ol>
+                ${glossary.sections.map((candidate, index) => {
+                  const candidateProgress = state.latestResults!.learningSections.find((item) => item.sectionId === candidate.id);
+                  return `<li class="${candidateProgress?.completed ? "complete" : ""} ${index === state.currentIndex ? "current" : ""} ${!candidateProgress?.unlocked ? "locked" : ""}">
+                    <button type="button" data-glossary-section-index="${index}" ${candidateProgress?.unlocked ? "" : "disabled"} aria-current="${index === state.currentIndex ? "step" : "false"}">
+                      <span>${candidateProgress?.completed ? "&#10003;" : index + 1}</span>
+                      ${escapeHtml(candidateProgress?.unlocked ? candidate.title : "Locked section")}
+                    </button>
+                  </li>`;
+                }).join("")}
+              </ol>
+              <p class="muted">Review every required section before beginning recall.</p>
+            </aside>
+            <section class="learning-section">
+              ${intro ? `<div class="learning-introduction markdown">${intro}</div>` : ""}
+              <article class="learning-card glossary-study-card">
+                <div class="question-header"><span>${state.currentIndex + 1} of ${glossary.sections.length}</span><strong>${section.required ? "Required" : "Optional"}</strong></div>
+                <h2>${escapeHtml(section.title)}</h2>
+                ${content ? `<div class="markdown learning-content">${content}</div>` : ""}
+                <div class="glossary-entry-list">${entries.join("")}</div>
+                <div class="assessment-control-bar">
+                  <div class="button-row">
+                    <button type="button" id="previous-glossary-section" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Section</button>
+                    <button class="primary chunky" type="button" id="complete-glossary-section">${state.currentIndex === glossary.sections.length - 1 ? "Begin Recall" : "Mark Reviewed and Continue"}</button>
+                    ${renderDevAssessmentRefreshButton()}
+                    <button type="button" id="pause-attempt">Save and Quit</button>
+                  </div>
+                  <div class="button-row terminal-actions">
+                    <button class="chunky danger-action" type="button" id="abandon-attempt">Quit Early</button>
+                  </div>
+                </div>
+              </article>
+            </section>
+          </div>
+        `;
+
+        document.querySelector<HTMLButtonElement>("#previous-glossary-section")?.addEventListener("click", () => {
+          state.currentIndex = Math.max(0, state.currentIndex - 1);
+          void renderGlossarySession();
+        });
+        document.querySelector<HTMLButtonElement>("#complete-glossary-section")?.addEventListener("click", () => {
+          void completeLearningSection(section.id);
+        });
+        document.querySelectorAll<HTMLButtonElement>("[data-glossary-section-index]").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.currentIndex = Number(button.dataset.glossarySectionIndex ?? state.currentIndex);
+            void renderGlossarySession();
+          });
+        });
+        document.querySelector<HTMLButtonElement>("#pause-attempt")?.addEventListener("click", pauseAttempt);
+        document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
+        setupDevAssessmentRefresh();
       }
 
       function getLearningSections() {
@@ -4119,6 +4273,14 @@ import "../styles/global.css";
             updateActiveAttemptChip("Complete");
             await renderResults(false);
             await loadGrades();
+            return;
+          }
+          if (state.assessment?.assessmentType === "glossary") {
+            const sections = state.assessment.glossary?.sections ?? [];
+            const nextIncomplete = sections.findIndex((section) =>
+              !response.results.learningSections.find((item) => item.sectionId === section.id)?.completed);
+            state.currentIndex = nextIncomplete >= 0 ? nextIncomplete : 0;
+            await renderGlossarySession();
             return;
           }
           state.currentIndex = firstUnansweredIndex(response.results, response.attempt);
@@ -4573,7 +4735,7 @@ import "../styles/global.css";
       async function renderCurrentRecallItem() {
         if (!state.attempt || !state.assessment) return;
         const itemId = state.attempt.questionOrder[state.currentIndex];
-        const item = state.assessment.items?.find((candidate) => candidate.id === itemId);
+        const item = getRecallItems().find((candidate) => candidate.id === itemId);
         if (!item) {
           attemptContent.innerHTML = `<div class="empty-state">Recall item could not be found.</div>`;
           return;
@@ -4595,7 +4757,7 @@ import "../styles/global.css";
         attemptContent.innerHTML = `
           <div class="recall-shell">
             <aside class="recall-progress">
-              <p class="eyebrow">Recall Drill</p>
+              <p class="eyebrow">${state.assessment.assessmentType === "glossary" ? "Glossary · Recall" : "Recall Drill"}</p>
               <h2>${escapeHtml(state.assessment.title)}</h2>
               <p>${state.currentIndex + 1} of ${state.attempt.questionOrder.length}</p>
               <div class="question-jump-grid recall-jump-grid">
@@ -4676,6 +4838,16 @@ import "../styles/global.css";
           void renderCurrentRecallItem();
         });
         document.querySelector<HTMLButtonElement>("#reveal-recall-answer")?.addEventListener("click", revealCurrentRecallItem);
+        document.querySelectorAll<HTMLButtonElement>("[data-recall-choice]").forEach((button) => {
+          button.addEventListener("click", () => {
+            document.querySelectorAll<HTMLButtonElement>("[data-recall-choice]").forEach((candidate) => {
+              const selected = candidate === button;
+              candidate.classList.toggle("selected", selected);
+              candidate.dataset.selected = String(selected);
+              candidate.setAttribute("aria-checked", String(selected));
+            });
+          });
+        });
         document.querySelectorAll<HTMLButtonElement>("[data-recall-rating]").forEach((button) => {
           button.addEventListener("click", () => rateCurrentRecallItem(button.dataset.recallRating as RecallRating));
         });
@@ -4688,6 +4860,15 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
         setupDevAssessmentRefresh();
+      }
+
+      function getRecallItems() {
+        if (state.assessment?.assessmentType === "glossary") {
+          return state.assessment.glossary?.sections
+            .flatMap((section) => section.entries)
+            .flatMap((entry) => entry.drills) ?? [];
+        }
+        return state.assessment?.items ?? [];
       }
 
       function renderGuidedProjectChecks(checks: GuidedProjectCheck[], results: GuidedProjectCheckResult[], required: boolean) {
@@ -4872,9 +5053,10 @@ import "../styles/global.css";
         const results = state.latestResults;
         const isWorkedExample = results.assessmentType === "workedExample";
         const isRecallDrill = results.assessmentType === "recallDrill";
+        const isGlossary = results.assessmentType === "glossary";
         const isLearningSession = results.assessmentType === "conceptLesson" || results.assessmentType === "interactiveExploration";
-        const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject" || isRecallDrill || isLearningSession;
-        if (isRecallDrill) {
+        const isInstructionalSession = results.assessmentType === "workedExample" || results.assessmentType === "guidedProject" || isRecallDrill || isGlossary || isLearningSession;
+        if (isRecallDrill || isGlossary) {
           await renderRecallResults(results, alreadyCommitted);
           return;
         }
@@ -5031,6 +5213,7 @@ import "../styles/global.css";
       }
 
       async function renderRecallResults(results: AttemptResults, alreadyCommitted: boolean) {
+        const isGlossary = results.assessmentType === "glossary";
         const summary = results.recallSummary;
         const itemHtml = await Promise.all(results.recallItems.map(async (item) => {
           const promptHtml = await renderMarkdown(item.prompt);
@@ -5057,9 +5240,9 @@ import "../styles/global.css";
         attemptContent.innerHTML = `
           <div class="results-header">
             <h2>${escapeHtml(results.assessmentTitle)}</h2>
-            <div class="score-badge">${results.percentScore}%</div>
+            <div class="score-badge">${isGlossary ? "Complete" : `${results.percentScore}%`}</div>
           </div>
-          <p class="muted">Recall Drill. Status: ${escapeHtml(statusLabel(results.status))}.</p>
+          <p class="muted">${isGlossary ? "Glossary recall summary" : "Recall Drill"}. Status: ${escapeHtml(statusLabel(results.status))}.</p>
           ${summary ? `
             <div class="metric-row recall-summary-row">
               <div><span>${summary.itemsReviewed}</span><small>Items reviewed</small></div>
@@ -5078,10 +5261,10 @@ import "../styles/global.css";
           <div class="result-list">
             ${itemHtml.join("")}
           </div>
-          ${(summary?.itemsReviewed ?? 0) < results.totalQuestions ? `<p class="feedback incorrect">Resolve all recall ratings before committing this score.</p>` : ""}
-          ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
+          ${(summary?.itemsReviewed ?? 0) < results.totalQuestions ? `<p class="feedback incorrect">Rate every recall item to complete this session.</p>` : ""}
+          ${alreadyCommitted && !isGlossary ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
           <div class="button-row" style="margin-top: 1rem;">
-            ${!alreadyCommitted && (summary?.itemsReviewed ?? 0) >= results.totalQuestions && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+            ${!isGlossary && !alreadyCommitted && (summary?.itemsReviewed ?? 0) >= results.totalQuestions && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
             <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>
@@ -5723,6 +5906,29 @@ import "../styles/global.css";
           `;
         }
 
+        if (item.type === "recognition") {
+          const choices = state.attempt
+            ? seededShuffle(item.choices ?? [], `${state.attempt.id}:${item.id}:recognition`)
+            : item.choices ?? [];
+          return `
+            <div class="choice-card-list" role="radiogroup" aria-label="Recognition choices">
+              ${choices.map((choice, index) => {
+                const selected = value === choice.text;
+                return `<button
+                  type="button"
+                  class="choice-card ${selected ? "selected" : ""}"
+                  data-recall-choice="${escapeHtml(choice.id)}"
+                  data-recall-choice-value="${escapeHtml(choice.text)}"
+                  data-selected="${selected}"
+                  aria-checked="${selected}"
+                  role="radio"
+                  ${isRevealed ? "disabled" : ""}
+                ><span class="choice-indicator">${choiceShortcut(index)}</span><span>${escapeHtml(choice.text)}</span></button>`;
+              }).join("")}
+            </div>
+          `;
+        }
+
         return `
           <div class="field">
             <label for="recall-response">${item.type === "cloze" ? "Missing text" : "Your recall attempt"}</label>
@@ -5732,6 +5938,10 @@ import "../styles/global.css";
       }
 
       function readRecallResponse() {
+        const selectedChoice = document.querySelector<HTMLButtonElement>("[data-recall-choice][data-selected='true']");
+        if (selectedChoice) {
+          return selectedChoice.dataset.recallChoiceValue ?? "";
+        }
         const mathField = document.querySelector<HTMLElement & { value?: string }>("#recall-response");
         if (mathField?.tagName.toLowerCase() === "math-field") {
           return mathField.value ?? mathField.textContent ?? "";
@@ -6020,7 +6230,7 @@ import "../styles/global.css";
 
       function handleAnswerShortcut(event: KeyboardEvent) {
         if (!state.attempt || !state.assessment) return;
-        if (state.assessment.assessmentType === "guidedProject" || state.assessment.assessmentType === "recallDrill") return;
+        if (state.assessment.assessmentType === "guidedProject" || state.assessment.assessmentType === "recallDrill" || state.assessment.assessmentType === "glossary") return;
 
         const target = event.target as HTMLElement;
         if (target.matches("input, textarea, select, math-field")) return;
@@ -6065,7 +6275,7 @@ import "../styles/global.css";
           throw new Error("Guided projects do not use question navigation.");
         }
 
-        if (state.assessment?.assessmentType === "recallDrill") {
+        if (state.assessment?.assessmentType === "recallDrill" || state.assessment?.assessmentType === "glossary") {
           throw new Error("Recall drills do not use quiz question navigation.");
         }
 
@@ -6129,6 +6339,11 @@ import "../styles/global.css";
           return assessment.items?.map((item) => item.id) ?? [];
         }
 
+        if (assessment.assessmentType === "glossary") {
+          return assessment.glossary?.sections.flatMap((section) =>
+            section.entries.flatMap((entry) => entry.drills.map((drill) => drill.id))) ?? [];
+        }
+
         if (assessment.assessmentType === "conceptLesson") {
           return assessment.lesson?.sections.map((section) => section.id) ?? [];
         }
@@ -6161,6 +6376,7 @@ import "../styles/global.css";
           workedExample: "Worked Example",
           guidedProject: "Guided Project",
           recallDrill: "Recall Drill",
+          glossary: "Glossary",
           conceptLesson: "Concept Lesson",
           interactiveExploration: "Interactive Exploration"
         }[type] ?? "Assessment";
@@ -6171,7 +6387,8 @@ import "../styles/global.css";
           typed: "Typed Recall",
           symbolic: "Symbolic Recall",
           flashcard: "Flashcard",
-          cloze: "Cloze"
+          cloze: "Cloze",
+          recognition: "Recognition"
         }[type] ?? "Recall";
       }
 

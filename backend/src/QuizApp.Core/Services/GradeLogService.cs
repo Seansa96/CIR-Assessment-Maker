@@ -24,6 +24,7 @@ public sealed class GradeLogService
 
         if (results.AssessmentType is AssessmentType.WorkedExample
             or AssessmentType.GuidedProject
+            or AssessmentType.Glossary
             or AssessmentType.ConceptLesson
             or AssessmentType.InteractiveExploration
             or AssessmentType.DirectedProject)
