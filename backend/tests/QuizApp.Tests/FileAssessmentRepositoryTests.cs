@@ -386,6 +386,9 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("aops-identity-engineering-interactive-exploration")]
     [InlineData("aops-identity-engineering-worked-example")]
     [InlineData("aops-identity-engineering-quiz")]
+    [InlineData("calc2-sequence-fundamentals-deep-concept-lesson")]
+    [InlineData("calc2-intro-to-sequences-worked-example")]
+    [InlineData("calc2-sequences-glossary")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(

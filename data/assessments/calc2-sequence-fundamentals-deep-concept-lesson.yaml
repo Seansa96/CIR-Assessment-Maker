@@ -1,0 +1,274 @@
+schemaVersion: 1
+id: calc2-sequence-fundamentals-deep-concept-lesson
+title: Sequence Fundamentals Deep Dive
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - sequences-series
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - sequences
+    - sequence-notation
+    - sequence-limits
+    - monotonicity
+    - boundedness
+skills:
+  - sequences
+lesson:
+  introduction: |
+    This lesson strengthens the first layer of infinite-series work: understanding sequences before summing them. A sequence is a discrete list of terms, so the main questions are:
+
+    - How do I generate terms from a formula?
+    - How do I infer a formula from a pattern?
+    - Do the terms approach a stable value?
+    - Is the sequence increasing, decreasing, bounded, or oscillating?
+
+    Those questions become the foundation for deciding whether infinite series can converge later.
+  sections:
+    - id: sequence-notation-and-indexing
+      title: Sequence Notation and Indexing
+      required: true
+      content: |
+        A sequence is written as an ordered list:
+
+        $$
+        \{a_1,a_2,a_3,\dots\}.
+        $$
+
+        The subscript is the **index**. The expression $a_n$ means "the term in position $n$." For example, if
+
+        $$
+        a_n=3n-2,
+        $$
+
+        then $a_1=1$, $a_2=4$, $a_3=7$, and so on. The formula does not describe a continuous curve you can use at every real number; it describes values at integer inputs.
+      check:
+        id: sequence-notation-and-indexing-check
+        type: numericResponse
+        prompt: 'If $a_n=3n-2$, what is $a_5$?'
+        answer:
+          value: 13
+          tolerance: 0
+        explanation: |
+          Substitute the index $n=5$:
+
+          $$
+          a_5=3(5)-2=13.
+          $$
+
+          Related topic: sequence notation and term generation.
+    - id: generating-terms-from-formulas
+      title: Generating Terms from Formulas
+      required: true
+      content: |
+        To list terms, substitute $n=1,2,3,\dots$ unless the problem tells you a different starting index.
+
+        Some formulas reveal behavior quickly:
+
+        $$
+        a_n=\cos\left(\frac{n\pi}{2}\right)
+        $$
+
+        gives
+
+        $$
+        0,-1,0,1,0,\dots
+        $$
+
+        because the cosine input advances by quarter turns around the unit circle. This sequence does not settle toward one number; it cycles.
+      check:
+        id: generating-terms-from-formulas-check
+        type: multipleChoice
+        prompt: 'What are the first four terms of $a_n=\cos\left(\frac{n\pi}{2}\right)$, starting at $n=1$?'
+        choices:
+          - id: a
+            text: '$1,0,-1,0$'
+          - id: b
+            text: '$0,-1,0,1$'
+          - id: c
+            text: '$0,1,0,-1$'
+          - id: d
+            text: '$-1,0,1,0$'
+        answer:
+          choiceId: b
+        explanation: |
+          Evaluate at $n=1,2,3,4$:
+
+          $$
+          \cos\frac{\pi}{2}=0,\quad
+          \cos\pi=-1,\quad
+          \cos\frac{3\pi}{2}=0,\quad
+          \cos 2\pi=1.
+          $$
+
+          Related topic: using the unit circle to understand oscillating sequences.
+    - id: finding-general-terms
+      title: Finding a General Term from a Pattern
+      required: true
+      content: |
+        When a problem gives only the first few terms, look for separate patterns in:
+
+        - numerator,
+        - denominator,
+        - signs,
+        - powers,
+        - shifts from the index $n$.
+
+        For example,
+
+        $$
+        \left\{\frac{3}{16},\frac{4}{25},\frac{5}{36},\frac{6}{49},\dots\right\}
+        $$
+
+        has numerator $n+2$ and denominator $(n+3)^2$, so one possible formula is
+
+        $$
+        a_n=\frac{n+2}{(n+3)^2}.
+        $$
+      check:
+        id: finding-general-terms-check
+        type: multipleChoice
+        prompt: 'Which formula matches $\left\{\frac{2}{3},\frac{4}{9},\frac{2}{9},\frac{8}{81},\frac{10}{243},\dots\right\}$?'
+        choices:
+          - id: a
+            text: '$a_n=\frac{2n}{3^n}$'
+          - id: b
+            text: '$a_n=\frac{n}{3n}$'
+          - id: c
+            text: '$a_n=\frac{2^n}{3^n}$'
+          - id: d
+            text: '$a_n=\frac{n+1}{3^{n+1}}$'
+        answer:
+          choiceId: a
+        explanation: |
+          The expression $\frac{2n}{3^n}$ gives
+
+          $$
+          \frac{2}{3},\frac{4}{9},\frac{6}{27},\frac{8}{81},\frac{10}{243},\dots
+          $$
+
+          and $\frac{6}{27}$ reduces to $\frac{2}{9}$. Related topic: detecting reducible terms when finding a general formula.
+    - id: convergence-through-limits
+      title: Convergence Through Limits
+      required: true
+      content: |
+        A sequence converges if its terms approach one real number:
+
+        $$
+        \lim_{n\to\infty}a_n=L.
+        $$
+
+        A useful theorem lets you borrow continuous-function limit techniques:
+
+        If $f(n)=a_n$ for integer $n$ and
+
+        $$
+        \lim_{x\to\infty}f(x)=L,
+        $$
+
+        then
+
+        $$
+        \lim_{n\to\infty}a_n=L.
+        $$
+
+        This is why rational-function limits, logarithmic limits, and sometimes L'Hospital's Rule can help with sequences.
+      check:
+        id: convergence-through-limits-check
+        type: numericResponse
+        prompt: 'What does $a_n=\frac{4n-3}{3n+4}$ converge to?'
+        answer:
+          value: 1.3333333333
+          tolerance: 0.001
+        explanation: |
+          Divide numerator and denominator by $n$:
+
+          $$
+          \frac{4-\frac{3}{n}}{3+\frac{4}{n}}\to \frac{4}{3}.
+          $$
+
+          Related topic: rational sequence limits and leading coefficient comparison.
+    - id: growth-types-and-oscillation
+      title: Growth Types and Oscillation
+      required: true
+      content: |
+        Not every divergence looks the same.
+
+        A sequence may diverge because it grows without bound:
+
+        $$
+        a_n=5n\to\infty.
+        $$
+
+        It may converge because exponential decay shrinks:
+
+        $$
+        a_n=(0.2)^n\to 0.
+        $$
+
+        It may diverge by oscillation:
+
+        $$
+        a_n=\sin\left(\frac{n\pi}{2}\right)
+        $$
+
+        cycles through values instead of approaching one number.
+      check:
+        id: growth-types-and-oscillation-check
+        type: multipleChoice
+        prompt: 'What happens to $a_n=(-1.3)^n$ as $n\to\infty$?'
+        choices:
+          - id: a
+            text: It converges to $0$.
+          - id: b
+            text: It converges to $-1.3$.
+          - id: c
+            text: It diverges because the magnitude grows while signs alternate.
+          - id: d
+            text: It converges to $1$.
+        answer:
+          choiceId: c
+        explanation: |
+          Since $|-1.3|>1$, the magnitude grows without bound. The negative base makes signs alternate, so the sequence does not approach one real number.
+
+          Related topic: exponential sequence convergence based on $|r|$.
+    - id: monotonicity-and-bounds
+      title: Monotonicity and Boundedness
+      required: true
+      content: |
+        A sequence is **increasing** if $a_n<a_{n+1}$ for every relevant $n$, and **decreasing** if $a_n>a_{n+1}$ for every relevant $n$.
+
+        It is **monotonic** if it is increasing or decreasing.
+
+        A sequence is **bounded above** if every term is at most some number $M$, and **bounded below** if every term is at least some number $m$. If it has both kinds of bounds, it is bounded.
+
+        For example,
+
+        $$
+        a_n=\frac{1}{5n}
+        $$
+
+        is decreasing, bounded above by $\frac{1}{5}$, and bounded below by $0$.
+      check:
+        id: monotonicity-and-bounds-check
+        type: multipleChoice
+        prompt: 'Which description fits $a_n=\sin\left(\frac{n\pi}{2}\right)$?'
+        choices:
+          - id: a
+            text: Increasing and unbounded.
+          - id: b
+            text: Decreasing and bounded below only.
+          - id: c
+            text: Not monotonic, but bounded between $-1$ and $1$.
+          - id: d
+            text: Monotonic and convergent.
+        answer:
+          choiceId: c
+        explanation: |
+          The values cycle through $1,0,-1,0,\dots$ or a shifted version depending on the starting index. They do not consistently rise or fall, but sine values always stay between $-1$ and $1$.
+
+          Related topic: distinguishing boundedness from convergence.
