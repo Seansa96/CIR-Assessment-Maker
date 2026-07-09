@@ -120,7 +120,7 @@ public sealed class GradeAnalyticsServiceTests
             new AnalyticsCategoryRepository(),
             new AnalyticsAreaRepository(),
             new DummyNavigationCatalogService(),
-            new ScoringService(null!, null!, null!));
+            new ScoringService(null!, null!, null!, null!));
     }
 
     private sealed class DummyNavigationCatalogService : INavigationCatalogService

@@ -7,15 +7,18 @@ public sealed class ScoringService
     private readonly ICodeQuestionScorer codeQuestionScorer;
     private readonly ISymbolicExpressionScorer symbolicExpressionScorer;
     private readonly ICircuitQuestionScorer circuitQuestionScorer;
+    private readonly IGraphingQuestionScorer graphingQuestionScorer;
 
     public ScoringService(
         ICodeQuestionScorer codeQuestionScorer,
         ISymbolicExpressionScorer symbolicExpressionScorer,
-        ICircuitQuestionScorer circuitQuestionScorer)
+        ICircuitQuestionScorer circuitQuestionScorer,
+        IGraphingQuestionScorer graphingQuestionScorer)
     {
         this.codeQuestionScorer = codeQuestionScorer;
         this.symbolicExpressionScorer = symbolicExpressionScorer;
         this.circuitQuestionScorer = circuitQuestionScorer;
+        this.graphingQuestionScorer = graphingQuestionScorer;
     }
 
     public async Task<AnswerEvaluation> ScoreQuestionAsync(QuestionDefinition question, SubmittedAnswer submittedAnswer, AppSettings settings, CancellationToken cancellationToken = default)
@@ -30,6 +33,7 @@ public sealed class ScoringService
             QuestionType.Code => await codeQuestionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
             QuestionType.SymbolicResponse => await symbolicExpressionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
             QuestionType.Circuit => await circuitQuestionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
+            QuestionType.GraphingResponse => await graphingQuestionScorer.ScoreAsync(question, submittedAnswer, settings, cancellationToken),
             _ => ScoreSynchronousAnswer(question, submittedAnswer)
         };
 

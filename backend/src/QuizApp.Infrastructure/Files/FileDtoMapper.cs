@@ -511,7 +511,8 @@ public static class FileDtoMapper
                 SymbolicVariables = dto.Answer?.Variables ?? new List<string>(),
                 SymbolicTolerance = dto.Answer?.Tolerance,
                 KeyPoints = dto.Answer?.KeyPoints ?? new List<string>(),
-                CircuitAnswer = ToDomain(dto.Answer?.CircuitAnswer)
+                CircuitAnswer = ToDomain(dto.Answer?.CircuitAnswer),
+                GraphingAnswer = ToDomain(dto.Answer?.GraphingAnswer)
             },
             dto.Explanation,
             (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
@@ -548,7 +549,8 @@ public static class FileDtoMapper
                 Tolerance = question.Answer.NumericTolerance ?? question.Answer.SymbolicTolerance ?? question.Answer.Tolerance,
                 Media = question.Answer.Media.Select(ToDto).ToList(),
                 KeyPoints = question.Answer.KeyPoints.ToList(),
-                CircuitAnswer = ToDto(question.Answer.CircuitAnswer)
+                CircuitAnswer = ToDto(question.Answer.CircuitAnswer),
+                GraphingAnswer = ToDto(question.Answer.GraphingAnswer)
             },
             Explanation = question.Explanation,
             Media = question.Media.Select(ToDto).ToList(),
@@ -640,6 +642,8 @@ public static class FileDtoMapper
             "code" => QuestionType.Code,
             "symbolicresponse" => QuestionType.SymbolicResponse,
             "circuit" => QuestionType.Circuit,
+            "multipart" => QuestionType.Multipart,
+            "graphingresponse" => QuestionType.GraphingResponse,
             _ => QuestionType.Unknown
         };
     }
@@ -705,6 +709,8 @@ public static class FileDtoMapper
             QuestionType.Code => "code",
             QuestionType.SymbolicResponse => "symbolicResponse",
             QuestionType.Circuit => "circuit",
+            QuestionType.Multipart => "multipart",
+            QuestionType.GraphingResponse => "graphingResponse",
             _ => "multipleChoice"
         };
     }
@@ -837,6 +843,27 @@ public static class FileDtoMapper
         );
     }
 
+    private static GraphingAnswerDefinition? ToDomain(GraphingAnswerFileDto? dto)
+    {
+        if (dto is null) return null;
+        return new GraphingAnswerDefinition(
+            (dto.Features ?? new List<ExpectedGraphFeatureFileDto>()).Select(ToDomain).ToList()
+        );
+    }
+
+    private static ExpectedGraphFeature ToDomain(ExpectedGraphFeatureFileDto dto)
+    {
+        return new ExpectedGraphFeature(
+            dto.Type ?? string.Empty,
+            dto.X,
+            dto.Y,
+            dto.Value,
+            dto.StringValue,
+            dto.Tolerance ?? 0,
+            dto.Weight ?? 0
+        );
+    }
+
     private static CircuitQuestionFileDto? ToDto(CircuitQuestionDefinition? domain)
     {
         if (domain is null) return null;
@@ -966,6 +993,29 @@ public static class FileDtoMapper
             SymbolicEquivalenceMode = domain.SymbolicEquivalenceMode,
             SymbolicVariables = domain.SymbolicVariables?.ToList(),
             SymbolicTolerance = domain.SymbolicTolerance
+        };
+    }
+
+    private static GraphingAnswerFileDto? ToDto(GraphingAnswerDefinition? domain)
+    {
+        if (domain is null) return null;
+        return new GraphingAnswerFileDto
+        {
+            Features = domain.Features.Select(ToDto).ToList()
+        };
+    }
+
+    private static ExpectedGraphFeatureFileDto ToDto(ExpectedGraphFeature domain)
+    {
+        return new ExpectedGraphFeatureFileDto
+        {
+            Type = domain.Type,
+            X = domain.X,
+            Y = domain.Y,
+            Value = domain.Value,
+            StringValue = domain.StringValue,
+            Tolerance = domain.Tolerance,
+            Weight = domain.Weight
         };
     }
 

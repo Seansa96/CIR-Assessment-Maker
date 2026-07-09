@@ -1,0 +1,89 @@
+schemaVersion: 1
+id: calc2-rational-integration-concept-lesson-1
+title: Long Division and Partial Fractions
+categoryId: calculus-2
+subcategoryIds:
+- rational-integration
+assessmentType: conceptLesson
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - calculus 2
+  - integration
+  - partial fractions
+skills:
+- calc2-rational-integration
+modeDefault: study
+randomizeQuestions: false
+lesson:
+  introduction: |-
+    A rational function is a fraction where the numerator and denominator are both polynomials. To integrate them, we often need to break them down into simpler pieces using algebra.
+  sections:
+  - id: sec-long-division
+    title: Polynomial Long Division
+    required: true
+    content: |-
+      Before attempting any advanced techniques, you must always check the degree (the highest power of $x$) of the polynomials.
+      
+      **The Rule**: If the degree of the numerator is $\ge$ the degree of the denominator, you MUST use polynomial long division first!
+      
+      For example, in $\int \frac{x^3 + x}{x - 1} \, dx$, the top degree ($3$) is greater than the bottom degree ($1$). Dividing them gives a polynomial plus a proper remainder:
+      $$\frac{x^3 + x}{x - 1} = x^2 + x + 2 + \frac{2}{x - 1}$$
+      
+      Now, you can easily integrate each piece! The polynomial integrates normally, and the remainder integrates to a natural log.
+
+  - id: sec-partial-fractions
+    title: Partial Fraction Decomposition
+    required: true
+    content: |-
+      If the fraction is "proper" (numerator degree $<$ denominator degree), but the denominator is a complex polynomial, we use **Partial Fraction Decomposition** to split it apart.
+      
+      The goal is to turn one complex fraction into the sum of several simple fractions.
+      
+      **Step 1:** Completely factor the denominator.
+      **Step 2:** Set up an equation with unknown constants ($A, B, C...$) over each factor.
+      For distinct linear factors like $(x-1)(x+2)$, the setup is:
+      $$\frac{P(x)}{(x-1)(x+2)} = \frac{A}{x-1} + \frac{B}{x+2}$$
+      **Step 3:** Multiply everything by the common denominator to clear the fractions.
+      **Step 4:** Solve for $A$ and $B$ by plugging in strategic $x$-values that make the factors equal zero!
+
+questions:
+- id: q-calc2-rat-1
+  title: Concept Check - When to Divide
+  prompt: |-
+    Which of the following integrals requires polynomial long division before applying other integration techniques?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $\int \frac{x^2 + 1}{x^3 + 3x} \, dx$
+  - id: c2
+    text: $\int \frac{3x - 4}{x^2 - 1} \, dx$
+  - id: c3
+    text: $\int \frac{x^4 - 2x^2 + 5}{x^2 + 1} \, dx$
+  answer:
+    choiceId: c3
+  explanation: |-
+    Look at the degrees. You only divide if the degree of the numerator is greater than or equal to the degree of the denominator.
+    In choice C, the top degree is $4$ and the bottom degree is $2$. Because $4 \ge 2$, you must divide first.
+  skills:
+  - calc2-rational-integration
+
+- id: q-calc2-rat-2
+  title: Concept Check - Partial Fraction Setup
+  prompt: |-
+    What is the correct setup for the partial fraction decomposition of $\frac{5x}{(x-3)(x+4)}$?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $\frac{A}{x-3} + \frac{Bx+C}{x+4}$
+  - id: c2
+    text: $\frac{A}{x-3} + \frac{B}{x+4}$
+  - id: c3
+    text: $\frac{Ax}{x-3} + \frac{Bx}{x+4}$
+  answer:
+    choiceId: c2
+  explanation: |-
+    Because the denominator consists of distinct linear factors (degree 1), the numerators for the decomposed fractions just need to be constants ($A$ and $B$).
+  skills:
+  - calc2-rational-integration

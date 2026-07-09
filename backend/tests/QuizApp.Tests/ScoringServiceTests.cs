@@ -5,7 +5,7 @@ namespace QuizApp.Tests;
 
 public sealed class ScoringServiceTests
 {
-    private readonly ScoringService scoringService = new(null!, null!, null!);
+    private readonly ScoringService scoringService = new(null!, null!, null!, null!);
 
     [Fact]
     public async Task ScoreAnswer_scores_multiple_choice_by_choice_id()

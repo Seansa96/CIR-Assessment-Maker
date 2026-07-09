@@ -1,0 +1,93 @@
+schemaVersion: 1
+id: calc2-u-sub-integration-concept-lesson-1
+title: U-Substitution as the Reverse Chain Rule
+categoryId: calculus-2
+subcategoryIds:
+- u-sub-integration
+assessmentType: conceptLesson
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - calculus 2
+  - integration
+  - u-substitution
+skills:
+- calc2-u-sub-integration
+modeDefault: study
+randomizeQuestions: false
+lesson:
+  introduction: |-
+    The fundamental theorem of calculus establishes that integration is the reverse process of differentiation. But what happens when we need to reverse the Chain Rule? The answer is $u$-substitution.
+  sections:
+  - id: sec-reverse-chain
+    title: Recognizing the Chain Rule
+    required: true
+    content: |-
+      Recall the Chain Rule for derivatives: $\frac{d}{dx}[f(g(x))] = f'(g(x)) \cdot g'(x)$.
+      
+      When evaluating integrals, if you see a composite function $f(g(x))$ multiplied by the exact derivative of its "inner" function $g'(x)$, you are looking at the result of the Chain Rule!
+      
+      $$\int f'(g(x)) g'(x) \, dx = f(g(x)) + C$$
+      
+      For example, consider $\int 2x \cos(x^2) \, dx$. 
+      Notice that the "inner" function is $x^2$, and its derivative is exactly $2x$. This means the integral perfectly matches the reverse Chain Rule pattern.
+
+  - id: sec-u-sub-mechanics
+    title: The Mechanics of U-Substitution
+    required: true
+    content: |-
+      To formally reverse the Chain Rule, we substitute a new variable, $u$, for the inner function.
+      
+      **Step 1:** Choose $u = g(x)$. (Usually the "inside" function).
+      **Step 2:** Find the differential $du$. Since $u = g(x)$, taking the derivative gives $\frac{du}{dx} = g'(x)$, which means $du = g'(x) \, dx$.
+      **Step 3:** Substitute $u$ and $du$ into the integral. The integral should now be entirely in terms of $u$, with no $x$'s remaining!
+      **Step 4:** Integrate with respect to $u$.
+      **Step 5:** Substitute $g(x)$ back in for $u$ in your final answer.
+      
+      Using our previous example: $\int 2x \cos(x^2) \, dx$.
+      Let $u = x^2$. Then $du = 2x \, dx$.
+      Substitute: $\int \cos(u) \, du$.
+      Integrate: $\sin(u) + C$.
+      Substitute back: $\sin(x^2) + C$.
+
+questions:
+- id: q-calc2-usub-1
+  title: Concept Check - Identifying u
+  prompt: |-
+    Evaluate the integral $\int e^{x^3} \cdot 3x^2 \, dx$. What is the most logical choice for $u$?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $u = e^x$
+  - id: c2
+    text: $u = 3x^2$
+  - id: c3
+    text: $u = x^3$
+  answer:
+    choiceId: c3
+  explanation: |-
+    Choose $u$ to be the "inner" function whose derivative is also present in the integral. If $u = x^3$, then $du = 3x^2 \, dx$, which perfectly matches the rest of the integrand!
+  skills:
+  - calc2-u-sub-integration
+
+- id: q-calc2-usub-2
+  title: Concept Check - Evaluating the Integral
+  prompt: |-
+    Using the choice $u = x^3$ from the previous question, what is the final evaluated integral of $\int e^{x^3} \cdot 3x^2 \, dx$?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $e^{x^3} + C$
+  - id: c2
+    text: $e^{3x^2} + C$
+  - id: c3
+    text: $\frac{1}{4}x^4 e^{x^3} + C$
+  answer:
+    choiceId: c1
+  explanation: |-
+    If $u = x^3$, then $du = 3x^2 \, dx$. The integral becomes $\int e^u \, du$. 
+    The antiderivative of $e^u$ is just $e^u + C$. 
+    Substituting back gives $e^{x^3} + C$.
+  skills:
+  - calc2-u-sub-integration

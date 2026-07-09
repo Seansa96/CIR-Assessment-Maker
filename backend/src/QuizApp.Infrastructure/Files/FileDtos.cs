@@ -381,6 +381,7 @@ public sealed class AnswerFileDto
     public List<MediaFileDto>? Media { get; set; }
     public List<string>? KeyPoints { get; set; }
     public CircuitAnswerFileDto? CircuitAnswer { get; set; }
+    public GraphingAnswerFileDto? GraphingAnswer { get; set; }
 }
 
 public sealed class MediaFileDto
@@ -500,4 +501,22 @@ public sealed class ExpectedValueFileDto
     public string? SymbolicEquivalenceMode { get; set; }
     public List<string>? SymbolicVariables { get; set; }
     public decimal? SymbolicTolerance { get; set; }
+}
+
+// ─── Graphing DTOs ───────────────────────────────────────────────────────────
+
+public sealed class GraphingAnswerFileDto
+{
+    public List<ExpectedGraphFeatureFileDto>? Features { get; set; }
+}
+
+public sealed class ExpectedGraphFeatureFileDto
+{
+    public string? Type { get; set; }
+    public decimal? X { get; set; }
+    public decimal? Y { get; set; }
+    public decimal? Value { get; set; }
+    public string? StringValue { get; set; }
+    public decimal? Tolerance { get; set; }
+    public decimal? Weight { get; set; }
 }

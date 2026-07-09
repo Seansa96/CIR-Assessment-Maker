@@ -1,0 +1,88 @@
+schemaVersion: 1
+id: calc2-improper-integrals-limits-concept-lesson
+title: Defining Improper Integrals with Limits
+categoryId: calculus-2
+subcategoryIds:
+- improper-integrals
+assessmentType: conceptLesson
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - calculus 2
+  - integration
+  - limits
+  - improper integrals
+skills:
+- calc2-improper-integrals
+modeDefault: study
+randomizeQuestions: false
+lesson:
+  introduction: |-
+    The Fundamental Theorem of Calculus assumes that the interval $[a, b]$ is finite, and the function $f(x)$ is continuous everywhere on that interval. What happens if one of those conditions is broken? We get an **Improper Integral**.
+  sections:
+  - id: sec-type-1
+    title: Type 1 - Infinite Intervals
+    required: true
+    content: |-
+      A **Type 1** improper integral has an infinite bound (either $\infty$ or $-\infty$). 
+      You cannot simply "plug in" infinity into an antiderivative, because infinity is not a number.
+      
+      Instead, we replace the infinite bound with a variable (like $t$), and take the limit as $t$ approaches infinity!
+      
+      $$\int_{a}^{\infty} f(x) \, dx = \lim_{t \to \infty} \int_{a}^{t} f(x) \, dx$$
+      
+      If this limit evaluates to a finite number, we say the integral **converges**. If the limit is infinite or does not exist, the integral **diverges**.
+
+  - id: sec-type-2
+    title: Type 2 - Infinite Discontinuities
+    required: true
+    content: |-
+      A **Type 2** improper integral has finite bounds, but the function has a vertical asymptote (an infinite discontinuity) somewhere in the interval $[a, b]$.
+      
+      If the discontinuity is at the upper bound $b$, we approach it from the left:
+      $$\int_{a}^{b} f(x) \, dx = \lim_{t \to b^-} \int_{a}^{t} f(x) \, dx$$
+      
+      If the discontinuity is in the *middle* of the interval at $c$, you MUST split the integral into two separate integrals at $c$, and take two separate limits!
+      $$\int_{a}^{b} f(x) \, dx = \int_{a}^{c} f(x) \, dx + \int_{c}^{b} f(x) \, dx$$
+      
+      **Crucial Rule:** If *either* of the split integrals diverges, the entire original integral diverges immediately. You cannot have "$\infty - \infty = 0$".
+
+questions:
+- id: q-calc2-imp-1
+  title: Concept Check - Setting up Type 1
+  prompt: |-
+    Which of the following is the correct formal setup for evaluating $\int_{-\infty}^{0} e^x \, dx$?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $e^0 - e^{-\infty}$
+  - id: c2
+    text: $\lim_{t \to 0} \int_{-\infty}^{t} e^x \, dx$
+  - id: c3
+    text: $\lim_{t \to -\infty} \int_{t}^{0} e^x \, dx$
+  answer:
+    choiceId: c3
+  explanation: |-
+    The improper bound is the lower limit ($-\infty$). You replace it with a variable $t$, and take the limit as $t \to -\infty$.
+  skills:
+  - calc2-improper-integrals
+
+- id: q-calc2-imp-2
+  title: Concept Check - Splitting Type 2
+  prompt: |-
+    You are evaluating $\int_{-1}^{1} \frac{1}{x} \, dx$. Which of the following statements is true?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: The integral evaluates to $0$ because the function is odd.
+  - id: c2
+    text: The integral must be split at $x=0$, and because $\int_{0}^{1} \frac{1}{x} \, dx$ diverges, the entire integral diverges.
+  - id: c3
+    text: The integral evaluates to $\ln|1| - \ln|-1| = 0 - 0 = 0$.
+  answer:
+    choiceId: c2
+  explanation: |-
+    The function $\frac{1}{x}$ has an infinite discontinuity at $x=0$, which is inside the interval $[-1, 1]$. You must split it into $\int_{-1}^{0}$ and $\int_{0}^{1}$. Because the right half diverges to $\infty$ and the left half diverges to $-\infty$, the whole integral diverges. You cannot cancel out infinities!
+  skills:
+  - calc2-improper-integrals

@@ -1,0 +1,84 @@
+schemaVersion: 1
+id: calc2-improper-integrals-hard-quiz
+title: Advanced Improper Integrals Quiz
+categoryId: calculus-2
+subcategoryIds:
+- improper-integrals
+assessmentType: quiz
+navigation:
+  learningGoal: assess
+  activityType: quiz
+  tags:
+  - calculus 2
+  - integration
+  - improper integrals
+skills:
+- calc2-improper-integrals
+modeDefault: practice
+randomizeQuestions: true
+questions:
+- id: q-imp-hq-1
+  title: Doubly Infinite Bounds
+  prompt: |-
+    Evaluate $\int_{-\infty}^{\infty} x e^{-x^2} \, dx$.
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $0$
+  - id: c2
+    text: $\infty$
+  - id: c3
+    text: Diverges
+  answer:
+    choiceId: c1
+  explanation: |-
+    To evaluate an integral from $-\infty$ to $\infty$, you must split it into two integrals at any convenient point, like $0$: $\int_{-\infty}^{0} + \int_{0}^{\infty}$.
+    Let $u = -x^2$, $du = -2x \, dx$. The antiderivative is $-\frac{1}{2}e^{-x^2}$.
+    $\int_{0}^{\infty} x e^{-x^2} \, dx = \lim_{t \to \infty} [-\frac{1}{2}e^{-t^2} + \frac{1}{2}e^0] = 0 + \frac{1}{2} = \frac{1}{2}$.
+    $\int_{-\infty}^{0} x e^{-x^2} \, dx = \lim_{t \to -\infty} [-\frac{1}{2}e^0 + \frac{1}{2}e^{-t^2}] = -\frac{1}{2} + 0 = -\frac{1}{2}$.
+    Since BOTH halves converge, we can add them: $\frac{1}{2} - \frac{1}{2} = 0$. (Notice this matches the fact that the integrand is an odd function).
+  skills:
+  - calc2-improper-integrals
+
+- id: q-imp-hq-2
+  title: Interior Discontinuity
+  prompt: |-
+    Does $\int_{-1}^{8} x^{-1/3} \, dx$ converge or diverge? If it converges, what is the value?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: Converges to $\frac{9}{2}$
+  - id: c2
+    text: Converges to $\frac{27}{2}$
+  - id: c3
+    text: Diverges
+  answer:
+    choiceId: c1
+  explanation: |-
+    The function has an infinite discontinuity at $x=0$, which is inside the interval $[-1, 8]$. We must split the integral: $\int_{-1}^{0} x^{-1/3} \, dx + \int_{0}^{8} x^{-1/3} \, dx$.
+    The antiderivative is $\frac{3}{2}x^{2/3}$.
+    Right half: $\lim_{t \to 0^+} [\frac{3}{2}(8)^{2/3} - \frac{3}{2}t^{2/3}] = \frac{3}{2}(4) - 0 = 6$.
+    Left half: $\lim_{t \to 0^-} [\frac{3}{2}t^{2/3} - \frac{3}{2}(-1)^{2/3}] = 0 - \frac{3}{2}(1) = -\frac{3}{2}$.
+    Total: $6 - 1.5 = 4.5 = \frac{9}{2}$. Both halves converge, so the whole integral converges!
+  skills:
+  - calc2-improper-integrals
+
+- id: q-imp-hq-3
+  title: Comparison Test
+  prompt: |-
+    Does $\int_{1}^{\infty} \frac{\sin^2(x)}{x^2 + 1} \, dx$ converge or diverge?
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: Converges
+  - id: c2
+    text: Diverges
+  answer:
+    choiceId: c1
+  explanation: |-
+    We can't easily integrate this, but we can use the Direct Comparison Test.
+    Notice that $0 \le \sin^2(x) \le 1$. So, $\frac{\sin^2(x)}{x^2 + 1} \le \frac{1}{x^2 + 1} < \frac{1}{x^2}$.
+    We know that $\int_{1}^{\infty} \frac{1}{x^2} \, dx$ converges by the p-test ($p=2 > 1$). 
+    Since our function is smaller than a converging function, it must also converge!
+  skills:
+  - calc2-improper-integrals

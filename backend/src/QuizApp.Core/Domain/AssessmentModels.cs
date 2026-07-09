@@ -29,7 +29,8 @@ public enum QuestionType
     Code,
     SymbolicResponse,
     Circuit,
-    Multipart
+    Multipart,
+    GraphingResponse
 }
 
 public enum QuestionOrderMode
@@ -445,6 +446,7 @@ public sealed record AnswerDefinition(
     public decimal? SymbolicTolerance { get; init; }
     public IReadOnlyList<string> KeyPoints { get; init; } = Array.Empty<string>();
     public CircuitAnswerDefinition? CircuitAnswer { get; init; }
+    public GraphingAnswerDefinition? GraphingAnswer { get; init; }
 }
 
 public sealed record MediaAsset(
@@ -474,6 +476,7 @@ public sealed record SubmittedAnswer(
     public string? CodeText { get; init; }
     public string? SymbolicLatex { get; init; }
     public SubmittedCircuitAnswer? CircuitAnswer { get; init; }
+    public SubmittedGraphAnswer? GraphingAnswer { get; init; }
     public IReadOnlyList<SubmittedAnswer> PartAnswers { get; init; } = Array.Empty<SubmittedAnswer>();
 }
 
@@ -486,6 +489,7 @@ public sealed record AnswerEvaluation(
     public CodeFeedback? CodeFeedback { get; init; }
     public SymbolicFeedback? SymbolicFeedback { get; init; }
     public CircuitFeedback? CircuitFeedback { get; init; }
+    public GraphFeedback? GraphFeedback { get; init; }
     public decimal EarnedPoints { get; init; }
     public decimal PossiblePoints { get; init; }
     public IReadOnlyList<AnswerEvaluation> PartEvaluations { get; init; } = Array.Empty<AnswerEvaluation>();
@@ -631,3 +635,37 @@ public sealed record CircuitFeedback(
     bool? IncorrectPolarity,
     IReadOnlyDictionary<string, string> IncorrectValues,
     IReadOnlyList<string> ExpectedHighlightTargetIds);
+
+// ─── Graphing Question ──────────────────────────────────────────────────────
+
+public sealed record GraphingAnswerDefinition(
+    IReadOnlyList<ExpectedGraphFeature> Features
+);
+
+public sealed record ExpectedGraphFeature(
+    string Type, 
+    decimal? X,
+    decimal? Y,
+    decimal? Value,
+    string? StringValue,
+    decimal Tolerance,
+    decimal Weight
+);
+
+public sealed record SubmittedGraphAnswer(
+    string Shape,
+    IReadOnlyList<GraphPoint> Points,
+    string? Expression = null
+);
+
+public sealed record GraphPoint(decimal X, decimal Y);
+
+public sealed record GraphFeedback(
+    IReadOnlyList<GraphFeatureEvaluation> FeatureEvaluations
+);
+
+public sealed record GraphFeatureEvaluation(
+    string FeatureType,
+    bool Passed,
+    string Message
+);

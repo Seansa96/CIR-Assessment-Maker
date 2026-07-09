@@ -1,0 +1,138 @@
+schemaVersion: 1
+id: calc2-integration-techniques-hard-test
+title: Advanced Integration Techniques Test
+categoryId: calculus-2
+subcategoryIds:
+- integration-techniques
+assessmentType: test
+navigation:
+  learningGoal: assess
+  activityType: test
+  tags:
+  - calculus 2
+  - integration
+skills:
+- calc2-integration-techniques
+modeDefault: test
+randomizeQuestions: true
+attemptQuestionCount: 5
+questions:
+- id: q-int-ht-1
+  title: Repeated Integration by Parts (Tabular Method)
+  prompt: |-
+    Evaluate $\int x^2 e^{3x} \, dx$.
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $e^{3x}\left(\frac{1}{3}x^2 - \frac{2}{9}x + \frac{2}{27}\right) + C$
+  - id: c2
+    text: $e^{3x}\left(x^2 - 2x + 2\right) + C$
+  - id: c3
+    text: $e^{3x}\left(\frac{1}{3}x^2 + \frac{2}{9}x + \frac{2}{27}\right) + C$
+  answer:
+    choiceId: c1
+  explanation: |-
+    Using the tabular method (or repeated IBP):
+    Differentiate $x^2 \rightarrow 2x \rightarrow 2 \rightarrow 0$.
+    Integrate $e^{3x} \rightarrow \frac{1}{3}e^{3x} \rightarrow \frac{1}{9}e^{3x} \rightarrow \frac{1}{27}e^{3x}$.
+    Multiply diagonals with alternating signs ($+, -, +$):
+    $(x^2)(\frac{1}{3}e^{3x}) - (2x)(\frac{1}{9}e^{3x}) + (2)(\frac{1}{27}e^{3x}) + C$.
+    Factor out $e^{3x}$: $e^{3x}\left(\frac{1}{3}x^2 - \frac{2}{9}x + \frac{2}{27}\right) + C$.
+  skills:
+  - calc2-integration-techniques
+
+- id: q-int-ht-2
+  title: Looping Integration by Parts
+  prompt: |-
+    Evaluate $\int e^x \cos(x) \, dx$.
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $\frac{1}{2}e^x(\sin(x) + \cos(x)) + C$
+  - id: c2
+    text: $\frac{1}{2}e^x(\sin(x) - \cos(x)) + C$
+  - id: c3
+    text: $e^x\sin(x) + C$
+  answer:
+    choiceId: c1
+  explanation: |-
+    Let $u = \cos(x), dv = e^x \, dx$. Then $du = -\sin(x) \, dx, v = e^x$.
+    $I = e^x\cos(x) + \int e^x\sin(x) \, dx$.
+    For the new integral, let $u = \sin(x), dv = e^x \, dx$. Then $du = \cos(x) \, dx, v = e^x$.
+    $I = e^x\cos(x) + [e^x\sin(x) - \int e^x\cos(x) \, dx]$.
+    Notice the original integral $I$ appears on the right!
+    $I = e^x\cos(x) + e^x\sin(x) - I$.
+    $2I = e^x(\cos(x) + \sin(x)) \implies I = \frac{1}{2}e^x(\cos(x) + \sin(x)) + C$.
+  skills:
+  - calc2-integration-techniques
+
+- id: q-int-ht-3
+  title: Trig Integrals with Even Powers
+  prompt: |-
+    Evaluate $\int \cos^4(x) \, dx$.
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $\frac{3}{8}x + \frac{1}{4}\sin(2x) + \frac{1}{32}\sin(4x) + C$
+  - id: c2
+    text: $\frac{1}{5}\cos^5(x) + C$
+  - id: c3
+    text: $\frac{3}{8}x - \frac{1}{4}\sin(2x) + \frac{1}{32}\sin(4x) + C$
+  answer:
+    choiceId: c1
+  explanation: |-
+    Use half-angle identity: $\cos^2(x) = \frac{1}{2}(1 + \cos(2x))$.
+    $\cos^4(x) = [\frac{1}{2}(1 + \cos(2x))]^2 = \frac{1}{4}(1 + 2\cos(2x) + \cos^2(2x))$.
+    Use identity again on $\cos^2(2x) = \frac{1}{2}(1 + \cos(4x))$.
+    $\frac{1}{4}[1 + 2\cos(2x) + \frac{1}{2} + \frac{1}{2}\cos(4x)] = \frac{3}{8} + \frac{1}{2}\cos(2x) + \frac{1}{8}\cos(4x)$.
+    Integrate: $\frac{3}{8}x + \frac{1}{4}\sin(2x) + \frac{1}{32}\sin(4x) + C$.
+  skills:
+  - calc2-integration-techniques
+
+- id: q-int-ht-4
+  title: Tangent and Secant Products
+  prompt: |-
+    Evaluate $\int \tan^3(x)\sec^4(x) \, dx$.
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $\frac{1}{6}\tan^6(x) + \frac{1}{4}\tan^4(x) + C$
+  - id: c2
+    text: $\frac{1}{4}\sec^4(x) + \frac{1}{6}\sec^6(x) + C$
+  - id: c3
+    text: $\frac{1}{7}\tan^7(x) + C$
+  answer:
+    choiceId: c1
+  explanation: |-
+    Since secant has an even power, peel off $\sec^2(x)$ and convert the rest to tangents using $\sec^2(x) = 1 + \tan^2(x)$.
+    $\int \tan^3(x)(1 + \tan^2(x))\sec^2(x) \, dx$.
+    Let $u = \tan(x), du = \sec^2(x) \, dx$.
+    $\int u^3(1 + u^2) \, du = \int (u^3 + u^5) \, du = \frac{1}{4}u^4 + \frac{1}{6}u^6 + C$.
+    Substitute back: $\frac{1}{4}\tan^4(x) + \frac{1}{6}\tan^6(x) + C$.
+    *(Note: Peeling off $\sec(x)\tan(x)$ to use $u=\sec(x)$ also works and gives an equivalent answer $\frac{1}{6}\sec^6(x) - \frac{1}{4}\sec^4(x) + C$).*
+  skills:
+  - calc2-integration-techniques
+
+- id: q-int-ht-5
+  title: Advanced Integration by Parts
+  prompt: |-
+    Evaluate $\int \arctan(x) \, dx$.
+  type: multipleChoice
+  choices:
+  - id: c1
+    text: $x\arctan(x) - \frac{1}{2}\ln(1+x^2) + C$
+  - id: c2
+    text: $\frac{1}{1+x^2} + C$
+  - id: c3
+    text: $x\arctan(x) + \frac{1}{2}\ln(1+x^2) + C$
+  answer:
+    choiceId: c1
+  explanation: |-
+    Let $u = \arctan(x), dv = dx$.
+    Then $du = \frac{1}{1+x^2} \, dx$ and $v = x$.
+    Formula: $uv - \int v \, du = x\arctan(x) - \int \frac{x}{1+x^2} \, dx$.
+    For the remaining integral, use u-sub $w = 1+x^2, dw = 2x \, dx \implies \frac{1}{2}dw = x \, dx$.
+    $-\frac{1}{2}\int \frac{1}{w} \, dw = -\frac{1}{2}\ln|w| = -\frac{1}{2}\ln(1+x^2)$.
+    Final answer: $x\arctan(x) - \frac{1}{2}\ln(1+x^2) + C$.
+  skills:
+  - calc2-integration-techniques

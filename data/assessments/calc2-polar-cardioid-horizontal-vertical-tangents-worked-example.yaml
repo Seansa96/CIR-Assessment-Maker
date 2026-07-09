@@ -1,0 +1,291 @@
+schemaVersion: 1
+id: calc2-polar-cardioid-horizontal-vertical-tangents-worked-example
+title: Polar Calculus - Horizontal and Vertical Tangents on a Cardioid
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - polar-calculus
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - polar-calculus
+    - polar-tangents
+    - horizontal-tangents
+    - vertical-tangents
+    - cardioids
+skills:
+  - polar-slope
+  - tangent-classification
+  - polar-to-cartesian
+  - interval-restriction
+workedExamples:
+  - id: polar-cardioid-tangent-classification
+    title: Locate horizontal and vertical tangents on a restricted polar arc
+    problem: |
+      Find the Cartesian point $(x,y)$ at which
+
+      $$
+      r=1-\sin\theta,\qquad
+      -\frac{\pi}{4}\leq\theta\leq\frac{\pi}{4}
+      $$
+
+      has a horizontal tangent and a vertical tangent.
+
+      ![The cardioid r equals one minus sine theta with the restricted arc, horizontal tangent, and vertical tangent marked](/assessments/calc2-parametric-polar/polar-cardioid-horizontal-vertical-tangents.svg)
+    steps:
+      - id: cardioid-tangents-formula
+        title: Separate the two component rates
+        instruction: |
+          Regard the polar curve as the parametric curve
+
+          $$
+          x=r\cos\theta,\qquad y=r\sin\theta.
+          $$
+
+          Product-rule differentiation gives
+
+          $$
+          \frac{dx}{d\theta}=r'\cos\theta-r\sin\theta,
+          \qquad
+          \frac{dy}{d\theta}=r'\sin\theta+r\cos\theta.
+          $$
+
+          A horizontal tangent requires $dy/d\theta=0$ and $dx/d\theta\neq0$.
+          A vertical tangent requires $dx/d\theta=0$ and $dy/d\theta\neq0$.
+        type: selectAll
+        prompt: Which conditions must be checked rather than merely assumed?
+        choices:
+          - id: horizontal
+            text: 'For a horizontal tangent, verify $\frac{dy}{d\theta}=0$ and $\frac{dx}{d\theta}\neq0$.'
+          - id: vertical
+            text: 'For a vertical tangent, verify $\frac{dx}{d\theta}=0$ and $\frac{dy}{d\theta}\neq0$.'
+          - id: interval
+            text: 'Keep only parameter values in $[-\pi/4,\pi/4]$.'
+          - id: radius
+            text: 'Require $r>0$ for every polar tangent.'
+        answer:
+          choiceIds: [horizontal, vertical, interval]
+        hint: A negative or zero radius does not automatically prevent a tangent.
+        explanation: |
+          All three derivative and interval checks are necessary. The rejected statement is false: polar coordinates can represent points with negative radius, and some curves have meaningful behavior at the pole.
+
+          Related topic: parametric tangent classification.
+
+      - id: cardioid-tangents-simplify-components
+        title: Differentiate and simplify before solving
+        instruction: |
+          For $r=1-\sin\theta$,
+
+          $$
+          r'=-\cos\theta.
+          $$
+
+          Substitute into each component rate:
+
+          $$
+          \frac{dy}{d\theta}
+          =-\cos\theta\sin\theta+(1-\sin\theta)\cos\theta
+          =\cos\theta(1-2\sin\theta),
+          $$
+
+          $$
+          \frac{dx}{d\theta}
+          =-\cos^2\theta-(1-\sin\theta)\sin\theta
+          =2\sin^2\theta-\sin\theta-1.
+          $$
+        type: multipleChoice
+        prompt: Which factorization of $dx/d\theta$ makes its zeros easiest to see?
+        choices:
+          - id: a
+            text: '$(2\sin\theta+1)(\sin\theta-1)$'
+          - id: b
+            text: '$(2\sin\theta-1)(\sin\theta+1)$'
+          - id: c
+            text: '$\cos\theta(1-2\sin\theta)$'
+          - id: d
+            text: '$(\sin\theta-1)^2$'
+        answer:
+          choiceId: a
+        hint: Let $u=\sin\theta$ and factor $2u^2-u-1$.
+        explanation: |
+          $2u^2-u-1=(2u+1)(u-1)$, so
+
+          $$
+          \frac{dx}{d\theta}
+          =(2\sin\theta+1)(\sin\theta-1).
+          $$
+
+          Related topic: algebraic reduction of trigonometric equations.
+
+      - id: cardioid-tangents-horizontal-parameter
+        title: Solve the horizontal-tangent condition
+        instruction: |
+          Set
+
+          $$
+          \frac{dy}{d\theta}
+          =\cos\theta(1-2\sin\theta)=0.
+          $$
+
+          On the restricted interval, $\cos\theta$ is never zero. Therefore
+
+          $$
+          \sin\theta=\frac12,
+          $$
+
+          and the only allowed parameter is $\theta=\pi/6$.
+        type: symbolicResponse
+        prompt: Enter the horizontal-tangent parameter.
+        answer:
+          expectedLatex: '\frac{\pi}{6}'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        hint: Intersect the solutions of $\sin\theta=1/2$ with the given interval.
+        explanation: |
+          The interval removes all coterminal alternatives, leaving $\theta=\pi/6$.
+
+          Related topic: solving restricted trigonometric equations.
+
+      - id: cardioid-tangents-horizontal-point
+        title: Convert the horizontal tangent to a point
+        instruction: |
+          At $\theta=\pi/6$,
+
+          $$
+          r=1-\frac12=\frac12.
+          $$
+
+          Then
+
+          $$
+          x=r\cos\theta=\frac12\cdot\frac{\sqrt3}{2}=\frac{\sqrt3}{4},
+          \qquad
+          y=r\sin\theta=\frac12\cdot\frac12=\frac14.
+          $$
+        type: multipleChoice
+        prompt: Which point has the horizontal tangent?
+        choices:
+          - id: a
+            text: '$\left(\frac{\sqrt3}{4},\frac14\right)$'
+          - id: b
+            text: '$\left(\frac34,\frac{\sqrt3}{4}\right)$'
+          - id: c
+            text: '$\left(\frac{3\sqrt3}{4},-\frac34\right)$'
+          - id: d
+            text: '$\left(\frac12,\frac{\pi}{6}\right)$'
+        answer:
+          choiceId: a
+        hint: The requested answer is Cartesian, not the polar pair $(r,\theta)$.
+        explanation: |
+          The horizontal-tangent point is
+
+          $$
+          \boxed{\left(\frac{\sqrt3}{4},\frac14\right)}.
+          $$
+
+          Also, $dx/d\theta=-1$ at $\theta=\pi/6$, so the denominator is nonzero.
+
+      - id: cardioid-tangents-vertical-parameter
+        title: Solve the vertical-tangent condition
+        instruction: |
+          Set
+
+          $$
+          (2\sin\theta+1)(\sin\theta-1)=0.
+          $$
+
+          The possibilities are $\sin\theta=-1/2$ and $\sin\theta=1$.
+          Only $\theta=-\pi/6$ lies in the stated interval.
+        type: symbolicResponse
+        prompt: Enter the vertical-tangent parameter.
+        answer:
+          expectedLatex: '-\frac{\pi}{6}'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        hint: The positive endpoint of the interval is only $\pi/4$.
+        explanation: |
+          The interval condition is part of the problem, not a final cosmetic check. It leaves
+
+          $$
+          \theta=-\frac{\pi}{6}.
+          $$
+
+      - id: cardioid-tangents-vertical-point
+        title: Convert the vertical tangent to a point
+        instruction: |
+          At $\theta=-\pi/6$,
+
+          $$
+          r=1-\left(-\frac12\right)=\frac32.
+          $$
+
+          Thus
+
+          $$
+          x=\frac32\cdot\frac{\sqrt3}{2}=\frac{3\sqrt3}{4},
+          \qquad
+          y=\frac32\cdot\left(-\frac12\right)=-\frac34.
+          $$
+        type: multipleChoice
+        prompt: Which point has the vertical tangent?
+        choices:
+          - id: a
+            text: '$\left(\frac{3\sqrt3}{4},-\frac34\right)$'
+          - id: b
+            text: '$\left(\frac{\sqrt3}{4},\frac14\right)$'
+          - id: c
+            text: '$\left(-\frac{3\sqrt3}{4},\frac34\right)$'
+          - id: d
+            text: '$\left(\frac32,-\frac{\pi}{6}\right)$'
+        answer:
+          choiceId: a
+        hint: Use the same polar-to-Cartesian conversion as before.
+        explanation: |
+          The vertical-tangent point is
+
+          $$
+          \boxed{\left(\frac{3\sqrt3}{4},-\frac34\right)}.
+          $$
+
+          Here $dy/d\theta=\sqrt3\neq0$, so this is genuinely vertical.
+
+      - id: cardioid-tangents-final-check
+        title: State the complete result
+        instruction: |
+          A reliable polar-tangent workflow is:
+
+          1. Differentiate $r$.
+          2. Simplify $dx/d\theta$ and $dy/d\theta$ separately.
+          3. Solve the appropriate numerator or denominator equation.
+          4. Enforce the parameter interval.
+          5. Verify the other component rate is nonzero.
+          6. Convert the accepted parameter to $(x,y)$.
+        type: freeResponse
+        prompt: State both points and explain which derivative component vanishes at each.
+        answer:
+          expected: 'Horizontal at (sqrt(3)/4, 1/4), where dy/dtheta = 0 and dx/dtheta is nonzero; vertical at (3sqrt(3)/4, -3/4), where dx/dtheta = 0 and dy/dtheta is nonzero.'
+          gradingMode: selfCheck
+          keyPoints:
+            - 'Horizontal point: $(\sqrt3/4,1/4)$.'
+            - 'Vertical point: $(3\sqrt3/4,-3/4)$.'
+            - The nonvanishing component rate is checked at each point.
+        hint: Do not report only the parameter values; the problem asks for Cartesian points.
+        explanation: |
+          The complete answer is
+
+          $$
+          \boxed{\text{horizontal at }\left(\frac{\sqrt3}{4},\frac14\right)}
+          $$
+
+          and
+
+          $$
+          \boxed{\text{vertical at }\left(\frac{3\sqrt3}{4},-\frac34\right)}.
+          $$
+
+          Related topics: parametric derivatives, tangent classification, and polar-to-Cartesian conversion.

@@ -31,6 +31,7 @@ builder.Services.AddSingleton<ScoringService>();
 builder.Services.AddSingleton<ICodeQuestionScorer, CodeQuestionScorer>();
 builder.Services.AddSingleton<ISymbolicExpressionScorer, SymbolicExpressionScorer>();
 builder.Services.AddSingleton<ICircuitQuestionScorer, CircuitQuestionScorer>();
+builder.Services.AddSingleton<IGraphingQuestionScorer, GraphingQuestionScorer>();
 builder.Services.AddSingleton<ISymbolicMathEngine, CortexSymbolicMathEngine>();
 builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();

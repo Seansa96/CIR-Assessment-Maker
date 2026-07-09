@@ -8,6 +8,7 @@ import "../styles/global.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>CIR Assessment Maker</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" />
   </head>
   <body>
     <main class="app-shell">
@@ -344,10 +345,12 @@ import "../styles/global.css";
       import "mathlive";
       import { CircuitCanvas } from "../scripts/CircuitCanvas";
       import type { CircuitDiagram, CircuitComponent, CircuitNode, CircuitWire } from "../scripts/CircuitCanvas";
+      import { GraphingCanvas } from "../scripts/GraphingCanvas";
+      import type { SubmittedGraphAnswer, GraphPoint } from "../scripts/GraphingCanvas";
 
       type AssessmentMode = "practice" | "scored";
       type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "conceptLesson" | "interactiveExploration" | "directedProject";
-      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit" | "multipart";
+      type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit" | "multipart" | "graphingResponse";
 
       interface CircuitQuestionDefinition {
         schemaVersion: number;
@@ -383,6 +386,17 @@ import "../styles/global.css";
         incorrectValues: Record<string, string>;
         expectedHighlightTargetIds: string[];
       }
+
+      interface GraphFeatureEvaluation {
+        featureType: string;
+        passed: boolean;
+        message: string;
+      }
+
+      interface GraphFeedback {
+        featureEvaluations: GraphFeatureEvaluation[];
+      }
+
       type AttemptStatus = "inProgress" | "paused" | "completed" | "abandoned";
       type RecallItemType = "typed" | "symbolic" | "flashcard" | "cloze";
       type RecallRating = "unknown" | "easy" | "correct" | "needsReview" | "forgotCompletely";
@@ -515,6 +529,7 @@ import "../styles/global.css";
           media?: MediaAsset[];
           keyPoints?: string[];
           circuitAnswer?: any;
+          graphingAnswer?: any;
         };
         language?: "python" | "cpp";
         functionName?: string;
@@ -815,9 +830,10 @@ import "../styles/global.css";
         freeResponseText: string | null;
         selfCheckCorrect: boolean | null;
         numericValue: number | null;
-        codeText: string | null;
-        symbolicLatex: string | null;
+        codeText?: string | null;
+        symbolicLatex?: string | null;
         circuitAnswer?: SubmittedCircuitAnswer | null;
+        graphingAnswer?: SubmittedGraphAnswer | null;
         partAnswers?: SubmittedAnswer[];
       }
 
@@ -853,9 +869,11 @@ import "../styles/global.css";
         isCorrect: boolean | null;
         explanation: string | null;
         expectedAnswer: string | null;
-        codeFeedback: CodeFeedback | null;
-        symbolicFeedback: SymbolicFeedback | null;
+        codeFeedback?: CodeFeedback | null;
+        symbolicFeedback?: SymbolicFeedback | null;
         circuitFeedback?: CircuitFeedback | null;
+        graphFeedback?: GraphFeedback | null;
+        partEvaluations?: AnswerEvaluation[];
         title: string | null;
         instruction: string | null;
         hint: string | null;
@@ -1081,9 +1099,11 @@ import "../styles/global.css";
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
       const IS_DEV = import.meta.env.DEV;
       let currentCodeEditors: EditorView[] = [];
-      let currentProjectEditor: EditorView | null = null;
+      let activeCodeEditor: EditorView | null = null;
       let activeCircuitCanvas: CircuitCanvas | null = null;
+      let activeGraphingCanvas: GraphingCanvas | null = null;
       let resultCircuitCanvases: CircuitCanvas[] = [];
+      let resultGraphingCanvases: GraphingCanvas[] = [];
       let activeWidgets: { destroy: () => void }[] = [];
 
       function clearActiveWidgets() {
@@ -2964,7 +2984,9 @@ import "../styles/global.css";
           freeResponse: "Free response",
           numericResponse: "Numeric response",
           code: "Code",
-          symbolicResponse: "Symbolic response"
+          symbolicResponse: "Symbolic response",
+          circuit: "Circuit interaction",
+          graphingResponse: "Graphing interaction"
         }[type] ?? type;
       }
 
@@ -3091,6 +3113,20 @@ import "../styles/global.css";
           };
         }
 
+        if (type === "graphingResponse") {
+          return {
+            id,
+            type,
+            prompt: "",
+            choices: [],
+            media: [],
+            answer: {
+              graphingAnswer: { features: [] }
+            },
+            explanation: ""
+          };
+        }
+
         if (type === "code") {
           return {
             id,
@@ -3147,6 +3183,7 @@ import "../styles/global.css";
                   <option value="symbolicResponse" ${question.type === "symbolicResponse" ? "selected" : ""}>Symbolic response</option>
                   <option value="code" ${question.type === "code" ? "selected" : ""}>Code</option>
                   <option value="circuit" ${question.type === "circuit" ? "selected" : ""}>Circuit</option>
+                  <option value="graphingResponse" ${question.type === "graphingResponse" ? "selected" : ""}>Graphing</option>
                 </select>
               </div>
             </div>
@@ -3264,24 +3301,6 @@ import "../styles/global.css";
           `;
         }
 
-        
-        if (question.type === "multipart") {
-          const answerForm = getActiveAnswerForm();
-          if (!answerForm) throw new Error("Form not found");
-          const form = new FormData(answerForm);
-          return {
-            questionId: question.id,
-            choiceId: null,
-            choiceIds: [],
-            freeResponseText: null,
-            selfCheckCorrect: null,
-            numericValue: null,
-            codeText: null,
-            symbolicLatex: null,
-            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
-          };
-        }
-
         if (question.type === "circuit") {
           const cQ = question.circuitQuestion || {
             interactionMode: "build",
@@ -3377,6 +3396,19 @@ import "../styles/global.css";
           `;
         }
 
+        if (question.type === "graphingResponse") {
+          const answer = question.answer?.graphingAnswer || { features: [] };
+          return `
+            <div class="question-settings-group">
+              <h4>Graphing Answer Rules</h4>
+              <div class="field">
+                <label for="question-graphing-features-json-${index}">Expected Features JSON (Array)</label>
+                <textarea id="question-graphing-features-json-${index}" data-question-field="graphingFeaturesJson" rows="4" placeholder='[{"type": "ShapeType", "stringValue": "parabola", "weight": 1.0}]'>${escapeHtml(JSON.stringify(answer.features || [], null, 2))}</textarea>
+              </div>
+            </div>
+          `;
+        }
+
         return `
           <div class="choice-editor-grid">
             ${question.choices.map((choice) => `
@@ -3402,7 +3434,11 @@ import "../styles/global.css";
           const answerValue = editor.querySelector<HTMLInputElement>("[data-question-field='answer']")?.value ?? "";
 
           const isCircuit = type === "circuit";
+          const isGraphing = type === "graphingResponse";
           let circuitQuestion = undefined;
+          let circuitAnswer = undefined;
+          let graphingAnswer = undefined;
+
           if (isCircuit) {
             let diag = { width: 600, height: 400, components: [], nodes: [], wires: [], annotations: [] };
             try {
@@ -3427,23 +3463,34 @@ import "../styles/global.css";
             };
           }
 
+          if (isGraphing) {
+            try {
+              graphingAnswer = {
+                features: JSON.parse(editor.querySelector<HTMLTextAreaElement>("[data-question-field='graphingFeaturesJson']")!.value)
+              };
+            } catch (err) {
+              console.warn("Invalid graphing features JSON", err);
+            }
+          }
+
           return {
             id: editor.querySelector<HTMLInputElement>("[data-question-field='id']")!.value.trim(),
             type,
             prompt: editor.querySelector<HTMLTextAreaElement>("[data-question-field='prompt']")!.value.trim(),
-            choices: type === "freeResponse" || type === "numericResponse" || type === "code" || type === "symbolicResponse" || type === "circuit" ? [] : choices,
-            answer: buildDraftAnswer(type, answerValue, editor),
+            choices: type === "freeResponse" || type === "numericResponse" || type === "code" || type === "symbolicResponse" || type === "circuit" || type === "graphingResponse" ? [] : choices,
+            answer: buildDraftAnswer(type, answerValue, editor, circuitAnswer, graphingAnswer),
             language: type === "code" ? editor.querySelector<HTMLSelectElement>("[data-question-field='language']")?.value as "python" | "cpp" : undefined,
             functionName: type === "code" ? editor.querySelector<HTMLInputElement>("[data-question-field='functionName']")?.value.trim() : undefined,
             starterCode: type === "code" ? editor.querySelector<HTMLTextAreaElement>("[data-question-field='starterCode']")?.value : undefined,
             tests: type === "code" ? parseCodeTests(editor.querySelector<HTMLTextAreaElement>("[data-question-field='tests']")?.value ?? "[]") : undefined,
             explanation: editor.querySelector<HTMLTextAreaElement>("[data-question-field='explanation']")!.value.trim(),
-            circuitQuestion
+            circuitQuestion,
+            graphingAnswer
           };
         });
       }
 
-      function buildDraftAnswer(type: QuestionType, answerValue: string, editor: HTMLElement) {
+      function buildDraftAnswer(type: QuestionType, answerValue: string, editor: HTMLElement, circuitAnswer: any = null, graphingAnswer: any = null) {
         if (type === "freeResponse") {
           return {
             choiceId: null,
@@ -3533,6 +3580,14 @@ import "../styles/global.css";
               meterPlacement,
               expectedValues
             }
+          };
+        }
+
+        if (type === "graphingResponse") {
+          return {
+            choiceId: null,
+            choiceIds: [],
+            graphingAnswer
           };
         }
 
@@ -3779,6 +3834,7 @@ import "../styles/global.css";
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
         setupCircuitEditor(question, results?.submittedAnswer ?? null);
+        setupGraphingEditor(question, results?.submittedAnswer ?? null);
       }
 
       function getLearningSections() {
@@ -3923,6 +3979,7 @@ import "../styles/global.css";
           setupSymbolicResponseField(check);
           setupSelfCheckButtons();
           setupCircuitEditor(check, checkResult?.submittedAnswer ?? null);
+          setupGraphingEditor(check, checkResult?.submittedAnswer ?? null);
         }
         if (explorationSection) setupExplorationControls(explorationSection, result);
       }
@@ -4192,6 +4249,7 @@ import "../styles/global.css";
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
         setupCircuitEditor(question, result?.submittedAnswer ?? null);
+        setupGraphingEditor(question, result?.submittedAnswer ?? null);
       }
 
       async function renderGuidedProject() {
@@ -4783,7 +4841,7 @@ import "../styles/global.css";
         };
       }
 
-            function setupGuidedProjectEditor(language: "cpp" | "python", readOnly: boolean) {
+      function setupGuidedProjectEditor(language: "cpp" | "python", readOnly: boolean) {
         currentProjectEditor?.destroy();
         currentProjectEditor = null;
 
@@ -5086,24 +5144,6 @@ import "../styles/global.css";
           `;
         }
 
-        
-        if (question.type === "multipart") {
-          const answerForm = getActiveAnswerForm();
-          if (!answerForm) throw new Error("Form not found");
-          const form = new FormData(answerForm);
-          return {
-            questionId: question.id,
-            choiceId: null,
-            choiceIds: [],
-            freeResponseText: null,
-            selfCheckCorrect: null,
-            numericValue: null,
-            codeText: null,
-            symbolicLatex: null,
-            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
-          };
-        }
-
         if (question.type === "circuit") {
           const def = question.circuitQuestion || {
             interactionMode: "build",
@@ -5149,6 +5189,23 @@ import "../styles/global.css";
               ${promptNote}
               ${toolbarHtml}
               <div id="${idPrefix}circuit-editor-mount" class="circuit-mount"></div>
+            </div>
+          `;
+        }
+
+        if (question.type === "graphingResponse") {
+          return `
+            <div class="graphing-editor-shell">
+              <p class="input-help"><strong>Graphing Tool:</strong> Select a tool and click on the grid to place points and shapes.</p>
+              <div class="graphing-toolbar">
+                <button type="button" class="graph-btn" data-tool="point">Point</button>
+                <button type="button" class="graph-btn" data-tool="line">Line</button>
+                <button type="button" class="graph-btn" data-tool="parabola">Parabola</button>
+                <button type="button" class="graph-btn" data-tool="ellipse">Ellipse</button>
+                <button type="button" class="graph-btn danger-light" data-tool="clear">Clear</button>
+              </div>
+              <div id="${idPrefix}graphing-editor-mount" class="graphing-mount jxgbox" style="width:500px; height:500px; max-width:100%; border:1px solid #ccc; border-radius:4px; margin-top:8px;"></div>
+              <input type="hidden" id="${idPrefix}graphing-response" name="${idPrefix}graphingAnswer" value="${escapeHtml(JSON.stringify(submittedAnswer?.graphingAnswer || null))}" />
             </div>
           `;
         }
@@ -5333,32 +5390,7 @@ import "../styles/global.css";
         `;
       }
 
-      
       function readPartAnswer(question: Question, answerForm: HTMLFormElement, form: FormData, idPrefix: string = ""): SubmittedAnswer {
-        
-        if (question.type === "multipart") {
-          const answerForm = getActiveAnswerForm();
-          if (!answerForm) throw new Error("Form not found");
-          const form = new FormData(answerForm);
-          return {
-            questionId: question.id,
-            choiceId: null,
-            choiceIds: [],
-            freeResponseText: null,
-            selfCheckCorrect: null,
-            numericValue: null,
-            codeText: null,
-            symbolicLatex: null,
-            partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
-          };
-        }
-
-        if (question.type === "circuit") {
-          const mount = document.querySelector<HTMLElement>(`#${idPrefix}circuit-editor-mount`);
-          // Note: In a full impl we need to extract from multiple activeCircuitCanvases
-          // For now we just return null or empty to avoid breaking
-        }
-        
         const partScope = idPrefix ? document.querySelector<HTMLElement>(`#part-container-${idPrefix}`) || answerForm : answerForm;
         const selectedCards = Array.from(partScope.querySelectorAll<HTMLButtonElement>(".choice-card.selected"));
 
@@ -5375,7 +5407,6 @@ import "../styles/global.css";
       }
 
       function readAnswer(question: Question) {
-        
         if (question.type === "multipart") {
           const answerForm = getActiveAnswerForm();
           if (!answerForm) throw new Error("Form not found");
@@ -5391,6 +5422,22 @@ import "../styles/global.css";
             symbolicLatex: null,
             partAnswers: question.parts?.map(p => readPartAnswer(p, answerForm, form, `${p.id}-`)) ?? []
           };
+        }
+
+        if (question.type === "graphingResponse") {
+          if (activeGraphingCanvas) {
+            return {
+              questionId: question.id,
+              choiceId: null,
+              choiceIds: [],
+              freeResponseText: null,
+              selfCheckCorrect: null,
+              numericValue: null,
+              codeText: null,
+              symbolicLatex: null,
+              graphingAnswer: activeGraphingCanvas.getAnswer()
+            };
+          }
         }
 
         if (question.type === "circuit") {
@@ -5562,6 +5609,41 @@ import "../styles/global.css";
 
           document.querySelector("#btn-circuit-node")?.addEventListener("click", () => {
             activeCircuitCanvas?.addNode();
+          });
+        }
+      }
+
+      function setupGraphingEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
+        activeGraphingCanvas?.destroy();
+        activeGraphingCanvas = null;
+        if (question.type !== "graphingResponse") return;
+
+        const container = document.querySelector<HTMLElement>("#graphing-editor-mount");
+        if (!container) return;
+
+        const isReadOnly = state.attempt?.status === "completed" || state.attempt?.mode === "scored";
+
+        activeGraphingCanvas = new GraphingCanvas(container, isReadOnly);
+        activeWidgets.push(activeGraphingCanvas);
+
+        if (submittedAnswer?.graphingAnswer) {
+          activeGraphingCanvas.restoreAnswer(submittedAnswer.graphingAnswer);
+        }
+
+        if (!isReadOnly) {
+          document.querySelectorAll(".graph-btn").forEach(btn => {
+            btn.addEventListener("click", (e) => {
+              const target = e.currentTarget as HTMLButtonElement;
+              const tool = target.dataset.tool;
+              
+              if (tool === "clear") {
+                activeGraphingCanvas?.clear();
+              } else {
+                activeGraphingCanvas?.setTool(tool as any);
+                document.querySelectorAll(".graph-btn").forEach(b => b.classList.remove("active"));
+                target.classList.add("active");
+              }
+            });
           });
         }
       }

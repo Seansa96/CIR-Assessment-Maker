@@ -560,7 +560,8 @@ public sealed class AttemptFlowTests
             new ScoringService(
                 new FakeCodeQuestionScorer(),
                 new FakeSymbolicExpressionScorer(),
-                new FakeCircuitQuestionScorer()));
+                new FakeCircuitQuestionScorer(),
+                null!));
     }
 }
 

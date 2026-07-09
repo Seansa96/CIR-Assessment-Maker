@@ -370,7 +370,7 @@ public sealed class AssessmentValidator
 
         if (question.Type is QuestionType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, numericResponse, code, symbolicResponse, circuit, or multipart.", question.Id));
+            issues.Add(new ValidationIssue("INVALID_QUESTION_TYPE", "Question type must be multipleChoice, selectAll, freeResponse, numericResponse, code, symbolicResponse, circuit, multipart, or graphingResponse.", question.Id));
             return;
         }
 
@@ -453,6 +453,11 @@ public sealed class AssessmentValidator
         if (question.Type is QuestionType.Circuit)
         {
             ValidateCircuitQuestion(question, issues);
+        }
+
+        if (question.Type is QuestionType.GraphingResponse)
+        {
+            ValidateGraphingQuestion(question, issues);
         }
     }
 
@@ -1032,6 +1037,32 @@ public sealed class AssessmentValidator
             else
             {
                 RequireText(resource.Url, "MISSING_RESOURCE_URL", $"External resource '{resource.Label}' must have a url.", issues);
+            }
+        }
+    }
+
+    private static void ValidateGraphingQuestion(QuestionDefinition question, List<ValidationIssue> issues)
+    {
+        if (question.Answer.GraphingAnswer is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_GRAPHING_ANSWER", "Graphing questions must include answer.graphingAnswer.", question.Id));
+            return;
+        }
+
+        if (question.Answer.GraphingAnswer.Features.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_GRAPHING_FEATURES", "Graphing questions must include at least one expected feature.", question.Id));
+        }
+
+        foreach (var feature in question.Answer.GraphingAnswer.Features)
+        {
+            if (string.IsNullOrWhiteSpace(feature.Type))
+            {
+                issues.Add(new ValidationIssue("MISSING_GRAPHING_FEATURE_TYPE", "Graphing features must have a type.", question.Id));
+            }
+            if (feature.Weight <= 0)
+            {
+                issues.Add(new ValidationIssue("INVALID_GRAPHING_FEATURE_WEIGHT", "Graphing features must have a positive weight.", question.Id));
             }
         }
     }

@@ -413,6 +413,186 @@ def polar_circle_intersections():
     finish(fig, "polar-circle-intersections.svg")
 
 
+def polar_tangent_negative_radius():
+    fig, ax = plt.subplots(figsize=(7.2, 6.2))
+    cartesian_ax(ax, r"Tangent to $r=1-5\cos\theta$ at $\theta=\pi/4$", equal=True)
+
+    theta = np.linspace(0, 2 * np.pi, 1800)
+    radius = 1 - 5 * np.cos(theta)
+    x = radius * np.cos(theta)
+    y = radius * np.sin(theta)
+    ax.plot(x, y, color=BLUE, linewidth=3)
+
+    theta0 = np.pi / 4
+    radius0 = 1 - 5 * np.sqrt(2) / 2
+    point_x = radius0 * np.cos(theta0)
+    point_y = radius0 * np.sin(theta0)
+    slope = (1 + 5 * np.sqrt(2)) / 49
+
+    ray = np.linspace(-4.7, 4.7, 100)
+    ax.plot(
+        ray * np.cos(theta0),
+        ray * np.sin(theta0),
+        color=MUTED,
+        linewidth=1.5,
+        linestyle="--",
+    )
+    ax.annotate(
+        "",
+        xy=(3.25 * np.cos(theta0), 3.25 * np.sin(theta0)),
+        xytext=(0, 0),
+        arrowprops={"arrowstyle": "->", "color": GOLD, "lw": 2},
+    )
+    ax.text(2.45, 1.85, r"$\theta=\pi/4$ ray", color=GOLD, ha="center")
+
+    tangent_x = np.linspace(point_x - 2.6, point_x + 2.8, 100)
+    tangent_y = point_y + slope * (tangent_x - point_x)
+    ax.plot(tangent_x, tangent_y, color=RED, linewidth=2.6, label="tangent line")
+    ax.scatter([point_x], [point_y], color=RED, edgecolor=INK, s=75, zorder=5)
+    ax.annotate(
+        "negative r places the point\nopposite the named ray",
+        xy=(point_x, point_y),
+        xytext=(-5.6, -0.3),
+        color=INK,
+        arrowprops={"arrowstyle": "->", "color": MUTED, "lw": 1.5},
+        ha="left",
+    )
+    ax.text(point_x - 0.1, point_y - 0.55, "evaluation point", color=RED, ha="center")
+
+    ax.set_xlim(-6.2, 4.5)
+    ax.set_ylim(-5.7, 5.1)
+    ax.legend(frameon=False, loc="upper left")
+    finish(fig, "polar-tangent-limacon-1-minus-5cos.svg")
+
+
+def polar_cardioid_horizontal_vertical_tangents():
+    fig, ax = plt.subplots(figsize=(7.4, 5.8))
+    cartesian_ax(ax, r"Tangents on $r=1-\sin\theta$", equal=True)
+
+    theta = np.linspace(0, 2 * np.pi, 1800)
+    radius = 1 - np.sin(theta)
+    ax.plot(radius * np.cos(theta), radius * np.sin(theta), color=MUTED, linewidth=2)
+
+    interval = np.linspace(-np.pi / 4, np.pi / 4, 500)
+    interval_radius = 1 - np.sin(interval)
+    ax.plot(
+        interval_radius * np.cos(interval),
+        interval_radius * np.sin(interval),
+        color=BLUE,
+        linewidth=4,
+        label=r"traced for $-\pi/4\leq\theta\leq\pi/4$",
+    )
+
+    horizontal = (np.sqrt(3) / 4, 1 / 4)
+    vertical = (3 * np.sqrt(3) / 4, -3 / 4)
+    ax.plot(
+        [horizontal[0] - 0.65, horizontal[0] + 0.65],
+        [horizontal[1], horizontal[1]],
+        color=RED,
+        linewidth=2.6,
+    )
+    ax.plot(
+        [vertical[0], vertical[0]],
+        [vertical[1] - 0.65, vertical[1] + 0.65],
+        color=GOLD,
+        linewidth=2.6,
+    )
+    ax.scatter(
+        [horizontal[0], vertical[0]],
+        [horizontal[1], vertical[1]],
+        color=[RED, GOLD],
+        edgecolor=INK,
+        s=75,
+        zorder=5,
+    )
+    ax.annotate(
+        r"horizontal: $\theta=\pi/6$",
+        xy=horizontal,
+        xytext=(-0.8, 0.95),
+        arrowprops={"arrowstyle": "->", "color": RED},
+        color=RED,
+    )
+    ax.annotate(
+        r"vertical: $\theta=-\pi/6$",
+        xy=vertical,
+        xytext=(1.55, -1.65),
+        arrowprops={"arrowstyle": "->", "color": GOLD},
+        color=GOLD,
+    )
+    ax.set_xlim(-0.9, 2.25)
+    ax.set_ylim(-2.15, 1.15)
+    ax.legend(frameon=False, loc="lower left")
+    finish(fig, "polar-cardioid-horizontal-vertical-tangents.svg")
+
+
+def polar_limacon_total_area():
+    fig, ax = plt.subplots(figsize=(7.2, 5.7))
+    cartesian_ax(ax, r"Area enclosed by $r=9+3\cos\theta$", equal=True)
+
+    theta = np.linspace(0, 2 * np.pi, 1800)
+    radius = 9 + 3 * np.cos(theta)
+    x = radius * np.cos(theta)
+    y = radius * np.sin(theta)
+    ax.fill(x, y, color=FILL, alpha=0.65)
+    ax.plot(x, y, color=BLUE, linewidth=3)
+
+    upper = np.linspace(0, np.pi, 900)
+    upper_radius = 9 + 3 * np.cos(upper)
+    upper_x = np.concatenate(([0], upper_radius * np.cos(upper), [0]))
+    upper_y = np.concatenate(([0], upper_radius * np.sin(upper), [0]))
+    ax.fill(upper_x, upper_y, color=GOLD, alpha=0.28, label=r"$0\leq\theta\leq\pi$")
+    ax.annotate(
+        "reflect across the polar axis",
+        xy=(-4.2, 4.4),
+        xytext=(-6.8, 7.2),
+        arrowprops={"arrowstyle": "->", "color": MUTED},
+        color=INK,
+        ha="left",
+    )
+    ax.text(3.5, 4.8, "upper half determines\nthe lower half", color=INK, ha="center")
+    ax.set_xlim(-7.4, 12.8)
+    ax.set_ylim(-10.3, 10.3)
+    ax.legend(frameon=False, loc="lower right")
+    finish(fig, "polar-limacon-9-plus-3cos-area.svg")
+
+
+def polar_rose_one_leaf_area():
+    fig, ax = plt.subplots(figsize=(6.7, 6.3))
+    cartesian_ax(ax, r"One leaf of $r=6\sin(6\theta)$", equal=True)
+
+    theta = np.linspace(0, 2 * np.pi, 4200)
+    radius = 6 * np.sin(6 * theta)
+    ax.plot(radius * np.cos(theta), radius * np.sin(theta), color=MUTED, linewidth=1.8)
+
+    leaf_theta = np.linspace(0, np.pi / 6, 500)
+    leaf_radius = 6 * np.sin(6 * leaf_theta)
+    leaf_x = np.concatenate(([0], leaf_radius * np.cos(leaf_theta), [0]))
+    leaf_y = np.concatenate(([0], leaf_radius * np.sin(leaf_theta), [0]))
+    ax.fill(leaf_x, leaf_y, color=FILL, alpha=0.9)
+    ax.plot(leaf_radius * np.cos(leaf_theta), leaf_radius * np.sin(leaf_theta), color=BLUE, linewidth=3.5)
+    maximum_theta = np.pi / 12
+    ax.scatter(
+        [6 * np.cos(maximum_theta)],
+        [6 * np.sin(maximum_theta)],
+        color=RED,
+        edgecolor=INK,
+        s=65,
+        zorder=5,
+    )
+    ax.annotate(
+        r"one leaf: $0\leq\theta\leq\pi/6$",
+        xy=(5.2, 1.4),
+        xytext=(6.0, 4.5),
+        arrowprops={"arrowstyle": "->", "color": BLUE},
+        color=BLUE,
+        ha="center",
+    )
+    ax.text(6.0, -4.8, r"maximum radius at $\theta=\pi/12$", color=RED, ha="center")
+    ax.set_xlim(-6.9, 7.8)
+    ax.set_ylim(-6.9, 6.9)
+    finish(fig, "polar-rose-6sin6theta-one-leaf.svg")
+
+
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     plt.rcParams.update(
@@ -440,6 +620,10 @@ def main():
     polar_area_between_curves()
     polar_limacon_inner_loop()
     polar_circle_intersections()
+    polar_tangent_negative_radius()
+    polar_cardioid_horizontal_vertical_tangents()
+    polar_limacon_total_area()
+    polar_rose_one_leaf_area()
 
     print(f"Generated parametric/polar media in {OUTPUT_DIR}")
 
