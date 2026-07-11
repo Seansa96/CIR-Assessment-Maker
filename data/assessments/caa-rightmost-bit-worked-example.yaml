@@ -1,0 +1,143 @@
+schemaVersion: 1
+id: caa-rightmost-bit-worked-example
+title: Rightmost Bit Tricks Worked Example
+assessmentType: workedExample
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-bitwise-fundamentals
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - rightmost-bit
+  - bit-tricks
+  - two-complement
+skills:
+- caa-bitwise-fundamentals
+workedExamples:
+- id: we001
+  title: Clear and isolate the rightmost set bit
+  problem: |
+    Use the 8-bit value `x = 00101100` to understand why `x & (x - 1)` clears the rightmost set bit and why `x & -x` isolates it.
+  steps:
+  - id: rightmost-s001
+    title: Find the rightmost set bit
+    instruction: |
+      Read the value from right to left. The rightmost 1 is the lowest-position set bit.
+    type: multipleChoice
+    prompt: |
+      In `00101100`, which bit value is the rightmost set bit?
+    choices:
+    - id: a
+      text: '`00000010`'
+    - id: b
+      text: '`00000100`'
+    - id: c
+      text: '`00001000`'
+    - id: d
+      text: '`00100000`'
+    answer:
+      choiceId: b
+    explanation: |
+      The low set bit is the 4's place, represented by binary `00000100`.
+  - id: rightmost-s002
+    title: Subtract one
+    instruction: |
+      Subtracting 1 turns the rightmost 1 into 0 and turns all lower bits into 1.
+    type: multipleChoice
+    prompt: |
+      What is `x - 1` for `x = 00101100`?
+    choices:
+    - id: a
+      text: '`00101011`'
+    - id: b
+      text: '`00101101`'
+    - id: c
+      text: '`00100100`'
+    - id: d
+      text: '`00000100`'
+    answer:
+      choiceId: a
+    explanation: |
+      `00101100 - 1 = 00101011`.
+  - id: rightmost-s003
+    title: Clear the bit
+    instruction: |
+      Now AND the original value with the decremented value.
+    type: multipleChoice
+    prompt: |
+      What is `00101100 & 00101011`?
+    choices:
+    - id: a
+      text: '`00101100`'
+    - id: b
+      text: '`00000100`'
+    - id: c
+      text: '`00101000`'
+    - id: d
+      text: '`00000000`'
+    answer:
+      choiceId: c
+    explanation: |
+      Only the rightmost set bit differs in a way that removes it; the result is `00101000`.
+  - id: rightmost-s004
+    title: State the identity
+    instruction: |
+      `x & (x - 1)` is useful because it removes exactly one set bit at a time when `x` is nonzero.
+    type: freeResponse
+    prompt: |
+      Explain why repeated `x = x & (x - 1)` can count set bits.
+    answer:
+      expected: |
+        Each iteration removes the current rightmost set bit. The number of iterations before x becomes zero equals the number of 1 bits in the original value.
+      gradingMode: selfCheck
+      keyPoints:
+      - Mentions one set bit removed per iteration
+      - Mentions rightmost set bit
+      - Connects iteration count to popcount
+    explanation: |
+      This is the classic loop behind a simple population-count method.
+  - id: rightmost-s005
+    title: Isolate the low bit
+    instruction: |
+      In two's-complement arithmetic, `-x` preserves the rightmost set bit and flips the higher prefix in a way that lets AND isolate that bit.
+    type: multipleChoice
+    prompt: |
+      For `x = 00101100`, what does `x & -x` produce?
+    choices:
+    - id: a
+      text: '`00101000`'
+    - id: b
+      text: '`00000100`'
+    - id: c
+      text: '`00101100`'
+    - id: d
+      text: '`11110100`'
+    answer:
+      choiceId: b
+    explanation: |
+      The isolated low bit is `00000100`.
+  - id: rightmost-s006
+    title: Choose the correct trick
+    instruction: |
+      Different tricks answer different questions.
+    type: selectAll
+    prompt: |
+      Which statements are true?
+    choices:
+    - id: a
+      text: '`x & (x - 1)` clears the rightmost set bit.'
+    - id: b
+      text: '`x & (x - 1)` isolates the rightmost set bit.'
+    - id: c
+      text: '`x & -x` isolates the rightmost set bit.'
+    - id: d
+      text: '`x & -x` always returns zero for nonzero x.'
+    answer:
+      choiceIds:
+      - a
+      - c
+    explanation: |
+      `x & (x - 1)` clears the low set bit. `x & -x` isolates it.

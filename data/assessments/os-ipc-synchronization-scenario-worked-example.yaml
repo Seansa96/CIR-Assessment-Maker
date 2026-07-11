@@ -1,0 +1,140 @@
+schemaVersion: 1
+id: os-ipc-synchronization-scenario-worked-example
+title: IPC and Synchronization Scenario Worked Example
+assessmentType: workedExample
+categoryId: operating-systems
+subcategoryIds:
+- os-ipc-synchronization
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - operating-systems
+  - scenario-reasoning
+  - ipc
+  - synchronization
+  - critical-section
+skills:
+- os-ipc-synchronization
+workedExamples:
+- id: we001
+  title: Reason through a IPC and Synchronization scenario
+  problem: Two worker threads update a shared queue while a consumer waits for items. Identify the race, choose a synchronization primitive, and explain the waiting condition.
+  steps:
+  - id: ipc-synchronization-deep-s001
+    title: Frame the OS boundary
+    type: multipleChoice
+    prompt: Which boundary is most important to identify first?
+    choices:
+    - id: a
+      text: The boundary between ordinary program behavior and OS-mediated resource control.
+    - id: b
+      text: Only the user interface colors.
+    - id: c
+      text: Only the final answer wording.
+    - id: d
+      text: Only whether the computer is modern.
+    answer:
+      choiceId: a
+    explanation: The bug is the uncontrolled interleaving.
+    instruction: Start by naming what the OS is mediating.
+  - id: ipc-synchronization-deep-s002
+    title: Identify the resource
+    type: multipleChoice
+    prompt: Which kind of thing is most likely being controlled?
+    choices:
+    - id: a
+      text: CPU, memory, storage, device access, naming, or authority.
+    - id: b
+      text: Only comments in source code.
+    - id: c
+      text: Only the user's preference for terminology.
+    - id: d
+      text: Nothing; OS mechanisms do not control resources.
+    answer:
+      choiceId: a
+    explanation: OS reasoning becomes clearer when the resource is explicit.
+    instruction: Operating systems usually act because a resource, privilege, or shared state must be controlled.
+  - id: ipc-synchronization-deep-s003
+    title: Choose the mechanism
+    type: multipleChoice
+    prompt: In this scenario, why is **Critical sections** relevant?
+    choices:
+    - id: a
+      text: Protect every conflicting access, not just some.
+    - id: b
+      text: It replaces all other OS mechanisms.
+    - id: c
+      text: It only matters for hardware designers, not OS reasoning.
+    - id: d
+      text: It is a synonym for adding more RAM.
+    answer:
+      choiceId: a
+    explanation: Protect every conflicting access, not just some.
+    instruction: Match the problem to the mechanism that directly controls it.
+  - id: ipc-synchronization-deep-s004
+    title: Spot the common confusion
+    type: multipleChoice
+    prompt: Which confusion should you avoid around **Mutexes and semaphores**?
+    choices:
+    - id: a
+      text: A binary semaphore can resemble a mutex, but the concepts differ.
+    - id: b
+      text: Assuming the concept never affects behavior.
+    - id: c
+      text: Treating all OS designs as identical.
+    - id: d
+      text: Ignoring the relationship between policy and mechanism.
+    answer:
+      choiceId: a
+    explanation: A binary semaphore can resemble a mutex, but the concepts differ.
+    instruction: Good OS answers separate similar-sounding concepts.
+  - id: ipc-synchronization-deep-s005
+    title: Name the tradeoff
+    type: multipleChoice
+    prompt: What tradeoff is most important for **Monitors and conditions**?
+    choices:
+    - id: a
+      text: Always wait for a condition, not merely a signal.
+    - id: b
+      text: There is no tradeoff in OS design.
+    - id: c
+      text: The fastest-looking choice is always correct.
+    - id: d
+      text: Compatibility and security never matter.
+    answer:
+      choiceId: a
+    explanation: Always wait for a condition, not merely a signal.
+    instruction: The best OS design answer usually admits a cost.
+  - id: ipc-synchronization-deep-s006
+    title: Check an edge case
+    type: multipleChoice
+    prompt: Which edge case would best test your understanding of **Message passing**?
+    choices:
+    - id: a
+      text: A case where the mechanism is stressed by blocking, failure, sharing, or permission limits.
+    - id: b
+      text: A case with no OS-managed resource.
+    - id: c
+      text: A case where every actor is single-threaded and isolated forever.
+    - id: d
+      text: A case where all inputs are ignored.
+    answer:
+      choiceId: a
+    explanation: Boundary cases reveal whether the mental model is real.
+    instruction: Now test the reasoning against a boundary case.
+  - id: ipc-synchronization-deep-s007
+    title: Explain the complete path
+    type: freeResponse
+    prompt: Write a short explanation of the scenario using at least three OS terms from this worked example.
+    answer:
+      expected: A strong answer names the OS-mediated resource, the relevant mechanism, the tradeoff, and the possible failure or boundary case in IPC and Synchronization.
+      gradingMode: selfCheck
+      keyPoints:
+      - Names OS-mediated resource
+      - Names relevant mechanism
+      - Mentions tradeoff or failure mode
+    explanation: 'Related topic: IPC and Synchronization. The purpose is to reason through the OS path, not to recite a definition.'
+    instruction: Finish by explaining the entire scenario from request to OS decision.

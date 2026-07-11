@@ -1,0 +1,153 @@
+schemaVersion: 1
+id: os-virtual-memory-deep-concept-lesson
+title: Virtual Memory Deep Concept Lesson
+assessmentType: conceptLesson
+categoryId: operating-systems
+subcategoryIds:
+- os-virtual-memory
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - operating-systems
+  - deep-review
+  - virtual-memory
+  - paging
+  - page-replacement
+skills:
+- os-virtual-memory
+lesson:
+  introduction: This deeper lesson expands Virtual Memory from Chapter 3 of the Modern Operating Systems reference structure. It focuses on mechanism, boundary, tradeoff, and common failure modes rather than memorized labels.
+  sections:
+  - id: paging-model
+    title: Paging model
+    required: true
+    content: 'Paging divides virtual memory into pages and physical memory into frames so mappings can be managed independently.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Virtual Memory, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: paging-model-deep-check
+      title: 'Check: Paging model'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Paging model**?
+      choices:
+      - id: a
+        text: Pages and frames are same-size units.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'Pages and frames are same-size units. Related topic: Virtual Memory.'
+  - id: translation-path
+    title: Translation path
+    required: true
+    content: 'A virtual address is split into a virtual page number and offset; the page table finds the frame while the offset stays unchanged.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Virtual Memory, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: translation-path-deep-check
+      title: 'Check: Translation path'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Translation path**?
+      choices:
+      - id: a
+        text: The offset is copied through the translation.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'The offset is copied through the translation. Related topic: Virtual Memory.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/memory/virtual-address-translation.svg
+      alt: Virtual address split into page number and offset, with TLB and page table translation into a physical frame.
+      caption: Address translation changes the page/frame portion while preserving the offset.
+  - id: tlb
+    title: Translation lookaside buffer
+    required: true
+    content: 'A TLB caches recent translations so most memory references avoid walking page tables.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Virtual Memory, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: tlb-deep-check
+      title: 'Check: Translation lookaside buffer'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Translation lookaside buffer**?
+      choices:
+      - id: a
+        text: A TLB miss is not necessarily a page fault.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'A TLB miss is not necessarily a page fault. Related topic: Virtual Memory.'
+  - id: page-fault
+    title: Page faults
+    required: true
+    content: 'A page fault makes the OS decide whether the access is valid, locate or create the page, possibly evict another page, then restart the instruction.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Virtual Memory, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: page-fault-deep-check
+      title: 'Check: Page faults'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Page faults**?
+      choices:
+      - id: a
+        text: Fault handling is a controlled recovery path.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'Fault handling is a controlled recovery path. Related topic: Virtual Memory.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/memory/page-fault-path.svg
+      alt: Page fault recovery path showing TLB miss, page table check, disk fetch, and retry.
+      caption: A page fault is a controlled recovery path, not just a slow lookup.
+  - id: replacement
+    title: Replacement and working set
+    required: true
+    content: 'Replacement policies approximate future usefulness; the working set idea asks how many pages the process actively needs.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Virtual Memory, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: replacement-deep-check
+      title: 'Check: Replacement and working set'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Replacement and working set**?
+      choices:
+      - id: a
+        text: If active working sets exceed memory, thrashing appears.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'If active working sets exceed memory, thrashing appears. Related topic: Virtual Memory.'

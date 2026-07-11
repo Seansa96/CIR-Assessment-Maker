@@ -1,0 +1,152 @@
+schemaVersion: 1
+id: caa-bitwise-fundamentals-hard-quiz
+title: Bitwise Fundamentals Hard Quiz
+assessmentType: quiz
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-bitwise-fundamentals
+modeDefault: scored
+randomizeQuestions: true
+attemptQuestionCount: 10
+navigation:
+  learningGoal: evaluate
+  activityType: formalTest
+  tags:
+  - bitwise-fundamentals
+  - masks
+  - boolean-identities
+skills:
+- caa-bitwise-fundamentals
+questions:
+- id: q001
+  title: Clear Field
+  type: multipleChoice
+  prompt: Which expression clears the bits selected by `mask` while preserving all others?
+  choices:
+  - id: a
+    text: '`x & ~mask`'
+  - id: b
+    text: '`x | mask`'
+  - id: c
+    text: '`x ^ mask`'
+  - id: d
+    text: '`~x & mask`'
+  answer:
+    choiceId: a
+  explanation: The inverted mask has zeros where the field should be cleared.
+- id: q002
+  title: Rightmost Clear
+  type: numericResponse
+  prompt: Starting from `0b10110000`, how many set bits remain after applying `x & (x - 1)` once?
+  answer:
+    value: 2
+    tolerance: 0
+  explanation: One set bit is removed, leaving two.
+- id: q003
+  title: Toggle Risk
+  type: freeResponse
+  prompt: Why can XOR toggling be risky for setting a known state?
+  answer:
+    expected: XOR flips selected bits, so applying it twice restores the original value. If you need a bit definitely on or off, use OR or AND with an inverted mask.
+    gradingMode: selfCheck
+    keyPoints:
+    - XOR flips
+    - Second application reverses
+    - OR/AND for known state
+  explanation: Toggle is not the same as assigning a state.
+- id: q004
+  title: Assumption Check
+  type: multipleChoice
+  prompt: Which assumption should be written down before trusting a hard bit-level transformation?
+  choices:
+  - id: a
+    text: Word width, signedness, and edge-case behavior
+  - id: b
+    text: Only the final decimal answer
+  - id: c
+    text: The number of comments
+  - id: d
+    text: The file extension
+  answer:
+    choiceId: a
+  explanation: These transformations are representation-sensitive.
+- id: q005
+  title: Invariant Check
+  type: multipleChoice
+  prompt: What makes a bit trick explainable rather than magical?
+  choices:
+  - id: a
+    text: A clear invariant that stays true through the transformation
+  - id: b
+    text: A shorter variable name
+  - id: c
+    text: Using only decimal numbers
+  - id: d
+    text: Avoiding all tests
+  answer:
+    choiceId: a
+  explanation: An invariant explains why the result remains correct.
+- id: q006
+  title: Low Mask Challenge
+  type: numericResponse
+  prompt: What is the decimal value of `(1 << 6) - 1`?
+  answer:
+    value: 63
+    tolerance: 0
+  explanation: Six low bits set gives binary `111111`, which is 63.
+- id: q007
+  title: Power-of-Two Pattern
+  type: multipleChoice
+  prompt: Which 8-bit value is positive and has exactly one set bit?
+  choices:
+  - id: a
+    text: '`01000000`'
+  - id: b
+    text: '`01100000`'
+  - id: c
+    text: '`00000000`'
+  - id: d
+    text: '`01111111`'
+  answer:
+    choiceId: a
+  explanation: A positive power of two has one set bit.
+- id: q008
+  title: Testing Strategy
+  type: freeResponse
+  prompt: Describe a compact testing strategy for a bit-level algorithm.
+  answer:
+    expected: Test zero, one or more exact powers of two, all-ones or maximum values, sign boundaries when signed values are involved, and at least one ordinary middle value.
+    gradingMode: selfCheck
+    keyPoints:
+    - Zero
+    - Boundary values
+    - Ordinary middle value
+  explanation: This catches both boundary and normal behavior.
+- id: q009
+  title: Code Review Habit
+  type: freeResponse
+  prompt: What should a code review ask about a low-level arithmetic optimization?
+  answer:
+    expected: It should ask what assumptions make the transformation valid, what happens at overflow or boundary inputs, and whether the optimized form is clearer or properly documented.
+    gradingMode: selfCheck
+    keyPoints:
+    - Assumptions
+    - Overflow/boundaries
+    - Clarity or documentation
+  explanation: Low-level speedups need a correctness story.
+- id: q010
+  title: Mask Isolation
+  type: multipleChoice
+  prompt: Which operation usually extracts only the bits selected by `mask`?
+  choices:
+  - id: a
+    text: '`x & mask`'
+  - id: b
+    text: '`x | mask`'
+  - id: c
+    text: '`x ^ 0`'
+  - id: d
+    text: '`x << mask`'
+  answer:
+    choiceId: a
+  explanation: AND with a mask keeps selected bits.

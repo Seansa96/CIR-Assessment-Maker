@@ -1,0 +1,80 @@
+schemaVersion: 1
+id: caa-integer-representation-worked-example
+title: Integer Representation Worked Example
+assessmentType: workedExample
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-integer-representation
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - integer-representation
+  - two-complement
+  - unsigned-arithmetic
+skills:
+- caa-integer-representation
+workedExamples:
+- id: we001
+  title: Decode and widen fixed-width values
+  problem: Work with the 4-bit pattern `1010`. Interpret it as unsigned, interpret it as signed two's-complement, and sign-extend it to 8 bits.
+  steps:
+  - id: repr-s001
+    title: Unsigned decode
+    type: numericResponse
+    prompt: What is unsigned `1010` in decimal?
+    answer:
+      value: 10
+      tolerance: 0
+    explanation: '`1010` is `8 + 2 = 10`.'
+    instruction: First read the pattern as an ordinary unsigned binary number.
+  - id: repr-s002
+    title: Signed decode
+    type: numericResponse
+    prompt: What signed value does 4-bit `1010` represent?
+    answer:
+      value: -6
+      tolerance: 0
+    explanation: The sign bit has weight -8, so `-8 + 2 = -6`.
+    instruction: Now interpret the same bits as 4-bit two's-complement.
+  - id: repr-s003
+    title: Choose extension
+    type: multipleChoice
+    prompt: Which 8-bit pattern is the sign extension of signed 4-bit `1010`?
+    choices:
+    - id: a
+      text: '`11111010`'
+    - id: b
+      text: '`00001010`'
+    - id: c
+      text: '`10100000`'
+    - id: d
+      text: '`01011010`'
+    answer:
+      choiceId: a
+    explanation: Copy the sign bit, which is 1, into the new high positions.
+    instruction: A signed value must be widened by preserving its sign.
+  - id: repr-s004
+    title: Check widened value
+    type: numericResponse
+    prompt: What signed value does `11111010` represent in 8-bit two's-complement?
+    answer:
+      value: -6
+      tolerance: 0
+    explanation: '`11111010` is 250 unsigned, and 250 - 256 = -6.'
+    instruction: The widened pattern should still represent the same signed value.
+  - id: repr-s005
+    title: Explain the habit
+    type: freeResponse
+    prompt: Why should you separate bit pattern from interpretation?
+    answer:
+      expected: The same bits can represent different values or masks depending on whether the operation treats them as unsigned, signed, flags, or fields. Correct reasoning starts by naming the word size and interpretation.
+      gradingMode: selfCheck
+      keyPoints:
+      - Mentions same bits
+      - Mentions interpretation or contract
+      - Mentions word size
+    explanation: This is the central mental model for computer arithmetic.
+    instruction: State the reasoning habit this example is trying to build.

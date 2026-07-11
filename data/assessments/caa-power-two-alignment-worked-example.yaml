@@ -1,0 +1,117 @@
+schemaVersion: 1
+id: caa-power-two-alignment-worked-example
+title: Power-of-Two Alignment Worked Example
+assessmentType: workedExample
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-power-two-alignment
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - alignment
+  - power-of-two
+  - masks
+skills:
+- caa-power-two-alignment
+workedExamples:
+- id: we001
+  title: Round an address up to a 16-byte boundary
+  problem: |
+    Given a nonnegative address-like value `x = 37`, round it up to the next multiple of 16. Use the common power-of-two alignment formula `(x + a - 1) & ~(a - 1)` with `a = 16`.
+  steps:
+  - id: align-s001
+    title: Confirm power-of-two alignment
+    instruction: |
+      The formula depends on `a` being a power of two so that `a - 1` is a low-bit mask.
+    type: multipleChoice
+    prompt: |
+      Why is `a = 16` suitable?
+    choices:
+    - id: a
+      text: It is a power of two.
+    - id: b
+      text: It is odd.
+    - id: c
+      text: It has every low bit set.
+    - id: d
+      text: It is larger than every possible address.
+    answer:
+      choiceId: a
+    explanation: |
+      16 is binary `10000`, so it has exactly one set bit.
+  - id: align-s002
+    title: Build the low-bit mask
+    instruction: |
+      For `a = 16`, the mask `a - 1` marks the low four bits.
+    type: numericResponse
+    prompt: |
+      What is `a - 1` when `a = 16`?
+    answer:
+      value: 15
+      tolerance: 0
+    explanation: |
+      `16 - 1 = 15`, binary `1111`.
+  - id: align-s003
+    title: Bias upward
+    instruction: |
+      Adding `a - 1` moves any nonaligned value into the next alignment bucket.
+    type: numericResponse
+    prompt: |
+      What is `x + a - 1` for `x = 37` and `a = 16`?
+    answer:
+      value: 52
+      tolerance: 0
+    explanation: |
+      `37 + 15 = 52`.
+  - id: align-s004
+    title: Clear low alignment bits
+    instruction: |
+      `~(a - 1)` has zeros in the low alignment bits and ones elsewhere.
+    type: multipleChoice
+    prompt: |
+      What is the purpose of ANDing with `~(a - 1)`?
+    choices:
+    - id: a
+      text: It sets the low bits.
+    - id: b
+      text: It toggles all bits.
+    - id: c
+      text: It clears the low alignment bits.
+    - id: d
+      text: It divides by 16 using decimal arithmetic.
+    answer:
+      choiceId: c
+    explanation: |
+      It clears the low four bits, leaving a multiple of 16.
+  - id: align-s005
+    title: Compute the result
+    instruction: |
+      Clearing the low four bits of 52 gives 48.
+    type: numericResponse
+    prompt: |
+      What is the aligned result?
+    answer:
+      value: 48
+      tolerance: 0
+    explanation: |
+      `52` is `0b00110100`; clearing the low four bits gives `0b00110000`, which is 48.
+  - id: align-s006
+    title: Explain the trick
+    instruction: |
+      The formula works by first ensuring the value is in the correct bucket, then dropping the remainder bits.
+    type: freeResponse
+    prompt: |
+      Explain why `(x + a - 1) & ~(a - 1)` rounds up when `a` is a power of two.
+    answer:
+      expected: |
+        For power-of-two `a`, `a - 1` is a mask of the low remainder bits. Adding `a - 1` pushes nonaligned values into the next bucket, and ANDing with `~(a - 1)` clears the remainder bits to produce a multiple of `a`.
+      gradingMode: selfCheck
+      keyPoints:
+      - Mentions `a - 1` as low-bit mask
+      - Mentions biasing upward
+      - Mentions clearing remainder/alignment bits
+    explanation: |
+      Related topic: power-of-two alignment and masks.

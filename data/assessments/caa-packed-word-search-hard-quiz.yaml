@@ -1,0 +1,152 @@
+schemaVersion: 1
+id: caa-packed-word-search-hard-quiz
+title: Word Searching and Packed Data Hard Quiz
+assessmentType: quiz
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-packed-word-search
+modeDefault: scored
+randomizeQuestions: true
+attemptQuestionCount: 10
+navigation:
+  learningGoal: evaluate
+  activityType: formalTest
+  tags:
+  - packed-data
+  - byte-search
+  - word-search
+skills:
+- caa-packed-word-search
+questions:
+- id: q001
+  title: Lane Reasoning
+  type: multipleChoice
+  prompt: Why are packed byte tricks usually designed with per-lane high-bit markers?
+  choices:
+  - id: a
+    text: They let each byte report a condition without being confused with neighboring bytes.
+  - id: b
+    text: They convert bytes to strings.
+  - id: c
+    text: They remove the need for masks.
+  - id: d
+    text: They only work on decimal digits.
+  answer:
+    choiceId: a
+  explanation: The high bit can act as a flag for a lane.
+- id: q002
+  title: Byte Lanes
+  type: numericResponse
+  prompt: How many 8-bit lanes fit in a 32-bit word?
+  answer:
+    value: 4
+    tolerance: 0
+  explanation: 32 divided by 8 is 4.
+- id: q003
+  title: Packed Search Caveat
+  type: freeResponse
+  prompt: Explain why packed-word search algorithms must avoid cross-byte carry contamination.
+  answer:
+    expected: Arithmetic in one byte lane can carry or borrow into a neighboring lane unless masks and constants are chosen to isolate lane behavior.
+    gradingMode: selfCheck
+    keyPoints:
+    - Carry or borrow
+    - Neighboring lane
+    - Masks/constants isolate
+  explanation: Lane independence is the core safety condition.
+- id: q004
+  title: Assumption Check
+  type: multipleChoice
+  prompt: Which assumption should be written down before trusting a hard bit-level transformation?
+  choices:
+  - id: a
+    text: Word width, signedness, and edge-case behavior
+  - id: b
+    text: Only the final decimal answer
+  - id: c
+    text: The number of comments
+  - id: d
+    text: The file extension
+  answer:
+    choiceId: a
+  explanation: These transformations are representation-sensitive.
+- id: q005
+  title: Invariant Check
+  type: multipleChoice
+  prompt: What makes a bit trick explainable rather than magical?
+  choices:
+  - id: a
+    text: A clear invariant that stays true through the transformation
+  - id: b
+    text: A shorter variable name
+  - id: c
+    text: Using only decimal numbers
+  - id: d
+    text: Avoiding all tests
+  answer:
+    choiceId: a
+  explanation: An invariant explains why the result remains correct.
+- id: q006
+  title: Low Mask Challenge
+  type: numericResponse
+  prompt: What is the decimal value of `(1 << 6) - 1`?
+  answer:
+    value: 63
+    tolerance: 0
+  explanation: Six low bits set gives binary `111111`, which is 63.
+- id: q007
+  title: Power-of-Two Pattern
+  type: multipleChoice
+  prompt: Which 8-bit value is positive and has exactly one set bit?
+  choices:
+  - id: a
+    text: '`01000000`'
+  - id: b
+    text: '`01100000`'
+  - id: c
+    text: '`00000000`'
+  - id: d
+    text: '`01111111`'
+  answer:
+    choiceId: a
+  explanation: A positive power of two has one set bit.
+- id: q008
+  title: Testing Strategy
+  type: freeResponse
+  prompt: Describe a compact testing strategy for a bit-level algorithm.
+  answer:
+    expected: Test zero, one or more exact powers of two, all-ones or maximum values, sign boundaries when signed values are involved, and at least one ordinary middle value.
+    gradingMode: selfCheck
+    keyPoints:
+    - Zero
+    - Boundary values
+    - Ordinary middle value
+  explanation: This catches both boundary and normal behavior.
+- id: q009
+  title: Code Review Habit
+  type: freeResponse
+  prompt: What should a code review ask about a low-level arithmetic optimization?
+  answer:
+    expected: It should ask what assumptions make the transformation valid, what happens at overflow or boundary inputs, and whether the optimized form is clearer or properly documented.
+    gradingMode: selfCheck
+    keyPoints:
+    - Assumptions
+    - Overflow/boundaries
+    - Clarity or documentation
+  explanation: Low-level speedups need a correctness story.
+- id: q010
+  title: Mask Isolation
+  type: multipleChoice
+  prompt: Which operation usually extracts only the bits selected by `mask`?
+  choices:
+  - id: a
+    text: '`x & mask`'
+  - id: b
+    text: '`x | mask`'
+  - id: c
+    text: '`x ^ 0`'
+  - id: d
+    text: '`x << mask`'
+  answer:
+    choiceId: a
+  explanation: AND with a mask keeps selected bits.

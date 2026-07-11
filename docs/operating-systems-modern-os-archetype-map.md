@@ -291,3 +291,34 @@ Use rule: use this map for concept coverage, misconceptions, and difficulty targ
 - `os-operating-system-design-quiz`
 - `os-operating-system-design-test`
 - `operating-systems-cumulative-review-test`
+
+## Deep Expansion Layer
+
+The second-pass expansion adds deeper chapter-level practice without replacing the original overview assessments.
+
+Added patterns:
+- `*-deep-concept-lesson`: mechanism, boundary, tradeoff, and failure-mode focused lessons.
+- `*-scenario-worked-example`: guided scenario analysis for each topic.
+- `*-hard-quiz`: harder mixed-practice questions requiring explanation and misconception detection.
+- `operating-systems-*-deep-test`: cumulative tests for major OS areas.
+
+Coverage principle: each deep item should ask the learner to identify the OS-managed resource, the mechanism that controls it, the relevant policy or tradeoff, and an edge case such as blocking, failure, permission denial, contention, or scalability limits.
+
+## Visual Aid Inventory
+
+The OS concept lessons now include local SVG media under `frontend/public/assessments/operating-systems/`.
+
+Primary visual clusters:
+- system calls and privilege boundaries
+- virtual memory translation and page faults
+- process/thread layout and context switching
+- race conditions, mutexes, and semaphores
+- scheduling queues and round-robin time slices
+- I/O stack, DMA/interrupt flow, and event-loop callbacks
+- file path lookup, inodes, and journaled writes
+- deadlock resource allocation graphs
+- VM/container and trap-and-emulate boundaries
+- cache coherence, ACL/capability security, trusted computing base, UNIX pipelines, Windows handles, and OS design structures
+
+The SVGs are original local diagrams and should remain inspectable without external dependencies.
+

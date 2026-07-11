@@ -1,0 +1,201 @@
+schemaVersion: 1
+id: caa-power-two-alignment-quiz
+title: Power-of-Two Alignment Quiz
+assessmentType: quiz
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-power-two-alignment
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 12
+navigation:
+  learningGoal: practice
+  activityType: focusedPractice
+  tags:
+  - power-of-two
+  - alignment
+  - rounding
+skills:
+- caa-power-two-alignment
+questions:
+- id: q001
+  title: Power of Two Test
+  type: multipleChoice
+  prompt: |
+    Which value is a power of two?
+  choices:
+  - id: a
+    text: '64'
+  - id: b
+    text: '96'
+  - id: c
+    text: '0'
+  - id: d
+    text: '72'
+  answer:
+    choiceId: a
+  explanation: |
+    64 has exactly one set bit.
+- id: q002
+  title: Power Test Expression
+  type: multipleChoice
+  prompt: |
+    For positive `x`, which expression is true exactly when `x` is a power of two?
+  choices:
+  - id: a
+    text: '`(x & (x - 1)) == 0`'
+  - id: b
+    text: '`(x | (x - 1)) == 0`'
+  - id: c
+    text: '`(x & -x) == 0`'
+  - id: d
+    text: '`x == x - 1`'
+  answer:
+    choiceId: a
+  explanation: |
+    A power of two has one set bit, and clearing it leaves zero.
+- id: q003
+  title: Round Up to 8
+  type: numericResponse
+  prompt: |
+    Round 19 up to the next multiple of 8.
+  answer:
+    value: 24
+    tolerance: 0
+  explanation: |
+    The multiples of 8 around 19 are 16 and 24; rounding up gives 24.
+- id: q004
+  title: Round Up to 16
+  type: numericResponse
+  prompt: |
+    Round 49 up to the next multiple of 16.
+  answer:
+    value: 64
+    tolerance: 0
+  explanation: |
+    The next 16-byte boundary after 49 is 64.
+- id: q005
+  title: Already Aligned
+  type: numericResponse
+  prompt: |
+    Round 64 up to a 16-byte boundary.
+  answer:
+    value: 64
+    tolerance: 0
+  explanation: |
+    Already aligned values stay unchanged.
+- id: q006
+  title: Alignment Mask
+  type: multipleChoice
+  prompt: |
+    For 32-byte alignment, what is `a - 1`?
+  choices:
+  - id: a
+    text: '31'
+  - id: b
+    text: '32'
+  - id: c
+    text: '30'
+  - id: d
+    text: '63'
+  answer:
+    choiceId: a
+  explanation: |
+    `32 - 1 = 31`, a mask of the low five bits.
+- id: q007
+  title: Formula Condition
+  type: multipleChoice
+  prompt: |
+    When is `(x + a - 1) & ~(a - 1)` the standard alignment formula?
+  choices:
+  - id: a
+    text: When `a` is a power of two.
+  - id: b
+    text: When `a` is odd.
+  - id: c
+    text: When `x` is negative.
+  - id: d
+    text: When `a` is prime.
+  answer:
+    choiceId: a
+  explanation: |
+    The mask structure depends on power-of-two alignment.
+- id: q008
+  title: Alignment Uses
+  type: selectAll
+  prompt: |
+    Which are common reasons to align values?
+  choices:
+  - id: a
+    text: Memory layout constraints
+  - id: b
+    text: Vector/SIMD-friendly boundaries
+  - id: c
+    text: Page or cache-line boundaries
+  - id: d
+    text: Avoiding all need for bounds checks
+  answer:
+    choiceIds:
+    - a
+    - b
+    - c
+  explanation: |
+    Alignment helps layout/performance/protocol constraints, but does not eliminate safety checks.
+- id: q009
+  title: Explain Boundary Crossing
+  type: freeResponse
+  prompt: |
+    Why can boundary crossing matter for fixed-size blocks?
+  answer:
+    expected: |
+      If an object crosses a boundary such as a cache line, page, or packed storage block, it may require extra accesses or special handling. Alignment can keep objects within expected boundaries.
+    gradingMode: selfCheck
+    keyPoints:
+    - Mentions boundary such as cache/page/block
+    - Mentions extra accesses or handling
+    - Connects alignment to avoiding crossing
+  explanation: |
+    Boundary reasoning is one practical reason alignment matters.
+- id: q010
+  title: Low Mask
+  type: numericResponse
+  prompt: |
+    What is `(1 << 6) - 1`?
+  answer:
+    value: 63
+    tolerance: 0
+  explanation: |
+    Six low bits set gives binary `111111`, decimal 63.
+- id: q011
+  title: Round Down
+  type: multipleChoice
+  prompt: |
+    Which expression rounds nonnegative `x` down to a multiple of power-of-two `a`?
+  choices:
+  - id: a
+    text: '`x & ~(a - 1)`'
+  - id: b
+    text: '`x | (a - 1)`'
+  - id: c
+    text: '`x + a - 1`'
+  - id: d
+    text: '`x ^ (a - 1)`'
+  answer:
+    choiceId: a
+  explanation: |
+    Clearing the low remainder bits rounds down.
+- id: q012
+  title: Explain Already Aligned
+  type: freeResponse
+  prompt: |
+    Why does the round-up formula leave an already aligned value unchanged?
+  answer:
+    expected: |
+      If `x` already has zero in the low alignment bits, adding `a - 1` moves it just below the next boundary. Clearing the low bits returns the original aligned value.
+    gradingMode: selfCheck
+    keyPoints:
+    - Mentions low alignment bits are zero
+    - Mentions adding `a - 1`
+    - Mentions clearing bits returns original value
+  explanation: |
+    This is an important check for trusting the formula.

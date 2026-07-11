@@ -1,0 +1,158 @@
+schemaVersion: 1
+id: os-input-output-deep-concept-lesson
+title: Input and Output Deep Concept Lesson
+assessmentType: conceptLesson
+categoryId: operating-systems
+subcategoryIds:
+- os-input-output
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - operating-systems
+  - deep-review
+  - io
+  - interrupts
+  - dma
+skills:
+- os-input-output
+lesson:
+  introduction: This deeper lesson expands Input and Output from Chapter 5 of the Modern Operating Systems reference structure. It focuses on mechanism, boundary, tradeoff, and common failure modes rather than memorized labels.
+  sections:
+  - id: io-path
+    title: I/O path
+    required: true
+    content: 'An I/O request travels from application code through system calls, device-independent layers, drivers, controllers, and hardware.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Input and Output, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: io-path-deep-check
+      title: 'Check: I/O path'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **I/O path**?
+      choices:
+      - id: a
+        text: User code does not drive hardware directly.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'User code does not drive hardware directly. Related topic: Input and Output.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/io-storage/io-stack.svg
+      alt: Application request traveling through syscall, OS I/O layer, driver, controller, and device.
+      caption: I/O requests pass through multiple OS-mediated layers.
+  - id: interrupts-polling
+    title: Interrupts versus polling
+    required: true
+    content: 'Polling repeatedly checks device status; interrupts let hardware notify the CPU when attention is needed.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Input and Output, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: interrupts-polling-deep-check
+      title: 'Check: Interrupts versus polling'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Interrupts versus polling**?
+      choices:
+      - id: a
+        text: Interrupts improve waiting efficiency but add asynchronous control flow.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'Interrupts improve waiting efficiency but add asynchronous control flow. Related topic: Input and Output.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/io-storage/event-loop-callback.svg
+      alt: Event loop receiving I/O and timer events and dispatching callbacks.
+      caption: Event-based programming turns asynchronous events into callback dispatch.
+  - id: dma
+    title: DMA
+    required: true
+    content: 'DMA lets a controller transfer blocks between device and memory after the OS sets up a safe transfer.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Input and Output, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: dma-deep-check
+      title: 'Check: DMA'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **DMA**?
+      choices:
+      - id: a
+        text: DMA still requires OS setup and protection.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'DMA still requires OS setup and protection. Related topic: Input and Output.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/io-storage/dma-interrupt-flow.svg
+      alt: CPU setup followed by DMA transfer to memory and interrupt completion.
+      caption: DMA lets a device move data after the OS safely sets up the transfer.
+  - id: drivers
+    title: Device drivers
+    required: true
+    content: 'Drivers translate OS-level requests into device-specific commands and often run with high privilege.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Input and Output, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: drivers-deep-check
+      title: 'Check: Device drivers'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Device drivers**?
+      choices:
+      - id: a
+        text: Driver reliability is OS reliability.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'Driver reliability is OS reliability. Related topic: Input and Output.'
+  - id: buffering-spooling
+    title: Buffering and spooling
+    required: true
+    content: 'Buffering smooths speed mismatches; spooling queues output for devices that cannot safely serve many writers directly.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For Input and Output, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: buffering-spooling-deep-check
+      title: 'Check: Buffering and spooling'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Buffering and spooling**?
+      choices:
+      - id: a
+        text: I/O performance often depends on staging.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'I/O performance often depends on staging. Related topic: Input and Output.'

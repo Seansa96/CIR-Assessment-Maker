@@ -1,0 +1,146 @@
+schemaVersion: 1
+id: caa-integer-representation-concept-lesson
+title: Integer Representation Concept Lesson
+assessmentType: conceptLesson
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-integer-representation
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - integer-representation
+  - two-complement
+  - word-size
+  - bit-models
+skills:
+- caa-integer-representation
+lesson:
+  introduction: |
+    Computer arithmetic starts by remembering that machine integers are fixed-width patterns. The same bits can be interpreted as unsigned values, signed two's-complement values, masks, flags, or fields.
+  sections:
+  - id: fixed-width-words
+    title: Fixed-width words
+    required: true
+    content: |
+      A machine integer has a fixed number of bits. In an 8-bit word, adding 1 to 255 wraps to 0 if the operation is treated as unsigned modular arithmetic. Algorithms must be explicit about the assumed width.
+    check:
+      id: fixed-width-words-check
+      title: Check fixed width
+      type: multipleChoice
+      prompt: |
+        In an 8-bit unsigned word, what value follows 255 after adding 1?
+      choices:
+      - id: a
+        text: '0'
+      - id: b
+        text: '256'
+      - id: c
+        text: '-1'
+      - id: d
+        text: The operation becomes a 9-bit value automatically.
+      answer:
+        choiceId: a
+      explanation: |
+        With 8 bits, arithmetic wraps modulo 256 unless a wider representation is used.
+  - id: unsigned-interpretation
+    title: Unsigned interpretation
+    required: true
+    content: |
+      Unsigned interpretation treats a bit pattern as a nonnegative binary number. For example, `1111` in a 4-bit word is 15 unsigned.
+    check:
+      id: unsigned-interpretation-check
+      title: Unsigned value
+      type: numericResponse
+      prompt: |
+        What is the unsigned value of the 4-bit pattern `1111`?
+      answer:
+        value: 15
+        tolerance: 0
+      explanation: |
+        `1111` is `8+4+2+1=15`.
+  - id: twos-complement
+    title: Two's-complement interpretation
+    required: true
+    content: |
+      Two's-complement uses the high bit as a negative-weight bit. In 4 bits, `1111` represents `-1` because it is congruent to 15 modulo 16 but interpreted in the signed range -8 through 7.
+    check:
+      id: twos-complement-check
+      title: Signed value
+      type: numericResponse
+      prompt: |
+        What signed two's-complement value does the 4-bit pattern `1111` represent?
+      answer:
+        value: -1
+        tolerance: 0
+      explanation: |
+        The all-ones pattern represents `-1` in two's complement.
+  - id: masks-and-fields
+    title: Masks and fields
+    required: true
+    content: |
+      A mask selects a subset of bits. `x & 0x0F` keeps the low four bits and clears the rest. Thinking in masks is often better than thinking in decimal values.
+    check:
+      id: masks-and-fields-check
+      title: Recognize a mask
+      type: multipleChoice
+      prompt: |
+        What does `x & 0x0F` keep?
+      choices:
+      - id: a
+        text: The low four bits of `x`
+      - id: b
+        text: The high four bits of `x`
+      - id: c
+        text: Only the sign bit
+      - id: d
+        text: Only bits that are already zero
+      answer:
+        choiceId: a
+      explanation: |
+        `0x0F` has ones in the low nibble, so AND keeps those bits.
+  - id: shifts
+    title: Shifts as movement
+    required: true
+    content: |
+      A left shift moves bits toward more significant positions and inserts zeros on the right. For unsigned values, shifting left by one often corresponds to multiplying by 2, if no important bit is shifted out.
+    check:
+      id: shifts-check
+      title: Shift value
+      type: numericResponse
+      prompt: |
+        For an unsigned value, what is `3 << 1`?
+      answer:
+        value: 6
+        tolerance: 0
+      explanation: |
+        `3` is binary `11`; shifting left gives `110`, which is 6.
+  - id: representation-versus-value
+    title: Representation versus value
+    required: true
+    content: |
+      A key habit is separating the bit pattern from the interpretation. The same pattern can mean a number, a set of flags, a mask, an encoded byte, or part of a packed field.
+    check:
+      id: representation-versus-value-check
+      title: Multiple interpretations
+      type: selectAll
+      prompt: |
+        Which can be valid interpretations of the same bit pattern?
+      choices:
+      - id: a
+        text: An unsigned integer
+      - id: b
+        text: A signed two's-complement integer
+      - id: c
+        text: A set of flags
+      - id: d
+        text: Only one fixed meaning forever
+      answer:
+        choiceIds:
+        - a
+        - b
+        - c
+      explanation: |
+        Bits are representation. Meaning comes from the operation or data contract applied to them.

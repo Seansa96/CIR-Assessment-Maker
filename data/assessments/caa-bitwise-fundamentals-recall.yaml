@@ -1,0 +1,104 @@
+schemaVersion: 1
+id: caa-bitwise-fundamentals-recall
+title: Bitwise Fundamentals Recall Drill
+assessmentType: recallDrill
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-bitwise-fundamentals
+modeDefault: practice
+randomizeQuestions: true
+navigation:
+  learningGoal: recall
+  activityType: mixedRecallSet
+  tags:
+  - bitwise-identities
+  - rightmost-bit
+  - masks
+items:
+- id: and-clears-bits
+  type: flashcard
+  prompt: What does `x & mask` generally do?
+  answer:
+    expected: It keeps bits where the mask has 1s and clears bits where the mask has 0s.
+  explanation: AND is the usual operation for selecting a subset of bits.
+  tags:
+  - and
+  - masks
+- id: or-sets-bits
+  type: cloze
+  prompt: 'Complete: `x | mask` is commonly used to ____ selected bits.'
+  answer:
+    expected: set
+    aliases:
+    - turn on
+    - set to 1
+  explanation: OR with 1 forces a bit to 1; OR with 0 leaves it unchanged.
+  tags:
+  - or
+  - masks
+- id: xor-toggles-bits
+  type: cloze
+  prompt: 'Complete: `x ^ mask` is commonly used to ____ selected bits.'
+  answer:
+    expected: toggle
+    aliases:
+    - flip
+    - invert
+  explanation: XOR with 1 flips a bit; XOR with 0 leaves it unchanged.
+  tags:
+  - xor
+  - toggle
+- id: clear-rightmost-set-bit
+  type: typed
+  prompt: Recall the expression that clears the rightmost set bit of `x`.
+  answer:
+    expected: x & (x - 1)
+    aliases:
+    - x&(x-1)
+    - x and x minus 1
+  explanation: '`x - 1` flips the rightmost 1 and all lower bits; AND removes that rightmost 1.'
+  tags:
+  - rightmost-bit
+- id: isolate-rightmost-set-bit
+  type: typed
+  prompt: Recall the expression that isolates the rightmost set bit of `x` in two's-complement arithmetic.
+  answer:
+    expected: x & -x
+    aliases:
+    - x&-x
+    - x and negative x
+  explanation: '`-x` is the two''s-complement negation, and AND leaves only the lowest set bit.'
+  tags:
+  - rightmost-bit
+  - two-complement
+- id: power-two-test
+  type: typed
+  prompt: Recall the common positive-integer power-of-two test.
+  answer:
+    expected: x > 0 and (x & (x - 1)) == 0
+    aliases:
+    - x>0 && (x&(x-1))==0
+    - x positive and x&(x-1) equals zero
+  explanation: Powers of two have exactly one set bit, so clearing the rightmost set bit leaves zero.
+  tags:
+  - power-of-two
+- id: low-bit-mask
+  type: flashcard
+  prompt: What does `(1 << n) - 1` represent when `n` is within the word size?
+  answer:
+    expected: A mask with the lowest n bits set to 1.
+  explanation: For example, `(1 << 4) - 1` is binary `1111`.
+  tags:
+  - masks
+  - shifts
+- id: alignment-rounding
+  type: typed
+  prompt: Recall the common expression for rounding nonnegative `x` up to a power-of-two alignment `a`.
+  answer:
+    expected: (x + a - 1) & ~(a - 1)
+    aliases:
+    - (x+a-1)&~(a-1)
+  explanation: This works when `a` is a power of two. Add `a-1`, then clear the low alignment bits.
+  tags:
+  - alignment
+  - power-of-two

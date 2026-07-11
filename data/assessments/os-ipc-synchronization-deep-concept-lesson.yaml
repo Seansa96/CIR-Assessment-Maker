@@ -1,0 +1,158 @@
+schemaVersion: 1
+id: os-ipc-synchronization-deep-concept-lesson
+title: IPC and Synchronization Deep Concept Lesson
+assessmentType: conceptLesson
+categoryId: operating-systems
+subcategoryIds:
+- os-ipc-synchronization
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - operating-systems
+  - deep-review
+  - ipc
+  - synchronization
+  - critical-section
+skills:
+- os-ipc-synchronization
+lesson:
+  introduction: This deeper lesson expands IPC and Synchronization from Chapter 2 of the Modern Operating Systems reference structure. It focuses on mechanism, boundary, tradeoff, and common failure modes rather than memorized labels.
+  sections:
+  - id: race-condition
+    title: Race conditions
+    required: true
+    content: 'A race condition occurs when correctness depends on timing between concurrent operations on shared state.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For IPC and Synchronization, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: race-condition-deep-check
+      title: 'Check: Race conditions'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Race conditions**?
+      choices:
+      - id: a
+        text: The bug is the uncontrolled interleaving.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'The bug is the uncontrolled interleaving. Related topic: IPC and Synchronization.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/synchronization/race-condition-interleaving.svg
+      alt: Two thread timelines both reading the same value and losing an increment.
+      caption: Race bugs often come from an unlucky but valid interleaving.
+  - id: critical-section
+    title: Critical sections
+    required: true
+    content: 'A critical section is code that must be protected because it reads or modifies shared state in a non-independent way.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For IPC and Synchronization, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: critical-section-deep-check
+      title: 'Check: Critical sections'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Critical sections**?
+      choices:
+      - id: a
+        text: Protect every conflicting access, not just some.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'Protect every conflicting access, not just some. Related topic: IPC and Synchronization.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/synchronization/mutex-critical-section.svg
+      alt: A mutex guarding a shared-data critical section while another thread waits.
+      caption: A mutex protects a critical section by admitting one actor at a time.
+  - id: mutex-semaphore
+    title: Mutexes and semaphores
+    required: true
+    content: 'A mutex guards ownership of a critical section; a semaphore generalizes coordination through an integer count.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For IPC and Synchronization, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: mutex-semaphore-deep-check
+      title: 'Check: Mutexes and semaphores'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Mutexes and semaphores**?
+      choices:
+      - id: a
+        text: A binary semaphore can resemble a mutex, but the concepts differ.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'A binary semaphore can resemble a mutex, but the concepts differ. Related topic: IPC and Synchronization.'
+    media:
+    - type: image
+      src: /assessments/operating-systems/synchronization/semaphore-count.svg
+      alt: Semaphore count with two threads entering and a third thread waiting in a queue.
+      caption: A semaphore count controls how many actors may proceed.
+  - id: monitors-conditions
+    title: Monitors and conditions
+    required: true
+    content: 'Monitors package shared data with procedures and use condition variables to wait until a predicate becomes true.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For IPC and Synchronization, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: monitors-conditions-deep-check
+      title: 'Check: Monitors and conditions'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Monitors and conditions**?
+      choices:
+      - id: a
+        text: Always wait for a condition, not merely a signal.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'Always wait for a condition, not merely a signal. Related topic: IPC and Synchronization.'
+  - id: message-passing
+    title: Message passing
+    required: true
+    content: 'Message passing coordinates by exchanging data instead of sharing memory directly, but still requires protocol design.
+
+
+      Decision habit: ask what boundary, resource, or policy is being controlled. For IPC and Synchronization, the safe answer usually names both the mechanism and its tradeoff.'
+    check:
+      id: message-passing-deep-check
+      title: 'Check: Message passing'
+      type: multipleChoice
+      prompt: Which statement best captures the important idea behind **Message passing**?
+      choices:
+      - id: a
+        text: Message passing avoids shared memory races but can still deadlock or block.
+      - id: b
+        text: The issue is only terminology and has no effect on resource management or protection.
+      - id: c
+        text: The application can always bypass the operating system safely if it needs more speed.
+      - id: d
+        text: Adding faster hardware removes the need to reason about this design choice.
+      answer:
+        choiceId: a
+      explanation: 'Message passing avoids shared memory races but can still deadlock or block. Related topic: IPC and Synchronization.'

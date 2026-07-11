@@ -1,0 +1,217 @@
+schemaVersion: 1
+id: caa-bitwise-fundamentals-easy-quiz
+title: Bitwise Fundamentals Easy Quiz
+assessmentType: quiz
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-bitwise-fundamentals
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 12
+navigation:
+  learningGoal: practice
+  activityType: focusedPractice
+  tags:
+  - bitwise-fundamentals
+  - masks
+  - rightmost-bit
+skills:
+- caa-bitwise-fundamentals
+questions:
+- id: q001
+  title: AND Mask
+  type: multipleChoice
+  prompt: |
+    What does `x & 0x0F` keep?
+  choices:
+  - id: a
+    text: The low four bits
+  - id: b
+    text: The high four bits
+  - id: c
+    text: Only the sign bit
+  - id: d
+    text: Only zero bits
+  answer:
+    choiceId: a
+  explanation: |
+    `0x0F` is binary `00001111` in the low byte, so AND keeps the low nibble.
+- id: q002
+  title: OR Mask
+  type: multipleChoice
+  prompt: |
+    Which operation sets the bits present in `mask`?
+  choices:
+  - id: a
+    text: '`x | mask`'
+  - id: b
+    text: '`x & mask`'
+  - id: c
+    text: '`x ^ mask`'
+  - id: d
+    text: '`x >> mask`'
+  answer:
+    choiceId: a
+  explanation: |
+    OR with 1 sets a bit to 1.
+- id: q003
+  title: XOR Mask
+  type: multipleChoice
+  prompt: |
+    Which operation toggles selected bits?
+  choices:
+  - id: a
+    text: '`x ^ mask`'
+  - id: b
+    text: '`x | mask`'
+  - id: c
+    text: '`x & mask`'
+  - id: d
+    text: '`x + mask`'
+  answer:
+    choiceId: a
+  explanation: |
+    XOR with 1 flips a bit.
+- id: q004
+  title: Clear Rightmost Set Bit
+  type: multipleChoice
+  prompt: |
+    Which expression clears the rightmost set bit?
+  choices:
+  - id: a
+    text: '`x & (x - 1)`'
+  - id: b
+    text: '`x & -x`'
+  - id: c
+    text: '`x | (x - 1)`'
+  - id: d
+    text: '`x ^ 0`'
+  answer:
+    choiceId: a
+  explanation: |
+    `x & (x - 1)` clears the lowest 1 bit.
+- id: q005
+  title: Isolate Rightmost Set Bit
+  type: multipleChoice
+  prompt: |
+    Which expression isolates the rightmost set bit in two's-complement arithmetic?
+  choices:
+  - id: a
+    text: '`x & -x`'
+  - id: b
+    text: '`x & (x - 1)`'
+  - id: c
+    text: '`x | -x`'
+  - id: d
+    text: '`~x`'
+  answer:
+    choiceId: a
+  explanation: |
+    `x & -x` leaves only the low set bit.
+- id: q006
+  title: Shift Left
+  type: numericResponse
+  prompt: |
+    What is the decimal value of `5 << 1` for unsigned arithmetic?
+  answer:
+    value: 10
+    tolerance: 0
+  explanation: |
+    Left shifting by 1 multiplies by 2 when no important bit is lost.
+- id: q007
+  title: Low Mask Value
+  type: numericResponse
+  prompt: |
+    What is the decimal value of `(1 << 5) - 1`?
+  answer:
+    value: 31
+    tolerance: 0
+  explanation: |
+    This creates five low 1 bits: binary `11111`, which is 31.
+- id: q008
+  title: Power of Two Pattern
+  type: multipleChoice
+  prompt: |
+    Which unsigned binary value is a power of two?
+  choices:
+  - id: a
+    text: '`00100000`'
+  - id: b
+    text: '`00101000`'
+  - id: c
+    text: '`00000000`'
+  - id: d
+    text: '`00110000`'
+  answer:
+    choiceId: a
+  explanation: |
+    A positive power of two has exactly one set bit.
+- id: q009
+  title: Valid Mask Uses
+  type: selectAll
+  prompt: |
+    Which are valid bit-mask uses?
+  choices:
+  - id: a
+    text: Clear selected bits with AND and an inverted mask.
+  - id: b
+    text: Set selected bits with OR.
+  - id: c
+    text: Toggle selected bits with XOR.
+  - id: d
+    text: Assume masks work without knowing word width.
+  answer:
+    choiceIds:
+    - a
+    - b
+    - c
+  explanation: |
+    Masks need word-size awareness, but AND/OR/XOR are standard operations for clearing, setting, and toggling.
+- id: q010
+  title: Explain Word Size
+  type: freeResponse
+  prompt: |
+    Why do bit tricks need a clear word-size assumption?
+  answer:
+    expected: |
+      Bit tricks operate on fixed-width representations. Shifts, complements, overflow, and sign interpretation depend on the number of bits and whether the value is signed or unsigned.
+    gradingMode: selfCheck
+    keyPoints:
+    - Mentions fixed width
+    - Mentions shifts/complement/overflow or signedness
+    - Explains why assumptions affect correctness
+  explanation: |
+    Machine arithmetic is not infinite mathematical integer arithmetic.
+- id: q011
+  title: Complement Meaning
+  type: multipleChoice
+  prompt: |
+    What does `~mask` mean in fixed-width arithmetic?
+  choices:
+  - id: a
+    text: All bits flipped within the word width
+  - id: b
+    text: The negative of mask in ordinary algebra only
+  - id: c
+    text: A mask with all zeros
+  - id: d
+    text: A left shift by mask
+  answer:
+    choiceId: a
+  explanation: |
+    Complement flips bits, but the result depends on the word width.
+- id: q012
+  title: Explain Rightmost Bit
+  type: freeResponse
+  prompt: |
+    Explain the difference between `x & (x - 1)` and `x & -x`.
+  answer:
+    expected: |
+      `x & (x - 1)` clears the rightmost set bit. `x & -x` isolates the rightmost set bit. The first removes one 1 bit; the second returns a mask containing only that bit.
+    gradingMode: selfCheck
+    keyPoints:
+    - Identifies clear operation
+    - Identifies isolate operation
+    - Mentions rightmost set bit
+  explanation: |
+    These are complementary rightmost-bit tools.

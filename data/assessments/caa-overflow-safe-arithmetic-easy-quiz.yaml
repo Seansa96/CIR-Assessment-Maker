@@ -1,0 +1,124 @@
+schemaVersion: 1
+id: caa-overflow-safe-arithmetic-easy-quiz
+title: Overflow, Bounds, and Safe Arithmetic Easy Quiz
+assessmentType: quiz
+categoryId: computer-arithmetic-algorithms
+subcategoryIds:
+- caa-overflow-safe-arithmetic
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+navigation:
+  learningGoal: practice
+  activityType: focusedPractice
+  tags:
+  - overflow
+  - bounds
+  - safe-arithmetic
+skills:
+- caa-overflow-safe-arithmetic
+questions:
+- id: q001
+  title: Signed Overflow
+  type: multipleChoice
+  prompt: Which signed addition case can overflow?
+  choices:
+  - id: a
+    text: Positive plus positive gives negative
+  - id: b
+    text: Positive plus negative gives positive
+  - id: c
+    text: Zero plus negative gives negative
+  - id: d
+    text: Negative plus positive gives zero
+  answer:
+    choiceId: a
+  explanation: Same-sign inputs producing an opposite-sign result indicate overflow.
+- id: q002
+  title: Unsigned Byte Wrap
+  type: numericResponse
+  prompt: In 8-bit unsigned arithmetic, what is `250 + 10` after wraparound?
+  answer:
+    value: 4
+    tolerance: 0
+  explanation: '`260 mod 256 = 4`.'
+- id: q003
+  title: Safe Average
+  type: multipleChoice
+  prompt: Why can `(a + b) / 2` be unsafe for large integers?
+  choices:
+  - id: a
+    text: The sum can overflow before division.
+  - id: b
+    text: Division always changes the sign bit.
+  - id: c
+    text: Averages cannot be integers.
+  - id: d
+    text: Addition is unavailable for integers.
+  answer:
+    choiceId: a
+  explanation: The intermediate sum may exceed the fixed-width range.
+- id: q004
+  title: Saturating Arithmetic
+  type: multipleChoice
+  prompt: What does saturating arithmetic do on overflow?
+  choices:
+  - id: a
+    text: Clamps to a boundary value
+  - id: b
+    text: Always wraps to zero
+  - id: c
+    text: Deletes the result
+  - id: d
+    text: Converts to text
+  answer:
+    choiceId: a
+  explanation: Saturation chooses the nearest representable bound.
+- id: q005
+  title: Carry Meaning
+  type: freeResponse
+  prompt: Explain why multiword addition needs a carry.
+  answer:
+    expected: Each word is fixed-width, so overflow out of a low word must be added into the next higher word to represent the larger combined integer.
+    gradingMode: selfCheck
+    keyPoints:
+    - Fixed-width word
+    - Overflow out of low word
+    - Added to higher word
+  explanation: This is how narrow machine words build wider arithmetic.
+- id: q006
+  title: Safe Average Result
+  type: numericResponse
+  prompt: Using `a + (b - a) / 2`, what is the average midpoint of `a=240` and `b=250` with integer division?
+  answer:
+    value: 245
+    tolerance: 0
+  explanation: '`240 + (10 / 2) = 245`.'
+- id: q007
+  title: Unsigned Overflow Model
+  type: multipleChoice
+  prompt: Unsigned wraparound is best modeled as arithmetic modulo what for `w` bits?
+  choices:
+  - id: a
+    text: '`2^w`'
+  - id: b
+    text: '`w`'
+  - id: c
+    text: '`2w`'
+  - id: d
+    text: '`w - 1`'
+  answer:
+    choiceId: a
+  explanation: There are `2^w` distinct patterns.
+- id: q008
+  title: Bounds Habit
+  type: freeResponse
+  prompt: What should you ask before applying an optimized integer expression?
+  answer:
+    expected: Ask whether every intermediate result fits in the chosen signed or unsigned word size and what should happen at the bounds.
+    gradingMode: selfCheck
+    keyPoints:
+    - Intermediate results
+    - Signed/unsigned word size
+    - Bounds behavior
+  explanation: The optimized expression is only correct under its assumptions.
