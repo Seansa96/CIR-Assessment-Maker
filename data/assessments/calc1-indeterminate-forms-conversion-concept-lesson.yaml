@@ -1,0 +1,233 @@
+schemaVersion: 1
+id: calc1-indeterminate-forms-conversion-concept-lesson
+title: Indeterminate Forms and L'Hopital Conversion Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-1
+subcategoryIds:
+  - calc1-differentiation-theorems
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - indeterminate-forms
+    - lhospital-rule
+    - limits
+    - logarithmic-rewriting
+skills:
+  - indeterminate-forms
+  - lhospital-rule
+  - limit-transformations
+lesson:
+  introduction: |
+    Many limits are not quotients at first. L'Hopital's Rule can still help, but only after the expression has been transformed into a valid quotient form.
+
+    The practical goal of this lesson is to recognize an indeterminate form and choose the cleanest conversion.
+  sections:
+    - id: direct-quotient-forms
+      title: Direct quotient forms
+      required: true
+      content: |
+        The direct L'Hopital forms are
+
+        $$
+        \frac{0}{0}
+        \qquad\text{and}\qquad
+        \frac{\infty}{\infty}.
+        $$
+
+        These forms do not tell you the answer. They tell you the expression is unresolved. The numerator and denominator are competing, and L'Hopital's Rule may reveal which one dominates.
+      check:
+        id: direct-quotient-forms-check
+        type: selectAll
+        prompt: Which forms are direct L'Hopital quotient forms?
+        choices:
+          - id: zero-zero
+            text: '$\frac{0}{0}$'
+          - id: infinity-infinity
+            text: '$\frac{\infty}{\infty}$'
+          - id: finite-zero
+            text: '$\frac{5}{0}$'
+          - id: zero-infinity
+            text: '$\frac{0}{\infty}$'
+        answer:
+          choiceIds:
+            - zero-zero
+            - infinity-infinity
+        explanation: |
+          $\frac{5}{0}$ indicates unbounded behavior, and $\frac{0}{\infty}$ tends to $0$. They are not indeterminate quotient forms.
+
+    - id: product-form
+      title: Product form $0\cdot\infty$
+      required: true
+      content: |
+        A product such as
+
+        $$
+        f(x)g(x)\to0\cdot\infty
+        $$
+
+        is indeterminate because the shrinking factor and growing factor compete.
+
+        Convert it into a quotient by moving one factor into the denominator:
+
+        $$
+        f(x)g(x)
+        =
+        \frac{f(x)}{1/g(x)}
+        $$
+
+        or
+
+        $$
+        f(x)g(x)
+        =
+        \frac{g(x)}{1/f(x)}.
+        $$
+
+        Choose the version that differentiates cleanly.
+      check:
+        id: product-form-check
+        type: multipleChoice
+        prompt: Which rewrite can turn $x\ln x$ as $x\to0^+$ into a quotient form?
+        choices:
+          - id: correct
+            text: '$\displaystyle \frac{\ln x}{1/x}$'
+          - id: unchanged
+            text: '$x+\ln x$'
+          - id: reciprocal
+            text: '$\displaystyle \frac{1}{x\ln x}$'
+          - id: square
+            text: '$x^2(\ln x)^2$'
+        answer:
+          choiceId: correct
+        explanation: |
+          As $x\to0^+$, $\ln x\to-\infty$ and $1/x\to\infty$, so $\frac{\ln x}{1/x}$ is an $\frac{-\infty}{\infty}$ quotient suitable for L'Hopital's Rule.
+
+    - id: difference-form
+      title: Difference form $\infty-\infty$
+      required: true
+      content: |
+        A difference such as
+
+        $$
+        f(x)-g(x)\to\infty-\infty
+        $$
+
+        is indeterminate because the large terms may cancel partially or almost completely.
+
+        Common conversions include:
+
+        - combine fractions over a common denominator,
+        - rationalize if radicals are involved,
+        - factor the dominant growth,
+        - rewrite logarithm differences as one logarithm.
+
+        The target is usually a quotient form or a simpler expression whose limit is visible.
+      check:
+        id: difference-form-check
+        type: multipleChoice
+        prompt: What is a good first move for $\frac{1}{x}-\frac{1}{e^x-1}$ as $x\to0$?
+        choices:
+          - id: common-denominator
+            text: Combine the fractions over a common denominator.
+          - id: differentiate-terms
+            text: Differentiate each term separately as if L'Hopital directly applied.
+          - id: plug-zero
+            text: Substitute $x=0$ and stop.
+          - id: square
+            text: Square both terms.
+        answer:
+          choiceId: common-denominator
+        explanation: |
+          The expression is a difference, not a quotient. A common denominator can convert the cancellation into a quotient where the limiting form can be diagnosed.
+
+    - id: power-forms
+      title: Power forms need logarithms
+      required: true
+      content: |
+        The power forms
+
+        $$
+        0^0,
+        \qquad
+        1^\infty,
+        \qquad
+        \infty^0
+        $$
+
+        are indeterminate.
+
+        If
+
+        $$
+        y=f(x)^{g(x)},
+        $$
+
+        take logarithms:
+
+        $$
+        \ln y=g(x)\ln(f(x)).
+        $$
+
+        Then evaluate the transformed limit for $\ln y$. If $\ln y\to L$, then
+
+        $$
+        y\to e^L.
+        $$
+      check:
+        id: power-forms-check
+        type: multipleChoice
+        prompt: What is the standard first move for a $1^\infty$ limit?
+        choices:
+          - id: log
+            text: Set $y$ equal to the expression and analyze $\ln y$.
+          - id: derivative-base
+            text: Differentiate only the base and keep the exponent unchanged.
+          - id: set-one
+            text: Declare the answer to be $1$ immediately.
+          - id: reciprocal
+            text: Replace the expression by its reciprocal.
+        answer:
+          choiceId: log
+        explanation: |
+          A $1^\infty$ form can approach many different values. Logarithmic rewriting turns the exponent into a product that can often be converted to a quotient.
+
+    - id: not-indeterminate
+      title: Some forms already have a meaning
+      required: true
+      content: |
+        Not every strange-looking expression is indeterminate.
+
+        Examples:
+
+        $$
+        \frac{0}{\infty}=0,
+        \qquad
+        \frac{5}{0}
+        \text{ is unbounded or one-sided divergent},
+        \qquad
+        \infty+\infty=\infty.
+        $$
+
+        These do not need L'Hopital's Rule. They need ordinary limit interpretation.
+      check:
+        id: not-indeterminate-check
+        type: selectAll
+        prompt: Which forms are not indeterminate?
+        choices:
+          - id: zero-over-infinity
+            text: '$\frac{0}{\infty}$'
+          - id: infinity-plus-infinity
+            text: '$\infty+\infty$'
+          - id: zero-zero
+            text: '$\frac{0}{0}$'
+          - id: one-infinity
+            text: '$1^\infty$'
+        answer:
+          choiceIds:
+            - zero-over-infinity
+            - infinity-plus-infinity
+        explanation: |
+          $\frac{0}{0}$ and $1^\infty$ are indeterminate. $\frac{0}{\infty}$ tends to $0$, and $\infty+\infty$ grows without bound.

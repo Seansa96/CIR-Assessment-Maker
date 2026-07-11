@@ -1,0 +1,313 @@
+schemaVersion: 1
+id: calc2-polar-tangent-theta-as-variable-concept-lesson
+title: Polar Tangents - Treating Theta as the Unknown
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - polar-calculus
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - polar-calculus
+    - polar-tangents
+    - polar-slope
+    - horizontal-vertical-tangents
+    - polar-tracing-intervals
+skills:
+  - polar-calculus
+  - polar-tangents
+  - polar-slope
+  - parametric-derivatives
+lesson:
+  introduction: |
+    Polar tangent problems can feel strange because $\theta$ is not a fixed input unless the problem gives one. When a problem asks where a polar curve has horizontal or vertical tangents, $\theta$ is the variable you solve for.
+
+    The mental model is:
+
+    $$
+    r=f(\theta)
+    $$
+
+    secretly means
+
+    $$
+    x(\theta)=r(\theta)\cos\theta,
+    \qquad
+    y(\theta)=r(\theta)\sin\theta.
+    $$
+
+    So polar tangents are parametric tangent problems with $\theta$ as the parameter.
+  sections:
+    - id: theta-is-the-unknown
+      title: Theta Is Not Chosen Randomly
+      required: true
+      content: |
+        In a Cartesian tangent problem, if someone asks where
+
+        $$
+        y=x^3-3x
+        $$
+
+        has a horizontal tangent, you do not guess an $x$-value. You differentiate and solve:
+
+        $$
+        y'=3x^2-3,
+        \qquad
+        3x^2-3=0.
+        $$
+
+        Polar works the same way. If the curve is
+
+        $$
+        r=f(\theta),
+        $$
+
+        then $\theta$ is the unknown angle that must satisfy the tangent condition. You solve for $\theta$, then plug the accepted values back into $r=f(\theta)$.
+      check:
+        id: theta-is-the-unknown-check
+        type: multipleChoice
+        prompt: In a polar tangent problem with no specific angle given, what should you do with $\theta$?
+        choices:
+          - id: solve
+            text: Treat $\theta$ as the variable and solve the horizontal or vertical tangent equation.
+          - id: random
+            text: Pick a convenient angle such as $\theta=0$ and evaluate there.
+          - id: ignore
+            text: Ignore $\theta$ and solve only for $r$.
+          - id: graph-only
+            text: Estimate tangent locations from a sketch and avoid equations.
+        answer:
+          choiceId: solve
+        explanation: |
+          The tangent condition produces an equation in $\theta$. You solve that equation the same way a Cartesian tangent condition produces an equation in $x$.
+
+    - id: polar-as-parametric
+      title: Polar Curves Are Parametric Curves
+      required: true
+      content: |
+        A polar curve gives a radius at each angle. To use slope, convert that motion into component functions:
+
+        $$
+        x=r\cos\theta,
+        \qquad
+        y=r\sin\theta.
+        $$
+
+        Since $r$ depends on $\theta$, both $x$ and $y$ are products. Differentiate with respect to $\theta$:
+
+        $$
+        \frac{dx}{d\theta}
+        =
+        r'\cos\theta-r\sin\theta
+        $$
+
+        and
+
+        $$
+        \frac{dy}{d\theta}
+        =
+        r'\sin\theta+r\cos\theta.
+        $$
+
+        Then
+
+        $$
+        \frac{dy}{dx}
+        =
+        \frac{r'\sin\theta+r\cos\theta}{r'\cos\theta-r\sin\theta}.
+        $$
+      check:
+        id: polar-as-parametric-check
+        type: multipleChoice
+        prompt: Why does the polar slope formula contain both $r$ and $r'$?
+        choices:
+          - id: product-rule
+            text: Because $x=r\cos\theta$ and $y=r\sin\theta$ require the product rule.
+          - id: quotient-rule
+            text: Because every polar curve is differentiated with the quotient rule.
+          - id: constant-radius
+            text: Because $r$ is always constant and $r'$ corrects for that.
+          - id: inverse
+            text: Because $\theta$ must be solved as a function of $r$ first.
+        answer:
+          choiceId: product-rule
+        explanation: |
+          The derivative of $r(\theta)\cos\theta$ and $r(\theta)\sin\theta$ needs both the derivative of $r$ and the derivative of the trig factor.
+
+    - id: horizontal-and-vertical-equations
+      title: Horizontal and Vertical Conditions
+      required: true
+      content: |
+        The slope is
+
+        $$
+        \frac{dy}{dx}
+        =
+        \frac{dy/d\theta}{dx/d\theta}.
+        $$
+
+        A horizontal tangent has zero slope, so solve the numerator:
+
+        $$
+        \boxed{r'\sin\theta+r\cos\theta=0}
+        $$
+
+        while checking that
+
+        $$
+        r'\cos\theta-r\sin\theta\ne0.
+        $$
+
+        A vertical tangent has undefined slope, so solve the denominator:
+
+        $$
+        \boxed{r'\cos\theta-r\sin\theta=0}
+        $$
+
+        while checking that
+
+        $$
+        r'\sin\theta+r\cos\theta\ne0.
+        $$
+      check:
+        id: horizontal-and-vertical-equations-check
+        type: selectAll
+        prompt: Which statements are part of the correct polar tangent workflow?
+        choices:
+          - id: horizontal-numerator
+            text: Horizontal tangents come from $r'\sin\theta+r\cos\theta=0$.
+          - id: vertical-denominator
+            text: Vertical tangents come from $r'\cos\theta-r\sin\theta=0$.
+          - id: check-other
+            text: After solving one equation, check that the other component rate is not also zero.
+          - id: choose-random
+            text: Choose a random $\theta$ if none is given.
+        answer:
+          choiceIds:
+            - horizontal-numerator
+            - vertical-denominator
+            - check-other
+        explanation: |
+          Horizontal and vertical tangent tests come from the numerator and denominator of the parametric slope ratio. Randomly choosing $\theta$ changes the problem from "where are the tangents?" to "what is the slope at this one angle?"
+
+    - id: choosing-the-interval
+      title: Choosing a Tracing Interval
+      required: true
+      content: |
+        If a problem gives bounds, use them. If it does not, the safest class default is usually one full angular sweep:
+
+        $$
+        0\le \theta<2\pi.
+        $$
+
+        This may produce duplicate polar representations of the same physical point, especially when $r$ becomes negative. That is not a disaster. It means you should convert accepted $\theta$-values to points and remove duplicate locations if the final answer asks for points.
+
+        The deeper question is:
+
+        $$
+        \text{What interval traces the curve once?}
+        $$
+
+        Limacons and cardioids usually use $0\le\theta<2\pi$. Some circles and roses trace sooner, but $0\le\theta<2\pi$ is a reliable starting interval for finding candidates unless the prompt says otherwise.
+      check:
+        id: choosing-the-interval-check
+        type: multipleChoice
+        prompt: If a polar tangent problem gives no bounds, what is usually the safest first interval for finding candidates?
+        choices:
+          - id: full-sweep
+            text: '$0\le\theta<2\pi$'
+          - id: only-zero
+            text: '$\theta=0$ only'
+          - id: positive-r
+            text: Only angles where $r>0$'
+          - id: all-real
+            text: All real $\theta$ with no interval restriction'
+        answer:
+          choiceId: full-sweep
+        explanation: |
+          One full revolution usually catches all tangent candidates. If the curve retraces, convert to rectangular points and remove duplicates.
+
+    - id: singular-cases
+      title: When Both Component Rates Vanish
+      required: true
+      content: |
+        Sometimes a candidate makes both component rates zero:
+
+        $$
+        \frac{dy}{d\theta}=0
+        \qquad\text{and}\qquad
+        \frac{dx}{d\theta}=0.
+        $$
+
+        Then the slope formula gives
+
+        $$
+        \frac{0}{0},
+        $$
+
+        which is not automatically horizontal or vertical. This often happens at the pole, a cusp, or a point where the curve has singular behavior.
+
+        For a first pass, reject it from the ordinary horizontal or vertical tangent list unless the problem specifically asks you to analyze singular tangents.
+      check:
+        id: singular-cases-check
+        type: multipleChoice
+        prompt: A candidate angle makes both $dy/d\theta$ and $dx/d\theta$ equal zero. What should you conclude immediately?
+        choices:
+          - id: inconclusive
+            text: The ordinary slope test is inconclusive and needs separate analysis.
+          - id: horizontal
+            text: It must be horizontal because the numerator is zero.
+          - id: vertical
+            text: It must be vertical because the denominator is zero.
+          - id: impossible
+            text: This cannot happen on polar curves.
+        answer:
+          choiceId: inconclusive
+        explanation: |
+          A $0/0$ slope ratio is indeterminate. It may be a cusp, a pole crossing, or another special case, so it should not be accepted as ordinary horizontal or vertical without extra analysis.
+
+    - id: convert-to-points
+      title: Convert Accepted Angles to Points
+      required: true
+      content: |
+        After solving for $\theta$, plug each accepted value into
+
+        $$
+        r=f(\theta).
+        $$
+
+        Then convert to a rectangular point if the problem asks for point locations:
+
+        $$
+        x=r\cos\theta,
+        \qquad
+        y=r\sin\theta.
+        $$
+
+        This final conversion matters because two different polar pairs can represent the same point:
+
+        $$
+        (r,\theta)
+        \quad\text{and}\quad
+        (-r,\theta+\pi).
+        $$
+      check:
+        id: convert-to-points-check
+        type: multipleChoice
+        prompt: Why should you often convert accepted polar tangent candidates to rectangular points?
+        choices:
+          - id: duplicates
+            text: To identify the actual physical points and remove duplicate polar representations.
+          - id: avoid-derivatives
+            text: To avoid differentiating $r$.
+          - id: change-curve
+            text: To turn the polar curve into a different curve.
+          - id: make-r-positive
+            text: To force every radius to be positive before solving.
+        answer:
+          choiceId: duplicates
+        explanation: |
+          Polar coordinates are not unique. Converting to $(x,y)$ shows the actual location on the plane.

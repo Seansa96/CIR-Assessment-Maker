@@ -1129,9 +1129,8 @@ import "../styles/global.css";
       let currentCodeEditors: EditorView[] = [];
       let activeCodeEditor: EditorView | null = null;
       let currentProjectEditor: EditorView | null = null;
-      let activeCircuitCanvas: CircuitCanvas | null = null;
-      let activeGraphingCanvas: GraphingCanvas | null = null;
-      let resultCircuitCanvases: CircuitCanvas[] = [];
+      let activeCircuitCanvases: Map<string, CircuitCanvas> = new Map();
+      let activeGraphingCanvases: Map<string, GraphingCanvas> = new Map();
       let resultGraphingCanvases: GraphingCanvas[] = [];
       let activeWidgets: { destroy: () => void }[] = [];
 
@@ -2164,7 +2163,8 @@ import "../styles/global.css";
           state.latestResults = null;
           state.guidedProjectSession = null;
           currentProjectEditor = null;
-          activeCircuitCanvas = null;
+          activeCircuitCanvases.clear();
+          activeGraphingCanvases.clear();
           clearActiveWidgets();
           updateActiveAttemptChip();
           updateModeControlLock();
@@ -2215,7 +2215,8 @@ import "../styles/global.css";
           state.guidedProjectSession = null;
           state.guidedProjectActiveFile = "";
           currentProjectEditor = null;
-          activeCircuitCanvas = null;
+          activeCircuitCanvases.clear();
+          activeGraphingCanvases.clear();
           clearActiveWidgets();
 
           updateActiveAttemptChip();
@@ -2239,7 +2240,8 @@ import "../styles/global.css";
         state.latestResults = null;
         state.guidedProjectSession = null;
         currentProjectEditor = null;
-        activeCircuitCanvas = null;
+        activeCircuitCanvases.clear();
+        activeGraphingCanvases.clear();
         clearActiveWidgets();
 
         updateActiveAttemptChip();
@@ -3880,8 +3882,8 @@ import "../styles/global.css";
         setupCodeEditor(question);
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
-        setupCircuitEditor(question, results?.submittedAnswer ?? null);
-        setupGraphingEditor(question, results?.submittedAnswer ?? null);
+        setupCircuitEditor(question, results?.submittedAnswer ?? null, "");
+        setupGraphingEditor(question, results?.submittedAnswer ?? null, "");
       }
 
       async function renderGlossarySession() {
@@ -4133,8 +4135,8 @@ import "../styles/global.css";
           setupCodeEditor(check);
           setupSymbolicResponseField(check);
           setupSelfCheckButtons();
-          setupCircuitEditor(check, checkResult?.submittedAnswer ?? null);
-          setupGraphingEditor(check, checkResult?.submittedAnswer ?? null);
+          setupCircuitEditor(check, checkResult?.submittedAnswer ?? null, "");
+          setupGraphingEditor(check, checkResult?.submittedAnswer ?? null, "");
         }
         if (explorationSection) setupExplorationControls(explorationSection, result);
       }
@@ -4411,8 +4413,8 @@ import "../styles/global.css";
         setupCodeEditor(question);
         setupSymbolicResponseField(question);
         setupSelfCheckButtons();
-        setupCircuitEditor(question, result?.submittedAnswer ?? null);
-        setupGraphingEditor(question, result?.submittedAnswer ?? null);
+        setupCircuitEditor(question, result?.submittedAnswer ?? null, "");
+        setupGraphingEditor(question, result?.submittedAnswer ?? null, "");
       }
 
       async function renderGuidedProject() {
@@ -5047,8 +5049,8 @@ import "../styles/global.css";
 
       async function renderResults(alreadyCommitted: boolean) {
         if (!state.latestResults) return;
-        activeCircuitCanvas = null;
-        resultCircuitCanvases = [];
+        activeCircuitCanvases.clear();
+        activeGraphingCanvases.clear();
         clearActiveWidgets();
         const results = state.latestResults;
         const isWorkedExample = results.assessmentType === "workedExample";
@@ -5380,13 +5382,15 @@ import "../styles/global.css";
         if (question.type === "graphingResponse") {
           return `
             <div class="graphing-editor-shell">
-              <p class="input-help"><strong>Graphing Tool:</strong> Select a tool and click on the grid to place points and shapes.</p>
+              <p class="input-help"><strong>Graphing Tool:</strong> Select a tool and click on the grid to place points (e.g. 2 for a line/circle/parabola, 3 for an ellipse). You can drag placed points or the shape itself to adjust it.</p>
               <div class="graphing-toolbar">
                 <button type="button" class="graph-btn" data-tool="point">Point</button>
                 <button type="button" class="graph-btn" data-tool="line">Line</button>
+                <button type="button" class="graph-btn" data-tool="circle">Circle</button>
                 <button type="button" class="graph-btn" data-tool="parabola">Parabola</button>
                 <button type="button" class="graph-btn" data-tool="ellipse">Ellipse</button>
-                <button type="button" class="graph-btn danger-light" data-tool="clear">Clear</button>
+                <button type="button" class="graph-btn secondary" data-tool="undo">Undo Point</button>
+                <button type="button" class="graph-btn danger-light" data-tool="clear">Clear All</button>
               </div>
               <div id="${idPrefix}graphing-editor-mount" class="graphing-mount jxgbox" style="width:500px; height:500px; max-width:100%; border:1px solid #ccc; border-radius:4px; margin-top:8px;"></div>
               <input type="hidden" id="${idPrefix}graphing-response" name="${idPrefix}graphingAnswer" value="${escapeHtml(JSON.stringify(submittedAnswer?.graphingAnswer || null))}" />
@@ -5609,7 +5613,8 @@ import "../styles/global.css";
         }
 
         if (question.type === "graphingResponse") {
-          if (activeGraphingCanvas) {
+          const canvas = activeGraphingCanvases.get(idPrefix);
+          if (canvas) {
             return {
               questionId: question.id,
               choiceId: null,
@@ -5619,20 +5624,21 @@ import "../styles/global.css";
               numericValue: null,
               codeText: null,
               symbolicLatex: null,
-              graphingAnswer: activeGraphingCanvas.getAnswer()
+              graphingAnswer: canvas.getAnswer()
             };
           }
         }
 
         if (question.type === "circuit") {
-          if (activeCircuitCanvas) {
-            const diag = activeCircuitCanvas.getDiagram();
-            const selectedIds = activeCircuitCanvas.getSelectedIds();
-            const meterType = activeCircuitCanvas.getMeterType();
-            const meterPosTarget = activeCircuitCanvas.getMeterPositiveTerminalId();
-            const meterNegTarget = activeCircuitCanvas.getMeterNegativeTerminalId();
-            const meterBranchTarget = activeCircuitCanvas.getMeterTargetBranchId();
-            const values = activeCircuitCanvas.getValues();
+          const canvas = activeCircuitCanvases.get(idPrefix);
+          if (canvas) {
+            const diag = canvas.getDiagram();
+            const selectedIds = canvas.getSelectedIds();
+            const meterType = canvas.getMeterType();
+            const meterPosTarget = canvas.getMeterPositiveTerminalId();
+            const meterNegTarget = canvas.getMeterNegativeTerminalId();
+            const meterBranchTarget = canvas.getMeterTargetBranchId();
+            const values = canvas.getValues();
 
             const selectedComponentIds = selectedIds.filter(id => diag.components.some(c => c.id === id));
             const selectedNodeIds = selectedIds.filter(id => diag.nodes.some(n => n.id === id));
@@ -5689,12 +5695,15 @@ import "../styles/global.css";
         };
       }
 
-      function setupCircuitEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
-        activeCircuitCanvas?.destroy();
-        activeCircuitCanvas = null;
+      function setupCircuitEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null, idPrefix: string = "") {
+        const oldCanvas = activeCircuitCanvases.get(idPrefix);
+        if (oldCanvas) {
+          oldCanvas.destroy?.();
+          activeCircuitCanvases.delete(idPrefix);
+        }
         if (question.type !== "circuit") return;
 
-        const container = document.querySelector<HTMLElement>("#circuit-editor-mount");
+        const container = document.querySelector<HTMLElement>(`#${idPrefix}circuit-editor-mount`);
         if (!container) return;
 
         const def = question.circuitQuestion || {
@@ -5722,18 +5731,19 @@ import "../styles/global.css";
           }
         }
 
-        activeCircuitCanvas = new CircuitCanvas(
+        const canvas = new CircuitCanvas(
           container,
           startDiagram,
-          def.interactionMode,
+          def.interactionMode === "build" ? "build" : "meterPlacement",
           () => {}
         );
-        activeWidgets.push(activeCircuitCanvas);
+        activeWidgets.push(canvas);
+        activeCircuitCanvases.set(idPrefix, canvas);
 
         // Restore submitted state
         if (submittedAnswer?.circuitAnswer) {
           const ca = submittedAnswer.circuitAnswer;
-          activeCircuitCanvas.restoreState({
+          canvas.restoreState({
             selectedIds: [
               ...(ca.selectedComponentIds ?? []),
               ...(ca.selectedNodeIds ?? []),
@@ -5760,71 +5770,78 @@ import "../styles/global.css";
           };
 
           meterVoltmeterBtn?.addEventListener("click", () => {
-            activeCircuitCanvas?.setMeterType("voltmeter");
+            canvas?.setMeterType("voltmeter");
             updateMeterToolActive("voltmeter");
           });
           meterAmmeterBtn?.addEventListener("click", () => {
-            activeCircuitCanvas?.setMeterType("ammeter");
+            canvas?.setMeterType("ammeter");
             updateMeterToolActive("ammeter");
           });
           meterClearBtn?.addEventListener("click", () => {
-            activeCircuitCanvas?.setMeterType(null);
+            canvas?.setMeterType(null);
             updateMeterToolActive(null);
           });
 
-          updateMeterToolActive(activeCircuitCanvas.getMeterType());
+          updateMeterToolActive(canvas.getMeterType());
         } else if (def.interactionMode === "build") {
           document.querySelectorAll(".palette-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
               const sym = (e.currentTarget as HTMLButtonElement).dataset.symbol;
-              if (sym && activeCircuitCanvas) {
-                activeCircuitCanvas.addComponent(sym);
+              if (sym && canvas) {
+                canvas.addComponent(sym);
               }
             });
           });
 
           document.querySelector("#btn-circuit-rotate")?.addEventListener("click", () => {
-            activeCircuitCanvas?.rotateSelected();
+            canvas?.rotateSelected();
           });
 
           document.querySelector("#btn-circuit-delete")?.addEventListener("click", () => {
-            activeCircuitCanvas?.deleteSelected();
+            canvas?.deleteSelected();
           });
 
           document.querySelector("#btn-circuit-node")?.addEventListener("click", () => {
-            activeCircuitCanvas?.addNode();
+            canvas?.addNode();
           });
         }
       }
 
-      function setupGraphingEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null) {
-        activeGraphingCanvas?.destroy();
-        activeGraphingCanvas = null;
+      function setupGraphingEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null, idPrefix: string = "") {
+        const oldCanvas = activeGraphingCanvases.get(idPrefix);
+        if (oldCanvas) {
+          oldCanvas.destroy?.();
+          activeGraphingCanvases.delete(idPrefix);
+        }
         if (question.type !== "graphingResponse") return;
 
-        const container = document.querySelector<HTMLElement>("#graphing-editor-mount");
+        const container = document.querySelector<HTMLElement>(`#${idPrefix}graphing-editor-mount`);
         if (!container) return;
 
         const isReadOnly = state.attempt?.status === "completed" || state.attempt?.mode === "scored";
 
-        activeGraphingCanvas = new GraphingCanvas(container, isReadOnly);
-        activeWidgets.push(activeGraphingCanvas);
+        const canvas = new GraphingCanvas(container, isReadOnly);
+        activeWidgets.push(canvas);
+        activeGraphingCanvases.set(idPrefix, canvas);
 
         if (submittedAnswer?.graphingAnswer) {
-          activeGraphingCanvas.restoreAnswer(submittedAnswer.graphingAnswer);
+          canvas.restoreAnswer(submittedAnswer.graphingAnswer);
         }
 
         if (!isReadOnly) {
-          document.querySelectorAll(".graph-btn").forEach(btn => {
+          const shell = container.closest(".graphing-editor-shell");
+          shell?.querySelectorAll(".graph-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
               const target = e.currentTarget as HTMLButtonElement;
               const tool = target.dataset.tool;
               
               if (tool === "clear") {
-                activeGraphingCanvas?.clear();
+                canvas.clear();
+              } else if (tool === "undo") {
+                canvas.undo();
               } else {
-                activeGraphingCanvas?.setTool(tool as any);
-                document.querySelectorAll(".graph-btn").forEach(b => b.classList.remove("active"));
+                canvas.setTool(tool as any);
+                shell.querySelectorAll(".graph-btn").forEach(b => b.classList.remove("active"));
                 target.classList.add("active");
               }
             });

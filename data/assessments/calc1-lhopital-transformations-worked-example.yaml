@@ -1,0 +1,333 @@
+schemaVersion: 1
+id: calc1-lhopital-transformations-worked-example
+title: L'Hopital's Rule Transformation Worked Examples
+assessmentType: workedExample
+categoryId: calculus-1
+subcategoryIds:
+  - calc1-differentiation-theorems
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - lhospital-rule
+    - indeterminate-forms
+    - logarithmic-rewriting
+    - calc1-differentiation-theorems
+skills:
+  - lhospital-rule
+  - limit-transformations
+workedExamples:
+  - id: product-zero-infinity-example
+    title: Convert $0\cdot\infty$ into a quotient
+    problem: |
+      Evaluate
+
+      $$
+      \lim_{x\to0^+}x\ln x.
+      $$
+    steps:
+      - id: product-step-1-diagnose
+        title: Diagnose the product form
+        instruction: |
+          As $x\to0^+$,
+
+          $$
+          x\to0
+          \qquad\text{and}\qquad
+          \ln x\to-\infty.
+          $$
+        type: multipleChoice
+        prompt: What kind of form is this?
+        choices:
+          - id: product
+            text: '$0\cdot(-\infty)$, an indeterminate product form'
+          - id: quotient
+            text: '$\frac{0}{0}$ directly'
+          - id: finite
+            text: A finite nonzero value immediately'
+          - id: infinity-plus
+            text: '$\infty+\infty$'
+        answer:
+          choiceId: product
+        explanation: |
+          The shrinking factor $x$ and growing negative factor $\ln x$ compete.
+      - id: product-step-2-rewrite
+        title: Rewrite as a quotient
+        instruction: |
+          Move $x$ into the denominator as its reciprocal:
+
+          $$
+          x\ln x
+          =
+          \frac{\ln x}{1/x}.
+          $$
+        type: multipleChoice
+        prompt: What form does the rewritten quotient have as $x\to0^+$?
+        choices:
+          - id: infinity-infinity
+            text: '$\frac{-\infty}{\infty}$'
+          - id: zero-zero
+            text: '$\frac{0}{0}$'
+          - id: zero-infinity
+            text: '$\frac{0}{\infty}$'
+          - id: finite-zero
+            text: '$\frac{1}{0}$'
+        answer:
+          choiceId: infinity-infinity
+        explanation: |
+          This is now an indeterminate quotient form, so L'Hopital's Rule can be used.
+      - id: product-step-3-apply
+        title: Apply L'Hopital carefully
+        instruction: |
+          Differentiate numerator and denominator separately:
+
+          $$
+          \frac{d}{dx}\ln x=\frac1x,
+          \qquad
+          \frac{d}{dx}\left(\frac1x\right)=-\frac{1}{x^2}.
+          $$
+        type: symbolicResponse
+        prompt: What is the simplified derivative quotient?
+        answer:
+          expectedLatex: '-x'
+          equivalenceMode: expression
+          variables:
+            - x
+          tolerance: 0.000001
+        explanation: |
+          The derivative quotient is
+
+          $$
+          \frac{1/x}{-1/x^2}
+          =
+          -x.
+          $$
+      - id: product-step-4-final
+        title: Take the final limit
+        instruction: |
+          Now evaluate the simpler limit:
+
+          $$
+          \lim_{x\to0^+}(-x).
+          $$
+        type: symbolicResponse
+        prompt: What is $\lim_{x\to0^+}x\ln x$?
+        answer:
+          expectedLatex: '0'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          The limit is $0$. This pattern appears often in improper integrals, such as evaluating endpoint terms like $x\ln x$ near $0^+$.
+
+  - id: power-one-to-infinity-example
+    title: Use logarithms for a $1^\infty$ form
+    problem: |
+      Evaluate
+
+      $$
+      \lim_{x\to\infty}\left(1+\frac{3}{x}\right)^x.
+      $$
+    steps:
+      - id: power-step-1-diagnose
+        title: Diagnose the power form
+        instruction: |
+          The base approaches $1$, and the exponent approaches infinity:
+
+          $$
+          \left(1+\frac{3}{x}\right)^x
+          \to
+          1^\infty.
+          $$
+        type: multipleChoice
+        prompt: What is the standard strategy for this form?
+        choices:
+          - id: log
+            text: 'Set $y=\left(1+\frac{3}{x}\right)^x$ and analyze $\ln y$.'
+          - id: base-only
+            text: Replace the whole expression by $1$.
+          - id: exponent-only
+            text: Replace the whole expression by $\infty$.
+          - id: quotient-rule
+            text: Apply the quotient rule to the base.
+        answer:
+          choiceId: log
+        explanation: |
+          The $1^\infty$ form is indeterminate. Logarithms turn the exponent into multiplication.
+      - id: power-step-2-log
+        title: Convert the exponent
+        instruction: |
+          Let
+
+          $$
+          y=\left(1+\frac{3}{x}\right)^x.
+          $$
+
+          Then
+
+          $$
+          \ln y
+          =
+          x\ln\left(1+\frac{3}{x}\right).
+          $$
+
+          This is an $\infty\cdot0$ product.
+        type: multipleChoice
+        prompt: Which quotient is a clean rewrite for $\ln y$?
+        choices:
+          - id: correct
+            text: '$\displaystyle \frac{\ln(1+3/x)}{1/x}$'
+          - id: reciprocal
+            text: '$\displaystyle \frac{1/x}{\ln(1+3/x)}$'
+          - id: no-log
+            text: '$\displaystyle \frac{1+3/x}{x}$'
+          - id: subtract
+            text: '$x-\ln(1+3/x)$'
+        answer:
+          choiceId: correct
+        explanation: |
+          Since $x=\frac{1}{1/x}$, the product becomes
+
+          $$
+          \frac{\ln(1+3/x)}{1/x}.
+          $$
+
+          This is a $\frac{0}{0}$ quotient.
+      - id: power-step-3-lhopital
+        title: Apply L'Hopital to the logarithm
+        instruction: |
+          Differentiate:
+
+          $$
+          \frac{d}{dx}\ln\left(1+\frac3x\right)
+          =
+          \frac{-3/x^2}{1+3/x},
+          \qquad
+          \frac{d}{dx}\left(\frac1x\right)
+          =
+          -\frac1{x^2}.
+          $$
+        type: symbolicResponse
+        prompt: What is $\lim_{x\to\infty}\ln y$?
+        answer:
+          expectedLatex: '3'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          The derivative quotient simplifies to
+
+          $$
+          \frac{3}{1+3/x}
+          \to3.
+          $$
+      - id: power-step-4-exponentiate
+        title: Convert back from the logarithm
+        instruction: |
+          We found
+
+          $$
+          \ln y\to3.
+          $$
+
+          Since the logarithm approaches $3$, the original expression approaches $e^3$.
+        type: symbolicResponse
+        prompt: What is the original limit?
+        answer:
+          expectedLatex: 'e^3'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          If $\ln y\to L$, then $y\to e^L$. Here $L=3$, so the original limit is $e^3$.
+
+  - id: improper-integral-endpoint-example
+    title: Endpoint limit from an improper integral
+    problem: |
+      Evaluate the endpoint limit that appears after integration by parts:
+
+      $$
+      \lim_{b\to\infty} b e^{-b}.
+      $$
+    steps:
+      - id: endpoint-step-1-diagnose
+        title: See the endpoint form
+        instruction: |
+          As $b\to\infty$,
+
+          $$
+          b\to\infty
+          \qquad\text{and}\qquad
+          e^{-b}\to0.
+          $$
+        type: multipleChoice
+        prompt: What form appears?
+        choices:
+          - id: product
+            text: '$\infty\cdot0$'
+          - id: quotient
+            text: '$\frac{0}{0}$ directly'
+          - id: finite
+            text: '$1$'
+          - id: sum
+            text: '$\infty+\infty$'
+        answer:
+          choiceId: product
+        explanation: |
+          The factor $b$ grows while $e^{-b}$ decays. Rewrite before using L'Hopital's Rule.
+      - id: endpoint-step-2-rewrite
+        title: Rewrite using positive exponential growth
+        instruction: |
+          Since
+
+          $$
+          e^{-b}=\frac1{e^b},
+          $$
+
+          rewrite the expression as
+
+          $$
+          \frac{b}{e^b}.
+          $$
+        type: multipleChoice
+        prompt: What form does $\frac{b}{e^b}$ have as $b\to\infty$?
+        choices:
+          - id: infinity-infinity
+            text: '$\frac{\infty}{\infty}$'
+          - id: zero-zero
+            text: '$\frac{0}{0}$'
+          - id: finite-zero
+            text: '$\frac{1}{0}$'
+          - id: zero-infinity
+            text: '$\frac{0}{\infty}$'
+        answer:
+          choiceId: infinity-infinity
+        explanation: |
+          Now L'Hopital's Rule applies directly.
+      - id: endpoint-step-3-final
+        title: Apply L'Hopital once
+        instruction: |
+          Differentiate numerator and denominator separately:
+
+          $$
+          \frac{d}{db}b=1,
+          \qquad
+          \frac{d}{db}e^b=e^b.
+          $$
+        type: symbolicResponse
+        prompt: Evaluate the original endpoint limit.
+        answer:
+          expectedLatex: '0'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          L'Hopital gives
+
+          $$
+          \lim_{b\to\infty}\frac{1}{e^b}=0.
+          $$
+
+          This is a common endpoint term in improper integrals involving exponential decay.

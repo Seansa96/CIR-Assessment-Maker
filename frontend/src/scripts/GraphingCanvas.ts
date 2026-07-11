@@ -11,7 +11,7 @@ export interface SubmittedGraphAnswer {
     expression?: string | null;
 }
 
-export type GraphShapeTool = 'point' | 'line' | 'parabola' | 'ellipse' | null;
+export type GraphShapeTool = 'point' | 'line' | 'parabola' | 'ellipse' | 'circle' | null;
 
 export class GraphingCanvas {
     private board: any;
@@ -30,6 +30,7 @@ export class GraphingCanvas {
         this.board = JXG.JSXGraph.initBoard(this.containerElement.id, {
             boundingbox: [-10, 10, 10, -10],
             axis: true,
+            grid: true,
             showCopyright: false,
             pan: { enabled: !readonly },
             zoom: { enabled: !readonly }
@@ -51,13 +52,24 @@ export class GraphingCanvas {
         const x = coords[0];
         const y = coords[1];
 
+        // Check point limit
+        const maxPts = {
+            'point': 50,
+            'line': 2,
+            'circle': 2,
+            'parabola': 2,
+            'ellipse': 3
+        }[this.activeTool as string] || 50;
+
+        if (this.points.length >= maxPts) return;
+
         // Create point
         const p = this.board.create('point', [x, y], { size: 4, name: '', fixed: false });
         this.points.push(p);
 
         // When points are moved, we want to update the submitted answer
         p.on('drag', () => {
-            // Can trigger an external onChange event here if needed
+            this.board.update();
         });
 
         this.updateShape();
@@ -69,7 +81,7 @@ export class GraphingCanvas {
         this.drawnElements = [];
 
         if (this.activeTool === 'line' && this.points.length >= 2) {
-            const line = this.board.create('line', [this.points[0], this.points[1]], { strokeColor: 'blue' });
+            const line = this.board.create('line', [this.points[0], this.points[1]], { strokeColor: 'blue', hasInnerPoints: true });
             this.drawnElements.push(line);
             this.currentShape = 'line';
         } else if (this.activeTool === 'parabola' && this.points.length >= 2) {
@@ -92,13 +104,26 @@ export class GraphingCanvas {
             const center = this.points[0];
             const pt1 = this.points[1];
             const pt2 = this.points[2];
-            const ellipse = this.board.create('ellipse', [center, pt1, pt2], { strokeColor: 'purple' });
+            const ellipse = this.board.create('ellipse', [center, pt1, pt2], { strokeColor: 'purple', hasInnerPoints: true });
             this.drawnElements.push(ellipse);
             this.currentShape = 'ellipse';
+        } else if (this.activeTool === 'circle' && this.points.length >= 2) {
+            const circle = this.board.create('circle', [this.points[0], this.points[1]], { strokeColor: 'orange', hasInnerPoints: true });
+            this.drawnElements.push(circle);
+            this.currentShape = 'circle';
         } else if (this.activeTool === 'point') {
             this.currentShape = 'point';
         }
     }
+
+    public undo() {
+        if (this.points.length > 0) {
+            const p = this.points.pop();
+            this.board.removeObject(p);
+            this.updateShape();
+        }
+    }
+
 
     public getAnswer(): SubmittedGraphAnswer | null {
         if (this.points.length === 0) return null;

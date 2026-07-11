@@ -1,0 +1,253 @@
+schemaVersion: 1
+id: calc1-lhopital-quotient-worked-example
+title: L'Hopital's Rule Quotient Worked Examples
+assessmentType: workedExample
+categoryId: calculus-1
+subcategoryIds:
+  - calc1-differentiation-theorems
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - lhospital-rule
+    - indeterminate-forms
+    - quotient-limits
+skills:
+  - lhospital-rule
+  - quotient-limits
+workedExamples:
+  - id: repeated-zero-over-zero
+    title: Repeated L'Hopital on a $0/0$ limit
+    problem: |
+      Evaluate
+
+      $$
+      \lim_{x\to0}\frac{\sin x-x}{x^3}.
+      $$
+    steps:
+      - id: repeated-zero-step-1-diagnose
+        title: Diagnose the form
+        instruction: |
+          Substitute $x=0$ into the numerator and denominator:
+
+          $$
+          \sin0-0=0,
+          \qquad
+          0^3=0.
+          $$
+        type: multipleChoice
+        prompt: What limiting form appears?
+        choices:
+          - id: zero-zero
+            text: '$\frac{0}{0}$'
+          - id: infinity-infinity
+            text: '$\frac{\infty}{\infty}$'
+          - id: determinate-zero
+            text: '$0$'
+          - id: finite-over-zero
+            text: '$\frac{1}{0}$'
+        answer:
+          choiceId: zero-zero
+        explanation: |
+          This is a direct L'Hopital form, so differentiating numerator and denominator separately is allowed.
+      - id: repeated-zero-step-2-first-application
+        title: Apply L'Hopital once
+        instruction: |
+          Differentiate numerator and denominator separately:
+
+          $$
+          \frac{d}{dx}(\sin x-x)=\cos x-1,
+          \qquad
+          \frac{d}{dx}(x^3)=3x^2.
+          $$
+        type: multipleChoice
+        prompt: What is the new quotient after one application?
+        choices:
+          - id: correct
+            text: '$\displaystyle \frac{\cos x-1}{3x^2}$'
+          - id: quotient-rule
+            text: '$\displaystyle \frac{x^3(\cos x-1)-3x^2(\sin x-x)}{x^6}$'
+          - id: sign-error
+            text: '$\displaystyle \frac{\cos x+1}{3x^2}$'
+          - id: denominator-error
+            text: '$\displaystyle \frac{\cos x-1}{x^2}$'
+        answer:
+          choiceId: correct
+        explanation: |
+          L'Hopital's Rule uses $\frac{f'}{g'}$, not the quotient rule.
+      - id: repeated-zero-step-3-still-indeterminate
+        title: Check before repeating
+        instruction: |
+          The new quotient still gives
+
+          $$
+          \frac{\cos0-1}{3\cdot0^2}
+          =
+          \frac{0}{0}.
+          $$
+
+          So another application is justified.
+        type: multipleChoice
+        prompt: After applying L'Hopital a second time, what quotient appears?
+        choices:
+          - id: correct
+            text: '$\displaystyle \frac{-\sin x}{6x}$'
+          - id: positive
+            text: '$\displaystyle \frac{\sin x}{6x}$'
+          - id: no-denominator
+            text: '$\displaystyle \frac{-\sin x}{3x^2}$'
+          - id: third
+            text: '$\displaystyle \frac{-\cos x}{6}$'
+        answer:
+          choiceId: correct
+        explanation: |
+          Differentiate $\cos x-1$ to get $-\sin x$, and differentiate $3x^2$ to get $6x$.
+      - id: repeated-zero-step-4-final
+        title: Finish with one more valid use
+        instruction: |
+          The quotient
+
+          $$
+          \frac{-\sin x}{6x}
+          $$
+
+          still gives $\frac{0}{0}$ at $x=0$, so a third application is allowed.
+        type: symbolicResponse
+        prompt: What is the final limit?
+        answer:
+          expectedLatex: '-\frac{1}{6}'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        hint: Differentiate $-\sin x$ and $6x$ separately.
+        explanation: |
+          A third application gives
+
+          $$
+          \lim_{x\to0}\frac{-\cos x}{6}
+          =
+          -\frac16.
+          $$
+
+          Related topic: repeated L'Hopital only after repeated diagnosis.
+
+  - id: infinity-over-infinity-growth
+    title: Growth comparison with $\infty/\infty$
+    problem: |
+      Evaluate
+
+      $$
+      \lim_{x\to\infty}\frac{x^2}{e^x}.
+      $$
+    steps:
+      - id: growth-step-1-diagnose
+        title: Diagnose the growth race
+        instruction: |
+          As $x\to\infty$, both $x^2$ and $e^x$ grow without bound.
+        type: multipleChoice
+        prompt: What is the limiting form?
+        choices:
+          - id: infinity-infinity
+            text: '$\frac{\infty}{\infty}$'
+          - id: zero-zero
+            text: '$\frac{0}{0}$'
+          - id: zero
+            text: '$0$ immediately'
+          - id: infinity-plus
+            text: '$\infty+\infty$'
+        answer:
+          choiceId: infinity-infinity
+        explanation: |
+          This is a direct L'Hopital quotient form.
+      - id: growth-step-2-first-application
+        title: Apply once and recheck
+        instruction: |
+          Differentiating separately gives
+
+          $$
+          \lim_{x\to\infty}\frac{2x}{e^x}.
+          $$
+        type: multipleChoice
+        prompt: What should you do next?
+        choices:
+          - id: apply-again
+            text: Apply L'Hopital's Rule again because the form is still $\frac{\infty}{\infty}$.
+          - id: stop-zero
+            text: Stop because the answer is automatically zero.
+          - id: quotient-rule
+            text: Use the quotient rule on $\frac{2x}{e^x}$.
+          - id: reciprocal
+            text: Flip the fraction.
+        answer:
+          choiceId: apply-again
+        explanation: |
+          The derivative quotient still has an indeterminate $\frac{\infty}{\infty}$ form.
+      - id: growth-step-3-final
+        title: Exponential growth wins
+        instruction: |
+          Applying L'Hopital a second time gives
+
+          $$
+          \lim_{x\to\infty}\frac{2}{e^x}.
+          $$
+        type: symbolicResponse
+        prompt: Evaluate the limit.
+        answer:
+          expectedLatex: '0'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          Since $e^x\to\infty$,
+
+          $$
+          \frac{2}{e^x}\to0.
+          $$
+
+          This illustrates the general hierarchy that exponentials eventually dominate powers.
+
+  - id: determinate-warning
+    title: Know when not to use the rule
+    problem: |
+      Decide whether L'Hopital's Rule should be used immediately for
+
+      $$
+      \lim_{x\to0^+}\frac{1+x}{x}.
+      $$
+    steps:
+      - id: warning-step-1-diagnose
+        title: Diagnose before differentiating
+        instruction: |
+          Substituting $x\to0^+$ gives numerator approaching $1$ and denominator approaching $0^+$.
+        type: multipleChoice
+        prompt: What is the correct interpretation?
+        choices:
+          - id: diverges
+            text: The limit diverges to $+\infty$; it is not an indeterminate quotient.
+          - id: lhopital
+            text: It is $\frac{0}{0}$, so use L'Hopital's Rule.
+          - id: zero
+            text: It equals $0$.
+          - id: one
+            text: It equals $1$.
+        answer:
+          choiceId: diverges
+        explanation: |
+          L'Hopital's Rule does not apply to $\frac{1}{0^+}$. The ordinary limit interpretation already tells us the expression grows to $+\infty$.
+      - id: warning-step-2-explain
+        title: Explain the decision
+        instruction: |
+          A good solution explicitly states why the rule is not being used.
+        type: freeResponse
+        prompt: Explain why L'Hopital's Rule is not appropriate here.
+        answer:
+          expected: The form is finite nonzero over zero, not $0/0$ or $\infty/\infty$. Since the denominator approaches $0^+$ and the numerator approaches $1$, the quotient diverges to $+\infty$.
+          gradingMode: selfCheck
+          keyPoints:
+            - Identify the form as finite nonzero over zero.
+            - State that it is not an indeterminate L'Hopital form.
+            - Use the one-sided denominator to conclude $+\infty$.
+        explanation: |
+          Related topic: distinguishing determinate divergent forms from indeterminate forms.

@@ -1,0 +1,247 @@
+schemaVersion: 1
+id: calc1-lhopital-rule-concept-lesson
+title: L'Hopital's Rule Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-1
+subcategoryIds:
+  - calc1-differentiation-theorems
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - lhospital-rule
+    - indeterminate-forms
+    - limits
+    - calc1-differentiation-theorems
+skills:
+  - lhospital-rule
+  - indeterminate-forms
+  - limit-evaluation
+lesson:
+  introduction: |
+    L'Hopital's Rule is a limit tool for a very specific situation: a quotient limit has an indeterminate form, and differentiating the numerator and denominator separately exposes simpler limiting behavior.
+
+    The key is not "differentiate any fraction." The key is:
+
+    $$
+    \frac{0}{0}
+    \qquad\text{or}\qquad
+    \frac{\infty}{\infty}.
+    $$
+
+    If the expression is not one of those quotient forms, either do not use L'Hopital's Rule or first rewrite the expression into a valid quotient form.
+  sections:
+    - id: rule-statement
+      title: What the rule actually says
+      required: true
+      content: |
+        If
+
+        $$
+        \lim_{x\to a} f(x)=0
+        \qquad\text{and}\qquad
+        \lim_{x\to a} g(x)=0,
+        $$
+
+        or both limits are infinite in magnitude, then the quotient
+
+        $$
+        \lim_{x\to a}\frac{f(x)}{g(x)}
+        $$
+
+        may be evaluated by
+
+        $$
+        \lim_{x\to a}\frac{f'(x)}{g'(x)}
+        $$
+
+        provided the derivative quotient limit exists or diverges in a controlled way.
+
+        The numerator and denominator are differentiated separately. You are not using the quotient rule.
+      check:
+        id: rule-statement-check
+        type: multipleChoice
+        prompt: Which situation is a direct valid candidate for L'Hopital's Rule?
+        choices:
+          - id: zero-zero
+            text: '$\displaystyle \lim_{x\to a}\frac{f(x)}{g(x)}$ gives $\frac{0}{0}$.'
+          - id: finite-over-zero
+            text: '$\displaystyle \lim_{x\to a}\frac{f(x)}{g(x)}$ gives $\frac{5}{0}$.'
+          - id: product
+            text: '$\displaystyle \lim_{x\to a}f(x)g(x)$ gives $0\cdot\infty$ without rewriting.'
+          - id: sum
+            text: '$\displaystyle \lim_{x\to a}(f(x)+g(x))$ gives $\infty+\infty$.'
+        answer:
+          choiceId: zero-zero
+        explanation: |
+          L'Hopital's Rule directly applies to quotient forms $\frac{0}{0}$ and $\frac{\infty}{\infty}$. Other indeterminate forms may require algebraic rewriting first.
+
+    - id: derivative-quotient-not-quotient-rule
+      title: Do not use the quotient rule
+      required: true
+      content: |
+        A common mistake is to see a quotient and apply the quotient rule:
+
+        $$
+        \frac{d}{dx}\left(\frac{f}{g}\right)
+        =
+        \frac{f'g-fg'}{g^2}.
+        $$
+
+        That is not L'Hopital's Rule.
+
+        L'Hopital's Rule replaces the original quotient limit with a new quotient limit:
+
+        $$
+        \lim\frac{f(x)}{g(x)}
+        =
+        \lim\frac{f'(x)}{g'(x)}
+        $$
+
+        when the hypotheses are met.
+      check:
+        id: derivative-quotient-not-quotient-rule-check
+        type: multipleChoice
+        prompt: Under L'Hopital's Rule, what does $\frac{f(x)}{g(x)}$ become?
+        choices:
+          - id: separate
+            text: '$\displaystyle \frac{f''(x)}{g''(x)}$'
+          - id: quotient-rule
+            text: '$\displaystyle \frac{f''(x)g(x)-f(x)g''(x)}{g(x)^2}$'
+          - id: reciprocal
+            text: '$\displaystyle \frac{g''(x)}{f''(x)}$'
+          - id: product
+            text: '$f''(x)g''(x)$'
+        answer:
+          choiceId: separate
+        explanation: |
+          Differentiate the numerator and denominator as separate functions. Do not differentiate the quotient as a single function.
+
+    - id: check-before-and-after
+      title: Check the form before each use
+      required: true
+      content: |
+        L'Hopital's Rule can be applied more than once, but each use needs a valid indeterminate quotient.
+
+        For example, if after one application you still get
+
+        $$
+        \frac{0}{0}
+        $$
+
+        or
+
+        $$
+        \frac{\infty}{\infty},
+        $$
+
+        then a second application may be appropriate.
+
+        But if the new quotient becomes
+
+        $$
+        \frac{3}{0},
+        \qquad
+        \frac{0}{5},
+        \qquad
+        \text{or}
+        \qquad
+        \frac{7}{2},
+        $$
+
+        you stop and interpret that limit normally.
+      check:
+        id: check-before-and-after-check
+        type: selectAll
+        prompt: After one use of L'Hopital's Rule, which new forms permit another use?
+        choices:
+          - id: zero-zero
+            text: '$\frac{0}{0}$'
+          - id: infinity-infinity
+            text: '$\frac{\infty}{\infty}$'
+          - id: zero-five
+            text: '$\frac{0}{5}$'
+          - id: five-zero
+            text: '$\frac{5}{0}$'
+        answer:
+          choiceIds:
+            - zero-zero
+            - infinity-infinity
+        explanation: |
+          Another application is justified only when the derivative quotient is still an indeterminate quotient form.
+
+    - id: finite-infinite-endpoints
+      title: It works at finite points and at infinity
+      required: true
+      content: |
+        L'Hopital's Rule may be used for limits as $x$ approaches a finite value, a one-sided endpoint, or infinity:
+
+        $$
+        x\to a,
+        \qquad
+        x\to a^+,
+        \qquad
+        x\to a^-,
+        \qquad
+        x\to\infty,
+        \qquad
+        x\to-\infty.
+        $$
+
+        This is why it also reappears later when evaluating improper integrals. After integration, an endpoint limit may contain an expression such as
+
+        $$
+        b e^{-b}
+        $$
+
+        as $b\to\infty$. That is not a quotient yet, but it can be rewritten into one.
+      check:
+        id: finite-infinite-endpoints-check
+        type: multipleChoice
+        prompt: Why does L'Hopital's Rule appear in improper-integral problems?
+        choices:
+          - id: endpoint-limits
+            text: Improper integrals become endpoint limits, and those limits may be indeterminate.
+          - id: all-integrals
+            text: Every improper integral must be evaluated with L'Hopital's Rule.
+          - id: antiderivatives
+            text: L'Hopital's Rule directly finds antiderivatives.
+          - id: p-test
+            text: It replaces the p-test in every tail integral.
+        answer:
+          choiceId: endpoint-limits
+        explanation: |
+          The integral setup creates a limit. L'Hopital's Rule is used only if that limit has an appropriate indeterminate form after any needed rewriting.
+
+    - id: first-move-question
+      title: The first move is diagnosis
+      required: true
+      content: |
+        Before applying any technique, ask:
+
+        1. What does the expression approach?
+        2. Is that form determinate or indeterminate?
+        3. Is it already a quotient?
+        4. If not, can it be rewritten into $\frac{0}{0}$ or $\frac{\infty}{\infty}$?
+        5. Would algebra, known limits, or comparison be simpler?
+
+        This prevents using L'Hopital's Rule as a reflex. The rule is powerful, but it is safest when used after a clear diagnosis.
+      check:
+        id: first-move-question-check
+        type: multipleChoice
+        prompt: What is the best first step before using L'Hopital's Rule?
+        choices:
+          - id: diagnose
+            text: Diagnose the limiting form.
+          - id: differentiate
+            text: Immediately differentiate every term.
+          - id: quotient-rule
+            text: Apply the quotient rule.
+          - id: ignore-domain
+            text: Ignore one-sided behavior and endpoint restrictions.
+        answer:
+          choiceId: diagnose
+        explanation: |
+          Diagnosis tells you whether the rule applies directly, needs algebraic rewriting, or should not be used at all.
