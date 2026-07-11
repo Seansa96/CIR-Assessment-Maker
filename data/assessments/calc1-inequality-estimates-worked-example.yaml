@@ -1,0 +1,94 @@
+schemaVersion: 1
+id: calc1-inequality-estimates-worked-example
+title: Inequality Estimates Worked Example
+assessmentType: workedExample
+categoryId: calculus-1
+subcategoryIds:
+- calc1-inequalities-real-numbers
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - inequalities
+  - absolute-value
+  - epsilon-delta
+workedExamples:
+- id: we001
+  title: Control a nonlinear expression near a point
+  problem: |
+    Show how to control $|x^2-4|$ when $x$ is close to $2$. This is the estimate behind a direct proof of $\lim_{x\to2}x^2=4$.
+  steps:
+  - id: ineq-est-s001
+    title: Expose the small factor
+    instruction: |
+      Factor the expression so the distance from $x$ to $2$ appears.
+    type: multipleChoice
+    prompt: |
+      Which factorization is most useful?
+    choices:
+    - id: a
+      text: $|x^2-4|=|x-2||x+2|$
+    - id: b
+      text: $|x^2-4|=|x-4||x+1|$
+    - id: c
+      text: $|x^2-4|=|x-2|^2$
+    - id: d
+      text: $|x^2-4|=|x|^2-4$
+    answer:
+      choiceId: a
+    explanation: |
+      The factor $|x-2|$ is the small input-distance factor.
+  - id: ineq-est-s002
+    title: Bound the extra factor
+    instruction: |
+      Assume $|x-2|<1$. Then $1<x<3$, so $3<x+2<5$.
+    type: multipleChoice
+    prompt: |
+      Which bound is safe?
+    choices:
+    - id: a
+      text: $|x+2|<1$
+    - id: b
+      text: $|x+2|<5$
+    - id: c
+      text: $|x+2|=|x-2|$
+    - id: d
+      text: $|x+2|<0$
+    answer:
+      choiceId: b
+    explanation: |
+      A safe bound does not need to be sharp; it only needs to be true in the neighborhood.
+  - id: ineq-est-s003
+    title: State the estimate
+    instruction: |
+      Combine the small factor with the bounded factor.
+    type: symbolicResponse
+    prompt: |
+      Give a valid upper bound in terms of $|x-2|$.
+    answer:
+      expectedLatex: 5|x-2|
+      equivalenceMode: expression
+      variables:
+      - x
+      tolerance: 0.000001
+    explanation: |
+      Because $|x^2-4|=|x-2||x+2|$ and $|x+2|<5$, the output error is less than $5|x-2|$.
+  - id: ineq-est-s004
+    title: Explain why it matters
+    instruction: |
+      The estimate converts output control into input control.
+    type: freeResponse
+    prompt: |
+      Explain how this estimate supports an epsilon-delta proof.
+    answer:
+      expected: |
+        It lets us force $|x^2-4|<\varepsilon$ by requiring $|x-2|<\varepsilon/5$, together with the neighborhood restriction $|x-2|<1$.
+      gradingMode: selfCheck
+      keyPoints:
+      - Connects output error to input distance
+      - Mentions choosing delta from epsilon
+      - Keeps the local bound restriction
+    explanation: |
+      Related topic: direct limit proofs and chain estimates.

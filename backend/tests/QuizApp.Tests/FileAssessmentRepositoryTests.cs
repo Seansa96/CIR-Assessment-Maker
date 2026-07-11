@@ -404,6 +404,19 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-power-taylor-error-deep-worked-example")]
     [InlineData("calc2-intro-to-sequences-worked-example")]
     [InlineData("calc2-sequences-glossary")]
+    [InlineData("calc1-real-number-order-concept-lesson")]
+    [InlineData("calc1-sets-functions-concept-lesson")]
+    [InlineData("calc1-limits-continuity-concept-lesson")]
+    [InlineData("calc1-derivative-theorems-concept-lesson")]
+    [InlineData("calc1-graph-integral-concept-lesson")]
+    [InlineData("calc1-inequality-estimates-worked-example")]
+    [InlineData("calc1-limits-continuity-worked-example")]
+    [InlineData("calc1-derivative-mvt-worked-example")]
+    [InlineData("calc1-graph-and-riemann-worked-example")]
+    [InlineData("calc2-monotone-bounded-sequence-worked-example")]
+    [InlineData("calc2-advanced-series-comparison-worked-example")]
+    [InlineData("calc2-improper-integral-limit-comparison-worked-example")]
+    [InlineData("calc2-taylor-remainder-decision-worked-example")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
