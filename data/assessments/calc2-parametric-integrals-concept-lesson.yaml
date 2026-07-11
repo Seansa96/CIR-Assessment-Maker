@@ -1,0 +1,248 @@
+schemaVersion: 1
+id: calc2-parametric-integrals-concept-lesson
+title: Parametric Integrals Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - parametric-integrals
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - parametric-integrals
+    - parametric-area
+    - parametric-arc-length
+    - surface-area
+    - orientation
+skills:
+  - parametric-integrals
+lesson:
+  introduction: |
+    Parametric integrals convert familiar geometric quantities into parameter language. Instead of integrating directly with respect to $x$, you use the parameter $t$ to measure how $x$, $y$, or arc length changes.
+
+    The key ideas are:
+
+    - area uses $dx=x'(t)\,dt$,
+    - arc length uses $ds=\sqrt{(x'(t))^2+(y'(t))^2}\,dt$,
+    - surface area uses circumference times arc-length element,
+    - orientation matters whenever area is signed.
+  sections:
+    - id: area-from-y-dx
+      title: Area Uses $y\,dx$
+      required: true
+      content: |
+        For an ordinary function, area under a curve often starts from:
+
+        $$
+        A=\int y\,dx.
+        $$
+
+        If the curve is parametric, then $y=y(t)$ and $dx=x'(t)\,dt$. So the parametric area formula becomes:
+
+        $$
+        A=\int_{\alpha}^{\beta} y(t)x'(t)\,dt.
+        $$
+
+        ![Parametric area and surface intuition](/assessments/calc2-parametric-polar/parametric-integrals-area-surface-intuition.svg)
+      check:
+        id: area-from-y-dx-check
+        type: multipleChoice
+        prompt: In the parametric area formula, what replaces $dx$?
+        choices:
+          - id: a
+            text: '$\frac{dx}{dt}\,dt$'
+          - id: b
+            text: '$\frac{dy}{dt}\,dt$'
+          - id: c
+            text: '$x(t)y(t)$'
+          - id: d
+            text: '$dt^2$'
+        answer:
+          choiceId: a
+        explanation: |
+          Since $x=x(t)$, a small change in $x$ is $dx=x'(t)\,dt$.
+
+    - id: signed-area-and-orientation
+      title: Signed Area and Orientation
+      required: true
+      content: |
+        The integral
+
+        $$
+        \int_{\alpha}^{\beta} y(t)x'(t)\,dt
+        $$
+
+        is signed. If the curve moves left, then $x'(t)<0$, and the area contribution may be negative.
+
+        For geometric area, you may need to:
+
+        - split the interval where orientation changes,
+        - reverse bounds,
+        - take absolute values,
+        - or reason from the graph.
+
+        This is why parametric area problems often ask you to identify the trace direction before integrating.
+      check:
+        id: signed-area-and-orientation-check
+        type: multipleChoice
+        prompt: If $x'(t)<0$ on an interval, what can happen to $\int y(t)x'(t)\,dt$?
+        choices:
+          - id: a
+            text: It may count area with a negative sign.
+          - id: b
+            text: It automatically becomes arc length.
+          - id: c
+            text: It is always invalid.
+          - id: d
+            text: It means $y(t)=0$.
+        answer:
+          choiceId: a
+        explanation: |
+          Area built from $y\,dx$ is sensitive to the direction in which $x$ changes.
+
+    - id: arc-length-element
+      title: Arc Length Uses $ds$
+      required: true
+      content: |
+        For a parametric curve, a tiny movement along the curve has horizontal change $dx=x'(t)\,dt$ and vertical change $dy=y'(t)\,dt$.
+
+        By the Pythagorean theorem:
+
+        $$
+        ds=\sqrt{(dx)^2+(dy)^2}.
+        $$
+
+        Substitute the parameter changes:
+
+        $$
+        ds=\sqrt{(x'(t))^2+(y'(t))^2}\,dt.
+        $$
+
+        Therefore:
+
+        $$
+        L=\int_{\alpha}^{\beta}\sqrt{(x'(t))^2+(y'(t))^2}\,dt.
+        $$
+      check:
+        id: arc-length-element-check
+        type: multipleChoice
+        prompt: What expression represents the parametric arc-length integrand?
+        choices:
+          - id: a
+            text: '$\sqrt{\left(\frac{dx}{dt}\right)^2+\left(\frac{dy}{dt}\right)^2}$'
+          - id: b
+            text: '$x''(t)+y''(t)$'
+          - id: c
+            text: '$y(t)x''(t)$'
+          - id: d
+            text: '$x(t)y(t)$'
+        answer:
+          choiceId: a
+        explanation: |
+          Arc length is built from the speed of the moving point: $\sqrt{(x')^2+(y')^2}$.
+
+    - id: surface-area-parametric
+      title: Surface Area from Rotating a Parametric Curve
+      required: true
+      content: |
+        Surface area comes from:
+
+        $$
+        \text{surface area}=\int 2\pi(\text{radius})\,ds.
+        $$
+
+        For rotation about the $x$-axis, the radius is usually $y(t)$:
+
+        $$
+        S_x=\int_{\alpha}^{\beta}2\pi y(t)\sqrt{(x'(t))^2+(y'(t))^2}\,dt.
+        $$
+
+        For rotation about the $y$-axis, the radius is usually $x(t)$:
+
+        $$
+        S_y=\int_{\alpha}^{\beta}2\pi x(t)\sqrt{(x'(t))^2+(y'(t))^2}\,dt.
+        $$
+
+        Use absolute values or geometric radius if the curve crosses an axis.
+      check:
+        id: surface-area-parametric-check
+        type: multipleChoice
+        prompt: For rotation about the $x$-axis, what is the usual radius factor?
+        choices:
+          - id: a
+            text: '$y(t)$'
+          - id: b
+            text: '$x(t)$'
+          - id: c
+            text: '$x''(t)$'
+          - id: d
+            text: '$t$ only'
+        answer:
+          choiceId: a
+        explanation: |
+          Distance to the $x$-axis is vertical distance, represented by $y(t)$ when the curve is above the axis.
+
+    - id: choosing-bounds
+      title: Choosing the Parameter Bounds
+      required: true
+      content: |
+        Parametric integral bounds are parameter values, not necessarily $x$-values.
+
+        To choose bounds:
+
+        1. Determine which part of the curve is being used.
+        2. Translate endpoint information into $t$ values.
+        3. Confirm the interval traces the desired piece exactly once.
+        4. Watch for retracing or direction changes.
+
+        If a problem gives endpoints in $(x,y)$ form, solve $x(t)$ and $y(t)$ together to find the matching parameter values.
+      check:
+        id: choosing-bounds-check
+        type: multipleChoice
+        prompt: In a parametric integral, the bounds should usually be values of what variable?
+        choices:
+          - id: a
+            text: The parameter $t$.
+          - id: b
+            text: Always $x$.
+          - id: c
+            text: Always $y$.
+          - id: d
+            text: The final area.
+        answer:
+          choiceId: a
+        explanation: |
+          Since the integrand is written in terms of $t$, the bounds must also be parameter values.
+
+    - id: parametric-integral-workflow
+      title: Parametric Integral Workflow
+      required: true
+      content: |
+        Use this decision order:
+
+        1. Identify the quantity: area, arc length, or surface area.
+        2. Choose the parameter interval.
+        3. Compute $x'(t)$ and $y'(t)$.
+        4. For area, use $y(t)x'(t)$ and check orientation.
+        5. For arc length, use $\sqrt{(x')^2+(y')^2}$.
+        6. For surface area, multiply $ds$ by $2\pi$ times the radius to the axis.
+        7. Evaluate exactly if possible; otherwise state a reliable numerical approximation.
+      check:
+        id: parametric-integral-workflow-check
+        type: multipleChoice
+        prompt: Which quantity requires the integrand $\sqrt{(x'(t))^2+(y'(t))^2}$?
+        choices:
+          - id: a
+            text: Arc length.
+          - id: b
+            text: Signed area only.
+          - id: c
+            text: Slope only.
+          - id: d
+            text: Average value only.
+        answer:
+          choiceId: a
+        explanation: |
+          That expression is the speed of the parametric point, which accumulates distance along the curve.

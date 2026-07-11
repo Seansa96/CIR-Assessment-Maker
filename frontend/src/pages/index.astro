@@ -2841,7 +2841,7 @@ import "../styles/global.css";
           actions.push(`<button type="button" data-attempt-action="review" data-attempt-id="${id}">Review</button>`);
         }
 
-        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && attempt.assessmentType !== "guidedProject" && !attempt.hasPendingSelfChecks && !isAttemptCommitted(attempt.attemptId)) {
+        if (attempt.status === "completed" && attempt.assessmentType !== "workedExample" && attempt.assessmentType !== "guidedProject" && !isAttemptCommitted(attempt.attemptId)) {
           actions.push(`<button type="button" data-attempt-action="commit" data-attempt-id="${id}">Commit</button>`);
         }
 
@@ -5104,10 +5104,10 @@ import "../styles/global.css";
           <div class="result-list">
             ${questionHtml.join("")}
           </div>
-          ${results.hasPendingSelfChecks ? `<p class="feedback incorrect">Resolve pending free-response self-checks before committing this score.</p>` : ""}
+          ${results.hasPendingSelfChecks ? `<p class="feedback incorrect">You have pending free-response self-checks, but you can still commit this score.</p>` : ""}
           ${alreadyCommitted ? `<p class="feedback correct">Score committed to grade log.</p>` : ""}
           <div class="button-row" style="margin-top: 1rem;">
-            ${!alreadyCommitted && !isInstructionalSession && !results.hasPendingSelfChecks && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
+            ${!alreadyCommitted && !isInstructionalSession && results.status === "completed" ? `<button class="primary chunky" id="commit-grade">Commit Score</button>` : ""}
             <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>

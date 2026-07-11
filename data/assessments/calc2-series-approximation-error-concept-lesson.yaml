@@ -1,0 +1,195 @@
+schemaVersion: 1
+id: calc2-series-approximation-error-concept-lesson
+title: Series Approximation and Error Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - series-approximation-error
+  - taylor-maclaurin
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - taylor-polynomials
+    - approximation-error
+    - alternating-series-error
+    - lagrange-remainder
+skills:
+  - series-approximation-error
+lesson:
+  introduction: |
+    Infinite series are often used because we cannot or do not want to evaluate a function exactly. A finite partial sum gives an approximation, and the error estimate tells us how much trust to place in that approximation.
+
+    This lesson focuses on the practical question: how close is the finite approximation to the infinite object?
+  sections:
+    - id: approximation-idea
+      title: A polynomial can imitate a function near a center
+      required: true
+      content: |
+        ![Taylor polynomials of increasing degree approximating e to the x near the center](/assessments/calc2-infinite-series/taylor-approximation-error.svg)
+
+        A Taylor polynomial uses finitely many terms from a Taylor series:
+
+        $$
+        P_N(x)=\sum_{n=0}^{N}\frac{f^{(n)}(a)}{n!}(x-a)^n.
+        $$
+
+        Near the center $a$, more terms usually improve the approximation. Farther from the center, error can grow quickly.
+      check:
+        id: approximation-idea-check
+        type: multipleChoice
+        prompt: What is a Taylor polynomial?
+        choices:
+          - id: a
+            text: A finite partial sum of a Taylor series.
+          - id: b
+            text: An unrelated polynomial chosen at random.
+          - id: c
+            text: The exact value of every infinite series.
+          - id: d
+            text: A convergence test for positive series only.
+        answer:
+          choiceId: a
+        explanation: |
+          A Taylor polynomial is a finite truncation of a Taylor series. It is used as an approximation to the function.
+
+          Related topic: Taylor polynomial approximation.
+    - id: remainder-language
+      title: The remainder is the error
+      required: true
+      content: |
+        If $P_N(x)$ is the degree-$N$ Taylor polynomial for $f(x)$, then the error is:
+
+        $$
+        R_N(x)=f(x)-P_N(x).
+        $$
+
+        Since $f(x)$ may be hard to compute exactly, we usually do not know $R_N(x)$ exactly. Instead, we bound its size:
+
+        $$
+        |R_N(x)|\le \text{some manageable number}.
+        $$
+      check:
+        id: remainder-language-check
+        type: multipleChoice
+        prompt: What does $R_N(x)$ represent in Taylor approximation?
+        choices:
+          - id: a
+            text: The error after using the degree-$N$ Taylor polynomial.
+          - id: b
+            text: The common ratio of a geometric series.
+          - id: c
+            text: The first derivative only.
+          - id: d
+            text: The number of endpoints in an interval of convergence.
+        answer:
+          choiceId: a
+        explanation: |
+          $R_N(x)$ is the remainder, meaning the difference between the function and the finite Taylor polynomial.
+
+          Related topic: Taylor remainder.
+    - id: alternating-error
+      title: Alternating series error is often the easiest bound
+      required: true
+      content: |
+        If an alternating series satisfies the Alternating Series Test, then:
+
+        $$
+        |R_N|\le b_{N+1}.
+        $$
+
+        That means the first omitted term controls the error.
+
+        Example: using
+
+        $$
+        \sin x=x-\frac{x^3}{3!}+\frac{x^5}{5!}-\cdots,
+        $$
+
+        the next unused term often gives a quick error bound near $x=0$.
+      check:
+        id: alternating-error-check
+        type: multipleChoice
+        prompt: For a valid alternating approximation, what usually bounds the error after $N$ terms?
+        choices:
+          - id: a
+            text: The first omitted term.
+          - id: b
+            text: The first term of the original series.
+          - id: c
+            text: The common difference of an arithmetic sequence.
+          - id: d
+            text: The square of the answer.
+        answer:
+          choiceId: a
+        explanation: |
+          The alternating series error estimate says the error is no larger than the magnitude of the next term.
+
+          Related topic: alternating series error bound.
+    - id: lagrange-bound
+      title: Lagrange remainder handles non-alternating Taylor estimates
+      required: true
+      content: |
+        When the alternating error estimate does not apply, a common Taylor error bound is the Lagrange remainder:
+
+        $$
+        |R_N(x)|
+        \le
+        \frac{M}{(N+1)!}|x-a|^{N+1},
+        $$
+
+        where $M$ is an upper bound for
+
+        $$
+        |f^{(N+1)}(z)|
+        $$
+
+        between $a$ and $x$.
+
+        The point is not to find the exact error. The point is to trap the error below a number small enough for the requested accuracy.
+      check:
+        id: lagrange-bound-check
+        type: multipleChoice
+        prompt: In the Lagrange remainder estimate, what does $M$ bound?
+        choices:
+          - id: a
+            text: The magnitude of the next derivative on the relevant interval.
+          - id: b
+            text: The first term of the series only.
+          - id: c
+            text: The number of terms in a geometric series.
+          - id: d
+            text: The denominator of a p-series.
+        answer:
+          choiceId: a
+        explanation: |
+          $M$ bounds $|f^{(N+1)}(z)|$ between the center and the input value. That derivative controls the maximum possible leftover error.
+
+          Related topic: Lagrange error bound.
+    - id: choosing-degree
+      title: Choosing enough terms
+      required: true
+      content: |
+        Many approximation questions ask for enough terms to guarantee an error less than a target such as $0.001$.
+
+        The workflow is:
+
+        1. Identify the approximation type.
+        2. Choose an error bound.
+        3. Write an inequality such as $|R_N|<0.001$.
+        4. Increase $N$ until the inequality is true.
+
+        This is why error bounds are part of the answer, not decorative afterthoughts.
+      check:
+        id: choosing-degree-check
+        type: numericResponse
+        prompt: If an alternating estimate has first omitted term $0.0008$, what is the largest guaranteed error?
+        answer:
+          value: 0.0008
+          tolerance: 0
+        explanation: |
+          For a valid alternating series estimate, the first omitted term bounds the error, so the largest guaranteed error is $0.0008$.
+
+          Related topic: choosing terms for a target accuracy.

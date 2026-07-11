@@ -1,0 +1,188 @@
+schemaVersion: 1
+id: calc2-alternating-series-concept-lesson
+title: Alternating Series Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - alternating-series
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+    - alternating-series
+    - alternating-series-test
+    - error-bound
+    - conditional-convergence
+skills:
+  - alternating-series
+lesson:
+  introduction: |
+    Alternating series behave differently from positive-term series because cancellation can make partial sums settle even when the positive version would diverge.
+
+    The core idea is not magic. If the terms shrink toward $0$, each new term overshoots the final value by a smaller amount than the last one.
+  sections:
+    - id: alternating-pattern
+      title: Alternating signs create bracketing
+      required: true
+      content: |
+        ![Partial sums of the alternating harmonic series bracketing the limit](/assessments/calc2-infinite-series/alternating-partial-sums.svg)
+
+        An alternating series has signs that switch back and forth:
+
+        $$
+        \sum_{n=1}^{\infty}(-1)^{n-1}b_n
+        =
+        b_1-b_2+b_3-b_4+\cdots.
+        $$
+
+        If $b_n$ gets smaller and approaches $0$, the partial sums bounce around the limit with smaller and smaller jumps.
+      check:
+        id: alternating-pattern-check
+        type: multipleChoice
+        prompt: What feature makes a series alternating?
+        choices:
+          - id: a
+            text: Its terms switch sign back and forth.
+          - id: b
+            text: Every term is positive.
+          - id: c
+            text: Every term contains a factorial.
+          - id: d
+            text: Its terms are all equal.
+        answer:
+          choiceId: a
+        explanation: |
+          Alternating series have a sign-changing factor such as $(-1)^n$ or $(-1)^{n-1}$.
+
+          Related topic: recognizing alternating series.
+    - id: ast-conditions
+      title: The alternating series test
+      required: true
+      content: |
+        The Alternating Series Test says:
+
+        $$
+        \sum (-1)^n b_n
+        $$
+
+        converges if:
+
+        1. $b_n\ge0$,
+        2. $b_n$ eventually decreases,
+        3. $\lim_{n\to\infty}b_n=0$.
+
+        The test proves convergence, but it usually does not give the exact sum.
+      check:
+        id: ast-conditions-check
+        type: selectAll
+        prompt: Which conditions are needed for the Alternating Series Test?
+        choices:
+          - id: a
+            text: The magnitudes $b_n$ approach $0$.
+          - id: b
+            text: The magnitudes $b_n$ eventually decrease.
+          - id: c
+            text: The signs alternate.
+          - id: d
+            text: The terms must contain factorials.
+        answer:
+          choiceIds: [a, b, c]
+        explanation: |
+          Alternating signs, decreasing magnitudes, and a zero term limit are the AST requirements. Factorials are unrelated to the AST.
+
+          Related topic: alternating series test conditions.
+    - id: error-bound
+      title: The next term controls the error
+      required: true
+      content: |
+        Alternating series have a useful built-in approximation rule. If the AST conditions hold, then the error after $N$ terms satisfies:
+
+        $$
+        |R_N|\le b_{N+1}.
+        $$
+
+        In words: the error is no larger than the first omitted term.
+
+        This is why alternating series are useful for approximation even when the exact sum is unknown.
+      check:
+        id: alternating-error-bound-check
+        type: numericResponse
+        prompt: For an alternating series with $b_n=\frac{1}{n}$, what is the largest possible error after using the first 99 terms?
+        answer:
+          value: 0.01
+          tolerance: 0.000001
+        explanation: |
+          The first omitted term is $b_{100}=\frac{1}{100}=0.01$, so the error is at most $0.01$.
+
+          Related topic: alternating series estimation theorem.
+    - id: ast-does-not-prove-absolute
+      title: Alternating convergence is not automatically absolute
+      required: true
+      content: |
+        The alternating harmonic series converges:
+
+        $$
+        \sum_{n=1}^{\infty}\frac{(-1)^{n-1}}{n}.
+        $$
+
+        But its absolute value series is the harmonic series:
+
+        $$
+        \sum_{n=1}^{\infty}\frac{1}{n},
+        $$
+
+        which diverges.
+
+        That means the alternating harmonic series is conditionally convergent.
+      check:
+        id: ast-does-not-prove-absolute-check
+        type: multipleChoice
+        prompt: What extra check determines whether an alternating series converges absolutely?
+        choices:
+          - id: a
+            text: Test the series formed by taking absolute values of the terms.
+          - id: b
+            text: Check only the first term.
+          - id: c
+            text: Ignore all signs and assume convergence.
+          - id: d
+            text: Use only the formula for finite arithmetic sums.
+        answer:
+          choiceId: a
+        explanation: |
+          Absolute convergence means $\sum |a_n|$ converges. The AST alone only proves the alternating series converges.
+
+          Related topic: absolute versus conditional convergence.
+    - id: alternating-workflow
+      title: Alternating series workflow
+      required: true
+      content: |
+        Use this workflow:
+
+        1. Identify the sign-changing factor.
+        2. Define $b_n=|a_n|$.
+        3. Check whether $b_n\to0$.
+        4. Check whether $b_n$ eventually decreases.
+        5. If asked about absolute or conditional convergence, test $\sum |a_n|$ separately.
+        6. If approximating, use the first omitted term as the error bound.
+      check:
+        id: alternating-workflow-check
+        type: multipleChoice
+        prompt: If $b_n$ does not approach $0$, what happens to $\sum (-1)^n b_n$?
+        choices:
+          - id: a
+            text: It diverges by the nth-term divergence test.
+          - id: b
+            text: It converges by the Alternating Series Test.
+          - id: c
+            text: It converges absolutely.
+          - id: d
+            text: It must telescope.
+        answer:
+          choiceId: a
+        explanation: |
+          Alternating signs do not rescue a series whose terms fail to approach $0$. The nth-term divergence test still applies.
+
+          Related topic: divergence test before alternating series test.

@@ -1,0 +1,465 @@
+schemaVersion: 1
+id: calc2-polar-to-parametric-worked-example
+title: Turning Polar Equations into Parametric Equations
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - parametric-curves
+  - polar-curves
+  - parametric-polar-review
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - polar-curves
+    - parametric-curves
+    - polar-to-parametric
+    - coordinate-conversion
+    - limacon
+skills:
+  - polar-curves
+  - parametric-curves
+  - polar-to-parametric
+workedExamples:
+  - id: polar-circle-to-parametric
+    title: 'Simple Conversion: $r=2\cos\theta$'
+    problem: |
+      ![A side-by-side comparison showing the polar curve r equals 2 cosine theta and the equivalent parametric trace](/assessments/calc2-parametric-polar/polar-to-parametric-circle-2cos.svg)
+
+      Convert the polar equation
+
+      $$
+      r=2\cos\theta
+      $$
+
+      into parametric equations. Then explain why the parametric version represents the same set of points.
+    steps:
+      - id: polar-circle-param-step-1
+        title: Start from the coordinate bridge
+        instruction: |
+          Polar and rectangular coordinates describe the same point in two different ways.
+
+          If a point has polar coordinates $(r,\theta)$, then its rectangular coordinates are:
+
+          $$
+          x=r\cos\theta,\qquad y=r\sin\theta.
+          $$
+
+          To turn a polar equation into parametric equations, we let the angle be the parameter:
+
+          $$
+          \theta=t.
+          $$
+        type: multipleChoice
+        prompt: What is the main bridge from polar to parametric form?
+        choices:
+          - id: a
+            text: '$x=r\cos\theta,\ y=r\sin\theta$'
+          - id: b
+            text: '$r=x+y$'
+          - id: c
+            text: '$x=r+\theta,\ y=r-\theta$'
+          - id: d
+            text: '$r=\frac{y}{x}$'
+        answer:
+          choiceId: a
+        explanation: |
+          Polar coordinates describe a distance and angle. Multiplying by cosine gives the horizontal component, and multiplying by sine gives the vertical component.
+
+          Related topic: polar-to-rectangular coordinate conversion.
+      - id: polar-circle-param-step-2
+        title: Choose the parameter
+        instruction: |
+          The polar equation gives radius as a function of angle:
+
+          $$
+          r=2\cos\theta.
+          $$
+
+          Parametric equations need both $x$ and $y$ as functions of one parameter. The natural choice is:
+
+          $$
+          t=\theta.
+          $$
+
+          Then the radius becomes:
+
+          $$
+          r(t)=2\cos t.
+          $$
+        type: multipleChoice
+        prompt: Which parameter choice is most natural for converting a polar equation?
+        choices:
+          - id: a
+            text: Let $t=\theta$.
+          - id: b
+            text: Let $t=x$.
+          - id: c
+            text: Let $t=y$.
+          - id: d
+            text: Let $t=r+\theta$.
+        answer:
+          choiceId: a
+        explanation: |
+          Since the polar equation already describes $r$ using $\theta$, the cleanest parameter is the angle itself.
+      - id: polar-circle-param-step-3
+        title: Substitute into $x=r\cos t$
+        instruction: |
+          The horizontal coordinate is:
+
+          $$
+          x(t)=r(t)\cos t.
+          $$
+
+          Since $r(t)=2\cos t$:
+
+          $$
+          x(t)=2\cos t\cos t=2\cos^2 t.
+          $$
+        type: symbolicResponse
+        prompt: Write $x(t)$ for the parametric form.
+        answer:
+          expectedLatex: 'x=2\cos^2 t'
+          equivalenceMode: expression
+          variables:
+            - x
+            - t
+          tolerance: 0.000001
+        explanation: |
+          The $x$-coordinate is the radius times the horizontal direction factor $\cos t$. Here the radius already contains a $\cos t$, so $x(t)=2\cos^2t$.
+      - id: polar-circle-param-step-4
+        title: Substitute into $y=r\sin t$
+        instruction: |
+          The vertical coordinate is:
+
+          $$
+          y(t)=r(t)\sin t.
+          $$
+
+          Since $r(t)=2\cos t$:
+
+          $$
+          y(t)=2\cos t\sin t.
+          $$
+
+          You may also write this as $y(t)=\sin(2t)$ using the double-angle identity.
+        type: symbolicResponse
+        prompt: Write $y(t)$ without using the double-angle identity.
+        answer:
+          expectedLatex: 'y=2\sin t\cos t'
+          equivalenceMode: expression
+          variables:
+            - y
+            - t
+          tolerance: 0.000001
+        explanation: |
+          The $y$-coordinate is the same radius multiplied by the vertical direction factor $\sin t$.
+
+          Related topic: resolving a polar radius into rectangular components.
+      - id: polar-circle-param-step-5
+        title: Explain why the curve is the same
+        instruction: |
+          The parametric curve
+
+          $$
+          x=2\cos^2t,\qquad y=2\sin t\cos t
+          $$
+
+          is not a new curve. It is the same polar curve with the point written in rectangular coordinates at each angle $t$.
+
+          To verify the shape, use $r^2=x^2+y^2$ and $x=r\cos\theta$. From $r=2\cos\theta$:
+
+          $$
+          r^2=2r\cos\theta=2x.
+          $$
+
+          Therefore:
+
+          $$
+          x^2+y^2=2x.
+          $$
+        type: multipleChoice
+        prompt: What rectangular equation does this curve satisfy?
+        choices:
+          - id: a
+            text: '$x^2+y^2=2x$'
+          - id: b
+            text: '$x^2+y^2=2y$'
+          - id: c
+            text: '$x^2-y^2=2x$'
+          - id: d
+            text: '$y=2x$'
+        answer:
+          choiceId: a
+        explanation: |
+          Multiplying $r=2\cos\theta$ by $r$ gives $r^2=2r\cos\theta$. Since $r^2=x^2+y^2$ and $r\cos\theta=x$, the rectangular form is $x^2+y^2=2x$.
+      - id: polar-circle-param-step-6
+        title: State the final parametric equations
+        instruction: |
+          The final parametric form is:
+
+          $$
+          x(t)=2\cos^2t,\qquad y(t)=2\sin t\cos t.
+          $$
+
+          A natural interval for one full trace is:
+
+          $$
+          0\le t\le \pi.
+          $$
+
+          The interval $0\le t\le 2\pi$ also works, but it traces the same circle twice.
+        type: symbolicResponse
+        prompt: Write the final pair of parametric equations.
+        answer:
+          expectedLatex: 'x=2\cos^2 t,\ y=2\sin t\cos t'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+            - t
+          tolerance: 0.000001
+        explanation: |
+          The conversion rule is systematic:
+
+          $$
+          x=r(t)\cos t,\qquad y=r(t)\sin t.
+          $$
+
+          For $r(t)=2\cos t$, that gives $x=2\cos^2t$ and $y=2\sin t\cos t$.
+
+          Related topic: converting polar curves into parametric curves.
+
+  - id: inner-loop-limacon-to-parametric
+    title: 'Challenging Conversion: $r=1+2\sin\theta$'
+    problem: |
+      ![A side-by-side comparison showing the polar curve r equals 1 plus 2 sine theta and the equivalent parametric trace](/assessments/calc2-parametric-polar/polar-to-parametric-inner-loop-limacon.svg)
+
+      Convert the polar equation
+
+      $$
+      r=1+2\sin\theta
+      $$
+
+      into parametric equations. Pay close attention to what happens when $r$ becomes negative.
+    steps:
+      - id: inner-loop-param-step-1
+        title: Identify why this one is harder
+        instruction: |
+          The equation
+
+          $$
+          r=1+2\sin\theta
+          $$
+
+          is a limacon. Because the coefficient on sine is larger than the constant term, the radius becomes negative for some angles. Negative radius values do not break the conversion; they mean the plotted point lies in the opposite direction from the angle.
+        type: multipleChoice
+        prompt: Why is this conversion more subtle than $r=2\cos\theta$?
+        choices:
+          - id: a
+            text: The radius can become negative, creating an inner loop.
+          - id: b
+            text: Sine cannot be used in parametric equations.
+          - id: c
+            text: The graph is not a polar graph.
+          - id: d
+            text: There is no possible rectangular point for negative $r$.
+        answer:
+          choiceId: a
+        explanation: |
+          Negative radius values are valid in polar coordinates. They send the point across the pole, which is why inner loops can appear.
+
+          Related topic: interpreting negative polar radius.
+      - id: inner-loop-param-step-2
+        title: Let the angle become the parameter
+        instruction: |
+          As before, set
+
+          $$
+          t=\theta.
+          $$
+
+          Then the radius is:
+
+          $$
+          r(t)=1+2\sin t.
+          $$
+
+          The conversion rule does not change:
+
+          $$
+          x(t)=r(t)\cos t,\qquad y(t)=r(t)\sin t.
+          $$
+        type: multipleChoice
+        prompt: Which expression should be used for $r(t)$?
+        choices:
+          - id: a
+            text: '$1+2\sin t$'
+          - id: b
+            text: '$1+2\cos t$'
+          - id: c
+            text: '$2+\sin t$'
+          - id: d
+            text: '$\sin(2t)$'
+        answer:
+          choiceId: a
+        explanation: |
+          Replacing $\theta$ with $t$ gives $r(t)=1+2\sin t$.
+      - id: inner-loop-param-step-3
+        title: Build the horizontal coordinate
+        instruction: |
+          Use
+
+          $$
+          x(t)=r(t)\cos t.
+          $$
+
+          Substitute $r(t)=1+2\sin t$:
+
+          $$
+          x(t)=(1+2\sin t)\cos t.
+          $$
+
+          Do not distribute unless it helps. The factored form clearly shows the radius times the horizontal direction factor.
+        type: symbolicResponse
+        prompt: Write $x(t)$ in factored form.
+        answer:
+          expectedLatex: 'x=(1+2\sin t)\cos t'
+          equivalenceMode: expression
+          variables:
+            - x
+            - t
+          tolerance: 0.000001
+        explanation: |
+          The horizontal component is always radius times cosine of the angle. The challenging part is simply remembering that the radius is now $1+2\sin t$.
+      - id: inner-loop-param-step-4
+        title: Build the vertical coordinate
+        instruction: |
+          Use
+
+          $$
+          y(t)=r(t)\sin t.
+          $$
+
+          Substitute $r(t)=1+2\sin t$:
+
+          $$
+          y(t)=(1+2\sin t)\sin t.
+          $$
+
+          This can be expanded to $y=\sin t+2\sin^2t$, but the factored form preserves the polar structure.
+        type: symbolicResponse
+        prompt: Write $y(t)$ in factored form.
+        answer:
+          expectedLatex: 'y=(1+2\sin t)\sin t'
+          equivalenceMode: expression
+          variables:
+            - y
+            - t
+          tolerance: 0.000001
+        explanation: |
+          The vertical component is radius times sine of the same angle parameter.
+      - id: inner-loop-param-step-5
+        title: Locate where the inner loop begins and ends
+        instruction: |
+          The curve crosses the pole when $r=0$:
+
+          $$
+          1+2\sin t=0.
+          $$
+
+          So
+
+          $$
+          \sin t=-\frac12.
+          $$
+
+          On $0\le t<2\pi$, this occurs at:
+
+          $$
+          t=\frac{7\pi}{6},\qquad t=\frac{11\pi}{6}.
+          $$
+
+          Between those angles, $r(t)$ is negative, and that negative radius creates the inner loop.
+        type: multipleChoice
+        prompt: During which interval is $r(t)=1+2\sin t$ negative?
+        choices:
+          - id: a
+            text: '$\frac{7\pi}{6}<t<\frac{11\pi}{6}$'
+          - id: b
+            text: '$0<t<\frac{\pi}{2}$'
+          - id: c
+            text: '$\frac{\pi}{6}<t<\frac{5\pi}{6}$'
+          - id: d
+            text: '$\frac{\pi}{2}<t<\pi$'
+        answer:
+          choiceId: a
+        explanation: |
+          The sine function is less than $-\frac12$ between $\frac{7\pi}{6}$ and $\frac{11\pi}{6}$. That is when the radius is negative.
+
+          Related topic: pole crossings and inner loops.
+      - id: inner-loop-param-step-6
+        title: Explain why negative $r$ still gives correct points
+        instruction: |
+          Suppose $r(t)<0$. The formulas
+
+          $$
+          x=r(t)\cos t,\qquad y=r(t)\sin t
+          $$
+
+          automatically account for the negative radius. Multiplying both components by a negative value flips the point across the pole, exactly as polar coordinates require.
+        type: multipleChoice
+        prompt: What do the parametric equations do when $r(t)$ is negative?
+        choices:
+          - id: a
+            text: They automatically plot the point on the opposite side of the pole.
+          - id: b
+            text: They make the graph invalid.
+          - id: c
+            text: They erase the inner loop.
+          - id: d
+            text: They force $y(t)$ to be zero.
+        answer:
+          choiceId: a
+        explanation: |
+          The component formulas preserve the geometry of polar coordinates. Negative $r$ reverses the direction, so the same formulas still produce the correct Cartesian point.
+      - id: inner-loop-param-step-7
+        title: State the final parametric equations
+        instruction: |
+          The final parametric representation is:
+
+          $$
+          x(t)=(1+2\sin t)\cos t,
+          $$
+
+          $$
+          y(t)=(1+2\sin t)\sin t,
+          $$
+
+          with a natural full-trace interval:
+
+          $$
+          0\le t\le 2\pi.
+          $$
+        type: symbolicResponse
+        prompt: Write the final pair of parametric equations.
+        answer:
+          expectedLatex: 'x=(1+2\sin t)\cos t,\ y=(1+2\sin t)\sin t'
+          equivalenceMode: expression
+          variables:
+            - x
+            - y
+            - t
+          tolerance: 0.000001
+        explanation: |
+          Every polar-to-parametric conversion follows the same core pattern:
+
+          $$
+          x(t)=r(t)\cos t,\qquad y(t)=r(t)\sin t.
+          $$
+
+          The only extra reasoning here is recognizing what the negative radius interval does geometrically.
+
+          Related topic: converting limacons and inner-loop polar curves to parametric form.

@@ -658,7 +658,7 @@ api.MapPost("/attempts/{attemptId}/complete", async (
         var settings = await settingsRepository.GetAsync(cancellationToken);
         GradeLogEntry? committedGrade = null;
 
-        if (results.Mode is AssessmentMode.Scored && settings.CommitScoredAttemptsAutomatically && !results.HasPendingSelfChecks)
+        if (results.Mode is AssessmentMode.Scored && settings.CommitScoredAttemptsAutomatically)
         {
             committedGrade = await gradeLogService.CommitAttemptAsync(attemptId, cancellationToken);
         }
