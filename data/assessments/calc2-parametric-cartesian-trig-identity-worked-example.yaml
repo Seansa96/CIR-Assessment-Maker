@@ -1,0 +1,544 @@
+schemaVersion: 1
+id: calc2-parametric-cartesian-trig-identity-worked-example
+title: Converting Trigonometric Parametric Equations to Cartesian Form
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - parametric-curves
+  - parametric-polar-review
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - parametric-curves
+    - parameter-elimination
+    - trig-identities
+    - conic-sections
+    - graph-interpretation
+skills:
+  - parametric-curves
+  - parameter-elimination
+  - trig-identities
+workedExamples:
+  - id: trig-parametric-upper-semicircle
+    title: 'Problem 1: $x=6\cos t,\ y=6\sin t,\ 0\le t\le\pi$'
+    problem: |
+      ![The parametric curve x equals 6 cosine t and y equals 6 sine t on zero to pi traces the upper semicircle from right to left](/assessments/calc2-parametric-polar/parametric-cartesian-trig-upper-semicircle.svg)
+
+      Convert the parametric equations to a Cartesian equation and describe the portion of the graph that is actually traced:
+
+      $$
+      x=6\cos t,\qquad y=6\sin t,\qquad 0\le t\le\pi.
+      $$
+
+      The important issue is not only eliminating $t$, but preserving the interval information after the parameter disappears.
+    steps:
+      - id: trig-param-semicircle-step-1
+        title: Identify the identity structure
+        instruction: |
+          When one coordinate is a constant multiple of $\cos t$ and the other is a constant multiple of $\sin t$, the usual target is the Pythagorean identity:
+
+          $$
+          \cos^2 t+\sin^2 t=1.
+          $$
+
+          The goal is to rewrite $\cos t$ and $\sin t$ in terms of $x$ and $y$, then substitute them into the identity.
+        type: multipleChoice
+        prompt: Which identity should drive the elimination?
+        choices:
+          - id: a
+            text: '$\cos^2 t+\sin^2 t=1$'
+          - id: b
+            text: '$\tan^2 t+1=\sec^2 t$'
+          - id: c
+            text: '$\cos(2t)=1-2\sin^2 t$'
+          - id: d
+            text: '$\sin(2t)=2\sin t\cos t$'
+        answer:
+          choiceId: a
+        hint: 'The equations contain matching $\cos t$ and $\sin t$ terms.'
+        explanation: |
+          The pair $x=6\cos t$ and $y=6\sin t$ gives direct access to $\cos t$ and $\sin t$. That is exactly when $\cos^2t+\sin^2t=1$ is the cleanest identity.
+
+          Related topic: eliminating a trigonometric parameter with the Pythagorean identity.
+      - id: trig-param-semicircle-step-2
+        title: Isolate the trig functions
+        instruction: |
+          Divide each parametric equation by its coefficient:
+
+          $$
+          \cos t=\frac{x}{6},\qquad \sin t=\frac{y}{6}.
+          $$
+
+          This is the bookkeeping step that prevents the common mistake of writing $x^2+y^2=1$ instead of preserving the scale factor.
+        type: symbolicResponse
+        prompt: 'What is $\cos t$ in terms of $x$?'
+        answer:
+          expectedLatex: '\frac{x}{6}'
+          equivalenceMode: expression
+          variables:
+            - x
+          tolerance: 0.000001
+        explanation: |
+          Since $x=6\cos t$, dividing by $6$ gives $\cos t=\frac{x}{6}$.
+      - id: trig-param-semicircle-step-3
+        title: Substitute and simplify
+        instruction: |
+          Substitute the isolated expressions into:
+
+          $$
+          \cos^2t+\sin^2t=1.
+          $$
+
+          That gives:
+
+          $$
+          \left(\frac{x}{6}\right)^2+\left(\frac{y}{6}\right)^2=1.
+          $$
+
+          Multiplying by $36$ gives:
+
+          $$
+          x^2+y^2=36.
+          $$
+        type: multipleChoice
+        prompt: Which Cartesian equation comes from the identity?
+        choices:
+          - id: a
+            text: '$x^2+y^2=36$'
+          - id: b
+            text: '$x^2+y^2=6$'
+          - id: c
+            text: '$\frac{x^2}{6}+\frac{y^2}{6}=1$'
+          - id: d
+            text: '$x^2-y^2=36$'
+        answer:
+          choiceId: a
+        explanation: |
+          The scale factor is squared. Since both coordinates were divided by $6$, the denominator is $36$, not $6$.
+      - id: trig-param-semicircle-step-4
+        title: Recover the lost interval information
+        instruction: |
+          The equation $x^2+y^2=36$ describes the full circle, but the parameter interval was restricted:
+
+          $$
+          0\le t\le\pi.
+          $$
+
+          On this interval, $\sin t\ge 0$, so:
+
+          $$
+          y=6\sin t\ge 0.
+          $$
+
+          The curve is only the upper semicircle. It starts at $(6,0)$ when $t=0$ and ends at $(-6,0)$ when $t=\pi$.
+        type: multipleChoice
+        prompt: What part of the circle is actually traced?
+        choices:
+          - id: a
+            text: The upper semicircle, traced from $(6,0)$ to $(-6,0)$.
+          - id: b
+            text: The lower semicircle, traced from $(-6,0)$ to $(6,0)$.
+          - id: c
+            text: The full circle, traced once.
+          - id: d
+            text: Only the right half of the circle.
+        answer:
+          choiceId: a
+        explanation: |
+          Because $\sin t$ is nonnegative on $0\le t\le\pi$, all traced points satisfy $y\ge 0$. The endpoints come from evaluating $t=0$ and $t=\pi$.
+
+          Related topic: domain restrictions after eliminating a parameter.
+      - id: trig-param-semicircle-step-5
+        title: State the full Cartesian description
+        instruction: |
+          The best final answer should include both the Cartesian equation and the restriction:
+
+          $$
+          x^2+y^2=36,\qquad y\ge 0.
+          $$
+
+          If direction is requested, add that it is traced counterclockwise from $(6,0)$ to $(-6,0)$.
+        type: multipleChoice
+        prompt: Which final description is most complete?
+        choices:
+          - id: a
+            text: '$x^2+y^2=36,\ y\ge0$, traced from $(6,0)$ to $(-6,0)$'
+          - id: b
+            text: '$x^2+y^2=36$ only'
+          - id: c
+            text: '$x^2+y^2=36,\ y\le0$, traced from $(-6,0)$ to $(6,0)$'
+          - id: d
+            text: '$x^2+y^2=6,\ y\ge0$'
+        answer:
+          choiceId: a
+        explanation: |
+          Eliminating the parameter gives the circle, but the interval gives the upper-half restriction and direction. A complete Cartesian description should preserve both.
+
+          Related topic: parametric graph tracing.
+
+  - id: trig-parametric-ellipse
+    title: 'Problem 2: $x=4\cos\theta,\ y=5\sin\theta$'
+    problem: |
+      ![The parametric curve x equals 4 cosine theta and y equals 5 sine theta traces an ellipse centered at the origin](/assessments/calc2-parametric-polar/parametric-cartesian-trig-ellipse.svg)
+
+      Convert the parametric equations to Cartesian form:
+
+      $$
+      x=4\cos\theta,\qquad y=5\sin\theta.
+      $$
+
+      This looks almost like a circle, but the different coefficients stretch the axes differently. The identity is the same; the geometry changes because the denominators are different.
+    steps:
+      - id: trig-param-ellipse-step-1
+        title: Recognize the scaled sine-cosine pattern
+        instruction: |
+          This again matches the pattern:
+
+          $$
+          x=a\cos\theta,\qquad y=b\sin\theta.
+          $$
+
+          That usually becomes:
+
+          $$
+          \frac{x^2}{a^2}+\frac{y^2}{b^2}=1.
+          $$
+
+          Here $a=4$ and $b=5$.
+        type: multipleChoice
+        prompt: What type of Cartesian curve should you expect?
+        choices:
+          - id: a
+            text: An ellipse centered at the origin.
+          - id: b
+            text: A line through the origin.
+          - id: c
+            text: A hyperbola centered at the origin.
+          - id: d
+            text: A parabola opening upward.
+        answer:
+          choiceId: a
+        explanation: |
+          A sine-cosine pair with different scale factors gives an ellipse. Equal scale factors give a circle.
+
+          Related topic: standard parametric form of an ellipse.
+      - id: trig-param-ellipse-step-2
+        title: Isolate both trig functions
+        instruction: |
+          Divide by the coefficients:
+
+          $$
+          \cos\theta=\frac{x}{4},\qquad \sin\theta=\frac{y}{5}.
+          $$
+
+          The denominators must be squared when substituted into $\cos^2\theta+\sin^2\theta=1$.
+        type: symbolicResponse
+        prompt: 'What is $\sin\theta$ in terms of $y$?'
+        answer:
+          expectedLatex: '\frac{y}{5}'
+          equivalenceMode: expression
+          variables:
+            - y
+          tolerance: 0.000001
+        explanation: |
+          Since $y=5\sin\theta$, dividing by $5$ gives $\sin\theta=\frac{y}{5}$.
+      - id: trig-param-ellipse-step-3
+        title: Substitute into the Pythagorean identity
+        instruction: |
+          Substitute:
+
+          $$
+          \left(\frac{x}{4}\right)^2+\left(\frac{y}{5}\right)^2=1.
+          $$
+
+          Simplify:
+
+          $$
+          \frac{x^2}{16}+\frac{y^2}{25}=1.
+          $$
+        type: multipleChoice
+        prompt: Which equation is the Cartesian form?
+        choices:
+          - id: a
+            text: '$\frac{x^2}{16}+\frac{y^2}{25}=1$'
+          - id: b
+            text: '$\frac{x^2}{4}+\frac{y^2}{5}=1$'
+          - id: c
+            text: '$\frac{x^2}{25}+\frac{y^2}{16}=1$'
+          - id: d
+            text: '$\frac{x^2}{16}-\frac{y^2}{25}=1$'
+        answer:
+          choiceId: a
+        explanation: |
+          The coefficients $4$ and $5$ become squared denominators. The $x$-denominator is $4^2=16$, and the $y$-denominator is $5^2=25$.
+      - id: trig-param-ellipse-step-4
+        title: Interpret the axes
+        instruction: |
+          The ellipse
+
+          $$
+          \frac{x^2}{16}+\frac{y^2}{25}=1
+          $$
+
+          has horizontal semi-axis $4$ and vertical semi-axis $5$. Because $25>16$, the major axis is vertical.
+        type: multipleChoice
+        prompt: Which geometric description is correct?
+        choices:
+          - id: a
+            text: Center $(0,0)$, horizontal radius $4$, vertical radius $5$.
+          - id: b
+            text: Center $(0,0)$, horizontal radius $16$, vertical radius $25$.
+          - id: c
+            text: Center $(4,5)$, radius $1$.
+          - id: d
+            text: Center $(0,0)$, horizontal radius $5$, vertical radius $4$.
+        answer:
+          choiceId: a
+        explanation: |
+          The denominators contain the squared semi-axis lengths. So the actual radii are $\sqrt{16}=4$ and $\sqrt{25}=5$.
+      - id: trig-param-ellipse-step-5
+        title: Preserve the tracing information
+        instruction: |
+          If no interval is given, the default assumption is usually a full trace over:
+
+          $$
+          0\le\theta<2\pi.
+          $$
+
+          At $\theta=0$, the point is $(4,0)$. As $\theta$ increases, $y=5\sin\theta$ becomes positive, so the curve moves upward first. That is counterclockwise tracing.
+        type: multipleChoice
+        prompt: If $0\le\theta<2\pi$, where does the trace start and which way does it move first?
+        choices:
+          - id: a
+            text: Starts at $(4,0)$ and moves counterclockwise.
+          - id: b
+            text: Starts at $(0,5)$ and moves clockwise.
+          - id: c
+            text: Starts at $(-4,0)$ and moves counterclockwise.
+          - id: d
+            text: Starts at $(0,-5)$ and moves clockwise.
+        answer:
+          choiceId: a
+        explanation: |
+          At $\theta=0$, $x=4$ and $y=0$. For small positive $\theta$, $\sin\theta>0$, so the trace rises from the rightmost point.
+
+          Related topic: tracing orientation from a parametric interval.
+
+  - id: trig-parametric-sec-tan-hyperbola
+    title: 'Problem 3: $x=4\sec t,\ y=4\tan t$'
+    problem: |
+      ![The parametric curve x equals 4 secant t and y equals 4 tangent t traces a horizontal hyperbola with asymptotes y equals plus or minus x](/assessments/calc2-parametric-polar/parametric-cartesian-trig-hyperbola-sec-tan.svg)
+
+      Convert the parametric equations to Cartesian form:
+
+      $$
+      x=4\sec t,\qquad y=4\tan t.
+      $$
+
+      This is trickier because the relevant identity is not $\sin^2t+\cos^2t=1$. The matching pair is $\sec t$ and $\tan t$, so the identity changes.
+    steps:
+      - id: trig-param-hyperbola-step-1
+        title: Choose the matching identity
+        instruction: |
+          The parametric equations contain $\sec t$ and $\tan t$:
+
+          $$
+          x=4\sec t,\qquad y=4\tan t.
+          $$
+
+          The identity connecting these is:
+
+          $$
+          \sec^2t-\tan^2t=1.
+          $$
+
+          This minus sign is the signal that the Cartesian graph will be a hyperbola rather than an ellipse.
+        type: multipleChoice
+        prompt: Which identity should be used?
+        choices:
+          - id: a
+            text: '$\sec^2t-\tan^2t=1$'
+          - id: b
+            text: '$\sin^2t+\cos^2t=1$'
+          - id: c
+            text: '$1-\cos^2t=\sin^2t$'
+          - id: d
+            text: '$\tan t=\frac{\cos t}{\sin t}$'
+        answer:
+          choiceId: a
+        explanation: |
+          Use the identity that contains the exact functions appearing in the parametric equations. Here that is $\sec^2t-\tan^2t=1$.
+
+          Related topic: choosing a trig identity by matching structure.
+      - id: trig-param-hyperbola-step-2
+        title: Isolate secant and tangent
+        instruction: |
+          Divide by $4$:
+
+          $$
+          \sec t=\frac{x}{4},\qquad \tan t=\frac{y}{4}.
+          $$
+
+          Now the identity can be written entirely with $x$ and $y$.
+        type: symbolicResponse
+        prompt: 'What is $\tan t$ in terms of $y$?'
+        answer:
+          expectedLatex: '\frac{y}{4}'
+          equivalenceMode: expression
+          variables:
+            - y
+          tolerance: 0.000001
+        explanation: |
+          Since $y=4\tan t$, divide both sides by $4$ to get $\tan t=\frac{y}{4}$.
+      - id: trig-param-hyperbola-step-3
+        title: Substitute into the identity
+        instruction: |
+          Substitute into $\sec^2t-\tan^2t=1$:
+
+          $$
+          \left(\frac{x}{4}\right)^2-\left(\frac{y}{4}\right)^2=1.
+          $$
+
+          Simplify:
+
+          $$
+          \frac{x^2}{16}-\frac{y^2}{16}=1.
+          $$
+        type: multipleChoice
+        prompt: Which Cartesian equation is correct?
+        choices:
+          - id: a
+            text: '$\frac{x^2}{16}-\frac{y^2}{16}=1$'
+          - id: b
+            text: '$\frac{y^2}{16}-\frac{x^2}{16}=1$'
+          - id: c
+            text: '$\frac{x^2}{16}+\frac{y^2}{16}=1$'
+          - id: d
+            text: '$x^2-y^2=4$'
+        answer:
+          choiceId: a
+        explanation: |
+          The order matters. Since the identity is $\sec^2t-\tan^2t=1$, and $\sec t$ came from $x$, the $x^2$ term is positive.
+      - id: trig-param-hyperbola-step-4
+        title: Interpret the branch restriction
+        instruction: |
+          The Cartesian equation
+
+          $$
+          \frac{x^2}{16}-\frac{y^2}{16}=1
+          $$
+
+          is a horizontal hyperbola. Also, since $x=4\sec t$ and $\sec t$ never lies between $-1$ and $1$, the graph satisfies:
+
+          $$
+          x\le -4\quad \text{or}\quad x\ge 4.
+          $$
+
+          That matches the two branches of the hyperbola.
+        type: multipleChoice
+        prompt: Which restriction follows from $x=4\sec t$?
+        choices:
+          - id: a
+            text: '$x\le -4$ or $x\ge 4$'
+          - id: b
+            text: '$-4\le x\le 4$'
+          - id: c
+            text: '$y\ge 4$ only'
+          - id: d
+            text: '$x$ can be any real number.'
+        answer:
+          choiceId: a
+        explanation: |
+          Because $|\sec t|\ge1$ wherever secant is defined, multiplying by $4$ gives $|x|\ge4$.
+
+          Related topic: preserving range restrictions after eliminating a parameter.
+      - id: trig-param-hyperbola-step-5
+        title: Identify excluded parameter values
+        instruction: |
+          Secant and tangent are undefined when $\cos t=0$:
+
+          $$
+          t=\frac{\pi}{2}+k\pi.
+          $$
+
+          These parameter values do not produce points on the curve. Near them, $x$ and $y$ become very large, which corresponds to the branches approaching asymptotes.
+        type: multipleChoice
+        prompt: Which values of $t$ must be excluded?
+        choices:
+          - id: a
+            text: '$t=\frac{\pi}{2}+k\pi$'
+          - id: b
+            text: '$t=k\pi$'
+          - id: c
+            text: '$t=\frac{\pi}{4}+k\pi$'
+          - id: d
+            text: No values need to be excluded.
+        answer:
+          choiceId: a
+        explanation: |
+          Both $\sec t$ and $\tan t$ have $\cos t$ in the denominator, so they are undefined wherever $\cos t=0$.
+      - id: trig-param-hyperbola-step-6
+        title: Connect the equation to the graph
+        instruction: |
+          For
+
+          $$
+          \frac{x^2}{16}-\frac{y^2}{16}=1,
+          $$
+
+          the asymptotes are:
+
+          $$
+          y=\pm x.
+          $$
+
+          The vertices are $(4,0)$ and $(-4,0)$. This matches the behavior of $x=4\sec t$: the nearest each branch gets to the $y$-axis is $x=\pm4$.
+        type: multipleChoice
+        prompt: Which description is most complete?
+        choices:
+          - id: a
+            text: Horizontal hyperbola with vertices $(\pm4,0)$ and asymptotes $y=\pm x$.
+          - id: b
+            text: Vertical hyperbola with vertices $(0,\pm4)$ and asymptotes $y=\pm x$.
+          - id: c
+            text: Circle centered at the origin with radius $4$.
+          - id: d
+            text: Ellipse centered at the origin with semi-axes $4$ and $4$.
+        answer:
+          choiceId: a
+        explanation: |
+          The positive $x^2$ term means the hyperbola opens left and right. Equal denominators give asymptotes $y=\pm x$.
+
+          Related topic: reading hyperbola geometry from standard form.
+      - id: trig-param-hyperbola-step-7
+        title: Generalize the method
+        instruction: |
+          The main lesson from all three problems is:
+
+          - Match the trig functions to the identity.
+          - Isolate the trig functions before squaring.
+          - Substitute into the identity.
+          - Keep restrictions from the parameter interval or trig-function range.
+
+          For $\sin$ and $\cos$, expect circles or ellipses. For $\sec$ and $\tan$, expect hyperbolas.
+        type: selectAll
+        prompt: Which checks should be part of a strong parametric-to-Cartesian answer?
+        choices:
+          - id: a
+            text: Choose the identity that matches the trig functions present.
+          - id: b
+            text: Square scale factors when substituting into a squared identity.
+          - id: c
+            text: Preserve interval, range, and branch restrictions after eliminating the parameter.
+          - id: d
+            text: Ignore the original parameter once a Cartesian equation appears.
+        answer:
+          choiceIds:
+            - a
+            - b
+            - c
+        explanation: |
+          Eliminating the parameter gives the broad Cartesian relation, but the original parameter still controls which portion is traced and how the curve is oriented. The most common mistakes are losing restrictions and forgetting to square coefficients.
