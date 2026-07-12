@@ -69,7 +69,8 @@ public static class FileDtoMapper
             dto.AttemptQuestionCount,
             dto.QuestionTimerSeconds,
             dto.AssessmentTimerSeconds,
-            (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList())
+            (dto.Questions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList(),
+            dto.QuestionSelection is null ? null : ToDomain(dto.QuestionSelection))
         {
             WorkedExamples = (dto.WorkedExamples ?? new List<WorkedExampleFileDto>()).Select(ToDomain).ToList(),
             GuidedProject = dto.GuidedProject is null ? null : ToDomain(dto.GuidedProject),
@@ -101,6 +102,7 @@ public static class FileDtoMapper
             AttemptQuestionCount = assessment.AttemptQuestionCount,
             QuestionTimerSeconds = assessment.QuestionTimerSeconds,
             AssessmentTimerSeconds = assessment.AssessmentTimerSeconds,
+            QuestionSelection = assessment.QuestionSelection is null ? null : ToDto(assessment.QuestionSelection),
             Questions = assessment.Questions.Select(ToDto).ToList(),
             WorkedExamples = assessment.WorkedExamples.Select(ToDto).ToList(),
             GuidedProject = assessment.GuidedProject is null ? null : ToDto(assessment.GuidedProject),
@@ -116,6 +118,40 @@ public static class FileDtoMapper
                 Tags = assessment.Navigation.Tags.ToList()
             },
             Skills = assessment.Skills.ToList()
+        };
+    }
+
+    private static QuestionSelectionDefinition ToDomain(QuestionSelectionFileDto dto)
+    {
+        return new QuestionSelectionDefinition(
+            ParseQuestionSelectionMode(dto.Mode),
+            (dto.Slots ?? new List<QuestionSelectionSlotFileDto>()).Select(ToDomain).ToList());
+    }
+
+    private static QuestionSelectionSlotDefinition ToDomain(QuestionSelectionSlotFileDto dto)
+    {
+        return new QuestionSelectionSlotDefinition(
+            dto.Id ?? string.Empty,
+            dto.Title,
+            dto.QuestionIds ?? new List<string>());
+    }
+
+    private static QuestionSelectionFileDto ToDto(QuestionSelectionDefinition selection)
+    {
+        return new QuestionSelectionFileDto
+        {
+            Mode = selection.Mode is QuestionSelectionMode.OrderedVariants ? "orderedVariants" : "unknown",
+            Slots = selection.Slots.Select(ToDto).ToList()
+        };
+    }
+
+    private static QuestionSelectionSlotFileDto ToDto(QuestionSelectionSlotDefinition slot)
+    {
+        return new QuestionSelectionSlotFileDto
+        {
+            Id = slot.Id,
+            Title = slot.Title,
+            QuestionIds = slot.QuestionIds.ToList()
         };
     }
 
@@ -734,6 +770,17 @@ public static class FileDtoMapper
         {
             "static" => QuestionOrderMode.Static,
             _ => QuestionOrderMode.Randomized
+        };
+    }
+
+    private static QuestionSelectionMode ParseQuestionSelectionMode(string? value)
+    {
+        return Normalize(value) switch
+        {
+            "" => QuestionSelectionMode.OrderedVariants,
+            "orderedvariant" => QuestionSelectionMode.OrderedVariants,
+            "orderedvariants" => QuestionSelectionMode.OrderedVariants,
+            _ => QuestionSelectionMode.Unknown
         };
     }
 

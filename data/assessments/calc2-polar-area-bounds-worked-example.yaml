@@ -1,0 +1,469 @@
+schemaVersion: 1
+id: calc2-polar-area-bounds-worked-example
+title: Polar Area Bounds and Duplicate Tracing Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - polar-calculus
+  - polar-curves
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - polar-area
+    - polar-bounds
+    - rose-curves
+    - area-between-polar-curves
+    - duplicate-tracing
+skills:
+  - polar-calculus
+  - polar-area
+workedExamples:
+  - id: polar-area-bounds-main
+    title: Choosing Bounds Before Integrating
+    problem: |
+      Work through three polar area scenarios:
+
+      1. Find the area inside a cardioid.
+      2. Find the area inside one petal of a rose.
+      3. Set up area between two polar curves.
+
+      ![Polar area diagrams for a cardioid, a rose petal, and a circle-overlap region](/assessments/calc2-parametric-polar/polar-area-cardioid-bounds.svg)
+    steps:
+      - id: polar-area-step-001
+        title: Start from the sector formula
+        instruction: |
+          Polar area comes from sector slices:
+
+          $$
+          A=\frac12\int_{\alpha}^{\beta}r^2\,d\theta.
+          $$
+
+          The factor $\frac12$ and the square both come from circular sector area.
+        type: multipleChoice
+        prompt: Which expression is the basic polar area formula?
+        choices:
+          - id: a
+            text: '$A=\frac12\int_{\alpha}^{\beta}r^2\,d\theta$'
+          - id: b
+            text: '$A=\int_{\alpha}^{\beta}r\,d\theta$'
+          - id: c
+            text: '$A=\int_{\alpha}^{\beta}r\cos\theta\,d\theta$'
+          - id: d
+            text: '$A=\pi r^2$'
+        answer:
+          choiceId: a
+        explanation: |
+          Polar area accumulates many tiny sectors, each approximately $\frac12r^2\,d\theta$.
+
+      - id: polar-area-step-002
+        title: Identify the full-cardioid interval
+        instruction: |
+          Consider:
+
+          $$
+          r=2+2\cos\theta.
+          $$
+
+          This is a cardioid. A full trace is naturally captured by:
+
+          $$
+          0\le\theta\le2\pi.
+          $$
+        type: multipleChoice
+        prompt: Which interval is a natural full trace for $r=2+2\cos\theta$?
+        choices:
+          - id: a
+            text: '$0\le\theta\le2\pi$'
+          - id: b
+            text: '$0\le\theta\le\frac{\pi}{6}$'
+          - id: c
+            text: '$1\le\theta\le2$'
+          - id: d
+            text: '$-\infty<\theta<\infty$'
+        answer:
+          choiceId: a
+        explanation: |
+          Limacons and cardioids are commonly traced once over a full $2\pi$ angular sweep.
+
+      - id: polar-area-step-003
+        title: Set up the cardioid area
+        instruction: |
+          Substitute $r=2+2\cos\theta$ into the formula:
+
+          $$
+          A=\frac12\int_0^{2\pi}(2+2\cos\theta)^2\,d\theta.
+          $$
+        type: multipleChoice
+        prompt: Which setup gives the full area inside $r=2+2\cos\theta$?
+        choices:
+          - id: a
+            text: '$\frac12\int_0^{2\pi}(2+2\cos\theta)^2\,d\theta$'
+          - id: b
+            text: '$\int_0^{2\pi}(2+2\cos\theta)\,d\theta$'
+          - id: c
+            text: '$\frac12\int_0^{2\pi}(2+2\cos\theta)\,d\theta$'
+          - id: d
+            text: '$\pi(2+2\cos\theta)^2$'
+        answer:
+          choiceId: a
+        explanation: |
+          Square the full radius function, then multiply by $\frac12$.
+
+      - id: polar-area-step-004
+        title: Expand using a power-reduction identity
+        instruction: |
+          Expand:
+
+          $$
+          (2+2\cos\theta)^2=4+8\cos\theta+4\cos^2\theta.
+          $$
+
+          Then use:
+
+          $$
+          \cos^2\theta=\frac{1+\cos(2\theta)}{2}.
+          $$
+        type: multipleChoice
+        prompt: Which identity is useful for integrating $\cos^2\theta$?
+        choices:
+          - id: a
+            text: '$\cos^2\theta=\frac{1+\cos(2\theta)}{2}$'
+          - id: b
+            text: '$\cos^2\theta=1+\sin^2\theta$'
+          - id: c
+            text: '$\cos^2\theta=\cos(2\theta)$'
+          - id: d
+            text: '$\cos^2\theta=\frac{1-\sin(2\theta)}{2}$'
+        answer:
+          choiceId: a
+        explanation: |
+          Power reduction turns the squared trig expression into terms that integrate directly over a full period.
+
+      - id: polar-area-step-005
+        title: Finish the cardioid area
+        instruction: |
+          Over $0$ to $2\pi$, the integrals of $\cos\theta$ and $\cos(2\theta)$ are zero.
+
+          The remaining constant part is:
+
+          $$
+          \frac12\int_0^{2\pi}6\,d\theta=6\pi.
+          $$
+        type: symbolicResponse
+        prompt: What is the area inside $r=2+2\cos\theta$?
+        answer:
+          expectedLatex: '6\pi'
+          equivalenceMode: expression
+          variables:
+            - pi
+          tolerance: 0.000001
+        explanation: |
+          The final area is $6\pi$. The full-period cosine terms cancel out.
+
+      - id: polar-area-step-006
+        title: Start the rose petal problem
+        instruction: |
+          Now find the area inside one petal of:
+
+          $$
+          r=4\sin(3\theta).
+          $$
+
+          For one petal, do not automatically use $0$ to $2\pi$. That would trace several petals.
+
+          ![One petal of r equals four sine of three theta highlighted between adjacent pole crossings](/assessments/calc2-parametric-polar/polar-rose-petal-bounds.svg)
+        type: multipleChoice
+        prompt: What should you solve first to find one-petal bounds?
+        choices:
+          - id: a
+            text: '$r=0$'
+          - id: b
+            text: '$r=4$'
+          - id: c
+            text: '$\theta=2\pi$'
+          - id: d
+            text: '$r=1$'
+        answer:
+          choiceId: a
+        explanation: |
+          One petal typically starts and ends at the pole, so solve for adjacent zeros of $r$.
+
+      - id: polar-area-step-007
+        title: Find adjacent zeros
+        instruction: |
+          Solve:
+
+          $$
+          4\sin(3\theta)=0.
+          $$
+
+          This gives:
+
+          $$
+          3\theta=k\pi,
+          \qquad
+          \theta=\frac{k\pi}{3}.
+          $$
+
+          One petal is traced from:
+
+          $$
+          0\le\theta\le\frac{\pi}{3}.
+          $$
+        type: multipleChoice
+        prompt: Which interval traces one petal of $r=4\sin(3\theta)$?
+        choices:
+          - id: a
+            text: '$0\le\theta\le\frac{\pi}{3}$'
+          - id: b
+            text: '$0\le\theta\le2\pi$'
+          - id: c
+            text: '$0\le\theta\le\pi$'
+          - id: d
+            text: '$0\le\theta\le\frac{\pi}{12}$'
+        answer:
+          choiceId: a
+        explanation: |
+          Adjacent pole crossings at $0$ and $\frac{\pi}{3}$ bound one petal.
+
+      - id: polar-area-step-008
+        title: Set up one-petal area
+        instruction: |
+          Use:
+
+          $$
+          A=\frac12\int_0^{\pi/3}(4\sin(3\theta))^2\,d\theta.
+          $$
+
+          Simplify the constant:
+
+          $$
+          A=8\int_0^{\pi/3}\sin^2(3\theta)\,d\theta.
+          $$
+        type: multipleChoice
+        prompt: Which setup matches one petal of $r=4\sin(3\theta)$?
+        choices:
+          - id: a
+            text: '$\frac12\int_0^{\pi/3}(4\sin(3\theta))^2\,d\theta$'
+          - id: b
+            text: '$\frac12\int_0^{2\pi}(4\sin(3\theta))^2\,d\theta$'
+          - id: c
+            text: '$\int_0^{\pi/3}4\sin(3\theta)\,d\theta$'
+          - id: d
+            text: '$\pi(4)^2$'
+        answer:
+          choiceId: a
+        explanation: |
+          Use the one-petal bounds and square the radius function.
+
+      - id: polar-area-step-009
+        title: Evaluate the rose petal area
+        instruction: |
+          Use:
+
+          $$
+          \sin^2(3\theta)=\frac{1-\cos(6\theta)}{2}.
+          $$
+
+          Then:
+
+          $$
+          A=8\int_0^{\pi/3}\frac{1-\cos(6\theta)}{2}\,d\theta
+          =
+          4\left[\theta-\frac{\sin(6\theta)}{6}\right]_0^{\pi/3}.
+          $$
+
+          Since $\sin(2\pi)=0$, the area is:
+
+          $$
+          \frac{4\pi}{3}.
+          $$
+        type: symbolicResponse
+        prompt: What is the area inside one petal?
+        answer:
+          expectedLatex: '\frac{4\pi}{3}'
+          equivalenceMode: expression
+          variables:
+            - pi
+          tolerance: 0.000001
+        explanation: |
+          One petal has area $\frac{4\pi}{3}$. A full trace would count multiple petals.
+
+      - id: polar-area-step-010
+        title: Begin area between curves
+        instruction: |
+          Now consider the region inside:
+
+          $$
+          r=2
+          $$
+
+          and outside:
+
+          $$
+          r=2\cos\theta.
+          $$
+
+          Area between polar curves uses:
+
+          $$
+          \frac12\int(R^2-r^2)\,d\theta.
+          $$
+
+          ![Region inside r equals two and outside r equals two cosine theta shaded between the two circles](/assessments/calc2-parametric-polar/polar-circle-outside-inner-bounds.svg)
+        type: multipleChoice
+        prompt: What should be subtracted in a polar area-between-curves setup?
+        choices:
+          - id: a
+            text: Outer radius squared minus inner radius squared.
+          - id: b
+            text: Outer radius minus inner radius, then squared.
+          - id: c
+            text: Inner radius squared minus outer radius squared.
+          - id: d
+            text: The angles only.
+        answer:
+          choiceId: a
+        explanation: |
+          Each curve contributes a sector area, so subtract squared radii.
+
+      - id: polar-area-step-011
+        title: Find intersection angles
+        instruction: |
+          Set the radii equal:
+
+          $$
+          2=2\cos\theta.
+          $$
+
+          Then:
+
+          $$
+          \cos\theta=1.
+          $$
+
+          On $0\le\theta\le2\pi$, this occurs at $\theta=0$ and $\theta=2\pi$, which tells us the smaller circle is tangent to the larger circle at the pole-side point.
+        type: multipleChoice
+        prompt: What does $2=2\cos\theta$ imply?
+        choices:
+          - id: a
+            text: The curves meet when $\cos\theta=1$.
+          - id: b
+            text: The curves never meet.
+          - id: c
+            text: The curves meet when $\sin\theta=1$.
+          - id: d
+            text: The outer radius is always $2\cos\theta$.
+        answer:
+          choiceId: a
+        explanation: |
+          Divide by $2$ to get $\cos\theta=1$.
+
+      - id: polar-area-step-012
+        title: Decide outer and inner radii
+        instruction: |
+          The circle $r=2$ is the outer radius for the requested region. The smaller circle $r=2\cos\theta$ lies inside it where $\cos\theta\ge0$.
+
+          To represent the area inside the larger circle and outside the smaller circle, one clean approach is:
+
+          $$
+          \pi(2)^2-\text{area inside }r=2\cos\theta.
+          $$
+        type: multipleChoice
+        prompt: What is the area of the larger circle $r=2$?
+        choices:
+          - id: a
+            text: '$4\pi$'
+          - id: b
+            text: '$2\pi$'
+          - id: c
+            text: '$\pi$'
+          - id: d
+            text: '$8\pi$'
+        answer:
+          choiceId: a
+        explanation: |
+          The curve $r=2$ is a circle centered at the pole with radius $2$, so its area is $4\pi$.
+
+      - id: polar-area-step-013
+        title: Area of the inner circle
+        instruction: |
+          The curve:
+
+          $$
+          r=2\cos\theta
+          $$
+
+          is a circle centered at $(1,0)$ with radius $1$, so its area is:
+
+          $$
+          \pi.
+          $$
+
+          You can also compute it with polar area over $-\frac{\pi}{2}\le\theta\le\frac{\pi}{2}$.
+        type: multipleChoice
+        prompt: What is the area inside $r=2\cos\theta$?
+        choices:
+          - id: a
+            text: '$\pi$'
+          - id: b
+            text: '$4\pi$'
+          - id: c
+            text: '$2\pi$'
+          - id: d
+            text: '$0$'
+        answer:
+          choiceId: a
+        explanation: |
+          $r=2\cos\theta$ converts to $(x-1)^2+y^2=1$, a radius-$1$ circle.
+
+      - id: polar-area-step-014
+        title: Subtract the inner region
+        instruction: |
+          The requested area is:
+
+          $$
+          4\pi-\pi=3\pi.
+          $$
+        type: symbolicResponse
+        prompt: What is the area inside $r=2$ and outside $r=2\cos\theta$?
+        answer:
+          expectedLatex: '3\pi'
+          equivalenceMode: expression
+          variables:
+            - pi
+          tolerance: 0.000001
+        explanation: |
+          The smaller circle sits inside the larger circle, so subtract its area.
+
+      - id: polar-area-step-015
+        title: State the polar-area checklist
+        instruction: |
+          The safe polar-area checklist is:
+
+          1. Identify the curve family.
+          2. Decide the exact region.
+          3. Find pole crossings or intersections.
+          4. Confirm the trace interval counts the region once.
+          5. Use $\frac12\int r^2\,d\theta$ or $\frac12\int(R^2-r^2)\,d\theta$.
+        type: selectAll
+        prompt: Which are common polar-area mistakes?
+        choices:
+          - id: a
+            text: Integrating over $0$ to $2\pi$ when the prompt asks for one petal.
+          - id: b
+            text: Subtracting radii before squaring instead of subtracting squared radii.
+          - id: c
+            text: Forgetting to check which radius is outer.
+          - id: d
+            text: Squaring the radius in the sector formula.
+        answer:
+          choiceIds:
+            - a
+            - b
+            - c
+        explanation: |
+          Squaring the radius is correct. The other three are frequent setup errors.

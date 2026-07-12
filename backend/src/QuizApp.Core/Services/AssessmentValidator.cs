@@ -36,6 +36,8 @@ public sealed class AssessmentValidator
             issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TIMER", "Assessment timer must be null or a non-negative number of seconds."));
         }
 
+        ValidateQuestionSelection(assessment, issues);
+
         if (assessment.AssessmentType is AssessmentType.WorkedExample)
         {
             ValidateWorkedExamples(assessment, issues);
@@ -108,6 +110,84 @@ public sealed class AssessmentValidator
         }
 
         return new AssessmentValidationResult(issues);
+    }
+
+    private static void ValidateQuestionSelection(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        var selection = assessment.QuestionSelection;
+        if (selection is null)
+        {
+            return;
+        }
+
+        if (assessment.AssessmentType is not AssessmentType.Quiz and not AssessmentType.Test)
+        {
+            issues.Add(new ValidationIssue("INVALID_QUESTION_SELECTION", "questionSelection is only supported for quiz and test assessments."));
+        }
+
+        if (selection.Mode is not QuestionSelectionMode.OrderedVariants)
+        {
+            issues.Add(new ValidationIssue("INVALID_QUESTION_SELECTION_MODE", "questionSelection.mode must be orderedVariants."));
+        }
+
+        if (selection.Slots.Count == 0)
+        {
+            issues.Add(new ValidationIssue("MISSING_QUESTION_SELECTION_SLOTS", "Ordered variant questionSelection must include at least one slot."));
+        }
+
+        if (assessment.AttemptQuestionCount is not null && assessment.AttemptQuestionCount != selection.Slots.Count)
+        {
+            issues.Add(new ValidationIssue("INVALID_ATTEMPT_QUESTION_COUNT", "attemptQuestionCount must match the number of ordered variant slots when questionSelection is used."));
+        }
+
+        var authoredQuestionIds = assessment.Questions
+            .Select(question => question.Id)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var usedSlotIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var usedQuestionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var slot in selection.Slots)
+        {
+            if (string.IsNullOrWhiteSpace(slot.Id))
+            {
+                issues.Add(new ValidationIssue("MISSING_QUESTION_SELECTION_SLOT_ID", "Ordered variant slots must include an id."));
+            }
+            else if (!usedSlotIds.Add(slot.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_QUESTION_SELECTION_SLOT_ID", "Ordered variant slot ids must be unique.", slot.Id));
+            }
+
+            if (slot.QuestionIds.Count == 0)
+            {
+                issues.Add(new ValidationIssue("MISSING_QUESTION_SELECTION_SLOT_QUESTIONS", "Ordered variant slots must include at least one questionId.", slot.Id));
+                continue;
+            }
+
+            var slotQuestionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var questionId in slot.QuestionIds)
+            {
+                if (string.IsNullOrWhiteSpace(questionId))
+                {
+                    issues.Add(new ValidationIssue("MISSING_QUESTION_SELECTION_QUESTION_ID", "Ordered variant slot questionIds cannot be blank.", slot.Id));
+                    continue;
+                }
+
+                if (!slotQuestionIds.Add(questionId))
+                {
+                    issues.Add(new ValidationIssue("DUPLICATE_QUESTION_SELECTION_QUESTION_ID", "A questionId cannot be repeated inside the same ordered variant slot.", questionId));
+                }
+
+                if (!authoredQuestionIds.Contains(questionId))
+                {
+                    issues.Add(new ValidationIssue("UNKNOWN_QUESTION_SELECTION_QUESTION_ID", "Ordered variant slot references a question id that does not exist in questions.", questionId));
+                }
+
+                if (!usedQuestionIds.Add(questionId))
+                {
+                    issues.Add(new ValidationIssue("DUPLICATE_QUESTION_SELECTION_BANK_USE", "A questionId can only appear in one ordered variant slot.", questionId));
+                }
+            }
+        }
     }
 
     private static void ValidateConceptLesson(AssessmentDefinition assessment, List<ValidationIssue> issues)

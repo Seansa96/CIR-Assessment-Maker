@@ -14,18 +14,19 @@ navigation:
     - convergence-tests
     - test-selection
     - ratio-test
+    - root-test
     - comparison-test
     - divergence-test
 skills:
   - convergence-test-selection
 lesson:
   introduction: |
-    Convergence-test problems are usually not hard because of the arithmetic. They are hard because the first move is a choice.
+    Convergence-test problems are usually not hard because of arithmetic. They are hard because the first move is a choice.
 
-    The goal of this lesson is to make that choice less mysterious. Instead of memorizing a pile of tests as separate tricks, inspect the term structure and ask what kind of evidence the term is offering.
+    The goal of this lesson is to make that choice less mysterious. Instead of memorizing isolated tests, inspect the term structure and ask what kind of evidence the terms provide.
   sections:
     - id: decision-map
-      title: Start with a decision map
+      title: Start with a Decision Map
       required: true
       content: |
         ![A convergence test decision map organized by term structure](/assessments/calc2-infinite-series/convergence-test-decision-map.svg)
@@ -37,6 +38,10 @@ lesson:
         3. Does it involve factorials, exponentials, or powers raised to $n$? Try ratio or root.
         4. Does it look like a known positive series? Try comparison or limit comparison.
         5. Does it alternate signs? Check absolute convergence first, then use the alternating series test if needed.
+
+        This order is not a law, but it prevents wasted work.
+
+        ![Convergence test selection flowchart from term scan to divergence, comparison, ratio, alternating, and integral tests](/assessments/calc2-infinite-series/convergence-test-selection-flow.svg)
       check:
         id: decision-map-check
         type: multipleChoice
@@ -56,8 +61,46 @@ lesson:
           If $\lim_{n\to\infty}a_n\ne0$ or does not exist, then $\sum a_n$ diverges. This is a fast rejection test, not a convergence proof.
 
           Related topic: nth-term divergence test.
+
+    - id: divergence-test-first
+      title: The Divergence Test Is a Gatekeeper
+      required: true
+      content: |
+        The nth-term divergence test says:
+
+        $$
+        \text{If }\lim_{n\to\infty}a_n\ne0\text{, then }\sum a_n\text{ diverges.}
+        $$
+
+        But the converse is false:
+
+        $$
+        \lim_{n\to\infty}a_n=0
+        $$
+
+        does not prove convergence.
+
+        Think of this test as a gatekeeper. It can reject a series quickly, but it cannot admit a series as convergent.
+      check:
+        id: divergence-test-first-check
+        type: multipleChoice
+        prompt: If $\lim_{n\to\infty}a_n=0$, what can you conclude about $\sum a_n$ from the divergence test alone?
+        choices:
+          - id: a
+            text: Nothing final; another test is needed.
+          - id: b
+            text: The series converges.
+          - id: c
+            text: The series diverges.
+          - id: d
+            text: The series must be geometric.
+        answer:
+          choiceId: a
+        explanation: |
+          Terms approaching zero is necessary for convergence, but not sufficient. The harmonic series is the classic warning.
+
     - id: known-families-first
-      title: Recognize known families first
+      title: Recognize Known Families First
       required: true
       content: |
         Before reaching for a complicated test, look for a known family:
@@ -81,13 +124,17 @@ lesson:
           - id: d
             text: '$\sum_{n=1}^{\infty}\frac{n!}{3^n}$'
         answer:
-          choiceIds: [a, b, c]
+          choiceIds:
+            - a
+            - b
+            - c
         explanation: |
           Choices A, B, and C are p-series, geometric, and telescoping respectively. The factorial expression suggests the ratio test.
 
           Related topic: structural recognition.
+
     - id: comparison-thinking
-      title: Comparison means matching dominant behavior
+      title: Comparison Means Matching Dominant Behavior
       required: true
       content: |
         Comparison tests are about finding a simpler series with the same large-$n$ behavior.
@@ -102,7 +149,9 @@ lesson:
         \frac{3}{n^3}.
         $$
 
-        That suggests comparing to $\sum \frac{1}{n^3}$, a convergent p-series.
+        That suggests comparing to $\sum\frac{1}{n^3}$, a convergent p-series.
+
+        Direct comparison needs an inequality. Limit comparison only needs a positive finite limiting ratio.
       check:
         id: comparison-thinking-check
         type: multipleChoice
@@ -119,11 +168,51 @@ lesson:
         answer:
           choiceId: a
         explanation: |
-          The dominant behavior is $\frac{5n}{n^4}=\frac{5}{n^3}$. Compare with $\sum \frac{1}{n^3}$, which converges because $p=3>1$.
+          The dominant behavior is $\frac{5n}{n^4}=\frac{5}{n^3}$. Compare with $\sum\frac{1}{n^3}$, which converges because $p=3>1$.
 
           Related topic: limit comparison using dominant powers.
+
+    - id: integral-test-pattern
+      title: Integral Test Handles Function-Like Terms
+      required: true
+      content: |
+        The integral test is useful when $a_n=f(n)$ for a function that is:
+
+        - continuous,
+        - positive,
+        - decreasing.
+
+        Then:
+
+        $$
+        \sum a_n
+        \quad\text{and}\quad
+        \int f(x)\,dx
+        $$
+
+        either both converge or both diverge.
+
+        Use it when the term resembles a function you can integrate, especially expressions involving logs, powers, or decreasing rational forms.
+      check:
+        id: integral-test-pattern-check
+        type: multipleChoice
+        prompt: Which condition is required before using the integral test in the standard way?
+        choices:
+          - id: a
+            text: $f(x)$ is continuous, positive, and decreasing on the relevant interval.
+          - id: b
+            text: The series alternates signs.
+          - id: c
+            text: The term contains a factorial.
+          - id: d
+            text: The series has a finite number of terms.
+        answer:
+          choiceId: a
+        explanation: |
+          The integral test compares the series terms to areas under a positive decreasing curve.
+
     - id: ratio-root-thinking
-      title: Ratio and root tests detect repeated multiplication
+      title: Ratio and Root Tests Detect Repeated Multiplication
       required: true
       content: |
         The ratio test is especially useful when terms contain factorials or exponentials:
@@ -138,14 +227,18 @@ lesson:
         L=\lim_{n\to\infty}\sqrt[n]{|a_n|}.
         $$
 
-        In both tests, $L<1$ means absolute convergence, $L>1$ means divergence, and $L=1$ means inconclusive.
+        In both tests:
+
+        - $L<1$ means absolute convergence,
+        - $L>1$ means divergence,
+        - $L=1$ means inconclusive.
       check:
         id: ratio-root-thinking-check
         type: multipleChoice
-        prompt: Which series most naturally suggests the ratio test?
+        prompt: Which series most naturally suggests the root test?
         choices:
           - id: a
-            text: '$\sum_{n=1}^{\infty}\frac{4^n}{n!}$'
+            text: '$\sum_{n=1}^{\infty}\left(\frac{2n+1}{3n+5}\right)^n$'
           - id: b
             text: '$\sum_{n=1}^{\infty}\frac{1}{n^2}$'
           - id: c
@@ -155,11 +248,54 @@ lesson:
         answer:
           choiceId: a
         explanation: |
-          Factorials and exponentials simplify cleanly in $\left|\frac{a_{n+1}}{a_n}\right|$, making the ratio test the natural first choice.
+          A full expression raised to the $n$th power is a strong root-test signal.
 
-          Related topic: ratio test pattern recognition.
+          Related topic: root test pattern recognition.
+
+    - id: alternating-and-absolute
+      title: Alternating Series Need Two Layers
+      required: true
+      content: |
+        If a series alternates, first ask whether it converges absolutely:
+
+        $$
+        \sum |a_n|.
+        $$
+
+        If the absolute-value series converges, the original series converges absolutely.
+
+        If the absolute-value series diverges, the alternating series may still converge conditionally. Then use the alternating series test:
+
+        1. magnitudes decrease eventually,
+        2. magnitudes approach $0$.
+
+        This gives the important distinction:
+
+        $$
+        \text{absolute convergence}
+        \quad\text{vs.}\quad
+        \text{conditional convergence}.
+        $$
+      check:
+        id: alternating-and-absolute-check
+        type: multipleChoice
+        prompt: What should you usually check first for an alternating series?
+        choices:
+          - id: a
+            text: Whether the absolute-value series converges.
+          - id: b
+            text: Whether the first term is positive.
+          - id: c
+            text: Whether the graph is symmetric.
+          - id: d
+            text: Whether the sum is exactly $0$.
+        answer:
+          choiceId: a
+        explanation: |
+          Absolute convergence is stronger. If the absolute-value series converges, no alternating-series rescue is needed.
+
     - id: inconclusive-is-information
-      title: Inconclusive does not mean failure
+      title: Inconclusive Does Not Mean Failure
       required: true
       content: |
         Some tests can return an inconclusive result. For example, the ratio test gives no decision when $L=1$.

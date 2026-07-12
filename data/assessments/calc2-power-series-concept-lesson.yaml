@@ -4,163 +4,278 @@ title: Power Series Concept Lesson
 assessmentType: conceptLesson
 categoryId: calculus-2
 subcategoryIds:
-- power-series
+  - power-series
 skills:
-- power-series
+  - power-series
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-  - power-series
-  - radius-of-convergence
-  - interval-of-convergence
+    - power-series
+    - radius-of-convergence
+    - interval-of-convergence
+    - endpoint-tests
 lesson:
-  introduction: 'Up until now, our series have just been sums of constant numbers.
+  introduction: |
+    A power series is an infinite polynomial-like object:
 
-    A **Power Series** is a series that contains a variable, $x$. It acts like an
-    infinitely long polynomial!
+    $$
+    \sum_{n=0}^{\infty}c_n(x-a)^n.
+    $$
 
-
-    $$ \sum_{n=0}^\infty c_n x^n = c_0 + c_1 x + c_2 x^2 + c_3 x^3 + \dots $$
-
-    '
+    The important shift is that convergence now depends on the value of $x$. A single power series may converge for some inputs and diverge for others.
   sections:
-  - id: domain
-    title: Interval and Radius of Convergence
-    required: true
-    content: 'Because a power series contains $x$, its convergence depends on the
-      value of $x$ you plug in.
+    - id: power-series-as-variable-series
+      title: A Series with an Input
+      required: true
+      content: |
+        Earlier series were made of numbers:
 
-      The set of all $x$ values for which the series converges is called its **Interval
-      of Convergence**.
+        $$
+        \sum_{n=1}^{\infty}a_n.
+        $$
 
+        A power series is made of functions:
 
-      Every power series $\sum c_n (x-a)^n$ centered at $a$ falls into one of three
-      categories:
+        $$
+        \sum_{n=0}^{\infty}c_n(x-a)^n.
+        $$
 
-      1. It only converges at the center, $x=a$ (Radius $R = 0$).
+        For each fixed $x$, the power series becomes an ordinary numerical series. That is why the question becomes:
 
-      2. It converges for all real numbers $x$ (Radius $R = \infty$).
+        $$
+        \text{For which values of }x\text{ does this converge?}
+        $$
 
-      3. It converges for a specific radius $R$ around the center, meaning it converges
-      when $|x-a| < R$ and diverges when $|x-a| > R$.
+        ![Power series input map showing that different x values produce different convergence behavior](/assessments/calc2-infinite-series/power-series-input-interval-map.svg)
+      check:
+        id: power-series-as-variable-series-check
+        type: multipleChoice
+        prompt: What makes a power series different from an ordinary numerical series?
+        choices:
+          - id: a
+            text: It contains a variable, so convergence can depend on the value of $x$.
+          - id: b
+            text: It always diverges.
+          - id: c
+            text: It has only finitely many terms.
+          - id: d
+            text: It never uses convergence tests.
+        answer:
+          choiceId: a
+        explanation: |
+          Once you choose a specific $x$, the power series becomes an ordinary numerical series. Different $x$ values can produce different convergence behavior.
 
+    - id: center-and-radius
+      title: Center and Radius
+      required: true
+      content: |
+        In
 
-      We find the radius $R$ by using the **Ratio Test**.
+        $$
+        \sum_{n=0}^{\infty}c_n(x-a)^n,
+        $$
 
-      '
-    check:
-      id: domain-check
-      type: multipleChoice
-      skills:
-      - power-series
-      prompt: If a power series centered at $x=3$ has a radius of convergence $R=2$,
-        which of the following x-values is GUARANTEED to make the series converge?
-      choices:
-      - id: a
-        text: $x = 4$
-      - id: b
-        text: $x = 5$
-      - id: c
-        text: $x = 1$
-      - id: d
-        text: $x = 6$
-      answer:
-        choiceId: a
-      explanation: 'The series converges when $|x - 3| < 2$, meaning $1 < x < 5$.
-        The endpoints (1 and 5) might converge or diverge, but $x=4$ is strictly inside
-        the interval, so it guarantees convergence.
+        the number $a$ is the center. Power series converge in a symmetric open interval around the center:
 
-        '
-  - id: ratio-test-power
-    title: Using the Ratio Test
-    required: true
-    content: 'To find the interval of convergence, set up the Ratio Test and force
-      the limit to be less than 1.
+        $$
+        |x-a|<R.
+        $$
 
+        The number $R$ is the radius of convergence. It measures how far from the center you can move before the series stops converging automatically.
 
-      Example: $\sum_{n=1}^\infty \frac{x^n}{n \cdot 2^n}$
+        There are three possibilities:
 
+        - $R=0$: only the center is guaranteed.
+        - $0<R<\infty$: an interval around the center.
+        - $R=\infty$: all real $x$.
 
-      $$ \lim_{n \to \infty} \left| \frac{x^{n+1}}{(n+1)2^{n+1}} \cdot \frac{n2^n}{x^n}
-      \right| = \lim_{n \to \infty} \left| \frac{x}{2} \cdot \frac{n}{n+1} \right|
-      = \left| \frac{x}{2} \right| $$
+        ![Power series interval map showing center radius and separate endpoint tests](/assessments/calc2-infinite-series/power-series-radius-endpoints-map.svg)
+      check:
+        id: center-and-radius-check
+        type: multipleChoice
+        prompt: If a power series centered at $x=3$ has radius $R=2$, which value is guaranteed to be inside the convergence interval?
+        choices:
+          - id: a
+            text: '$x=4$'
+          - id: b
+            text: '$x=5$'
+          - id: c
+            text: '$x=1$'
+          - id: d
+            text: '$x=6$'
+        answer:
+          choiceId: a
+        explanation: |
+          The strict radius condition is $|x-3|<2$, so $1<x<5$. Endpoints require separate tests.
 
+    - id: ratio-test-for-radius
+      title: Use the Ratio Test to Find the Radius
+      required: true
+      content: |
+        The ratio test is the usual first tool for radius of convergence:
 
-      For convergence, we require $\left| \frac{x}{2} \right| < 1$, which means $|x|
-      < 2$.
+        $$
+        L=\lim_{n\to\infty}\left|\frac{a_{n+1}}{a_n}\right|.
+        $$
 
-      So the Radius of Convergence is $R = 2$, and the interval is $(-2, 2)$.
+        For a power series, this limit often contains $|x-a|$. Force the ratio-test condition:
 
-      '
-    check:
-      id: ratio-test-power-check
-      type: multipleChoice
-      skills:
-      - power-series
-      prompt: Why is the absolute value strictly necessary when performing the Ratio
-        Test on a power series?
-      choices:
-      - id: a
-        text: Because $x$ could be a negative number, and the Ratio Test requires
-          positive terms.
-      - id: b
-        text: Because distance is always positive.
-      - id: c
-        text: Because the Ratio Test is the same as the Alternating Series Test.
-      answer:
-        choiceId: a
-      explanation: 'The formal Ratio Test uses the absolute value $|a_{n+1}/a_n|$.
-        Since $x$ can be negative, leaving out the absolute value would yield incorrect
-        limits.
+        $$
+        L<1.
+        $$
 
-        '
-  - id: endpoints
-    title: Checking the Endpoints
-    required: true
-    content: 'The Ratio Test is **inconclusive** when $L = 1$, which happens exactly
-      at the edges of the interval ($x = a \pm R$).
+        Example structure:
 
+        $$
+        L=\left|\frac{x-2}{5}\right|<1
+        $$
 
-      You must test the endpoints manually by plugging them back into the original
-      series and using other convergence tests (like the Alternating Series Test or
-      p-series).
+        means:
 
+        $$
+        |x-2|<5.
+        $$
 
-      In the previous example, the interval was $(-2, 2)$.
+        So the radius is $R=5$, centered at $2$.
+      check:
+        id: ratio-test-for-radius-check
+        type: multipleChoice
+        prompt: If the ratio test gives $\left|\frac{x+1}{4}\right|<1$, what is the radius of convergence?
+        choices:
+          - id: a
+            text: '$R=4$'
+          - id: b
+            text: '$R=1$'
+          - id: c
+            text: '$R=-1$'
+          - id: d
+            text: '$R=\infty$'
+        answer:
+          choiceId: a
+        explanation: |
+          The inequality is $|x+1|<4$, so the series converges within 4 units of the center $-1$.
 
-      - Plug in $x=2$: $\sum \frac{2^n}{n2^n} = \sum \frac{1}{n}$ (Diverges, harmonic
-      series).
+    - id: endpoints-are-separate
+      title: Endpoints Are Separate Series Problems
+      required: true
+      content: |
+        The ratio test finds the open interval:
 
-      - Plug in $x=-2$: $\sum \frac{(-2)^n}{n2^n} = \sum \frac{(-1)^n}{n}$ (Converges,
-      alternating harmonic series).
+        $$
+        |x-a|<R.
+        $$
 
+        At the endpoints, the ratio test usually gives $L=1$, which is inconclusive. That means each endpoint must be plugged back into the original power series and tested as its own numerical series.
 
-      So the full interval of convergence is $[-2, 2)$.
+        Endpoint tests often become:
 
-      '
-    check:
-      id: endpoints-check
-      type: multipleChoice
-      skills:
-      - power-series
-      prompt: If a series converges at both endpoints of its interval of convergence,
-        what brackets are used for the interval?
-      choices:
-      - id: a
-        text: $[a, b]$
-      - id: b
-        text: $(a, b)$
-      - id: c
-        text: $[a, b)$
-      - id: d
-        text: $(a, b]$
-      answer:
-        choiceId: a
-      explanation: 'Square brackets $[$ and $]$ are used to denote that the endpoints
-        are included in the interval.
+        - p-series,
+        - alternating series,
+        - harmonic series,
+        - telescoping series,
+        - comparison problems.
 
-        '
+        This is why an answer like $(-2,2)$ is not finished until $x=-2$ and $x=2$ have both been tested.
+      check:
+        id: endpoints-are-separate-check
+        type: multipleChoice
+        prompt: Why do endpoints need separate testing?
+        choices:
+          - id: a
+            text: The ratio test is usually inconclusive at $|x-a|=R$.
+          - id: b
+            text: Endpoints always diverge.
+          - id: c
+            text: Endpoints always converge.
+          - id: d
+            text: Power series do not have endpoints.
+        answer:
+          choiceId: a
+        explanation: |
+          The radius gives the automatic interior behavior. Endpoints require ordinary series tests after substitution.
 
+    - id: operations-on-power-series
+      title: Operations Create New Series
+      required: true
+      content: |
+        Once you know a power series, you can often build new ones by algebra:
+
+        - substitute a new expression for $x$,
+        - multiply by a power of $x$,
+        - differentiate term by term,
+        - integrate term by term.
+
+        For example, from
+
+        $$
+        \frac{1}{1-x}=\sum_{n=0}^{\infty}x^n
+        $$
+
+        you can replace $x$ with $-x^2$:
+
+        $$
+        \frac{1}{1+x^2}=\sum_{n=0}^{\infty}(-1)^n x^{2n}.
+        $$
+
+        The interval of convergence must also transform with the substitution.
+
+        ![Flow diagram for building new power series through substitution multiplication differentiation and integration](/assessments/calc2-infinite-series/power-series-operations-map.svg)
+      check:
+        id: operations-on-power-series-check
+        type: multipleChoice
+        prompt: Starting from $\frac{1}{1-x}=\sum x^n$, what substitution produces a series for $\frac{1}{1+x}$?
+        choices:
+          - id: a
+            text: Replace $x$ with $-x$.
+          - id: b
+            text: Replace $x$ with $x^2$.
+          - id: c
+            text: Differentiate both sides twice.
+          - id: d
+            text: Replace $x$ with $\frac{1}{x}$.
+        answer:
+          choiceId: a
+        explanation: |
+          Since $1+x=1-(-x)$, substitute $-x$ into the geometric series.
+
+    - id: power-series-common-traps
+      title: Common Traps
+      required: true
+      content: |
+        Watch for these mistakes:
+
+        - Reporting the radius but not the interval.
+        - Forgetting endpoint tests.
+        - Treating the center as always $0$.
+        - Losing absolute value in the ratio test.
+        - Changing the interval incorrectly after substitution.
+        - Assuming term-by-term differentiation or integration preserves endpoint behavior automatically.
+
+        A complete power-series answer usually includes:
+
+        $$
+        \text{center, radius, endpoint tests, and interval of convergence.}
+        $$
+      check:
+        id: power-series-common-traps-check
+        type: selectAll
+        prompt: Which items are usually needed for a complete interval-of-convergence problem?
+        choices:
+          - id: a
+            text: Radius of convergence.
+          - id: b
+            text: Endpoint tests.
+          - id: c
+            text: Final interval notation.
+          - id: d
+            text: A random test point outside the radius.
+        answer:
+          choiceIds:
+            - a
+            - b
+            - c
+        explanation: |
+          The radius gives the interior. Endpoint tests decide brackets, and interval notation records the final answer.

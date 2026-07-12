@@ -4,137 +4,290 @@ title: Taylor and Maclaurin Series Concept Lesson
 assessmentType: conceptLesson
 categoryId: calculus-2
 subcategoryIds:
-- taylor-maclaurin
+  - taylor-maclaurin
 skills:
-- taylor-maclaurin
+  - taylor-maclaurin
 modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-  - taylor-series
-  - maclaurin-series
-  - series-expansion
+    - taylor-series
+    - maclaurin-series
+    - series-expansion
+    - taylor-polynomials
 lesson:
-  introduction: 'We''ve seen that rational functions like $\frac{1}{1-x}$ can be written
-    as power series. But what about transcendental functions like $e^x$, $\sin x$,
-    or $\ln x$?
+  introduction: |
+    Taylor series let us replace a function with a polynomial-like expression that matches the function near a chosen center.
 
-    **Taylor Series** allow us to represent *any* infinitely differentiable function
-    as a power series!
-
-    '
+    The point is not just to memorize a formula. The point is to understand why polynomials can imitate functions and how to build useful approximations from derivative information.
   sections:
-  - id: taylor-formula
-    title: The Taylor Series Formula
-    required: true
-    content: 'If a function $f(x)$ has a power series representation centered at $x=a$,
-      its coefficients must perfectly match all the derivatives of the function at
-      that point.
+    - id: polynomial-imitation
+      title: Why Taylor Polynomials Work
+      required: true
+      content: |
+        A tangent line matches a function's value and slope at one point:
 
+        $$
+        L(x)=f(a)+f'(a)(x-a).
+        $$
 
-      The $n$-th coefficient is:
+        A Taylor polynomial pushes that idea further. It matches more derivative information at the center:
 
-      $$ c_n = \frac{f^{(n)}(a)}{n!} $$
+        $$
+        f(a),\quad f'(a),\quad f''(a),\quad f'''(a),\quad \dots
+        $$
 
+        More matched derivatives usually means a better local imitation near $x=a$.
 
-      So the full **Taylor Series** is:
+        ![Sine curve with first, third, and fifth degree Taylor polynomial approximations near zero](/assessments/calc2-infinite-series/taylor-polynomial-imitation-sinx.svg)
+      check:
+        id: polynomial-imitation-check
+        type: multipleChoice
+        prompt: What does a Taylor polynomial try to match at the center $a$?
+        choices:
+          - id: a
+            text: The function value and derivative behavior at $a$.
+          - id: b
+            text: Only the graph's $x$-intercepts.
+          - id: c
+            text: Only the end behavior as $x\to\infty$.
+          - id: d
+            text: The area under the function on every interval.
+        answer:
+          choiceId: a
+        explanation: |
+          Taylor polynomials are local approximations. They are designed to match derivative information at the center.
 
-      $$ f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(a)}{n!} (x-a)^n = f(a) + f''(a)(x-a)
-      + \frac{f''''(a)}{2!}(x-a)^2 + \frac{f''''''(a)}{3!}(x-a)^3 + \dots $$
+    - id: taylor-formula
+      title: The Taylor Series Formula
+      required: true
+      content: |
+        If a function has a Taylor series centered at $a$, then:
 
-      '
-    check:
-      id: taylor-formula-check
-      type: multipleChoice
-      skills:
-      - taylor-maclaurin
-      prompt: Why is there a factorial ($n!$) in the denominator of each Taylor coefficient?
-      choices:
-      - id: a
-        text: Because taking the $n$-th derivative of $x^n$ produces $n(n-1)(n-2)\dots
-          = n!$, which must be cancelled out to match $f^{(n)}(a)$.
-      - id: b
-        text: It guarantees that the Ratio Test will succeed.
-      - id: c
-        text: It was discovered empirically by Brook Taylor.
-      - id: d
-        text: It prevents the series from alternating.
-      answer:
-        choiceId: a
-      explanation: 'Exactly. If $f(x) = c_3 x^3$, the 3rd derivative is $f''''''(x)
-        = c_3(3)(2)(1) = c_3 \cdot 3!$. To isolate $c_3$, we must divide by $3!$.
+        $$
+        f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x-a)^n.
+        $$
 
-        '
-  - id: maclaurin-series
-    title: Maclaurin Series
-    required: true
-    content: 'A **Maclaurin Series** is simply a Taylor Series centered at $a = 0$.
+        Written out:
 
+        $$
+        f(x)=
+        f(a)
+        +f'(a)(x-a)
+        +\frac{f''(a)}{2!}(x-a)^2
+        +\frac{f'''(a)}{3!}(x-a)^3
+        +\cdots
+        $$
 
-      $$ f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(0)}{n!} x^n $$
+        The factorial appears because differentiating $(x-a)^n$ exactly $n$ times produces $n!$.
+      check:
+        id: taylor-formula-check
+        type: multipleChoice
+        prompt: Why does the Taylor coefficient use $\frac{f^{(n)}(a)}{n!}$?
+        choices:
+          - id: a
+            text: Differentiating $(x-a)^n$ exactly $n$ times produces $n!$.
+          - id: b
+            text: It makes every Taylor series alternate.
+          - id: c
+            text: It prevents the radius of convergence from being finite.
+          - id: d
+            text: It turns every function into a geometric series.
+        answer:
+          choiceId: a
+        explanation: |
+          The factorial cancels the factor produced when the $n$th derivative reaches the coefficient of $(x-a)^n$.
 
+    - id: maclaurin-series
+      title: Maclaurin Means Centered at Zero
+      required: true
+      content: |
+        A Maclaurin series is a Taylor series centered at $a=0$:
 
-      Because $a=0$, these are the easiest to compute and are used constantly in physics
-      and engineering to a\approximate complex functions near zero.
+        $$
+        f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}x^n.
+        $$
 
-      '
-    check:
-      id: maclaurin-series-check
-      type: numericResponse
-      skills:
-      - taylor-maclaurin
-      prompt: If $f(x) = e^x$, what is the value of $f^{(n)}(0)$ for any $n$?
-      answer:
-        value: 1
-        tolerance: 0.1
-      explanation: 'The derivative of $e^x$ is always $e^x$. Evaluating $e^0$ always
-        gives 1. Thus, every coefficient in the Maclaurin series for $e^x$ is simply
-        $1/n!$.
+        Maclaurin series are common because many standard functions have simple derivative patterns at $0$.
 
-        '
-  - id: key-maclaurin
-    title: Essential Maclaurin Series to Memorize
-    required: true
-    content: 'You do not want to derive these from scratch every time. Memorize them!
+        For example, every derivative of $e^x$ is $e^x$, so every derivative at $0$ is $1$. Therefore:
 
+        $$
+        e^x=\sum_{n=0}^{\infty}\frac{x^n}{n!}.
+        $$
+      check:
+        id: maclaurin-series-check
+        type: numericResponse
+        prompt: If $f(x)=e^x$, what is $f^{(n)}(0)$ for any nonnegative integer $n$?
+        answer:
+          value: 1
+          tolerance: 0.000001
+        explanation: |
+          Every derivative of $e^x$ is still $e^x$, and $e^0=1$.
 
-      1. **Exponential:** $e^x = \sum_{n=0}^\infty \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!}
-      + \frac{x^3}{3!} + \dots$ (For all real $x$)
+    - id: essential-series
+      title: Essential Series to Recognize
+      required: true
+      content: |
+        These series are worth memorizing because they become building blocks:
 
+        $$
+        e^x=\sum_{n=0}^{\infty}\frac{x^n}{n!}
+        $$
 
-      2. **Sine:** $\sin x = \sum_{n=0}^\infty \frac{(-1)^n x^{2n+1}}{(2n+1)!} = x
-      - \frac{x^3}{3!} + \frac{x^5}{5!} - \dots$ (For all real $x$)
+        $$
+        \sin x=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!}
+        $$
 
+        $$
+        \cos x=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n}}{(2n)!}
+        $$
 
-      3. **Cosine:** $\cos x = \sum_{n=0}^\infty \frac{(-1)^n x^{2n}}{(2n)!} = 1 -
-      \frac{x^2}{2!} + \frac{x^4}{4!} - \dots$ (For all real $x$)
+        $$
+        \frac{1}{1-x}=\sum_{n=0}^{\infty}x^n,\qquad |x|<1.
+        $$
 
+        Sine has odd powers because it is odd. Cosine has even powers because it is even.
+      check:
+        id: essential-series-check
+        type: multipleChoice
+        prompt: Which feature identifies the Maclaurin series for $\cos x$?
+        choices:
+          - id: a
+            text: It has only even powers and alternating signs.
+          - id: b
+            text: It has only odd powers and no alternating signs.
+          - id: c
+            text: It is a finite polynomial.
+          - id: d
+            text: It starts with $x$.
+        answer:
+          choiceId: a
+        explanation: |
+          Cosine is even, so its Maclaurin series has even powers. The signs alternate.
 
-      *Notice\rhow Sine only has odd powers (it''s an odd function), and Cosine only
-      has even powers (it''s an even function)!*
+    - id: building-from-known-series
+      title: Build New Series from Known Series
+      required: true
+      content: |
+        Many Taylor-series problems are not asking you to compute derivatives from scratch. They ask you to recognize a known series and transform it.
 
-      '
-    check:
-      id: key-maclaurin-check
-      type: multipleChoice
-      skills:
-      - taylor-maclaurin
-      prompt: What is the Maclaurin series for $x \cos(x)$?
-      choices:
-      - id: a
-        text: $\sum_{n=0}^\infty \frac{(-1)^n x^{2n+1}}{(2n)!}$
-      - id: b
-        text: $\sum_{n=0}^\infty \frac{(-1)^n x^{2n}}{(2n)!}$
-      - id: c
-        text: $\sum_{n=0}^\infty \frac{(-1)^n x^{2n+2}}{(2n)!}$
-      - id: d
-        text: It cannot be determined easily.
-      answer:
-        choiceId: a
-      explanation: 'Just take the known series for $\cos x$ and multiply every term
-        by $x$. The power $x^{2n}$ becomes $x^{2n+1}$.
+        Examples:
 
-        '
+        - replace $x$ with $3x$,
+        - replace $x$ with $x^2$,
+        - multiply the whole series by $x$,
+        - differentiate a known series,
+        - integrate a known series.
 
+        For example:
+
+        $$
+        \cos x=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n}}{(2n)!}
+        $$
+
+        gives
+
+        $$
+        x\cos x=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n)!}.
+        $$
+
+        ![Flow map showing how known Taylor series become new series through substitution, differentiation, and integration](/assessments/calc2-infinite-series/taylor-known-series-transformation-map.svg)
+      check:
+        id: building-from-known-series-check
+        type: multipleChoice
+        prompt: What is the cleanest way to find a Maclaurin series for $e^{2x}$?
+        choices:
+          - id: a
+            text: Start with the known series for $e^x$ and substitute $2x$ for $x$.
+          - id: b
+            text: Use partial fractions.
+          - id: c
+            text: Use the integral test.
+          - id: d
+            text: Convert to polar coordinates.
+        answer:
+          choiceId: a
+        explanation: |
+          Since $e^x=\sum x^n/n!$, substituting $2x$ gives $e^{2x}=\sum (2x)^n/n!$.
+
+    - id: taylor-polynomial-vs-series
+      title: Polynomial vs Infinite Series
+      required: true
+      content: |
+        A Taylor polynomial stops after finitely many terms:
+
+        $$
+        T_N(x)=\sum_{n=0}^{N}\frac{f^{(n)}(a)}{n!}(x-a)^n.
+        $$
+
+        A Taylor series keeps going forever:
+
+        $$
+        \sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x-a)^n.
+        $$
+
+        Taylor polynomials are used for approximation. Taylor series are used when you want an infinite representation and its interval of convergence.
+      check:
+        id: taylor-polynomial-vs-series-check
+        type: multipleChoice
+        prompt: What is the main difference between a Taylor polynomial and a Taylor series?
+        choices:
+          - id: a
+            text: A Taylor polynomial has finitely many terms; a Taylor series has infinitely many terms.
+          - id: b
+            text: A Taylor polynomial always diverges.
+          - id: c
+            text: A Taylor series cannot be centered away from zero.
+          - id: d
+            text: A Taylor polynomial never uses derivatives.
+        answer:
+          choiceId: a
+        explanation: |
+          The polynomial is the finite approximation. The series is the infinite expansion.
+
+    - id: error-intuition
+      title: Error Is the Part You Left Out
+      required: true
+      content: |
+        When you approximate a function with a Taylor polynomial, the error is the remainder:
+
+        $$
+        R_N(x)=f(x)-T_N(x).
+        $$
+
+        In practice, common error tools include:
+
+        - alternating-series error when the Taylor series alternates with decreasing terms,
+        - Lagrange remainder when you can bound a later derivative,
+        - calculator or numerical comparison when exact symbolic bounds are not required.
+
+        The big idea is simple:
+
+        $$
+        \text{Approximation quality depends on center, distance from center, and number of terms.}
+        $$
+
+        ![Taylor approximation error visual showing how the approximation departs away from the center](/assessments/calc2-infinite-series/taylor-approximation-error.svg)
+      check:
+        id: error-intuition-check
+        type: selectAll
+        prompt: Which factors usually affect Taylor polynomial accuracy?
+        choices:
+          - id: a
+            text: How far $x$ is from the center.
+          - id: b
+            text: How many terms are included.
+          - id: c
+            text: Whether the needed derivatives stay controlled.
+          - id: d
+            text: The color of the graph.
+        answer:
+          choiceIds:
+            - a
+            - b
+            - c
+        explanation: |
+          Taylor approximations are local. They usually improve with more terms and with inputs closer to the center, provided the function behaves well there.

@@ -183,6 +183,13 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
             var root = doc.RootElement;
             int? attempt = root.TryGetProperty("attemptQuestionCount", out var aqc) && aqc.ValueKind != System.Text.Json.JsonValueKind.Null
                 ? aqc.GetInt32() : null;
+            if (root.TryGetProperty("questionSelection", out var selection)
+                && IsOrderedVariantSelection(selection)
+                && selection.TryGetProperty("slots", out var slots)
+                && slots.ValueKind is System.Text.Json.JsonValueKind.Array)
+            {
+                attempt = slots.GetArrayLength();
+            }
 
             int authored = typeStr.ToLowerInvariant() switch
             {
@@ -201,6 +208,17 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
             return (authored, attempt);
         }
         catch { return (0, null); }
+    }
+
+    private static bool IsOrderedVariantSelection(System.Text.Json.JsonElement selection)
+    {
+        if (!selection.TryGetProperty("mode", out var mode) || mode.ValueKind is System.Text.Json.JsonValueKind.Null)
+        {
+            return true;
+        }
+
+        var value = mode.GetString()?.Trim().ToLowerInvariant();
+        return string.IsNullOrWhiteSpace(value) || value is "orderedvariant" or "orderedvariants";
     }
 
     private static async Task<List<string>> GetListAsync(SqliteConnection connection, string table, string column, string id, CancellationToken cancellationToken)

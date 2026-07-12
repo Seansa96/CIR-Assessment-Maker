@@ -183,7 +183,7 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
     {
         var authoredCount = CountItems(assessment);
         var effectiveCount = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            ? Math.Min(assessment.AttemptQuestionCount ?? authoredCount, authoredCount)
+            ? Math.Min(GetEffectiveAttemptCount(assessment) ?? authoredCount, authoredCount)
             : authoredCount;
 
         return new AssessmentSummary(
@@ -194,7 +194,7 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
             subcatIds,
             effectiveCount,
             authoredCount,
-            assessment.AttemptQuestionCount)
+            GetEffectiveAttemptCount(assessment))
         {
             AreaIds = areaIds,
             LearningGoal = learningGoal,
@@ -202,6 +202,17 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
             Tags = tags,
             Skills = skills
         };
+    }
+
+    private static int? GetEffectiveAttemptCount(AssessmentDefinition assessment)
+    {
+        if (assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
+            && assessment.QuestionSelection?.Mode is QuestionSelectionMode.OrderedVariants)
+        {
+            return assessment.QuestionSelection.Slots.Count;
+        }
+
+        return assessment.AttemptQuestionCount;
     }
 
     private static int CountItems(AssessmentDefinition assessment) => assessment.AssessmentType switch

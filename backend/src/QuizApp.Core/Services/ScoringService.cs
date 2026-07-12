@@ -140,12 +140,15 @@ public sealed class ScoringService
             .Select(questionId => assessmentItems.FirstOrDefault(item => string.Equals(item.Question.Id, questionId, StringComparison.OrdinalIgnoreCase)))
             .OfType<AssessmentItem>()
             .ToList();
+        var allOrderedQuestionsAnswered = attempt.QuestionOrder.All(questionId => answersByQuestion.ContainsKey(questionId));
 
         var questionResults = orderedQuestions.Select(item =>
         {
             var question = item.Question;
             answersByQuestion.TryGetValue(question.Id, out var answer);
-            var showFeedback = attempt.Status is AttemptStatus.Completed or AttemptStatus.Abandoned || attempt.Mode is AssessmentMode.Practice;
+            var showFeedback = attempt.Status is AttemptStatus.Completed or AttemptStatus.Abandoned
+                || attempt.Mode is AssessmentMode.Practice
+                || (attempt.Mode is AssessmentMode.Scored && allOrderedQuestionsAnswered);
             var isPendingSelfCheck = question.Type is QuestionType.FreeResponse
                 && answer?.Answer.FreeResponseText is not null
                 && answer.Answer.SelfCheckCorrect is null;

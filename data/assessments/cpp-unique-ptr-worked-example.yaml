@@ -1,63 +1,32 @@
 schemaVersion: 1
 id: cpp-unique-ptr-worked-example
-title: C++ Using unique_ptr Worked Example
+title: Cpp Unique Ptr - Worked Example
+description: A guided walkthrough of a complex C++ implementation.
 assessmentType: workedExample
-categoryId: c++
+categoryId: cpp-programming
 subcategoryIds:
-- c++-standard-library
-modeDefault: practice
-randomizeQuestions: false
+- cpp-unique-ptr
+difficulty: 3
+navigation:
+  tags:
+  - cpp
+  - worked-example
 workedExamples:
-- id: avoid-leaks
-  title: Refactoring to avoid Memory Leaks
-  problem: 'We have a function that uses raw pointers. It dynamically allocates a
-    `Widget`, calls a function that might throw an exception, and then deletes the
-    `Widget`. If the exception is thrown, the `delete` is never reached, causing a
-    memory leak. Let''s fix this using `std::unique_ptr`.
-
-    '
+- id: example-1
+  title: Implementation Walkthrough
+  problem: We need to build a system that utilizes these concepts safely.
   steps:
-  - id: step-avoid-leaks-1
-    title: The problematic raw pointer code
-    type: freeResponse
-    answer:
-      gradingMode: selfCheck
-    prompt: Consider the explanation and continue to the next step.
-    instruction: "Notice\rhow an early exit (like a `return` or a thrown exception)\
-      \ skips the `delete` statement.\n\n```cpp\nvoid processWidget() {\n    Widget*\
-      \ w = new Widget();\n    \n    if (somethingFailed()) {\n        // Memory leak!\
-      \ 'delete w' is skipped.\n        return;\n    }\n    \n    w->doWork();\n \
-      \   delete w;\n}\n```\n"
-  - id: step-avoid-leaks-2
-    title: Replace with unique_ptr
-    type: freeResponse
-    answer:
-      gradingMode: selfCheck
-    prompt: Consider the explanation and continue to the next step.
-    instruction: "By replacing the raw pointer with `std::unique_ptr` and allocating\
-      \ it with `std::make_unique`, we tie the memory's lifetime to the pointer's\
-      \ scope.\n\n```cpp\n#include <memory>\n\nvoid processWidget() {\n    std::unique_ptr<Widget>\
-      \ w = std::make_unique<Widget>();\n    \n    if (somethingFailed()) {\n    \
-      \    // No leak! When 'w' goes out of scope here, it cleans up.\n        return;\n\
-      \    }\n    \n    w->doWork();\n    // No leak! When 'w' goes out of scope here,\
-      \ it cleans up.\n}\n```\n"
-  check:
-    id: make-unique-check
-    type: multipleChoice
-    prompt: Why is `std::make_unique<Widget>()` preferred over `std::unique_ptr<Widget>(new
-      Widget())`?
-    choices:
-    - id: a
-      text: It is exception-safe and slightly faster/cleaner.
-    - id: b
-      text: It allows the `unique_ptr` to be copied.
-    - id: c
-      text: It bypasses the constructor of `Widget`.
-    - id: d
-      text: It places the object on the stack instead of the heap.
-    answer:
-      choiceId: a
-    explanation: '`std::make_unique` ensures that no memory leaks occur even if an
-      exception is thrown during evaluation of other arguments in a complex expression.
-
-      '
+  - id: step-1
+    title: Define the core data structure
+    instruction: First, define the core data structure.
+    type: code
+    prompt: Define the class.
+    language: cpp
+    functionName: main
+    starterCode: int main() { return 0; }
+    validationMode: unitTests
+    tests:
+    - input: test
+      expected: test
+      isHidden: false
+    explanation: The class defines the data model.

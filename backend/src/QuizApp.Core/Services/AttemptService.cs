@@ -42,25 +42,31 @@ public sealed class AttemptService
         var selectedMode = IsInstructionalAssessment(assessment.AssessmentType)
             ? AssessmentMode.Practice
             : mode ?? assessment.ModeDefault;
-        var questionOrder = assessment.AssessmentType switch
-        {
-            AssessmentType.RecallDrill => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
-            AssessmentType.Glossary => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
-            AssessmentType.ConceptLesson => assessment.Lesson!.Sections.Select(section => section.Id).ToList(),
-            AssessmentType.InteractiveExploration => assessment.Exploration!.Sections.Select(section => section.Id).ToList(),
-            AssessmentType.DirectedProject => assessment.DirectedProject!.Phases.SelectMany(phase => phase.Steps).Select(step => step.Id).ToList(),
-            _ => scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList()
-        };
+        var usesOrderedVariants = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
+            && assessment.QuestionSelection?.Mode is QuestionSelectionMode.OrderedVariants;
+        var questionOrder = usesOrderedVariants
+            ? BuildOrderedVariantQuestionOrder(assessment.QuestionSelection!)
+            : assessment.AssessmentType switch
+            {
+                AssessmentType.RecallDrill => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
+                AssessmentType.Glossary => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
+                AssessmentType.ConceptLesson => assessment.Lesson!.Sections.Select(section => section.Id).ToList(),
+                AssessmentType.InteractiveExploration => assessment.Exploration!.Sections.Select(section => section.Id).ToList(),
+                AssessmentType.DirectedProject => assessment.DirectedProject!.Phases.SelectMany(phase => phase.Steps).Select(step => step.Id).ToList(),
+                _ => scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList()
+            };
 
-        if ((assessment.AssessmentType is AssessmentType.Glossary && assessment.RandomizeQuestions)
+        if (!usesOrderedVariants
+            && ((assessment.AssessmentType is AssessmentType.Glossary && assessment.RandomizeQuestions)
             || (!IsInstructionalAssessment(assessment.AssessmentType)
             && assessment.RandomizeQuestions
-            && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized))
+            && settings.DefaultQuestionOrder is QuestionOrderMode.Randomized)))
         {
             Shuffle(questionOrder);
         }
 
-        if (assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
+        if (!usesOrderedVariants
+            && assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
             && assessment.AttemptQuestionCount is > 0
             && assessment.AttemptQuestionCount < questionOrder.Count)
         {
@@ -81,6 +87,19 @@ public sealed class AttemptService
 
         await SaveAttemptAsync(attempt, cancellationToken);
         return attempt;
+    }
+
+    private static List<string> BuildOrderedVariantQuestionOrder(QuestionSelectionDefinition selection)
+    {
+        var questionOrder = new List<string>(selection.Slots.Count);
+        foreach (var slot in selection.Slots)
+        {
+            var questionIds = slot.QuestionIds;
+            var index = questionIds.Count == 1 ? 0 : RandomNumberGenerator.GetInt32(questionIds.Count);
+            questionOrder.Add(questionIds[index]);
+        }
+
+        return questionOrder;
     }
 
     public async Task<Attempt> SubmitAnswerAsync(string attemptId, SubmittedAnswer submittedAnswer, CancellationToken cancellationToken = default)

@@ -79,6 +79,21 @@ public sealed record NavigationMetadata(
     string? ActivityType,
     IReadOnlyList<string> Tags);
 
+public enum QuestionSelectionMode
+{
+    Unknown,
+    OrderedVariants
+}
+
+public sealed record QuestionSelectionDefinition(
+    QuestionSelectionMode Mode,
+    IReadOnlyList<QuestionSelectionSlotDefinition> Slots);
+
+public sealed record QuestionSelectionSlotDefinition(
+    string Id,
+    string? Title,
+    IReadOnlyList<string> QuestionIds);
+
 public sealed record AssessmentDefinition(
     int SchemaVersion,
     string Id,
@@ -91,7 +106,8 @@ public sealed record AssessmentDefinition(
     int? AttemptQuestionCount,
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
-    IReadOnlyList<QuestionDefinition> Questions)
+    IReadOnlyList<QuestionDefinition> Questions,
+    QuestionSelectionDefinition? QuestionSelection = null)
 {
     public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
     public GuidedProjectDefinition? GuidedProject { get; init; }

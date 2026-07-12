@@ -85,6 +85,7 @@ public sealed record SaveAssessmentRequest(
     int? AttemptQuestionCount,
     int? QuestionTimerSeconds,
     int? AssessmentTimerSeconds,
+    QuestionSelectionDefinition? QuestionSelection,
     IReadOnlyList<QuestionDefinition>? Questions,
     IReadOnlyList<WorkedExampleDefinition>? WorkedExamples,
     GuidedProjectDefinition? GuidedProject,
@@ -108,7 +109,8 @@ public sealed record SaveAssessmentRequest(
             AttemptQuestionCount,
             QuestionTimerSeconds,
             AssessmentTimerSeconds,
-            Questions ?? Array.Empty<QuestionDefinition>())
+            Questions ?? Array.Empty<QuestionDefinition>(),
+            QuestionSelection)
         {
             WorkedExamples = WorkedExamples ?? Array.Empty<WorkedExampleDefinition>(),
             GuidedProject = GuidedProject,

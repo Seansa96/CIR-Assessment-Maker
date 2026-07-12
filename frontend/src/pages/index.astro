@@ -2018,11 +2018,12 @@ import "../styles/global.css";
 
       async function markFreeResponseSelfCheck(questionId: string, isCorrect: boolean) {
         if (!state.attempt || !state.latestResults) return;
-        const result = state.latestResults.questions.find((candidate) => candidate.questionId === questionId)
+        const questionResults = state.latestResults.questions.flatMap((candidate) => [candidate, ...(candidate.partResults ?? [])]);
+        const result = questionResults.find((candidate) => candidate.questionId === questionId)
           ?? state.latestResults.learningSections
             .map((section) => section.check)
             .find((candidate) => candidate?.questionId === questionId);
-        if (!result?.submittedAnswer?.freeResponseText) return;
+        if (!result || result.submittedAnswer?.freeResponseText === null || result.submittedAnswer?.freeResponseText === undefined) return;
 
         state.attempt = await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
           method: "POST",
@@ -5538,12 +5539,16 @@ import "../styles/global.css";
       }
 
       async function renderFreeResponseSelfCheck(result: QuestionResult | null | undefined, allowSelfCheck: boolean) {
-        if (!allowSelfCheck || !result || result.type !== "freeResponse" || !result.submittedAnswer?.freeResponseText) return "";
-        if (state.attempt?.mode === "scored" && state.attempt?.status === "inProgress") return "";
+        const hasSubmittedResponse = result?.submittedAnswer?.freeResponseText !== null
+          && result?.submittedAnswer?.freeResponseText !== undefined;
+        if (!allowSelfCheck || !result || result.type !== "freeResponse" || !hasSubmittedResponse) return "";
 
         const expectedHtml = result.expectedAnswer ? await renderMarkdown(result.expectedAnswer) : "";
         const explanationHtml = result.explanation ? await renderMarkdown(result.explanation) : "";
         const keyPoints = result.keyPoints ?? [];
+        const responseText = result.submittedAnswer?.freeResponseText?.trim()
+          ? result.submittedAnswer.freeResponseText
+          : "(blank response)";
         const status = result.isPendingSelfCheck
           ? "Awaiting self-check"
           : result.isCorrect ? "Marked correct" : "Marked needs review";
@@ -5556,7 +5561,7 @@ import "../styles/global.css";
             </div>
             <div class="result-detail">
               <strong>Your response:</strong>
-              <p>${escapeHtml(result.submittedAnswer.freeResponseText)}</p>
+              <p>${escapeHtml(responseText)}</p>
             </div>
             ${expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
             ${keyPoints.length > 0 ? `

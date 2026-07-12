@@ -89,6 +89,63 @@ public sealed class AssessmentValidatorTests
     }
 
     [Fact]
+    public void Validate_rejects_ordered_variants_for_non_quiz_test_assessments()
+    {
+        var assessment = TestData.Assessment(AssessmentType.WorkedExample, Array.Empty<QuestionDefinition>()) with
+        {
+            QuestionSelection = new QuestionSelectionDefinition(
+                QuestionSelectionMode.OrderedVariants,
+                new[] { new QuestionSelectionSlotDefinition("slot-001", null, new[] { "q001" }) })
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_QUESTION_SELECTION");
+    }
+
+    [Fact]
+    public void Validate_rejects_ordered_variant_slots_that_reference_missing_questions()
+    {
+        var assessment = TestData.Assessment(AssessmentType.Test, new[]
+        {
+            TestData.MultipleChoiceQuestion("q001")
+        }) with
+        {
+            QuestionSelection = new QuestionSelectionDefinition(
+                QuestionSelectionMode.OrderedVariants,
+                new[] { new QuestionSelectionSlotDefinition("slot-001", null, new[] { "missing" }) })
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "UNKNOWN_QUESTION_SELECTION_QUESTION_ID");
+    }
+
+    [Fact]
+    public void Validate_rejects_attempt_question_count_that_does_not_match_ordered_variant_slots()
+    {
+        var assessment = TestData.Assessment(AssessmentType.Test, new[]
+        {
+            TestData.MultipleChoiceQuestion("q001"),
+            TestData.MultipleChoiceQuestion("q002")
+        }) with
+        {
+            AttemptQuestionCount = 1,
+            QuestionSelection = new QuestionSelectionDefinition(
+                QuestionSelectionMode.OrderedVariants,
+                new[]
+                {
+                    new QuestionSelectionSlotDefinition("slot-001", null, new[] { "q001" }),
+                    new QuestionSelectionSlotDefinition("slot-002", null, new[] { "q002" })
+                })
+        };
+
+        var result = validator.Validate(assessment);
+
+        Assert.Contains(result.Issues, issue => issue.Code == "INVALID_ATTEMPT_QUESTION_COUNT");
+    }
+
+    [Fact]
     public void Validate_rejects_numeric_response_without_non_negative_tolerance()
     {
         var assessment = TestData.Assessment(questions: new[]

@@ -139,7 +139,7 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
     {
         var authoredCount = CountAssessmentItems(assessment);
         var effectiveCount = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            ? Math.Min(assessment.AttemptQuestionCount ?? authoredCount, authoredCount)
+            ? Math.Min(GetEffectiveAttemptCount(assessment) ?? authoredCount, authoredCount)
             : authoredCount;
 
         return new AssessmentSummary(
@@ -150,12 +150,23 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             assessment.SubcategoryIds,
             effectiveCount,
             authoredCount,
-            assessment.AttemptQuestionCount)
+            GetEffectiveAttemptCount(assessment))
         {
             LearningGoal = assessment.Navigation?.LearningGoal,
             ActivityType = assessment.Navigation?.ActivityType,
             Tags = assessment.Navigation?.Tags ?? Array.Empty<string>(),
             Skills = assessment.Skills
         };
+    }
+
+    private static int? GetEffectiveAttemptCount(AssessmentDefinition assessment)
+    {
+        if (assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
+            && assessment.QuestionSelection?.Mode is QuestionSelectionMode.OrderedVariants)
+        {
+            return assessment.QuestionSelection.Slots.Count;
+        }
+
+        return assessment.AttemptQuestionCount;
     }
 }

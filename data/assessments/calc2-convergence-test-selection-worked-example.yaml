@@ -1,0 +1,488 @@
+schemaVersion: 1
+id: calc2-convergence-test-selection-worked-example
+title: Convergence Test Selection Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - sequences-series
+  - convergence-tests
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - convergence-tests
+    - comparison-test
+    - limit-comparison-test
+    - ratio-test
+    - alternating-series-test
+    - p-series
+skills:
+  - convergence-test-selection
+workedExamples:
+  - id: convergence-test-selection-main
+    title: Choosing the Test Before Doing Algebra
+    problem: |
+      Decide which convergence test to use by reading the structure of the series first.
+
+      We will compare several common series:
+
+      $$
+      \sum_{n=1}^{\infty}\frac{3n^2+1}{n^4+5},
+      \qquad
+      \sum_{n=1}^{\infty}\frac{n!}{4^n},
+      \qquad
+      \sum_{n=2}^{\infty}\frac{(-1)^n}{n\ln n}.
+      $$
+
+      The goal is not just to get an answer. The goal is to identify the signal that tells you which tool is efficient.
+
+      ![Convergence test selection flowchart from term scan to divergence, comparison, ratio, alternating, and integral tests](/assessments/calc2-infinite-series/convergence-test-selection-flow.svg)
+    steps:
+      - id: convergence-select-step-001
+        title: First scan the structure
+        instruction: |
+          Before calculating, ask what kind of expression you see.
+
+          Rational functions in $n$ often suggest comparison with a $p$-series. Factorials and exponentials often suggest the Ratio Test. Alternating signs suggest the Alternating Series Test, followed by absolute convergence checks when needed.
+        type: selectAll
+        prompt: Which structural signals should influence test choice?
+        choices:
+          - id: a
+            text: Dominant powers of $n$ in numerator and denominator.
+          - id: b
+            text: Factorials or exponentials.
+          - id: c
+            text: Alternating signs such as $(-1)^n$.
+          - id: d
+            text: The font used to write the problem.
+        answer:
+          choiceIds:
+            - a
+            - b
+            - c
+        explanation: |
+          Convergence tests are pattern-driven. You choose a likely tool from the structure, then verify the conditions.
+
+      - id: convergence-select-step-002
+        title: Identify the dominant behavior
+        instruction: |
+          For:
+
+          $$
+          \sum_{n=1}^{\infty}\frac{3n^2+1}{n^4+5},
+          $$
+
+          the dominant terms are $3n^2$ and $n^4$.
+        type: multipleChoice
+        prompt: What simple expression describes the long-term size of the terms?
+        choices:
+          - id: a
+            text: '$\frac{3}{n^2}$'
+          - id: b
+            text: '$3n^2$'
+          - id: c
+            text: '$\frac{1}{n}$'
+          - id: d
+            text: '$n^4$'
+        answer:
+          choiceId: a
+        explanation: |
+          Divide the dominant powers: $\frac{3n^2}{n^4}=\frac{3}{n^2}$.
+
+      - id: convergence-select-step-003
+        title: Choose a comparison target
+        instruction: |
+          Since the terms behave like $\frac{3}{n^2}$, compare to:
+
+          $$
+          \sum\frac{1}{n^2}.
+          $$
+        type: multipleChoice
+        prompt: Which test is most natural for the rational function series?
+        choices:
+          - id: a
+            text: Limit Comparison Test with $\sum\frac{1}{n^2}$.
+          - id: b
+            text: Alternating Series Test.
+          - id: c
+            text: Ratio Test because every series needs a ratio.
+          - id: d
+            text: Integral Test only.
+        answer:
+          choiceId: a
+        explanation: |
+          Limit Comparison is efficient when two positive-term series have the same dominant long-term behavior.
+
+      - id: convergence-select-step-004
+        title: Compute the limit comparison
+        instruction: |
+          Let:
+
+          $$
+          a_n=\frac{3n^2+1}{n^4+5},
+          \qquad
+          b_n=\frac{1}{n^2}.
+          $$
+
+          Then:
+
+          $$
+          \frac{a_n}{b_n}
+          =
+          \frac{n^2(3n^2+1)}{n^4+5}.
+          $$
+        type: multipleChoice
+        prompt: What is $\lim_{n\to\infty}\frac{a_n}{b_n}$?
+        choices:
+          - id: a
+            text: '$3$'
+          - id: b
+            text: '$0$'
+          - id: c
+            text: '$\infty$'
+          - id: d
+            text: '$1$'
+        answer:
+          choiceId: a
+        explanation: |
+          The leading term in the numerator is $3n^4$, and the leading term in the denominator is $n^4$, so the limit is $3$.
+
+      - id: convergence-select-step-005
+        title: Finish the first conclusion
+        instruction: |
+          A positive finite limit means the two series share convergence behavior.
+
+          Since:
+
+          $$
+          \sum\frac{1}{n^2}
+          $$
+
+          converges, the original series converges.
+        type: multipleChoice
+        prompt: Why does the rational function series converge?
+        choices:
+          - id: a
+            text: It is limit-comparable to a convergent $p$-series with $p=2$.
+          - id: b
+            text: It is alternating.
+          - id: c
+            text: Its terms are eventually negative.
+          - id: d
+            text: Every rational function series converges.
+        answer:
+          choiceId: a
+        explanation: |
+          The exact related topic is Limit Comparison with a $p$-series. The dominant powers showed which $p$-series to use.
+
+      - id: convergence-select-step-006
+        title: Recognize factorial growth
+        instruction: |
+          Now consider:
+
+          $$
+          \sum_{n=1}^{\infty}\frac{n!}{4^n}.
+          $$
+
+          Factorials are a strong signal for the Ratio Test because adjacent factorials simplify cleanly.
+        type: multipleChoice
+        prompt: Which test should you try first?
+        choices:
+          - id: a
+            text: Ratio Test.
+          - id: b
+            text: Alternating Series Test.
+          - id: c
+            text: Direct Comparison with $\frac{1}{n^2}$.
+          - id: d
+            text: Geometric series formula only.
+        answer:
+          choiceId: a
+        explanation: |
+          The Ratio Test is designed for terms with factorials, exponentials, or powers whose adjacent-term ratio simplifies.
+
+      - id: convergence-select-step-007
+        title: Form the ratio
+        instruction: |
+          Let:
+
+          $$
+          a_n=\frac{n!}{4^n}.
+          $$
+
+          Then:
+
+          $$
+          \left|\frac{a_{n+1}}{a_n}\right|
+          =
+          \frac{(n+1)!}{4^{n+1}}\cdot\frac{4^n}{n!}.
+          $$
+        type: multipleChoice
+        prompt: What does the ratio simplify to?
+        choices:
+          - id: a
+            text: '$\frac{n+1}{4}$'
+          - id: b
+            text: '$\frac{4}{n+1}$'
+          - id: c
+            text: '$\frac{1}{4}$'
+          - id: d
+            text: '$n+1$'
+        answer:
+          choiceId: a
+        explanation: |
+          Since $(n+1)!=(n+1)n!$ and $4^{n+1}=4\cdot4^n$, the remaining ratio is $\frac{n+1}{4}$.
+
+      - id: convergence-select-step-008
+        title: Interpret the Ratio Test result
+        instruction: |
+          The limit is:
+
+          $$
+          \lim_{n\to\infty}\frac{n+1}{4}=\infty.
+          $$
+        type: multipleChoice
+        prompt: What does this imply?
+        choices:
+          - id: a
+            text: The series diverges because the Ratio Test limit is greater than $1$.
+          - id: b
+            text: The series converges because factorials always help.
+          - id: c
+            text: The test is inconclusive.
+          - id: d
+            text: The series conditionally converges.
+        answer:
+          choiceId: a
+        explanation: |
+          For the Ratio Test, a limit greater than $1$ means divergence. Here the factorial grows faster than the fixed exponential base $4^n$.
+
+      - id: convergence-select-step-009
+        title: Spot alternating behavior
+        instruction: |
+          Now consider:
+
+          $$
+          \sum_{n=2}^{\infty}\frac{(-1)^n}{n\ln n}.
+          $$
+
+          The factor $(-1)^n$ signals alternating signs.
+        type: multipleChoice
+        prompt: Which test is the first natural candidate?
+        choices:
+          - id: a
+            text: Alternating Series Test.
+          - id: b
+            text: Ratio Test.
+          - id: c
+            text: Limit Comparison with $\sum n$.
+          - id: d
+            text: Divergence Test because signs alternate.
+        answer:
+          choiceId: a
+        explanation: |
+          Alternating signs do not guarantee convergence. They tell you to check whether the positive part decreases to $0$.
+
+      - id: convergence-select-step-010
+        title: Check the alternating conditions
+        instruction: |
+          The positive part is:
+
+          $$
+          b_n=\frac{1}{n\ln n}.
+          $$
+
+          For $n\geq2$, this decreases and approaches $0$.
+        type: selectAll
+        prompt: Which conditions are needed for the Alternating Series Test?
+        choices:
+          - id: a
+            text: The positive term sequence approaches $0$.
+          - id: b
+            text: The positive term sequence is eventually decreasing.
+          - id: c
+            text: The absolute value series must converge.
+          - id: d
+            text: The signs alternate.
+        answer:
+          choiceIds:
+            - a
+            - b
+            - d
+        explanation: |
+          Absolute convergence is stronger than alternating convergence. The Alternating Series Test only needs alternating signs, decreasing positive terms, and limit $0$.
+
+      - id: convergence-select-step-011
+        title: Decide conditional versus absolute
+        instruction: |
+          To determine whether convergence is absolute, inspect:
+
+          $$
+          \sum_{n=2}^{\infty}\frac{1}{n\ln n}.
+          $$
+
+          This is a classic divergent series, often shown by the Integral Test or Cauchy condensation.
+        type: multipleChoice
+        prompt: What is the most accurate conclusion?
+        choices:
+          - id: a
+            text: The alternating series converges conditionally.
+          - id: b
+            text: The series converges absolutely.
+          - id: c
+            text: The series diverges because $\ln n$ grows.
+          - id: d
+            text: The Alternating Series Test is inconclusive.
+        answer:
+          choiceId: a
+        explanation: |
+          The alternating version converges, but the absolute value version diverges. That is conditional convergence.
+
+      - id: convergence-select-step-012
+        title: Use the Divergence Test first when terms do not vanish
+        instruction: |
+          Some series can be settled before any sophisticated test.
+
+          For example:
+
+          $$
+          \sum_{n=1}^{\infty}\frac{5n^2+1}{2n^2+7}.
+          $$
+        type: multipleChoice
+        prompt: What is $\lim_{n\to\infty}\frac{5n^2+1}{2n^2+7}$?
+        choices:
+          - id: a
+            text: '$\frac52$'
+          - id: b
+            text: '$0$'
+          - id: c
+            text: '$1$'
+          - id: d
+            text: '$\infty$'
+        answer:
+          choiceId: a
+        explanation: |
+          The term limit is the ratio of leading coefficients, $\frac52$, not $0$.
+
+      - id: convergence-select-step-013
+        title: Apply the term test correctly
+        instruction: |
+          If the terms do not approach $0$, the series must diverge.
+        type: multipleChoice
+        prompt: What should you conclude about $\sum\frac{5n^2+1}{2n^2+7}$?
+        choices:
+          - id: a
+            text: It diverges by the Divergence Test.
+          - id: b
+            text: It converges by comparison to $\frac52$.
+          - id: c
+            text: It converges because the terms are bounded.
+          - id: d
+            text: It is conditionally convergent.
+        answer:
+          choiceId: a
+        explanation: |
+          A necessary condition for convergence is $a_n\to0$. This condition fails here.
+
+      - id: convergence-select-step-014
+        title: Identify a geometric series
+        instruction: |
+          Consider:
+
+          $$
+          \sum_{n=0}^{\infty}7\left(\frac{3}{5}\right)^n.
+          $$
+
+          This is geometric because it has the form $\sum ar^n$.
+        type: multipleChoice
+        prompt: What is the common ratio?
+        choices:
+          - id: a
+            text: '$\frac35$'
+          - id: b
+            text: '$7$'
+          - id: c
+            text: '$\frac53$'
+          - id: d
+            text: '$n$'
+        answer:
+          choiceId: a
+        explanation: |
+          In $7(\frac35)^n$, the repeated factor is $\frac35$.
+
+      - id: convergence-select-step-015
+        title: Finish the geometric conclusion
+        instruction: |
+          A geometric series converges when:
+
+          $$
+          |r|<1.
+          $$
+        type: multipleChoice
+        prompt: What is the sum of $\sum_{n=0}^{\infty}7(\frac35)^n$?
+        choices:
+          - id: a
+            text: '$\frac{35}{2}$'
+          - id: b
+            text: '$\frac{21}{5}$'
+          - id: c
+            text: '$7$'
+          - id: d
+            text: '$\frac{5}{3}$'
+        answer:
+          choiceId: a
+        explanation: |
+          Use $\frac{a}{1-r}$ with $a=7$ and $r=\frac35$:
+
+          $$
+          \frac{7}{1-\frac35}=\frac{7}{\frac25}=\frac{35}{2}.
+          $$
+
+      - id: convergence-select-step-016
+        title: Build the decision tree
+        instruction: |
+          A practical order is:
+
+          1. Does $a_n$ fail to approach $0$?
+          2. Is it geometric or a $p$-series?
+          3. Is it a rational expression in powers of $n$?
+          4. Are there factorials or exponentials?
+          5. Are there alternating signs?
+          6. Is there an integral-like form?
+        type: selectAll
+        prompt: Which pairings are usually good first choices?
+        choices:
+          - id: a
+            text: Factorials or exponentials with the Ratio Test.
+          - id: b
+            text: Dominant rational powers with Limit Comparison.
+          - id: c
+            text: Alternating signs with the Alternating Series Test.
+          - id: d
+            text: Any series with any test chosen at random.
+        answer:
+          choiceIds:
+            - a
+            - b
+            - c
+        explanation: |
+          Test selection is not random. The visible structure suggests the shortest reliable route.
+
+      - id: convergence-select-step-017
+        title: Explain the strategy
+        instruction: |
+          The strongest solutions name both the test and the reason that test matches the structure.
+        type: freeResponse
+        prompt: Explain how you would decide between Limit Comparison, Ratio Test, and Alternating Series Test.
+        answer:
+          expected: Use Limit Comparison when the terms resemble a simpler positive series, especially a rational expression whose dominant powers match a p-series. Use the Ratio Test when terms contain factorials, exponentials, or powers whose adjacent ratio simplifies. Use the Alternating Series Test when signs alternate and the positive term sequence decreases to zero, then check absolute convergence separately if needed.
+          gradingMode: selfCheck
+          keyPoints:
+            - 'Limit Comparison: compare long-term size to a simpler positive series.'
+            - 'Ratio Test: good for factorials, exponentials, and adjacent-term simplification.'
+            - 'Alternating Series Test: signs alternate, positive terms decrease, and terms approach zero.'
+            - Conditional versus absolute convergence may require a second check.
+        explanation: |
+          The related topic is convergence-test selection. The goal is to recognize the structural signal before starting algebra.

@@ -44,6 +44,7 @@ public sealed class AssessmentFileDto
     public int? AttemptQuestionCount { get; set; }
     public int? QuestionTimerSeconds { get; set; }
     public int? AssessmentTimerSeconds { get; set; }
+    public QuestionSelectionFileDto? QuestionSelection { get; set; }
     public List<QuestionFileDto>? Questions { get; set; }
     public List<WorkedExampleFileDto>? WorkedExamples { get; set; }
     public GuidedProjectFileDto? GuidedProject { get; set; }
@@ -54,6 +55,19 @@ public sealed class AssessmentFileDto
     public DirectedProjectFileDto? DirectedProject { get; set; }
     public NavigationFileDto? Navigation { get; set; }
     public List<string>? Skills { get; set; }
+}
+
+public sealed class QuestionSelectionFileDto
+{
+    public string? Mode { get; set; }
+    public List<QuestionSelectionSlotFileDto>? Slots { get; set; }
+}
+
+public sealed class QuestionSelectionSlotFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public List<string>? QuestionIds { get; set; }
 }
 
 public sealed class ConceptLessonFileDto

@@ -1,0 +1,282 @@
+schemaVersion: 1
+id: calc2-series-tests-glossary
+title: Series Tests Glossary
+assessmentType: glossary
+categoryId: calculus-2
+subcategoryIds:
+  - series-fundamentals
+  - geometric-telescoping-series
+  - convergence-tests
+  - alternating-series
+  - absolute-conditional-convergence
+modeDefault: practice
+randomizeQuestions: true
+navigation:
+  learningGoal: learn
+  activityType: glossary
+  tags:
+    - series
+    - convergence-tests
+    - series-vocabulary
+    - test-selection
+skills:
+  - series-convergence-tests
+glossary:
+  introduction: |
+    Series tests are easier to choose when their names are tied to structural cues. This glossary emphasizes what each test is for, not just its formal statement.
+
+    ![Convergence test selection flowchart keyed by structural cues](/assessments/calc2-infinite-series/convergence-test-selection-flow.svg)
+  sections:
+    - id: foundational-series
+      title: Foundational Series Families
+      required: true
+      content: |
+        These families are direct tools and comparison targets for harder series.
+      entries:
+        - id: geometric-series
+          term: Geometric Series
+          definition: |
+            A series with a constant ratio between successive terms.
+          notation: '$\sum_{n=0}^{\infty}ar^n$'
+          examples:
+            - '$\sum 3\left(\frac12\right)^n$ converges because $|r|<1$.'
+          aliases: [geometric]
+          tags: [geometric-series, series-fundamentals]
+          drills:
+            - id: geometric-series-cloze
+              type: cloze
+              prompt: 'An infinite geometric series converges when $|r|$ is ____ than $1$.'
+              answer:
+                expected: less
+                aliases: [less than, <]
+              explanation: If $|r|\ge1$, the terms do not shrink enough for the infinite sum to settle.
+              tags: [geometric-series, convergence]
+
+        - id: p-series
+          term: p-Series
+          definition: |
+            A series of reciprocal powers whose convergence depends on the exponent.
+          notation: '$\sum_{n=1}^{\infty}\frac{1}{n^p}$'
+          examples:
+            - '$\sum\frac{1}{n^2}$ converges, but $\sum\frac{1}{n}$ diverges.'
+          aliases: [p test]
+          tags: [p-series, convergence-tests]
+          drills:
+            - id: p-series-recognition
+              type: recognition
+              prompt: Which p-series converges?
+              choices:
+                - id: a
+                  text: '$\sum\frac{1}{n^3}$'
+                - id: b
+                  text: '$\sum\frac{1}{n}$'
+                - id: c
+                  text: '$\sum\frac{1}{\sqrt{n}}$'
+                - id: d
+                  text: '$\sum 1$'
+              answer:
+                choiceId: a
+                expected: '$\sum\frac{1}{n^3}$'
+              explanation: A p-series converges only when $p>1$.
+              tags: [p-series, convergence]
+
+        - id: telescoping-series
+          term: Telescoping Series
+          definition: |
+            A series whose partial sums simplify because most middle terms cancel.
+          notation: '$\sum (b_n-b_{n+1})$'
+          examples:
+            - '$\sum_{n=1}^{\infty}\left(\frac1n-\frac1{n+1}\right)$ telescopes.'
+          aliases: [telescoping]
+          tags: [telescoping-series, partial-sums]
+          drills:
+            - id: telescoping-flashcard
+              type: flashcard
+              prompt: What makes a series telescoping?
+              answer:
+                expected: Most middle terms cancel in the partial sums.
+              explanation: Always write several partial-sum terms to see the cancellation pattern.
+              tags: [telescoping-series, partial-sums]
+
+    - id: convergence-tests
+      title: Major Convergence Tests
+      required: true
+      content: |
+        Each convergence test has a preferred habitat. Learn the cue that suggests the test.
+
+        ![A convergence test decision map organized by term structure](/assessments/calc2-infinite-series/convergence-test-decision-map.svg)
+      entries:
+        - id: nth-term-divergence-test
+          term: nth-Term Divergence Test
+          definition: |
+            A rejection test: if the terms do not approach zero, the series diverges.
+          notation: '$\lim_{n\to\infty}a_n\ne0\Rightarrow\sum a_n\text{ diverges}$'
+          examples:
+            - '$\sum\frac{n}{n+1}$ diverges because the terms approach $1$.'
+          aliases: [divergence test, term test]
+          tags: [divergence-test, convergence-tests]
+          drills:
+            - id: divergence-test-cloze
+              type: cloze
+              prompt: 'If $\lim a_n\ne0$, then $\sum a_n$ ____.' 
+              answer:
+                expected: diverges
+              explanation: Terms must approach zero for a series to have any chance of converging.
+              tags: [divergence-test, convergence-tests]
+
+        - id: integral-test
+          term: Integral Test
+          definition: |
+            Compares a positive decreasing series to an improper integral.
+          notation: '$\sum a_n$ and $\int f(x)\,dx$ share convergence behavior'
+          examples:
+            - Use it for series like $\sum\frac{1}{n\ln n}$ when the associated function is positive and decreasing.
+          aliases: [integral comparison]
+          tags: [integral-test, improper-integrals]
+          drills:
+            - id: integral-test-conditions
+              type: typed
+              prompt: Name the three usual conditions on $f(x)$ for the Integral Test.
+              answer:
+                expected: continuous positive decreasing
+                aliases:
+                  - continuous, positive, and decreasing
+              explanation: These conditions let the series terms compare cleanly with area under a curve.
+              tags: [integral-test, convergence-tests]
+
+        - id: direct-comparison-test
+          term: Direct Comparison Test
+          definition: |
+            Uses inequalities against a known convergent or divergent positive series.
+          notation: '$0\le a_n\le b_n$'
+          examples:
+            - If $0\le a_n\le\frac1{n^2}$, then $\sum a_n$ converges.
+          aliases: [comparison test]
+          tags: [comparison-test, convergence-tests]
+          drills:
+            - id: direct-comparison-flashcard
+              type: flashcard
+              prompt: What kind of evidence does direct comparison require?
+              answer:
+                expected: An inequality comparing the given positive series to a known convergent or divergent series.
+              explanation: |
+                Direction matters: smaller than convergent proves convergence; larger than divergent proves divergence.
+              tags: [comparison-test, convergence-tests]
+
+        - id: limit-comparison-test
+          term: Limit Comparison Test
+          definition: |
+            Compares large-term behavior using the limiting ratio of two positive series.
+          notation: '$\lim_{n\to\infty}\frac{a_n}{b_n}=L,\quad 0<L<\infty$'
+          examples:
+            - Rational expressions in $n$ often compare to the ratio of dominant powers.
+          aliases: [LCT]
+          tags: [limit-comparison, convergence-tests]
+          drills:
+            - id: limit-comparison-cloze
+              type: cloze
+              prompt: 'Limit comparison proves two positive series share behavior when the limiting ratio is positive and ____.' 
+              answer:
+                expected: finite
+              explanation: A positive finite ratio means the terms have the same asymptotic size.
+              tags: [limit-comparison, convergence-tests]
+
+        - id: ratio-test
+          term: Ratio Test
+          definition: |
+            A test built from the limit of successive-term ratios; especially useful for factorials and exponentials.
+          notation: '$L=\lim\left|\frac{a_{n+1}}{a_n}\right|$'
+          examples:
+            - $\sum\frac{3^n}{n!}$ is a natural ratio-test candidate.
+          aliases: [successive ratio test]
+          tags: [ratio-test, convergence-tests]
+          drills:
+            - id: ratio-test-cue
+              type: typed
+              prompt: What two expression types often signal the Ratio Test?
+              answer:
+                expected: factorials and exponentials
+                aliases:
+                  - factorial and exponential
+              explanation: Successive terms simplify cleanly when factorials or exponential powers are present.
+              tags: [ratio-test, convergence-tests]
+
+        - id: root-test
+          term: Root Test
+          definition: |
+            A test using the nth root of the absolute value of the nth term.
+          notation: '$L=\lim\sqrt[n]{|a_n|}$'
+          examples:
+            - $\sum\left(\frac{2n+1}{3n+4}\right)^n$ is a natural root-test candidate.
+          aliases: [nth-root test]
+          tags: [root-test, convergence-tests]
+          drills:
+            - id: root-test-cue
+              type: cloze
+              prompt: 'The Root Test is especially useful when the whole term is raised to the ____ power.' 
+              answer:
+                expected: nth
+                aliases: [n-th, n]
+              explanation: The nth root cancels the nth power structure.
+              tags: [root-test, convergence-tests]
+
+        - id: alternating-series-test
+          term: Alternating Series Test
+          definition: |
+            A convergence test for alternating series whose magnitudes decrease to zero.
+          notation: '$\sum (-1)^n b_n,\quad b_n\downarrow0$'
+          examples:
+            - The alternating harmonic series converges conditionally.
+          aliases: [AST]
+          tags: [alternating-series, convergence-tests]
+          drills:
+            - id: ast-conditions-cloze
+              type: cloze
+              prompt: 'The Alternating Series Test requires decreasing magnitudes and limit ____.' 
+              answer:
+                expected: zero
+                aliases: [0]
+              explanation: Alternating signs alone do not guarantee convergence.
+              tags: [alternating-series, convergence-tests]
+
+    - id: convergence-types
+      title: Types of Convergence
+      required: true
+      content: |
+        Alternating and signed series require language that distinguishes ordinary convergence from stronger absolute convergence.
+      entries:
+        - id: absolute-convergence
+          term: Absolute Convergence
+          definition: |
+            A series $\sum a_n$ converges absolutely if $\sum |a_n|$ converges.
+          notation: '$\sum |a_n|\text{ converges}$'
+          examples:
+            - Absolute convergence implies ordinary convergence.
+          aliases: [absolutely convergent]
+          tags: [absolute-convergence, convergence-types]
+          drills:
+            - id: absolute-convergence-flashcard
+              type: flashcard
+              prompt: What does absolute convergence mean?
+              answer:
+                expected: The series formed by taking absolute values of the terms converges.
+              explanation: Absolute convergence is stronger than ordinary convergence.
+              tags: [absolute-convergence, convergence-types]
+
+        - id: conditional-convergence
+          term: Conditional Convergence
+          definition: |
+            A series converges, but its absolute-value series diverges.
+          notation: '$\sum a_n\text{ converges, but }\sum |a_n|\text{ diverges}$'
+          examples:
+            - The alternating harmonic series is conditionally convergent.
+          aliases: [conditionally convergent]
+          tags: [conditional-convergence, convergence-types]
+          drills:
+            - id: conditional-convergence-cloze
+              type: cloze
+              prompt: 'A series is conditionally convergent if it converges but does not converge ____.' 
+              answer:
+                expected: absolutely
+              explanation: Conditional convergence depends on sign cancellation.
+              tags: [conditional-convergence, convergence-types]

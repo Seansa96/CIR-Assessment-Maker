@@ -52,6 +52,41 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
+    public async Task StartAsync_selects_one_ordered_variant_per_slot()
+    {
+        var assessment = TestData.Assessment(AssessmentType.Test, new[]
+        {
+            TestData.MultipleChoiceQuestion("q001a"),
+            TestData.MultipleChoiceQuestion("q001b"),
+            TestData.MultipleChoiceQuestion("q002a"),
+            TestData.MultipleChoiceQuestion("q002b"),
+            TestData.MultipleChoiceQuestion("q003a")
+        }) with
+        {
+            RandomizeQuestions = true,
+            AttemptQuestionCount = 3,
+            QuestionSelection = new QuestionSelectionDefinition(
+                QuestionSelectionMode.OrderedVariants,
+                new[]
+                {
+                    new QuestionSelectionSlotDefinition("slot-001", "First slot", new[] { "q001a", "q001b" }),
+                    new QuestionSelectionSlotDefinition("slot-002", "Second slot", new[] { "q002a", "q002b" }),
+                    new QuestionSelectionSlotDefinition("slot-003", "Third slot", new[] { "q003a" })
+                })
+        };
+        var service = CreateAttemptService(assessment);
+
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+        var results = await service.GetResultsAsync(attempt.Id);
+
+        Assert.Equal(3, attempt.QuestionOrder.Count);
+        Assert.Contains(attempt.QuestionOrder[0], new[] { "q001a", "q001b" });
+        Assert.Contains(attempt.QuestionOrder[1], new[] { "q002a", "q002b" });
+        Assert.Equal("q003a", attempt.QuestionOrder[2]);
+        Assert.Equal(attempt.QuestionOrder, results.Questions.Select(question => question.QuestionId));
+    }
+
+    [Fact]
     public async Task PauseAsync_persists_attempt_and_removes_active_session()
     {
         var assessment = TestData.Assessment(questions: new[] { TestData.MultipleChoiceQuestion("q001") });
@@ -284,6 +319,37 @@ public sealed class AttemptFlowTests
         await attemptService.CompleteAsync(attempt.Id);
 
         await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+    }
+
+    [Fact]
+    public async Task Scored_attempt_shows_expected_answers_for_review_once_all_questions_are_answered()
+    {
+        var assessment = TestData.Assessment(AssessmentType.Test, new[]
+        {
+            TestData.MultipleChoiceQuestion("q001"),
+            TestData.FreeResponseQuestion("q002")
+        });
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Scored);
+
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q001", "a", Array.Empty<string>(), null, null, null));
+
+        var partialResults = await service.GetResultsAsync(attempt.Id);
+        Assert.Null(partialResults.Questions.Single(question => question.QuestionId == "q002").ExpectedAnswer);
+
+        await service.SubmitAnswerAsync(
+            attempt.Id,
+            new SubmittedAnswer("q002", null, Array.Empty<string>(), "", null, null));
+
+        var reviewResults = await service.GetResultsAsync(attempt.Id);
+        var freeResponseResult = reviewResults.Questions.Single(question => question.QuestionId == "q002");
+
+        Assert.Equal(AttemptStatus.InProgress, reviewResults.Status);
+        Assert.False(string.IsNullOrWhiteSpace(freeResponseResult.ExpectedAnswer));
+        Assert.NotEmpty(freeResponseResult.KeyPoints);
+        Assert.True(freeResponseResult.IsPendingSelfCheck);
     }
 
     [Fact]

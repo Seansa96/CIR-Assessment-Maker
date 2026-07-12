@@ -97,6 +97,100 @@ public sealed class FileAssessmentRepositoryTests
     }
 
     [Fact]
+    public async Task SaveAsync_round_trips_ordered_variant_question_selection_and_lists_slot_count()
+    {
+        var dataRoot = CreateDataRoot();
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+        var assessment = TestData.Assessment(AssessmentType.Test, new[]
+        {
+            TestData.MultipleChoiceQuestion("q001a"),
+            TestData.MultipleChoiceQuestion("q001b"),
+            TestData.MultipleChoiceQuestion("q002a")
+        }) with
+        {
+            Id = "ordered-variant-bank-test",
+            QuestionSelection = new QuestionSelectionDefinition(
+                QuestionSelectionMode.OrderedVariants,
+                new[]
+                {
+                    new QuestionSelectionSlotDefinition("slot-001", "First", new[] { "q001a", "q001b" }),
+                    new QuestionSelectionSlotDefinition("slot-002", "Second", new[] { "q002a" })
+                })
+        };
+
+        await repository.SaveAsync(assessment);
+        var loaded = await repository.GetByIdAsync("ordered-variant-bank-test");
+        var summary = Assert.Single(await repository.ListByCategoryAsync(assessment.CategoryId));
+
+        Assert.NotNull(loaded);
+        Assert.Equal(QuestionSelectionMode.OrderedVariants, loaded.QuestionSelection?.Mode);
+        Assert.Equal(2, loaded.QuestionSelection?.Slots.Count);
+        Assert.Equal(new[] { "q001a", "q001b" }, loaded.QuestionSelection!.Slots[0].QuestionIds);
+        Assert.Equal(2, summary.QuestionCount);
+        Assert.Equal(3, summary.AuthoredQuestionCount);
+        Assert.Equal(2, summary.AttemptQuestionCount);
+    }
+
+    [Fact]
+    public async Task GetByIdAsync_defaults_question_selection_with_slots_to_ordered_variants()
+    {
+        var dataRoot = CreateDataRoot();
+        await File.WriteAllTextAsync(Path.Combine(dataRoot, "assessments", "ordered-default-test.yaml"),
+            """
+            schemaVersion: 1
+            id: ordered-default-test
+            title: Ordered Default Test
+            assessmentType: test
+            categoryId: calculus-2
+            subcategoryIds:
+              - integration-techniques
+            modeDefault: practice
+            randomizeQuestions: true
+            questionSelection:
+              slots:
+                - id: slot-001
+                  questionIds:
+                    - q001a
+                    - q001b
+            questions:
+              - id: q001a
+                type: multipleChoice
+                prompt: First variant A
+                choices:
+                  - id: a
+                    text: A
+                  - id: b
+                    text: B
+                answer:
+                  choiceId: a
+                explanation: A is correct.
+              - id: q001b
+                type: multipleChoice
+                prompt: First variant B
+                choices:
+                  - id: a
+                    text: A
+                  - id: b
+                    text: B
+                answer:
+                  choiceId: b
+                explanation: B is correct.
+            """);
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+
+        var loaded = await repository.GetByIdAsync("ordered-default-test");
+        var validation = await repository.ValidateFileAsync("ordered-default-test.yaml");
+
+        Assert.NotNull(loaded);
+        Assert.Equal(QuestionSelectionMode.OrderedVariants, loaded.QuestionSelection?.Mode);
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Fact]
     public async Task SaveAsync_round_trips_code_question_fields()
     {
         var dataRoot = CreateDataRoot();
@@ -401,6 +495,9 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-parametric-integrals-worked-example")]
     [InlineData("calc2-parametric-integrals-deep-worked-example")]
     [InlineData("calc2-parametric-cartesian-trig-identity-worked-example")]
+    [InlineData("calc2-parametric-conic-orientation-recall")]
+    [InlineData("calc2-parametric-conic-orientation-easy-quiz")]
+    [InlineData("calc2-parametric-conic-orientation-hard-quiz")]
     [InlineData("calc2-polar-calculus-worked-example")]
     [InlineData("calc2-polar-cardioid-horizontal-vertical-tangents-worked-example")]
     [InlineData("calc2-polar-limacon-total-area-worked-example")]
@@ -466,6 +563,11 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-series-foundations-deep-worked-example")]
     [InlineData("calc2-convergence-tests-deep-worked-example")]
     [InlineData("calc2-power-taylor-error-deep-worked-example")]
+    [InlineData("calc2-polar-coordinate-representation-worked-example")]
+    [InlineData("calc2-polar-area-bounds-worked-example")]
+    [InlineData("calc2-power-series-radius-endpoints-worked-example")]
+    [InlineData("calc2-taylor-series-from-known-series-worked-example")]
+    [InlineData("calc2-convergence-test-selection-worked-example")]
     [InlineData("calc2-intro-to-sequences-worked-example")]
     [InlineData("calc2-sequences-glossary")]
     [InlineData("os-introduction-system-calls-concept-lesson")]
