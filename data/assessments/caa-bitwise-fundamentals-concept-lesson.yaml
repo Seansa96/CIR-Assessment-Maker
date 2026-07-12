@@ -17,12 +17,51 @@ navigation:
 skills:
 - caa-bitwise-fundamentals
 lesson:
-  introduction: 'Bitwise algorithms combine tiny local truths: AND keeps, OR sets, XOR toggles, NOT flips, and shifts move fields into position.'
+  introduction: |
+    Bitwise algorithms combine tiny local truths:
+
+    - AND keeps selected bits.
+    - OR sets selected bits.
+    - XOR toggles selected bits.
+    - NOT flips bits inside the chosen word width.
+    - Shifts move bit fields into position.
+
+    The reason this matters is that many low-level algorithms are not really "doing math" first. They are editing a fixed-width row of switches. Before using a trick, name what each switch means, which switches are allowed to change, and which switches must stay untouched.
   sections:
   - id: bits-mental-model
-    title: Mental model
+    title: Name the Representation Before the Trick
     required: true
-    content: Bitwise Fundamentals problems should begin with the representation contract. Decide the word width, which bits matter, and which operation preserves the property you want.
+    content: |
+      Bitwise Fundamentals problems should begin with the representation contract:
+
+      - word width,
+      - signed or unsigned interpretation,
+      - bit numbering convention,
+      - what each bit or bit field represents.
+
+      Example: suppose an 8-bit permissions byte is arranged like this:
+
+      ```text
+      bit:      7 6 5 4 3 2 1 0
+      meaning:  - - - - A X W R
+      ```
+
+      Here:
+
+      - bit `0` means read permission,
+      - bit `1` means write permission,
+      - bit `2` means execute permission,
+      - bit `3` means admin permission.
+
+      If the value is:
+
+      ```text
+      00001011
+      ```
+
+      then read, write, and admin are on, while execute is off.
+
+      Naming the representation matters because the same raw pattern can mean different things in different contracts. In a 4-bit signed integer, `1000` might mean the most negative value. In a permissions byte, bit `3` might simply mean admin access. A bit trick is only meaningful after the contract is clear.
     check:
       id: bits-mental-model-check
       title: Check understanding
@@ -39,11 +78,196 @@ lesson:
         text: The source textbook chapter
       answer:
         choiceId: a
-      explanation: The same expression may behave differently under a different width or interpretation.
-  - id: bits-invariant
-    title: Invariant
+      explanation: The same raw bit pattern may behave differently under a different width, signedness, or field meaning.
+  - id: bit-operators-as-edits
+    title: Operators as Bit Edits
     required: true
-    content: 'A good bitwise fundamentals technique has an invariant: the thing that remains true after each transformation. Track that invariant before memorizing the expression.'
+    content: |
+      The basic bitwise operators are editing tools. A mask says which bits the tool is allowed to touch.
+
+      Suppose:
+
+      ```text
+      flags = 00001011
+      READ  = 00000001
+      WRITE = 00000010
+      EXEC  = 00000100
+      ADMIN = 00001000
+      ```
+
+      To test whether execute is enabled, use AND:
+
+      ```text
+      flags & EXEC
+
+      00001011
+      00000100
+      --------
+      00000000
+      ```
+
+      AND keeps only the selected bit. Since the result is zero, execute is not enabled.
+
+      To set execute, use OR:
+
+      ```text
+      flags | EXEC
+
+      00001011
+      00000100
+      --------
+      00001111
+      ```
+
+      OR turns the selected bit on and leaves already-on bits on.
+
+      To toggle admin, use XOR:
+
+      ```text
+      flags ^ ADMIN
+
+      00001011
+      00001000
+      --------
+      00000011
+      ```
+
+      XOR flips the selected bit. Admin was on, so it becomes off.
+
+      To clear write, use AND with an inverted mask:
+
+      ```text
+      flags & ~WRITE
+
+      00001011
+      11111101
+      --------
+      00001001
+      ```
+
+      The abstraction is simple: a bitwise operator edits only the bits selected by the mask. That is why masks should be named. `flags & ~0b10` is legal, but `flags & ~WRITE` tells the reader what bit is being cleared.
+    check:
+      id: bit-operators-as-edits-check
+      title: Check understanding
+      type: multipleChoice
+      prompt: Which operation best describes "turn this bit on without disturbing the other bits"?
+      choices:
+      - id: a
+        text: OR with a mask for that bit
+      - id: b
+        text: XOR with all bits set
+      - id: c
+        text: Shift the whole word until the bit disappears
+      - id: d
+        text: AND with zero
+      answer:
+        choiceId: a
+      explanation: OR with a mask sets selected bits to one while preserving unrelated bits.
+  - id: shifts-as-positioning
+    title: Shifts Move Fields Into Position
+    required: true
+    content: |
+      Shifts are not only fast multiplication or division. In bit manipulation, shifts are often about positioning.
+
+      Suppose a byte stores two 4-bit values:
+
+      ```text
+      packed = 10110010
+               high low
+      ```
+
+      The high field is `1011`; the low field is `0010`.
+
+      To read the high field, shift it down:
+
+      ```text
+      packed >> 4
+
+      10110010 >> 4 = 00001011
+      ```
+
+      To read only the low field, mask it:
+
+      ```text
+      packed & 00001111
+
+      10110010
+      00001111
+      --------
+      00000010
+      ```
+
+      A common bug is shifting without masking:
+
+      ```text
+      // Buggy if other high bits can leak into the result.
+      low = packed;
+      ```
+
+      The safer idea is:
+
+      ```text
+      low = packed & LOW_MASK;
+      high = (packed >> 4) & LOW_MASK;
+      ```
+
+      The abstraction is "move the field to where you want it, then mask away anything that is not part of the field."
+    check:
+      id: shifts-as-positioning-check
+      title: Check understanding
+      type: multipleChoice
+      prompt: Why do shift-and-mask patterns often appear together?
+      choices:
+      - id: a
+        text: The shift moves a field into position, and the mask removes unrelated bits.
+      - id: b
+        text: Shifts automatically delete all unrelated bits.
+      - id: c
+        text: Masks only work after addition.
+      - id: d
+        text: They are always slower than decimal arithmetic.
+      answer:
+        choiceId: a
+      explanation: Shifting changes position; masking selects the field that is supposed to remain.
+  - id: bits-invariant
+    title: Use an Invariant to Explain the Trick
+    required: true
+    content: |
+      A good bitwise technique has an invariant: the thing that remains true after each transformation. Track that invariant before memorizing the expression.
+
+      Example: to clear the rightmost set bit:
+
+      ```text
+      x = 00101100
+      x - 1 = 00101011
+      x & (x - 1)
+      ```
+
+      The result is:
+
+      ```text
+      00101100
+      00101011
+      --------
+      00101000
+      ```
+
+      What stayed true?
+
+      - Bits to the left of the rightmost set bit stayed the same.
+      - The rightmost set bit changed from `1` to `0`.
+      - Lower bits do not matter because AND with the original zeroes clears them.
+
+      This invariant is why the expression is useful in loops:
+
+      ```text
+      count = 0
+      while x != 0:
+          x = x & (x - 1)
+          count = count + 1
+      ```
+
+      Each iteration removes exactly one set bit. That is the reason the loop counts set bits.
     check:
       id: bits-invariant-check
       title: Check understanding
@@ -62,9 +286,52 @@ lesson:
         choiceId: a
       explanation: The invariant is the reason the manipulation is trustworthy.
   - id: bits-edge-cases
-    title: Edge cases
+    title: Edge Cases and Trap Patterns
     required: true
-    content: Most bitwise fundamentals bugs appear at zero, all-ones patterns, sign boundaries, exact powers of two, and maximum-width shifts.
+    content: |
+      Most bitwise fundamentals bugs appear at:
+
+      - zero,
+      - all-ones patterns,
+      - sign boundaries,
+      - exact powers of two,
+      - maximum-width shifts.
+
+      Example trap: power-of-two checks.
+
+      ```text
+      isPowerOfTwo(x):
+          return (x & (x - 1)) == 0
+      ```
+
+      This looks plausible because powers of two have exactly one set bit:
+
+      ```text
+      00001000
+      ```
+
+      Clearing the rightmost set bit gives zero. But `x=0` also passes the expression:
+
+      ```text
+      x     = 00000000
+      x - 1 = 11111111   // in a fixed-width unsigned model
+      x & (x - 1) = 00000000
+      ```
+
+      So the safer version names the edge condition:
+
+      ```text
+      isPowerOfTwo(x):
+          return x != 0 and (x & (x - 1)) == 0
+      ```
+
+      Another trap is NOT without a word width. In an 8-bit model:
+
+      ```text
+      ~00000010 = 11111101
+      ```
+
+      But in a wider machine word, the flipped bits extend across the whole word. This is why examples should name width when using `~mask`.
     check:
       id: bits-edge-cases-check
       title: Check understanding

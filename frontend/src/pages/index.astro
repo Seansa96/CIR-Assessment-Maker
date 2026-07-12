@@ -537,12 +537,18 @@ import "../styles/global.css";
         tests?: CodeQuestionTest[];
         explanation?: string | null;
         circuitQuestion?: CircuitQuestionDefinition;
+        graphingQuestion?: GraphingQuestionDefinition;
         parts?: Question[];
       }
 
       interface CodeQuestionTest {
         input: string;
         expected: string;
+      }
+
+      interface GraphingQuestionDefinition {
+        gridType?: "cartesian" | "polar";
+        interactionMode?: "drag" | "equation" | "hybrid";
       }
 
       interface WorkedExample {
@@ -1491,37 +1497,86 @@ import "../styles/global.css";
            }
         });
       }
-
       const RECOMMENDED_PATHS: Record<string, { label: string; desc: string }[]> = {
-        "physics-1": [
-          { label: "Physics Kinematics", desc: "1D and 2D motion basics" },
-          { label: "Physics Dynamics", desc: "Forces and Newton's laws" },
-          { label: "Physics Energy & Momentum", desc: "Conservation laws" },
-          { label: "Physics Rotation", desc: "Rotational kinematics and dynamics" }
+        "anatomy-and-physiology": [
+          { label: "Anatomy and Physiology Foundations", desc: "Chemical, cellular, and tissue-level organization of the human body." },
+          { label: "Anatomy and Physiology Body Systems", desc: "Structure, function, regulation, and interaction of major human body systems." }
         ],
-        "calculus-2": [
-          { label: "Calculus Integration", desc: "Techniques for evaluating integrals" },
-          { label: "Calculus Geometric Applications", desc: "Area and volume" },
-          { label: "Calculus Physical Applications", desc: "Work, mass, pressure" },
-          { label: "Calculus Infinite Series", desc: "Sequences, series, Taylor" }
+        "art-of-problem-solving": [
+          { label: "Olympiad Mathematics", desc: "Advanced problem solving, theorems, and configurations for competitive math (AMC/AIME/Olympiad)." },
+          { label: "AoPS Algebra Foundations", desc: "Exponents, equations, number systems, functions, inequalities, operations, and sequences as problem-solving tools." },
+          { label: "AoPS Geometry Foundations", desc: "Circle, angle, triangle, polygon, coordinate, transformation, and three-dimensional geometry problem solving." },
+          { label: "AoPS Discrete Math and Probability", desc: "Counting, statistics, probability, set notation, and finite structure reasoning." },
+          { label: "AoPS Proof and Mixed Problem Solving", desc: "Proof methods, counterexamples, pigeonhole reasoning, and mixed contest-style synthesis." }
+        ],
+        "aspnet": [
+          { label: "Web Application Design", desc: "Request lifecycles, routing, dependency injection, validation, persistence, and security boundaries." }
         ],
         "c++": [
-          { label: "Programming Fundamentals", desc: "Variables, flow, functions" },
-          { label: "Object-Oriented C++", desc: "Classes, encapsulation, OOP" },
-          { label: "Systems Programming", desc: "Memory, networking, file I/O" }
+          { label: "Programming Fundamentals", desc: "Syntax, control flow, functions, object-oriented design, collections, and testing." },
+          { label: "Systems Programming", desc: "Concurrency, file I/O, networking, asynchronous work, and lower-level program behavior." }
         ],
-        "python": [
-          { label: "Programming Fundamentals", desc: "Python basics and OOP" },
-          { label: "Systems Programming", desc: "Concurrency and I/O" }
+        "calculus-1": [
+          { label: "Calculus 1 Foundations", desc: "Real-number order, set language, functions, bounds, and sequence notation used throughout single-variable calculus." },
+          { label: "Calculus 1 Limits and Continuity", desc: "Limit definitions, one-sided behavior, continuity, discontinuities, and local function behavior." },
+          { label: "Calculus 1 Differentiation", desc: "Derivative definitions, derivative rules, classical differential-calculus theorems, and graph interpretation." },
+          { label: "Calculus 1 Integration", desc: "Riemann sums, integrability, signed area, accumulation, and the bridge to antiderivatives." }
         ],
-        "dsa": [
-          { label: "Data Structures", desc: "Core data types and collections" },
-          { label: "Algorithms & Complexity", desc: "Sorting, searching, Big-O" }
+        "calculus-2": [
+          { label: "Calculus Integration", desc: "Techniques for evaluating integrals and choosing an efficient integration strategy." },
+          { label: "Calculus Geometric Applications", desc: "Geometric interpretations and applications of accumulation, area, and volume." },
+          { label: "Calculus Physical Applications", desc: "Using integration to solve problems in physics, mass, and probability." },
+          { label: "Calculus Infinite Series", desc: "Sequence limits, infinite sums, convergence tests, power series, Taylor/Maclaurin expansions, and approximation error." },
+          { label: "Parametric and Polar Calculus", desc: "Parametric motion, parametric derivatives and integrals, polar graph structure, and polar calculus techniques." }
+        ],
+        "chemistry": [
+          { label: "Chemistry Foundations", desc: "Measurement, matter, atomic structure, periodic behavior, bonding, and compounds." },
+          { label: "Chemistry Reactions and Change", desc: "Chemical reactions, quantitative change, energy, equilibrium, and electrochemistry." },
+          { label: "Light and Electronic Structure", desc: "Electromagnetic radiation, Bohr model, quantum mechanics, and electron configurations." },
+          { label: "Chemical Bonds and Compounds", desc: "Lewis structures, ionic/covalent bonding, nomenclature, and aqueous solutions." }
+        ],
+        "computer-arithmetic-algorithms": [
+          { label: "Machine Integers and Bit Models", desc: "Integer representation, word size, signedness, masks, shifts, and two's-complement intuition." },
+          { label: "Bit Manipulation Fundamentals", desc: "Rightmost-bit tricks, setting, clearing, toggling, extracting, Boolean identities, and branchless patterns." },
+          { label: "Power-of-Two and Alignment Algorithms", desc: "Detecting powers of two, rounding to boundaries, alignment, and boundary crossing." },
+          { label: "Overflow, Bounds, and Safe Arithmetic", desc: "Overflow detection, saturating arithmetic, arithmetic bounds, average without overflow, and multiword operations." },
+          { label: "Population Counts and Bit Scans", desc: "Popcount, parity, leading zeros, trailing zeros, and first or last set-bit location." },
+          { label: "Word Searching and Packed Data", desc: "Zero-byte detection, byte-wise masks, packed comparisons, and bit-run searches." },
+          { label: "Bit Permutations and Rearrangement", desc: "Bit/byte reversal, shuffling, compress/extract, expand/insert, and bit matrix transpose." },
+          { label: "Integer Multiplication and Division", desc: "Multiword multiplication, multiplication by constants, division algorithms, division by constants, and magic-number intuition." },
+          { label: "Integer Elementary Functions", desc: "Integer square roots, logarithms, exponentiation, and refinement methods." },
+          { label: "Encodings, Checksums, and Error Correction", desc: "Gray code, CRC concepts, Hamming codes, and SEC-DED intuition." },
+          { label: "Floating-Point and Approximation", desc: "IEEE layout, conversion intuition, bitwise comparison, and approximation capstones." }
         ],
         "containerization": [
-          { label: "Container Lifecycle", desc: "Container concepts, CLI basics, and troubleshooting" },
-          { label: "Container Architecture & Networking", desc: "Running applications and connecting containers" },
-          { label: "Container Data & Workflows", desc: "Bind mounts, permissions, and capstone projects" }
+          { label: "Container Lifecycle", desc: "Understanding how containers run, start, stop, and persist data." },
+          { label: "Container Architecture & Networking", desc: "Understanding images vs containers, and how containers network with each other and the host." },
+          { label: "Container Data & Workflows", desc: "Managing persistent data with volumes and orchestrating multi-container projects." }
+        ],
+        "cpp-programming": [
+          { label: "C++ Basics", desc: "Introduction to C++, variables, and basic input/output." },
+          { label: "Control Flow and Basic Containers", desc: "Loops, arrays, vectors, and handling exceptions." },
+          { label: "Algorithms and Lambdas", desc: "Standard library algorithms, lambdas, and the Ranges library." },
+          { label: "Files, Strings, and Formatting", desc: "Working with the filesystem, standard strings, and formatting." },
+          { label: "Classes and Memory Management", desc: "Object-oriented programming and smart pointers." },
+          { label: "Advanced C++ and STL", desc: "Templates, variant, unordered_map, and advanced STL features." }
+        ],
+        "csharp": [
+          { label: "Programming Fundamentals", desc: "Syntax, control flow, functions, object-oriented design, collections, and testing." },
+          { label: "Systems Programming", desc: "Concurrency, file I/O, networking, asynchronous work, and lower-level program behavior." }
+        ],
+        "dsa": [
+          { label: "Data Structures", desc: "Core data types, collections, and structural organization of data." },
+          { label: "Algorithms & Complexity", desc: "Algorithm analysis, sorting, searching, recursion, and dynamic programming." }
+        ],
+        "electrical-engineering": [
+          { label: "Electrical Engineering Systems", desc: "DSP, Power Systems, Transformers, and Electrical Material Science." }
+        ],
+        "electronics-and-circuits": [
+          { label: "DC Circuits & Fundamentals", desc: "Basic circuit variables, circuit elements, resistive circuits, and techniques of circuit analysis." },
+          { label: "Active Elements & Energy Storage", desc: "Operational amplifiers, capacitors, inductors, and first and second order transient responses." },
+          { label: "AC Analysis & Power", desc: "Sinusoidal steady-state analysis, AC power calculations, and balanced three-phase circuits." },
+          { label: "Advanced Analysis & Frequency Domains", desc: "Laplace transform, frequency selective circuits, active filters, Fourier series and transform, and two-port networks." }
         ],
         "geometry": [
           { label: "Geometry Foundations", desc: "Fundamental concepts of points, lines, angles, and basic geometric reasoning." },
@@ -1539,7 +1594,33 @@ import "../styles/global.css";
           { label: "Orthogonality And Approximation", desc: "Dot products, orthogonal bases, projections, and least squares solutions." },
           { label: "Eigenstructure And Diagonalization", desc: "Eigenvalues, eigenvectors, characteristic equations, and diagonalizing matrices." },
           { label: "Linear Algebra Applications", desc: "Inner product spaces and real-world applications of linear algebra concepts." }
-        ]
+        ],
+        "operating-systems": [
+          { label: "OS Foundations and Interfaces", desc: "Operating-system roles, hardware context, system calls, APIs, kernel boundaries, and structural design." },
+          { label: "OS Processes and Concurrency", desc: "Processes, threads, IPC, synchronization, scheduling, and deadlock reasoning." },
+          { label: "OS Memory, Storage, and I/O", desc: "Address spaces, memory allocation, virtual memory, file systems, and device I/O." },
+          { label: "OS Virtualization, Parallelism, and Security", desc: "Virtual machines, cloud abstractions, multiprocessor systems, and security mechanisms." },
+          { label: "OS Case Studies and Design", desc: "UNIX/Linux/Android, Windows, and operating-system design tradeoffs." }
+        ],
+        "physics-1": [
+          { label: "Physics Kinematics", desc: "Describing motion with position, velocity, acceleration, vectors, and measurement." },
+          { label: "Physics Dynamics", desc: "Forces, Newton's laws, circular motion, friction, and the construction of force models." },
+          { label: "Physics Energy & Momentum", desc: "Conservation laws, work-energy theorem, and collisions." },
+          { label: "Physics Rotation", desc: "Rotational kinematics, dynamics, torque, and angular momentum." }
+        ],
+        "precalculus": [
+          { label: "Trigonometric Models and Coordinates", desc: "Trigonometric functions, vectors, polar coordinates, parametric models, and complex numbers." },
+          { label: "Precalculus Functions", desc: "Function families, transformations, algebraic models, sequences, and limit intuition." }
+        ],
+        "python": [
+          { label: "Programming Fundamentals", desc: "Syntax, control flow, functions, object-oriented design, collections, and testing." },
+          { label: "Systems Programming", desc: "Concurrency, file I/O, networking, asynchronous work, and lower-level program behavior." }
+        ],
+        "trigonometry": [
+          { label: "Trigonometric Identities", desc: "Identity recognition, manipulation, and triangle-law relationships." },
+          { label: "Trigonometric Models and Coordinates", desc: "Trigonometric functions, vectors, polar coordinates, parametric models, and complex numbers." },
+          { label: "Olympiad Mathematics", desc: "Advanced problem solving, theorems, and configurations for competitive math (AMC/AIME/Olympiad)." }
+        ],
       };
 
       function renderRecommendedPath(subjectId: string) {
@@ -5381,10 +5462,28 @@ import "../styles/global.css";
         }
 
         if (question.type === "graphingResponse") {
-          return `
-            <div class="graphing-editor-shell">
-              <p class="input-help"><strong>Graphing Tool:</strong> Select a tool and click on the grid to place points (e.g. 2 for a line/circle/parabola, 3 for an ellipse). You can drag placed points or the shape itself to adjust it.</p>
+          const def = question.graphingQuestion || { gridType: "cartesian", interactionMode: "drag" };
+          const isEquationMode = def.interactionMode === "equation" || def.interactionMode === "hybrid";
+          const isDragMode = def.interactionMode === "drag" || def.interactionMode === "hybrid";
+          const answer = submittedAnswer?.graphingAnswer;
+          const initialExpression = answer?.expression || "";
+
+          let equationHtml = "";
+          if (isEquationMode) {
+            equationHtml = `
+              <div class="field graphing-equation-field">
+                <label for="${idPrefix}graphing-equation">Equation</label>
+                <math-field id="${idPrefix}graphing-equation" virtual-keyboard-mode="manual" style="width: 100%; font-size: 1.2rem; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">${escapeHtml(initialExpression)}</math-field>
+              </div>
+            `;
+          }
+
+          let toolbarHtml = "";
+          if (isDragMode) {
+            toolbarHtml = `
+              <p class="input-help"><strong>Graphing Tool:</strong> Select a tool, then click and drag on the grid to draw the shape. You can drag placed points or the shape itself using the Select tool.</p>
               <div class="graphing-toolbar">
+                <button type="button" class="graph-btn" data-tool="select">Select/Move</button>
                 <button type="button" class="graph-btn" data-tool="point">Point</button>
                 <button type="button" class="graph-btn" data-tool="line">Line</button>
                 <button type="button" class="graph-btn" data-tool="circle">Circle</button>
@@ -5393,8 +5492,15 @@ import "../styles/global.css";
                 <button type="button" class="graph-btn secondary" data-tool="undo">Undo Point</button>
                 <button type="button" class="graph-btn danger-light" data-tool="clear">Clear All</button>
               </div>
+            `;
+          }
+
+          return `
+            <div class="graphing-editor-shell">
+              ${equationHtml}
+              ${toolbarHtml}
               <div id="${idPrefix}graphing-editor-mount" class="graphing-mount jxgbox" style="width:500px; height:500px; max-width:100%; border:1px solid #ccc; border-radius:4px; margin-top:8px;"></div>
-              <input type="hidden" id="${idPrefix}graphing-response" name="${idPrefix}graphingAnswer" value="${escapeHtml(JSON.stringify(submittedAnswer?.graphingAnswer || null))}" />
+              <input type="hidden" id="${idPrefix}graphing-response" name="${idPrefix}graphingAnswer" value="${escapeHtml(JSON.stringify(answer || null))}" />
             </div>
           `;
         }
@@ -5823,9 +5929,10 @@ import "../styles/global.css";
         const container = document.querySelector<HTMLElement>(`#${idPrefix}graphing-editor-mount`);
         if (!container) return;
 
-        const isReadOnly = state.attempt?.status === "completed" || state.attempt?.mode === "scored";
+        const isReadOnly = state.attempt?.status === "completed";
 
-        const canvas = new GraphingCanvas(container, isReadOnly);
+        const def = question.graphingQuestion || { gridType: "cartesian", interactionMode: "drag" };
+        const canvas = new GraphingCanvas(container, isReadOnly, def);
         activeWidgets.push(canvas);
         activeGraphingCanvases.set(idPrefix, canvas);
 
@@ -5835,6 +5942,14 @@ import "../styles/global.css";
 
         if (!isReadOnly) {
           const shell = container.closest(".graphing-editor-shell");
+          const mathField = shell?.querySelector<any>(`#${idPrefix}graphing-equation`);
+          
+          if (mathField) {
+            mathField.addEventListener("input", () => {
+              canvas.setEquation(mathField.value);
+            });
+          }
+
           shell?.querySelectorAll(".graph-btn").forEach(btn => {
             btn.addEventListener("click", (e) => {
               const target = e.currentTarget as HTMLButtonElement;

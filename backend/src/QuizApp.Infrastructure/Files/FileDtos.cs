@@ -402,6 +402,7 @@ public sealed class QuestionFileDto
     public string? StarterCode { get; set; }
     public List<CodeQuestionTestFileDto>? Tests { get; set; }
     public CircuitQuestionFileDto? CircuitQuestion { get; set; }
+    public GraphingQuestionFileDto? GraphingQuestion { get; set; }
     public List<string>? Skills { get; set; }
 }
 
@@ -549,6 +550,13 @@ public sealed class ExpectedValueFileDto
 }
 
 // ─── Graphing DTOs ───────────────────────────────────────────────────────────
+
+public sealed class GraphingQuestionFileDto
+{
+    public string? GridType { get; set; }
+    public string? InteractionMode { get; set; }
+}
+
 
 public sealed class GraphingAnswerFileDto
 {

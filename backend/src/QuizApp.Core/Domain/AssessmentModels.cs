@@ -447,6 +447,7 @@ public sealed record QuestionDefinition(
 {
     public CodeQuestionDefinition? CodeQuestion { get; init; }
     public CircuitQuestionDefinition? CircuitQuestion { get; init; }
+    public GraphingQuestionDefinition? GraphingQuestion { get; init; }
     public IReadOnlyList<MultipartPartDefinition> Parts { get; init; } = Array.Empty<MultipartPartDefinition>();
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
@@ -575,6 +576,11 @@ public sealed record AssessmentSummary(
     public IReadOnlyList<string> Tags { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
+
+public sealed record GraphingQuestionDefinition(
+    string GridType = "cartesian",
+    string InteractionMode = "drag"
+);
 
 public sealed record CircuitQuestionDefinition(
     int SchemaVersion,

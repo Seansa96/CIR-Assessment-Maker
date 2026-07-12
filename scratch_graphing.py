@@ -1,10 +1,4 @@
-import JXG from 'jsxgraph';
-import { ComputeEngine } from '@cortex-js/compute-engine';
-
-export interface GraphingConfig {
-    gridType?: 'cartesian' | 'polar';
-    interactionMode?: 'drag' | 'equation' | 'hybrid';
-}
+content = """import JXG from 'jsxgraph';
 
 export interface GraphPoint {
     x: number;
@@ -28,39 +22,20 @@ export class GraphingCanvas {
     private activeTool: GraphShapeTool = null;
     private isReadonly: boolean = false;
     private isDrawing: boolean = false;
-    private config: GraphingConfig;
-    private expression: string = '';
-    private ce = new ComputeEngine();
 
-    constructor(container: HTMLElement, readonly: boolean = false, config: GraphingConfig = {}) {
+    constructor(container: HTMLElement, readonly: boolean = false) {
         this.containerElement = container;
         this.isReadonly = readonly;
-        this.config = config;
         
-        const isPolar = this.config.gridType === 'polar';
-
         // Initialize board
         this.board = JXG.JSXGraph.initBoard(this.containerElement.id, {
             boundingbox: [-10, 10, 10, -10],
-            axis: !isPolar,
-            grid: !isPolar,
+            axis: true,
+            grid: true,
             showCopyright: false,
             pan: { enabled: !readonly },
             zoom: { enabled: !readonly }
         });
-
-        if (isPolar) {
-            // Draw polar grid
-            for (let r = 1; r <= 15; r++) {
-                this.board.create('circle', [[0,0], r], { strokeColor: '#ccc', dash: 1, strokeWidth: 1 });
-            }
-            for (let a = 0; a < 2 * Math.PI; a += Math.PI / 6) {
-                this.board.create('line', [[0,0], [Math.cos(a), Math.sin(a)]], { strokeColor: '#ccc', dash: 1, strokeWidth: 1 });
-            }
-            // Add crosshairs
-            this.board.create('axis', [[0,0], [1,0]]);
-            this.board.create('axis', [[0,0], [0,1]]);
-        }
 
         if (!this.isReadonly) {
             this.board.on('down', this.handleDown.bind(this));
@@ -84,8 +59,8 @@ export class GraphingCanvas {
             i = 0;
         }
         const coords = this.board.getUsrCoordsOfMouse(e, i);
-        if (!coords || coords.length < 2) return null;
-        return { x: coords[0], y: coords[1] };
+        if (!coords || !coords.usrCoords) return null;
+        return { x: coords.usrCoords[1], y: coords.usrCoords[2] };
     }
 
     private handleDown(e: any) {
@@ -180,96 +155,19 @@ export class GraphingCanvas {
         this.clear();
     }
 
-    public setEquation(latex: string) {
-        if (this.isReadonly) return;
-        this.clear();
-        this.expression = latex;
-        this.currentShape = 'equation';
-
-        if (!latex.trim()) {
-            this.board.update();
-            return;
-        }
-
-        try {
-            // If they wrote r= or y=, just evaluate the RHS.
-            let parseStr = latex;
-            if (parseStr.includes('=')) {
-                parseStr = parseStr.split('=')[1];
-            }
-            
-            const expr = this.ce.parse(parseStr);
-            const isPolar = this.config.gridType === 'polar';
-            
-            // Sample points for grading
-            const numSamples = 500;
-            const tMin = isPolar ? 0 : -10;
-            const tMax = isPolar ? 4 * Math.PI : 10;
-            const dt = (tMax - tMin) / numSamples;
-            
-            for (let i = 0; i <= numSamples; i++) {
-                const t = tMin + i * dt;
-                const val = Number(expr.subs({ "t": t, "x": t, "\\theta": t, "theta": t }).N().value);
-                if (!isNaN(val)) {
-                    let x = isPolar ? val * Math.cos(t) : t;
-                    let y = isPolar ? val * Math.sin(t) : val;
-                    // Inject invisible points for backend sampling grader!
-                    const p = this.board.create('point', [x, y], { visible: false, fixed: true, size: 0, name: '' });
-                    this.points.push(p);
-                }
-            }
-
-            // Draw the continuous curve
-            if (isPolar) {
-                const curve = this.board.create('curve', [
-                    (t: number) => {
-                        const val = Number(expr.subs({ "t": t, "\\theta": t, "theta": t }).N().value);
-                        return isNaN(val) ? 0 : val * Math.cos(t);
-                    },
-                    (t: number) => {
-                        const val = Number(expr.subs({ "t": t, "\\theta": t, "theta": t }).N().value);
-                        return isNaN(val) ? 0 : val * Math.sin(t);
-                    },
-                    tMin, tMax
-                ], { strokeColor: 'red', strokeWidth: 2 });
-                this.drawnElements.push(curve);
-            } else {
-                const curve = this.board.create('functiongraph', [
-                    (x: number) => Number(expr.subs({ "x": x }).N().value)
-                ], { strokeColor: 'red', strokeWidth: 2 });
-                this.drawnElements.push(curve);
-            }
-
-        } catch (e) {
-            console.error("Failed to parse/plot equation:", e);
-        }
-
-        this.board.update();
-    }
-
     public getAnswer(): SubmittedGraphAnswer | null {
-        if (this.points.length === 0 && !this.expression) return null;
+        if (this.points.length === 0) return null;
         
         return {
             shape: this.currentShape,
-            points: this.points.map(p => ({ x: p.X(), y: p.Y() })),
-            expression: this.expression
+            points: this.points.map(p => ({ x: p.X(), y: p.Y() }))
         };
     }
 
     public restoreAnswer(answer: SubmittedGraphAnswer) {
         this.clear();
         this.currentShape = answer.shape;
-        this.expression = answer.expression || '';
         this.activeTool = (answer.shape as GraphShapeTool) || 'point';
-        
-        if (this.expression && this.currentShape === 'equation') {
-            const wasRo = this.isReadonly;
-            this.isReadonly = false;
-            this.setEquation(this.expression);
-            this.isReadonly = wasRo;
-            return;
-        }
         
         // We simulate the points creation based on the answer
         if (answer.points.length > 0) {
@@ -320,7 +218,6 @@ export class GraphingCanvas {
         this.drawnElements = [];
         this.points = [];
         this.currentShape = '';
-        this.expression = '';
     }
 
     public destroy() {
@@ -329,3 +226,8 @@ export class GraphingCanvas {
         }
     }
 }
+"""
+
+with open("frontend/src/scripts/GraphingCanvas.ts", "w") as f:
+    f.write(content)
+print("Updated GraphingCanvas.ts")

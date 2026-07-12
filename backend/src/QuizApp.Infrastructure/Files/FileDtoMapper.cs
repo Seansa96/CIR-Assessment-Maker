@@ -623,6 +623,7 @@ public static class FileDtoMapper
         {
             CodeQuestion = ToCodeQuestion(dto),
             CircuitQuestion = ToDomain(dto.CircuitQuestion),
+            GraphingQuestion = ToDomain(dto.GraphingQuestion),
             Skills = dto.Skills ?? new List<string>()
         };
     }
@@ -667,6 +668,7 @@ public static class FileDtoMapper
                 Expected = test.Expected
             }).ToList(),
             CircuitQuestion = ToDto(question.CircuitQuestion),
+            GraphingQuestion = ToDto(question.GraphingQuestion),
             Skills = question.Skills.ToList()
         };
     }
@@ -899,8 +901,9 @@ public static class FileDtoMapper
         return new CircuitPoint(dto.X, dto.Y);
     }
 
-    private static CircuitAnnotationDefinition ToDomain(CircuitAnnotationFileDto dto)
+    private static CircuitAnnotationDefinition? ToDomain(CircuitAnnotationFileDto? dto)
     {
+        if (dto is null) return null;
         return new CircuitAnnotationDefinition(
             dto.Id ?? string.Empty,
             dto.Type ?? string.Empty,
@@ -908,6 +911,25 @@ public static class FileDtoMapper
             dto.X,
             dto.Y
         );
+    }
+
+    private static GraphingQuestionDefinition? ToDomain(GraphingQuestionFileDto? dto)
+    {
+        if (dto is null) return null;
+        return new GraphingQuestionDefinition(
+            dto.GridType ?? "cartesian",
+            dto.InteractionMode ?? "drag"
+        );
+    }
+
+    private static GraphingQuestionFileDto? ToDto(GraphingQuestionDefinition? domain)
+    {
+        if (domain is null) return null;
+        return new GraphingQuestionFileDto
+        {
+            GridType = domain.GridType,
+            InteractionMode = domain.InteractionMode
+        };
     }
 
     private static CircuitAnswerDefinition? ToDomain(CircuitAnswerFileDto? dto)
