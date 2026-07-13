@@ -1145,6 +1145,8 @@ import "../styles/global.css";
           try { w?.destroy?.(); } catch (e) { console.error("Error destroying widget", e); }
         });
         activeWidgets = [];
+        activeGraphingCanvases.clear();
+        activeCircuitCanvases.clear();
       }
       let learningStateTimer: ReturnType<typeof setTimeout> | null = null;
       let pendingLearningSectionState: {
@@ -5809,7 +5811,7 @@ import "../styles/global.css";
       function setupCircuitEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null, idPrefix: string = "") {
         const oldCanvas = activeCircuitCanvases.get(idPrefix);
         if (oldCanvas) {
-          oldCanvas.destroy?.();
+          try { oldCanvas.destroy?.(); } catch (e) { console.error(e); }
           activeCircuitCanvases.delete(idPrefix);
         }
         if (question.type !== "circuit") return;
@@ -5921,7 +5923,7 @@ import "../styles/global.css";
       function setupGraphingEditor(question: Question, submittedAnswer: SubmittedAnswer | null = null, idPrefix: string = "") {
         const oldCanvas = activeGraphingCanvases.get(idPrefix);
         if (oldCanvas) {
-          oldCanvas.destroy?.();
+          try { oldCanvas.destroy?.(); } catch (e) { console.error(e); }
           activeGraphingCanvases.delete(idPrefix);
         }
         if (question.type !== "graphingResponse") return;
@@ -6228,9 +6230,13 @@ import "../styles/global.css";
       }
 
       function setupQuestionNavigator() {
-        document.querySelector<HTMLButtonElement>(".question-navigator-toggle")?.addEventListener("click", () => {
+        document.querySelector<HTMLButtonElement>(".question-navigator-toggle")?.addEventListener("click", (e) => {
           state.questionNavigatorOpen = !state.questionNavigatorOpen;
-          void renderCurrentQuestion();
+          const navigator = (e.currentTarget as HTMLElement).closest(".question-navigator");
+          if (navigator) {
+            navigator.classList.toggle("open", state.questionNavigatorOpen);
+          }
+          (e.currentTarget as HTMLButtonElement).setAttribute("aria-expanded", String(state.questionNavigatorOpen));
         });
         document.querySelectorAll<HTMLButtonElement>("[data-question-index]").forEach((button) => {
           button.addEventListener("click", () => {

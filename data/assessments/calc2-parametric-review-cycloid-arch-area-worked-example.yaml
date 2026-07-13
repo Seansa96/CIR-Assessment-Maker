@@ -1,0 +1,183 @@
+schemaVersion: 1
+id: calc2-parametric-review-cycloid-arch-area-worked-example
+title: Area Under One Cycloid Arch
+assessmentType: workedExample
+categoryId: calculus-2
+subcategoryIds:
+  - parametric-polar-review
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - parametric-curves
+    - parametric-area
+    - cycloid
+    - definite-integrals
+skills:
+  - parametric-integrals
+workedExamples:
+  - id: cycloid-one-arch-area-example
+    title: Area Under One Arch of a Cycloid
+    problem: |
+      ![One arch of a cycloid with the enclosed area shaded](/assessments/calc2-parametric-polar/parametric-review-cycloid-one-arch-area.svg)
+
+      Find the area under one arch of the cycloid parametric curve
+
+      $$
+      x=t-\sin t,\qquad y=1-\cos t,
+      $$
+
+      from $t=0$ to $t=2\pi$.
+
+      Provide the setup integral and the final decimal answer rounded to three decimal places.
+    steps:
+      - id: cycloid-arch-area-step-1
+        title: Choose the parametric area formula
+        instruction: |
+          Area under a parametric curve is still:
+
+          $$
+          A=\int y\,dx.
+          $$
+
+          Since $x$ is controlled by $t$, replace $dx$ with $\frac{dx}{dt}\,dt$.
+        type: multipleChoice
+        prompt: Which setup form should be used?
+        choices:
+          - id: a
+            text: '$A=\int_0^{2\pi} y(t)\frac{dx}{dt}\,dt$'
+          - id: b
+            text: '$A=\int_0^{2\pi} x(t)\frac{dy}{dt}\,dt$'
+          - id: c
+            text: '$A=\int_0^{2\pi} x(t)y(t)\,dt$'
+          - id: d
+            text: '$A=\int_0^{2\pi}\frac{dy/dt}{dx/dt}\,dt$'
+        answer:
+          choiceId: a
+        explanation: |
+          For area under a parametric curve:
+
+          $$
+          A=\int y\,dx=\int_a^b y(t)x'(t)\,dt.
+          $$
+
+          Related topic: parametric area integrals.
+      - id: cycloid-arch-area-step-2
+        title: Compute the horizontal rate
+        instruction: |
+          The area formula needs $x'(t)$, not the slope $\frac{dy}{dx}$.
+        type: symbolicResponse
+        prompt: 'For $x=t-\sin t$, what is $\frac{dx}{dt}$?'
+        answer:
+          expectedLatex: '1-\cos t'
+          equivalenceMode: expression
+          variables:
+            - t
+          tolerance: 0.000001
+        explanation: |
+          Differentiate $x=t-\sin t$:
+
+          $$
+          \frac{dx}{dt}=1-\cos t.
+          $$
+      - id: cycloid-arch-area-step-3
+        title: Build the setup integral
+        instruction: |
+          Here:
+
+          $$
+          y(t)=1-\cos t
+          $$
+
+          and:
+
+          $$
+          x'(t)=1-\cos t.
+          $$
+        type: multipleChoice
+        prompt: Which integral gives the area under one arch?
+        choices:
+          - id: a
+            text: '$\int_0^{2\pi}(1-\cos t)^2\,dt$'
+          - id: b
+            text: '$\int_0^{2\pi}(t-\sin t)(1-\cos t)\,dt$'
+          - id: c
+            text: '$\int_0^{2\pi}(1-\cos t)\sin t\,dt$'
+          - id: d
+            text: '$\int_0^{2\pi}(t-\sin t)^2\,dt$'
+        answer:
+          choiceId: a
+        explanation: |
+          Substitute into $A=\int y(t)x'(t)\,dt$:
+
+          $$
+          A=\int_0^{2\pi}(1-\cos t)(1-\cos t)\,dt
+          =
+          \int_0^{2\pi}(1-\cos t)^2\,dt.
+          $$
+      - id: cycloid-arch-area-step-4
+        title: Evaluate the integral
+        instruction: |
+          Expand the square:
+
+          $$
+          (1-\cos t)^2=1-2\cos t+\cos^2 t.
+          $$
+
+          Over a full period, the cosine term integrates to $0$, and
+
+          $$
+          \int_0^{2\pi}\cos^2t\,dt=\pi.
+          $$
+        type: multipleChoice
+        prompt: What exact area does the integral produce?
+        choices:
+          - id: a
+            text: '$3\pi$'
+          - id: b
+            text: '$2\pi$'
+          - id: c
+            text: '$\pi$'
+          - id: d
+            text: '$4\pi$'
+        answer:
+          choiceId: a
+        explanation: |
+          Evaluate:
+
+          $$
+          \int_0^{2\pi}(1-\cos t)^2\,dt
+          =
+          \int_0^{2\pi}1\,dt
+          -2\int_0^{2\pi}\cos t\,dt
+          +\int_0^{2\pi}\cos^2t\,dt.
+          $$
+
+          This is:
+
+          $$
+          2\pi+0+\pi=3\pi.
+          $$
+      - id: cycloid-arch-area-step-5
+        title: Round the decimal answer
+        instruction: |
+          The prompt asks for the final decimal answer rounded to three decimal places.
+        type: numericResponse
+        prompt: 'What is $3\pi$ rounded to three decimal places?'
+        answer:
+          value: 9.425
+          tolerance: 0.001
+        explanation: |
+          Since $3\pi\approx 9.42477796$, the rounded value is:
+
+          $$
+          \boxed{9.425}.
+          $$
+
+          Full answer:
+
+          $$
+          \boxed{A=\int_0^{2\pi}(1-\cos t)^2\,dt=3\pi\approx9.425.}
+          $$
