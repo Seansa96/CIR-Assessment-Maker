@@ -1,31 +1,68 @@
 schemaVersion: 1
 id: physics-calculating-moi-worked-example
-title: 'Worked Example: Calculating Moi'
-description: Step-by-step problem solving for this topic.
+title: 'Worked Example: Calculating Moment of Inertia'
+description: Using the parallel-axis theorem and superposition on a composite geometric
+  object.
 assessmentType: workedExample
 categoryId: physics-1
 subcategoryIds:
 - physics-calculating-moi
 workedExamples:
-- id: we-physics-calculating-moi
-  title: 'Example 1: Calculating Moi'
-  problem: A standard problem involving physics calculating moi.
+- id: we-calc-moi-1
+  title: Composite Disc with Cutouts
+  problem: Consider a uniform solid disc of radius $R = 1.5\text{ m}$ and total mass
+    $M = 10\text{ kg}$ (before cutouts). Two circular holes, each of radius $r = 0.5\text{
+    m}$, are cut out. Their centers are located at a distance $d = 0.75\text{ m}$
+    from the main axis $O$. Calculate the new moment of inertia of the remaining shape
+    about axis $O$.
   steps:
-  - id: we-physics-calculating-moi-step-1
-    title: Identify Knowns
-    instruction: Identify the known variables.
-    prompt: What are the known variables?
-    type: freeResponse
+  - id: we-calc-moi-1-step1
+    title: 'Step 1: MOI of the Solid Disc'
+    instruction: Calculate the moment of inertia $I_0$ of the full disc *before* the
+      cutouts.
+    prompt: What is $I_0$?
+    type: numericResponse
+    media:
+    - type: image
+      src: /media/physics/worked-examples/moi-composite.png
+      alt: A large circle of radius R=1.5 with two circular cutouts of radius r=0.5
+        positioned at d=0.75 from the center.
+      caption: Composite disc showing the location of the cutouts.
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - Identify given values.
-  - id: we-physics-calculating-moi-step-2
-    title: Calculate Result
-    instruction: Apply the appropriate formula.
-    prompt: Apply the appropriate formula.
-    type: freeResponse
+      value: 11.25
+      tolerance: 0.1
+    explanation: $$I_0 = \frac{1}{2}MR^2 = \frac{1}{2}(10)(1.5)^2 = 11.25 \text{ kg}\cdot\text{m}^2$$
+  - id: we-calc-moi-1-step2
+    title: 'Step 2: Mass of the Cutouts'
+    instruction: Find the mass of the material removed by a single cutout hole, $m_{hole}$.
+      Since the disc is uniform, mass is proportional to area $\sigma = \frac{M}{\pi
+      R^2}$.
+    prompt: What is the mass of one hole $m_{hole}$?
+    type: numericResponse
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - Plug into the equation.
+      value: 1.111
+      tolerance: 0.1
+    explanation: $$m_{hole} = \sigma \pi r^2 = M \frac{\pi r^2}{\pi R^2} = M \left(\frac{r}{R}\right)^2
+      = 10 \left(\frac{0.5}{1.5}\right)^2 = 10 \left(\frac{1}{9}\right) = 1.111 \text{
+      kg}$$
+  - id: we-calc-moi-1-step3
+    title: 'Step 3: Parallel-Axis Theorem for Cutouts'
+    instruction: 'Calculate the MOI of one cutout hole with respect to the main axis
+      $O$ using the parallel-axis theorem: $I_{hole} = I_{cm} + md^2$.'
+    prompt: What is $I_{hole}$ for one cutout?
+    type: numericResponse
+    answer:
+      value: 0.7638
+      tolerance: 0.05
+    explanation: $$I_{cm} = \frac{1}{2}m_{hole}r^2 = \frac{1}{2}(1.111)(0.5)^2 = 0.1388$$
+      $$I_{hole} = 0.1388 + 1.111(0.75)^2 = 0.1388 + 0.625 = 0.7638 \text{ kg}\cdot\text{m}^2$$
+  - id: we-calc-moi-1-step4
+    title: 'Step 4: Superposition'
+    instruction: Subtract the MOI of the two holes from the MOI of the full disc.
+    prompt: What is the final $I_{total}$?
+    type: numericResponse
+    answer:
+      value: 9.722
+      tolerance: 0.1
+    explanation: $$I_{total} = I_0 - 2 I_{hole} = 11.25 - 2(0.7638) = 11.25 - 1.5276
+      = 9.722 \text{ kg}\cdot\text{m}^2$$
