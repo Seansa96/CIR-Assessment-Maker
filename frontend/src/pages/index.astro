@@ -347,9 +347,10 @@ import "../styles/global.css";
       import type { CircuitDiagram, CircuitComponent, CircuitNode, CircuitWire } from "../scripts/CircuitCanvas";
       import { GraphingCanvas } from "../scripts/GraphingCanvas";
       import type { SubmittedGraphAnswer, GraphPoint } from "../scripts/GraphingCanvas";
+      import { SandboxTerminal } from "../scripts/sandboxTerminal";
 
       type AssessmentMode = "practice" | "scored";
-      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "glossary" | "conceptLesson" | "interactiveExploration" | "directedProject";
+      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "glossary" | "conceptLesson" | "interactiveExploration" | "directedProject" | "sandbox";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit" | "multipart" | "graphingResponse";
 
       interface CircuitQuestionDefinition {
@@ -574,6 +575,14 @@ import "../styles/global.css";
         starterCode?: string;
         tests?: CodeQuestionTest[];
         explanation?: string | null;
+      }
+
+      interface SandboxDefinition {
+        language: string;
+        image: string;
+        initialCommand: string;
+        instructions: string;
+        readOnlyFileSystem: boolean;
       }
 
       interface GuidedProject {
@@ -818,6 +827,7 @@ import "../styles/global.css";
         lesson?: ConceptLesson | null;
         exploration?: InteractiveExploration | null;
         directedProject?: DirectedProject | null;
+        sandbox?: SandboxDefinition | null;
       }
 
       interface Attempt {
@@ -1171,6 +1181,7 @@ import "../styles/global.css";
         latestResults: AttemptResults | null;
         guidedProjectSession: GuidedProjectSession | null;
         guidedProjectActiveFile: string;
+        sandboxTerminal: SandboxTerminal | null;
         directedProjectActivePhaseId: string | null;
         directedProjectActiveStepId: string | null;
         completedAssessmentIds: string[];
@@ -1212,6 +1223,7 @@ import "../styles/global.css";
         latestResults: null,
         guidedProjectSession: null,
         guidedProjectActiveFile: "",
+        sandboxTerminal: null,
         directedProjectActivePhaseId: null,
         directedProjectActiveStepId: null,
         completedAssessmentIds: [],
@@ -2043,6 +2055,7 @@ import "../styles/global.css";
           state.latestResults = null;
           state.guidedProjectSession = null;
           state.guidedProjectActiveFile = "";
+          if (state.sandboxTerminal) { state.sandboxTerminal.dispose(); state.sandboxTerminal = null; }
           updateActiveAttemptChip();
           updateModeControlLock();
           await renderCurrentQuestion();
@@ -2150,6 +2163,7 @@ import "../styles/global.css";
         state.latestResults = session.results;
         state.guidedProjectSession = null;
         state.guidedProjectActiveFile = "";
+        if (state.sandboxTerminal) { state.sandboxTerminal.dispose(); state.sandboxTerminal = null; }
         state.currentIndex = preferFirstUnanswered ? firstUnansweredIndex(session.results, session.attempt) : 0;
         updateActiveAttemptChip(statusLabel(session.attempt.status));
         syncModeControlToAttempt();
@@ -2299,6 +2313,7 @@ import "../styles/global.css";
           state.latestResults = null;
           state.guidedProjectSession = null;
           state.guidedProjectActiveFile = "";
+          if (state.sandboxTerminal) { state.sandboxTerminal.dispose(); state.sandboxTerminal = null; }
           currentProjectEditor = null;
           activeCircuitCanvases.clear();
           activeGraphingCanvases.clear();
@@ -3853,6 +3868,11 @@ import "../styles/global.css";
           return;
         }
 
+        if (state.assessment.assessmentType === "sandbox") {
+          await renderSandboxProject();
+          return;
+        }
+
         if (state.assessment.assessmentType === "directedProject") {
           await renderDirectedProject();
           return;
@@ -4956,6 +4976,61 @@ import "../styles/global.css";
             .flatMap((entry) => entry.drills) ?? [];
         }
         return state.assessment?.items ?? [];
+      }
+
+      async function renderSandboxProject() {
+        if (!state.attempt || !state.assessment?.sandbox) return;
+        if (state.attempt.status !== "inProgress") {
+          attemptContent.innerHTML = `<div class="empty-state">This sandbox is ${escapeHtml(statusLabel(state.attempt.status).toLowerCase())}. Continue it from Attempt Sessions to make changes.</div>`;
+          return;
+        }
+
+        const project = state.assessment.sandbox;
+        const instructionsHtml = await renderMarkdown(project.instructions);
+
+        attemptContent.innerHTML = `
+          <div class="guided-project-shell">
+            <aside class="guided-project-sidebar">
+              <p class="eyebrow">Interactive Sandbox</p>
+              <h2>${escapeHtml(state.assessment.title)}</h2>
+              <div class="markdown">${instructionsHtml}</div>
+            </aside>
+            <section class="guided-project-workspace" style="display: flex; flex-direction: column;">
+              <div id="sandbox-terminal-container" style="flex: 1; min-height: 400px; background: #1e1e1e; border-radius: 4px; overflow: hidden; padding: 4px;"></div>
+              <div class="sandbox-controls" style="padding: 16px; background: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; gap: 8px;">
+                <button type="button" id="sandbox-complete-btn" class="primary">Complete Sandbox</button>
+              </div>
+            </section>
+          </div>
+        `;
+
+        const container = document.getElementById("sandbox-terminal-container");
+        if (container) {
+          state.sandboxTerminal = new SandboxTerminal(
+            container, 
+            state.attempt!.id,
+            async (attemptId) => {
+              // Server already marked it as completed via the backend API call
+              state.attempt!.status = "completed";
+              await loadGrades();
+              renderAttempt();
+            }
+          );
+          await state.sandboxTerminal.mount();
+        }
+
+        document.getElementById("sandbox-complete-btn")?.addEventListener("click", async () => {
+          try {
+            setBusy(document.getElementById("sandbox-complete-btn") as HTMLButtonElement, "Completing...");
+            await api(`/attempts/${encodeURIComponent(state.attempt!.id)}/complete`, { method: "POST" });
+            state.attempt!.status = "completed";
+            await loadGrades();
+            renderAttempt();
+          } catch (e) {
+            clearBusy(document.getElementById("sandbox-complete-btn") as HTMLButtonElement, "Complete Sandbox");
+            alert(readableError(e));
+          }
+        });
       }
 
       function renderGuidedProjectChecks(checks: GuidedProjectCheck[], results: GuidedProjectCheckResult[], required: boolean) {

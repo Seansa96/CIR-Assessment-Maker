@@ -53,8 +53,18 @@ public sealed class AssessmentFileDto
     public ConceptLessonFileDto? Lesson { get; set; }
     public InteractiveExplorationFileDto? Exploration { get; set; }
     public DirectedProjectFileDto? DirectedProject { get; set; }
+    public SandboxFileDto? Sandbox { get; set; }
     public NavigationFileDto? Navigation { get; set; }
     public List<string>? Skills { get; set; }
+}
+
+public sealed class SandboxFileDto
+{
+    public string? Language { get; set; }
+    public string? Image { get; set; }
+    public string? InitialCommand { get; set; }
+    public string? Instructions { get; set; }
+    public bool? ReadOnlyFileSystem { get; set; }
 }
 
 public sealed class QuestionSelectionFileDto

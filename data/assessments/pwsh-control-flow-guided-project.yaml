@@ -1,0 +1,47 @@
+schemaVersion: 1
+id: pwsh-control-flow-guided-project
+title: "Number Skipping Loop"
+assessmentType: sandbox
+categoryId: scripting
+subcategoryIds:
+  - pwsh-loops
+  - pwsh-conditionals
+skills:
+  - pwsh-loops
+  - pwsh-conditionals
+modeDefault: practice
+randomizeQuestions: false
+sandbox:
+  language: pwsh
+  image: mcr.microsoft.com/powershell:latest
+  initialCommand: 'pwsh -NoExit -Command "Start-Job -FilePath /workspace/.cir/monitor.ps1 | Out-Null"'
+  readOnlyFileSystem: false
+  instructions: |
+    Write a PowerShell script that uses a `while` loop or `for` loop to count from 1 to 5.
+    Inside the loop, use an `if` statement to check if the current number is `3`. 
+    If it is `3`, use the `continue` keyword to skip printing that number.
+    Otherwise, print the number using `Write-Output`.
+    
+    The environment is pre-configured. When you have correctly written and saved your script, the background monitor will automatically detect it and advance the assessment.
+  files:
+    - path: loop.ps1
+      readOnly: false
+      content: |
+        # Write a loop from 1 to 5
+        # If the number is 3, use 'continue'
+        # Otherwise, Write-Output the number
+        
+    - path: .cir/monitor.ps1
+      readOnly: true
+      content: |
+        while ($true) {
+            if (Test-Path "/workspace/loop.ps1") {
+                $output = & /workspace/loop.ps1 | Out-String
+                $lines = $output -split '\r?\n' | Where-Object { $_ -match '\S' }
+                if ($lines.Count -eq 4 -and $lines[0] -eq '1' -and $lines[1] -eq '2' -and $lines[2] -eq '4' -and $lines[3] -eq '5') {
+                    Invoke-RestMethod -Method Post -Uri "$env:CIR_API_URL/api/attempts/$env:CIR_ATTEMPT_ID/sandbox/complete"
+                    break
+                }
+            }
+            Start-Sleep -Seconds 3
+        }

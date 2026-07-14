@@ -11,7 +11,8 @@ public enum AssessmentType
     Glossary,
     ConceptLesson,
     InteractiveExploration,
-    DirectedProject
+    DirectedProject,
+    Sandbox
 }
 
 public enum AssessmentMode
@@ -116,9 +117,25 @@ public sealed record AssessmentDefinition(
     public ConceptLessonDefinition? Lesson { get; init; }
     public InteractiveExplorationDefinition? Exploration { get; init; }
     public DirectedProjectDefinition? DirectedProject { get; init; }
+    public SandboxDefinition? Sandbox { get; init; }
     public NavigationMetadata? Navigation { get; init; }
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
 }
+
+public sealed record SandboxDefinition(
+    string Language,
+    string Image,
+    string InitialCommand,
+    string Instructions,
+    bool ReadOnlyFileSystem)
+{
+    public IReadOnlyList<SandboxFileDefinition> Files { get; init; } = Array.Empty<SandboxFileDefinition>();
+}
+
+public sealed record SandboxFileDefinition(
+    string Path,
+    string Content,
+    bool ReadOnly);
 
 public sealed record ConceptLessonDefinition(
     string Introduction,

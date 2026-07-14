@@ -538,7 +538,7 @@ public sealed class ScoringService
 
     private static IReadOnlyList<AssessmentItem> GetAssessmentItems(AssessmentDefinition assessment)
     {
-        if (assessment.AssessmentType is AssessmentType.GuidedProject)
+        if (assessment.AssessmentType is AssessmentType.GuidedProject or AssessmentType.Sandbox)
         {
             return Array.Empty<AssessmentItem>();
         }

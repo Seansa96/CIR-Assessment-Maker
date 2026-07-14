@@ -678,7 +678,8 @@ public sealed class AttemptService
             or AssessmentType.Glossary
             or AssessmentType.ConceptLesson
             or AssessmentType.InteractiveExploration
-            or AssessmentType.DirectedProject;
+            or AssessmentType.DirectedProject
+            or AssessmentType.Sandbox;
     }
 
     private static void EnsureLearningAssessment(AssessmentDefinition assessment)

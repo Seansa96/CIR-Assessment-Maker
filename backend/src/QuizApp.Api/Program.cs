@@ -8,8 +8,12 @@ using QuizApp.Infrastructure.CodeRunner;
 using QuizApp.Infrastructure.Files;
 using QuizApp.Infrastructure.Retention;
 using QuizApp.Infrastructure.SymbolicMath;
+using QuizApp.Api.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -41,6 +45,7 @@ builder.Services.AddSingleton<IDockerCommandRunner, QuizApp.Infrastructure.CodeR
 builder.Services.AddSingleton<IGuidedProjectRunner, LegacyHarnessGuidedProjectRunner>();
 builder.Services.AddSingleton<IGuidedProjectRunner, DockerWorkspaceGuidedProjectRunner>();
 builder.Services.AddSingleton<GuidedProjectService>();
+builder.Services.AddSingleton<ISandboxService, SandboxService>();
 builder.Services.AddSingleton(new FileStorageOptions { DataRoot = dataRoot });
 builder.Services.AddSingleton(new SqliteRetentionOptions { DatabasePath = sqlitePath });
 builder.Services.AddSingleton<SqliteRetentionInitializer>();
@@ -111,6 +116,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseCors("LocalFrontend");
+
+app.MapHub<SandboxHub>("/sandbox-hub").RequireCors("LocalFrontend");
 
 var api = app.MapGroup("/api");
 
@@ -664,6 +671,24 @@ api.MapPost("/attempts/{attemptId}/complete", async (
         }
 
         return Results.Ok(new { results, committedGrade });
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("ATTEMPT_COMPLETE_FAILED", ex.Message));
+    }
+});
+
+api.MapPost("/attempts/{attemptId}/sandbox/complete", async (
+    string attemptId,
+    AttemptService attemptService,
+    Microsoft.AspNetCore.SignalR.IHubContext<SandboxHub> hubContext,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var results = await attemptService.CompleteAsync(attemptId, cancellationToken);
+        await hubContext.Clients.All.SendAsync("SandboxCompleted", attemptId, cancellationToken: cancellationToken);
+        return Results.Ok(new { results });
     }
     catch (InvalidOperationException ex)
     {

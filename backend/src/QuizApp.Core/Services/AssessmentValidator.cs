@@ -23,7 +23,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, glossary, conceptLesson, interactiveExploration, or directedProject."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, glossary, conceptLesson, interactiveExploration, directedProject, or sandbox."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -77,6 +77,12 @@ public sealed class AssessmentValidator
         if (assessment.AssessmentType is AssessmentType.DirectedProject)
         {
             ValidateDirectedProject(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        if (assessment.AssessmentType is AssessmentType.Sandbox)
+        {
+            ValidateSandbox(assessment, issues);
             return new AssessmentValidationResult(issues);
         }
 
@@ -1150,6 +1156,19 @@ public sealed class AssessmentValidator
                 }
             }
         }
+    }
+
+    private static void ValidateSandbox(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        var sandbox = assessment.Sandbox;
+        if (sandbox is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_SANDBOX", "Sandbox assessments must define the 'sandbox' field."));
+            return;
+        }
+
+        RequireText(sandbox.Language, "MISSING_SANDBOX_LANGUAGE", "Sandbox language is required.", issues);
+        RequireText(sandbox.Image, "MISSING_SANDBOX_IMAGE", "Sandbox image is required.", issues);
     }
 
     private static void ValidateDirectedProject(AssessmentDefinition assessment, List<ValidationIssue> issues)

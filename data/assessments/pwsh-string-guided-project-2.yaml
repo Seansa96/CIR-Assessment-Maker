@@ -1,14 +1,15 @@
 schemaVersion: 1
 id: pwsh-string-guided-project-2
 title: "The Broken Report Formatter"
-assessmentType: guidedProject
+assessmentType: sandbox
 categoryId: scripting
 subcategoryIds:
   - pwsh-string-basics
-guidedProject:
+sandbox:
   language: pwsh
-  projectKind: console
-  runnerMode: workspace
+  image: mcr.microsoft.com/powershell:latest
+  initialCommand: 'pwsh -NoExit -Command "Start-Job -FilePath /workspace/.cir/monitor.ps1 | Out-Null"'
+  readOnlyFileSystem: false
   instructions: |
     Welcome to the Broken Report Formatter!
     
@@ -21,14 +22,8 @@ guidedProject:
     2. Fix the string quoting and interpolation so that the script correctly evaluates the `$ProcessName` variable and uses a sub-expression to evaluate `$ProcessObj.Id`.
     3. The final output printed to the screen must exactly match the format: 
        `Process: explorer, ID: 1234` (where 1234 is whatever the actual dynamic ID is).
-  workspace:
-    entryPoint: report.ps1
-    allowedBaseImages:
-      - mcr.microsoft.com/powershell:lts-ubuntu-22.04
-    sourceGlobs:
-      - report.ps1
-    includePaths: []
-    writablePaths: []
+       
+    The environment is pre-configured. When you have correctly formatted the report and saved your script, the background monitor will automatically detect it and advance the assessment.
   files:
     - path: report.ps1
       readOnly: false
@@ -42,21 +37,16 @@ guidedProject:
         
         Write-Output $Output
         
-  fixtures: []
-  scenarios: []
-  diagnostics: []
-  requiredChecks:
-    - id: check-interpolation
-      title: "Script correctly interpolates variables and properties"
-      description: "The script must use double quotes and sub-expressions to output the correct string."
-      testCode: null
-      expectedOutputContains: []
-      run:
-        arguments: []
-        stdin: null
-        scenario: null
-      expect:
-        stdoutContains:
-          - "Process: bash, ID:"
-        files: []
-  bonusChecks: []
+    - path: .cir/monitor.ps1
+      readOnly: true
+      content: |
+        while ($true) {
+            if (Test-Path "/workspace/report.ps1") {
+                $output = & /workspace/report.ps1 | Out-String
+                if ($output -match "Process: bash, ID:\s*\d+") {
+                    Invoke-RestMethod -Method Post -Uri "$env:CIR_API_URL/api/attempts/$env:CIR_ATTEMPT_ID/sandbox/complete"
+                    break
+                }
+            }
+            Start-Sleep -Seconds 3
+        }

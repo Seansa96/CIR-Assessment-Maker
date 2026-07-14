@@ -1,15 +1,16 @@
 schemaVersion: 1
 id: pwsh-basics-guided-project-2
 title: "Log File Filter Challenge"
-assessmentType: guidedProject
+assessmentType: sandbox
 categoryId: scripting
 subcategoryIds:
   - pwsh-navigation
   - pwsh-cmdlets
-guidedProject:
+sandbox:
   language: pwsh
-  projectKind: console
-  runnerMode: workspace
+  image: mcr.microsoft.com/powershell:latest
+  initialCommand: 'pwsh -NoExit -Command "& /workspace/.cir/setup.ps1; Start-Job -FilePath /workspace/.cir/monitor.ps1 | Out-Null"'
+  readOnlyFileSystem: false
   instructions: |
     Welcome to the Log File Filter Challenge!
     
@@ -23,48 +24,33 @@ guidedProject:
     3. Use the `-Filter` parameter to specify the file extension.
     4. Your script must target the `/var/www/site/logs/` directory.
     
-    The test suite will execute `filter-logs.ps1` and verify that only the correct file names are printed.
-  workspace:
-    entryPoint: filter-logs.ps1
-    allowedBaseImages:
-      - mcr.microsoft.com/powershell:lts-ubuntu-22.04
-    sourceGlobs:
-      - filter-logs.ps1
-    includePaths: []
-    writablePaths: []
+    The environment is pre-configured. When you have correctly written and saved your script, the background monitor will automatically detect it and advance the assessment.
   files:
     - path: filter-logs.ps1
       readOnly: false
       content: |
         # Write your PowerShell command below to list only the names of .log files
         
-  fixtures:
-    - path: setup.sh
+    - path: .cir/setup.ps1
+      readOnly: true
       content: |
-        #!/bin/bash
-        mkdir -p /var/www/site/logs/
-        touch /var/www/site/logs/access.log
-        touch /var/www/site/logs/error.log
-        touch /var/www/site/logs/notes.txt
-        touch /var/www/site/logs/backup.bak
-        touch /var/www/site/logs/system.log
-      runOnStart: true
-  scenarios: []
-  diagnostics: []
-  requiredChecks:
-    - id: check-log-filter
-      title: "Script filters and outputs correct log names"
-      description: "Your script must execute Get-ChildItem using the -Filter and -Name flags to output only the .log file names."
-      testCode: null
-      expectedOutputContains: []
-      run:
-        arguments: []
-        stdin: null
-        scenario: null
-      expect:
-        stdoutContains:
-          - "access.log"
-          - "error.log"
-          - "system.log"
-        files: []
-  bonusChecks: []
+        New-Item -ItemType Directory -Force -Path /var/www/site/logs/ | Out-Null
+        New-Item -ItemType File -Force -Path /var/www/site/logs/access.log | Out-Null
+        New-Item -ItemType File -Force -Path /var/www/site/logs/error.log | Out-Null
+        New-Item -ItemType File -Force -Path /var/www/site/logs/notes.txt | Out-Null
+        New-Item -ItemType File -Force -Path /var/www/site/logs/backup.bak | Out-Null
+        New-Item -ItemType File -Force -Path /var/www/site/logs/system.log | Out-Null
+        
+    - path: .cir/monitor.ps1
+      readOnly: true
+      content: |
+        while ($true) {
+            if (Test-Path "/workspace/filter-logs.ps1") {
+                $output = & /workspace/filter-logs.ps1 | Out-String
+                if ($output -match "access\.log" -and $output -match "error\.log" -and $output -match "system\.log" -and $output -notmatch "notes\.txt" -and $output -notmatch "backup\.bak") {
+                    Invoke-RestMethod -Method Post -Uri "$env:CIR_API_URL/api/attempts/$env:CIR_ATTEMPT_ID/sandbox/complete"
+                    break
+                }
+            }
+            Start-Sleep -Seconds 3
+        }

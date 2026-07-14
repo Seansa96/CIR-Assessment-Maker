@@ -27,11 +27,16 @@ public sealed class GradeLogService
             or AssessmentType.Glossary
             or AssessmentType.ConceptLesson
             or AssessmentType.InteractiveExploration
-            or AssessmentType.DirectedProject)
+            or AssessmentType.DirectedProject
+            or AssessmentType.Sandbox)
         {
             throw new InvalidOperationException("Instructional sessions cannot be committed to the grade log.");
         }
 
+        if (results.HasPendingSelfChecks)
+        {
+            throw new InvalidOperationException("Resolve all free response self-checks before committing this attempt to the grade log.");
+        }
 
         if (results.AssessmentType is AssessmentType.RecallDrill && results.RecallSummary?.ItemsReviewed < results.TotalQuestions)
         {

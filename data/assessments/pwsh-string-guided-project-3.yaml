@@ -1,14 +1,15 @@
 schemaVersion: 1
 id: pwsh-string-guided-project-3
 title: "The Regex Validator"
-assessmentType: guidedProject
+assessmentType: sandbox
 categoryId: scripting
 subcategoryIds:
   - pwsh-regex
-guidedProject:
+sandbox:
   language: pwsh
-  projectKind: console
-  runnerMode: workspace
+  image: mcr.microsoft.com/powershell:latest
+  initialCommand: 'pwsh -NoExit -Command "Start-Job -FilePath /workspace/.cir/monitor.ps1 | Out-Null"'
+  readOnlyFileSystem: false
   instructions: |
     Welcome to the Regex Validator!
     
@@ -22,15 +23,7 @@ guidedProject:
     3. The regex pattern should enforce the start (`^`) and end (`$`) of the string, e.g., `^\d{3}[A-Z]{2}$`.
     4. Output the boolean result (`True` or `False`) to the console.
     
-    The test suite will run your script to ensure it correctly outputs True for a valid code.
-  workspace:
-    entryPoint: validate.ps1
-    allowedBaseImages:
-      - mcr.microsoft.com/powershell:lts-ubuntu-22.04
-    sourceGlobs:
-      - validate.ps1
-    includePaths: []
-    writablePaths: []
+    The environment is pre-configured. The background monitor will run your script, and if it correctly outputs True, it will automatically advance the assessment.
   files:
     - path: validate.ps1
       readOnly: false
@@ -39,21 +32,16 @@ guidedProject:
         
         # Write your case-sensitive regex validation below and output the result
         
-  fixtures: []
-  scenarios: []
-  diagnostics: []
-  requiredChecks:
-    - id: check-regex
-      title: "Script successfully validates the string"
-      description: "Your script must output True."
-      testCode: null
-      expectedOutputContains: []
-      run:
-        arguments: []
-        stdin: null
-        scenario: null
-      expect:
-        stdoutContains:
-          - "True"
-        files: []
-  bonusChecks: []
+    - path: .cir/monitor.ps1
+      readOnly: true
+      content: |
+        while ($true) {
+            if (Test-Path "/workspace/validate.ps1") {
+                $output = & /workspace/validate.ps1 | Out-String
+                if ($output -match "True") {
+                    Invoke-RestMethod -Method Post -Uri "$env:CIR_API_URL/api/attempts/$env:CIR_ATTEMPT_ID/sandbox/complete"
+                    break
+                }
+            }
+            Start-Sleep -Seconds 3
+        }

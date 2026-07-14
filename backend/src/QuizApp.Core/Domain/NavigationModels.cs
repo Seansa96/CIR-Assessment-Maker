@@ -62,7 +62,7 @@ public static class LearningGoals
         (Learn,    "Learn",    ["conceptLesson", "glossary", "guidedWorkedExample", "interactiveExploration", "directedProject"]),
         (Recall,   "Recall",   ["recognitionDrill", "clozeDrill", "mixedRecallSet"]),
         (Practice, "Practice", ["focusedPractice", "mixedPractice"]),
-        (Apply,    "Apply",    ["guidedProject", "codingApplication", "circuitApplication"]),
+        (Apply,    "Apply",    ["sandbox", "guidedProject", "codingApplication", "circuitApplication"]),
         (Evaluate, "Evaluate", ["masteryCheck", "formalTest"]),
         (Reflect,  "Reflect",  ["selfReview"]),
     ];
@@ -98,6 +98,7 @@ public static class NavigationInference
             AssessmentType.InteractiveExploration => (LearningGoals.Learn, "interactiveExploration"),
             AssessmentType.DirectedProject => (LearningGoals.Learn, "directedProject"),
             AssessmentType.GuidedProject  => (LearningGoals.Apply, "guidedProject"),
+            AssessmentType.Sandbox        => (LearningGoals.Apply, "sandbox"),
             AssessmentType.Test           => (LearningGoals.Evaluate, "formalTest"),
             AssessmentType.Quiz           => (LearningGoals.Practice, "focusedPractice"),
             AssessmentType.RecallDrill    => InferRecallDrill(a),

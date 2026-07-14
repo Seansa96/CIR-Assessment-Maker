@@ -79,6 +79,12 @@ public static class FileDtoMapper
             Lesson = dto.Lesson is null ? null : ToDomain(dto.Lesson),
             Exploration = dto.Exploration is null ? null : ToDomain(dto.Exploration),
             DirectedProject = dto.DirectedProject is null ? null : ToDomain(dto.DirectedProject),
+            Sandbox = dto.Sandbox is null ? null : new SandboxDefinition(
+                dto.Sandbox.Language ?? string.Empty,
+                dto.Sandbox.Image ?? string.Empty,
+                dto.Sandbox.InitialCommand ?? string.Empty,
+                dto.Sandbox.Instructions ?? string.Empty,
+                dto.Sandbox.ReadOnlyFileSystem ?? false),
             Navigation = dto.Navigation is null ? null : new NavigationMetadata(
                 dto.Navigation.LearningGoal,
                 dto.Navigation.ActivityType,
@@ -111,6 +117,14 @@ public static class FileDtoMapper
             Lesson = assessment.Lesson is null ? null : ToDto(assessment.Lesson),
             Exploration = assessment.Exploration is null ? null : ToDto(assessment.Exploration),
             DirectedProject = assessment.DirectedProject is null ? null : ToDto(assessment.DirectedProject),
+            Sandbox = assessment.Sandbox is null ? null : new SandboxFileDto
+            {
+                Language = assessment.Sandbox.Language,
+                Image = assessment.Sandbox.Image,
+                InitialCommand = assessment.Sandbox.InitialCommand,
+                Instructions = assessment.Sandbox.Instructions,
+                ReadOnlyFileSystem = assessment.Sandbox.ReadOnlyFileSystem
+            },
             Navigation = assessment.Navigation is null ? null : new NavigationFileDto
             {
                 LearningGoal = assessment.Navigation.LearningGoal,
@@ -722,6 +736,7 @@ public static class FileDtoMapper
             "conceptlesson" => AssessmentType.ConceptLesson,
             "interactiveexploration" => AssessmentType.InteractiveExploration,
             "directedproject" => AssessmentType.DirectedProject,
+            "sandbox" => AssessmentType.Sandbox,
             _ => AssessmentType.Unknown
         };
     }
@@ -803,6 +818,7 @@ public static class FileDtoMapper
             AssessmentType.ConceptLesson => "conceptLesson",
             AssessmentType.InteractiveExploration => "interactiveExploration",
             AssessmentType.DirectedProject => "directedProject",
+            AssessmentType.Sandbox => "sandbox",
             _ => "quiz"
         };
     }
