@@ -1,0 +1,80 @@
+schemaVersion: 1
+id: pwsh-media-docs-concept-lesson
+title: "Wrapping Media and Doc Tools"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-media-docs
+skills:
+  - pwsh-media-docs
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Command-line tools like `ffmpeg` (for media) and `pandoc` (for document conversion) are incredibly powerful, but their syntax is notoriously complex and hard to remember. PowerShell is often used to write "Wrapper Scripts" to make them easy to use.
+  sections:
+    - id: sec-wrapper
+      title: "What is a Wrapper Script?"
+      required: true
+      content: |
+        A Wrapper Script is a PowerShell script that takes simple, friendly parameters from the user, and then internally constructs and executes the messy, complicated command required by the external tool.
+        
+        Instead of expecting a user to type this:
+        `ffmpeg -i input.mp4 -vcodec libx265 -crf 28 output.mp4`
+        
+        You write a script so the user just types this:
+        `.\Compress-Video.ps1 -File input.mp4`
+      check:
+        id: chk-med-1
+        type: multipleChoice
+        prompt: 'What is the primary goal of a Wrapper Script?'
+        choices:
+          - id: a
+            text: "To make the external tool run faster."
+          - id: b
+            text: "To bypass licensing restrictions."
+          - id: c
+            text: "To simplify complex external command-line tools by providing a friendly, parameterized PowerShell interface."
+          - id: d
+            text: "To convert text into PowerShell objects."
+        answer:
+          choiceId: c
+        explanation: |
+          Wrapper scripts abstract away the complexity of raw CLI tools, making them reusable and user-friendly.
+
+    - id: sec-building
+      title: "Building the Wrapper"
+      required: true
+      content: |
+        To build a wrapper for `pandoc` (a tool that converts Markdown to PDF), you first create a `param()` block for your friendly inputs. Then, you construct a string for the external arguments, and invoke it.
+        
+        ```powershell
+        param(
+            [Parameter(Mandatory=$true)][string]$InputFile,
+            [string]$OutputFile = "output.pdf"
+        )
+        
+        # Call the external Pandoc executable
+        & "pandoc.exe" $InputFile -o $OutputFile
+        
+        if ($LASTEXITCODE -eq 0) {
+            Write-Host "Success!"
+        }
+        ```
+      check:
+        id: chk-med-2
+        type: multipleChoice
+        prompt: 'In the Pandoc wrapper example, why is `$LASTEXITCODE` checked at the end?'
+        choices:
+          - id: a
+            text: "Because `pandoc.exe` is an external tool, so it will not trigger a PowerShell `catch` block if it fails."
+          - id: b
+            text: "To see how long the script took to run."
+          - id: c
+            text: "To close the application."
+          - id: d
+            text: "Because Pandoc outputs Objects."
+        answer:
+          choiceId: a
+        explanation: |
+          As learned earlier, native external tools do not participate in PowerShell's standard error handling. You must check the integer exit code they leave behind.

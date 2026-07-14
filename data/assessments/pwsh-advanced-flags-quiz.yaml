@@ -1,0 +1,176 @@
+schemaVersion: 1
+id: pwsh-advanced-flags-quiz
+title: "Chaining and Error Handling Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-chaining
+  - pwsh-advanced-flags
+  - pwsh-error-handling
+skills:
+  - pwsh-chaining
+  - pwsh-advanced-flags
+  - pwsh-error-handling
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-advanced-flags
+    prompt: |
+      You wrote a script that recursively deletes old log folders. You want to test it safely without actually deleting anything. Which parameter should you add to the `Remove-Item` command?
+    choices:
+      - id: a
+        text: '`-Force`'
+      - id: b
+        text: '`-Simulate`'
+      - id: c
+        text: '`-WhatIf`'
+      - id: d
+        text: '`-Confirm`'
+    answer:
+      choiceId: c
+    explanation: |
+      `-WhatIf` executes the logic but skips the destructive action, printing a summary of what it *would* have done instead.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-chaining
+    prompt: |
+      What does the `&&` operator do in PowerShell 7+?
+    choices:
+      - id: a
+        text: It merges two variables together.
+      - id: b
+        text: It executes the second command only if the first command succeeds.
+      - id: c
+        text: It executes the second command only if the first command fails.
+      - id: d
+        text: It executes both commands simultaneously in the background.
+    answer:
+      choiceId: b
+    explanation: |
+      `&&` is the logical AND pipeline chain operator. It acts as a strict gateway requiring success.
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-chaining
+    prompt: |
+      What does the semicolon `;` do when placed between two commands?
+    choices:
+      - id: a
+        text: It stops execution of the script.
+      - id: b
+        text: It executes the second command, regardless of the success or failure of the first.
+      - id: c
+        text: It pipes the output of the first command into the second.
+      - id: d
+        text: It creates a multi-line comment.
+    answer:
+      choiceId: b
+    explanation: |
+      `;` simply terminates the statement and begins a new one sequentially.
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-error-handling
+    prompt: |
+      You wrapped `Get-Item C:\FakePath.txt` in a `try/catch` block, but the script still printed red error text and ignored the `catch` block. What is the most likely reason?
+    choices:
+      - id: a
+        text: You forgot to import the ErrorHandling module.
+      - id: b
+        text: The cmdlet threw a non-terminating error, which does not trigger a catch block.
+      - id: c
+        text: You did not run PowerShell as Administrator.
+      - id: d
+        text: '`Get-Item` cannot be placed inside `try` blocks.'
+    answer:
+      choiceId: b
+    explanation: |
+      `catch` blocks only intercept fatal (terminating) errors. To force `Get-Item` to throw a terminating error, append `-ErrorAction Stop` to it.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-error-handling
+    prompt: |
+      How do you force a built-in cmdlet (like `Get-Content`) to throw a fatal error that your `catch` block will intercept?
+    choices:
+      - id: a
+        text: Use the `-ErrorAction Stop` parameter.
+      - id: b
+        text: Prepend `throw` to the cmdlet.
+      - id: c
+        text: Use the `-Fatal` parameter.
+      - id: d
+        text: Enclose the cmdlet in parentheses.
+    answer:
+      choiceId: a
+    explanation: |
+      `-ErrorAction Stop` overrides the default error preference for that specific cmdlet execution, turning a minor warning into a catchable exception.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-advanced-flags
+    prompt: |
+      Which flag is used to aggressively bypass interactive safety prompts, such as when attempting to delete a Read-Only file?
+    choices:
+      - id: a
+        text: '`-Confirm`'
+      - id: b
+        text: '`-Override`'
+      - id: c
+        text: '`-Force`'
+      - id: d
+        text: '`-Bypass`'
+    answer:
+      choiceId: c
+    explanation: |
+      `-Force` is used to suppress warnings and forcefully perform an action (like deleting hidden or read-only files).
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-chaining
+    prompt: |
+      Which operator should you use if you want to execute a backup command *only if* the primary save command fails?
+    choices:
+      - id: a
+        text: '`&&`'
+      - id: b
+        text: '`||`'
+      - id: c
+        text: '`;`'
+      - id: d
+        text: '`|`'
+    answer:
+      choiceId: b
+    explanation: |
+      `||` is the logical OR chain operator. It serves as a rapid error-handling fallback, only running the right side if the left side fails.
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-error-handling
+    prompt: |
+      In a `try/catch/finally` block, what is the purpose of the `finally` block?
+    choices:
+      - id: a
+        text: To execute code only if the `try` block is successful.
+      - id: b
+        text: To execute code guaranteed, regardless of whether an error occurred or not.
+      - id: c
+        text: To log the specific error message generated by the `catch` block.
+      - id: d
+        text: To retry the `try` block.
+    answer:
+      choiceId: b
+    explanation: |
+      The `finally` block guarantees execution, making it the perfect place for clean-up tasks like disconnecting from a server or clearing variables.

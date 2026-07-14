@@ -1988,6 +1988,7 @@ import "../styles/global.css";
           focusedPractice: "Focused Practice",
           mixedPractice: "Mixed Practice",
           guidedProject: "Guided Project",
+          directedProject: "Directed Project",
           codingApplication: "Coding Application",
           circuitApplication: "Circuit Application",
           masteryCheck: "Mastery Check",
@@ -4659,12 +4660,12 @@ import "../styles/global.css";
           const completedChecklistIds = activeResult?.completedChecklistItemIds ?? [];
           
           const checklistHtml = activeStep.checklist.length > 0 ? `
-            <div class="directed-project-checklist" style="margin-top: 1.5rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 6px;">
+            <div class="directed-project-checklist" style="margin-top: 1.5rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
               <h4>Checklist</h4>
               <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
               ${activeStep.checklist.map(item => `
-                <label class="checklist-item" style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer;">
-                  <input type="checkbox" data-dp-checklist="${escapeHtml(item.id)}" ${completedChecklistIds.includes(item.id) ? "checked" : ""} style="margin-top: 0.25rem;">
+                <label class="checklist-item" style="display: flex; gap: 0.75rem; align-items: center; cursor: pointer;">
+                  <input type="checkbox" data-dp-checklist="${escapeHtml(item.id)}" ${completedChecklistIds.includes(item.id) ? "checked" : ""} style="width: auto; flex-shrink: 0; margin: 0;">
                   <span>${escapeHtml(item.text)}</span>
                 </label>
               `).join("")}
@@ -4728,8 +4729,8 @@ import "../styles/global.css";
         ` : "";
 
         attemptContent.innerHTML = `
-          <div class="directed-project-shell" style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
-            <aside class="directed-project-sidebar" style="flex: 1 1 300px; max-width: 350px; padding-right: 1rem; border-right: 1px solid var(--border-color);">
+          <div class="directed-project-shell" style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap; box-sizing: border-box; width: 100%;">
+            <aside class="directed-project-sidebar" style="flex: 1 1 300px; max-width: 350px; padding-right: 1rem; border-right: 1px solid var(--border-color); box-sizing: border-box;">
               <p class="eyebrow">Directed Project</p>
               <h2 style="margin-top: 0;">${escapeHtml(state.assessment.title)}</h2>
               ${project.estimatedTimeMinutes ? `<p class="quiet-hint">⏱ Estimated time: ${project.estimatedTimeMinutes} min</p>` : ""}
@@ -4741,14 +4742,14 @@ import "../styles/global.css";
               
               ${projectResourcesHtml}
               
-              <div class="assessment-control-bar" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 0.5rem;">
+              <div class="assessment-control-bar" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem;">
                 <button class="chunky complete-action" type="button" id="complete-attempt" style="width: 100%;">Complete Project</button>
                 <div style="text-align: center;">
-                  <button type="button" class="danger-action" id="abandon-attempt" style="background: none; border: none; font-size: 0.9rem; padding: 0.5rem; cursor: pointer;">Quit Early</button>
+                  <button type="button" id="abandon-attempt" style="background: none; border: none; font-size: 0.9rem; padding: 0.5rem; cursor: pointer; color: var(--danger); text-decoration: underline;">Quit Early</button>
                 </div>
               </div>
             </aside>
-            <section class="directed-project-workspace" style="flex: 2 1 500px;">
+            <section class="directed-project-workspace" style="flex: 2 1 500px; min-width: 0; box-sizing: border-box; max-width: 100%;">
               ${contentHtml}
             </section>
           </div>
@@ -6518,6 +6519,7 @@ import "../styles/global.css";
           test: "Test",
           workedExample: "Worked Example",
           guidedProject: "Guided Project",
+          directedProject: "Directed Project",
           recallDrill: "Recall Drill",
           glossary: "Glossary",
           conceptLesson: "Concept Lesson",

@@ -1,0 +1,99 @@
+schemaVersion: 1
+id: pwsh-tasks-concept-lesson
+title: "Scheduled Tasks and Jobs"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-scheduled-tasks
+skills:
+  - pwsh-scheduled-tasks
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Scripts are amazing, but you don't want to wake up at 3:00 AM every Sunday to manually run a database backup. You must schedule them!
+  sections:
+    - id: sec-jobs
+      title: "Background Jobs"
+      required: true
+      content: |
+        If you have a script that takes 10 minutes to run, it will "lock" your terminal until it finishes. If you want to keep using your terminal, you can send the script to the background as a **Job**.
+        
+        `Start-Job -ScriptBlock { .\LongBackup.ps1 }`
+        
+        You can check on the job using `Get-Job`. When its state is "Completed", you retrieve its output using `Receive-Job`.
+        
+        *Note: Jobs disappear when you close your terminal session.*
+      check:
+        id: chk-tsk-1
+        type: multipleChoice
+        prompt: 'Why would you use `Start-Job` instead of just running a script normally?'
+        choices:
+          - id: a
+            text: "To bypass the Execution Policy."
+          - id: b
+            text: "To run a long script in the background asynchronously so it doesn't freeze or lock up your current terminal session."
+          - id: c
+            text: "To run the script as an Administrator."
+          - id: d
+            text: "To make the script run on a loop."
+        answer:
+          choiceId: b
+        explanation: |
+          Background jobs allow you to multitask. You can spin off heavy processing tasks and continue doing other work in the same console.
+
+    - id: sec-sched
+      title: "Scheduled Tasks"
+      required: true
+      content: |
+        To run a script automatically at a specific time (even if you are logged off), you use Windows Scheduled Tasks. (This is the equivalent of `cron` in Linux).
+        
+        You can manage these via the GUI "Task Scheduler", or via PowerShell using the ScheduledTask cmdlets:
+        
+        ```powershell
+        $Action = New-ScheduledTaskAction -Execute "pwsh.exe" -Argument "-File C:\Backup.ps1"
+        $Trigger = New-ScheduledTaskTrigger -Daily -At 3am
+        Register-ScheduledTask -Action $Action -Trigger $Trigger -TaskName "NightlyBackup"
+        ```
+      check:
+        id: chk-tsk-2
+        type: multipleChoice
+        prompt: 'What is the Linux equivalent of a Windows Scheduled Task?'
+        choices:
+          - id: a
+            text: "systemd"
+          - id: b
+            text: "bash"
+          - id: c
+            text: "cron (or crontab)"
+          - id: d
+            text: "sudo"
+        answer:
+          choiceId: c
+        explanation: |
+          `cron` jobs on Linux serve the exact same purpose: executing scripts autonomously on a defined time schedule.
+
+    - id: sec-args
+      title: "Task Execution Syntax"
+      required: true
+      content: |
+        When you create a scheduled task, you are not directly running the script file. You are running the `pwsh.exe` application, and passing the script as an argument to it!
+        
+        If you just tell Task Scheduler to "execute C:\Backup.ps1", it won't work correctly. You must set the executable to `pwsh.exe` (or `powershell.exe`) and provide `-File C:\Backup.ps1` as the arguments, just as you would when bypassing policies.
+      check:
+        id: chk-tsk-3
+        type: multipleChoice
+        prompt: 'In the `New-ScheduledTaskAction` cmdlet, what should the `-Execute` parameter point to?'
+        choices:
+          - id: a
+            text: "The path to your script."
+          - id: b
+            text: "The PowerShell executable (e.g., pwsh.exe)."
+          - id: c
+            text: "The Task Scheduler service."
+          - id: d
+            text: "Your $PROFILE."
+        answer:
+          choiceId: b
+        explanation: |
+          The OS executes the host program (`pwsh`), and the host program is fed the script file as an argument to process.

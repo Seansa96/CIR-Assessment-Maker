@@ -1,0 +1,68 @@
+schemaVersion: 1
+id: pwsh-symbolic-links-concept-lesson
+title: "Symbolic Links and Shortcuts"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-symbolic-links
+skills:
+  - pwsh-symbolic-links
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Advanced navigation often requires linking files or folders across different parts of the file system without actually duplicating the data. Symbolic links solve this problem.
+  sections:
+    - id: sec-symlinks
+      title: "What is a Symbolic Link?"
+      required: true
+      content: |
+        A **Symbolic Link** (or symlink) is an advanced shortcut at the filesystem level. Unlike a `.lnk` Windows shortcut (which only Windows Explorer understands), a symlink is understood by the OS itself, including the terminal and all applications.
+        
+        If you create a symlink at `C:\App\Config` that points to `D:\Shared\Config`, any program trying to read `C:\App\Config` will transparently be redirected to the `D:` drive.
+      check:
+        id: chk-sym-1
+        type: multipleChoice
+        prompt: 'What makes a Symbolic Link different from a standard Windows `.lnk` desktop shortcut?'
+        choices:
+          - id: a
+            text: "A .lnk shortcut is faster."
+          - id: b
+            text: "A symbolic link is recognized by the OS and terminal as if it were the actual file/folder, whereas a .lnk is just a file Windows Explorer knows how to open."
+          - id: c
+            text: "Symbolic links only work for files, not folders."
+          - id: d
+            text: "Symbolic links duplicate the data to prevent data loss."
+        answer:
+          choiceId: b
+        explanation: |
+          Programs (like text editors or automated scripts) cannot follow `.lnk` files because they are just binary metadata files. They *can* follow symlinks, because the filesystem handles the redirect invisibly.
+
+    - id: sec-newitem
+      title: "Creating Symlinks"
+      required: true
+      content: |
+        In PowerShell, you create symbolic links using the `New-Item` cmdlet with the `-ItemType` parameter.
+        
+        ```powershell
+        New-Item -ItemType SymbolicLink -Path "C:\LinkName" -Target "C:\OriginalFolder"
+        ```
+        
+        *Note: Depending on your Windows settings, creating symbolic links may require Administrator privileges (Developer Mode in Windows 10/11 relaxes this requirement).*
+      check:
+        id: chk-sym-2
+        type: multipleChoice
+        prompt: 'Which cmdlet is used to create a symbolic link in PowerShell?'
+        choices:
+          - id: a
+            text: "New-Link"
+          - id: b
+            text: "Create-Shortcut"
+          - id: c
+            text: "New-Item"
+          - id: d
+            text: "Set-Alias"
+        answer:
+          choiceId: c
+        explanation: |
+          `New-Item` is the universal cmdlet for creating files, directories, and links. You simply specify `-ItemType SymbolicLink`.

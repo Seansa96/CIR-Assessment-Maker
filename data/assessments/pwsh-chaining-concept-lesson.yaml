@@ -1,0 +1,95 @@
+schemaVersion: 1
+id: pwsh-chaining-concept-lesson
+title: "Command Chaining"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-chaining
+skills:
+  - pwsh-chaining
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Sometimes you want to run multiple commands on a single line, or only run a command if the previous one succeeded or failed. PowerShell provides chaining operators to handle this.
+  sections:
+    - id: sec-semicolon
+      title: "The Semicolon (;)"
+      required: true
+      content: |
+        The simplest way to chain commands is the semicolon `;`. It acts as an absolute statement terminator. 
+        
+        `Write-Host "Starting..."; Get-Service`
+        
+        This will run the first command, and regardless of whether it succeeds or fails, it will immediately run the second command.
+      check:
+        id: chk-chain-1
+        type: multipleChoice
+        prompt: 'If command A fails in `Command A ; Command B`, what happens to Command B?'
+        choices:
+          - id: a
+            text: "It does not run."
+          - id: b
+            text: "It runs normally, ignoring the failure of A."
+          - id: c
+            text: "It runs, but throws a warning."
+          - id: d
+            text: "The terminal crashes."
+        answer:
+          choiceId: b
+        explanation: |
+          The semicolon `;` simply means "end of statement, start next statement". It does not care about the success or failure of the previous statement.
+
+    - id: sec-and
+      title: "The AND Operator (&&)"
+      required: true
+      content: |
+        Introduced in PowerShell 7, the `&&` (Pipeline Chain AND) operator executes the right-hand command **only if** the left-hand command succeeds.
+        
+        `Test-Connection google.com -Count 1 && Write-Host "Internet is up!"`
+        
+        If `Test-Connection` fails (returns an error), the `Write-Host` command is skipped entirely. This is incredibly useful for writing safe one-liners.
+      check:
+        id: chk-chain-2
+        type: multipleChoice
+        prompt: 'When using `&&`, under what condition does the second command execute?'
+        choices:
+          - id: a
+            text: "Only if the first command succeeds (returns no errors)."
+          - id: b
+            text: "Only if the first command fails."
+          - id: c
+            text: "It always executes."
+          - id: d
+            text: "It never executes; && is a comment operator."
+        answer:
+          choiceId: a
+        explanation: |
+          `&&` ensures that the chain only continues if the preceding link was successful.
+
+    - id: sec-or
+      title: "The OR Operator (||)"
+      required: true
+      content: |
+        Also introduced in PowerShell 7, the `||` (Pipeline Chain OR) operator is the exact opposite of `&&`. It executes the right-hand command **only if** the left-hand command fails.
+        
+        `Get-Content C:\Config.txt || Write-Host "Config missing! Using defaults."`
+        
+        If `Get-Content` succeeds and reads the file, the `Write-Host` is skipped. If `Get-Content` throws a File Not Found error, the `Write-Host` executes.
+      check:
+        id: chk-chain-3
+        type: multipleChoice
+        prompt: 'You want to attempt to start a service, but if it fails, you want to send an email alert. Which operator should you use?'
+        choices:
+          - id: a
+            text: "`;`"
+          - id: b
+            text: "`&&`"
+          - id: c
+            text: "`||`"
+          - id: d
+            text: "`>`"
+        answer:
+          choiceId: c
+        explanation: |
+          `||` acts as a quick fallback or error handler. It only executes the right side if the left side throws an error.

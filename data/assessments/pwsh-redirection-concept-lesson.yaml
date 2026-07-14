@@ -1,0 +1,107 @@
+schemaVersion: 1
+id: pwsh-redirection-concept-lesson
+title: "Advanced Redirection"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-streams-redirection
+skills:
+  - pwsh-streams-redirection
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Sometimes you want to capture errors to a log file, or silence warnings. You can achieve this using Stream Redirection operators.
+  sections:
+    - id: sec-redirect
+      title: "Basic Redirection (>)"
+      required: true
+      content: |
+        The `>` operator redirects output to a file, overwriting the file if it exists. The `>>` operator appends to the file.
+        
+        By default, `>` only redirects Stream 1 (Success).
+        
+        `Get-Process > processes.txt`
+        
+        If you want to redirect a specific stream, you place the stream number before the operator. For example, to redirect ONLY Stream 2 (Error):
+        
+        `Get-ChildItem "C:\RestrictedFolder" 2> errors.log`
+      check:
+        id: chk-redir-1
+        type: multipleChoice
+        prompt: 'What does the command `Invoke-WebRequest http://example.com 3> warnings.txt` do?'
+        choices:
+          - id: a
+            text: "It downloads the webpage 3 times."
+          - id: b
+            text: "It redirects only the Warning stream (Stream 3) to the text file."
+          - id: c
+            text: "It redirects all streams except Stream 3."
+          - id: d
+            text: "It limits the download speed to 3 megabytes."
+        answer:
+          choiceId: b
+        explanation: |
+          Placing a stream number immediately before the `>` operator targets that specific stream. Stream 3 is Warning.
+
+    - id: sec-merge
+      title: "Merging Streams"
+      required: true
+      content: |
+        If you are running an automated script, you often want to capture *everything* (both the output and the errors) into a single log file so you can review it later.
+        
+        To do this, you use the `*>` operator. The asterisk `*` means "All Streams".
+        
+        `.\Deploy.ps1 *> deployment_log.txt`
+        
+        Alternatively, if you want to pipe errors to another command, you must merge the Error stream (2) into the Success stream (1). You do this with `2>&1`.
+        
+        `Get-Item C:\Fake 2>&1 | Export-Csv log.csv`
+      check:
+        id: chk-redir-2
+        type: multipleChoice
+        prompt: 'You want to run a script and ensure every single piece of data (Success, Error, Warning, Verbose) is appended to a log file. Which operator do you use?'
+        choices:
+          - id: a
+            text: '`>`'
+          - id: b
+            text: '`2>>`'
+          - id: c
+            text: '`*>>`'
+          - id: d
+            text: '`1>&2`'
+        answer:
+          choiceId: c
+        explanation: |
+          `*` targets all streams, and `>>` appends to the file rather than overwriting it.
+
+    - id: sec-null
+      title: "Silencing Output ($null)"
+      required: true
+      content: |
+        Sometimes a command is very noisy. You don't care about its output, you just want it to do its job quietly.
+        
+        You can redirect streams into a black hole called `$null`.
+        
+        To hide success output:
+        `New-Item -ItemType Directory "C:\Temp" > $null`
+        
+        To hide ugly red errors from an external command:
+        `ping -n 1 192.168.1.50 2> $null`
+      check:
+        id: chk-redir-3
+        type: multipleChoice
+        prompt: 'If a command generates annoying warning messages (Stream 3) that you want to completely hide, what is the best approach?'
+        choices:
+          - id: a
+            text: "Pipe it to `Select-Object`"
+          - id: b
+            text: "Redirect it to the black hole: `3> $null`"
+          - id: c
+            text: "Use a try/catch block."
+          - id: d
+            text: "Use the -WhatIf parameter."
+        answer:
+          choiceId: b
+        explanation: |
+          Redirecting a specific stream to `$null` instantly destroys the data in that stream, hiding it from the console without affecting the other streams.

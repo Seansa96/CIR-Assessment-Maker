@@ -1,0 +1,118 @@
+schemaVersion: 1
+id: pwsh-error-handling-concept-lesson
+title: "Error Handling (Try/Catch)"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-error-handling
+skills:
+  - pwsh-error-handling
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Scripts will inevitably fail. Files go missing, network drives disconnect, and permissions change. A good script gracefully handles these errors instead of crashing with a wall of red text.
+  sections:
+    - id: sec-trycatch
+      title: "Try / Catch / Finally"
+      required: true
+      content: |
+        The standard way to handle errors in modern programming is the `try / catch` block.
+        
+        ```powershell
+        try {
+            # Code that might fail
+            Get-Content C:\MissingFile.txt
+        } catch {
+            # Code that runs if the try block fails
+            Write-Host "Warning: The file could not be found."
+        } finally {
+            # Code that runs no matter what (optional)
+            Write-Host "Script finished."
+        }
+        ```
+        This prevents the script from crashing abruptly and allows you to log the error or fall back to default settings.
+      check:
+        id: chk-err-1
+        type: multipleChoice
+        prompt: 'In a `try / catch / finally` structure, when does the `finally` block execute?'
+        choices:
+          - id: a
+            text: "Only if the `try` block succeeds."
+          - id: b
+            text: "Only if the `try` block throws an error."
+          - id: c
+            text: "It always executes, regardless of success or failure."
+          - id: d
+            text: "It only executes if the script is run as Administrator."
+        answer:
+          choiceId: c
+        explanation: |
+          `finally` is guaranteed to run. It is typically used for clean-up operations, like closing database connections or deleting temporary files, ensuring they are cleaned up even if the main logic fails.
+
+    - id: sec-erroraction
+      title: "Terminating vs Non-Terminating Errors"
+      required: true
+      content: |
+        There is a major gotcha in PowerShell error handling: **`catch` blocks ONLY catch 'Terminating' errors.** 
+        
+        Many PowerShell cmdlets (like `Get-ChildItem` or `Get-Content`) throw 'Non-Terminating' errors. They print red text, but the script keeps running, completely bypassing your `catch` block!
+        
+        To force a cmdlet to throw a Terminating error so your `catch` block can grab it, you MUST use the **`-ErrorAction Stop`** parameter on the cmdlet.
+        
+        ```powershell
+        try {
+            Get-Content C:\MissingFile.txt -ErrorAction Stop
+        } catch {
+            Write-Host "Now the catch block actually works!"
+        }
+        ```
+      check:
+        id: chk-err-2
+        type: multipleChoice
+        prompt: 'Why might a `catch` block fail to execute even when a cmdlet throws an error?'
+        choices:
+          - id: a
+            text: "The cmdlet threw a non-terminating error, which does not trigger catch blocks."
+          - id: b
+            text: "The error was logged to the event viewer."
+          - id: c
+            text: "The Execution Policy blocked the catch block."
+          - id: d
+            text: "Try/catch blocks are not supported in PowerShell."
+        answer:
+          choiceId: a
+        explanation: |
+          PowerShell differentiates between minor errors (non-terminating) and fatal errors (terminating). Catch blocks only trigger on fatal errors. You must use `-ErrorAction Stop` to upgrade a minor error to a fatal one.
+
+    - id: sec-throw
+      title: "Throwing Custom Errors"
+      required: true
+      content: |
+        Sometimes, you want to intentionally crash the script and trigger an error (for example, if a user provides an invalid parameter).
+        
+        You can use the **`throw`** keyword to generate a custom terminating error.
+        
+        ```powershell
+        if ($Age -lt 0) {
+            throw "Age cannot be negative!"
+        }
+        ```
+        This instantly stops execution and acts exactly like a cmdlet that failed with `-ErrorAction Stop`.
+      check:
+        id: chk-err-3
+        type: multipleChoice
+        prompt: 'What is the effect of using the `throw` keyword in a script?'
+        choices:
+          - id: a
+            text: "It throws the script into the background."
+          - id: b
+            text: "It generates a fatal (terminating) error and halts execution."
+          - id: c
+            text: "It ignores the next error."
+          - id: d
+            text: "It prints a blue warning message."
+        answer:
+          choiceId: b
+        explanation: |
+          `throw` is how you manually generate a fatal error, forcing the script to halt or jumping execution to the nearest `catch` block.

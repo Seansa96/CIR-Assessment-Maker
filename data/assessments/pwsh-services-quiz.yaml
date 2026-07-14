@@ -1,0 +1,176 @@
+schemaVersion: 1
+id: pwsh-services-quiz
+title: "Processes, Services, and Tasks Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-process-management
+  - pwsh-service-management
+  - pwsh-scheduled-tasks
+skills:
+  - pwsh-process-management
+  - pwsh-service-management
+  - pwsh-scheduled-tasks
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-process-management
+    prompt: |
+      If you want to view a list of all currently running applications and their memory usage, which cmdlet should you use?
+    choices:
+      - id: a
+        text: '`Get-Service`'
+      - id: b
+        text: '`Get-Process`'
+      - id: c
+        text: '`Get-Task`'
+      - id: d
+        text: '`View-Memory`'
+    answer:
+      choiceId: b
+    explanation: |
+      `Get-Process` is the PowerShell equivalent of the Task Manager processes tab.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-process-management
+    prompt: |
+      You want to forcefully close a frozen application named "Photoshop". What is the command?
+    choices:
+      - id: a
+        text: '`Kill-App -Name "Photoshop"`'
+      - id: b
+        text: '`End-Task -Name "Photoshop"`'
+      - id: c
+        text: '`Stop-Process -Name "Photoshop"`'
+      - id: d
+        text: '`Close-Process -Name "Photoshop"`'
+    answer:
+      choiceId: c
+    explanation: |
+      `Stop-Process` is the standard cmdlet for terminating running processes. (Though `kill` is a built-in alias for it).
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-service-management
+    prompt: |
+      What is the primary difference between a Process and a Service?
+    choices:
+      - id: a
+        text: A service runs in the background and is usually independent of user sessions, while a process is typically tied to an active user.
+      - id: b
+        text: A service uses less memory.
+      - id: c
+        text: A process requires Administrator privileges.
+      - id: d
+        text: There is no difference.
+    answer:
+      choiceId: a
+    explanation: |
+      Services (or Daemons) are meant for system-wide background tasks like web servers, which must run even if nobody is logged into the desktop.
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-service-management
+    prompt: |
+      You installed a local database service, but you don't want it starting automatically every time you boot your computer. Which command fixes this?
+    choices:
+      - id: a
+        text: '`Stop-Service -Name "DB" -Permanent`'
+      - id: b
+        text: '`Set-Service -Name "DB" -StartupType Manual`'
+      - id: c
+        text: '`Disable-Process "DB"`'
+      - id: d
+        text: '`Remove-Service "DB"`'
+    answer:
+      choiceId: b
+    explanation: |
+      Setting the `StartupType` to `Manual` prevents it from auto-starting, but still allows you to spin it up when you actually need it.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-scheduled-tasks
+    prompt: |
+      What is the purpose of `Start-Job`?
+    choices:
+      - id: a
+        text: To schedule a script to run tomorrow.
+      - id: b
+        text: To elevate your privileges to Administrator.
+      - id: c
+        text: To run a long script in the background asynchronously so it doesn't freeze your terminal.
+      - id: d
+        text: To start a new PowerShell window.
+    answer:
+      choiceId: c
+    explanation: |
+      Background jobs allow you to multitask by tossing a heavy script into a background thread.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-scheduled-tasks
+    prompt: |
+      If you spin up a background job using `Start-Job`, and it finishes, how do you see the output it generated?
+    choices:
+      - id: a
+        text: It automatically prints to the screen.
+      - id: b
+        text: You use `Receive-Job`.
+      - id: c
+        text: You use `Get-Output`.
+      - id: d
+        text: Jobs cannot generate output.
+    answer:
+      choiceId: b
+    explanation: |
+      Because jobs run asynchronously, their output is buffered in memory until you explicitly retrieve it using `Receive-Job`.
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-scheduled-tasks
+    prompt: |
+      When creating a Windows Scheduled Task to run a PowerShell script, what should the "Action/Executable" be?
+    choices:
+      - id: a
+        text: The path to the `.ps1` file.
+      - id: b
+        text: '`pwsh.exe` (or `powershell.exe`)'
+      - id: c
+        text: '`cmd.exe`'
+      - id: d
+        text: TaskScheduler
+    answer:
+      choiceId: b
+    explanation: |
+      The task must execute the PowerShell host program, passing your script file as an argument (e.g. `-File C:\script.ps1`).
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-process-management
+    prompt: |
+      You are writing an automation script that launches a software installer (`setup.exe`). You need the script to pause and not run the next command until the installer is closed. What cmdlet do you use?
+    choices:
+      - id: a
+        text: '`Pause-Script`'
+      - id: b
+        text: '`Sleep 60`'
+      - id: c
+        text: '`Wait-Process -Name "setup"`'
+      - id: d
+        text: '`Get-Process -Name "setup"`'
+    answer:
+      choiceId: c
+    explanation: |
+      `Wait-Process` halts execution until the specified process is no longer running, making it perfect for sequential installation scripts.

@@ -1,0 +1,104 @@
+schemaVersion: 1
+id: pwsh-process-concept-lesson
+title: "Managing Processes"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-process-management
+skills:
+  - pwsh-process-management
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    A process is a running instance of a program. Managing them from the command line is essential for terminating frozen apps or monitoring memory usage.
+  sections:
+    - id: sec-getproc
+      title: "Get-Process"
+      required: true
+      content: |
+        The `Get-Process` cmdlet (aliased as `ps` or `gps`) lists all running processes on your machine.
+        
+        Because it returns PowerShell objects, it is incredibly easy to filter:
+        `Get-Process | Where-Object { $_.WorkingSet -gt 1GB }`
+        
+        Or find a specific app:
+        `Get-Process -Name "Notepad"`
+      check:
+        id: chk-proc-1
+        type: multipleChoice
+        prompt: 'If you want to find out how much RAM Google Chrome is using, how can you do that easily in PowerShell?'
+        choices:
+          - id: a
+            text: "Use `Get-Service`"
+          - id: b
+            text: "Run `Get-Process -Name chrome`"
+          - id: c
+            text: "Open Task Manager, PowerShell cannot do this."
+          - id: d
+            text: "Run `Find-Process -App chrome`"
+        answer:
+          choiceId: b
+        explanation: |
+          `Get-Process` is the direct CLI equivalent of the Task Manager. It will return an object for every running Chrome tab and its associated memory usage.
+
+    - id: sec-stopproc
+      title: "Stop-Process"
+      required: true
+      content: |
+        To kill a rogue or frozen application, use `Stop-Process` (aliased as `kill`).
+        
+        You can stop an app by its name:
+        `Stop-Process -Name "Notepad"` (This kills ALL instances of Notepad)
+        
+        Or by its specific Process ID (PID), which you can find using `Get-Process`:
+        `Stop-Process -Id 10423`
+      check:
+        id: chk-proc-2
+        type: multipleChoice
+        prompt: 'Why might you choose to use `Stop-Process -Id 5521` instead of `Stop-Process -Name Code`?'
+        choices:
+          - id: a
+            text: "Using -Id requires fewer privileges."
+          - id: b
+            text: "If you have multiple VS Code windows open, `-Name Code` will instantly kill all of them. Using `-Id` allows you to kill one specific frozen window."
+          - id: c
+            text: "`-Name` doesn't work for VS Code."
+          - id: d
+            text: "Using `-Id` bypasses execution policies."
+        answer:
+          choiceId: b
+        explanation: |
+          PIDs are unique identifiers. Names are shared among all instances of the application.
+
+    - id: sec-waitproc
+      title: "Wait-Process"
+      required: true
+      content: |
+        Sometimes you are writing an installation script that launches a setup program, and you need PowerShell to pause until the installer finishes before moving to the next step.
+        
+        You can use `Wait-Process`:
+        
+        ```powershell
+        Start-Process "setup.exe"
+        Wait-Process -Name "setup"
+        Write-Host "Installation finished!"
+        ```
+        This halts the script until the process named "setup" no longer exists.
+      check:
+        id: chk-proc-3
+        type: multipleChoice
+        prompt: 'What is the primary use case for `Wait-Process`?'
+        choices:
+          - id: a
+            text: "To pause your script until a specific running program finishes/closes."
+          - id: b
+            text: "To make a process run faster."
+          - id: c
+            text: "To prevent a user from closing a program."
+          - id: d
+            text: "To wait for a network connection to open."
+        answer:
+          choiceId: a
+        explanation: |
+          `Wait-Process` is crucial for writing reliable, sequential automation scripts that interact with other executables.

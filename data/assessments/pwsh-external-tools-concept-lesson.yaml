@@ -1,0 +1,101 @@
+schemaVersion: 1
+id: pwsh-external-tools-concept-lesson
+title: "Calling External Tools"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-external-tools
+skills:
+  - pwsh-external-tools
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    PowerShell is not an island. A massive part of systems administration is using PowerShell to automate other, non-PowerShell command-line tools like `git`, `docker`, or `ffmpeg`.
+  sections:
+    - id: sec-callop
+      title: "The Call Operator (&)"
+      required: true
+      content: |
+        If an external executable is in your system's PATH (like `ping.exe`), you can just type it. 
+        
+        However, if the path to the executable contains spaces, PowerShell will think it's a string instead of a command. You must use the **Call Operator (`&`)**.
+        
+        **Fails:** `"C:\Program Files\App\tool.exe" -Flag`
+        **Works:** `& "C:\Program Files\App\tool.exe" -Flag`
+        
+        The `&` tells PowerShell: "Don't just print this string, execute the file located at this path."
+      check:
+        id: chk-ext-1
+        type: multipleChoice
+        prompt: 'Why might you need to use the `&` (Call Operator) when executing an external tool?'
+        choices:
+          - id: a
+            text: "Because the tool is written in Python."
+          - id: b
+            text: "Because the file path to the executable contains spaces, which PowerShell interprets as a simple string."
+          - id: c
+            text: "To run the tool in the background."
+          - id: d
+            text: "To run the tool as Administrator."
+        answer:
+          choiceId: b
+        explanation: |
+          If you just type `"C:\My Tools\app.exe"`, PowerShell simply echoes the string to the console. The `&` forces PowerShell to invoke that string as a command.
+
+    - id: sec-exitcode
+      title: "Checking $LASTEXITCODE"
+      required: true
+      content: |
+        External executables do not throw PowerShell terminating errors. They just return an integer known as an Exit Code (where `0` usually means success, and anything else means failure).
+        
+        PowerShell automatically stores the exit code of the last external tool you ran in the special variable **`$LASTEXITCODE`**.
+        
+        ```powershell
+        ping 192.168.1.50
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Ping failed!"
+        }
+        ```
+      check:
+        id: chk-ext-2
+        type: multipleChoice
+        prompt: 'If you call an external tool like `git clone` and it fails, how do you detect that failure in your script?'
+        choices:
+          - id: a
+            text: "By using a `try / catch` block."
+          - id: b
+            text: "By checking if `$LASTEXITCODE` is not equal to 0."
+          - id: c
+            text: "By checking `$?` for the string 'Error'."
+          - id: d
+            text: "External tools automatically crash the PowerShell script if they fail."
+        answer:
+          choiceId: b
+        explanation: |
+          External tools are outside of PowerShell's object pipeline and try/catch system. You must manually check `$LASTEXITCODE` to determine if they succeeded.
+
+    - id: sec-parsing
+      title: "Parsing Native Output"
+      required: true
+      content: |
+        When you run an external tool, it outputs raw text, not PowerShell Objects. 
+        
+        If you capture the output into a variable, PowerShell treats it as an array of strings (one string per line).
+        
+        `$Output = ping 8.8.8.8`
+        
+        You must use text-parsing tools like `-match`, `-split`, or `Select-String` to find the data you want inside `$Output`.
+      check:
+        id: chk-ext-3
+        type: multipleChoice
+        prompt: 'True or False: Running an external tool like `ipconfig` returns rich PowerShell Objects that you can pipe into `Select-Object`.'
+        choices:
+          - id: a
+            text: "True"
+          - id: b
+            text: "False"
+        answer:
+          choiceId: b
+        explanation: |
+          False. External tools output flat strings of text. You lose the rich object properties that native PowerShell cmdlets provide.

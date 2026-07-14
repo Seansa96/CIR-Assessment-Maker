@@ -1,0 +1,100 @@
+schemaVersion: 1
+id: pwsh-object-pipeline-concept-lesson
+title: "The Object Pipeline"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-object-pipeline
+skills:
+  - pwsh-object-pipeline
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Unlike Bash or Command Prompt which pass *text* between commands, PowerShell passes **Objects**. Understanding this difference is the key to mastering PowerShell.
+  sections:
+    - id: sec-objects
+      title: "Objects vs Text"
+      required: true
+      content: |
+        When you run `Get-Process` in Bash (using `ps`), the output is just a giant string of text. To extract a specific PID, you have to use text-parsing tools like `awk` or `grep`.
+        
+        In PowerShell, `Get-Process` outputs rich Objects. Every row is an object, and every column is a property.
+        
+        You don't need to parse text. You simply ask for the property you want:
+        `$Procs = Get-Process`
+        `$Procs[0].Id` (Returns the exact ID number of the first process)
+      check:
+        id: chk-obj-1
+        type: multipleChoice
+        prompt: 'Why is passing Objects in the pipeline considered superior to passing Text?'
+        choices:
+          - id: a
+            text: "Objects execute faster in the CPU."
+          - id: b
+            text: "It eliminates the need for complex, fragile text-parsing (like regex) to extract specific pieces of data."
+          - id: c
+            text: "Objects can be viewed on any operating system without PowerShell."
+          - id: d
+            text: "Text pipelines cannot be chained."
+        answer:
+          choiceId: b
+        explanation: |
+          Because properties are natively preserved as Objects (like `.Name` or `.Id`), you don't have to write fragile text scrapers to extract the data you want.
+
+    - id: sec-select
+      title: "Select-Object"
+      required: true
+      content: |
+        Because commands output objects with dozens of properties, you often want to trim them down to just the properties you care about.
+        
+        You can pipe objects into **`Select-Object`** to choose specific columns:
+        `Get-Service | Select-Object Name, Status`
+        
+        You can also use it to grab a specific number of items:
+        `Get-Process | Select-Object -First 5`
+      check:
+        id: chk-obj-2
+        type: multipleChoice
+        prompt: 'Which command would successfully retrieve only the Name and CPU properties of all running processes?'
+        choices:
+          - id: a
+            text: "Get-Process | Filter Name, CPU"
+          - id: b
+            text: "Get-Process | Select-Object Name, CPU"
+          - id: c
+            text: "Select-Object Name, CPU -From Get-Process"
+          - id: d
+            text: "Get-Process | Where-Object Name, CPU"
+        answer:
+          choiceId: b
+        explanation: |
+          `Select-Object` is used to filter the *properties* (columns) or the *number* of objects in the pipeline.
+
+    - id: sec-export
+      title: "Exporting Data"
+      required: true
+      content: |
+        Because PowerShell handles objects natively, converting them into structured data formats is incredibly easy. You just pipe the objects into an Export cmdlet!
+        
+        `Get-Process | Select-Object Name, Id | Export-Csv -Path C:\Procs.csv -NoTypeInformation`
+        
+        You can also export to JSON:
+        `Get-Service | ConvertTo-Json | Out-File C:\Services.json`
+      check:
+        id: chk-obj-3
+        type: multipleChoice
+        prompt: 'If you want to save a list of services to a comma-separated file, which cmdlet makes this effortless?'
+        choices:
+          - id: a
+            text: "Write-Host"
+          - id: b
+            text: "Out-String"
+          - id: c
+            text: "Export-Csv"
+          - id: d
+            text: "Save-Text"
+        answer:
+          choiceId: c
+        explanation: |
+          `Export-Csv` automatically takes the objects in the pipeline and formats their properties into perfect CSV columns.

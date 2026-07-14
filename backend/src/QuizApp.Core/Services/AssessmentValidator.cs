@@ -764,9 +764,10 @@ public sealed class AssessmentValidator
 
         if (!string.Equals(project.Language, "cpp", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(project.Language, "python", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(project.Language, "bash", StringComparison.OrdinalIgnoreCase))
+            && !string.Equals(project.Language, "bash", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(project.Language, "pwsh", StringComparison.OrdinalIgnoreCase))
         {
-            issues.Add(new ValidationIssue("INVALID_GUIDED_PROJECT_LANGUAGE", "Guided project language must be cpp, python, or bash."));
+            issues.Add(new ValidationIssue("INVALID_GUIDED_PROJECT_LANGUAGE", "Guided project language must be cpp, python, bash, or pwsh."));
         }
 
         RequireText(project.Instructions, "MISSING_GUIDED_PROJECT_INSTRUCTIONS", "Guided projects must include instructions.", issues);

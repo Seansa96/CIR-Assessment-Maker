@@ -1,0 +1,99 @@
+schemaVersion: 1
+id: pwsh-loops-concept-lesson
+title: "Loops (While and For)"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-loops
+skills:
+  - pwsh-loops
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Loops allow you to run the same block of code multiple times without rewriting it. PowerShell supports standard programmatic loops like `while`, `do`, `for`, and `foreach`.
+  sections:
+    - id: sec-while
+      title: "While and Do-While"
+      required: true
+      content: |
+        A **`while`** loop checks a condition first, and then executes its block repeatedly as long as the condition remains True.
+        ```powershell
+        $i = 1
+        while ($i -le 3) {
+            Write-Host $i
+            $i++
+        }
+        ```
+        
+        A **`do-while`** or **`do-until`** loop executes the block *first*, and then checks the condition at the end. This guarantees the block runs at least once.
+      check:
+        id: chk-loop-1
+        type: multipleChoice
+        prompt: 'Why might you use a `do-while` loop instead of a standard `while` loop?'
+        choices:
+          - id: a
+            text: "It runs faster than a standard while loop."
+          - id: b
+            text: "You want to guarantee the code block executes at least one time before checking the condition."
+          - id: c
+            text: "It does not require curly braces."
+          - id: d
+            text: "It cannot create infinite loops."
+        answer:
+          choiceId: b
+        explanation: |
+          Because a `do` block executes before the `while` condition is evaluated at the bottom, the code inside is guaranteed to run at least once.
+
+    - id: sec-for
+      title: "The For Loop"
+      required: true
+      content: |
+        A **`for`** loop is typically used when you know exactly how many times you want to iterate. It has three parts: an initializer, a condition, and an iterator.
+        
+        ```powershell
+        for ($i = 0; $i -lt 5; $i++) {
+            Write-Host "Iteration $i"
+        }
+        ```
+        This will loop exactly 5 times (0, 1, 2, 3, 4).
+      check:
+        id: chk-loop-2
+        type: numericResponse
+        prompt: 'If a for loop is written as `for ($i = 10; $i -ge 5; $i--)`, how many times will the code block execute?'
+        answer:
+          value: 6
+          tolerance: 0
+        explanation: |
+          It executes for 10, 9, 8, 7, 6, and 5 (because of the `-ge` greater-than-or-equal-to operator). That is 6 iterations.
+
+    - id: sec-foreach
+      title: "The foreach Statement"
+      required: true
+      content: |
+        The **`foreach`** statement is the easiest way to iterate over an array or collection of items. 
+        
+        ```powershell
+        $Colors = "Red", "Green", "Blue"
+        foreach ($c in $Colors) {
+            Write-Host "Color is $c"
+        }
+        ```
+        It automatically grabs one item from the array, assigns it to the local variable (`$c`), runs the block, and then moves to the next item until the array is empty.
+      check:
+        id: chk-loop-3
+        type: multipleChoice
+        prompt: 'In the statement `foreach ($File in $Directory)`, what does `$File` represent?'
+        choices:
+          - id: a
+            text: "The total number of files in the directory."
+          - id: b
+            text: "A temporary variable holding the current single item being processed in the loop."
+          - id: c
+            text: "The index number of the loop."
+          - id: d
+            text: "A command to delete the file."
+        answer:
+          choiceId: b
+        explanation: |
+          `$File` acts as an iterator variable. During each pass of the loop, it represents one individual item pulled from the `$Directory` collection.

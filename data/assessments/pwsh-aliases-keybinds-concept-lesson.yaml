@@ -1,0 +1,98 @@
+schemaVersion: 1
+id: pwsh-aliases-keybinds-concept-lesson
+title: "Aliases and the PowerShell Profile"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-aliases-keybinds
+skills:
+  - pwsh-aliases-keybinds
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    If you find yourself typing the same long commands over and over, you can create aliases and customize your environment using the PowerShell Profile.
+  sections:
+    - id: sec-alias
+      title: "Get-Alias and Set-Alias"
+      required: true
+      content: |
+        An **Alias** is a shortcut name for a cmdlet. PowerShell comes with many built-in aliases for convenience (e.g., `dir` and `ls` are aliases for `Get-ChildItem`).
+        
+        You can view them using `Get-Alias`.
+        
+        You can create your own temporary alias for the current session using `Set-Alias`:
+        `Set-Alias -Name np -Value notepad.exe`
+        Now, typing `np` will launch Notepad!
+      check:
+        id: chk-alias-1
+        type: multipleChoice
+        prompt: 'If you want to find out what cmdlet the alias `ghy` points to, what command should you run?'
+        choices:
+          - id: a
+            text: "Find-Alias ghy"
+          - id: b
+            text: "Get-Alias ghy"
+          - id: c
+            text: "Resolve-Alias ghy"
+          - id: d
+            text: "Show-Alias ghy"
+        answer:
+          choiceId: b
+        explanation: |
+          `Get-Alias` will display the alias name and the resolved cmdlet it points to.
+
+    - id: sec-profile
+      title: "The PowerShell Profile"
+      required: true
+      content: |
+        Aliases created with `Set-Alias` are forgotten as soon as you close the terminal. To make them permanent, you must add them to your **PowerShell Profile**.
+        
+        The Profile is a `.ps1` script that runs automatically every time you open PowerShell. Its path is stored in the automatic variable **`$PROFILE`**.
+        
+        To edit it, simply type:
+        `notepad $PROFILE`
+        *(If it doesn't exist yet, you may need to run `New-Item -Type File -Path $PROFILE -Force` first).*
+      check:
+        id: chk-alias-2
+        type: multipleChoice
+        prompt: 'What is the purpose of the `$PROFILE` script?'
+        choices:
+          - id: a
+            text: "It stores your Windows account password."
+          - id: b
+            text: "It limits which cmdlets you are allowed to run."
+          - id: c
+            text: "It is a script that runs automatically on startup to configure your terminal environment."
+          - id: d
+            text: "It manages your execution policy."
+        answer:
+          choiceId: c
+        explanation: |
+          The `$PROFILE` is the perfect place to put your custom aliases, imported modules, and custom prompt designs so they are always available.
+
+    - id: sec-psreadline
+      title: "PSReadLine and Keybinds"
+      required: true
+      content: |
+        Modern PowerShell includes a module called **PSReadLine**, which vastly improves the command-line editing experience. It provides syntax highlighting, prediction, and custom keybindings.
+        
+        You can bind actions to specific keystrokes in your `$PROFILE`. For example, this binds `Ctrl+B` to clear the screen:
+        `Set-PSReadLineKeyHandler -Chord 'Ctrl+b' -Function ClearScreen`
+      check:
+        id: chk-alias-3
+        type: multipleChoice
+        prompt: 'Which built-in module provides syntax highlighting and customizable keybindings in PowerShell?'
+        choices:
+          - id: a
+            text: "PSTerminal"
+          - id: b
+            text: "PSReadLine"
+          - id: c
+            text: "PSConsole"
+          - id: d
+            text: "PSKeybind"
+        answer:
+          choiceId: b
+        explanation: |
+          PSReadLine is the standard module that supercharges the PowerShell console experience.

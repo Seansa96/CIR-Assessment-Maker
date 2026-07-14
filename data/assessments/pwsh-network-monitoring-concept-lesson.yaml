@@ -1,0 +1,107 @@
+schemaVersion: 1
+id: pwsh-network-monitoring-concept-lesson
+title: "Network Monitoring and Port Scanning"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-network-monitoring
+skills:
+  - pwsh-network-monitoring
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    PowerShell has powerful built-in cmdlets for network diagnostics, entirely replacing old command-line tools like `ping`, `tracert`, and `telnet`.
+  sections:
+    - id: sec-testnet
+      title: "Test-NetConnection"
+      required: true
+      content: |
+        The ultimate network diagnostic tool in PowerShell is **`Test-NetConnection`** (often aliased as `tnc`). 
+        
+        It acts as an advanced ping. But unlike `ping.exe`, it outputs a rich object, meaning you don't have to parse text!
+        
+        ```powershell
+        $result = Test-NetConnection -ComputerName google.com
+        if ($result.PingSucceeded) {
+            Write-Host "We are online!"
+        }
+        ```
+      check:
+        id: chk-net-1
+        type: multipleChoice
+        prompt: 'What is a major advantage of `Test-NetConnection` over the legacy `ping.exe`?'
+        choices:
+          - id: a
+            text: "It runs in the background."
+          - id: b
+            text: "It returns a PowerShell Object with properties like `.PingSucceeded`, making it much easier to use in scripts."
+          - id: c
+            text: "It uses less CPU."
+          - id: d
+            text: "It cannot be blocked by firewalls."
+        answer:
+          choiceId: b
+        explanation: |
+          Because it returns an object, you can programmatically check `$result.PingSucceeded` (a Boolean) instead of doing regex parsing on the string "Reply from...".
+
+    - id: sec-portscan
+      title: "Basic Port Scanning"
+      required: true
+      content: |
+        `Test-NetConnection` can also test if a specific TCP port is open, completely replacing the need for tools like `telnet` or `nmap` for basic checks.
+        
+        `Test-NetConnection -ComputerName SRV-WEB-01 -Port 443`
+        
+        The resulting object will have a property called `TcpTestSucceeded`. This allows you to write scripts that verify your web servers or databases are actually listening for traffic.
+      check:
+        id: chk-net-2
+        type: multipleChoice
+        prompt: 'How do you check if port 3306 is open on a server named `DB-01`?'
+        choices:
+          - id: a
+            text: "Test-Port -Server DB-01 3306"
+          - id: b
+            text: "Ping DB-01:3306"
+          - id: c
+            text: "Test-NetConnection -ComputerName DB-01 -Port 3306"
+          - id: d
+            text: "Get-Port DB-01 -Number 3306"
+        answer:
+          choiceId: c
+        explanation: |
+          `Test-NetConnection` combined with the `-Port` parameter performs a TCP connection test.
+
+    - id: sec-loopscan
+      title: "Automating Scans"
+      required: true
+      content: |
+        Because these cmdlets are built into PowerShell, you can easily combine them with loops to create monitoring tools.
+        
+        ```powershell
+        $Ports = 80, 443, 8080
+        foreach ($Port in $Ports) {
+            $test = Test-NetConnection -ComputerName SRV-01 -Port $Port
+            if (-not $test.TcpTestSucceeded) {
+                Write-Warning "Port $Port is DOWN!"
+            }
+        }
+        ```
+        This simple 6-line script is the foundation of many enterprise monitoring systems.
+      check:
+        id: chk-net-3
+        type: multipleChoice
+        prompt: 'In the example script, what does the `-not` operator do?'
+        choices:
+          - id: a
+            text: "It skips the port."
+          - id: b
+            text: "It reverses the Boolean, executing the block only if `TcpTestSucceeded` is False."
+          - id: c
+            text: "It shuts down the port."
+          - id: d
+            text: "It hides the warning message."
+        answer:
+          choiceId: b
+        explanation: |
+          If `TcpTestSucceeded` is False (meaning the port is closed), `-not` flips it to True, allowing the `Write-Warning` block to execute.

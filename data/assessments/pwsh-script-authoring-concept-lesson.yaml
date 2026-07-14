@@ -1,0 +1,109 @@
+schemaVersion: 1
+id: pwsh-script-authoring-concept-lesson
+title: "Authoring PowerShell Scripts"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-script-authoring
+skills:
+  - pwsh-script-authoring
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Typing commands directly into the console is useful, but the true value of scripting comes from saving reusable code. In PowerShell, script files are simply plain text files with a `.ps1` extension.
+  sections:
+    - id: sec-authoring
+      title: "Creating a .ps1 File"
+      required: true
+      content: |
+        A PowerShell script file (`.ps1`) can be created in any text editor, from Notepad to advanced IDEs like Visual Studio Code.
+        
+        To create a basic script:
+        1. Open an editor.
+        2. Write your commands: `Write-Host "Hello from my script!"`
+        3. Save the file as `MyScript.ps1`.
+        
+        Historically, administrators used the *PowerShell ISE* (Integrated Scripting Environment) built into Windows, but Microsoft now officially recommends **Visual Studio Code** with the PowerShell extension for all script authoring.
+      check:
+        id: chk-auth-1
+        type: multipleChoice
+        prompt: 'What is the standard file extension for a PowerShell script?'
+        choices:
+          - id: a
+            text: ".bat"
+          - id: b
+            text: ".cmd"
+          - id: c
+            text: ".ps1"
+          - id: d
+            text: ".posh"
+        answer:
+          choiceId: c
+        explanation: |
+          `.ps1` is the standard extension. It originates from PowerShell v1, and Microsoft intentionally kept it as `.ps1` for all subsequent versions to ensure backwards compatibility.
+
+    - id: sec-comments
+      title: "Commenting Code"
+      required: true
+      content: |
+        A good script should be readable by humans. Use comments to document your code.
+        
+        - **Single-line comments** start with a `#`.
+        - **Multi-line comments** start with `<#` and end with `#>`
+        
+        ```powershell
+        # This gets all services
+        Get-Service
+        
+        <#
+           This is a large block comment.
+           It spans multiple lines.
+        #>
+        ```
+      check:
+        id: chk-auth-2
+        type: multipleChoice
+        prompt: 'How do you denote a single-line comment in a PowerShell script?'
+        choices:
+          - id: a
+            text: "//"
+          - id: b
+            text: "<!-- -->"
+          - id: c
+            text: "#"
+          - id: d
+            text: "REM"
+        answer:
+          choiceId: c
+        explanation: |
+          Like Python and Bash, PowerShell uses the hash symbol `#` for single-line comments.
+
+    - id: sec-structure
+      title: "Script Structure"
+      required: true
+      content: |
+        PowerShell scripts execute linearly from top to bottom. If you define a function or a variable, it must be declared *before* you attempt to use it lower in the script.
+        
+        It is best practice to structure your scripts like this:
+        1. `param()` block (Parameters)
+        2. Required modules or configuration
+        3. Function definitions
+        4. Main execution logic
+      check:
+        id: chk-auth-3
+        type: multipleChoice
+        prompt: 'In what order does a PowerShell script execute its contents?'
+        choices:
+          - id: a
+            text: "Linear (Top-to-Bottom)"
+          - id: b
+            text: "Main function first, then surrounding logic"
+          - id: c
+            text: "Bottom-to-Top"
+          - id: d
+            text: "Compiled simultaneously"
+        answer:
+          choiceId: a
+        explanation: |
+          Scripts execute from top to bottom. Because of this, if you try to call a function on line 2 that isn't defined until line 10, PowerShell will throw an error.

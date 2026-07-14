@@ -153,7 +153,7 @@ public sealed class DockerWorkspaceGuidedProjectRunner : IGuidedProjectRunner
         GuidedProjectDefinition project,
         CancellationToken cancellationToken)
     {
-        if (project.Language == "python" || project.Language == "bash")
+        if (project.Language == "python" || project.Language == "bash" || project.Language == "pwsh")
         {
             return new GuidedProjectBuildStageResult(true, $"{project.Language} projects do not require compilation.");
         }
@@ -207,17 +207,18 @@ public sealed class DockerWorkspaceGuidedProjectRunner : IGuidedProjectRunner
         bool filesPassed = true;
         var isPython = project.Language == "python";
         var isBash = project.Language == "bash";
-        var entryPoint = project.Workspace?.EntryPoint ?? (isPython ? "main.py" : (isBash ? "run.sh" : "main"));
+        var isPwsh = project.Language == "pwsh";
+        var entryPoint = project.Workspace?.EntryPoint ?? (isPython ? "main.py" : (isBash ? "run.sh" : (isPwsh ? "run.ps1" : "main")));
         
-        var command = isPython ? "python3" : (isBash ? "sh" : "./program");
+        var command = isPython ? "python3" : (isBash ? "sh" : (isPwsh ? "pwsh" : "./program"));
         var arguments = check.Run?.Arguments?.ToList() ?? new List<string>();
         
-        if (isPython || isBash)
+        if (isPython || isBash || isPwsh)
         {
             arguments.Insert(0, entryPoint);
         }
 
-        var runCommandStr = isPython ? $"python3 {entryPoint}" : (isBash ? $"sh {entryPoint}" : "./program");
+        var runCommandStr = isPython ? $"python3 {entryPoint}" : (isBash ? $"sh {entryPoint}" : (isPwsh ? $"pwsh {entryPoint}" : "./program"));
 
         if (check.Run?.Scenario is not null)
         {
@@ -242,7 +243,7 @@ public sealed class DockerWorkspaceGuidedProjectRunner : IGuidedProjectRunner
             }
         }
 
-        var runImage = project.Workspace?.AllowedBaseImages?.FirstOrDefault() ?? (isPython ? "python:3.11" : (isBash ? "docker:dind" : "gcc:13.2"));
+        var runImage = project.Workspace?.AllowedBaseImages?.FirstOrDefault() ?? (isPython ? "python:3.11" : (isBash ? "docker:dind" : (isPwsh ? "mcr.microsoft.com/powershell:lts-debian-11" : "gcc:13.2")));
         var privileged = isBash && runImage.Contains("dind");
 
         if (privileged)

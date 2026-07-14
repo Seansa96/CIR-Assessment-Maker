@@ -1,0 +1,176 @@
+schemaVersion: 1
+id: pwsh-common-tools-quiz
+title: "Common Tools and Monitoring Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-external-tools
+  - pwsh-network-monitoring
+  - pwsh-media-docs
+skills:
+  - pwsh-external-tools
+  - pwsh-network-monitoring
+  - pwsh-media-docs
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-external-tools
+    prompt: |
+      You are trying to execute an external tool, but the path has spaces: `"C:\My Apps\tool.exe"`. If you just press Enter, PowerShell just prints the string instead of running it. Which operator fixes this?
+    choices:
+      - id: a
+        text: '`*` (Wildcard Operator)'
+      - id: b
+        text: '`&` (Call Operator)'
+      - id: c
+        text: '`%` (ForEach Operator)'
+      - id: d
+        text: '`@` (Splat Operator)'
+    answer:
+      choiceId: b
+    explanation: |
+      The `&` (Call Operator) tells PowerShell to evaluate the string as an executable path rather than a literal string.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-external-tools
+    prompt: |
+      How do you determine if an external native executable (like `git.exe` or `ping.exe`) ran successfully in a PowerShell script?
+    choices:
+      - id: a
+        text: Check if `$LASTEXITCODE -eq 0`.
+      - id: b
+        text: Put it in a `try/catch` block.
+      - id: c
+        text: Check if it returned `$true`.
+      - id: d
+        text: Native tools will crash PowerShell if they fail.
+    answer:
+      choiceId: a
+    explanation: |
+      Native executables return integer exit codes. In PowerShell, the exit code of the last run native executable is stored in `$LASTEXITCODE`. 0 means success.
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-network-monitoring
+    prompt: |
+      What is the modern PowerShell equivalent of `ping`, which returns a script-friendly Object instead of raw text?
+    choices:
+      - id: a
+        text: '`Test-ConnectionObject`'
+      - id: b
+        text: '`Test-NetConnection`'
+      - id: c
+        text: '`Invoke-Ping`'
+      - id: d
+        text: '`Get-NetworkStatus`'
+    answer:
+      choiceId: b
+    explanation: |
+      `Test-NetConnection` is the built-in cmdlet for advanced network diagnostics.
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-network-monitoring
+    prompt: |
+      If you need to verify that a web server is actively listening for traffic on port 443, what is the best approach using built-in cmdlets?
+    choices:
+      - id: a
+        text: Use `Invoke-WebRequest` to download the entire site.
+      - id: b
+        text: Use `Test-NetConnection -ComputerName SERVER -Port 443`.
+      - id: c
+        text: You must install the external `nmap` tool.
+      - id: d
+        text: Use `Get-Process` to look for the web server on the remote machine.
+    answer:
+      choiceId: b
+    explanation: |
+      `Test-NetConnection` supports a `-Port` parameter that will perform a TCP connection test, making port scanning trivial.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-media-docs
+    prompt: |
+      What is the primary purpose of writing a "Wrapper Script" for tools like `ffmpeg`?
+    choices:
+      - id: a
+        text: To run the tool on Linux.
+      - id: b
+        text: To make the tool run faster by using PowerShell's memory management.
+      - id: c
+        text: To provide a simplified, user-friendly interface to a complex command-line tool.
+      - id: d
+        text: To convert the tool into a GUI.
+    answer:
+      choiceId: c
+    explanation: |
+      Wrappers hide the complex flag syntax of tools like `ffmpeg` behind simple, friendly PowerShell parameters.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-external-tools
+    prompt: |
+      When you capture the output of an external tool like `ipconfig` into a variable (`$out = ipconfig`), what type of data is stored in the variable?
+    choices:
+      - id: a
+        text: A rich NetworkAdapter object.
+      - id: b
+        text: An array of plain text strings.
+      - id: c
+        text: A binary blob.
+      - id: d
+        text: An XML document.
+    answer:
+      choiceId: b
+    explanation: |
+      External tools do not output PowerShell objects. They output raw console text, which PowerShell captures as an array of strings.
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-network-monitoring
+    prompt: |
+      If you run `$Result = Test-NetConnection google.com`, how do you check if it was successful without parsing strings?
+    choices:
+      - id: a
+        text: '`if ($Result -match "Success")`'
+      - id: b
+        text: '`if ($Result.PingSucceeded)`'
+      - id: c
+        text: '`if ($LASTEXITCODE -eq 0)`'
+      - id: d
+        text: '`if ($Result.Status -eq "OK")`'
+    answer:
+      choiceId: b
+    explanation: |
+      Because `Test-NetConnection` outputs an object, you simply check its boolean `.PingSucceeded` property.
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-media-docs
+    prompt: |
+      In a wrapper script, you run `& "pandoc" -i $Input -o $Output`. Why shouldn't you wrap this line in a `try/catch` block?
+    choices:
+      - id: a
+        text: Pandoc disables PowerShell error handling.
+      - id: b
+        text: Native executables do not throw PowerShell terminating errors, so the `catch` block will never trigger even if the tool fails.
+      - id: c
+        text: '`try/catch` only works on variables.'
+      - id: d
+        text: The `&` operator blocks all errors.
+    answer:
+      choiceId: b
+    explanation: |
+      External executables communicate failure via Exit Codes, not exceptions. A `catch` block cannot "see" when an external tool crashes.

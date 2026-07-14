@@ -1,0 +1,114 @@
+schemaVersion: 1
+id: pwsh-parameters-concept-lesson
+title: "Parameters and Arguments"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-parameters
+skills:
+  - pwsh-parameters
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Hardcoding values (like a specific folder path) into a script makes it brittle and hard to reuse. By using Parameters, you can pass data into your scripts at runtime, making them highly flexible tools.
+  sections:
+    - id: sec-args
+      title: "The $args Array"
+      required: true
+      content: |
+        The simplest way to pass data into a script is using arguments. If you run a script like this:
+        `.\MyScript.ps1 "Hello" 50`
+        
+        Inside `MyScript.ps1`, PowerShell automatically populates a special array named **`$args`**.
+        - `$args[0]` would contain `"Hello"`
+        - `$args[1]` would contain `50`
+        
+        However, using `$args` is considered bad practice because the user has no way to know what order they are supposed to provide the arguments in.
+      check:
+        id: chk-param-1
+        type: multipleChoice
+        prompt: 'If you execute `.\DeleteFiles.ps1 -Path C:\Logs -Days 30`, how would you access `-Path` if you were solely relying on `$args`?'
+        choices:
+          - id: a
+            text: "$args['Path']"
+          - id: b
+            text: "It is parsed into $args[0], but this is messy and not recommended."
+          - id: c
+            text: "$Path"
+          - id: d
+            text: "You cannot pass named flags if you only use $args."
+        answer:
+          choiceId: b
+        explanation: |
+          `$args` captures everything sequentially based on position. It doesn't inherently understand named parameters unless you manually parse them, which is exactly why the `param()` block was invented.
+
+    - id: sec-param
+      title: "The param() Block"
+      required: true
+      content: |
+        The correct way to handle inputs is the **`param()`** block. It must be the very first thing in your script file.
+        
+        ```powershell
+        param(
+            [string]$Directory,
+            [int]$Days
+        )
+        
+        Write-Host "Cleaning $Directory older than $Days days."
+        ```
+        
+        Now, a user can run your script using named flags, just like a native cmdlet!
+        `.\Cleanup.ps1 -Directory "C:\Logs" -Days 30`
+      check:
+        id: chk-param-2
+        type: multipleChoice
+        prompt: 'Where must a `param()` block be placed within a PowerShell script?'
+        choices:
+          - id: a
+            text: "At the very bottom of the file."
+          - id: b
+            text: "Inside the main function."
+          - id: c
+            text: "At the very top of the file, before any other executable code."
+          - id: d
+            text: "Anywhere, as long as it's defined before it is used."
+        answer:
+          choiceId: c
+        explanation: |
+          A `param()` block defines the parameters for the entire script and must be the first executable code statement in the file (though comments can precede it).
+
+    - id: sec-advanced
+      title: "Mandatory and Default Parameters"
+      required: true
+      content: |
+        You can make parameters strictly required by adding the `[Parameter(Mandatory=$true)]` attribute. If a user runs the script without providing it, PowerShell will pause and actively prompt them to type it in.
+        
+        You can also set default values using `=`.
+        
+        ```powershell
+        param(
+            [Parameter(Mandatory=$true)]
+            [string]$Directory,
+            
+            [int]$Days = 7
+        )
+        ```
+        In this example, `$Directory` is required, but if the user leaves out `-Days`, it defaults to `7`.
+      check:
+        id: chk-param-3
+        type: multipleChoice
+        prompt: 'What happens if a user executes a script but forgets to provide a parameter marked as `Mandatory=$true`?'
+        choices:
+          - id: a
+            text: "The script crashes immediately with a NullReferenceException."
+          - id: b
+            text: "The script ignores it and leaves the variable null."
+          - id: c
+            text: "PowerShell pauses execution and prompts the user to type in a value for it."
+          - id: d
+            text: "The script defaults to 0 or an empty string."
+        answer:
+          choiceId: c
+        explanation: |
+          PowerShell has built-in interactivity. If a Mandatory parameter is missing, it will safely halt and ask the user to provide the data before continuing.

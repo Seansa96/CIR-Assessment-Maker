@@ -1,0 +1,79 @@
+schemaVersion: 1
+id: pwsh-streams-concept-lesson
+title: "Understanding PowerShell Streams"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-streams-redirection
+  - pwsh-stdin-stdout-stderr
+skills:
+  - pwsh-streams-redirection
+  - pwsh-stdin-stdout-stderr
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    When a script runs, it generates data. Not all of this data is the same. The data you *want* is different from a warning message, which is different from a fatal error. PowerShell organizes these into multiple "Streams".
+  sections:
+    - id: sec-sixstreams
+      title: "The Six Streams"
+      required: true
+      content: |
+        In a standard Bash terminal, there are only two output streams: Standard Output (stdout) and Standard Error (stderr).
+        
+        PowerShell natively supports six distinct output streams:
+        1. **Success (Output)**: The actual data objects.
+        2. **Error**: Red terminating and non-terminating errors.
+        3. **Warning**: Yellow warning messages.
+        4. **Verbose**: Extra information not shown by default.
+        5. **Debug**: Developer debugging information.
+        6. **Information**: General host information (introduced in PSv5).
+        
+        When you use the pipeline (`|`), **only Stream 1 (Success) is passed down the pipeline by default!**
+      check:
+        id: chk-stream-1
+        type: multipleChoice
+        prompt: 'If you pipe a command into `Export-Csv`, which streams are sent to the CSV file by default?'
+        choices:
+          - id: a
+            text: "All of them."
+          - id: b
+            text: "Only Stream 1 (Success) and Stream 2 (Error)."
+          - id: c
+            text: "Only Stream 1 (Success)."
+          - id: d
+            text: "Only Stream 6 (Information)."
+        answer:
+          choiceId: c
+        explanation: |
+          The pipeline acts as a filter. By default, it only transports the actual success data (Stream 1). Errors and warnings print directly to the console, bypassing the pipeline.
+
+    - id: sec-write
+      title: "Writing to Streams"
+      required: true
+      content: |
+        You can write specifically to these streams using dedicated cmdlets.
+        
+        - `Write-Output "Data"` (Writes to Stream 1)
+        - `Write-Error "Failed"` (Writes to Stream 2)
+        - `Write-Warning "Disk low"` (Writes to Stream 3)
+        - `Write-Verbose "Processing file 1 of 100"` (Writes to Stream 4)
+        
+        **Important:** `Write-Host` (which we've used often) writes directly to the console display (or Stream 6). It intentionally bypasses the pipeline entirely. Do not use `Write-Host` if you want another command to receive the text.
+      check:
+        id: chk-stream-2
+        type: multipleChoice
+        prompt: 'Why is it generally discouraged to use `Write-Host` to output data in advanced scripts?'
+        choices:
+          - id: a
+            text: "Because it writes to Stream 2 (Error)."
+          - id: b
+            text: "Because it only accepts Strings, not numbers."
+          - id: c
+            text: "Because it bypasses the pipeline entirely. The data goes straight to the screen and cannot be captured or exported by the next command."
+          - id: d
+            text: "Because it requires Administrator privileges."
+        answer:
+          choiceId: c
+        explanation: |
+          `Write-Host` is for communicating with the human reading the screen. `Write-Output` is for communicating with the next command in the pipeline.

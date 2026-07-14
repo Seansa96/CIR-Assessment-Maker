@@ -1,0 +1,176 @@
+schemaVersion: 1
+id: pwsh-internals-quiz
+title: "Advanced Internals Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-streams-redirection
+  - pwsh-stdin-stdout-stderr
+  - pwsh-buffers
+skills:
+  - pwsh-streams-redirection
+  - pwsh-stdin-stdout-stderr
+  - pwsh-buffers
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-streams-redirection
+    prompt: |
+      By default, when you pipe (`|`) one command into another in PowerShell, which stream is passed to the next command?
+    choices:
+      - id: a
+        text: Stream 1 (Success) only.
+      - id: b
+        text: Stream 1 (Success) and Stream 2 (Error).
+      - id: c
+        text: All 6 streams.
+      - id: d
+        text: Stream 6 (Information).
+    answer:
+      choiceId: a
+    explanation: |
+      The pipeline isolates the data stream. Errors, warnings, and verbose messages are intentionally dropped from the pipeline so they don't corrupt the actual objects being processed.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-streams-redirection
+    prompt: |
+      Why is `Write-Host` considered bad practice for outputting data in a reusable script?
+    choices:
+      - id: a
+        text: It requires Administrator privileges.
+      - id: b
+        text: It only accepts integers.
+      - id: c
+        text: It bypasses the pipeline entirely (writing to Stream 6), meaning the data cannot be captured by variables or other cmdlets.
+      - id: d
+        text: It throws a terminating error.
+    answer:
+      choiceId: c
+    explanation: |
+      `Write-Host` is strictly for human consumption. If you want another command to be able to use the data, you must use `Write-Output` (Stream 1).
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-streams-redirection
+    prompt: |
+      How do you redirect ALL streams (Success, Error, Warning, Verbose, etc.) into a single log file and overwrite the file if it exists?
+    choices:
+      - id: a
+        text: '`*> log.txt`'
+      - id: b
+        text: '`*>> log.txt`'
+      - id: c
+        text: '`> log.txt`'
+      - id: d
+        text: '`6> log.txt`'
+    answer:
+      choiceId: a
+    explanation: |
+      The asterisk `*` targets all streams, and the single `>` overwrites the file.
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-streams-redirection
+    prompt: |
+      You are running a command that generates a lot of yellow Warning messages (Stream 3). You want to completely hide them. What should you do?
+    choices:
+      - id: a
+        text: '`Command | Hide-Warning`'
+      - id: b
+        text: '`Command 3> $null`'
+      - id: c
+        text: '`Command 2> $null`'
+      - id: d
+        text: Wrap it in a `catch` block.
+    answer:
+      choiceId: b
+    explanation: |
+      Redirecting Stream 3 to `$null` destroys the warning messages, ensuring a clean console output without affecting the actual success data.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-stdin-stdout-stderr
+    prompt: |
+      What is the POSIX equivalent (used in Linux/Mac/Native Exes) of PowerShell's Stream 2 (Error)?
+    choices:
+      - id: a
+        text: Stdin
+      - id: b
+        text: Stdout
+      - id: c
+        text: Stderr
+      - id: d
+        text: Stdnull
+    answer:
+      choiceId: c
+    explanation: |
+      Standard Error (Stderr) is the universal term for the stream dedicated to error messages.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-streams-redirection
+    prompt: |
+      What does the redirection operator `2>&1` do?
+    choices:
+      - id: a
+        text: It redirects Stream 2 (Error) to Stream 1 (Success), merging them together so errors can be passed down the pipeline.
+      - id: b
+        text: It multiplies the output by 2.
+      - id: c
+        text: It redirects Stream 1 to Stream 2.
+      - id: d
+        text: It runs the command twice.
+    answer:
+      choiceId: a
+    explanation: |
+      Merging Stream 2 into Stream 1 is required if you want to capture errors in a variable or export them to a CSV alongside successful data.
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-stdin-stdout-stderr
+    prompt: |
+      When a PowerShell script prompts a user to type in their name, from which stream is the script reading the data?
+    choices:
+      - id: a
+        text: Stderr
+      - id: b
+        text: Stdout
+      - id: c
+        text: Stdin (Standard Input)
+      - id: d
+        text: Buffer
+    answer:
+      choiceId: c
+    explanation: |
+      Stdin is the standard stream for receiving input, whether from a keyboard or from another program's Stdout.
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-buffers
+    prompt: |
+      In the context of streams, what is a "Buffer"?
+    choices:
+      - id: a
+        text: A command that stops errors.
+      - id: b
+        text: A temporary block of memory used to hold data while it flows between streams or to a file.
+      - id: c
+        text: A type of symbolic link.
+      - id: d
+        text: The file extension for a PowerShell script.
+    answer:
+      choiceId: b
+    explanation: |
+      Buffers act as waiting rooms in RAM, preventing the system from choking when one stream is writing faster than another stream can read.

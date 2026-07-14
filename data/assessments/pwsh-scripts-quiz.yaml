@@ -1,0 +1,172 @@
+schemaVersion: 1
+id: pwsh-scripts-quiz
+title: "Script Files and Parameters Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-script-authoring
+  - pwsh-script-execution
+  - pwsh-parameters
+skills:
+  - pwsh-script-authoring
+  - pwsh-script-execution
+  - pwsh-parameters
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-script-authoring
+    prompt: |
+      What is the correct file extension for a PowerShell script?
+    choices:
+      - id: a
+        text: '`.posh`'
+      - id: b
+        text: '`.sh`'
+      - id: c
+        text: '`.bat`'
+      - id: d
+        text: '`.ps1`'
+    answer:
+      choiceId: d
+    explanation: |
+      `.ps1` is the correct and only native extension for PowerShell script files.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-script-execution
+    prompt: |
+      You are in the directory `C:\Temp` where `script.ps1` is located. Which command will successfully run it?
+    choices:
+      - id: a
+        text: '`script.ps1`'
+      - id: b
+        text: '`.\script.ps1`'
+      - id: c
+        text: '`run script.ps1`'
+      - id: d
+        text: '`/script.ps1`'
+    answer:
+      choiceId: b
+    explanation: |
+      For security reasons, PowerShell requires an explicit path to run local scripts. `.\` refers to the current directory.
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-script-execution
+    prompt: |
+      Which Execution Policy allows you to run your own local scripts without a digital signature, but requires internet-downloaded scripts to be signed by a trusted publisher?
+    choices:
+      - id: a
+        text: Restricted
+      - id: b
+        text: RemoteSigned
+      - id: c
+        text: Unrestricted
+      - id: d
+        text: AllSigned
+    answer:
+      choiceId: b
+    explanation: |
+      `RemoteSigned` is the recommended daily-driver policy. It protects you from malicious internet downloads while letting you freely write and execute local code.
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-parameters
+    prompt: |
+      Where in a script file must a `param()` block be placed?
+    choices:
+      - id: a
+        text: Anywhere, as long as it is defined before it's called.
+      - id: b
+        text: At the very top, before any executable code.
+      - id: c
+        text: Inside a `Main()` function block.
+      - id: d
+        text: At the bottom of the file.
+    answer:
+      choiceId: b
+    explanation: |
+      The `param()` block parses input for the entire script. It must be the first executable code statement in the file.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-script-authoring
+    prompt: |
+      What character is used for a single-line comment in PowerShell?
+    choices:
+      - id: a
+        text: '`//`'
+      - id: b
+        text: '`<!--`'
+      - id: c
+        text: '`#`'
+      - id: d
+        text: '`--`'
+    answer:
+      choiceId: c
+    explanation: |
+      PowerShell uses `#` for single-line comments.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-parameters
+    prompt: |
+      In a `param()` block, how do you set a default value for a parameter?
+    choices:
+      - id: a
+        text: '`[string]$Server = "localhost"`'
+      - id: b
+        text: '`[Parameter(Default="localhost")]`'
+      - id: c
+        text: '`$Server -eq "localhost"`'
+      - id: d
+        text: '`$Server: "localhost"`'
+    answer:
+      choiceId: a
+    explanation: |
+      You assign a default value simply by using the assignment operator `=` right in the parameter declaration.
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-script-execution
+    prompt: |
+      True or False: Setting the Execution Policy to `Restricted` provides strict cryptographic security that malware cannot bypass.
+    choices:
+      - id: a
+        text: "True"
+      - id: b
+        text: "False"
+    answer:
+      choiceId: b
+    explanation: |
+      False. The Execution Policy is a user safety net to prevent accidental execution, not a security boundary. An attacker running code can simply launch `powershell.exe -ExecutionPolicy Bypass`.
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-parameters
+    prompt: |
+      What happens if a script defines `[Parameter(Mandatory=$true)][string]$Name`, and the user runs the script without providing `-Name`?
+    choices:
+      - id: a
+        text: The script exits with an error.
+      - id: b
+        text: The script pauses and prompts the user to type in a value for `Name`.
+      - id: c
+        text: The script sets the value to an empty string and continues.
+      - id: d
+        text: The script generates a random name.
+    answer:
+      choiceId: b
+    explanation: |
+      PowerShell automatically handles mandatory parameters by pausing execution and providing an interactive prompt for the missing data.

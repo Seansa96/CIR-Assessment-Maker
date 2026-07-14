@@ -1,0 +1,172 @@
+schemaVersion: 1
+id: pwsh-terminal-quiz
+title: "Terminal Customization Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-profiles
+  - pwsh-modules
+  - pwsh-shortcuts-prompts
+skills:
+  - pwsh-profiles
+  - pwsh-modules
+  - pwsh-shortcuts-prompts
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-profiles
+    prompt: |
+      You created an alias in your `$PROFILE` file using the standard PowerShell console. When you open Visual Studio Code, the alias is missing. Why?
+    choices:
+      - id: a
+        text: VS Code deletes aliases for security reasons.
+      - id: b
+        text: The default `$PROFILE` targets "Current Host". VS Code is a different Host than the standard console, so it loads a different profile file.
+      - id: c
+        text: You forgot to reboot the computer.
+      - id: d
+        text: VS Code uses Bash.
+    answer:
+      choiceId: b
+    explanation: |
+      Each host (Console, ISE, VS Code) has its own specific profile. If you want settings shared across all of them, use the `$PROFILE.CurrentUserAllHosts` file instead.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-profiles
+    prompt: |
+      How do you reveal the file paths for the other three Profile scopes (e.g., AllUsersAllHosts)?
+    choices:
+      - id: a
+        text: '`Get-ProfilePath -All`'
+      - id: b
+        text: Pipe `$PROFILE` to `Select-Object *` to view its hidden properties.
+      - id: c
+        text: Check the Windows Registry.
+      - id: d
+        text: '`Show-Profiles`'
+    answer:
+      choiceId: b
+    explanation: |
+      `$PROFILE` is a string object with properties containing the other paths. Piping it to `Select-Object *` exposes them.
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-modules
+    prompt: |
+      Which cmdlet allows you to search the PowerShell Gallery (Microsoft's central repository) for new packages?
+    choices:
+      - id: a
+        text: '`Find-Module`'
+      - id: b
+        text: '`Search-Gallery`'
+      - id: c
+        text: '`Get-Package`'
+      - id: d
+        text: '`Install-Module`'
+    answer:
+      choiceId: a
+    explanation: |
+      `Find-Module` searches the PSGallery and returns the available modules.
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-modules
+    prompt: |
+      You want to install a module, but you do not have Administrator rights on your workstation. What parameter MUST you use with `Install-Module`?
+    choices:
+      - id: a
+        text: '`-Bypass`'
+      - id: b
+        text: '`-Scope CurrentUser`'
+      - id: c
+        text: '`-Force`'
+      - id: d
+        text: '`-NoAdmin`'
+    answer:
+      choiceId: b
+    explanation: |
+      `-Scope CurrentUser` installs the module into your personal Documents folder, completely avoiding the need for elevated permissions.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-modules
+    prompt: |
+      True or False: In modern PowerShell, you must always explicitly type `Import-Module` to load a module before you can use any of its commands.
+    choices:
+      - id: a
+        text: "True"
+      - id: b
+        text: "False"
+    answer:
+      choiceId: b
+    explanation: |
+      False. PowerShell features Module Auto-Loading, which dynamically imports a module the instant you try to run one of its commands.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-shortcuts-prompts
+    prompt: |
+      Unlike Bash which uses the `$PS1` environment variable, how does PowerShell define what text appears at the prompt?
+    choices:
+      - id: a
+        text: It reads the `C:\Prompt.txt` file.
+      - id: b
+        text: It executes a function named `prompt` and displays whatever string the function returns.
+      - id: c
+        text: It is hardcoded in the executable and cannot be changed.
+      - id: d
+        text: It reads the registry.
+    answer:
+      choiceId: b
+    explanation: |
+      The prompt is driven by a live PowerShell function. This allows for incredibly dynamic prompts that can calculate time, directory status, or Git branches on the fly.
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-shortcuts-prompts
+    prompt: |
+      If you write a custom `prompt` function and run it in the console, your prompt changes. But when you restart PowerShell, it goes back to the default `PS C:\>`. How do you make it permanent?
+    choices:
+      - id: a
+        text: Run `Save-Prompt`.
+      - id: b
+        text: Add the function definition to your `$PROFILE` script.
+      - id: c
+        text: Run PowerShell as Administrator.
+      - id: d
+        text: It is impossible to make it permanent.
+    answer:
+      choiceId: b
+    explanation: |
+      Your `$PROFILE` executes every time you open a terminal. Placing the function there ensures it overwrites the default prompt every time.
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-shortcuts-prompts
+    prompt: |
+      What is **Oh My Posh**?
+    choices:
+      - id: a
+        text: A command to clean the terminal.
+      - id: b
+        text: A built-in Windows module.
+      - id: c
+        text: A popular community theme engine used to easily create complex, visually stunning terminal prompts.
+      - id: d
+        text: A text editor.
+    answer:
+      choiceId: c
+    explanation: |
+      Oh My Posh abstracts away the difficulty of writing complex prompt functions, allowing you to use beautiful pre-built themes with a single line of code.

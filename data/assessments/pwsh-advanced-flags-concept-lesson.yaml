@@ -1,0 +1,102 @@
+schemaVersion: 1
+id: pwsh-advanced-flags-concept-lesson
+title: "Advanced Flags (-WhatIf, -Confirm, -Force)"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-advanced-flags
+skills:
+  - pwsh-advanced-flags
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    PowerShell cmdlets that modify system state (deleting files, stopping services, modifying registry keys) often support a set of advanced, built-in Risk Mitigation parameters.
+  sections:
+    - id: sec-whatif
+      title: "The -WhatIf Switch"
+      required: true
+      content: |
+        The **`-WhatIf`** flag is arguably one of the best features of PowerShell. When appended to a destructive command, it **prevents the command from actually executing**, and instead prints to the console exactly what *would* have happened.
+        
+        `Stop-Process -Name "explorer" -WhatIf`
+        
+        Output:
+        `What if: Performing the operation "Stop-Process" on target "explorer (1234)".`
+        
+        Always use `-WhatIf` when testing a new script that deletes or modifies data.
+      check:
+        id: chk-flag-1
+        type: multipleChoice
+        prompt: 'If you execute `Remove-Item C:\Logs\* -WhatIf`, will the log files be deleted?'
+        choices:
+          - id: a
+            text: "Yes, it deletes them but prints a summary."
+          - id: b
+            text: "No, it simulates the deletion and prints what it would have deleted."
+          - id: c
+            text: "It prompts you for a Yes/No before deleting each one."
+          - id: d
+            text: "It moves them to the Recycle Bin instead."
+        answer:
+          choiceId: b
+        explanation: |
+          `-WhatIf` is a pure simulation. It executes the logic to find the targets, but safely aborts the actual modification step and reports the intended action instead.
+
+    - id: sec-confirm
+      title: "The -Confirm Switch"
+      required: true
+      content: |
+        If you are about to perform a highly destructive action (like deleting all users in an active directory), the system might prompt you anyway. 
+        
+        You can manually force this behavior using the **`-Confirm`** switch.
+        
+        `Restart-Computer -Confirm`
+        
+        This will pause execution and pop up a prompt asking `Are you sure you want to perform this action? [Y] Yes [A] Yes to All...`
+      check:
+        id: chk-flag-2
+        type: multipleChoice
+        prompt: 'What is the primary difference between `-WhatIf` and `-Confirm`?'
+        choices:
+          - id: a
+            text: "`-WhatIf` never executes the action, it only simulates. `-Confirm` asks for permission, and if granted, it executes the action."
+          - id: b
+            text: "There is no difference, they are aliases."
+          - id: c
+            text: "`-Confirm` is only for variables, `-WhatIf` is for files."
+          - id: d
+            text: "`-Confirm` automatically says yes to all prompts."
+        answer:
+          choiceId: a
+        explanation: |
+          `-WhatIf` strictly prevents execution. `-Confirm` provides an interactive gate where execution is paused until you grant explicit permission.
+
+    - id: sec-force
+      title: "The -Force Switch"
+      required: true
+      content: |
+        Sometimes, you are writing an automated script and you *know* a command will prompt you or fail due to a minor protection (like trying to delete a Read-Only file). 
+        
+        You can use the **`-Force`** switch to override these protections and suppress interactive prompts.
+        
+        `Remove-Item C:\ReadOnlyFile.txt -Force`
+        
+        This skips the confirmation and forces the deletion. **Use this with extreme caution.**
+      check:
+        id: chk-flag-3
+        type: multipleChoice
+        prompt: 'Why should you be careful when adding `-Force` to automated scripts?'
+        choices:
+          - id: a
+            text: "It makes the script run slower."
+          - id: b
+            text: "It requires Administrator privileges for every command."
+          - id: c
+            text: "It bypasses safety prompts and protections, which could lead to accidental data loss if the script has a bug."
+          - id: d
+            text: "It prevents variables from updating."
+        answer:
+          choiceId: c
+        explanation: |
+          Automating `-Force` removes your safety nets. If your `$Directory` variable is accidentally empty, `Remove-Item $Directory\* -Force` might aggressively delete things you didn't intend to delete.
