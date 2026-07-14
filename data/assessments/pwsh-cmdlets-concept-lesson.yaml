@@ -1,0 +1,78 @@
+schemaVersion: 1
+id: pwsh-cmdlets-concept-lesson
+title: "Introduction to PowerShell Cmdlets"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-cmdlets
+skills:
+  - pwsh-cmdlets
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Welcome to PowerShell! Unlike traditional shells that output plain text, PowerShell is built on .NET and outputs **objects**. This makes it incredibly powerful. The fundamental commands in PowerShell are called **cmdlets** (pronounced "command-lets").
+  sections:
+    - id: sec-verb-noun
+      title: "The Verb-Noun Naming Convention"
+      required: true
+      content: |
+        PowerShell uses a strict **Verb-Noun** naming convention for all its cmdlets. This makes discovering commands very intuitive.
+        
+        - **Verb:** The action you want to perform (e.g., `Get`, `Set`, `New`, `Remove`, `Invoke`).
+        - **Noun:** The resource you are acting upon (e.g., `Process`, `Service`, `Item`, `Content`).
+        
+        Examples:
+        - `Get-Process`: Gets a list of running processes on your computer.
+        - `Stop-Service`: Stops a background service.
+        - `New-Item`: Creates a new file or directory.
+        
+        Because of this standard, if you want to find information about your network adapters, you can easily guess that the command might be `Get-NetAdapter`.
+      check:
+        id: chk-cmdlet-1
+        type: multipleChoice
+        prompt: "Based on the Verb-Noun naming convention, which cmdlet would most likely be used to start a stopped service?"
+        choices:
+          - id: a
+            text: "Service-Start"
+          - id: b
+            text: "Start-Service"
+          - id: c
+            text: "Run-Service"
+          - id: d
+            text: "Execute-Service"
+        answer:
+          choiceId: b
+        explanation: |
+          `Start-Service` follows the standard `Verb-Noun` format using the approved verb `Start`.
+
+    - id: sec-aliases
+      title: "Aliases: The Bridge to Other Shells"
+      required: true
+      content: |
+        If you're used to Linux (bash) or Windows Command Prompt (cmd.exe), you might be used to commands like `ls`, `cd`, or `dir`. 
+        
+        PowerShell supports these through **Aliases**. An alias is simply a shortcut that points to a full cmdlet.
+        
+        - `ls` and `dir` are aliases for `Get-ChildItem`.
+        - `cd` is an alias for `Set-Location`.
+        - `cat` is an alias for `Get-Content`.
+        
+        While aliases are great for quick typing in the terminal, **best practice** dictates that you should always use the full Cmdlet names (`Get-ChildItem`) when writing scripts, so they are readable by others.
+      check:
+        id: chk-cmdlet-2
+        type: multipleChoice
+        prompt: "Why is it recommended to use full cmdlet names (like `Set-Location`) instead of aliases (like `cd`) when writing PowerShell scripts?"
+        choices:
+          - id: a
+            text: "Aliases run slower than full cmdlets."
+          - id: b
+            text: "Aliases cannot accept parameters."
+          - id: c
+            text: "Full cmdlets make scripts much more readable and maintainable for others."
+          - id: d
+            text: "Aliases are only available on Linux."
+        answer:
+          choiceId: c
+        explanation: |
+          Readability is key in scripting. Someone reading your script 2 years from now will instantly know what `Get-Content` does, but they might not know custom aliases.

@@ -1,0 +1,173 @@
+schemaVersion: 1
+id: pwsh-string-quiz
+title: "String Manipulation Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-string-basics
+  - pwsh-string-methods
+  - pwsh-regex
+skills:
+  - pwsh-string-basics
+  - pwsh-string-methods
+  - pwsh-regex
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-string-basics
+    prompt: |
+      What is the difference between single quotes (`' '`) and double quotes (`" "`) in PowerShell?
+    choices:
+      - id: a
+        text: Single quotes are for characters; double quotes are for strings.
+      - id: b
+        text: Single quotes are literal strings; double quotes allow variable interpolation.
+      - id: c
+        text: Single quotes allow variable interpolation; double quotes are literal strings.
+      - id: d
+        text: There is no difference in PowerShell.
+    answer:
+      choiceId: b
+    explanation: |
+      Double quotes allow PowerShell to look inside the string and expand variables and escape characters. Single quotes treat the text exactly as typed.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-string-basics
+    prompt: |
+      How do you correctly embed an object's property (like `$File.Length`) into a double-quoted string?
+    choices:
+      - id: a
+        text: `"Size: $File.Length"`
+      - id: b
+        text: `"Size: %File.Length%"`
+      - id: c
+        text: `"Size: $($File.Length)"`
+      - id: d
+        text: `"Size: ${File.Length}"`
+    answer:
+      choiceId: c
+    explanation: |
+      The `$()` syntax creates a sub-expression, forcing PowerShell to evaluate `$File.Length` first before inserting the result into the string.
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-string-basics
+    prompt: |
+      Which character is used to escape special characters (like forcing a newline or escaping a dollar sign) inside a double-quoted PowerShell string?
+    choices:
+      - id: a
+        text: Backslash `\`
+      - id: b
+        text: Forward slash `/`
+      - id: c
+        text: Backtick `` ` ``
+      - id: d
+        text: Tilde `~`
+    answer:
+      choiceId: c
+    explanation: |
+      Because `\` is used for Windows file paths, PowerShell uses the backtick `` ` `` as its escape character (e.g., `` `n `` for newline, `` `$ `` for literal dollar sign).
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-string-methods
+    prompt: |
+      What is the output of `"apple,banana,orange".Split(",")`?
+    choices:
+      - id: a
+        text: An array containing 3 string elements.
+      - id: b
+        text: A single string "applebananaorange".
+      - id: c
+        text: An array containing 1 string element.
+      - id: d
+        text: Error
+    answer:
+      choiceId: a
+    explanation: |
+      The `.Split()` method breaks the string at every comma, returning an array of the separated elements.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-string-methods
+    prompt: |
+      True or False: The .NET method `.Replace()` is case-insensitive.
+    choices:
+      - id: a
+        text: True
+      - id: b
+        text: False
+    answer:
+      choiceId: b
+    explanation: |
+      The `.Replace()` method is strictly case-sensitive. If you want a case-insensitive replacement, you should use the PowerShell `-replace` operator.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-regex
+    prompt: |
+      When using the `-match` operator, where does PowerShell automatically store the exact text that matched the regex pattern?
+    choices:
+      - id: a
+        text: In the `$LastMatch` variable.
+      - id: b
+        text: In the `$Matches` array variable.
+      - id: c
+        text: In the `$Regex` variable.
+      - id: d
+        text: It doesn't store it, you have to capture it manually.
+    answer:
+      choiceId: b
+    explanation: |
+      If `-match` returns True, the automatic `$Matches` variable is populated. `$Matches[0]` contains the full matched string.
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-regex
+    prompt: |
+      What does the `-creplace` operator do?
+    choices:
+      - id: a
+        text: It replaces text using a complex regex pattern.
+      - id: b
+        text: It performs a case-insensitive replacement.
+      - id: c
+        text: It performs a strictly case-sensitive replacement.
+      - id: d
+        text: It clears the replacement string.
+    answer:
+      choiceId: c
+    explanation: |
+      Prefixing PowerShell comparison operators with `c` (like `-cmatch` or `-creplace`) forces them to be case-sensitive. (Prefixing with `i` forces case-insensitivity, which is the default).
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-regex
+    prompt: |
+      What is the result of `'WIN-SERVER-01' -replace '\D', ''`?
+      *(Hint: `\D` matches any NON-digit character)*
+    choices:
+      - id: a
+        text: "WIN-SERVER-"
+      - id: b
+        text: "01"
+      - id: c
+        text: "WIN-SERVER-01"
+      - id: d
+        text: "1"
+    answer:
+      choiceId: b
+    explanation: |
+      The regex `\D` matches all non-digits (letters and dashes). The `-replace` operator replaces them all with nothing (an empty string). This effectively strips all letters and leaves only the numbers `"01"`.

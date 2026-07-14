@@ -531,6 +531,8 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-approximate-integration-worked-example")]
     [InlineData("physics-newtons-second-law-sprinter-worked-example")]
     [InlineData("physics-newtons-first-law-force-balance-worked-example")]
+    [InlineData("physics-atwood-tension-acceleration-worked-example")]
+    [InlineData("physics-atwood-friction-tension-acceleration-worked-example")]
     [InlineData("physics-propagation-of-errors-worked-example")]
     [InlineData("physics-propagation-of-errors-quiz")]
     [InlineData("physics-speed-displacement-basics-quiz")]
@@ -593,6 +595,14 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-convergence-test-selection-worked-example")]
     [InlineData("calc2-intro-to-sequences-worked-example")]
     [InlineData("calc2-sequences-glossary")]
+    [InlineData("calc2-sequence-fundamentals-convergence-easy-quiz")]
+    [InlineData("calc2-sequence-fundamentals-convergence-hard-quiz")]
+    [InlineData("calc2-sequence-limit-tools-medium-quiz")]
+    [InlineData("calc2-sequence-limit-tools-worked-example")]
+    [InlineData("calc2-series-fundamentals-convergence-easy-quiz")]
+    [InlineData("calc2-series-fundamentals-convergence-hard-quiz")]
+    [InlineData("calc2-series-limit-tools-medium-quiz")]
+    [InlineData("calc2-series-limit-tools-worked-example")]
     [InlineData("os-introduction-system-calls-concept-lesson")]
     [InlineData("os-introduction-system-calls-glossary")]
     [InlineData("os-introduction-system-calls-recall")]
@@ -745,10 +755,58 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-advanced-series-comparison-worked-example")]
     [InlineData("calc2-improper-integral-limit-comparison-worked-example")]
     [InlineData("calc2-taylor-remainder-decision-worked-example")]
+    [InlineData("physics-moment-of-inertia-ke-quiz-easy")]
+    [InlineData("physics-moment-of-inertia-ke-quiz-hard")]
+    [InlineData("physics-moment-of-inertia-ke-test-easy")]
+    [InlineData("physics-moment-of-inertia-ke-test-hard")]
+    [InlineData("physics-calculating-moi-quiz-easy")]
+    [InlineData("physics-calculating-moi-quiz-hard")]
+    [InlineData("physics-calculating-moi-test-easy")]
+    [InlineData("physics-calculating-moi-test-hard")]
+    [InlineData("physics-constant-angular-acceleration-quiz-easy")]
+    [InlineData("physics-constant-angular-acceleration-quiz-hard")]
+    [InlineData("physics-constant-angular-acceleration-test-easy")]
+    [InlineData("physics-constant-angular-acceleration-test-hard")]
+    [InlineData("physics-torque-quiz-easy")]
+    [InlineData("physics-torque-quiz-hard")]
+    [InlineData("physics-torque-test-easy")]
+    [InlineData("physics-torque-test-hard")]
+    [InlineData("physics-rotational-work-power-quiz-easy")]
+    [InlineData("physics-rotational-work-power-quiz-hard")]
+    [InlineData("physics-rotational-work-power-test-easy")]
+    [InlineData("physics-rotational-work-power-test-hard")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
             new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var loaded = await repository.GetByIdAsync(assessmentId);
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.NotNull(loaded);
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("calc2-sequence-fundamentals-convergence-easy-quiz")]
+    [InlineData("calc2-sequence-fundamentals-convergence-hard-quiz")]
+    [InlineData("calc2-sequence-limit-tools-medium-quiz")]
+    [InlineData("calc2-sequence-limit-tools-worked-example")]
+    [InlineData("calc2-series-fundamentals-convergence-easy-quiz")]
+    [InlineData("calc2-series-fundamentals-convergence-hard-quiz")]
+    [InlineData("calc2-series-limit-tools-medium-quiz")]
+    [InlineData("calc2-series-limit-tools-worked-example")]
+    public async Task Repository_loads_and_validates_sequence_and_series_limit_tool_content(string assessmentId)
+    {
+        var repositoryDataRoot = FindRepositoryDataRoot();
+        var dataRoot = CreateDataRoot();
+        File.Copy(
+            Path.Combine(repositoryDataRoot, "assessments", $"{assessmentId}.yaml"),
+            Path.Combine(dataRoot, "assessments", $"{assessmentId}.yaml"));
+
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
             new AssessmentValidator());
 
         var loaded = await repository.GetByIdAsync(assessmentId);
@@ -765,6 +823,38 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("physics-newtons-third-law-concept-lesson")]
     [InlineData("physics-static-kinetic-friction-concept-lesson")]
     public async Task Repository_validates_physics_dynamics_concept_lessons(string assessmentId)
+    {
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+        Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Theory]
+    [InlineData("physics-moment-of-inertia-ke-quiz-easy")]
+    [InlineData("physics-moment-of-inertia-ke-quiz-hard")]
+    [InlineData("physics-moment-of-inertia-ke-test-easy")]
+    [InlineData("physics-moment-of-inertia-ke-test-hard")]
+    [InlineData("physics-calculating-moi-quiz-easy")]
+    [InlineData("physics-calculating-moi-quiz-hard")]
+    [InlineData("physics-calculating-moi-test-easy")]
+    [InlineData("physics-calculating-moi-test-hard")]
+    [InlineData("physics-constant-angular-acceleration-quiz-easy")]
+    [InlineData("physics-constant-angular-acceleration-quiz-hard")]
+    [InlineData("physics-constant-angular-acceleration-test-easy")]
+    [InlineData("physics-constant-angular-acceleration-test-hard")]
+    [InlineData("physics-torque-quiz-easy")]
+    [InlineData("physics-torque-quiz-hard")]
+    [InlineData("physics-torque-test-easy")]
+    [InlineData("physics-torque-test-hard")]
+    [InlineData("physics-rotational-work-power-quiz-easy")]
+    [InlineData("physics-rotational-work-power-quiz-hard")]
+    [InlineData("physics-rotational-work-power-test-easy")]
+    [InlineData("physics-rotational-work-power-test-hard")]
+    public async Task Repository_validates_rotational_quizzes_and_tests(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
             new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },

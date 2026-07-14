@@ -65,7 +65,7 @@ public sealed class SqliteAssessmentSearchService
 
         if (!string.IsNullOrWhiteSpace(subjectId))
         {
-            sql.Append(" AND (subject_id = @subjectId OR subject_id IS NULL)");
+            sql.Append(" AND (subject_id = @subjectId COLLATE NOCASE OR subject_id IS NULL)");
         }
         
         // SQLite doesn't natively do fast bounded Levenshtein without custom extensions, 
@@ -166,10 +166,10 @@ public sealed class SqliteAssessmentSearchService
                 """);
         }
 
-        if (!string.IsNullOrWhiteSpace(request.SubjectId)) sql.Append(" AND a.category_id = @subjectId");
-        if (!string.IsNullOrWhiteSpace(request.LearningGoal)) sql.Append(" AND a.learning_goal = @goal");
-        if (!string.IsNullOrWhiteSpace(request.ActivityType)) sql.Append(" AND a.activity_type = @activity");
-        if (!string.IsNullOrWhiteSpace(request.AssessmentType)) sql.Append(" AND a.assessment_type = @type");
+        if (!string.IsNullOrWhiteSpace(request.SubjectId)) sql.Append(" AND a.category_id = @subjectId COLLATE NOCASE");
+        if (!string.IsNullOrWhiteSpace(request.LearningGoal)) sql.Append(" AND a.learning_goal = @goal COLLATE NOCASE");
+        if (!string.IsNullOrWhiteSpace(request.ActivityType)) sql.Append(" AND a.activity_type = @activity COLLATE NOCASE");
+        if (!string.IsNullOrWhiteSpace(request.AssessmentType)) sql.Append(" AND a.assessment_type = @type COLLATE NOCASE");
 
         if (hasQuery) sql.Append(" ORDER BY bm25(assessment_search_fts) LIMIT 200"); // Limit for C# reranking
         else sql.Append(" ORDER BY a.title LIMIT @limit"); // No query, just filter
@@ -240,7 +240,11 @@ public sealed class SqliteAssessmentSearchService
             // Re-evaluating Area/Topic filters since they are not in the `assessments` table directly.
             // For a robust implementation, we would join the mapping tables. Here we do an approximation or just skip if we can't efficiently filter.
             // If topicId is provided, we can just check if def.SubcategoryIds contains it!
-            if (!string.IsNullOrWhiteSpace(request.TopicId) && !def.SubcategoryIds.Contains(request.TopicId)) continue;
+            if (!string.IsNullOrWhiteSpace(request.TopicId)
+                && !def.SubcategoryIds.Contains(request.TopicId, StringComparer.OrdinalIgnoreCase))
+            {
+                continue;
+            }
             
             // To properly filter by areaId without hitting the DB again, we assume areaId is handled externally 
             // or we skip it here and rely on TopicId (which is what the UI primarily uses for leaf filtering).

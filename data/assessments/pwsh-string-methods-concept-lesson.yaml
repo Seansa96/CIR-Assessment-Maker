@@ -1,0 +1,96 @@
+schemaVersion: 1
+id: pwsh-string-methods-concept-lesson
+title: "String Methods and Manipulation"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-string-methods
+skills:
+  - pwsh-string-methods
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    Because strings in PowerShell are .NET `System.String` objects, they come packed with built-in methods (functions) to manipulate them. You call a method by adding a period (`.`) after the string or variable, followed by the method name and parentheses `()`.
+  sections:
+    - id: sec-split
+      title: "Splitting Strings"
+      required: true
+      content: |
+        The `.Split()` method breaks a single string into an array of smaller strings based on a specific character (delimiter).
+        
+        `$Names = "Alice,Bob,Charlie"`
+        `$Array = $Names.Split(",")`
+        
+        Now, `$Array[0]` is "Alice", `$Array[1]` is "Bob", and so on. This is incredibly useful for parsing CSV lines, log entries, or paths.
+      check:
+        id: chk-meth-1
+        type: numericResponse
+        prompt: |
+          Consider the code:
+          `$Path = "C:\Users\Admin\Documents"`
+          `$Folders = $Path.Split("\")`
+          What is the total number of items in the `$Folders` array?
+        answer:
+          value: 4
+          tolerance: 0
+        explanation: |
+          Splitting by `\` creates an array with 4 elements: `"C:"`, `"Users"`, `"Admin"`, and `"Documents"`.
+
+    - id: sec-replace
+      title: "Replacing Text"
+      required: true
+      content: |
+        The `.Replace()` method swaps all occurrences of one string with another.
+        
+        `$Text = "I love cats. Cats are great."`
+        `$NewText = $Text.Replace("cats", "dogs")`
+        
+        **Important Note:** The `.Replace()` method is **case-sensitive**!
+        Because it is case-sensitive, `$NewText` will be `"I love dogs. Cats are great."` (Notice the capital 'Cats' was completely ignored).
+        
+        *(Later you will learn about the `-replace` operator, which is case-insensitive and uses regex!)*
+      check:
+        id: chk-meth-2
+        type: multipleChoice
+        prompt: "What is the output of `'Hello World'.Replace('hello', 'Hi')`?"
+        choices:
+          - id: a
+            text: "Hi World"
+          - id: b
+            text: "Hello World"
+          - id: c
+            text: "Error"
+          - id: d
+            text: "Hi hi"
+        answer:
+          choiceId: b
+        explanation: |
+          Because `.Replace()` is strictly case-sensitive, it looks exactly for lowercase 'hello'. It does not find it in 'Hello', so it makes zero replacements and returns the original string.
+
+    - id: sec-substring
+      title: "Substring and Trimming"
+      required: true
+      content: |
+        - **`.Substring(startIndex, length)`**: Extracts a portion of a string. Note that the index is zero-based.
+          `"PowerShell".Substring(0, 5)` returns `"Power"`.
+        
+        - **`.Trim()`**: Removes all whitespace from the beginning and end of a string. Highly useful for cleaning up user input or badly formatted data.
+          `"   Hello   ".Trim()` returns `"Hello"`.
+      check:
+        id: chk-meth-3
+        type: multipleChoice
+        prompt: "What will `"Scripting".Substring(2, 4)` output?"
+        choices:
+          - id: a
+            text: "crip"
+          - id: b
+            text: "ript"
+          - id: c
+            text: "Scri"
+          - id: d
+            text: "cript"
+        answer:
+          choiceId: b
+        explanation: |
+          Index 0 is 'S', Index 1 is 'c', Index 2 is 'r'. Starting at index 2 and grabbing 4 characters gives 'r', 'i', 'p', 't' -> `"ript"`.

@@ -1,0 +1,388 @@
+schemaVersion: 1
+id: physics-atwood-tension-acceleration-worked-example
+title: 'Atwood Machines: Tension and Acceleration'
+assessmentType: workedExample
+categoryId: physics-1
+subcategoryIds:
+  - physics-newton-laws
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - physics
+    - dynamics
+    - atwood-machine
+    - half-atwood-machine
+    - tension
+    - acceleration
+    - free-body-diagrams
+skills:
+  - physics-newton-laws
+  - newtons-laws
+  - force-models
+  - free-body-diagram
+  - tension
+  - acceleration
+  - atwood-machine
+  - half-atwood-machine
+  - inclined-plane
+  - system-equations
+workedExamples:
+  - id: we-atwood-standard-tension-acceleration
+    title: Standard Atwood Machine
+    problem: |
+      Two hanging masses are connected by a light string over a frictionless, massless pulley. The system is released from rest.
+
+      Let $m_1 = 3.0\text{ kg}$ on the left and $m_2 = 5.0\text{ kg}$ on the right. Use $g = 9.8\text{ m/s}^2$.
+
+      Find the magnitude of the acceleration and the tension in the string.
+
+      ![Standard Atwood machine with force arrows on both hanging masses](/media/physics/worked-examples/atwood-tension-standard.svg)
+    steps:
+      - id: step-atwood-standard-choose-direction
+        title: Choose the Direction of Motion
+        instruction: |
+          The larger mass is $m_2$, so the system accelerates with $m_2$ downward and $m_1$ upward.
+
+          A clean setup uses **positive along each mass's motion**:
+          - for $m_1$, upward is positive;
+          - for $m_2$, downward is positive.
+        type: multipleChoice
+        prompt: Which direction should be positive for $m_2$ if $m_2$ is heavier?
+        choices:
+          - id: a
+            text: Downward, because $m_2$ moves downward.
+          - id: b
+            text: Upward, because tension points upward.
+          - id: c
+            text: Either direction is impossible because the masses have different coordinate systems.
+        answer:
+          choiceId: a
+        explanation: |
+          You may choose any consistent sign convention, but choosing positive along the actual motion keeps the acceleration $a$ positive in both equations.
+
+      - id: step-atwood-standard-equations
+        title: Write Newton's Second Law for Both Masses
+        instruction: |
+          For $m_1$, tension points in the positive direction and weight points against the motion:
+
+          $$
+          T - m_1g = m_1a.
+          $$
+
+          For $m_2$, weight points in the positive direction and tension points against the motion:
+
+          $$
+          m_2g - T = m_2a.
+          $$
+        type: multipleChoice
+        prompt: Which pair of equations matches the chosen positive directions?
+        choices:
+          - id: a
+            text: '$T-m_1g=m_1a$ and $m_2g-T=m_2a$'
+          - id: b
+            text: '$m_1g-T=m_1a$ and $T-m_2g=m_2a$'
+          - id: c
+            text: '$T+m_1g=m_1a$ and $m_2g+T=m_2a$'
+        answer:
+          choiceId: a
+        explanation: |
+          Each mass has two forces. Along the chosen positive direction, the driving force is positive and the opposing force is negative.
+
+      - id: step-atwood-standard-acceleration
+        title: Solve for the Acceleration
+        instruction: |
+          Add the two equations:
+
+          $$
+          (T-m_1g)+(m_2g-T)=m_1a+m_2a.
+          $$
+
+          The tensions cancel because tension is internal to the two-mass system:
+
+          $$
+          (m_2-m_1)g=(m_1+m_2)a.
+          $$
+
+          So:
+
+          $$
+          a=\frac{(m_2-m_1)g}{m_1+m_2}.
+          $$
+        type: numericResponse
+        prompt: What is the acceleration in $\text{m/s}^2$?
+        answer:
+          value: 2.45
+          tolerance: 0.03
+        explanation: |
+          Substitute:
+
+          $$
+          a=\frac{(5.0-3.0)(9.8)}{5.0+3.0}
+          =\frac{19.6}{8.0}
+          =2.45\text{ m/s}^2.
+          $$
+
+          Related topic: Atwood machine system equation. The mass difference drives the system, while the total mass resists acceleration.
+
+      - id: step-atwood-standard-tension
+        title: Solve for the Tension
+        instruction: |
+          Now substitute $a=2.45\text{ m/s}^2$ into either single-mass equation.
+
+          Using the $m_1$ equation:
+
+          $$
+          T-m_1g=m_1a.
+          $$
+        type: numericResponse
+        prompt: What is the string tension in Newtons?
+        answer:
+          value: 36.75
+          tolerance: 0.05
+        explanation: |
+          Solve:
+
+          $$
+          T=m_1g+m_1a
+          =3.0(9.8)+3.0(2.45)
+          =36.75\text{ N}.
+          $$
+
+          You can check with $m_2$:
+
+          $$
+          T=m_2g-m_2a
+          =5.0(9.8)-5.0(2.45)
+          =36.75\text{ N}.
+          $$
+
+  - id: we-atwood-incline-no-friction
+    title: Atwood Machine with a Frictionless Inclined Plane
+    problem: |
+      A $2.0\text{ kg}$ mass $m_1$ hangs from a string over a pulley. The other end of the string is attached to a $6.0\text{ kg}$ block $m_2$ on a frictionless incline at $35^\circ$.
+
+      The block on the incline moves **down the plane**, pulling the hanging mass upward. Use $g=9.8\text{ m/s}^2$.
+
+      Find the acceleration and the tension.
+
+      ![Frictionless inclined-plane Atwood setup with the incline component of gravity and tension labeled](/media/physics/worked-examples/atwood-incline-no-friction.svg)
+    steps:
+      - id: step-atwood-incline-component
+        title: Identify the Driving Component
+        instruction: |
+          The inclined block does not use its full weight along the ramp. Only the component parallel to the incline pulls it down the plane:
+
+          $$
+          m_2g\sin\theta.
+          $$
+
+          The hanging mass resists this motion with its weight $m_1g$.
+        type: numericResponse
+        prompt: What is $m_2g\sin(35^\circ)$ in Newtons?
+        answer:
+          value: 33.72
+          tolerance: 0.1
+        explanation: |
+          Compute:
+
+          $$
+          m_2g\sin(35^\circ)=6.0(9.8)\sin(35^\circ)\approx 33.72\text{ N}.
+          $$
+
+          This is larger than $m_1g=19.6\text{ N}$, so the stated direction of motion is physically consistent.
+
+      - id: step-atwood-incline-equations
+        title: Write the Force Equations
+        instruction: |
+          Choose positive down the incline for $m_2$ and upward for $m_1$.
+
+          The equations become:
+
+          $$
+          m_2g\sin\theta - T = m_2a
+          $$
+
+          and
+
+          $$
+          T-m_1g=m_1a.
+          $$
+        type: multipleChoice
+        prompt: Why does $m_2g\sin\theta$ appear instead of $m_2g$ in the ramp equation?
+        choices:
+          - id: a
+            text: Because only the component of gravity parallel to the plane accelerates the block along the string.
+          - id: b
+            text: Because the normal force is always equal to zero on an incline.
+          - id: c
+            text: Because tension always equals the full weight of the inclined block.
+        answer:
+          choiceId: a
+        explanation: |
+          The block is constrained to move along the plane. The perpendicular component of gravity is balanced by the normal force, while the parallel component affects the acceleration.
+
+      - id: step-atwood-incline-acceleration
+        title: Add Equations and Solve for Acceleration
+        instruction: |
+          Add the equations so tension cancels:
+
+          $$
+          m_2g\sin\theta - m_1g = (m_1+m_2)a.
+          $$
+
+          Therefore:
+
+          $$
+          a=\frac{m_2g\sin\theta-m_1g}{m_1+m_2}.
+          $$
+        type: numericResponse
+        prompt: What is the acceleration in $\text{m/s}^2$?
+        answer:
+          value: 1.77
+          tolerance: 0.04
+        explanation: |
+          Substitute:
+
+          $$
+          a=\frac{33.72-19.6}{8.0}
+          \approx 1.77\text{ m/s}^2.
+          $$
+
+          Related topic: Inclined-plane Atwood machines. The system is driven by the difference between the ramp-parallel weight component and the hanging weight.
+
+      - id: step-atwood-incline-tension
+        title: Use One Mass to Find Tension
+        instruction: |
+          Use the hanging-mass equation:
+
+          $$
+          T-m_1g=m_1a.
+          $$
+        type: numericResponse
+        prompt: What is the tension in Newtons?
+        answer:
+          value: 23.13
+          tolerance: 0.08
+        explanation: |
+          Solve:
+
+          $$
+          T=m_1g+m_1a
+          =19.6+2.0(1.77)
+          \approx 23.13\text{ N}.
+          $$
+
+          Tension is slightly larger than the hanging weight because $m_1$ accelerates upward.
+
+  - id: we-atwood-horizontal-no-friction
+    title: Half-Atwood Machine on a Frictionless Table
+    problem: |
+      A $4.0\text{ kg}$ hanging mass $m_1$ is attached to a $6.0\text{ kg}$ block $m_2$ on a frictionless horizontal table. The string and pulley are ideal.
+
+      The hanging mass moves downward and pulls the table block to the right. Use $g=9.8\text{ m/s}^2$.
+
+      Find the acceleration and the tension.
+
+      ![Half-Atwood machine on a frictionless horizontal table with tension, normal force, and weight labeled](/media/physics/worked-examples/atwood-horizontal-no-friction.svg)
+    steps:
+      - id: step-atwood-horizontal-driving-force
+        title: Identify the Net External Driving Force
+        instruction: |
+          Treat both masses as one system. Tension is internal to the system, so it cancels when the equations are added.
+
+          On a frictionless horizontal table, the table block has no horizontal weight component. The only external force driving the system is the hanging weight $m_1g$.
+        type: multipleChoice
+        prompt: What force drives the acceleration of the two-mass system?
+        choices:
+          - id: a
+            text: '$m_1g$, the weight of the hanging mass'
+          - id: b
+            text: '$m_2g$, the weight of the block on the table'
+          - id: c
+            text: '$N$, the normal force on the table block'
+        answer:
+          choiceId: a
+        explanation: |
+          The table block's weight and normal force are vertical and cancel. The hanging mass's weight is what pulls the system.
+
+      - id: step-atwood-horizontal-equations
+        title: Write the Two Object Equations
+        instruction: |
+          Use positive downward for the hanging mass and positive rightward for the block on the table.
+
+          For the hanging mass:
+
+          $$
+          m_1g-T=m_1a.
+          $$
+
+          For the table block:
+
+          $$
+          T=m_2a.
+          $$
+        type: multipleChoice
+        prompt: Which equation belongs to the block on the frictionless table?
+        choices:
+          - id: a
+            text: '$T=m_2a$'
+          - id: b
+            text: '$m_2g-T=m_2a$'
+          - id: c
+            text: '$T-m_2g=m_2a$'
+        answer:
+          choiceId: a
+        explanation: |
+          The table block only accelerates horizontally. Its vertical forces do not appear in the horizontal Newton's second law equation.
+
+      - id: step-atwood-horizontal-acceleration
+        title: Solve for Acceleration
+        instruction: |
+          Add the equations:
+
+          $$
+          m_1g = (m_1+m_2)a.
+          $$
+
+          Therefore:
+
+          $$
+          a=\frac{m_1g}{m_1+m_2}.
+          $$
+        type: numericResponse
+        prompt: What is the acceleration in $\text{m/s}^2$?
+        answer:
+          value: 3.92
+          tolerance: 0.03
+        explanation: |
+          Substitute:
+
+          $$
+          a=\frac{4.0(9.8)}{4.0+6.0}
+          =3.92\text{ m/s}^2.
+          $$
+
+      - id: step-atwood-horizontal-tension
+        title: Solve for Tension
+        instruction: |
+          The easiest tension equation is the table block equation:
+
+          $$
+          T=m_2a.
+          $$
+        type: numericResponse
+        prompt: What is the tension in Newtons?
+        answer:
+          value: 23.52
+          tolerance: 0.05
+        explanation: |
+          Substitute:
+
+          $$
+          T=6.0(3.92)=23.52\text{ N}.
+          $$
+
+          Notice that the tension is less than the hanging weight $m_1g=39.2\text{ N}$ because part of the hanging mass's weight accelerates itself.

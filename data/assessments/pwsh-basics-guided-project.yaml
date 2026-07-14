@@ -1,0 +1,66 @@
+schemaVersion: 1
+id: pwsh-basics-guided-project
+title: "The Lost Config File"
+assessmentType: guidedProject
+categoryId: scripting
+subcategoryIds:
+  - pwsh-navigation
+  - pwsh-cmdlets
+guidedProject:
+  language: pwsh
+  projectKind: console
+  runnerMode: workspace
+  instructions: |
+    Welcome to your first PowerShell Guided Project! 
+    
+    You have been dropped into a secure container. A critical configuration file named `target-config.ini` has been misplaced somewhere inside the `/var/log/` directory structure. 
+    
+    Your task is to:
+    1. Write a script `find-it.ps1` that uses `Get-ChildItem` with the correct flags to search recursively for `target-config.ini` starting from `/var/log/`.
+    2. The script must output ONLY the full path of the file (e.g., using `(Get-ChildItem ...).FullName`).
+    
+    The testing system will execute your `find-it.ps1` script and verify it prints the correct path.
+  workspace:
+    entryPoint: find-it.ps1
+    allowedBaseImages:
+      - mcr.microsoft.com/powershell:lts-ubuntu-22.04
+    sourceGlobs:
+      - find-it.ps1
+    includePaths: []
+    writablePaths: []
+  files:
+    - path: find-it.ps1
+      readOnly: false
+      content: |
+        # Write your PowerShell command below to find the file and output its FullName
+        
+  fixtures:
+    - path: setup.sh
+      content: |
+        #!/bin/bash
+        mkdir -p /var/log/app/deep/nested/folder/
+        touch /var/log/app/deep/nested/folder/target-config.ini
+      runOnStart: true
+  scenarios: []
+  diagnostics: []
+  requiredChecks:
+    - id: check-find-file
+      title: "Script finds the correct file path"
+      description: "Your script must execute Get-ChildItem and output the FullName of the target file."
+      testCode: null
+      expectedOutputContains: []
+      run:
+        arguments: []
+        stdin: null
+        scenario: null
+      expect:
+        stdoutContains:
+          - "/var/log/app/deep/nested/folder/target-config.ini"
+        files: []
+  bonusChecks: []
+navigation:
+  learningGoal: apply
+  activityType: guidedProject
+  tags:
+    - powershell
+    - navigation

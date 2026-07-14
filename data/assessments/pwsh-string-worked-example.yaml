@@ -1,0 +1,59 @@
+schemaVersion: 1
+id: pwsh-string-worked-example
+title: "Extracting Data from Log Lines"
+assessmentType: workedExample
+categoryId: scripting
+subcategoryIds:
+  - pwsh-string-methods
+skills:
+  - pwsh-string-methods
+modeDefault: study
+workedExamples:
+  - id: we-log-parsing
+    title: "Parsing a CSV-like string"
+    problem: |
+      You are writing a script that reads a log file. One of the lines is assigned to a variable:
+      `$LogLine = " ERROR |   10452   | Connection Timeout "`
+      
+      You need to extract just the Event ID (the number `10452`) as a clean string without any extra spaces. Walk through the process of using string methods to get this value.
+    steps:
+      - id: s1-split
+        title: 'Split the string'
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+        prompt: How would you break this string into an array containing the three different parts?
+        instruction: |
+          Since the parts are separated by the pipe character (`|`), you can use the `.Split()` method.
+          `$Parts = $LogLine.Split("|")`
+          
+          This creates an array where:
+          - `$Parts[0]` is `" ERROR "`
+          - `$Parts[1]` is `"   10452   "`
+          - `$Parts[2]` is `" Connection Timeout "`
+
+      - id: s2-select
+        title: 'Select the correct element'
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+        prompt: How do you isolate just the section containing the Event ID?
+        instruction: |
+          Arrays in PowerShell are zero-indexed. The ID is the second element.
+          `$RawId = $Parts[1]`
+          
+          At this point, `$RawId` holds the string `"   10452   "`.
+
+      - id: s3-trim
+        title: 'Clean the whitespace'
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+        prompt: The string currently has spaces at the beginning and end. What method removes them?
+        instruction: |
+          Use the `.Trim()` method to remove the leading and trailing whitespace.
+          `$CleanId = $RawId.Trim()`
+          
+          *(You can chain all of this together in one line: `$CleanId = $LogLine.Split("|")[1].Trim()`)*
+          
+          The final value is cleanly `"10452"`.

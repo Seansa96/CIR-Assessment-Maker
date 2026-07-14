@@ -1,0 +1,91 @@
+schemaVersion: 1
+id: chem-gas-stoichiometry-concept-lesson
+title: Gas Stoichiometry
+assessmentType: conceptLesson
+categoryId: chemistry
+subcategoryIds:
+  - chem-gas-stoichiometry
+skills:
+  - chem-gas-stoichiometry
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    In earlier units, we used molar mass to convert between grams and moles in chemical reactions. But what if a reactant or product is a gas? Weighing a gas is extremely difficult! Instead, we measure the **volume, pressure, and temperature** of the gas, and use the Ideal Gas Law to find the moles. This is the essence of **Gas Stoichiometry**.
+  sections:
+    - id: sec-molar-volume-stp
+      title: Molar Volume at STP
+      required: true
+      content: |
+        If a reaction occurs at exactly **Standard Temperature and Pressure (STP = 0 °C and 1.00 atm)**, there is a shortcut.
+
+        Using $PV = nRT$, we can calculate the volume of 1.00 mole of any ideal gas at STP:
+        $$V = \frac{nRT}{P} = \frac{1.00 \times 0.08206 \times 273.15}{1.00} = 22.4 \text{ L}$$
+
+        Therefore, **1 mole of any ideal gas at STP occupies 22.4 L.**
+        You can use this as a direct conversion factor (22.4 L/mol) in stoichiometry problems, *but only if the gas is at STP!*
+      check:
+        id: chk-stoich-1
+        type: numericResponse
+        prompt: |
+          In the reaction $2 H_2(g) + O_2(g) \to 2 H_2O(l)$, you consume 3.00 moles of $O_2$ gas at STP. What volume (in L) of $O_2$ gas was consumed?
+        answer:
+          value: 67.2
+          tolerance: 0.2
+        explanation: |
+          Since the gas is at STP, we can use the shortcut:
+          $$3.00 \text{ mol} \times 22.4 \text{ L/mol} = 67.2 \text{ L}$$
+
+    - id: sec-non-stp
+      title: Stoichiometry at Non-STP Conditions
+      required: true
+      content: |
+        Most chemical reactions don't happen in a freezing laboratory (0 °C). If the conditions are not STP, you **cannot** use 22.4 L/mol.
+
+        Instead, you must use the Ideal Gas Law ($PV = nRT$) as a bridge:
+        - **To find the volume of a gas product:** Use regular stoichiometry to find the *moles* of gas produced. Then plug $n$ into $PV = nRT$ to solve for $V$.
+        - **If given the volume of a gas reactant:** Plug the $P, V, T$ of the gas into $PV = nRT$ to solve for *moles* ($n$). Then use regular stoichiometry to find the amount of product.
+      media:
+        - type: image
+          src: /media/chemistry/solids-liquids-gases/chem-gas-stoichiometry-map.png
+          alt: Flow chart showing Mass -> Moles using Molar Mass, and Volume -> Moles using either 22.4 L/mol at STP, or PV=nRT for any conditions.
+          caption: "The Gas Stoichiometry Map: PV=nRT is the universal bridge connecting gas volume to moles."
+      check:
+        id: chk-stoich-2
+        type: multipleChoice
+        prompt: |
+          A student wants to calculate the volume of $CO_2$ gas produced in a reaction at 25 °C and 1.1 atm, knowing that 2.5 moles of $CO_2$ were formed. What is the correct approach?
+        choices:
+          - id: a
+            text: Multiply 2.5 moles by 22.4 L/mol.
+          - id: b
+            text: Use the Ideal Gas Law ($V = nRT/P$) with T = 298 K, P = 1.1 atm, n = 2.5 mol.
+          - id: c
+            text: Multiply 2.5 moles by the molar mass of CO₂ (44 g/mol).
+          - id: d
+            text: Divide 2.5 moles by 1.1 atm.
+        answer:
+          choiceId: b
+        explanation: |
+          Because the conditions are **not** STP (25 °C instead of 0 °C, 1.1 atm instead of 1.0 atm), the 22.4 L/mol shortcut is invalid. You must use the Ideal Gas Law ($PV = nRT$) to find the volume.
+
+    - id: sec-volume-ratios
+      title: Volume-to-Volume Ratios
+      required: true
+      content: |
+        According to Avogadro's Law, equal volumes of gas (at the same P and T) contain equal numbers of moles. This leads to an amazing shortcut: **For reactions where all reactants and products are gases, the mole ratio in the balanced equation is also the volume ratio!**
+
+        Example: $N_2(g) + 3 H_2(g) \to 2 NH_3(g)$
+        If you react 10 liters of $N_2$ (at constant P and T), you will need exactly 30 liters of $H_2$, and you will produce 20 liters of $NH_3$. You don't need to convert to moles at all!
+      check:
+        id: chk-stoich-3
+        type: numericResponse
+        prompt: |
+          Consider the reaction: $CH_4(g) + 2 O_2(g) \to CO_2(g) + 2 H_2O(g)$.
+          If you completely burn 5.0 L of methane ($CH_4$) gas, how many liters of oxygen ($O_2$) gas are required? (Assume constant temperature and pressure).
+        answer:
+          value: 10.0
+          tolerance: 0.1
+        explanation: |
+          Because both are gases at the same conditions, the stoichiometric mole ratio ($1 CH_4 : 2 O_2$) is exactly equal to the volume ratio.
+          $$5.0 \text{ L } CH_4 \times \frac{2 \text{ L } O_2}{1 \text{ L } CH_4} = 10.0 \text{ L } O_2$$

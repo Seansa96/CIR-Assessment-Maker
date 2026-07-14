@@ -1,0 +1,77 @@
+schemaVersion: 1
+id: pwsh-basics-guided-project-2
+title: "Log File Filter Challenge"
+assessmentType: guidedProject
+categoryId: scripting
+subcategoryIds:
+  - pwsh-navigation
+  - pwsh-cmdlets
+guidedProject:
+  language: pwsh
+  projectKind: console
+  runnerMode: workspace
+  instructions: |
+    Welcome to the Log File Filter Challenge!
+    
+    You have a directory at `/var/www/site/logs/` that is completely cluttered with hundreds of text files, backups, and log files.
+    
+    Your task is to write a script `filter-logs.ps1` that uses `Get-ChildItem` to list **ONLY** the names of files that end with `.log`.
+    
+    **Requirements:**
+    1. Do not list `.txt` or `.bak` files.
+    2. Output *only* the names of the files (e.g., `error.log`), not their full paths or other properties. You can use the `-Name` parameter of `Get-ChildItem` to achieve this.
+    3. Use the `-Filter` parameter to specify the file extension.
+    4. Your script must target the `/var/www/site/logs/` directory.
+    
+    The test suite will execute `filter-logs.ps1` and verify that only the correct file names are printed.
+  workspace:
+    entryPoint: filter-logs.ps1
+    allowedBaseImages:
+      - mcr.microsoft.com/powershell:lts-ubuntu-22.04
+    sourceGlobs:
+      - filter-logs.ps1
+    includePaths: []
+    writablePaths: []
+  files:
+    - path: filter-logs.ps1
+      readOnly: false
+      content: |
+        # Write your PowerShell command below to list only the names of .log files
+        
+  fixtures:
+    - path: setup.sh
+      content: |
+        #!/bin/bash
+        mkdir -p /var/www/site/logs/
+        touch /var/www/site/logs/access.log
+        touch /var/www/site/logs/error.log
+        touch /var/www/site/logs/notes.txt
+        touch /var/www/site/logs/backup.bak
+        touch /var/www/site/logs/system.log
+      runOnStart: true
+  scenarios: []
+  diagnostics: []
+  requiredChecks:
+    - id: check-log-filter
+      title: "Script filters and outputs correct log names"
+      description: "Your script must execute Get-ChildItem using the -Filter and -Name flags to output only the .log file names."
+      testCode: null
+      expectedOutputContains: []
+      run:
+        arguments: []
+        stdin: null
+        scenario: null
+      expect:
+        stdoutContains:
+          - "access.log"
+          - "error.log"
+          - "system.log"
+        files: []
+  bonusChecks: []
+navigation:
+  learningGoal: apply
+  activityType: guidedProject
+  tags:
+    - powershell
+    - navigation
+    - filtering

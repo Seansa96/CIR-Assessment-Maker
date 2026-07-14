@@ -1,0 +1,56 @@
+schemaVersion: 1
+id: pwsh-basics-worked-example
+title: "Discovering and Using Cmdlets"
+assessmentType: workedExample
+categoryId: scripting
+subcategoryIds:
+  - pwsh-cmdlets
+  - pwsh-help-flags
+skills:
+  - pwsh-cmdlets
+  - pwsh-help-flags
+modeDefault: study
+workedExamples:
+  - id: we-discover-service
+    title: "Finding and Restarting a Service"
+    problem: |
+      You are on a Windows Server and a web application has crashed. You know you need to restart the "W3SVC" service, but you can't remember the exact PowerShell command to do so. Walk through the process of discovering the command, learning how to use it, and executing it.
+    steps:
+      - id: s1-discover
+        title: 'Discover the command'
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+        prompt: What command would you run to find all cmdlets related to a "Service"?
+        instruction: |
+          Since PowerShell uses Verb-Noun naming, you know the noun will likely be `Service`.
+          You run:
+          `Get-Command -Noun Service`
+          *(Or `Get-Command *Service*`)*
+          
+          This returns a list including `Get-Service`, `Start-Service`, `Stop-Service`, and `Restart-Service`.
+
+      - id: s2-help
+        title: 'Learn how to use the command'
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+        prompt: Now that you know you want `Restart-Service`, how do you quickly find an example of how to use it?
+        instruction: |
+          You use the Help system with the Examples flag.
+          You run:
+          `Get-Help Restart-Service -Examples`
+          
+          The output shows you that you can restart a service by passing its name to the `-Name` parameter:
+          `Restart-Service -Name "serviceName"`
+
+      - id: s3-execute
+        title: 'Execute the command'
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+        prompt: Formulate the final command to restart the "W3SVC" service.
+        instruction: |
+          Using what you learned from the help file, the final command is:
+          `Restart-Service -Name "W3SVC"`
+          *(Note: Since `-Name` is often the default positional parameter, `Restart-Service W3SVC` also works!)*

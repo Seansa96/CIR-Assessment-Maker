@@ -1,0 +1,176 @@
+schemaVersion: 1
+id: pwsh-basics-quiz
+title: "PowerShell Basics Quiz"
+assessmentType: quiz
+categoryId: scripting
+subcategoryIds:
+  - pwsh-cmdlets
+  - pwsh-navigation
+  - pwsh-help-flags
+skills:
+  - pwsh-cmdlets
+  - pwsh-navigation
+  - pwsh-help-flags
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 8
+questions:
+  - id: q001
+    type: multipleChoice
+    skills:
+      - pwsh-cmdlets
+    prompt: |
+      What is the naming convention for all standard PowerShell commands?
+    choices:
+      - id: a
+        text: Noun-Verb
+      - id: b
+        text: Action-Target
+      - id: c
+        text: Verb-Noun
+      - id: d
+        text: Class-Method
+    answer:
+      choiceId: c
+    explanation: |
+      PowerShell uses a strict Verb-Noun convention (e.g., `Get-Process`, `Set-Location`), making commands predictable and discoverable.
+
+  - id: q002
+    type: multipleChoice
+    skills:
+      - pwsh-cmdlets
+    prompt: |
+      Why is PowerShell fundamentally different from traditional shells like Bash or Command Prompt?
+    choices:
+      - id: a
+        text: It only runs on Windows Server.
+      - id: b
+        text: It outputs .NET Objects instead of plain text strings.
+      - id: c
+        text: It requires a graphical user interface (GUI) to run.
+      - id: d
+        text: It does not support wildcards (*).
+    answer:
+      choiceId: b
+    explanation: |
+      While Bash pipes raw text streams, PowerShell pipes full, rich objects. This allows you to filter and manipulate data based on properties (like `.Length` or `.Name`) without needing to write complex Regex text parsers.
+
+  - id: q003
+    type: multipleChoice
+    skills:
+      - pwsh-navigation
+    prompt: |
+      Which cmdlet is used to change your current directory?
+    choices:
+      - id: a
+        text: Change-Directory
+      - id: b
+        text: Set-Location
+      - id: c
+        text: Move-Item
+      - id: d
+        text: Set-Path
+    answer:
+      choiceId: b
+    explanation: |
+      `Set-Location` is the PowerShell cmdlet equivalent to `cd`. 
+
+  - id: q004
+    type: multipleChoice
+    skills:
+      - pwsh-navigation
+    prompt: |
+      What is a PSDrive?
+    choices:
+      - id: a
+        text: A physical USB drive attached to the system.
+      - id: b
+        text: A cloud storage drive hosted on Azure.
+      - id: c
+        text: A data store (like the Registry or Environment Variables) mapped to look and act like a file system drive.
+      - id: d
+        text: A dedicated partition for PowerShell scripts.
+    answer:
+      choiceId: c
+    explanation: |
+      PSDrives allow you to use familiar cmdlets like `Set-Location` and `Get-ChildItem` to navigate the Registry (`HKLM:\`), Certificate store (`Cert:\`), and more.
+
+  - id: q005
+    type: multipleChoice
+    skills:
+      - pwsh-help-flags
+    prompt: |
+      You run a command and it fails. You want to read the official Microsoft documentation web page for the cmdlet. What is the fastest way?
+    choices:
+      - id: a
+        text: Open Google Chrome and search for the cmdlet name.
+      - id: b
+        text: Run `Get-Help <CmdletName> -Online`
+      - id: c
+        text: Run `Get-Help <CmdletName> -Full`
+      - id: d
+        text: Run `Get-Command <CmdletName> -Web`
+    answer:
+      choiceId: b
+    explanation: |
+      The `-Online` switch attached to `Get-Help` automatically opens your default browser directly to the Microsoft Docs page for that exact cmdlet.
+
+  - id: q006
+    type: multipleChoice
+    skills:
+      - pwsh-help-flags
+    prompt: |
+      You are looking for a command to restart your computer, but you don't know the exact cmdlet name. Which command is best suited to help you discover it?
+    choices:
+      - id: a
+        text: `Get-Help *Computer*`
+      - id: b
+        text: `Get-Command *Computer*`
+      - id: c
+        text: `Find-Cmdlet Restart`
+      - id: d
+        text: `Get-Service *Computer*`
+    answer:
+      choiceId: b
+    explanation: |
+      `Get-Command` is the discovery tool. By wrapping the noun in wildcards (`*Computer*`), it will list cmdlets like `Restart-Computer`, `Stop-Computer`, etc.
+
+  - id: q007
+    type: multipleChoice
+    skills:
+      - pwsh-navigation
+    prompt: |
+      When using `Get-ChildItem`, what does the `-Recurse` parameter do?
+    choices:
+      - id: a
+        text: It lists the files in reverse alphabetical order.
+      - id: b
+        text: It deletes the files after listing them.
+      - id: c
+        text: It retrieves items in the specified location, and in all child subfolders underneath it.
+      - id: d
+        text: It only lists folders, not files.
+    answer:
+      choiceId: c
+    explanation: |
+      `-Recurse` forces the cmdlet to dig down into every sub-directory recursively, building a massive list of every file in the tree.
+
+  - id: q008
+    type: multipleChoice
+    skills:
+      - pwsh-cmdlets
+    prompt: |
+      Why is it considered bad practice to use aliases (like `ls` or `cd`) inside saved PowerShell scripts?
+    choices:
+      - id: a
+        text: Aliases cause syntax errors when run outside of the interactive terminal.
+      - id: b
+        text: Aliases do not return objects.
+      - id: c
+        text: Aliases reduce script readability for others and can potentially be overwritten by users.
+      - id: d
+        text: Aliases take up more memory during execution.
+    answer:
+      choiceId: c
+    explanation: |
+      Using full cmdlet names (like `Get-ChildItem`) ensures your script is self-documenting and immune to a user having customized or changed their local aliases.

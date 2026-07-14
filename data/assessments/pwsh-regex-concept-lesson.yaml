@@ -1,0 +1,104 @@
+schemaVersion: 1
+id: pwsh-regex-concept-lesson
+title: "Regular Expressions in PowerShell"
+assessmentType: conceptLesson
+categoryId: scripting
+subcategoryIds:
+  - pwsh-regex
+skills:
+  - pwsh-regex
+modeDefault: practice
+randomizeQuestions: false
+lesson:
+  introduction: |
+    While .NET string methods are useful for simple tasks, PowerShell includes native operators for handling **Regular Expressions (Regex)**, giving you immense power to search, validate, and manipulate complex text.
+  sections:
+    - id: sec-match
+      title: "The -match Operator"
+      required: true
+      content: |
+        Instead of complicated .NET regex classes, PowerShell uses the native `-match` operator. It returns a simple True or False if the regex pattern is found anywhere in the string.
+        
+        `"User123" -match "\d+"` returns `True` (because `\d+` looks for one or more digits).
+        
+        **The $Matches Variable**
+        When `-match` successfully returns True, PowerShell automatically populates a special built-in variable called `$Matches` with the exact text it found!
+        
+        `"Error code: 404" -match "\d+"` -> Returns True.
+        If you immediately type `$Matches[0]`, it will output `404`.
+      check:
+        id: chk-regex-1
+        type: multipleChoice
+        prompt: "If you run `'My IP is 192.168.1.1' -match 'IP is'`, what is stored in `$Matches[0]`?"
+        choices:
+          - id: a
+            text: "192.168.1.1"
+          - id: b
+            text: "My IP is"
+          - id: c
+            text: "IP is"
+          - id: d
+            text: "$null (Nothing)"
+        answer:
+          choiceId: c
+        explanation: |
+          `$Matches[0]` always holds the exact substring that was matched by your regex pattern. Since your pattern was literally just `'IP is'`, that is exactly what was matched and stored.
+
+    - id: sec-replace-operator
+      title: "The -replace Operator"
+      required: true
+      content: |
+        Unlike the `.Replace()` string method, the PowerShell `-replace` operator uses Regex and is **case-insensitive** by default!
+        
+        `"I love Cats" -replace "cats", "Dogs"` returns `"I love Dogs"`.
+        
+        Because it uses Regex, you can do powerful replacements. For example, to strip all numbers out of a string:
+        `"S3cr3t P4ssw0rd" -replace "\d", ""` returns `"Scrt Psswrd"`.
+      check:
+        id: chk-regex-2
+        type: multipleChoice
+        prompt: "Which command will correctly remove all whitespace (spaces, tabs) from a string?"
+        choices:
+          - id: a
+            text: `"... " -replace "\s", ""`
+          - id: b
+            text: `"... ".Replace("\s", "")`
+          - id: c
+            text: `"... " -replace " ", ""`
+          - id: d
+            text: `"... ".Trim()`
+        answer:
+          choiceId: a
+        explanation: |
+          The `-replace` operator uses regex, where `\s` represents any whitespace character. `.Replace()` does not use regex, so it would literally look for a backslash followed by an 's'. `.Trim()` only removes whitespace at the *edges*, not in the middle.
+
+    - id: sec-case-sensitivity
+      title: "Case Sensitivity (c vs i)"
+      required: true
+      content: |
+        By default, all PowerShell comparison operators (`-eq`, `-match`, `-replace`, `-like`) are **case-insensitive**.
+        
+        If you specifically need them to be case-sensitive, you prepend a **`c`** to the operator:
+        - `-cmatch`
+        - `-creplace`
+        - `-ceq`
+        
+        `"HELLO" -replace "h", "b"` returns `"bELLO"`.
+        `"HELLO" -creplace "h", "b"` returns `"HELLO"` (No replacement, because capital H didn't match lowercase h).
+      check:
+        id: chk-regex-3
+        type: multipleChoice
+        prompt: "Which operator would you use to ensure your regex match is strictly case-sensitive?"
+        choices:
+          - id: a
+            text: "-imatch"
+          - id: b
+            text: "-match"
+          - id: c
+            text: "-cmatch"
+          - id: d
+            text: "-smatch"
+        answer:
+          choiceId: c
+        explanation: |
+          Prepending a `c` to any PowerShell comparison operator forces it to be Case-Sensitive.

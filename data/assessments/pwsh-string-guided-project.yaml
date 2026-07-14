@@ -1,0 +1,68 @@
+schemaVersion: 1
+id: pwsh-string-guided-project
+title: "The Config Sanitizer Challenge"
+assessmentType: guidedProject
+categoryId: scripting
+subcategoryIds:
+  - pwsh-string-methods
+  - pwsh-regex
+guidedProject:
+  language: pwsh
+  projectKind: console
+  runnerMode: workspace
+  instructions: |
+    Welcome to the Config Sanitizer Challenge!
+    
+    You have been provided with a raw, unformatted text string representing an internal network address that was scraped from a corrupted config file:
+    `$RawInput = "   SERVER_IP: 192.168.0.50   -- DO NOT SHARE "`
+    
+    Your task is to write a script `sanitize.ps1` that takes this string and extracts **only the IP address**.
+    
+    **Requirements:**
+    1. Define the variable `$RawInput = "   SERVER_IP: 192.168.0.50   -- DO NOT SHARE "` inside your script.
+    2. Use any combination of `.Split()`, `.Trim()`, `.Substring()`, or `-replace` / `-match` to isolate the IP address `192.168.0.50`.
+    3. Output the final, clean IP address string directly to the console.
+    
+    The testing system will run your script and verify that the only output is the isolated IP address.
+  workspace:
+    entryPoint: sanitize.ps1
+    allowedBaseImages:
+      - mcr.microsoft.com/powershell:lts-ubuntu-22.04
+    sourceGlobs:
+      - sanitize.ps1
+    includePaths: []
+    writablePaths: []
+  files:
+    - path: sanitize.ps1
+      readOnly: false
+      content: |
+        $RawInput = "   SERVER_IP: 192.168.0.50   -- DO NOT SHARE "
+        
+        # Write your string manipulation code below
+        # Make sure to output the final result!
+        
+  fixtures: []
+  scenarios: []
+  diagnostics: []
+  requiredChecks:
+    - id: check-sanitized-output
+      title: "Script outputs the clean IP address"
+      description: "Your script must output exactly '192.168.0.50' with no extra spaces or text."
+      testCode: null
+      expectedOutputContains: []
+      run:
+        arguments: []
+        stdin: null
+        scenario: null
+      expect:
+        stdoutContains:
+          - "192.168.0.50"
+        files: []
+  bonusChecks: []
+navigation:
+  learningGoal: apply
+  activityType: guidedProject
+  tags:
+    - powershell
+    - strings
+    - regex
