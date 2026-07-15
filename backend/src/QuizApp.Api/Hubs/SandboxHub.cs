@@ -56,8 +56,14 @@ public class SandboxHub : Hub
             await _sandboxService.StartContainerAsync(containerId, cts.Token);
             await SendStatusAsync(connectionId, "container-started", $"Container {ShortId(containerId)} is running.");
 
-            await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, cts.Token);
-            await SendStatusAsync(connectionId, "resized", $"Terminal size set to {cols}x{rows}.");
+            if (await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, cts.Token))
+            {
+                await SendStatusAsync(connectionId, "resized", $"Terminal size set to {cols}x{rows}.");
+            }
+            else
+            {
+                await SendStatusAsync(connectionId, "resize-pending", $"Terminal resize to {cols}x{rows} will retry after the terminal stream attaches.");
+            }
 
             await SendStatusAsync(connectionId, "attaching", "Attaching terminal stream.");
             _ = Task.Run(async () =>
@@ -102,6 +108,7 @@ public class SandboxHub : Hub
             if (readyTask == inputReady.Task)
             {
                 await inputReady.Task;
+                await ResizeTerminalWithRetriesAsync(connectionId, containerId, cols, rows, cts.Token);
                 await Clients.Client(connectionId).SendAsync("SandboxReady");
                 await SendStatusAsync(connectionId, "ready", "Sandbox is ready for input.");
             }
@@ -146,7 +153,10 @@ public class SandboxHub : Hub
     {
         if (_connectionContainers.TryGetValue(Context.ConnectionId, out var containerId))
         {
-            await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, CancellationToken.None);
+            if (!await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, CancellationToken.None))
+            {
+                await Clients.Caller.SendAsync("SandboxStatus", "resize-skipped", $"Terminal resize to {cols}x{rows} was not applied.");
+            }
         }
     }
 
@@ -175,6 +185,26 @@ public class SandboxHub : Hub
     {
         _logger.LogInformation("Sandbox {Phase} for {ConnectionId}: {Message}", phase, connectionId, message);
         return Clients.Client(connectionId).SendAsync("SandboxStatus", phase, message);
+    }
+
+    private async Task ResizeTerminalWithRetriesAsync(string connectionId, string containerId, int cols, int rows, CancellationToken cancellationToken)
+    {
+        for (var attempt = 1; attempt <= 5; attempt++)
+        {
+            if (await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, cancellationToken))
+            {
+                await SendStatusAsync(connectionId, "resized", $"Terminal size confirmed at {cols}x{rows}.");
+                return;
+            }
+
+            if (attempt < 5)
+            {
+                await SendStatusAsync(connectionId, "resize-retry", $"Terminal resize attempt {attempt} did not apply yet; retrying.");
+                await Task.Delay(250, cancellationToken);
+            }
+        }
+
+        await SendStatusAsync(connectionId, "resize-warning", $"Terminal resize to {cols}x{rows} could not be confirmed. Input is enabled, but some shells may behave poorly.");
     }
 
     private static string ShortId(string containerId)

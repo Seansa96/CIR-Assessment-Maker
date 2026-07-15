@@ -67,11 +67,7 @@ public sealed class SandboxService : ISandboxService
         // The InitialCommand in the YAML is a full shell invocation like:
         //   pwsh -NoExit -Command "& /workspace/.cir/setup.ps1; ..."
         // We split it into tokens ourselves so Docker exec's pwsh as PID 1.
-        IList<string>? cmd = null;
-        if (!string.IsNullOrWhiteSpace(sandboxDef.InitialCommand))
-        {
-            cmd = SplitCommand(sandboxDef.InitialCommand);
-        }
+        var cmd = BuildDockerCommand(sandboxDef);
 
         var createParameters = new CreateContainerParameters
         {
@@ -110,6 +106,68 @@ public sealed class SandboxService : ISandboxService
         {
             throw new InvalidOperationException($"Docker did not start sandbox container {containerId[..Math.Min(containerId.Length, 12)]}.");
         }
+    }
+
+    private static IList<string>? BuildDockerCommand(QuizApp.Core.Domain.SandboxDefinition sandboxDef)
+    {
+        if (string.IsNullOrWhiteSpace(sandboxDef.InitialCommand))
+        {
+            return null;
+        }
+
+        var tokens = SplitCommand(sandboxDef.InitialCommand);
+        if (!IsPowerShellSandbox(sandboxDef, tokens))
+        {
+            return tokens;
+        }
+
+        var executable = tokens.Count > 0 ? tokens[0] : "pwsh";
+        var originalScript = ExtractPowerShellCommand(tokens);
+        var startupScript = "Remove-Module PSReadLine -ErrorAction SilentlyContinue";
+        if (!string.IsNullOrWhiteSpace(originalScript))
+        {
+            startupScript += "; " + originalScript;
+        }
+
+        return new List<string>
+        {
+            executable,
+            "-NoLogo",
+            "-NoProfile",
+            "-NoExit",
+            "-Command",
+            startupScript
+        };
+    }
+
+    private static bool IsPowerShellSandbox(QuizApp.Core.Domain.SandboxDefinition sandboxDef, IList<string> tokens)
+    {
+        if (sandboxDef.Language.Equals("pwsh", StringComparison.OrdinalIgnoreCase) ||
+            sandboxDef.Language.Equals("powershell", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        var executable = tokens.FirstOrDefault();
+        return executable is not null &&
+            (executable.Equals("pwsh", StringComparison.OrdinalIgnoreCase) ||
+             executable.Equals("powershell", StringComparison.OrdinalIgnoreCase) ||
+             executable.Equals("powershell.exe", StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static string? ExtractPowerShellCommand(IList<string> tokens)
+    {
+        for (var i = 0; i < tokens.Count; i++)
+        {
+            if ((tokens[i].Equals("-Command", StringComparison.OrdinalIgnoreCase) ||
+                 tokens[i].Equals("-c", StringComparison.OrdinalIgnoreCase)) &&
+                i + 1 < tokens.Count)
+            {
+                return string.Join(' ', tokens.Skip(i + 1));
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -375,8 +433,13 @@ public sealed class SandboxService : ISandboxService
         }
     }
 
-    public async Task ResizeTerminalAsync(string containerId, int cols, int rows, CancellationToken cancellationToken)
+    public async Task<bool> ResizeTerminalAsync(string containerId, int cols, int rows, CancellationToken cancellationToken)
     {
+        if (cols <= 0 || rows <= 0)
+        {
+            return false;
+        }
+
         try
         {
             await _dockerClient.Containers.ResizeContainerTtyAsync(containerId, new ContainerResizeParameters
@@ -384,11 +447,13 @@ public sealed class SandboxService : ISandboxService
                 Width = (uint)cols,
                 Height = (uint)rows
             }, cancellationToken);
+            return true;
         }
         catch
         {
             // Best effort — container may have already exited
         }
+        return false;
     }
 }
 

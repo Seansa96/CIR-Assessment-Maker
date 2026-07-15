@@ -6,7 +6,7 @@ public interface ISandboxService
     Task StartContainerAsync(string containerId, CancellationToken cancellationToken);
     Task AttachToContainerAsync(string containerId, Func<byte[], Task> onOutput, Func<Func<byte[], Task>, Task> configureInputProxy, CancellationToken cancellationToken);
     Task StopContainerAsync(string containerId, CancellationToken cancellationToken);
-    Task ResizeTerminalAsync(string containerId, int cols, int rows, CancellationToken cancellationToken);
+    Task<bool> ResizeTerminalAsync(string containerId, int cols, int rows, CancellationToken cancellationToken);
 }
 
 public sealed record SandboxContainerSession(string ContainerId, string? WorkspacePath);

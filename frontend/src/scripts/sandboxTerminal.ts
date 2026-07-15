@@ -104,6 +104,8 @@ export class SandboxTerminal {
             this.readyForInput = true;
             this.warnedInputNotReady = false;
             this.terminal.writeln("\x1b[32m[ready] Sandbox terminal is ready for input.\x1b[0m");
+            this.fitAddon.fit();
+            this.sendResize();
             this.terminal.focus();
         });
 
