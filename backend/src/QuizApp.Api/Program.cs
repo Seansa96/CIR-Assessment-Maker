@@ -13,7 +13,13 @@ using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(options =>
+{
+    // Keep alive so the WebSocket stays connected during idle sandbox sessions
+    options.ClientTimeoutInterval = TimeSpan.FromMinutes(10);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+});
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -77,7 +83,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("http://localhost:4321", "http://127.0.0.1:4321", "http://localhost:3000", "http://127.0.0.1:3000")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -118,8 +125,44 @@ if (app.Environment.IsDevelopment())
 app.UseCors("LocalFrontend");
 
 app.MapHub<SandboxHub>("/sandbox-hub").RequireCors("LocalFrontend");
+app.MapHub<DiagnosticHub>("/diagnostic-hub").RequireCors("LocalFrontend");
 
 var api = app.MapGroup("/api");
+
+api.MapGet("/diagnostics/docker-stream-test", async (QuizApp.Core.Services.ISandboxService sandboxService, CancellationToken ct) =>
+{
+    var attemptId = "diag-" + Guid.NewGuid().ToString("N");
+    var sandboxDef = new QuizApp.Core.Domain.SandboxDefinition(
+        Language: "pwsh",
+        Image: "mcr.microsoft.com/powershell:latest",
+        InitialCommand: "pwsh -NoExit -Command \"Write-Host 'Hello from raw Docker stream!'; Start-Sleep -Seconds 2\"",
+        Instructions: "",
+        ReadOnlyFileSystem: false
+    );
+
+    var session = await sandboxService.CreateContainerAsync(attemptId, sandboxDef, "http://localhost:5000", ct);
+    var containerId = session.ContainerId;
+    var outputLog = new System.Text.StringBuilder();
+    
+    // Attach and capture raw byte output lengths
+    var attachTask = sandboxService.AttachToContainerAsync(containerId, 
+        async (bytes) => {
+            outputLog.AppendLine($"[Chunk Length: {bytes.Length} bytes]");
+            outputLog.AppendLine(BitConverter.ToString(bytes));
+            outputLog.AppendLine(System.Text.Encoding.UTF8.GetString(bytes));
+            await Task.CompletedTask;
+        }, 
+        (writeFunc) => Task.CompletedTask, 
+        ct);
+
+    await Task.Delay(250, ct);
+    await sandboxService.StartContainerAsync(containerId, ct);
+
+    await Task.Delay(3000, ct);
+    await sandboxService.StopContainerAsync(containerId, CancellationToken.None);
+    return Results.Text(outputLog.ToString(), "text/plain");
+});
+
 
 api.MapGet("/settings", async (ISettingsRepository repository, CancellationToken cancellationToken) =>
 {

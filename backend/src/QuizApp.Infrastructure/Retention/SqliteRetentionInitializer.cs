@@ -101,11 +101,32 @@ public sealed class SqliteRetentionInitializer
                 definition_json TEXT NOT NULL,
                 source_path TEXT NOT NULL,
                 content_hash TEXT NOT NULL,
+                source_last_write_utc TEXT NULL,
+                source_length INTEGER NULL,
+                import_status TEXT NOT NULL DEFAULT 'valid',
+                last_error TEXT NULL,
                 is_active INTEGER NOT NULL DEFAULT 1,
                 imported_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
             );
             """, cancellationToken);
+
+        if (!await ColumnExistsAsync(connection, "assessments", "source_last_write_utc", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE assessments ADD COLUMN source_last_write_utc TEXT NULL;", cancellationToken);
+        }
+        if (!await ColumnExistsAsync(connection, "assessments", "source_length", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE assessments ADD COLUMN source_length INTEGER NULL;", cancellationToken);
+        }
+        if (!await ColumnExistsAsync(connection, "assessments", "import_status", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE assessments ADD COLUMN import_status TEXT NOT NULL DEFAULT 'valid';", cancellationToken);
+        }
+        if (!await ColumnExistsAsync(connection, "assessments", "last_error", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE assessments ADD COLUMN last_error TEXT NULL;", cancellationToken);
+        }
 
         await ExecuteAsync(connection, """
             CREATE TABLE IF NOT EXISTS assessment_subcategories (

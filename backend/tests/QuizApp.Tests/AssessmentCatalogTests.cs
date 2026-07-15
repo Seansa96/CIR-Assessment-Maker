@@ -16,21 +16,56 @@ public sealed class SqliteAssessmentCatalogTests
         await File.WriteAllTextAsync(assessmentPath, QuizYaml("sample-quiz", "First title", "known-topic"));
 
         await fixture.Initializer.InitializeAsync();
-        await fixture.Importer.ImportAsync();
-        await fixture.Importer.ImportAsync();
+        var firstImport = await fixture.Importer.ImportAsync();
+        Assert.Equal(1, firstImport.Imported);
+
+        var secondImport = await fixture.Importer.ImportAsync();
+        Assert.Equal(1, secondImport.SkippedUnchanged);
         Assert.Equal(("First title", 1L), await ReadCatalogRowAsync(fixture.Sqlite.DatabasePath, "sample-quiz"));
 
         await File.WriteAllTextAsync(assessmentPath, QuizYaml("sample-quiz", "Updated title", "known-topic"));
-        await fixture.Importer.ImportAsync();
+        File.SetLastWriteTimeUtc(assessmentPath, DateTime.UtcNow.AddMinutes(1));
+        var changedImport = await fixture.Importer.ImportAsync();
+        Assert.Equal(1, changedImport.Imported);
         Assert.Equal(("Updated title", 1L), await ReadCatalogRowAsync(fixture.Sqlite.DatabasePath, "sample-quiz"));
 
         await File.WriteAllTextAsync(assessmentPath, "schemaVersion: 1\nid: sample-quiz\ntitle: \"unterminated");
-        await fixture.Importer.ImportAsync();
+        File.SetLastWriteTimeUtc(assessmentPath, DateTime.UtcNow.AddMinutes(2));
+        var invalidImport = await fixture.Importer.ImportAsync();
+        Assert.Equal(1, invalidImport.Invalid);
         Assert.Equal(("Updated title", 1L), await ReadCatalogRowAsync(fixture.Sqlite.DatabasePath, "sample-quiz"));
+        Assert.Equal("invalid", await ReadImportStatusAsync(fixture.Sqlite.DatabasePath, "sample-quiz"));
 
         File.Delete(assessmentPath);
-        await fixture.Importer.ImportAsync();
+        var missingImport = await fixture.Importer.ImportAsync();
+        Assert.Equal(1, missingImport.MissingInactive);
         Assert.Equal(("Updated title", 0L), await ReadCatalogRowAsync(fixture.Sqlite.DatabasePath, "sample-quiz"));
+    }
+
+    [Fact]
+    public async Task SqliteAssessmentCatalog_reindexes_unchanged_files_when_taxonomy_changes()
+    {
+        var fixture = CreateFixture();
+        var assessmentPath = Path.Combine(fixture.Files.AssessmentsPath, "sample-quiz.yaml");
+        await File.WriteAllTextAsync(assessmentPath, QuizYaml("sample-quiz", "First title", "known-topic"));
+
+        await fixture.Initializer.InitializeAsync();
+        await fixture.Importer.ImportAsync();
+
+        File.WriteAllText(Path.Combine(fixture.Files.DataRoot, "areas.yaml"), """
+schemaVersion: 1
+areas:
+  - id: renamed-core-area
+    title: Renamed Core Area
+    description: Core mapped material.
+    categoryIds: [subject-one]
+    subcategoryIds: [known-topic]
+""");
+
+        var summary = await fixture.Importer.ImportAsync();
+
+        Assert.Equal(1, summary.Reindexed);
+        Assert.Equal("renamed-core-area", await ReadAreaIdAsync(fixture.Sqlite.DatabasePath, "sample-quiz"));
     }
 
     [Fact]
@@ -146,6 +181,28 @@ areas:
         await using var reader = await command.ExecuteReaderAsync();
         Assert.True(await reader.ReadAsync());
         return (reader.GetString(0), reader.GetInt64(1));
+    }
+
+    private static async Task<string> ReadImportStatusAsync(string databasePath, string id)
+    {
+        await using var connection = new SqliteConnection($"Data Source={databasePath}");
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT import_status FROM assessments WHERE id = $id;";
+        command.Parameters.AddWithValue("$id", id);
+        var result = await command.ExecuteScalarAsync();
+        return Assert.IsType<string>(result);
+    }
+
+    private static async Task<string> ReadAreaIdAsync(string databasePath, string id)
+    {
+        await using var connection = new SqliteConnection($"Data Source={databasePath}");
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT area_id FROM assessment_areas WHERE assessment_id = $id;";
+        command.Parameters.AddWithValue("$id", id);
+        var result = await command.ExecuteScalarAsync();
+        return Assert.IsType<string>(result);
     }
 
     private static string QuizYaml(string id, string title, string topic, string navigation = "")

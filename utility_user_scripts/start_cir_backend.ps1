@@ -6,9 +6,6 @@ function Write-CirStatus {
         [string]$BackendState,
         [Nullable[int]]$BackendPid,
         [string]$BackendMessage,
-        [string]$FrontendState = "unknown",
-        [Nullable[int]]$FrontendPid = $null,
-        [string]$FrontendMessage = "",
         [string]$SidecarState = "unknown",
         [Nullable[int]]$SidecarPid = $null
     )
@@ -26,10 +23,10 @@ function Write-CirStatus {
             exitCode = $null
         }
         frontend = @{
-            state = $FrontendState
-            pid = $FrontendPid
+            state = "unknown"
+            pid = $null
             url = "http://127.0.0.1:4321"
-            lastMessage = $FrontendMessage
+            lastMessage = "backend-only launcher did not start frontend"
             startedAt = $null
             exitedAt = $null
             exitCode = $null
@@ -42,7 +39,7 @@ function Write-CirStatus {
     } | ConvertTo-Json -Depth 5 | Set-Content $StatusPath
 }
 
-Write-CirStatus -BackendState "building" -BackendPid $null -BackendMessage "dotnet run is about to start" -FrontendState "starting" -FrontendMessage "frontend not started yet"
+Write-CirStatus -BackendState "building" -BackendPid $null -BackendMessage "dotnet run is about to start"
 
 Write-Host "Starting dev status sidecar..."
 
@@ -62,20 +59,7 @@ $backend = Start-Process `
     -PassThru `
     -WindowStyle Hidden
 
-Write-CirStatus -BackendState "starting" -BackendPid $backend.Id -BackendMessage "dotnet run launched; backend may still be building/importing" -FrontendState "starting" -FrontendMessage "frontend not started yet" -SidecarState "running" -SidecarPid $sidecar.Id
-
-Write-Host "Starting frontend..."
-
-$frontend = Start-Process `
-    -FilePath "npm" `
-    -ArgumentList "run dev -- --port 4321" `
-    -WorkingDirectory "$ProjectRoot\frontend" `
-    -PassThru `
-    -WindowStyle Hidden
-
-Write-CirStatus -BackendState "starting" -BackendPid $backend.Id -BackendMessage "backend process launched; poll /api/dev/status for app readiness" -FrontendState "running" -FrontendPid $frontend.Id -FrontendMessage "frontend dev server launched" -SidecarState "running" -SidecarPid $sidecar.Id
+Write-CirStatus -BackendState "starting" -BackendPid $backend.Id -BackendMessage "dotnet run launched; backend may still be building/importing" -SidecarState "running" -SidecarPid $sidecar.Id
 
 Write-Host "Backend PID: $($backend.Id)"
-Write-Host "Frontend PID: $($frontend.Id)"
 Write-Host "Sidecar PID: $($sidecar.Id)"
-Write-Host "CIR started."

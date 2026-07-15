@@ -497,6 +497,62 @@ import "../styles/global.css";
         tags: string[];
       }
 
+      interface DevProcessStatus {
+        updatedAt?: string | null;
+        backend?: {
+          state?: string;
+          pid?: number | null;
+          alive?: boolean;
+          url?: string | null;
+          lastMessage?: string | null;
+        };
+        frontend?: {
+          state?: string;
+          pid?: number | null;
+          alive?: boolean;
+          url?: string | null;
+          lastMessage?: string | null;
+        };
+        sidecar?: {
+          state?: string;
+          pid?: number | null;
+          url?: string | null;
+        };
+      }
+
+      interface DevBackendStatus {
+        backend?: {
+          state?: string;
+          processId?: number;
+          startedAt?: string;
+          uptimeSeconds?: number;
+        };
+        catalog?: {
+          state?: string;
+          catalogInitialized?: boolean;
+          lastError?: string | null;
+          lastSummary?: {
+            totalFiles: number;
+            skippedUnchanged: number;
+            hashMatched: number;
+            imported: number;
+            reindexed: number;
+            invalid: number;
+            missingInactive: number;
+            elapsedMilliseconds: number;
+          } | null;
+          diagnostics?: {
+            errors?: number;
+            warnings?: number;
+            unavailable?: number;
+          };
+        };
+        retention?: {
+          sqlitePath?: string;
+          available?: boolean;
+        };
+      }
+
       interface MediaAsset {
         type: "image";
         src: string;
@@ -1142,6 +1198,8 @@ import "../styles/global.css";
 
       const API_BASE = import.meta.env.PUBLIC_API_BASE ?? "http://localhost:5000/api";
       const IS_DEV = import.meta.env.DEV;
+      const DEV_STATUS_BASE = import.meta.env.PUBLIC_DEV_STATUS_BASE ?? "http://127.0.0.1:4789";
+      const SANDBOX_HUB_URL = API_BASE.replace(/\/api\/?$/, "/sandbox-hub");
       let currentCodeEditors: EditorView[] = [];
       let activeCodeEditor: EditorView | null = null;
       let currentProjectEditor: EditorView | null = null;
@@ -1258,6 +1316,8 @@ import "../styles/global.css";
       };
 
       const apiStatus = document.querySelector<HTMLDivElement>("#api-status")!;
+      let devStatusTimer: ReturnType<typeof setTimeout> | null = null;
+      let lastBackendSeenAt: number | null = null;
       const categorySelect = document.querySelector<HTMLSelectElement>("#category-select")!;
       const assessmentSelect = document.querySelector<HTMLSelectElement>("#assessment-select")!;
       const attemptContent = document.querySelector<HTMLDivElement>("#attempt-content")!;
@@ -1319,6 +1379,7 @@ import "../styles/global.css";
       document.querySelector<HTMLButtonElement>("#refresh-preview")!.addEventListener("click", renderAssessmentPreview);
       document.querySelector<HTMLButtonElement>("#validate-draft")!.addEventListener("click", validateDraftAssessment);
 
+      startDevStatusPolling();
       await initialize();
 
       async function initialize() {
@@ -1332,7 +1393,7 @@ import "../styles/global.css";
           await loadAssessments(categorySelect.value);
           await initializeNavigation();
           await loadGrades();
-          setApiStatus("Connected", "ok");
+          setApiStatus("Backend online", "ok");
         } catch (error) {
           setApiStatus("Backend offline", "error");
           attemptContent.textContent = readableError(error);
@@ -2238,6 +2299,10 @@ import "../styles/global.css";
         // Show an inline three-option panel instead of a blocking confirm().
         // Capture identifiers now so they remain available in the click handlers.
         const attemptId = state.attempt.id;
+        if (state.assessment?.assessmentType === "sandbox" && state.sandboxTerminal) {
+          state.sandboxTerminal.dispose();
+          state.sandboxTerminal = null;
+        }
 
         attemptContent.innerHTML = `
           <div class="empty-state">
@@ -2262,6 +2327,7 @@ import "../styles/global.css";
           state.latestResults = null;
           state.guidedProjectSession = null;
           currentProjectEditor = null;
+          if (state.sandboxTerminal) { state.sandboxTerminal.dispose(); state.sandboxTerminal = null; }
           activeCircuitCanvases.clear();
           activeGraphingCanvases.clear();
           clearActiveWidgets();
@@ -4999,6 +5065,7 @@ import "../styles/global.css";
               <div id="sandbox-terminal-container" style="flex: 1; min-height: 400px; background: #1e1e1e; border-radius: 4px; overflow: hidden; padding: 4px;"></div>
               <div class="sandbox-controls" style="padding: 16px; background: #f8f9fa; border-top: 1px solid #dee2e6; display: flex; gap: 8px;">
                 <button type="button" id="sandbox-complete-btn" class="primary">Complete Sandbox</button>
+                <button type="button" id="sandbox-quit-btn" class="chunky danger-action">Quit Early</button>
               </div>
             </section>
           </div>
@@ -5006,6 +5073,7 @@ import "../styles/global.css";
 
         const container = document.getElementById("sandbox-terminal-container");
         if (container) {
+          if (state.sandboxTerminal) { state.sandboxTerminal.dispose(); state.sandboxTerminal = null; }
           state.sandboxTerminal = new SandboxTerminal(
             container, 
             state.attempt!.id,
@@ -5014,7 +5082,8 @@ import "../styles/global.css";
               state.attempt!.status = "completed";
               await loadGrades();
               renderAttempt();
-            }
+            },
+            SANDBOX_HUB_URL
           );
           await state.sandboxTerminal.mount();
         }
@@ -5023,6 +5092,7 @@ import "../styles/global.css";
           try {
             setBusy(document.getElementById("sandbox-complete-btn") as HTMLButtonElement, "Completing...");
             await api(`/attempts/${encodeURIComponent(state.attempt!.id)}/complete`, { method: "POST" });
+            if (state.sandboxTerminal) { state.sandboxTerminal.dispose(); state.sandboxTerminal = null; }
             state.attempt!.status = "completed";
             await loadGrades();
             renderAttempt();
@@ -5030,6 +5100,10 @@ import "../styles/global.css";
             clearBusy(document.getElementById("sandbox-complete-btn") as HTMLButtonElement, "Complete Sandbox");
             alert(readableError(e));
           }
+        });
+
+        document.getElementById("sandbox-quit-btn")?.addEventListener("click", () => {
+          void abandonAttempt();
         });
       }
 
@@ -6747,9 +6821,127 @@ import "../styles/global.css";
         return text === "" ? null : Number(text);
       }
 
-      function setApiStatus(text: string, tone: "ok" | "error") {
+      function setApiStatus(text: string, tone: "ok" | "error" | "warning" = "ok", title?: string) {
         apiStatus.textContent = text;
         apiStatus.dataset.tone = tone;
+        if (title) {
+          apiStatus.title = title;
+        }
+      }
+
+      function startDevStatusPolling() {
+        if (!IS_DEV) return;
+        void pollDevStatus();
+      }
+
+      async function pollDevStatus() {
+        if (!IS_DEV) return;
+
+        let processStatus: DevProcessStatus | null = null;
+        let backendStatus: DevBackendStatus | null = null;
+        let backendReachable = false;
+
+        try {
+          processStatus = await fetchJson<DevProcessStatus>(`${DEV_STATUS_BASE}/dev/process-status`, 1500);
+        } catch {
+          processStatus = null;
+        }
+
+        try {
+          backendStatus = await fetchJson<DevBackendStatus>(`${API_BASE}/dev/status`, 2500);
+          backendReachable = true;
+          lastBackendSeenAt = Date.now();
+        } catch {
+          backendStatus = null;
+          backendReachable = false;
+        }
+
+        updateDevStatusIndicator(processStatus, backendStatus, backendReachable);
+
+        const catalogState = backendStatus?.catalog?.state ?? "";
+        const retryMs = !backendReachable || catalogState === "importing" ? 5000 : 20000;
+        if (devStatusTimer) clearTimeout(devStatusTimer);
+        devStatusTimer = setTimeout(() => void pollDevStatus(), retryMs);
+      }
+
+      async function fetchJson<T>(url: string, timeoutMs: number): Promise<T> {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const response = await fetch(url, { signal: controller.signal });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return await response.json() as T;
+        } finally {
+          clearTimeout(timeout);
+        }
+      }
+
+      function updateDevStatusIndicator(processStatus: DevProcessStatus | null, backendStatus: DevBackendStatus | null, backendReachable: boolean) {
+        const processBackend = processStatus?.backend;
+        const processState = processBackend?.state ?? "unknown";
+        const catalog = backendStatus?.catalog;
+        const summary = catalog?.lastSummary;
+        const diagnostics = catalog?.diagnostics;
+        const detailLines = [
+          `Process: ${processState}${processBackend?.pid ? `, PID ${processBackend.pid}` : ""}${processBackend?.alive === false ? ", not alive" : ""}`,
+          backendStatus?.backend?.processId ? `Backend: online, PID ${backendStatus.backend.processId}, uptime ${formatDuration(backendStatus.backend.uptimeSeconds ?? 0)}` : "Backend: unreachable",
+          catalog ? `Catalog: ${catalog.state ?? "unknown"}${summary ? `, ${summary.totalFiles} scanned, ${summary.skippedUnchanged} skipped, ${summary.imported} imported, ${summary.reindexed} reindexed, ${summary.elapsedMilliseconds} ms` : ""}` : "Catalog: unavailable",
+          diagnostics ? `Diagnostics: ${diagnostics.errors ?? 0} errors, ${diagnostics.warnings ?? 0} warnings` : "",
+          processBackend?.lastMessage ? `Message: ${processBackend.lastMessage}` : ""
+        ].filter(Boolean);
+
+        if (backendReachable && catalog?.state === "importing") {
+          setApiStatus("Catalog importing", "warning", detailLines.join("\n"));
+          return;
+        }
+
+        if (backendReachable && catalog?.state === "failed") {
+          setApiStatus("Catalog failed", "error", detailLines.join("\n"));
+          return;
+        }
+
+        if (backendReachable && ((diagnostics?.errors ?? 0) > 0 || (diagnostics?.warnings ?? 0) > 0)) {
+          setApiStatus("Catalog warnings", "warning", detailLines.join("\n"));
+          return;
+        }
+
+        if (backendReachable) {
+          setApiStatus("Backend ready", "ok", detailLines.join("\n"));
+          return;
+        }
+
+        if (processState === "building") {
+          setApiStatus("Backend building", "warning", detailLines.join("\n"));
+          return;
+        }
+
+        if (processState === "starting" || processState === "running") {
+          setApiStatus("Backend starting", "warning", detailLines.join("\n"));
+          return;
+        }
+
+        if (processState === "crashed") {
+          setApiStatus("Backend crashed", "error", detailLines.join("\n"));
+          return;
+        }
+
+        if (lastBackendSeenAt) {
+          const seconds = Math.max(0, Math.round((Date.now() - lastBackendSeenAt) / 1000));
+          setApiStatus(`Offline ${seconds}s`, "error", detailLines.join("\n"));
+          return;
+        }
+
+        setApiStatus("Backend offline", "error", detailLines.join("\n"));
+      }
+
+      function formatDuration(totalSeconds: number) {
+        const seconds = Math.max(0, Math.floor(totalSeconds));
+        if (seconds < 60) return `${seconds}s`;
+        const minutes = Math.floor(seconds / 60);
+        const remainder = seconds % 60;
+        if (minutes < 60) return `${minutes}m ${remainder}s`;
+        const hours = Math.floor(minutes / 60);
+        return `${hours}h ${minutes % 60}m`;
       }
 
       function readableError(error: unknown) {

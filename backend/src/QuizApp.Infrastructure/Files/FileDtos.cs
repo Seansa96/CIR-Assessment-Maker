@@ -65,6 +65,14 @@ public sealed class SandboxFileDto
     public string? InitialCommand { get; set; }
     public string? Instructions { get; set; }
     public bool? ReadOnlyFileSystem { get; set; }
+    public List<SandboxWorkspaceFileDto>? Files { get; set; }
+}
+
+public sealed class SandboxWorkspaceFileDto
+{
+    public string? Path { get; set; }
+    public string? Content { get; set; }
+    public bool? ReadOnly { get; set; }
 }
 
 public sealed class QuestionSelectionFileDto

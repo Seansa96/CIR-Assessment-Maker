@@ -1,0 +1,64 @@
+schemaVersion: 1
+id: css-selectors-concept-lesson
+title: Understanding CSS Selectors and Specificity
+assessmentType: conceptLesson
+categoryId: css
+subcategoryIds:
+  - css-selectors-specificity
+modeDefault: study
+sections:
+  - id: selectors-intro
+    title: Introduction to CSS Selectors
+    content: |
+      CSS Selectors are the fundamental mechanism for targeting HTML elements to apply styles.
+      
+      There are several basic types of selectors:
+      * **Element Selector**: Targets all elements of a specific type (e.g., `p`, `h1`, `div`).
+      * **Class Selector**: Targets elements with a specific class attribute (e.g., `.card`, `.btn`).
+      * **ID Selector**: Targets a single, unique element with a specific ID attribute (e.g., `#header`).
+      * **Universal Selector**: Targets all elements (`*`).
+  - id: combinators
+    title: CSS Combinators
+    content: |
+      Combinators combine multiple selectors to target elements based on their relationships in the DOM tree.
+      
+      * **Descendant Combinator (space)**: Targets an element that is inside another element, regardless of how deep. `div p` selects all `<p>` elements inside a `<div>`.
+      * **Child Combinator (>)**: Targets an element that is a *direct* child of another element. `div > p` selects only `<p>` elements immediately inside a `<div>`.
+      * **Adjacent Sibling Combinator (+)**: Targets an element immediately following another element. `h1 + p` selects the `<p>` immediately after an `<h1>`.
+      * **General Sibling Combinator (~)**: Targets any sibling element following another. `h1 ~ p` selects all `<p>` elements that are siblings of and follow an `<h1>`.
+  - id: specificity
+    title: The Specificity Hierarchy
+    content: |
+      When multiple CSS rules target the exact same element, the browser uses **Specificity** to decide which rule wins. 
+      
+      Specificity is calculated as a 3-part score: `(ID, Class, Element)`.
+      
+      * **Inline styles** override everything else.
+      * **IDs** are worth the most (1-0-0).
+      * **Classes, pseudo-classes, and attributes** are worth the middle (0-1-0).
+      * **Elements and pseudo-elements** are worth the least (0-0-1).
+      * The Universal selector (`*`) has no specificity (0-0-0).
+      
+      If the scores are tied, the rule declared **last** in the stylesheet wins.
+lesson:
+  introduction: CSS Selectors and Specificity
+  sections:
+    - id: sec-q1
+      title: Check Your Understanding
+      content: |
+        Review the following scenario and determine the outcome.
+      check:
+        id: check-q1
+        type: multipleChoice
+        prompt: "If an element is targeted by both `.card .title` and `#main-title`, which selector's styles will apply?"
+        choices:
+          - id: a
+            text: ".card .title"
+          - id: b
+            text: "#main-title"
+          - id: c
+            text: "Whichever is declared last in the CSS file."
+        answer:
+          choiceId: b
+        explanation: |
+          `#main-title` has an ID selector, giving it a specificity of 1-0-0. `.card .title` has two class selectors, giving it a specificity of 0-2-0. Because IDs trump classes, `#main-title` wins.

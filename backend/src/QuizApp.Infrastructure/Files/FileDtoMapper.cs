@@ -84,7 +84,15 @@ public static class FileDtoMapper
                 dto.Sandbox.Image ?? string.Empty,
                 dto.Sandbox.InitialCommand ?? string.Empty,
                 dto.Sandbox.Instructions ?? string.Empty,
-                dto.Sandbox.ReadOnlyFileSystem ?? false),
+                dto.Sandbox.ReadOnlyFileSystem ?? false)
+            {
+                Files = (dto.Sandbox.Files ?? new List<SandboxWorkspaceFileDto>())
+                    .Select(f => new SandboxFileDefinition(
+                        f.Path ?? string.Empty,
+                        f.Content ?? string.Empty,
+                        f.ReadOnly ?? false))
+                    .ToList()
+            },
             Navigation = dto.Navigation is null ? null : new NavigationMetadata(
                 dto.Navigation.LearningGoal,
                 dto.Navigation.ActivityType,
@@ -123,7 +131,13 @@ public static class FileDtoMapper
                 Image = assessment.Sandbox.Image,
                 InitialCommand = assessment.Sandbox.InitialCommand,
                 Instructions = assessment.Sandbox.Instructions,
-                ReadOnlyFileSystem = assessment.Sandbox.ReadOnlyFileSystem
+                ReadOnlyFileSystem = assessment.Sandbox.ReadOnlyFileSystem,
+                Files = assessment.Sandbox.Files.Select(f => new SandboxWorkspaceFileDto
+                {
+                    Path = f.Path,
+                    Content = f.Content,
+                    ReadOnly = f.ReadOnly
+                }).ToList()
             },
             Navigation = assessment.Navigation is null ? null : new NavigationFileDto
             {

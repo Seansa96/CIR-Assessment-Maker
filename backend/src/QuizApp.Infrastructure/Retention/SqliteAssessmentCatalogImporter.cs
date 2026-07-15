@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Diagnostics;
+using System.Globalization;
 using Microsoft.Data.Sqlite;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
@@ -8,6 +10,17 @@ using QuizApp.Core.Services;
 using QuizApp.Infrastructure.Files;
 
 namespace QuizApp.Infrastructure.Retention;
+
+public sealed record AssessmentCatalogImportSummary(
+    string RunId,
+    int TotalFiles,
+    int SkippedUnchanged,
+    int HashMatched,
+    int Imported,
+    int Reindexed,
+    int Invalid,
+    int MissingInactive,
+    long ElapsedMilliseconds);
 
 public sealed class SqliteAssessmentCatalogImporter
 {
@@ -23,6 +36,11 @@ public sealed class SqliteAssessmentCatalogImporter
     private readonly ICatalogTaxonomyValidator catalogTaxonomyValidator;
 
     public bool CatalogInitialized { get; private set; }
+    public string CatalogState { get; private set; } = "notStarted";
+    public AssessmentCatalogImportSummary? LastSummary { get; private set; }
+    public string? LastError { get; private set; }
+    public DateTimeOffset? LastStartedAt { get; private set; }
+    public DateTimeOffset? LastFinishedAt { get; private set; }
 
     public SqliteAssessmentCatalogImporter(
         SqliteRetentionOptions retentionOptions,
@@ -44,10 +62,39 @@ public sealed class SqliteAssessmentCatalogImporter
         this.catalogTaxonomyValidator = catalogTaxonomyValidator;
     }
 
-    public async Task ImportAsync(CancellationToken cancellationToken = default)
+    private enum CatalogImportOutcome
+    {
+        SkippedUnchanged,
+        HashMatched,
+        Imported,
+        Reindexed,
+        Invalid
+    }
+
+    private sealed record ExistingCatalogFile(
+        string Id,
+        string ContentHash,
+        string? SourceLastWriteUtc,
+        long? SourceLength,
+        bool IsActive,
+        string DefinitionJson);
+
+    public async Task<AssessmentCatalogImportSummary> ImportAsync(CancellationToken cancellationToken = default)
     {
         var runId = Guid.NewGuid().ToString("N");
+        var stopwatch = Stopwatch.StartNew();
+        CatalogState = "importing";
+        LastError = null;
+        LastStartedAt = DateTimeOffset.UtcNow;
+        LastFinishedAt = null;
         var factory = new SqliteConnectionFactory(retentionOptions);
+        var totalFiles = 0;
+        var skippedUnchanged = 0;
+        var hashMatched = 0;
+        var imported = 0;
+        var reindexed = 0;
+        var invalid = 0;
+        var missingInactive = 0;
 
         try
         {
@@ -74,6 +121,7 @@ public sealed class SqliteAssessmentCatalogImporter
             var areasByCategory = BuildCategoryToAreaIndex(areas);
 
             var files = EnumerateAssessmentFiles().ToList();
+            totalFiles = files.Count;
             var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var globalHash = await ComputeGlobalConfigHashAsync(cancellationToken);
@@ -84,12 +132,31 @@ public sealed class SqliteAssessmentCatalogImporter
             {
                 try
                 {
-                    await ImportFileAsync(connection, runId, path, categories, areas, areasBySubcategory, areasByCategory, seenIds, forceFullReimport, cancellationToken);
+                    var outcome = await ImportFileAsync(connection, runId, path, categories, areas, areasBySubcategory, areasByCategory, seenIds, forceFullReimport, cancellationToken);
+                    switch (outcome)
+                    {
+                        case CatalogImportOutcome.SkippedUnchanged:
+                            skippedUnchanged++;
+                            break;
+                        case CatalogImportOutcome.HashMatched:
+                            hashMatched++;
+                            break;
+                        case CatalogImportOutcome.Imported:
+                            imported++;
+                            break;
+                        case CatalogImportOutcome.Reindexed:
+                            reindexed++;
+                            break;
+                        case CatalogImportOutcome.Invalid:
+                            invalid++;
+                            break;
+                    }
                 }
                 catch (Exception ex)
                 {
                     var existingId = await GetIdByPathAsync(connection, path, cancellationToken);
                     if (existingId is not null) seenIds.Add(existingId);
+                    invalid++;
                     await InsertDiagnosticAsync(connection, runId, path, existingId, "Error", "UNHANDLED_EXCEPTION", ex.Message, null, null, null, null, cancellationToken);
                     Console.Error.WriteLine($"[CatalogImporter] Skipping invalid assessment file: {path}. {ex.Message}");
                 }
@@ -101,18 +168,25 @@ public sealed class SqliteAssessmentCatalogImporter
             }
 
             // Mark assessments whose source files no longer exist as inactive
-            await MarkMissingInactiveAsync(connection, seenIds, cancellationToken);
+            missingInactive = await MarkMissingInactiveAsync(connection, seenIds, cancellationToken);
 
             // Mark Import Run finished
             await RecordImportRunEndAsync(connection, runId, "Success", cancellationToken);
 
             CatalogInitialized = true;
-            Console.WriteLine($"[CatalogImporter] Import complete. {files.Count} files processed. Run: {runId}");
+            stopwatch.Stop();
+            CatalogState = "ready";
+            LastFinishedAt = DateTimeOffset.UtcNow;
+            LastSummary = new AssessmentCatalogImportSummary(runId, totalFiles, skippedUnchanged, hashMatched, imported, reindexed, invalid, missingInactive, stopwatch.ElapsedMilliseconds);
+            Console.WriteLine($"[CatalogImporter] Import complete. {files.Count} files scanned, {skippedUnchanged} unchanged skipped, {hashMatched} hash-matched, {imported} imported, {reindexed} reindexed, {invalid} invalid, {missingInactive} missing inactive in {stopwatch.ElapsedMilliseconds} ms. Run: {runId}");
+            return LastSummary;
         }
         catch (Exception ex)
         {
             Console.Error.WriteLine($"[CatalogImporter] Import failed; falling back to file repository. {ex.Message}");
             CatalogInitialized = false;
+            CatalogState = "failed";
+            LastError = ex.Message;
 
             // Try to record failure
             try
@@ -122,6 +196,10 @@ public sealed class SqliteAssessmentCatalogImporter
                 await RecordImportRunEndAsync(connection, runId, "Failed", cancellationToken);
             }
             catch { }
+            stopwatch.Stop();
+            LastFinishedAt = DateTimeOffset.UtcNow;
+            LastSummary = new AssessmentCatalogImportSummary(runId, totalFiles, skippedUnchanged, hashMatched, imported, reindexed, invalid, missingInactive, stopwatch.ElapsedMilliseconds);
+            return LastSummary;
         }
     }
 
@@ -144,6 +222,9 @@ public sealed class SqliteAssessmentCatalogImporter
 
             var path = Path.Combine(storageOptions.AssessmentsPath, $"{ToSafeFileName(assessment.Id)}.yaml");
             var content = await File.ReadAllTextAsync(path, cancellationToken);
+            var fileInfo = new FileInfo(path);
+            var sourceLastWriteUtc = ToManifestTimestamp(fileInfo);
+            var sourceLength = fileInfo.Length;
             var nav = NavigationInference.Infer(assessment);
             var resolvedAreas = ResolveAreas(
                 assessment,
@@ -166,7 +247,11 @@ public sealed class SqliteAssessmentCatalogImporter
                 JsonSerializer.Serialize(assessment, JsonOptions),
                 path,
                 ComputeHash(content),
+                sourceLastWriteUtc,
+                sourceLength,
                 DateTimeOffset.UtcNow.ToString("O"),
+                "valid",
+                null,
                 cancellationToken);
             return true;
         }
@@ -177,7 +262,7 @@ public sealed class SqliteAssessmentCatalogImporter
         }
     }
 
-    private async Task ImportFileAsync(
+    private async Task<CatalogImportOutcome> ImportFileAsync(
         SqliteConnection connection,
         string runId,
         string path,
@@ -189,9 +274,48 @@ public sealed class SqliteAssessmentCatalogImporter
         bool forceFullReimport,
         CancellationToken cancellationToken)
     {
+        var fileInfo = new FileInfo(path);
+        var sourceLastWriteUtc = ToManifestTimestamp(fileInfo);
+        var sourceLength = fileInfo.Length;
+        var existing = await GetExistingFileAsync(connection, path, cancellationToken);
+        var existingId = existing?.Id;
+
+        if (existing is not null
+            && existing.IsActive
+            && existing.SourceLastWriteUtc == sourceLastWriteUtc
+            && existing.SourceLength == sourceLength)
+        {
+            if (!forceFullReimport)
+            {
+                seenIds.Add(existing.Id);
+                return CatalogImportOutcome.SkippedUnchanged;
+            }
+
+            var existingDomain = JsonSerializer.Deserialize<AssessmentDefinition>(existing.DefinitionJson, JsonOptions);
+            if (existingDomain is not null)
+            {
+                var reindexNav = NavigationInference.Infer(existingDomain);
+                var reindexResolvedAreas = ResolveAreas(existingDomain, areasBySubcategory, areasByCategory);
+                var reindexSubjectTitle = categories.FirstOrDefault(c => c.Id == existingDomain.CategoryId)?.Title ?? string.Empty;
+                var reindexAreaTitles = areas.Where(a => reindexResolvedAreas.Contains(a.Id)).Select(a => a.Title).ToList();
+                var reindexTopicTitles = categories.SelectMany(c => c.Subcategories).Where(s => existingDomain.SubcategoryIds.Contains(s.Id)).Select(s => s.Title).ToList();
+                var reindexNow = DateTimeOffset.UtcNow.ToString("O");
+
+                seenIds.Add(existingDomain.Id);
+                await UpsertAssessmentAsync(connection, existingDomain, reindexNav, reindexResolvedAreas, reindexSubjectTitle, reindexAreaTitles, reindexTopicTitles, existing.DefinitionJson, path, existing.ContentHash, sourceLastWriteUtc, sourceLength, reindexNow, "valid", null, cancellationToken);
+                return CatalogImportOutcome.Reindexed;
+            }
+        }
+
         var content = await File.ReadAllTextAsync(path, cancellationToken);
         var hash = ComputeHash(content);
-        var existingId = await GetIdByPathAsync(connection, path, cancellationToken);
+
+        if (!forceFullReimport && existing is not null && existing.ContentHash == hash)
+        {
+            seenIds.Add(existing.Id);
+            await UpdateManifestAsync(connection, path, sourceLastWriteUtc, sourceLength, "valid", null, cancellationToken);
+            return CatalogImportOutcome.HashMatched;
+        }
 
         // Preflight Source Inspection
         var inspection = sourceInspector.Inspect(content, Path.GetExtension(path), path);
@@ -203,16 +327,8 @@ public sealed class SqliteAssessmentCatalogImporter
         if (!inspection.IsValid)
         {
             if (existingId is not null) seenIds.Add(existingId);
-            return;
-        }
-
-        // Check if unchanged
-        var existingHash = await GetExistingHashAsync(connection, path, cancellationToken);
-        if (!forceFullReimport && existingHash == hash)
-        {
-            if (existingId is not null)
-                seenIds.Add(existingId);
-            return;
+            await MarkImportInvalidAsync(connection, path, "Source inspection failed.", cancellationToken);
+            return CatalogImportOutcome.Invalid;
         }
 
         var dto = FileFormat.ReadFromString<AssessmentFileDto>(content, Path.GetExtension(path));
@@ -220,8 +336,9 @@ public sealed class SqliteAssessmentCatalogImporter
         {
             if (existingId is not null) seenIds.Add(existingId);
             await InsertDiagnosticAsync(connection, runId, path, existingId, "Error", "MISSING_ID", "Assessment file has no ID", null, null, null, null, cancellationToken);
+            await MarkImportInvalidAsync(connection, path, "Assessment file has no ID.", cancellationToken);
             Console.Error.WriteLine($"[CatalogImporter] Assessment file has no ID, skipping: {path}");
-            return;
+            return CatalogImportOutcome.Invalid;
         }
 
         var domain = dto.ToDomain();
@@ -235,7 +352,8 @@ public sealed class SqliteAssessmentCatalogImporter
             {
                 await InsertDiagnosticAsync(connection, runId, path, domain.Id, "Error", issue.Code, issue.Message, null, null, null, null, cancellationToken);
             }
-            return;
+            await MarkImportInvalidAsync(connection, path, string.Join("; ", validation.Issues.Select(issue => issue.Message)), cancellationToken);
+            return CatalogImportOutcome.Invalid;
         }
 
         // 2. Taxonomy Validation
@@ -256,7 +374,8 @@ public sealed class SqliteAssessmentCatalogImporter
         if (seenIds.Contains(domain.Id))
         {
             await InsertDiagnosticAsync(connection, runId, path, domain.Id, "Error", "DUPLICATE_ID", $"Duplicate assessment ID '{domain.Id}' in '{path}'", null, null, null, null, cancellationToken);
-            return;
+            await MarkImportInvalidAsync(connection, path, $"Duplicate assessment ID '{domain.Id}'.", cancellationToken);
+            return CatalogImportOutcome.Invalid;
         }
 
         var nav = NavigationInference.Infer(domain);
@@ -271,7 +390,8 @@ public sealed class SqliteAssessmentCatalogImporter
 
         seenIds.Add(domain.Id);
 
-        await UpsertAssessmentAsync(connection, domain, nav, resolvedAreas, subjectTitle, areaTitles, topicTitles, definitionJson, path, hash, now, cancellationToken);
+        await UpsertAssessmentAsync(connection, domain, nav, resolvedAreas, subjectTitle, areaTitles, topicTitles, definitionJson, path, hash, sourceLastWriteUtc, sourceLength, now, "valid", null, cancellationToken);
+        return CatalogImportOutcome.Imported;
     }
 
     private static List<string> ResolveAreas(
@@ -310,7 +430,11 @@ public sealed class SqliteAssessmentCatalogImporter
         string definitionJson,
         string path,
         string hash,
+        string sourceLastWriteUtc,
+        long sourceLength,
         string now,
+        string importStatus,
+        string? lastError,
         CancellationToken cancellationToken)
     {
         await using var tx = connection.BeginTransaction();
@@ -322,8 +446,10 @@ public sealed class SqliteAssessmentCatalogImporter
         upsertCmd.Transaction = tx;
         upsertCmd.CommandText = """
             INSERT INTO assessments (id, title, assessment_type, category_id, learning_goal, activity_type,
-                definition_json, source_path, content_hash, is_active, imported_at, updated_at)
-            VALUES (@id, @title, @type, @cat, @goal, @activity, @json, @path, @hash, 1, @importedAt, @now)
+                definition_json, source_path, content_hash, source_last_write_utc, source_length,
+                import_status, last_error, is_active, imported_at, updated_at)
+            VALUES (@id, @title, @type, @cat, @goal, @activity, @json, @path, @hash, @sourceLastWriteUtc,
+                @sourceLength, @importStatus, @lastError, 1, @importedAt, @now)
             ON CONFLICT(id) DO UPDATE SET
                 title = excluded.title,
                 assessment_type = excluded.assessment_type,
@@ -333,6 +459,10 @@ public sealed class SqliteAssessmentCatalogImporter
                 definition_json = excluded.definition_json,
                 source_path = excluded.source_path,
                 content_hash = excluded.content_hash,
+                source_last_write_utc = excluded.source_last_write_utc,
+                source_length = excluded.source_length,
+                import_status = excluded.import_status,
+                last_error = excluded.last_error,
                 is_active = 1,
                 updated_at = excluded.updated_at;
             """;
@@ -345,6 +475,10 @@ public sealed class SqliteAssessmentCatalogImporter
         upsertCmd.Parameters.AddWithValue("@json", definitionJson);
         upsertCmd.Parameters.AddWithValue("@path", path);
         upsertCmd.Parameters.AddWithValue("@hash", hash);
+        upsertCmd.Parameters.AddWithValue("@sourceLastWriteUtc", sourceLastWriteUtc);
+        upsertCmd.Parameters.AddWithValue("@sourceLength", sourceLength);
+        upsertCmd.Parameters.AddWithValue("@importStatus", importStatus);
+        upsertCmd.Parameters.AddWithValue("@lastError", lastError ?? (object)DBNull.Value);
         upsertCmd.Parameters.AddWithValue("@importedAt", importedAt);
         upsertCmd.Parameters.AddWithValue("@now", now);
         await upsertCmd.ExecuteNonQueryAsync(cancellationToken);
@@ -471,7 +605,7 @@ public sealed class SqliteAssessmentCatalogImporter
         }
     }
 
-    private static async Task MarkMissingInactiveAsync(
+    private static async Task<int> MarkMissingInactiveAsync(
         SqliteConnection connection,
         HashSet<string> seenIds,
         CancellationToken cancellationToken)
@@ -484,13 +618,15 @@ public sealed class SqliteAssessmentCatalogImporter
         while (await reader.ReadAsync(cancellationToken))
             dbIds.Add(reader.GetString(0));
 
+        var count = 0;
         foreach (var id in dbIds.Where(id => !seenIds.Contains(id)))
         {
             await using var updateCmd = connection.CreateCommand();
-            updateCmd.CommandText = "UPDATE assessments SET is_active = 0, updated_at = @now WHERE id = @id;";
+            updateCmd.CommandText = "UPDATE assessments SET is_active = 0, import_status = 'missing', updated_at = @now WHERE id = @id;";
             updateCmd.Parameters.AddWithValue("@now", DateTimeOffset.UtcNow.ToString("O"));
             updateCmd.Parameters.AddWithValue("@id", id);
             await updateCmd.ExecuteNonQueryAsync(cancellationToken);
+            count++;
             
             // Remove from FTS and Terms if inactive
             await using var delFtsCmd = connection.CreateCommand();
@@ -503,15 +639,77 @@ public sealed class SqliteAssessmentCatalogImporter
             delTermsCmd.Parameters.AddWithValue("@id", id);
             await delTermsCmd.ExecuteNonQueryAsync(cancellationToken);
         }
+
+        return count;
     }
 
-    private static async Task<string?> GetExistingHashAsync(SqliteConnection connection, string path, CancellationToken cancellationToken)
+    private static async Task<ExistingCatalogFile?> GetExistingFileAsync(SqliteConnection connection, string path, CancellationToken cancellationToken)
     {
         await using var cmd = connection.CreateCommand();
-        cmd.CommandText = "SELECT content_hash FROM assessments WHERE source_path = @path LIMIT 1;";
+        cmd.CommandText = """
+            SELECT id, content_hash, source_last_write_utc, source_length, is_active, definition_json
+            FROM assessments
+            WHERE source_path = @path
+            LIMIT 1;
+            """;
         cmd.Parameters.AddWithValue("@path", path);
-        var result = await cmd.ExecuteScalarAsync(cancellationToken);
-        return result as string;
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+        if (!await reader.ReadAsync(cancellationToken))
+        {
+            return null;
+        }
+
+        return new ExistingCatalogFile(
+            reader.GetString(0),
+            reader.GetString(1),
+            reader.IsDBNull(2) ? null : reader.GetString(2),
+            reader.IsDBNull(3) ? null : reader.GetInt64(3),
+            reader.GetInt64(4) == 1,
+            reader.GetString(5));
+    }
+
+    private static async Task UpdateManifestAsync(
+        SqliteConnection connection,
+        string path,
+        string sourceLastWriteUtc,
+        long sourceLength,
+        string status,
+        string? lastError,
+        CancellationToken cancellationToken)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = """
+            UPDATE assessments
+            SET source_last_write_utc = @sourceLastWriteUtc,
+                source_length = @sourceLength,
+                import_status = @status,
+                last_error = @lastError,
+                updated_at = @now
+            WHERE source_path = @path;
+            """;
+        cmd.Parameters.AddWithValue("@sourceLastWriteUtc", sourceLastWriteUtc);
+        cmd.Parameters.AddWithValue("@sourceLength", sourceLength);
+        cmd.Parameters.AddWithValue("@status", status);
+        cmd.Parameters.AddWithValue("@lastError", lastError ?? (object)DBNull.Value);
+        cmd.Parameters.AddWithValue("@now", DateTimeOffset.UtcNow.ToString("O"));
+        cmd.Parameters.AddWithValue("@path", path);
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
+    }
+
+    private static async Task MarkImportInvalidAsync(SqliteConnection connection, string path, string message, CancellationToken cancellationToken)
+    {
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = """
+            UPDATE assessments
+            SET import_status = 'invalid',
+                last_error = @message,
+                updated_at = @now
+            WHERE source_path = @path;
+            """;
+        cmd.Parameters.AddWithValue("@message", message);
+        cmd.Parameters.AddWithValue("@now", DateTimeOffset.UtcNow.ToString("O"));
+        cmd.Parameters.AddWithValue("@path", path);
+        await cmd.ExecuteNonQueryAsync(cancellationToken);
     }
 
     private static async Task<string?> GetIdByPathAsync(SqliteConnection connection, string path, CancellationToken cancellationToken)
@@ -625,6 +823,11 @@ public sealed class SqliteAssessmentCatalogImporter
     {
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(content));
         return Convert.ToHexString(bytes);
+    }
+
+    private static string ToManifestTimestamp(FileInfo fileInfo)
+    {
+        return fileInfo.LastWriteTimeUtc.Ticks.ToString(CultureInfo.InvariantCulture);
     }
 
     private static string ToSafeFileName(string value)

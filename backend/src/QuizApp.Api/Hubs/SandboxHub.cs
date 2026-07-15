@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
 using QuizApp.Core.Services;
+using System.Collections.Concurrent;
 
 namespace QuizApp.Api.Hubs;
 
@@ -7,7 +8,9 @@ public class SandboxHub : Hub
 {
     private readonly ISandboxService _sandboxService;
     private readonly ILogger<SandboxHub> _logger;
-    private static readonly Dictionary<string, string> _connectionContainers = new();
+    private static readonly ConcurrentDictionary<string, string> _connectionContainers = new();
+    private static readonly ConcurrentDictionary<string, Func<byte[], Task>> _connectionInputWriters = new();
+    private static readonly ConcurrentDictionary<string, CancellationTokenSource> _connectionCancellation = new();
 
     private readonly AttemptService _attemptService;
     private readonly QuizApp.Core.Repositories.IAssessmentRepository _assessmentRepository;
@@ -20,10 +23,14 @@ public class SandboxHub : Hub
         _assessmentRepository = assessmentRepository;
     }
 
-    public async Task StartSandbox(string attemptId)
+    public async Task StartSandbox(string attemptId, int cols = 120, int rows = 30)
     {
+        var connectionId = Context.ConnectionId;
+        await CleanupConnectionAsync(connectionId, stopContainer: true);
+
         try
         {
+            await SendStatusAsync(connectionId, "starting", $"Starting sandbox for attempt {attemptId}.");
             var attempt = await _attemptService.GetAsync(attemptId, CancellationToken.None);
             var assessment = await _assessmentRepository.GetByIdAsync(attempt.AssessmentId, CancellationToken.None);
             
@@ -32,14 +39,27 @@ public class SandboxHub : Hub
                 throw new InvalidOperationException("Assessment does not have a sandbox definition.");
             }
 
-            // Set timeout for sandbox duration (e.g. 1 hour)
             var cts = new CancellationTokenSource(TimeSpan.FromHours(1));
+            _connectionCancellation[connectionId] = cts;
             
             var apiUrl = "http://host.docker.internal:5000"; // Assuming local dev
-            var containerId = await _sandboxService.StartContainerAsync(attemptId, assessment.Sandbox, apiUrl, cts.Token);
-            _connectionContainers[Context.ConnectionId] = containerId;
+            await SendStatusAsync(connectionId, "creating", $"Creating Docker container from image '{assessment.Sandbox.Image}'.");
+            var session = await _sandboxService.CreateContainerAsync(attemptId, assessment.Sandbox, apiUrl, cts.Token);
+            var containerId = session.ContainerId;
+            _connectionContainers[connectionId] = containerId;
+            await SendStatusAsync(connectionId, "created", $"Created container {ShortId(containerId)}{(session.WorkspacePath is null ? "." : $" with workspace {session.WorkspacePath}.")}");
 
-            // Start background task to pipe data
+            var inputReady = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var client = Clients.Client(connectionId);
+
+            await SendStatusAsync(connectionId, "container-starting", $"Starting container {ShortId(containerId)}.");
+            await _sandboxService.StartContainerAsync(containerId, cts.Token);
+            await SendStatusAsync(connectionId, "container-started", $"Container {ShortId(containerId)} is running.");
+
+            await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, cts.Token);
+            await SendStatusAsync(connectionId, "resized", $"Terminal size set to {cols}x{rows}.");
+
+            await SendStatusAsync(connectionId, "attaching", "Attaching terminal stream.");
             _ = Task.Run(async () =>
             {
                 try
@@ -49,45 +69,116 @@ public class SandboxHub : Hub
                         async (bytes) =>
                         {
                             var base64 = Convert.ToBase64String(bytes);
-                            await Clients.Caller.SendAsync("ReceiveOutput", base64);
+                            await client.SendAsync("ReceiveOutput", base64);
                         },
                         (writeFunc) =>
                         {
-                            // Store the write function in connection context so Input method can use it
-                            Context.Items["WriteInput"] = writeFunc;
+                            _connectionInputWriters[connectionId] = writeFunc;
+                            inputReady.TrySetResult();
+                            _logger.LogInformation("Sandbox input-ready for {ConnectionId}: Terminal input stream is ready.", connectionId);
+                            _ = client.SendAsync("SandboxStatus", "input-ready", "Terminal input stream is ready.");
                             return Task.CompletedTask;
                         },
                         cts.Token);
+
+                    _logger.LogInformation("Sandbox stream-ended for {ConnectionId}: Sandbox terminal stream ended.", connectionId);
+                    await client.SendAsync("SandboxStatus", "stream-ended", "Sandbox terminal stream ended.");
+                }
+                catch (OperationCanceledException)
+                {
+                    _logger.LogInformation("Sandbox stream canceled for {ConnectionId}.", connectionId);
+                    await client.SendAsync("SandboxStatus", "stream-canceled", "Sandbox terminal stream was closed.");
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError(ex, "Error while streaming container output.");
+                    inputReady.TrySetException(ex);
+                    await client.SendAsync("SandboxFailed", "stream", ex.Message);
+                    await client.SendAsync("Error", ex.Message);
                 }
-            });
+            }, cts.Token);
+
+            var readyTask = await Task.WhenAny(inputReady.Task, Task.Delay(TimeSpan.FromSeconds(5), cts.Token));
+            if (readyTask == inputReady.Task)
+            {
+                await inputReady.Task;
+                await Clients.Client(connectionId).SendAsync("SandboxReady");
+                await SendStatusAsync(connectionId, "ready", "Sandbox is ready for input.");
+            }
+            else
+            {
+                await SendStatusAsync(connectionId, "waiting-for-input", "Container is running, but the input stream has not reported ready yet.");
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to start sandbox.");
+            await Clients.Caller.SendAsync("SandboxFailed", "startup", ex.Message);
             await Clients.Caller.SendAsync("Error", ex.Message);
         }
     }
 
+
     public async Task SendInput(string base64Data)
     {
-        if (Context.Items.TryGetValue("WriteInput", out var writeObj) && writeObj is Func<byte[], Task> writeFunc)
+        if (_connectionInputWriters.TryGetValue(Context.ConnectionId, out var writeFunc))
         {
             var bytes = Convert.FromBase64String(base64Data);
-            await writeFunc(bytes);
+            try
+            {
+                await writeFunc(bytes);
+                _logger.LogDebug("Wrote {ByteCount} sandbox input bytes for connection {ConnectionId}.", bytes.Length, Context.ConnectionId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to write sandbox input for connection {ConnectionId}.", Context.ConnectionId);
+                await Clients.Caller.SendAsync("SandboxFailed", "input-write", ex.Message);
+                await Clients.Caller.SendAsync("Error", $"Sandbox input write failed: {ex.Message}");
+            }
+            return;
+        }
+
+        await Clients.Caller.SendAsync("SandboxStatus", "input-waiting", "Sandbox input is not ready yet.");
+        await Clients.Caller.SendAsync("Error", "Sandbox input is not ready yet. Try again in a moment.");
+    }
+
+    public async Task ResizeTerminal(int cols, int rows)
+    {
+        if (_connectionContainers.TryGetValue(Context.ConnectionId, out var containerId))
+        {
+            await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, CancellationToken.None);
         }
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        if (_connectionContainers.TryGetValue(Context.ConnectionId, out var containerId))
+        await CleanupConnectionAsync(Context.ConnectionId, stopContainer: true);
+        await base.OnDisconnectedAsync(exception);
+    }
+
+    private async Task CleanupConnectionAsync(string connectionId, bool stopContainer)
+    {
+        _connectionInputWriters.TryRemove(connectionId, out _);
+        if (_connectionCancellation.TryRemove(connectionId, out var cts))
         {
-            _connectionContainers.Remove(Context.ConnectionId);
+            await cts.CancelAsync();
+            cts.Dispose();
+        }
+
+        if (stopContainer && _connectionContainers.TryRemove(connectionId, out var containerId))
+        {
             await _sandboxService.StopContainerAsync(containerId, CancellationToken.None);
         }
-        await base.OnDisconnectedAsync(exception);
+    }
+
+    private Task SendStatusAsync(string connectionId, string phase, string message)
+    {
+        _logger.LogInformation("Sandbox {Phase} for {ConnectionId}: {Message}", phase, connectionId, message);
+        return Clients.Client(connectionId).SendAsync("SandboxStatus", phase, message);
+    }
+
+    private static string ShortId(string containerId)
+    {
+        return containerId[..Math.Min(containerId.Length, 12)];
     }
 }
