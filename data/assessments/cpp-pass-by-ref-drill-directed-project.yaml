@@ -1,0 +1,175 @@
+schemaVersion: 1
+id: cpp-pass-by-ref-drill-directed-project
+title: "Pass-by-Value vs Reference Drill"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-functions]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-functions
+  - c++
+  - pass
+  - by
+  - reference
+  - value
+  - const
+  - swap
+skills:
+- cpp
+- c-plus-plus
+- c++-functions
+- cpp-pass-by-ref-drill
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    See pass-by-value vs pass-by-reference behavior with your own eyes.
+    You will write functions that fail to modify variables (by value) and
+    functions that succeed (by reference), then use const reference for
+    efficiency.
+  estimatedTimeMinutes: 10
+  resources: []
+  phases:
+    - id: phase-1-value-vs-ref
+      title: "Value vs Reference"
+      steps:
+        - id: step-1-compare
+          title: "tryToDouble vs actuallyDouble"
+          instruction: |
+            Create a new C++ console project named `PassByRefDrill`.
+
+            Write two functions that attempt to double a number — one by value
+            and one by reference:
+
+            ```cpp
+            #include <iostream>
+            using namespace std;
+
+            void tryToDouble(int x) {
+                x = x * 2;
+                cout << "  Inside tryToDouble: x = " << x << endl;
+            }
+
+            void actuallyDouble(int& x) {
+                x = x * 2;
+                cout << "  Inside actuallyDouble: x = " << x << endl;
+            }
+
+            int main() {
+                int value = 10;
+
+                cout << "Before tryToDouble: value = " << value << endl;
+                tryToDouble(value);
+                cout << "After tryToDouble:  value = " << value << endl;
+
+                cout << endl;
+
+                cout << "Before actuallyDouble: value = " << value << endl;
+                actuallyDouble(value);
+                cout << "After actuallyDouble:  value = " << value << endl;
+
+                return 0;
+            }
+            ```
+
+            Build and run. You will see:
+            - `tryToDouble` changes `x` inside the function but `value` in main
+              stays 10 — it only modified a **copy**.
+            - `actuallyDouble` changes `value` in main to 20 — the `&` means
+              it received a **reference** to the original variable.
+          notesPrompt: "What was the value after each function call?"
+          checklist:
+            - id: chk-value
+              text: "tryToDouble did NOT change value in main"
+            - id: chk-reference
+              text: "actuallyDouble DID change value in main"
+          resources: []
+
+    - id: phase-2-swap
+      title: "Swap with References"
+      steps:
+        - id: step-2-swap
+          title: "Write a swap Function"
+          instruction: |
+            Add a function that swaps two integers using references:
+
+            ```cpp
+            void swapValues(int& a, int& b) {
+                int temp = a;
+                a = b;
+                b = temp;
+            }
+            ```
+
+            Call it from `main()`:
+
+            ```cpp
+            int x = 100, y = 200;
+            cout << endl << "Before swap: x = " << x << ", y = " << y << endl;
+            swapValues(x, y);
+            cout << "After swap:  x = " << x << ", y = " << y << endl;
+            ```
+
+            Without references, this function would be impossible — it would only
+            swap copies and the originals would be unchanged.
+
+            Build and verify that x becomes 200 and y becomes 100.
+          checklist:
+            - id: chk-swap
+              text: "swapValues correctly swaps two integers"
+            - id: chk-temp
+              text: "Understood why a temporary variable is needed"
+          resources: []
+
+    - id: phase-3-const-ref
+      title: "Const Reference"
+      steps:
+        - id: step-3-const
+          title: "Use const& for Efficiency Without Modification"
+          instruction: |
+            Add a function that takes a string by `const &`:
+
+            ```cpp
+            #include <string>
+
+            void printLonger(const string& a, const string& b) {
+                if (a.length() >= b.length()) {
+                    cout << "Longer: \"" << a << "\" (" << a.length()
+                         << " chars)" << endl;
+                } else {
+                    cout << "Longer: \"" << b << "\" (" << b.length()
+                         << " chars)" << endl;
+                }
+            }
+            ```
+
+            Call it:
+
+            ```cpp
+            printLonger("Hello", "Goodbye");
+            printLonger("C++", "Programming Language");
+            ```
+
+            Why `const string&` instead of just `string`?
+            - `string` (by value) would **copy** the entire string — wasteful
+              for large strings.
+            - `string&` (by reference) avoids the copy but would let the function
+              **modify** the original — risky.
+            - `const string&` avoids the copy AND prevents modification — the
+              best of both worlds.
+
+            This is the most common pattern for passing strings and other large
+            objects to functions in C++.
+          notesPrompt: "When would you use plain string& (without const)?"
+          checklist:
+            - id: chk-const-ref
+              text: "Used const string& to avoid copying"
+            - id: chk-understood
+              text: "Understood the three options: by value, by ref, by const ref"
+          resources: []

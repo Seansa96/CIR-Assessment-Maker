@@ -1,0 +1,199 @@
+schemaVersion: 1
+id: cpp-number-guessing-game-directed-project
+title: "Number Guessing Game"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-execution-flow]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-execution-flow
+  - c++
+  - number
+  - guessing
+  - game
+  - while
+  - loop
+  - conditionals
+skills:
+- cpp
+- c-plus-plus
+- c++-execution-flow
+- cpp-number-guessing-game
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Build the classic number guessing game. The program picks a secret number
+    and the user guesses until they get it right, receiving "too high" or
+    "too low" hints. This project ties loops, conditionals, and I/O together.
+  estimatedTimeMinutes: 25
+  resources: []
+  phases:
+    - id: phase-1-basic
+      title: "Basic Guessing Logic"
+      steps:
+        - id: step-1-hardcoded
+          title: "Hardcoded Secret Number"
+          instruction: |
+            Create a new C++ console project named `GuessingGame`.
+
+            Start with a hardcoded secret number and a single guess:
+
+            ```cpp
+            #include <iostream>
+            using namespace std;
+
+            int main() {
+                int secret = 42;
+                int guess;
+
+                cout << "=== Number Guessing Game ===" << endl;
+                cout << "I'm thinking of a number between 1 and 100." << endl;
+                cout << "Enter your guess: ";
+                cin >> guess;
+
+                if (guess == secret) {
+                    cout << "Correct!" << endl;
+                } else if (guess < secret) {
+                    cout << "Too low!" << endl;
+                } else {
+                    cout << "Too high!" << endl;
+                }
+
+                return 0;
+            }
+            ```
+
+            Build and test. Try guessing 42, something lower, and something higher.
+          checklist:
+            - id: chk-basic
+              text: "Program correctly identifies correct, too low, and too high"
+          resources: []
+
+    - id: phase-2-loop
+      title: "Adding the Game Loop"
+      steps:
+        - id: step-2-while
+          title: "Loop Until Correct"
+          instruction: |
+            Wrap the guessing logic in a `while` loop that continues until the
+            guess matches the secret:
+
+            ```cpp
+            int main() {
+                int secret = 42;
+                int guess;
+                int attempts = 0;
+
+                cout << "=== Number Guessing Game ===" << endl;
+                cout << "I'm thinking of a number between 1 and 100." << endl;
+
+                while (true) {
+                    cout << "Enter your guess: ";
+                    cin >> guess;
+                    attempts++;
+
+                    if (guess == secret) {
+                        cout << "Correct! You got it in " << attempts
+                             << " attempts!" << endl;
+                        break;
+                    } else if (guess < secret) {
+                        cout << "Too low! Try again." << endl;
+                    } else {
+                        cout << "Too high! Try again." << endl;
+                    }
+                }
+
+                return 0;
+            }
+            ```
+
+            The `attempts` counter increments with each guess. When the user
+            guesses correctly, the program prints the count and `break` exits
+            the loop.
+
+            Build and test. Try to guess 42 in as few attempts as possible.
+          notesPrompt: "How many attempts did it take? What strategy did you use?"
+          checklist:
+            - id: chk-loop
+              text: "Game loops until the correct answer is given"
+            - id: chk-attempts
+              text: "Attempt counter displays the correct count"
+            - id: chk-break
+              text: "Game exits the loop on a correct guess"
+          resources: []
+
+    - id: phase-3-random
+      title: "Random Number Generation"
+      steps:
+        - id: step-3-random
+          title: "Generate a Random Secret Number"
+          instruction: |
+            Replace the hardcoded `42` with a randomly generated number.
+            Add these includes at the top:
+
+            ```cpp
+            #include <cstdlib>
+            #include <ctime>
+            ```
+
+            Then at the beginning of `main()`, before the loop:
+
+            ```cpp
+            srand(static_cast<unsigned int>(time(0)));
+            int secret = rand() % 100 + 1; // Random number 1-100
+            ```
+
+            - `srand(time(0))` seeds the random number generator with the current
+              time so you get different numbers each run.
+            - `rand() % 100` gives a number from 0 to 99, and `+ 1` shifts it
+              to 1-100.
+
+            Build and run multiple times. The secret number should be different
+            each time.
+          checklist:
+            - id: chk-random
+              text: "Secret number is randomly generated between 1 and 100"
+            - id: chk-different
+              text: "Running the program twice gives different secret numbers"
+          resources: []
+
+    - id: phase-4-polish
+      title: "Polish the Game"
+      steps:
+        - id: step-4-rating
+          title: "Add a Performance Rating"
+          instruction: |
+            After the winning message, add a rating based on the number of attempts:
+
+            ```cpp
+            if (attempts <= 3) {
+                cout << "Rating: Amazing! Are you psychic?" << endl;
+            } else if (attempts <= 7) {
+                cout << "Rating: Great job! Very efficient." << endl;
+            } else if (attempts <= 10) {
+                cout << "Rating: Not bad! Room for improvement." << endl;
+            } else {
+                cout << "Rating: Keep practicing your strategy!" << endl;
+            }
+            ```
+
+            **Hint:** The optimal strategy for 1-100 is binary search — always
+            guess the midpoint of the remaining range. This guarantees finding
+            the answer in at most 7 guesses.
+
+            Build and play several rounds. Try to consistently score 7 or fewer
+            attempts.
+          notesPrompt: "What's your best attempt count? Did you use the binary search strategy?"
+          checklist:
+            - id: chk-rating
+              text: "Performance rating displays based on attempt count"
+            - id: chk-played
+              text: "Played at least 3 full rounds of the game"
+          resources: []

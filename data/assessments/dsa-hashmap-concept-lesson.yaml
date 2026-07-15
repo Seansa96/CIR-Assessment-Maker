@@ -1,0 +1,58 @@
+schemaVersion: 1
+id: dsa-hashmap-concept-lesson
+title: 'Hashmaps: Fast Key-Value Storage'
+assessmentType: conceptLesson
+categoryId: dsa
+subcategoryIds:
+- dsa-hashmaps
+modeDefault: learn
+lesson:
+  introduction: An in-depth look at Hashmaps (or Hash Tables), one of the most powerful and widely used data structures for achieving O(1) average time complexity for lookups, insertions, and deletions.
+  sections:
+  - id: hashmap-basics
+    title: What is a Hashmap?
+    content: |-
+      A **Hashmap** (or Hash Table) is a data structure that implements an associative array abstract data type, a structure that can map keys to values.
+
+      At its core, a hashmap uses a **hash function** to compute an index (also called a hash code) into an array of buckets or slots, from which the desired value can be found.
+
+      ### Key Characteristics:
+      - **Keys must be unique** (and usually immutable, like strings or integers).
+      - **Values can be anything** (and can be duplicated).
+      - Offers on average **O(1)** time complexity for search, insert, and delete operations.
+
+      When you think of a hashmap, think of a real-world dictionary: you have a word (the key) and you use its alphabetical position to quickly find its definition (the value).
+    check:
+      id: hashmap-q1
+      type: multipleChoice
+      prompt: What is the average time complexity for looking up a value in a hashmap by its key?
+      choices:
+      - id: a
+        text: O(N)
+      - id: b
+        text: O(log N)
+      - id: c
+        text: O(1)
+      answer:
+        choiceId: c
+      explanation: Hashmaps achieve O(1) average time complexity because the hash function directly computes the memory location of the value without needing to iterate.
+  - id: hash-functions-collisions
+    title: Hash Functions and Collisions
+    content: "A perfect hash function assigns every key to a unique bucket. However, since the number of possible keys usually vastly exceeds the number of buckets (the array size), two distinct keys can produce the same hash index. This is called a **collision**.\n\n### Handling Collisions\nThere are two primary methods for resolving collisions:\n\n1. **Chaining (Separate Chaining):** \n   Each bucket in the array points to a linked list (or another dynamic data structure). When multiple keys hash to the same index, their key-value pairs are stored in the linked list at that index. During a lookup, the hashmap traverses the linked list to find the matching key.\n\n2. **Open Addressing:** \n   If a collision occurs, the hashmap probes for the next available empty bucket in the array. Common probing techniques include linear probing (checking the next slot), quadratic probing, and double hashing.\n\n### Load Factor\nThe performance of a hashmap degrades if it becomes too full. The **load\
+      \ factor** is the ratio of the number of stored items to the number of buckets (`n/k`). When the load factor exceeds a certain threshold (e.g., 0.75), the hashmap automatically resizes its internal array (usually doubling it) and rehashes all existing keys."
+    check:
+      id: hashmap-q2
+      type: multipleChoice
+      prompt: What happens in a hashmap using 'chaining' when two different keys hash to the same index?
+      choices:
+      - id: a
+        text: The hashmap crashes or throws an exception.
+      - id: b
+        text: The new key-value pair overwrites the old one.
+      - id: c
+        text: Both key-value pairs are stored in a linked list at that index.
+      - id: d
+        text: The hashmap linearly searches for the next empty array slot.
+      answer:
+        choiceId: c
+      explanation: In chaining, collisions are resolved by storing multiple elements in a linked list attached to the bucket index.

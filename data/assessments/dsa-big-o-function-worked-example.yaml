@@ -1,0 +1,69 @@
+schemaVersion: 1
+id: dsa-big-o-function-worked-example
+title: Finding the Big O of a Function
+assessmentType: workedExample
+categoryId: dsa
+subcategoryIds:
+- dsa-complexity
+modeDefault: practice
+workedExamples:
+- id: we1
+  title: Analyzing Nested and Sequential Loops
+  problem: "Consider the following function in Python-like pseudocode. Our goal is to determine its overall **Time Complexity** in Big O notation.\n\n```python\ndef analyze_this(array):\n    n = len(array)\n    \n    # Block 1\n    for i in range(n):\n        print(array[i])\n        \n    # Block 2\n    for i in range(n):\n        for j in range(n):\n            print(array[i], array[j])\n            \n    # Block 3\n    for i in range(10):\n        print(\"Hello!\")\n```\n\nBreak down the complexity of each block, and then determine the final Big O of the entire function."
+  steps:
+  - id: step1
+    title: Analyze Block 1
+    instruction: Determine the time complexity of the first block (a single loop iterating over `array`).
+    type: multipleChoice
+    prompt: What is the Big O of Block 1?
+    choices:
+    - id: a
+      text: O(1)
+    - id: b
+      text: O(N)
+    - id: c
+      text: O(N^2)
+    answer:
+      choiceId: b
+    explanation: Block 1 iterates from 0 to N-1 exactly once. Therefore, it takes O(N) linear time.
+  - id: step2
+    title: Analyze Block 2
+    instruction: Determine the time complexity of the second block (the nested loops).
+    type: multipleChoice
+    prompt: What is the Big O of Block 2?
+    choices:
+    - id: a
+      text: O(N)
+    - id: b
+      text: O(N log N)
+    - id: c
+      text: O(N^2)
+    answer:
+      choiceId: c
+    explanation: Block 2 features an outer loop that runs N times, and an inner loop that also runs N times. N * N = N^2, meaning it takes O(N^2) quadratic time.
+  - id: step3
+    title: Analyze Block 3
+    instruction: Determine the time complexity of the third block (a loop running 10 times).
+    type: multipleChoice
+    prompt: What is the Big O of Block 3?
+    choices:
+    - id: a
+      text: O(1)
+    - id: b
+      text: O(N)
+    - id: c
+      text: O(10)
+    answer:
+      choiceId: a
+    explanation: Although it loops 10 times, the number 10 is a constant that does not change as N grows. In Big O, any constant time operation is simply O(1).
+  - id: step4
+    title: Combine and Simplify
+    instruction: Now combine the complexities of all three sequential blocks and simplify.
+    type: freeResponse
+    prompt: The total runtime is `O(N) + O(N^2) + O(1)`. What does this simplify to? (Provide just the simplified Big O notation, like 'O(1)')
+    answer:
+      gradingMode: selfCheck
+      expected: O(N^2)
+      keyPoints:
+      - O(N^2)
+    explanation: 'When blocks of code execute sequentially, their time complexities are added: `O(N) + O(N^2) + O(1)`. Following the rules of Big O, we drop lower-order terms and constants. `N^2` dominates `N` and `1`, so the overall complexity simplifies to `O(N^2)`.'

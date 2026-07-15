@@ -1,0 +1,216 @@
+schemaVersion: 1
+id: cpp-number-analyzer-guided-project
+title: C++ Number Analyzer Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryIds:
+- c++-execution-flow
+navigation:
+  learningGoal: evaluate
+  activityType: guidedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - guidedproject
+  - evaluate
+  - c++-execution-flow
+  - c++
+  - number
+  - analyzer
+  - loops
+  - conditionals
+  - switch
+skills:
+- cpp
+- c-plus-plus
+- c++-execution-flow
+- cpp-number-analyzer
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: >-
+    Build a `NumberAnalyzer` class that stores an array of integers and
+    provides analysis methods.
+
+
+    The app will handle compiling and running hidden checks. Do not write `main()`.
+
+
+    Required behavior:
+
+    - Create a class named exactly `NumberAnalyzer`.
+
+    - The constructor takes `int nums[]` and `int size` and stores copies of
+    the values in private member arrays/variables.
+
+    - `int countEvens() const` returns the count of even numbers in the stored
+    data (use `% 2 == 0`).
+
+    - `int sumRange(int low, int high) const` returns the sum of all stored
+    numbers that fall within the inclusive range [low, high].
+
+    - `string classifyCount() const` returns a string based on how many
+    numbers are stored:
+      - 0 numbers → `"empty"`
+      - 1 to 5 numbers → `"small"`
+      - 6 to 10 numbers → `"medium"`
+      - More than 10 → `"large"`
+
+    Use a `switch` statement or if/else chain for classifyCount.
+
+  files:
+  - path: NumberAnalyzer.h
+    readOnly: false
+    content: |
+      #pragma once
+      #include <string>
+      using namespace std;
+
+      class NumberAnalyzer {
+      private:
+          int data[100];
+          int count;
+
+      public:
+          NumberAnalyzer(int nums[], int size) {
+              // Store copies of the values into the data array.
+              // Store the size in count.
+              // Hint: use a for loop to copy each element.
+              count = 0;
+          }
+
+          int countEvens() const {
+              // Loop through data and count how many are even.
+              // A number is even if (data[i] % 2 == 0).
+              return 0;
+          }
+
+          int sumRange(int low, int high) const {
+              // Loop through data and sum values where
+              // data[i] >= low && data[i] <= high.
+              return 0;
+          }
+
+          string classifyCount() const {
+              // Return "empty", "small", "medium", or "large"
+              // based on the value of count.
+              return "";
+          }
+      };
+  - path: ProjectNotes.md
+    readOnly: true
+    content: >-
+      Required names:
+
+      - `NumberAnalyzer`
+
+      - `NumberAnalyzer(int nums[], int size)` — copies values
+
+      - `countEvens()` — counts even numbers
+
+      - `sumRange(int low, int high)` — sums values in [low, high]
+
+      - `classifyCount()` — returns "empty", "small", "medium", or "large"
+
+
+      Classification rules:
+
+      - 0 numbers → "empty"
+
+      - 1-5 numbers → "small"
+
+      - 6-10 numbers → "medium"
+
+      - 11+ numbers → "large"
+
+  requiredChecks:
+  - id: count-evens
+    title: countEvens counts even numbers
+    description: Check if countEvens returns the correct count
+    expectedOutputContains:
+    - EVENS_OK
+    testCode: |
+      #include "NumberAnalyzer.h"
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          int nums[] = {1, 2, 3, 4, 5, 6};
+          NumberAnalyzer na(nums, 6);
+          if (na.countEvens() == 3) {
+              cout << "EVENS_OK";
+          } else {
+              cout << "FAIL:" << na.countEvens();
+          }
+          return 0;
+      }
+  - id: sum-range
+    title: sumRange sums values in range
+    description: Check if sumRange returns correct sum for values in [3, 7]
+    expectedOutputContains:
+    - RANGE_OK
+    testCode: |
+      #include "NumberAnalyzer.h"
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          int nums[] = {1, 3, 5, 7, 9, 2};
+          NumberAnalyzer na(nums, 6);
+          int result = na.sumRange(3, 7);
+          if (result == 15) {
+              cout << "RANGE_OK";
+          } else {
+              cout << "FAIL:" << result;
+          }
+          return 0;
+      }
+  - id: classify-small
+    title: classifyCount returns correct label
+    description: Check small and empty classifications
+    expectedOutputContains:
+    - CLASSIFY_OK
+    testCode: |
+      #include "NumberAnalyzer.h"
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          int small[] = {10, 20, 30};
+          NumberAnalyzer nSmall(small, 3);
+
+          int empty[] = {};
+          NumberAnalyzer nEmpty(empty, 0);
+
+          if (nSmall.classifyCount() == "small" && nEmpty.classifyCount() == "empty") {
+              cout << "CLASSIFY_OK";
+          } else {
+              cout << "FAIL:" << nSmall.classifyCount() << ":" << nEmpty.classifyCount();
+          }
+          return 0;
+      }
+  - id: classify-medium-large
+    title: classifyCount handles medium and large
+    description: Check medium and large classifications
+    expectedOutputContains:
+    - CLASSIFY_ML_OK
+    testCode: |
+      #include "NumberAnalyzer.h"
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          int med[] = {1, 2, 3, 4, 5, 6, 7, 8};
+          NumberAnalyzer nMed(med, 8);
+
+          int big[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+          NumberAnalyzer nBig(big, 12);
+
+          if (nMed.classifyCount() == "medium" && nBig.classifyCount() == "large") {
+              cout << "CLASSIFY_ML_OK";
+          } else {
+              cout << "FAIL:" << nMed.classifyCount() << ":" << nBig.classifyCount();
+          }
+          return 0;
+      }

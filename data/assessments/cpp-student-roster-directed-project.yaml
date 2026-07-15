@@ -1,0 +1,291 @@
+schemaVersion: 1
+id: cpp-student-roster-directed-project
+title: "Student Roster Manager"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-execution-flow]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-execution-flow
+  - c++
+  - student
+  - roster
+  - manager
+  - menu
+  - vector
+  - switch
+skills:
+- cpp
+- c-plus-plus
+- c++-execution-flow
+- cpp-student-roster
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Build a complete interactive student roster manager with a menu-driven
+    interface. You will use switch, while loops, vectors, for loops, and
+    if/else together in a substantial program that adds, lists, searches,
+    and removes students.
+  estimatedTimeMinutes: 40
+  resources: []
+  phases:
+    - id: phase-1-menu
+      title: "Menu and Data Storage"
+      steps:
+        - id: step-1-menu
+          title: "Create the Menu and Vector"
+          instruction: |
+            Create a new C++ console project named `StudentRoster`.
+
+            Start with the menu structure and a vector to store names:
+
+            ```cpp
+            #include <iostream>
+            #include <string>
+            #include <vector>
+            using namespace std;
+
+            int main() {
+                vector<string> roster;
+                int choice;
+
+                while (true) {
+                    cout << endl << "=== Student Roster ===" << endl;
+                    cout << "1. Add student" << endl;
+                    cout << "2. List all students" << endl;
+                    cout << "3. Search by name" << endl;
+                    cout << "4. Remove student" << endl;
+                    cout << "5. Quit" << endl;
+                    cout << "Choice: ";
+                    cin >> choice;
+                    cin.ignore(); // Clear newline for getline
+
+                    switch (choice) {
+                        case 1:
+                            cout << "Add student selected." << endl;
+                            break;
+                        case 2:
+                            cout << "List selected." << endl;
+                            break;
+                        case 3:
+                            cout << "Search selected." << endl;
+                            break;
+                        case 4:
+                            cout << "Remove selected." << endl;
+                            break;
+                        case 5:
+                            cout << "Goodbye!" << endl;
+                            return 0;
+                        default:
+                            cout << "Invalid choice. Try again." << endl;
+                    }
+                }
+
+                return 0;
+            }
+            ```
+
+            The `switch` statement is cleaner than a long `if/else if` chain when
+            comparing one variable to several constant values. Each `case` ends
+            with `break` to prevent falling through to the next case.
+
+            `return 0` inside case 5 exits the entire program.
+
+            Build and test the menu. Each option should print its placeholder message.
+          checklist:
+            - id: chk-menu
+              text: "Menu displays and loops correctly"
+            - id: chk-switch
+              text: "Switch handles all 5 cases plus default"
+            - id: chk-quit
+              text: "Option 5 exits the program"
+          resources: []
+
+    - id: phase-2-add-list
+      title: "Add and List Students"
+      steps:
+        - id: step-2-add
+          title: "Implement Add Student"
+          instruction: |
+            Replace the case 1 placeholder with code that reads a name and adds
+            it to the vector:
+
+            ```cpp
+            case 1: {
+                string name;
+                cout << "Enter student name: ";
+                getline(cin, name);
+                roster.push_back(name);
+                cout << "Added: " << name << endl;
+                break;
+            }
+            ```
+
+            The curly braces `{}` inside the case are needed when declaring
+            variables inside a switch case.
+
+            `push_back` adds the name to the end of the vector.
+          checklist:
+            - id: chk-add
+              text: "Can add a student name to the roster"
+          resources: []
+
+        - id: step-3-list
+          title: "Implement List All Students"
+          instruction: |
+            Replace the case 2 placeholder:
+
+            ```cpp
+            case 2: {
+                if (roster.empty()) {
+                    cout << "Roster is empty." << endl;
+                } else {
+                    cout << "--- Student Roster (" << roster.size()
+                         << " students) ---" << endl;
+                    for (int i = 0; i < roster.size(); i++) {
+                        cout << "  " << (i + 1) << ". " << roster[i] << endl;
+                    }
+                }
+                break;
+            }
+            ```
+
+            Build and test: add 3 students, then list them. They should appear
+            numbered 1, 2, 3.
+          checklist:
+            - id: chk-list
+              text: "List displays all added students with numbers"
+            - id: chk-empty
+              text: "List shows 'Roster is empty' when no students exist"
+          resources: []
+
+    - id: phase-3-search
+      title: "Search for a Student"
+      steps:
+        - id: step-4-search
+          title: "Implement Search by Name"
+          instruction: |
+            Replace the case 3 placeholder with a linear search:
+
+            ```cpp
+            case 3: {
+                string searchName;
+                cout << "Enter name to search: ";
+                getline(cin, searchName);
+
+                bool found = false;
+                for (int i = 0; i < roster.size(); i++) {
+                    if (roster[i] == searchName) {
+                        cout << "Found: " << searchName
+                             << " at position " << (i + 1) << endl;
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found) {
+                    cout << searchName << " not found in roster." << endl;
+                }
+                break;
+            }
+            ```
+
+            This is a **linear search** — it checks each element one by one.
+            The `break` inside the `for` loop exits the loop early when the
+            name is found (no need to keep searching).
+
+            Build and test: add some students, then search for one that exists
+            and one that does not.
+          checklist:
+            - id: chk-found
+              text: "Search finds an existing student and shows position"
+            - id: chk-not-found
+              text: "Search reports when a name is not found"
+          resources: []
+
+    - id: phase-4-remove
+      title: "Remove a Student"
+      steps:
+        - id: step-5-remove
+          title: "Implement Remove Student"
+          instruction: |
+            Replace the case 4 placeholder:
+
+            ```cpp
+            case 4: {
+                string removeName;
+                cout << "Enter name to remove: ";
+                getline(cin, removeName);
+
+                bool removed = false;
+                for (int i = 0; i < roster.size(); i++) {
+                    if (roster[i] == removeName) {
+                        roster.erase(roster.begin() + i);
+                        cout << "Removed: " << removeName << endl;
+                        removed = true;
+                        break;
+                    }
+                }
+
+                if (!removed) {
+                    cout << removeName << " not found." << endl;
+                }
+                break;
+            }
+            ```
+
+            `roster.erase(roster.begin() + i)` removes the element at index `i`
+            from the vector and shifts all later elements down.
+
+            Build and test: add 3 students, remove the middle one, then list
+            to confirm it is gone.
+          checklist:
+            - id: chk-remove
+              text: "Successfully removed a student from the roster"
+            - id: chk-verify
+              text: "Listed roster after removal to confirm the student is gone"
+          resources: []
+
+    - id: phase-5-test
+      title: "Full Integration Test"
+      steps:
+        - id: step-6-integration
+          title: "Run a Complete Test Scenario"
+          instruction: |
+            Do a full test of the finished program:
+
+            1. Add 4 students: Alice, Bob, Charlie, Diana
+            2. List all students — confirm all 4 appear
+            3. Search for Charlie — confirm found at position 3
+            4. Search for Eve — confirm not found
+            5. Remove Bob
+            6. List all students — confirm Bob is gone and the remaining
+               3 are numbered correctly
+            7. Try to remove Bob again — confirm "not found"
+            8. Quit
+
+            **Reflection:** This program uses every control flow concept from this
+            area: `if/else`, `for` loops, `while(true)`, `switch`, `break`, and
+            a `bool` flag. It also uses a `vector` to store dynamic data.
+          notesPrompt: "Did all 8 test steps pass? Any unexpected behavior?"
+          checklist:
+            - id: chk-add-four
+              text: "Added 4 students successfully"
+            - id: chk-search-found
+              text: "Search found Charlie at position 3"
+            - id: chk-search-miss
+              text: "Search correctly reported Eve as not found"
+            - id: chk-remove-bob
+              text: "Removed Bob and confirmed with list"
+            - id: chk-remove-again
+              text: "Second removal of Bob correctly reported not found"
+            - id: chk-quit
+              text: "Program quit cleanly"
+          resources: []

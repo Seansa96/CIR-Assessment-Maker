@@ -1,0 +1,298 @@
+schemaVersion: 1
+id: cpp-unit-conversion-toolbox-directed-project
+title: "Unit Conversion Toolbox"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-types-and-variables]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-types-and-variables
+  - c++
+  - unit
+  - conversion
+  - toolbox
+  - menu
+  - constants
+skills:
+- cpp
+- c-plus-plus
+- c++-types-and-variables
+- cpp-unit-conversion-toolbox
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Build a menu-driven unit conversion toolbox with four categories
+    (Temperature, Distance, Weight, Time). This project ties together
+    variables, constants, arithmetic, I/O, and introduces a basic menu loop.
+  estimatedTimeMinutes: 40
+  resources: []
+  phases:
+    - id: phase-1-menu
+      title: "Building the Menu"
+      steps:
+        - id: step-1-menu
+          title: "Create the Main Menu"
+          instruction: |
+            Create a new C++ console project named `UnitToolbox`.
+
+            Start by creating a program that displays a category menu:
+
+            ```cpp
+            #include <iostream>
+            #include <iomanip>
+            using namespace std;
+
+            int main() {
+                cout << fixed << setprecision(4);
+
+                int choice;
+                cout << "=== Unit Conversion Toolbox ===" << endl;
+                cout << "1. Temperature" << endl;
+                cout << "2. Distance" << endl;
+                cout << "3. Weight" << endl;
+                cout << "4. Time" << endl;
+                cout << "0. Quit" << endl;
+                cout << "Choose a category: ";
+                cin >> choice;
+
+                cout << "You chose: " << choice << endl;
+
+                return 0;
+            }
+            ```
+
+            Build and test. The menu should display and accept a number.
+          checklist:
+            - id: chk-menu
+              text: "Menu displays with 4 categories plus quit"
+            - id: chk-reads-choice
+              text: "Program reads the user's menu choice"
+          resources: []
+
+    - id: phase-2-temperature
+      title: "Temperature Conversions"
+      steps:
+        - id: step-2-temp
+          title: "Implement Temperature Conversions"
+          instruction: |
+            After reading the choice, add an `if` block for temperature:
+
+            ```cpp
+            if (choice == 1) {
+                const double KELVIN_OFFSET = 273.15;
+                double value;
+                int subChoice;
+
+                cout << endl << "--- Temperature ---" << endl;
+                cout << "1. Celsius to Fahrenheit" << endl;
+                cout << "2. Fahrenheit to Celsius" << endl;
+                cout << "Sub-choice: ";
+                cin >> subChoice;
+                cout << "Enter value: ";
+                cin >> value;
+
+                if (subChoice == 1) {
+                    double result = value * 9.0 / 5.0 + 32.0;
+                    cout << value << " C = " << result << " F" << endl;
+                } else if (subChoice == 2) {
+                    double result = (value - 32.0) * 5.0 / 9.0;
+                    cout << value << " F = " << result << " C" << endl;
+                } else {
+                    cout << "Invalid sub-choice." << endl;
+                }
+            }
+            ```
+
+            Build and test with known conversions:
+            - 100°C → 212°F
+            - 32°F → 0°C
+          checklist:
+            - id: chk-c-to-f
+              text: "Celsius to Fahrenheit works correctly"
+            - id: chk-f-to-c
+              text: "Fahrenheit to Celsius works correctly"
+          resources: []
+
+    - id: phase-3-distance-weight
+      title: "Distance and Weight"
+      steps:
+        - id: step-3-distance
+          title: "Implement Distance Conversions"
+          instruction: |
+            Add an `else if` block for distance (choice 2):
+
+            ```cpp
+            else if (choice == 2) {
+                const double MILES_TO_KM = 1.60934;
+                double value;
+                int subChoice;
+
+                cout << endl << "--- Distance ---" << endl;
+                cout << "1. Miles to Kilometers" << endl;
+                cout << "2. Kilometers to Miles" << endl;
+                cout << "Sub-choice: ";
+                cin >> subChoice;
+                cout << "Enter value: ";
+                cin >> value;
+
+                if (subChoice == 1) {
+                    cout << value << " mi = " << (value * MILES_TO_KM) << " km" << endl;
+                } else if (subChoice == 2) {
+                    cout << value << " km = " << (value / MILES_TO_KM) << " mi" << endl;
+                } else {
+                    cout << "Invalid sub-choice." << endl;
+                }
+            }
+            ```
+
+            Notice that `MILES_TO_KM` is declared as `const`. This makes the
+            conversion factor immutable and gives it a meaningful name.
+          checklist:
+            - id: chk-mi-km
+              text: "Miles to Kilometers works (10 mi ≈ 16.0934 km)"
+            - id: chk-km-mi
+              text: "Kilometers to Miles works"
+          resources: []
+
+        - id: step-4-weight
+          title: "Implement Weight Conversions"
+          instruction: |
+            Add an `else if` block for weight (choice 3):
+
+            ```cpp
+            else if (choice == 3) {
+                const double LBS_TO_KG = 0.453592;
+                double value;
+                int subChoice;
+
+                cout << endl << "--- Weight ---" << endl;
+                cout << "1. Pounds to Kilograms" << endl;
+                cout << "2. Kilograms to Pounds" << endl;
+                cout << "Sub-choice: ";
+                cin >> subChoice;
+                cout << "Enter value: ";
+                cin >> value;
+
+                if (subChoice == 1) {
+                    cout << value << " lbs = " << (value * LBS_TO_KG) << " kg" << endl;
+                } else if (subChoice == 2) {
+                    cout << value << " kg = " << (value / LBS_TO_KG) << " lbs" << endl;
+                } else {
+                    cout << "Invalid sub-choice." << endl;
+                }
+            }
+            ```
+
+            Build and test. 1 lb ≈ 0.4536 kg.
+          checklist:
+            - id: chk-lbs-kg
+              text: "Pounds to Kilograms works"
+            - id: chk-kg-lbs
+              text: "Kilograms to Pounds works"
+          resources: []
+
+    - id: phase-4-time
+      title: "Time Conversions"
+      steps:
+        - id: step-5-time
+          title: "Implement Time Conversions"
+          instruction: |
+            Add an `else if` block for time (choice 4):
+
+            ```cpp
+            else if (choice == 4) {
+                double value;
+                int subChoice;
+
+                cout << endl << "--- Time ---" << endl;
+                cout << "1. Hours to Minutes" << endl;
+                cout << "2. Minutes to Seconds" << endl;
+                cout << "Sub-choice: ";
+                cin >> subChoice;
+                cout << "Enter value: ";
+                cin >> value;
+
+                if (subChoice == 1) {
+                    cout << value << " hrs = " << (value * 60.0) << " min" << endl;
+                } else if (subChoice == 2) {
+                    cout << value << " min = " << (value * 60.0) << " sec" << endl;
+                } else {
+                    cout << "Invalid sub-choice." << endl;
+                }
+            } else if (choice == 0) {
+                cout << "Goodbye!" << endl;
+            } else {
+                cout << "Invalid category." << endl;
+            }
+            ```
+
+            Build and test all four categories.
+          checklist:
+            - id: chk-time
+              text: "Time conversions work correctly"
+            - id: chk-invalid
+              text: "Invalid choices display an error message"
+            - id: chk-quit
+              text: "Entering 0 prints goodbye"
+          resources: []
+
+    - id: phase-5-loop
+      title: "Menu Loop"
+      steps:
+        - id: step-6-loop
+          title: "Wrap in a Loop for Repeated Use"
+          instruction: |
+            Currently the program exits after one conversion. Wrap the entire menu
+            and conversion logic in a loop so the user can do multiple conversions:
+
+            ```cpp
+            int main() {
+                cout << fixed << setprecision(4);
+                int choice;
+
+                while (true) {
+                    cout << endl << "=== Unit Conversion Toolbox ===" << endl;
+                    cout << "1. Temperature" << endl;
+                    cout << "2. Distance" << endl;
+                    cout << "3. Weight" << endl;
+                    cout << "4. Time" << endl;
+                    cout << "0. Quit" << endl;
+                    cout << "Choose a category: ";
+                    cin >> choice;
+
+                    if (choice == 0) {
+                        cout << "Thanks for using the toolbox. Goodbye!" << endl;
+                        break;
+                    }
+
+                    // ... all your if/else if blocks for choices 1-4 ...
+                }
+
+                return 0;
+            }
+            ```
+
+            The `while (true)` loop runs forever until the user enters `0`, which
+            triggers `break` to exit the loop.
+
+            Build and test by doing several conversions in a row, then quitting.
+
+            **You have built a complete, useful tool** that ties together all the
+            concepts from this area: types, variables, constants, arithmetic, I/O,
+            and formatted output.
+          notesPrompt: "How many conversions did you test in one session?"
+          checklist:
+            - id: chk-loop
+              text: "Menu repeats until user enters 0"
+            - id: chk-break
+              text: "Entering 0 exits the loop cleanly"
+            - id: chk-multi
+              text: "Tested multiple conversions in one program run"
+          resources: []

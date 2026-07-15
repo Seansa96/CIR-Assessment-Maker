@@ -1,0 +1,158 @@
+schemaVersion: 1
+id: dsa-sorting-searching-concept-lesson
+title: 'DSA: Sorting, Searching, and Selection'
+assessmentType: conceptLesson
+categoryId: dsa
+subcategoryIds:
+- dsa-sorting-searching
+modeDefault: learn
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - dsa
+  - sorting-searching
+lesson:
+  introduction: An in-depth, practical lesson on Sorting, Searching, and Selection. It teaches the purpose, implementation model, tradeoffs, and the point at which a standard library is preferable.
+  sections:
+  - id: sorting-searching-purpose
+    title: Purpose and decision signal
+    required: true
+    content: 'Sorting, Searching, and Selection exists to make a recurring kind of work predictable: **using order to avoid unnecessary comparisons**. Start with the workload, not the name of the structure. In finding a record in a sorted desktop index, identify the operation that happens most often, the latency limit, and the memory budget. A built-in collection is usually the correct production default; learn the internal idea so you can select and debug it.'
+    check:
+      id: sorting-searching-purpose-check
+      type: multipleChoice
+      prompt: Which question should be answered before choosing a structure?
+      choices:
+      - id: a
+        text: Which operation and constraint dominate the workload?
+      - id: b
+        text: Which algorithm has the shortest name?
+      - id: c
+        text: Which structure was invented first?
+      - id: d
+        text: Which syntax is most compact?
+      answer:
+        choiceId: a
+      explanation: Selection starts with workload and constraints, not a favorite container.
+  - id: sorting-searching-model
+    title: Representation and invariant
+    required: true
+    content: 'The representation is only useful while its invariant holds. For this module, the key invariant is: **binary search maintains a range that still could contain the target**. Write the invariant in a comment before implementing an update. After every insert, delete, or resize, ask which links, bounds, ordering facts, or bookkeeping values must be repaired.'
+    check:
+      id: sorting-searching-model-check
+      type: multipleChoice
+      prompt: What is the best use of an invariant during implementation?
+      choices:
+      - id: a
+        text: Use it to check every update preserves the structure's promise.
+      - id: b
+        text: Use it only in benchmark reports.
+      - id: c
+        text: Use it instead of testing.
+      - id: d
+        text: Use it to make all operations constant time.
+      answer:
+        choiceId: a
+      explanation: An invariant is a condition that must remain true after each valid operation.
+  - id: sorting-searching-operations
+    title: Core operations
+    required: true
+    content: 'Practice the operations that make the structure worthwhile: **binary search on a sorted list**. Trace one small input by hand before code. Name the precondition, mutate the smallest safe part of the structure, then update metadata such as size, head/tail, visited, or capacity. Prefer the standard library when it already exposes the needed operation and guarantees.'
+    check:
+      id: sorting-searching-operations-check
+      type: multipleChoice
+      prompt: When is a hand implementation most justified?
+      choices:
+      - id: a
+        text: When its memory, latency, or learning constraint matters and the invariant can be tested.
+      - id: b
+        text: Whenever a built-in container exists.
+      - id: c
+        text: Only when the input has one element.
+      - id: d
+        text: Never; internal behavior is irrelevant.
+      answer:
+        choiceId: a
+      explanation: Hand implementations are valuable for learning and specialized constraints, not as a reflex.
+  - id: sorting-searching-implementation
+    title: Implementation walkthrough
+    required: true
+    content: "A small Python sketch makes the control flow visible:\n\n```python\ndef process(items):\n    result = []\n    for item in items:\n        # apply the module invariant before recording work\n        result.append(item)\n    return result\n```\n\nReplace the placeholder with binary search on a sorted list. Keep mutation isolated in a small function, and add tests for empty input, one item, duplicates, and the largest allowed input."
+    check:
+      id: sorting-searching-implementation-check
+      type: multipleChoice
+      prompt: Which test most often reveals a broken boundary update?
+      choices:
+      - id: a
+        text: An empty-input or one-item test.
+      - id: b
+        text: Only a million-item benchmark.
+      - id: c
+        text: A test that avoids deletion.
+      - id: d
+        text: A test with random comments.
+      answer:
+        choiceId: a
+      explanation: Small boundary cases expose missing initialization and off-by-one errors.
+  - id: sorting-searching-cost
+    title: Complexity, memory, and locality
+    required: true
+    content: The representative operation has a typical cost of **O(log n)**, but Big-O is not a stopwatch. Allocation, pointer chasing, cache locality, collisions, branch behavior, and copying can dominate at real sizes. Measure production-shaped inputs after selecting an asymptotically suitable approach. Track both time and additional memory.
+    check:
+      id: sorting-searching-cost-check
+      type: multipleChoice
+      prompt: Why can two O(n) solutions behave differently in practice?
+      choices:
+      - id: a
+        text: Their allocation patterns, locality, and constant costs can differ.
+      - id: b
+        text: Big-O guarantees identical elapsed time.
+      - id: c
+        text: Only the programming language matters.
+      - id: d
+        text: Input shape never affects performance.
+      answer:
+        choiceId: a
+      explanation: Asymptotic cost guides selection; profiling validates the actual workload.
+  - id: sorting-searching-applications
+    title: Application choices
+    required: true
+    content: 'Use Sorting, Searching, and Selection as a decision tool in real systems. In finding a record in a sorted desktop index, state why the access pattern fits, then state one alternative and why it loses: slower lookup, wrong ordering, excess allocation, or missing bounds. Avoid rebuilding a specialized structure if a library type or database index already provides the behavior.'
+    check:
+      id: sorting-searching-applications-check
+      type: multipleChoice
+      prompt: What makes an example a good fit for this module?
+      choices:
+      - id: a
+        text: Its dominant access pattern matches the structure's guarantee.
+      - id: b
+        text: It uses the most lines of code.
+      - id: c
+        text: It avoids all library APIs.
+      - id: d
+        text: It has the largest input regardless of operations.
+      answer:
+        choiceId: a
+      explanation: The best structure is the one whose operations match the workload.
+  - id: sorting-searching-failure-modes
+    title: Failure modes and selection guide
+    required: true
+    content: Common mistakes are applying Sorting, Searching, and Selection where its assumptions do not hold, ignoring worst cases, and optimizing before measuring. Record the input bounds, ordering assumptions, duplicate policy, and failure behavior. For bit operations and fixed storage, continue with **Computer Arithmetic Algorithms** for machine-level representation; this course keeps the focus on data-structure selection.
+    check:
+      id: sorting-searching-failure-modes-check
+      type: multipleChoice
+      prompt: What should a production selection note include?
+      choices:
+      - id: a
+        text: Input bounds, required operations, memory limit, and behavior on failure.
+      - id: b
+        text: Only the preferred API name.
+      - id: c
+        text: A claim that every lookup is O(1).
+      - id: d
+        text: A benchmark with no input description.
+      answer:
+        choiceId: a
+      explanation: A useful decision records constraints and failure behavior as well as expected speed.

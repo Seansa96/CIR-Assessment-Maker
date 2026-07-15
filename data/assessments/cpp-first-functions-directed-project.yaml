@@ -1,0 +1,197 @@
+schemaVersion: 1
+id: cpp-first-functions-directed-project
+title: "Write Your First Functions"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-functions]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-functions
+  - c++
+  - first
+  - functions
+  - return
+  - void
+  - parameters
+skills:
+- cpp
+- c-plus-plus
+- c++-functions
+- cpp-first-functions
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Write three functions from scratch to drill the basic syntax: return
+    type, name, parameters, body, and calling from main(). You will write
+    an int-returning function, a void function, and a function with
+    multiple parameters.
+  estimatedTimeMinutes: 10
+  resources: []
+  phases:
+    - id: phase-1-square
+      title: "A Function That Returns a Value"
+      steps:
+        - id: step-1-square
+          title: "Write and Call square()"
+          instruction: |
+            Create a new C++ console project named `FirstFunctions`.
+
+            Write a function `square` that takes an integer and returns its square,
+            then call it from `main()`:
+
+            ```cpp
+            #include <iostream>
+            using namespace std;
+
+            int square(int x) {
+                return x * x;
+            }
+
+            int main() {
+                cout << "square(5) = " << square(5) << endl;
+                cout << "square(12) = " << square(12) << endl;
+
+                int number;
+                cout << "Enter a number to square: ";
+                cin >> number;
+                cout << "square(" << number << ") = " << square(number) << endl;
+
+                return 0;
+            }
+            ```
+
+            Key parts of a function:
+            - **Return type:** `int` — this function gives back an integer value
+            - **Name:** `square`
+            - **Parameter:** `int x` — the input value
+            - **Body:** `{ return x * x; }` — the computation
+            - **return:** sends the result back to the caller
+
+            Build and test.
+          checklist:
+            - id: chk-square
+              text: "square(5) returns 25 and square(12) returns 144"
+            - id: chk-called
+              text: "Called square() with a user-provided value"
+          resources: []
+
+    - id: phase-2-void
+      title: "A Void Function"
+      steps:
+        - id: step-2-printline
+          title: "Write and Call printLine()"
+          instruction: |
+            Add a `void` function that prints a line of dashes. A `void` function
+            does not return a value — it just performs an action:
+
+            ```cpp
+            void printLine(int n) {
+                for (int i = 0; i < n; i++) {
+                    cout << "-";
+                }
+                cout << endl;
+            }
+            ```
+
+            Now use it in `main()` to draw separator lines:
+
+            ```cpp
+            printLine(30);
+            cout << "   Function Demo" << endl;
+            printLine(30);
+            cout << "square(5) = " << square(5) << endl;
+            printLine(30);
+            ```
+
+            Notice there is no `return` statement in `printLine` (though you can
+            use `return;` without a value if you want to exit early).
+          checklist:
+            - id: chk-void
+              text: "printLine() prints the correct number of dashes"
+            - id: chk-no-return
+              text: "Understood that void functions do not return a value"
+          resources: []
+
+    - id: phase-3-multiple-params
+      title: "Multiple Parameters"
+      steps:
+        - id: step-3-average
+          title: "Write and Call average()"
+          instruction: |
+            Add a function that takes three `double` parameters and returns their
+            average:
+
+            ```cpp
+            double average(double a, double b, double c) {
+                return (a + b + c) / 3.0;
+            }
+            ```
+
+            Call it from `main()`:
+
+            ```cpp
+            cout << "average(10, 20, 30) = " << average(10, 20, 30) << endl;
+            cout << "average(95, 87, 92) = " << average(95, 87, 92) << endl;
+            ```
+
+            Build and test. Note that the function takes `double` parameters but
+            you can pass `int` arguments — C++ will automatically convert them.
+          checklist:
+            - id: chk-average
+              text: "average(10, 20, 30) returns 20"
+            - id: chk-double-return
+              text: "Function returns a double value"
+          resources: []
+
+        - id: step-4-order
+          title: "Understand Declaration Order"
+          instruction: |
+            Try moving the `square` function definition *below* `main()`:
+
+            ```cpp
+            int main() {
+                cout << square(5) << endl; // Error! square is not yet declared
+                return 0;
+            }
+
+            int square(int x) {
+                return x * x;
+            }
+            ```
+
+            Build and observe the error. In C++, you must **declare** a function
+            before you call it. You can fix this in two ways:
+
+            **Option 1:** Keep the function above `main()` (what you had before).
+
+            **Option 2:** Add a **forward declaration** (prototype) above `main()`:
+
+            ```cpp
+            int square(int x); // Forward declaration
+
+            int main() {
+                cout << square(5) << endl; // Now it works
+                return 0;
+            }
+
+            int square(int x) {
+                return x * x;
+            }
+            ```
+
+            Try both approaches. Forward declarations become essential when you
+            have multiple functions that call each other.
+          notesPrompt: "Which approach do you prefer — function above main, or forward declaration?"
+          checklist:
+            - id: chk-error
+              text: "Saw the error when calling an undeclared function"
+            - id: chk-forward
+              text: "Fixed it with a forward declaration"
+          resources: []

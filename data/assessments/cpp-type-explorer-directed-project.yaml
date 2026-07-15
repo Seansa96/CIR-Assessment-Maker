@@ -1,0 +1,174 @@
+schemaVersion: 1
+id: cpp-type-explorer-directed-project
+title: "Type Explorer"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-types-and-variables]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-types-and-variables
+  - c++
+  - types
+  - sizeof
+  - int
+  - double
+  - char
+  - bool
+  - casting
+skills:
+- cpp
+- c-plus-plus
+- c++-types-and-variables
+- cpp-type-explorer
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Explore C++ fundamental data types hands-on. You will declare variables
+    of each type, use sizeof to inspect their memory sizes, and observe what
+    happens during implicit and explicit type conversions.
+  estimatedTimeMinutes: 10
+  resources: []
+  phases:
+    - id: phase-1-declare
+      title: "Declaring and Printing Types"
+      steps:
+        - id: step-1-primitives
+          title: "One Variable of Each Type"
+          instruction: |
+            Create a new C++ console project named `TypeExplorer`.
+
+            Write a program that declares one variable of each fundamental type
+            and prints its value:
+
+            ```cpp
+            #include <iostream>
+            #include <string>
+            using namespace std;
+
+            int main() {
+                int wholeNumber = 42;
+                double decimalNumber = 3.14159;
+                char letter = 'A';
+                bool isTrue = true;
+                string message = "Hello";
+
+                cout << "int:    " << wholeNumber << endl;
+                cout << "double: " << decimalNumber << endl;
+                cout << "char:   " << letter << endl;
+                cout << "bool:   " << isTrue << endl;
+                cout << "string: " << message << endl;
+
+                return 0;
+            }
+            ```
+
+            Build and run. Notice that `bool` prints as `1` (true) or `0` (false),
+            not as the word "true".
+          notesPrompt: "What did the bool value print as?"
+          checklist:
+            - id: chk-all-types
+              text: "Declared and printed int, double, char, bool, and string"
+            - id: chk-bool-numeric
+              text: "Observed that bool prints as 1 or 0"
+          resources: []
+
+    - id: phase-2-sizeof
+      title: "Inspecting Type Sizes"
+      steps:
+        - id: step-2-sizeof
+          title: "Use sizeof to Compare Type Sizes"
+          instruction: |
+            Add the following block after your existing print statements:
+
+            ```cpp
+            cout << endl << "=== Type Sizes (bytes) ===" << endl;
+            cout << "int:       " << sizeof(int) << endl;
+            cout << "long:      " << sizeof(long) << endl;
+            cout << "long long: " << sizeof(long long) << endl;
+            cout << "float:     " << sizeof(float) << endl;
+            cout << "double:    " << sizeof(double) << endl;
+            cout << "char:      " << sizeof(char) << endl;
+            cout << "bool:      " << sizeof(bool) << endl;
+            ```
+
+            Build and run. On most systems you will see:
+            - `char` is 1 byte
+            - `bool` is 1 byte
+            - `int` is 4 bytes
+            - `long` is 4 bytes (on Windows) or 8 bytes (on Linux/Mac)
+            - `long long` is 8 bytes
+            - `float` is 4 bytes
+            - `double` is 8 bytes
+
+            The size of a type determines its range of possible values.
+          notesPrompt: "What sizes did you see? Was long 4 or 8 bytes on your system?"
+          checklist:
+            - id: chk-sizeof
+              text: "Printed sizeof for all listed types"
+            - id: chk-compared
+              text: "Noted the size differences between types"
+          resources: []
+
+    - id: phase-3-conversions
+      title: "Type Conversions"
+      steps:
+        - id: step-3-narrowing
+          title: "Observe Implicit Narrowing"
+          instruction: |
+            Add this block to see what happens when a `double` is assigned to an `int`:
+
+            ```cpp
+            cout << endl << "=== Type Conversions ===" << endl;
+
+            double pi = 3.99;
+            int truncated = pi; // Implicit narrowing conversion
+            cout << "double pi = " << pi << endl;
+            cout << "int truncated = pi -> " << truncated << endl;
+            ```
+
+            Build and run. The value `3.99` becomes `3` — the decimal part is
+            silently dropped. This is called **narrowing** and it can be a source
+            of bugs.
+
+            Your compiler may show a warning about this conversion. Warnings like
+            these are important — they alert you to potential data loss.
+          checklist:
+            - id: chk-narrowing
+              text: "Observed that 3.99 becomes 3 when assigned to int"
+          resources: []
+
+        - id: step-4-cast
+          title: "Use static_cast for Explicit Conversions"
+          instruction: |
+            The safer way to convert types is using `static_cast<>`, which makes
+            your intent explicit:
+
+            ```cpp
+            double value = 7.89;
+            int explicit_result = static_cast<int>(value);
+            cout << "static_cast<int>(7.89) = " << explicit_result << endl;
+
+            int a = 7, b = 2;
+            cout << "7 / 2 (int)    = " << (a / b) << endl;
+            cout << "7 / 2 (double) = " << (static_cast<double>(a) / b) << endl;
+            ```
+
+            The last two lines show a critical difference:
+            - `7 / 2` with both `int` values gives `3` (integer division)
+            - Casting one operand to `double` gives `3.5` (floating-point division)
+
+            Build and run to see both results.
+          notesPrompt: "Why does casting just one operand to double change the result?"
+          checklist:
+            - id: chk-static-cast
+              text: "Used static_cast to explicitly convert types"
+            - id: chk-int-vs-double-div
+              text: "Observed the difference between integer and floating-point division"
+          resources: []

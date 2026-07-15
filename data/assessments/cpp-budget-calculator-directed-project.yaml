@@ -1,0 +1,192 @@
+schemaVersion: 1
+id: cpp-budget-calculator-directed-project
+title: "Budget Calculator"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-types-and-variables]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-types-and-variables
+  - c++
+  - budget
+  - calculator
+  - const
+  - iomanip
+  - formatting
+skills:
+- cpp
+- c-plus-plus
+- c++-types-and-variables
+- cpp-budget-calculator
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Build a monthly budget calculator that uses const variables for fixed
+    rates, reads income and expenses from the user, computes totals with
+    tax, and displays formatted dollar amounts using iomanip.
+  estimatedTimeMinutes: 25
+  resources: []
+  phases:
+    - id: phase-1-constants
+      title: "Constants and Income"
+      steps:
+        - id: step-1-setup
+          title: "Set Up Constants and Read Income"
+          instruction: |
+            Create a new C++ console project named `BudgetCalculator`.
+
+            Start with constants and income input:
+
+            ```cpp
+            #include <iostream>
+            #include <iomanip>
+            using namespace std;
+
+            int main() {
+                const double TAX_RATE = 0.08;
+                const double SAVINGS_GOAL_PERCENT = 0.20;
+
+                double income;
+                cout << "=== Monthly Budget Calculator ===" << endl;
+                cout << "Enter your monthly income: $";
+                cin >> income;
+
+                return 0;
+            }
+            ```
+
+            The `const` keyword marks a variable as unchangeable. Attempting to
+            modify `TAX_RATE` later would cause a compiler error. Constants are
+            conventionally named in `ALL_CAPS` with underscores.
+
+            Build and test.
+          checklist:
+            - id: chk-const
+              text: "Declared TAX_RATE and SAVINGS_GOAL_PERCENT as const"
+            - id: chk-income
+              text: "Program reads monthly income from the user"
+          resources: []
+
+    - id: phase-2-expenses
+      title: "Reading Expenses"
+      steps:
+        - id: step-2-expenses
+          title: "Prompt for Monthly Expenses"
+          instruction: |
+            Add prompts for three expense categories:
+
+            ```cpp
+            double rent, groceries, transportation;
+
+            cout << "Enter monthly rent: $";
+            cin >> rent;
+
+            cout << "Enter monthly groceries: $";
+            cin >> groceries;
+
+            cout << "Enter monthly transportation: $";
+            cin >> transportation;
+            ```
+
+            These are the user's three main expenses. We will apply tax to
+            groceries and transportation (but not rent) in the next step.
+          checklist:
+            - id: chk-expenses
+              text: "Program reads rent, groceries, and transportation"
+          resources: []
+
+    - id: phase-3-compute
+      title: "Computing Totals"
+      steps:
+        - id: step-3-calculate
+          title: "Calculate Totals with Tax"
+          instruction: |
+            Add calculations after the input section:
+
+            ```cpp
+            double groceriesWithTax = groceries * (1.0 + TAX_RATE);
+            double transportWithTax = transportation * (1.0 + TAX_RATE);
+            double totalExpenses = rent + groceriesWithTax + transportWithTax;
+            double remaining = income - totalExpenses;
+            double savingsTarget = income * SAVINGS_GOAL_PERCENT;
+            ```
+
+            Notice how `TAX_RATE` is used in the formula. Because it is `const`,
+            you can be confident this rate is applied consistently everywhere.
+          checklist:
+            - id: chk-tax
+              text: "Applied tax to groceries and transportation"
+            - id: chk-remaining
+              text: "Calculated remaining budget after expenses"
+          resources: []
+
+    - id: phase-4-display
+      title: "Formatted Display"
+      steps:
+        - id: step-4-format
+          title: "Display Results with Fixed Decimal Places"
+          instruction: |
+            Use `<iomanip>` to format dollar amounts to 2 decimal places:
+
+            ```cpp
+            cout << fixed << setprecision(2);
+
+            cout << endl << "=== Budget Summary ===" << endl;
+            cout << "Income:          $" << income << endl;
+            cout << "---" << endl;
+            cout << "Rent:            $" << rent << endl;
+            cout << "Groceries+tax:   $" << groceriesWithTax << endl;
+            cout << "Transport+tax:   $" << transportWithTax << endl;
+            cout << "---" << endl;
+            cout << "Total Expenses:  $" << totalExpenses << endl;
+            cout << "Remaining:       $" << remaining << endl;
+            cout << "Savings Target:  $" << savingsTarget << " (20%)" << endl;
+            ```
+
+            - `fixed` tells `cout` to use fixed-point notation (not scientific).
+            - `setprecision(2)` sets the number of digits after the decimal point.
+            - Once set, these apply to all subsequent `double` output.
+
+            Build and test with income `$3000`, rent `$1200`, groceries `$400`,
+            transportation `$150`.
+          notesPrompt: "What are the formatted totals? Is the remaining budget above or below the savings target?"
+          checklist:
+            - id: chk-fixed
+              text: "Used fixed and setprecision(2) for dollar formatting"
+            - id: chk-summary
+              text: "Budget summary displays with aligned labels"
+          resources: []
+
+        - id: step-5-percentages
+          title: "Bonus: Show Expense Percentages"
+          instruction: |
+            Add a section that shows what percentage of income each expense represents:
+
+            ```cpp
+            cout << endl << "=== Expense Breakdown ===" << endl;
+            cout << "Rent:          " << (rent / income * 100.0) << "%" << endl;
+            cout << "Groceries:     " << (groceriesWithTax / income * 100.0) << "%" << endl;
+            cout << "Transportation:" << (transportWithTax / income * 100.0) << "%" << endl;
+
+            if (remaining >= savingsTarget) {
+                cout << endl << "You are meeting your 20% savings goal!" << endl;
+            } else {
+                cout << endl << "Warning: You are below your 20% savings goal." << endl;
+            }
+            ```
+
+            Build and run with your test values. Try different income and expense
+            combinations to see how the percentages change.
+          checklist:
+            - id: chk-percentages
+              text: "Added percentage breakdown for each expense"
+            - id: chk-savings-check
+              text: "Added savings goal comparison message"
+          resources: []

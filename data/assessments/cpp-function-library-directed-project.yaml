@@ -1,0 +1,232 @@
+schemaVersion: 1
+id: cpp-function-library-directed-project
+title: "Function Library with Headers"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-functions]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-functions
+  - c++
+  - function
+  - library
+  - header
+  - source
+  - multi-file
+  - overloading
+skills:
+- cpp
+- c-plus-plus
+- c++-functions
+- cpp-function-library
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Build a reusable function library split across header and source files.
+    You will declare functions in a .h file, implement them in a .cpp file,
+    and call them from main.cpp — the standard C++ multi-file pattern.
+  estimatedTimeMinutes: 25
+  resources: []
+  phases:
+    - id: phase-1-header
+      title: "Creating the Header File"
+      steps:
+        - id: step-1-project
+          title: "Create the Project and Header"
+          instruction: |
+            Create a new C++ console project named `FunctionLibrary`.
+
+            Add a new header file called `utils.h` to the project.
+
+            In `utils.h`, write the function **declarations** (prototypes):
+
+            ```cpp
+            #pragma once
+
+            // Returns n! (n factorial)
+            // factorial(0) = 1, factorial(5) = 120
+            int factorial(int n);
+
+            // Returns true if n is prime, false otherwise
+            // 0 and 1 are not prime
+            bool isPrime(int n);
+
+            // Returns the greatest common divisor of a and b
+            // Uses the Euclidean algorithm
+            int gcd(int a, int b);
+            ```
+
+            `#pragma once` prevents the header from being included multiple times
+            in the same compilation unit.
+
+            A **declaration** tells the compiler that a function exists and what
+            its signature looks like, but does not provide the body. The body goes
+            in the `.cpp` file.
+          checklist:
+            - id: chk-header
+              text: "Created utils.h with three function declarations"
+            - id: chk-pragma
+              text: "Included #pragma once at the top"
+          resources: []
+
+    - id: phase-2-implementation
+      title: "Implementing the Functions"
+      steps:
+        - id: step-2-source
+          title: "Create utils.cpp with Implementations"
+          instruction: |
+            Add a new source file called `utils.cpp` to the project.
+
+            Write the function **definitions** (implementations):
+
+            ```cpp
+            #include "utils.h"
+
+            int factorial(int n) {
+                int result = 1;
+                for (int i = 2; i <= n; i++) {
+                    result *= i;
+                }
+                return result;
+            }
+
+            bool isPrime(int n) {
+                if (n <= 1) return false;
+                if (n <= 3) return true;
+                if (n % 2 == 0) return false;
+
+                for (int i = 3; i * i <= n; i += 2) {
+                    if (n % i == 0) return false;
+                }
+                return true;
+            }
+
+            int gcd(int a, int b) {
+                while (b != 0) {
+                    int temp = b;
+                    b = a % b;
+                    a = temp;
+                }
+                return a;
+            }
+            ```
+
+            Notice that `utils.cpp` includes `utils.h` with `#include "utils.h"`.
+            The quotes (not angle brackets) tell the compiler to look in the
+            project directory first.
+          checklist:
+            - id: chk-source
+              text: "Created utils.cpp with all three implementations"
+            - id: chk-include
+              text: "utils.cpp includes utils.h"
+          resources: []
+
+    - id: phase-3-main
+      title: "Using the Library"
+      steps:
+        - id: step-3-main
+          title: "Call Functions from main.cpp"
+          instruction: |
+            In your main `.cpp` file, include the header and test each function:
+
+            ```cpp
+            #include <iostream>
+            #include "utils.h"
+            using namespace std;
+
+            int main() {
+                // Test factorial
+                cout << "=== Factorial ===" << endl;
+                for (int i = 0; i <= 10; i++) {
+                    cout << i << "! = " << factorial(i) << endl;
+                }
+
+                // Test isPrime
+                cout << endl << "=== Primes from 1-30 ===" << endl;
+                for (int i = 1; i <= 30; i++) {
+                    if (isPrime(i)) {
+                        cout << i << " ";
+                    }
+                }
+                cout << endl;
+
+                // Test gcd
+                cout << endl << "=== GCD ===" << endl;
+                cout << "gcd(12, 8) = " << gcd(12, 8) << endl;
+                cout << "gcd(100, 75) = " << gcd(100, 75) << endl;
+                cout << "gcd(17, 13) = " << gcd(17, 13) << endl;
+
+                return 0;
+            }
+            ```
+
+            Build and run. Expected results:
+            - `5! = 120`, `10! = 3628800`
+            - Primes: `2 3 5 7 11 13 17 19 23 29`
+            - `gcd(12, 8) = 4`, `gcd(100, 75) = 25`, `gcd(17, 13) = 1`
+          checklist:
+            - id: chk-factorial
+              text: "factorial produces correct results"
+            - id: chk-primes
+              text: "isPrime correctly identifies prime numbers"
+            - id: chk-gcd
+              text: "gcd produces correct results"
+          resources: []
+
+    - id: phase-4-overload
+      title: "Function Overloading Across Files"
+      steps:
+        - id: step-4-overload
+          title: "Add an Overloaded factorial for Doubles"
+          instruction: |
+            Add an overloaded version of factorial for `double` values.
+
+            In `utils.h`, add the declaration:
+
+            ```cpp
+            // Overloaded: returns n! as a double (for larger values)
+            double factorial(double n);
+            ```
+
+            In `utils.cpp`, add the implementation:
+
+            ```cpp
+            double factorial(double n) {
+                double result = 1.0;
+                for (int i = 2; i <= static_cast<int>(n); i++) {
+                    result *= i;
+                }
+                return result;
+            }
+            ```
+
+            In `main.cpp`, test it:
+
+            ```cpp
+            cout << endl << "=== Double Factorial ===" << endl;
+            cout << "factorial(20.0) = " << factorial(20.0) << endl;
+            cout << "factorial(15.0) = " << factorial(15.0) << endl;
+            ```
+
+            The compiler automatically chooses `int factorial(int)` when you pass
+            an `int`, and `double factorial(double)` when you pass a `double`.
+
+            Build and verify. `factorial(20.0)` should be `2.43290200817664e+18`.
+
+            **Reflection:** You now know the standard C++ pattern: declarations
+            in `.h`, definitions in `.cpp`, usage via `#include`. This is how
+            every real C++ project is organized.
+          notesPrompt: "Why is the double version useful for factorial(20)?"
+          checklist:
+            - id: chk-overload
+              text: "Added the double overload and it compiles"
+            - id: chk-auto-select
+              text: "Compiler selects the correct overload based on argument type"
+          resources: []

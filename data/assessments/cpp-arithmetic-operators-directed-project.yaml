@@ -1,0 +1,174 @@
+schemaVersion: 1
+id: cpp-arithmetic-operators-directed-project
+title: "Arithmetic and Operator Precedence"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-types-and-variables]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-types-and-variables
+  - c++
+  - arithmetic
+  - operators
+  - precedence
+  - modulus
+  - division
+skills:
+- cpp
+- c-plus-plus
+- c++-types-and-variables
+- cpp-arithmetic-operators
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Practice C++ arithmetic operators through three focused exercises:
+    integer vs floating-point division, a tip calculator expression, and
+    the modulus operator for odd/even detection.
+  estimatedTimeMinutes: 10
+  resources: []
+  phases:
+    - id: phase-1-division
+      title: "Integer vs Floating-Point Division"
+      steps:
+        - id: step-1-division
+          title: "Compare Division Results"
+          instruction: |
+            Create a new C++ console project named `ArithmeticDrill`.
+
+            Write a program that compares integer and floating-point division:
+
+            ```cpp
+            #include <iostream>
+            using namespace std;
+
+            int main() {
+                cout << "=== Division Comparison ===" << endl;
+                cout << "7 / 2         = " << (7 / 2) << endl;
+                cout << "7.0 / 2       = " << (7.0 / 2) << endl;
+                cout << "7 / 2.0       = " << (7 / 2.0) << endl;
+                cout << "7.0 / 2.0     = " << (7.0 / 2.0) << endl;
+
+                int a = 7, b = 2;
+                cout << "int a/b       = " << (a / b) << endl;
+                cout << "double(a)/b   = " << (static_cast<double>(a) / b) << endl;
+
+                return 0;
+            }
+            ```
+
+            Build and run. The rule is: **if both operands are integers, the result
+            is an integer (truncated). If either operand is a double, the result is
+            a double.**
+          notesPrompt: "Which expressions produced 3 and which produced 3.5?"
+          checklist:
+            - id: chk-int-div
+              text: "Observed that 7/2 produces 3 (integer division)"
+            - id: chk-double-div
+              text: "Observed that 7.0/2 produces 3.5 (floating-point division)"
+          resources: []
+
+    - id: phase-2-tip-calc
+      title: "Tip Calculator Expression"
+      steps:
+        - id: step-2-tip
+          title: "Write a Tip Calculator"
+          instruction: |
+            Replace or extend your `main()` with a tip calculator:
+
+            ```cpp
+            double mealCost;
+            int tipPercent;
+
+            cout << endl << "=== Tip Calculator ===" << endl;
+            cout << "Enter meal cost: $";
+            cin >> mealCost;
+            cout << "Enter tip percentage (e.g. 18): ";
+            cin >> tipPercent;
+
+            double tipAmount = mealCost * tipPercent / 100.0;
+            double total = mealCost + tipAmount;
+
+            cout << "Tip:   $" << tipAmount << endl;
+            cout << "Total: $" << total << endl;
+            ```
+
+            Build and test with a meal cost of `25.00` and a tip of `18`:
+            - Tip should be `$4.5`
+            - Total should be `$29.5`
+
+            **Key concept:** Using `100.0` (not `100`) ensures floating-point division.
+            If you used `100`, the expression `tipPercent / 100` would be `0` due to
+            integer division (since `tipPercent` is `int`).
+          notesPrompt: "What happens if you change 100.0 to 100 in the expression?"
+          checklist:
+            - id: chk-tip-works
+              text: "Tip calculator produces correct results"
+            - id: chk-100-vs-100point0
+              text: "Understood why 100.0 is needed instead of 100"
+          resources: []
+
+    - id: phase-3-modulus
+      title: "The Modulus Operator"
+      steps:
+        - id: step-3-odd-even
+          title: "Odd or Even with %"
+          instruction: |
+            Add a section that reads a number and determines if it is odd or even:
+
+            ```cpp
+            int number;
+            cout << endl << "=== Odd or Even ===" << endl;
+            cout << "Enter an integer: ";
+            cin >> number;
+
+            int remainder = number % 2;
+            cout << number << " % 2 = " << remainder << endl;
+
+            if (remainder == 0) {
+                cout << number << " is even." << endl;
+            } else {
+                cout << number << " is odd." << endl;
+            }
+            ```
+
+            The `%` (modulus) operator returns the remainder after integer division.
+            - `10 % 2 = 0` → even
+            - `7 % 2 = 1` → odd
+
+            Build and test with several numbers: try `0`, `1`, `4`, `7`, `-3`.
+          checklist:
+            - id: chk-modulus
+              text: "Modulus correctly identifies odd and even numbers"
+            - id: chk-negative
+              text: "Tested with a negative number"
+          resources: []
+
+        - id: step-4-precedence
+          title: "Operator Precedence Experiment"
+          instruction: |
+            Add a final section that demonstrates operator precedence:
+
+            ```cpp
+            cout << endl << "=== Precedence ===" << endl;
+            cout << "2 + 3 * 4     = " << (2 + 3 * 4) << endl;
+            cout << "(2 + 3) * 4   = " << ((2 + 3) * 4) << endl;
+            cout << "10 - 6 / 2    = " << (10 - 6 / 2) << endl;
+            cout << "(10 - 6) / 2  = " << ((10 - 6) / 2) << endl;
+            ```
+
+            Build and run. The results show that `*` and `/` are evaluated before
+            `+` and `-`, just like in math. Use parentheses to override the default
+            order.
+          checklist:
+            - id: chk-precedence
+              text: "Observed that multiplication and division happen before addition and subtraction"
+            - id: chk-parens
+              text: "Used parentheses to change evaluation order"
+          resources: []

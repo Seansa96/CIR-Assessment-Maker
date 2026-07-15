@@ -1,0 +1,199 @@
+schemaVersion: 1
+id: cpp-comments-errors-directed-project
+title: "Comments and Compiler Errors"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-basics]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-basics
+  - c++
+  - comments
+  - compiler
+  - errors
+  - debugging
+skills:
+- cpp
+- c-plus-plus
+- c++-basics
+- cpp-comments-errors
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Learn to use single-line and multi-line comments, and build the habit of
+    reading compiler error messages by intentionally introducing and fixing
+    common mistakes.
+  estimatedTimeMinutes: 10
+  resources: []
+  phases:
+    - id: phase-1-comments
+      title: "Using Comments"
+      steps:
+        - id: step-1-single-line
+          title: "Single-Line Comments"
+          instruction: |
+            Create a new C++ console project named `CommentsAndErrors`.
+
+            Write this program:
+
+            ```cpp
+            #include <iostream>
+            using namespace std;
+
+            int main() {
+                // This prints a greeting to the console
+                cout << "Hello from C++!" << endl;
+
+                // TODO: Add a second print statement below
+                cout << "Comments are ignored by the compiler." << endl;
+
+                return 0; // Program ends here
+            }
+            ```
+
+            Notice the three styles of single-line comment usage:
+            - Explaining what the next line does
+            - Marking a TODO for yourself
+            - Inline comment at the end of a line
+
+            Build and run. Confirm the comments do not appear in the output.
+          checklist:
+            - id: chk-single
+              text: "Program compiles with single-line comments"
+            - id: chk-output
+              text: "Comments do not appear in the console output"
+          resources: []
+
+        - id: step-2-multi-line
+          title: "Multi-Line Comments"
+          instruction: |
+            Add a multi-line comment block at the top of your file, above `#include`:
+
+            ```cpp
+            /*
+             * CommentsAndErrors
+             * Author: [Your Name]
+             * Date: [Today's Date]
+             *
+             * This program demonstrates comments and
+             * how to read compiler error messages.
+             */
+            ```
+
+            Build and run again. The multi-line comment should not affect the output.
+          checklist:
+            - id: chk-multi
+              text: "Added a multi-line comment header block"
+            - id: chk-still-runs
+              text: "Program still compiles and runs correctly"
+          resources: []
+
+    - id: phase-2-errors
+      title: "Reading Compiler Errors"
+      steps:
+        - id: step-3-missing-semicolon
+          title: "Error: Missing Semicolon"
+          instruction: |
+            Remove the semicolon from the end of one of your `cout` lines:
+
+            ```cpp
+            cout << "Hello from C++!" << endl  // <-- missing semicolon
+            ```
+
+            Try to build the project (Ctrl+Shift+B or Build > Build Solution).
+
+            Read the error message in the **Error List** or **Output** panel.
+            It will say something like:
+            ```
+            error C2146: syntax error: missing ';' before identifier 'cout'
+            ```
+
+            **Important:** Notice that the error often points to the line *after* the actual mistake.
+            Fix the error by adding the semicolon back.
+          notesPrompt: "What line number did the compiler point to? Was it the line with the actual mistake?"
+          checklist:
+            - id: chk-saw-error
+              text: "Saw the missing semicolon error message"
+            - id: chk-fixed
+              text: "Fixed the error and confirmed the program builds"
+          resources: []
+
+        - id: step-4-misspelling
+          title: "Error: Misspelled Keyword"
+          instruction: |
+            Change `cout` to `cot` (a misspelling):
+
+            ```cpp
+            cot << "Hello from C++!" << endl;
+            ```
+
+            Build the project and read the error. It will say something like:
+            ```
+            error C2065: 'cot': undeclared identifier
+            ```
+
+            This tells you the compiler does not recognize `cot` as a name.
+            Fix it back to `cout`.
+
+            Next, try changing `#include <iostream>` to `#include <iostrem>` (misspelled header).
+            Build and observe the error. Fix it.
+          notesPrompt: "What error did the misspelled header produce?"
+          checklist:
+            - id: chk-identifier
+              text: "Saw the undeclared identifier error"
+            - id: chk-header
+              text: "Saw the missing header error"
+            - id: chk-all-fixed
+              text: "Fixed all errors — program compiles cleanly"
+          resources: []
+
+        - id: step-5-unclosed-string
+          title: "Error: Unclosed String Literal"
+          instruction: |
+            Remove the closing quote from a string:
+
+            ```cpp
+            cout << "Hello from C++! << endl;
+            ```
+
+            Build and observe. The compiler may produce multiple confusing errors from
+            this single mistake. This is a common pattern: **one mistake can cause a
+            cascade of errors**. Always fix the *first* error and rebuild.
+
+            Fix the string by adding the closing `"` back.
+          checklist:
+            - id: chk-cascade
+              text: "Observed multiple errors from one missing quote"
+            - id: chk-first-error
+              text: "Understood that fixing the first error often fixes the rest"
+          resources: []
+
+    - id: phase-3-comment-out
+      title: "Commenting Out Code"
+      steps:
+        - id: step-6-comment-out
+          title: "Disable Code with Comments"
+          instruction: |
+            A common technique is to temporarily disable code by commenting it out.
+
+            1. Select your second `cout` line.
+            2. Comment it out using `//` at the beginning of the line
+               (shortcut: Ctrl+K, Ctrl+C in Visual Studio).
+            3. Build and run. Confirm only one line prints.
+            4. Uncomment it (Ctrl+K, Ctrl+U) and verify both lines print again.
+
+            This is useful when debugging — you can disable sections of code without
+            deleting them.
+          checklist:
+            - id: chk-commented-out
+              text: "Successfully commented out a line and confirmed output changed"
+            - id: chk-uncommented
+              text: "Uncommented the line and confirmed output restored"
+          resources: []

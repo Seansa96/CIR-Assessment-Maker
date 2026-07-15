@@ -1,0 +1,194 @@
+schemaVersion: 1
+id: cpp-temperature-converter-guided-project
+title: C++ Temperature Converter Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryIds:
+- c++-types-and-variables
+navigation:
+  learningGoal: evaluate
+  activityType: guidedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - guidedproject
+  - evaluate
+  - c++-types-and-variables
+  - c++
+  - temperature
+  - converter
+  - guided
+  - project
+skills:
+- cpp
+- c-plus-plus
+- c++-types-and-variables
+- cpp-temperature-converter
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: >-
+    Build a `TemperatureConverter` class that converts between Celsius,
+    Fahrenheit, and Kelvin scales.
+
+
+    The app will handle compiling and running hidden checks. Do not write `main()`.
+
+
+    Required behavior:
+
+    - Create a class named exactly `TemperatureConverter`.
+
+    - Create a public method named exactly `celsiusToFahrenheit` that takes a
+    `double celsius` and returns a `double`. Formula: `F = C * 9.0 / 5.0 + 32.0`
+
+    - Create a public method named exactly `fahrenheitToCelsius` that takes a
+    `double fahrenheit` and returns a `double`. Formula: `C = (F - 32.0) * 5.0 / 9.0`
+
+    - Create a public method named exactly `celsiusToKelvin` that takes a
+    `double celsius` and returns a `double`. Formula: `K = C + 273.15`
+
+    - Create a public method named exactly `formatReading` that takes a
+    `double value` and a `string scale` and returns a string in the format
+    `"72.5 F"` (using `to_string(value) + " " + scale`).
+
+  files:
+  - path: TemperatureConverter.h
+    readOnly: false
+    content: |
+      #pragma once
+      #include <string>
+
+      using namespace std;
+
+      class TemperatureConverter {
+      public:
+          // Convert Celsius to Fahrenheit
+          // F = C * 9.0 / 5.0 + 32.0
+          double celsiusToFahrenheit(double celsius) {
+              return 0;
+          }
+
+          // Convert Fahrenheit to Celsius
+          // C = (F - 32.0) * 5.0 / 9.0
+          double fahrenheitToCelsius(double fahrenheit) {
+              return 0;
+          }
+
+          // Convert Celsius to Kelvin
+          // K = C + 273.15
+          double celsiusToKelvin(double celsius) {
+              return 0;
+          }
+
+          // Format a reading as "value scale"
+          // e.g., formatReading(72.5, "F") returns "72.500000 F"
+          string formatReading(double value, string scale) {
+              return "";
+          }
+      };
+  - path: ProjectNotes.md
+    readOnly: true
+    content: >-
+      Required names:
+
+      - `TemperatureConverter`
+
+      - `celsiusToFahrenheit(double celsius)`
+
+      - `fahrenheitToCelsius(double fahrenheit)`
+
+      - `celsiusToKelvin(double celsius)`
+
+      - `formatReading(double value, string scale)`
+
+
+      Formulas:
+
+      - F = C * 9.0 / 5.0 + 32.0
+
+      - C = (F - 32.0) * 5.0 / 9.0
+
+      - K = C + 273.15
+
+  requiredChecks:
+  - id: celsius-to-fahrenheit
+    title: celsiusToFahrenheit converts correctly
+    description: Check if celsiusToFahrenheit(100.0) returns 212.0
+    expectedOutputContains:
+    - C_TO_F_OK
+    testCode: |
+      #include "TemperatureConverter.h"
+      #include <iostream>
+      #include <cmath>
+
+      int main() {
+          TemperatureConverter tc;
+          double result = tc.celsiusToFahrenheit(100.0);
+          if (abs(result - 212.0) < 0.01) {
+              cout << "C_TO_F_OK";
+          } else {
+              cout << "FAIL:" << result;
+          }
+          return 0;
+      }
+  - id: fahrenheit-to-celsius
+    title: fahrenheitToCelsius converts correctly
+    description: Check if fahrenheitToCelsius(32.0) returns 0.0
+    expectedOutputContains:
+    - F_TO_C_OK
+    testCode: |
+      #include "TemperatureConverter.h"
+      #include <iostream>
+      #include <cmath>
+
+      int main() {
+          TemperatureConverter tc;
+          double result = tc.fahrenheitToCelsius(32.0);
+          if (abs(result - 0.0) < 0.01) {
+              cout << "F_TO_C_OK";
+          } else {
+              cout << "FAIL:" << result;
+          }
+          return 0;
+      }
+  - id: celsius-to-kelvin
+    title: celsiusToKelvin converts correctly
+    description: Check if celsiusToKelvin(0.0) returns 273.15
+    expectedOutputContains:
+    - C_TO_K_OK
+    testCode: |
+      #include "TemperatureConverter.h"
+      #include <iostream>
+      #include <cmath>
+
+      int main() {
+          TemperatureConverter tc;
+          double result = tc.celsiusToKelvin(0.0);
+          if (abs(result - 273.15) < 0.01) {
+              cout << "C_TO_K_OK";
+          } else {
+              cout << "FAIL:" << result;
+          }
+          return 0;
+      }
+  - id: format-reading
+    title: formatReading returns correct string
+    description: Check if formatReading(72.5, "F") produces the expected output
+    expectedOutputContains:
+    - FORMAT_OK
+    testCode: |
+      #include "TemperatureConverter.h"
+      #include <iostream>
+
+      int main() {
+          TemperatureConverter tc;
+          string res = tc.formatReading(72.5, "F");
+          if (res.find("72.5") != string::npos && res.find("F") != string::npos) {
+              cout << "FORMAT_OK";
+          } else {
+              cout << "FAIL:" << res;
+          }
+          return 0;
+      }

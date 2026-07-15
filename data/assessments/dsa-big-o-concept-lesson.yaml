@@ -1,0 +1,71 @@
+schemaVersion: 1
+id: dsa-big-o-concept-lesson
+title: 'Big O Notation: Analyzing Complexity'
+assessmentType: conceptLesson
+categoryId: dsa
+subcategoryIds:
+- dsa-complexity
+modeDefault: learn
+lesson:
+  introduction: An in-depth guide to Big O Notation, the mathematical language used to describe the efficiency and scalability of algorithms in computer science.
+  sections:
+  - id: big-o-basics
+    title: What is Big O?
+    content: "**Big O Notation** describes how the runtime or memory requirements of an algorithm grow as the input size (`N`) grows. It provides an upper bound, focusing on the worst-case scenario and the fundamental scaling behavior rather than exact hardware execution time.\n\n### Why do we drop constants and lower-order terms?\nWhen analyzing an algorithm, we might find its exact runtime is `3N^2 + 5N + 10` operations. \nAs `N` becomes very large (e.g., millions), the `N^2` term completely dominates the growth. The constant multiplier `3` and the smaller terms `5N + 10` become mathematically insignificant to the overall shape of the growth curve. \nThus, `O(3N^2 + 5N + 10)` simplifies directly to **`O(N^2)`**.\n\nBig O is about the *trend*, answering the question: \"If I double the input size, how much longer does it take?\""
+    check:
+      id: big-o-q1
+      type: multipleChoice
+      prompt: Which of the following correctly simplifies the expression `O(4N + N^3 + 100)`?
+      choices:
+      - id: a
+        text: O(N)
+      - id: b
+        text: O(N^3)
+      - id: c
+        text: O(4N + N^3)
+      answer:
+        choiceId: b
+      explanation: We drop constants and lower order terms. The highest order term is `N^3`, so the overall complexity is `O(N^3)`.
+  - id: common-complexities
+    title: Common Time Complexities
+    content: |-
+      Here are the most common time complexities, ordered from fastest (best) to slowest (worst):
+
+      - **O(1) Constant:** The runtime is exactly the same regardless of the input size. Example: Array lookup by index, Hashmap lookup.
+      - **O(log N) Logarithmic:** The runtime grows very slowly. The algorithm typically cuts the problem size in half each step. Example: Binary Search.
+      - **O(N) Linear:** The runtime grows directly proportionally to the input size. Example: Iterating through an array once.
+      - **O(N log N) Linearithmic:** Slightly worse than linear. Example: Efficient sorting algorithms like Merge Sort or Quick Sort.
+      - **O(N^2) Quadratic:** The runtime grows quadratically. Usually indicates nested loops over the data. Example: Bubble Sort, Selection Sort.
+      - **O(2^N) Exponential:** Runtime doubles with each addition to the input data space. Often seen in naive recursive solutions without memoization. Example: Recursive Fibonacci.
+      - **O(N!) Factorial:** Runtime grows astronomically fast. Example: Generating all permutations of a string.
+    check:
+      id: big-o-q2
+      type: multipleChoice
+      prompt: An algorithm repeatedly divides the dataset in half until it finds the target value. What is its time complexity?
+      choices:
+      - id: a
+        text: O(N)
+      - id: b
+        text: O(log N)
+      - id: c
+        text: O(1)
+      answer:
+        choiceId: b
+      explanation: Algorithms that repeatedly halve the search space, like Binary Search, operate in O(log N) logarithmic time.
+  - id: space-complexity
+    title: Space Complexity
+    content: "Big O is not just for time! It is equally important for analyzing **Space (Memory) Complexity**.\n\nSpace complexity measures how much *extra* memory an algorithm needs to run as a function of the input size. \n\n- If you sort an array strictly in-place, the space complexity is **O(1)**.\n- If your algorithm creates a new secondary array of the same size as the input, the space complexity is **O(N)**.\n- A recursive function has a hidden space complexity due to the **Call Stack**. A recursion depth of `N` requires **O(N)** space."
+    check:
+      id: big-o-q3
+      type: multipleChoice
+      prompt: If a function takes an array of size `N`, and creates a hashmap to store the frequency of every element in that array, what is the worst-case space complexity?
+      choices:
+      - id: a
+        text: O(1)
+      - id: b
+        text: O(log N)
+      - id: c
+        text: O(N)
+      answer:
+        choiceId: c
+      explanation: In the worst case (all elements are unique), the hashmap will store N key-value pairs, resulting in O(N) extra space used.

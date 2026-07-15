@@ -222,9 +222,9 @@ public sealed class NavigationRecommendationService
         {
             "learn" => ["conceptLesson", "glossary", "guidedWorkedExample", "interactiveExploration"],
             "recall" => ["mixedRecallSet", "clozeDrill", "recognitionDrill"],
-            "practice" => ["focusedPractice", "mixedPractice"],
+            "practice" => ["focusedPractice", "mixedPractice", "directedProject"],
             "apply" => ["guidedProject", "codingApplication", "circuitApplication"],
-            "evaluate" => ["masteryCheck", "formalTest"],
+            "evaluate" => ["masteryCheck", "formalTest", "guidedProject"],
             "reflect" => ["selfReview"],
             _ => []
         };
@@ -236,9 +236,9 @@ public sealed class NavigationRecommendationService
         {
             "learn" => ["conceptLesson", "glossary", "guidedWorkedExample", "interactiveExploration"],
             "recall" => ["mixedRecallSet", "clozeDrill", "recognitionDrill"],
-            "practice" => ["focusedPractice", "mixedPractice"],
-            "review" => ["mixedRecallSet", "clozeDrill", "recognitionDrill", "focusedPractice", "mixedPractice", "conceptLesson", "guidedWorkedExample", "interactiveExploration"],
-            "evaluate" => ["masteryCheck", "formalTest", "focusedPractice", "mixedPractice"],
+            "practice" => ["focusedPractice", "mixedPractice", "directedProject"],
+            "review" => ["mixedRecallSet", "clozeDrill", "recognitionDrill", "focusedPractice", "mixedPractice", "directedProject", "conceptLesson", "guidedWorkedExample", "interactiveExploration"],
+            "evaluate" => ["masteryCheck", "formalTest", "guidedProject", "focusedPractice", "mixedPractice"],
             _ => []
         };
     }

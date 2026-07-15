@@ -26,7 +26,14 @@ export class SandboxTerminal {
                 foreground: '#cccccc'
             }
         });
-        
+        this.terminal.attachCustomKeyEventHandler((event) => {
+            if (event.type === "keydown" && event.ctrlKey && event.key.toLowerCase() === "l") {
+                this.terminal.clear();
+            }
+
+            return true;
+        });
+
         this.fitAddon = new FitAddon();
         this.terminal.loadAddon(this.fitAddon);
 

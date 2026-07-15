@@ -1,0 +1,262 @@
+schemaVersion: 1
+id: cpp-text-stats-analyzer-directed-project
+title: "Text Statistics Analyzer"
+assessmentType: directedProject
+categoryId: c++
+subcategoryIds: [c++-functions]
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - directedproject
+  - practice
+  - c++-functions
+  - c++
+  - text
+  - statistics
+  - analyzer
+  - modular
+  - design
+  - const-ref
+skills:
+- cpp
+- c-plus-plus
+- c++-functions
+- cpp-text-stats-analyzer
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Build a text statistics analyzer by decomposing the problem into small,
+    focused functions. You will write functions for counting vowels, counting
+    sentences, finding the longest word, and computing average word length,
+    then combine them in a summary display.
+  estimatedTimeMinutes: 40
+  resources: []
+  phases:
+    - id: phase-1-vowels
+      title: "Count Vowels"
+      steps:
+        - id: step-1-setup
+          title: "Create the Project and First Function"
+          instruction: |
+            Create a new C++ console project named `TextStats`.
+
+            Write the first analysis function:
+
+            ```cpp
+            #include <iostream>
+            #include <string>
+            #include <cctype>
+            using namespace std;
+
+            int countVowels(const string& text) {
+                int count = 0;
+                for (int i = 0; i < text.length(); i++) {
+                    char lower = tolower(text[i]);
+                    if (lower == 'a' || lower == 'e' || lower == 'i'
+                        || lower == 'o' || lower == 'u') {
+                        count++;
+                    }
+                }
+                return count;
+            }
+
+            int main() {
+                string sample = "Hello World";
+                cout << "Vowels in \"" << sample << "\": "
+                     << countVowels(sample) << endl;
+                return 0;
+            }
+            ```
+
+            Key design decisions:
+            - `const string&` avoids copying the text and prevents accidental
+              modification.
+            - `tolower()` from `<cctype>` handles case-insensitive comparison.
+
+            Build and test. "Hello World" has 3 vowels (e, o, o).
+          checklist:
+            - id: chk-vowels
+              text: "countVowels correctly counts 3 vowels in 'Hello World'"
+            - id: chk-const-ref
+              text: "Used const string& for the parameter"
+          resources: []
+
+    - id: phase-2-sentences
+      title: "Count Sentences"
+      steps:
+        - id: step-2-sentences
+          title: "Write countSentences"
+          instruction: |
+            Add a function that counts sentence-ending punctuation:
+
+            ```cpp
+            int countSentences(const string& text) {
+                int count = 0;
+                for (int i = 0; i < text.length(); i++) {
+                    if (text[i] == '.' || text[i] == '!' || text[i] == '?') {
+                        count++;
+                    }
+                }
+                return count;
+            }
+            ```
+
+            Test it in `main()`:
+
+            ```cpp
+            string paragraph = "Hello there. How are you? I am fine! Great.";
+            cout << "Sentences: " << countSentences(paragraph) << endl;
+            ```
+
+            Expected: 4 sentences.
+          checklist:
+            - id: chk-sentences
+              text: "countSentences correctly counts 4 sentences"
+          resources: []
+
+    - id: phase-3-longest
+      title: "Find the Longest Word"
+      steps:
+        - id: step-3-longest
+          title: "Write longestWord"
+          instruction: |
+            Add a function that finds the longest whitespace-delimited word:
+
+            ```cpp
+            string longestWord(const string& text) {
+                string longest = "";
+                string current = "";
+
+                for (int i = 0; i <= text.length(); i++) {
+                    if (i == text.length() || text[i] == ' ') {
+                        if (current.length() > longest.length()) {
+                            longest = current;
+                        }
+                        current = "";
+                    } else {
+                        current += text[i];
+                    }
+                }
+
+                return longest;
+            }
+            ```
+
+            This function builds words character by character. When it hits a
+            space (or the end of the string), it compares the current word to
+            the longest found so far.
+
+            Test it:
+
+            ```cpp
+            cout << "Longest word: \"" << longestWord("The quick brown fox")
+                 << "\"" << endl;
+            ```
+
+            Expected: "quick" (5 characters).
+          checklist:
+            - id: chk-longest
+              text: "longestWord returns 'quick' for 'The quick brown fox'"
+          resources: []
+
+    - id: phase-4-average
+      title: "Average Word Length"
+      steps:
+        - id: step-4-avg
+          title: "Write averageWordLength"
+          instruction: |
+            Add a function that computes the average word length:
+
+            ```cpp
+            double averageWordLength(const string& text) {
+                if (text.empty()) return 0.0;
+
+                int totalChars = 0;
+                int wordCount = 0;
+                int currentLength = 0;
+
+                for (int i = 0; i <= text.length(); i++) {
+                    if (i == text.length() || text[i] == ' ') {
+                        if (currentLength > 0) {
+                            totalChars += currentLength;
+                            wordCount++;
+                        }
+                        currentLength = 0;
+                    } else {
+                        currentLength++;
+                    }
+                }
+
+                if (wordCount == 0) return 0.0;
+                return static_cast<double>(totalChars) / wordCount;
+            }
+            ```
+
+            Test it:
+
+            ```cpp
+            cout << "Average word length: "
+                 << averageWordLength("The quick brown fox") << endl;
+            ```
+
+            Expected: (3 + 5 + 5 + 3) / 4 = 4.0.
+          checklist:
+            - id: chk-average
+              text: "averageWordLength returns 4.0 for 'The quick brown fox'"
+            - id: chk-empty
+              text: "Returns 0.0 for an empty string"
+          resources: []
+
+    - id: phase-5-combine
+      title: "Full Statistics Summary"
+      steps:
+        - id: step-5-summary
+          title: "Build the Summary Display"
+          instruction: |
+            Replace `main()` with a program that reads a sentence from the user
+            and displays a complete statistics summary:
+
+            ```cpp
+            int main() {
+                string text;
+                cout << "=== Text Statistics Analyzer ===" << endl;
+                cout << "Enter a sentence or paragraph:" << endl;
+                cout << "> ";
+                getline(cin, text);
+
+                cout << endl << "--- Statistics ---" << endl;
+                cout << "Characters:        " << text.length() << endl;
+                cout << "Vowels:            " << countVowels(text) << endl;
+                cout << "Sentences:         " << countSentences(text) << endl;
+                cout << "Longest word:      \"" << longestWord(text) << "\"" << endl;
+                cout << "Avg word length:   " << averageWordLength(text) << endl;
+
+                return 0;
+            }
+            ```
+
+            Build and test with:
+            1. `"Hello World"` — simple test
+            2. `"The quick brown fox jumps over the lazy dog."` — all letters
+            3. `"Wow! That was amazing. Did you see it?"` — multiple sentences
+            4. An empty string
+
+            **Reflection:** You decomposed a complex problem into four small,
+            testable functions. Each function does one thing well and takes its
+            input via `const string&`. This modular design is the foundation of
+            good C++ engineering.
+          notesPrompt: "Which function was the hardest to write? Why?"
+          checklist:
+            - id: chk-summary
+              text: "Complete statistics summary displays correctly"
+            - id: chk-pangram
+              text: "Tested with the 'quick brown fox' pangram"
+            - id: chk-multi-sentence
+              text: "Tested with a multi-sentence input"
+            - id: chk-empty-test
+              text: "Tested with an empty string (no crashes)"
+          resources: []

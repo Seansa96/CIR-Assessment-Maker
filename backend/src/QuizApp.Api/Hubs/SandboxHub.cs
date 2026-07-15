@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
 using QuizApp.Core.Services;
 using System.Collections.Concurrent;
+using System.Text;
 
 namespace QuizApp.Api.Hubs;
 
@@ -49,7 +50,7 @@ public class SandboxHub : Hub
             _connectionContainers[connectionId] = containerId;
             await SendStatusAsync(connectionId, "created", $"Created container {ShortId(containerId)}{(session.WorkspacePath is null ? "." : $" with workspace {session.WorkspacePath}.")}");
 
-            var inputReady = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+            var inputReady = new TaskCompletionSource<Func<byte[], Task>>(TaskCreationOptions.RunContinuationsAsynchronously);
             var client = Clients.Client(connectionId);
 
             await SendStatusAsync(connectionId, "container-starting", $"Starting container {ShortId(containerId)}.");
@@ -80,7 +81,7 @@ public class SandboxHub : Hub
                         (writeFunc) =>
                         {
                             _connectionInputWriters[connectionId] = writeFunc;
-                            inputReady.TrySetResult();
+                            inputReady.TrySetResult(writeFunc);
                             _logger.LogInformation("Sandbox input-ready for {ConnectionId}: Terminal input stream is ready.", connectionId);
                             _ = client.SendAsync("SandboxStatus", "input-ready", "Terminal input stream is ready.");
                             return Task.CompletedTask;
@@ -107,8 +108,9 @@ public class SandboxHub : Hub
             var readyTask = await Task.WhenAny(inputReady.Task, Task.Delay(TimeSpan.FromSeconds(5), cts.Token));
             if (readyTask == inputReady.Task)
             {
-                await inputReady.Task;
-                await ResizeTerminalWithRetriesAsync(connectionId, containerId, cols, rows, cts.Token);
+                var writeInput = await inputReady.Task;
+                var resized = await ResizeTerminalWithRetriesAsync(connectionId, containerId, cols, rows, cts.Token);
+                await ConfigureInteractiveShellAsync(connectionId, assessment.Sandbox, writeInput, resized, cts.Token);
                 await Clients.Client(connectionId).SendAsync("SandboxReady");
                 await SendStatusAsync(connectionId, "ready", "Sandbox is ready for input.");
             }
@@ -187,14 +189,14 @@ public class SandboxHub : Hub
         return Clients.Client(connectionId).SendAsync("SandboxStatus", phase, message);
     }
 
-    private async Task ResizeTerminalWithRetriesAsync(string connectionId, string containerId, int cols, int rows, CancellationToken cancellationToken)
+    private async Task<bool> ResizeTerminalWithRetriesAsync(string connectionId, string containerId, int cols, int rows, CancellationToken cancellationToken)
     {
         for (var attempt = 1; attempt <= 5; attempt++)
         {
             if (await _sandboxService.ResizeTerminalAsync(containerId, cols, rows, cancellationToken))
             {
                 await SendStatusAsync(connectionId, "resized", $"Terminal size confirmed at {cols}x{rows}.");
-                return;
+                return true;
             }
 
             if (attempt < 5)
@@ -205,6 +207,63 @@ public class SandboxHub : Hub
         }
 
         await SendStatusAsync(connectionId, "resize-warning", $"Terminal resize to {cols}x{rows} could not be confirmed. Input is enabled, but some shells may behave poorly.");
+        return false;
+    }
+
+    private async Task ConfigureInteractiveShellAsync(
+        string connectionId,
+        QuizApp.Core.Domain.SandboxDefinition sandbox,
+        Func<byte[], Task> writeInput,
+        bool terminalResizeConfirmed,
+        CancellationToken cancellationToken)
+    {
+        if (!IsPowerShellSandbox(sandbox))
+        {
+            return;
+        }
+
+        if (!terminalResizeConfirmed)
+        {
+            await SendStatusAsync(connectionId, "shell-basic", "PowerShell line editing stayed in basic mode because terminal resize was not confirmed.");
+            return;
+        }
+
+        await SendStatusAsync(connectionId, "shell-enhancing", "Enabling PowerShell tab completion and line-editing keybinds.");
+        var script =
+            "try { " +
+            "Import-Module PSReadLine -ErrorAction Stop; " +
+            "Set-PSReadLineOption -PredictionSource None -EditMode Emacs -BellStyle None -ErrorAction SilentlyContinue; " +
+            "Set-PSReadLineKeyHandler -Key Tab -Function Complete -ErrorAction SilentlyContinue; " +
+            "Set-PSReadLineKeyHandler -Key Ctrl+a -Function BeginningOfLine -ErrorAction SilentlyContinue; " +
+            "Set-PSReadLineKeyHandler -Key Ctrl+e -Function EndOfLine -ErrorAction SilentlyContinue; " +
+            "Set-PSReadLineKeyHandler -Key Ctrl+l -Function ClearScreen -ErrorAction SilentlyContinue; " +
+            "Set-PSReadLineKeyHandler -Key Backspace -Function BackwardDeleteChar -ErrorAction SilentlyContinue; " +
+            "Set-PSReadLineKeyHandler -Key Delete -Function DeleteChar -ErrorAction SilentlyContinue " +
+            "} catch { }";
+
+        try
+        {
+            await writeInput(Encoding.UTF8.GetBytes(script + "\r"));
+            await Task.Delay(150, cancellationToken);
+            await SendStatusAsync(connectionId, "shell-enhanced", "PowerShell line editing is enabled.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Failed to enable PowerShell line editing for sandbox connection {ConnectionId}.", connectionId);
+            await SendStatusAsync(connectionId, "shell-basic", $"PowerShell line editing could not be enabled: {ex.Message}");
+        }
+    }
+
+    private static bool IsPowerShellSandbox(QuizApp.Core.Domain.SandboxDefinition sandbox)
+    {
+        if (sandbox.Language.Equals("pwsh", StringComparison.OrdinalIgnoreCase) ||
+            sandbox.Language.Equals("powershell", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return sandbox.InitialCommand.TrimStart().StartsWith("pwsh", StringComparison.OrdinalIgnoreCase) ||
+            sandbox.InitialCommand.TrimStart().StartsWith("powershell", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string ShortId(string containerId)

@@ -1,0 +1,220 @@
+schemaVersion: 1
+id: cpp-math-toolkit-guided-project
+title: C++ Math Toolkit Guided Project
+assessmentType: guidedProject
+categoryId: c++
+subcategoryIds:
+- c++-functions
+navigation:
+  learningGoal: evaluate
+  activityType: guidedProject
+  tags:
+  - cpp
+  - c-plus-plus
+  - guidedproject
+  - evaluate
+  - c++-functions
+  - c++
+  - math
+  - toolkit
+  - overloading
+  - default
+  - parameters
+skills:
+- cpp
+- c-plus-plus
+- c++-functions
+- cpp-math-toolkit
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  instructions: >-
+    Build a `MathToolkit` class with static helper functions that demonstrate
+    function overloading and default parameters.
+
+
+    The app will handle compiling and running hidden checks. Do not write `main()`.
+
+
+    Required behavior:
+
+    - Create a class named exactly `MathToolkit`.
+
+    - `static int max(int a, int b)` — returns the larger of two ints.
+
+    - `static double max(double a, double b)` — overloaded version for doubles.
+    The compiler selects the correct version based on the argument types.
+
+    - `static int clamp(int value, int low, int high)` — returns `value` if it
+    is within [low, high], returns `low` if value < low, returns `high` if
+    value > high.
+
+    - `static double power(double base, int exponent = 2)` — returns base
+    raised to the exponent using a loop. The default exponent is 2 (squaring).
+    Assume exponent >= 0.
+
+  files:
+  - path: MathToolkit.h
+    readOnly: false
+    content: |
+      #pragma once
+
+      class MathToolkit {
+      public:
+          // Return the larger of two ints
+          static int max(int a, int b) {
+              return 0;
+          }
+
+          // Overloaded: return the larger of two doubles
+          static double max(double a, double b) {
+              return 0;
+          }
+
+          // Clamp value to [low, high]
+          // If value < low, return low
+          // If value > high, return high
+          // Otherwise return value
+          static int clamp(int value, int low, int high) {
+              return 0;
+          }
+
+          // Return base^exponent using a loop
+          // Default exponent is 2 (squaring)
+          // Assume exponent >= 0
+          static double power(double base, int exponent = 2) {
+              return 0;
+          }
+      };
+  - path: ProjectNotes.md
+    readOnly: true
+    content: >-
+      Required names:
+
+      - `MathToolkit`
+
+      - `static int max(int a, int b)`
+
+      - `static double max(double a, double b)` (overload)
+
+      - `static int clamp(int value, int low, int high)`
+
+      - `static double power(double base, int exponent = 2)`
+
+
+      Key concepts:
+
+      - Function overloading: same name, different parameter types
+
+      - Default parameters: exponent defaults to 2 if not provided
+
+      - power(3.0) should return 9.0 (3^2)
+
+      - power(2.0, 10) should return 1024.0 (2^10)
+
+  requiredChecks:
+  - id: max-int
+    title: max(int, int) returns the larger integer
+    description: Check if max(3, 7) returns 7 and max(10, 4) returns 10
+    expectedOutputContains:
+    - MAX_INT_OK
+    testCode: |
+      #include "MathToolkit.h"
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          if (MathToolkit::max(3, 7) == 7 && MathToolkit::max(10, 4) == 10
+              && MathToolkit::max(5, 5) == 5) {
+              cout << "MAX_INT_OK";
+          } else {
+              cout << "FAIL";
+          }
+          return 0;
+      }
+  - id: max-double
+    title: max(double, double) returns the larger double
+    description: Check if max(3.14, 2.71) returns 3.14
+    expectedOutputContains:
+    - MAX_DOUBLE_OK
+    testCode: |
+      #include "MathToolkit.h"
+      #include <iostream>
+      #include <cmath>
+      using namespace std;
+
+      int main() {
+          double result = MathToolkit::max(3.14, 2.71);
+          if (abs(result - 3.14) < 0.001) {
+              cout << "MAX_DOUBLE_OK";
+          } else {
+              cout << "FAIL:" << result;
+          }
+          return 0;
+      }
+  - id: clamp-values
+    title: clamp restricts values to range
+    description: Check clamp with in-range, below, and above values
+    expectedOutputContains:
+    - CLAMP_OK
+    testCode: |
+      #include "MathToolkit.h"
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          bool inRange = MathToolkit::clamp(5, 1, 10) == 5;
+          bool below = MathToolkit::clamp(-3, 0, 100) == 0;
+          bool above = MathToolkit::clamp(200, 0, 100) == 100;
+          bool atBound = MathToolkit::clamp(10, 10, 10) == 10;
+
+          if (inRange && below && above && atBound) {
+              cout << "CLAMP_OK";
+          } else {
+              cout << "FAIL";
+          }
+          return 0;
+      }
+  - id: power-default
+    title: power uses default exponent of 2
+    description: Check if power(3.0) returns 9.0 and power(5.0) returns 25.0
+    expectedOutputContains:
+    - POWER_DEFAULT_OK
+    testCode: |
+      #include "MathToolkit.h"
+      #include <iostream>
+      #include <cmath>
+      using namespace std;
+
+      int main() {
+          if (abs(MathToolkit::power(3.0) - 9.0) < 0.001
+              && abs(MathToolkit::power(5.0) - 25.0) < 0.001) {
+              cout << "POWER_DEFAULT_OK";
+          } else {
+              cout << "FAIL:" << MathToolkit::power(3.0)
+                   << ":" << MathToolkit::power(5.0);
+          }
+          return 0;
+      }
+  - id: power-explicit
+    title: power works with explicit exponent
+    description: Check if power(2.0, 10) returns 1024.0
+    expectedOutputContains:
+    - POWER_EXPLICIT_OK
+    testCode: |
+      #include "MathToolkit.h"
+      #include <iostream>
+      #include <cmath>
+      using namespace std;
+
+      int main() {
+          if (abs(MathToolkit::power(2.0, 10) - 1024.0) < 0.001
+              && abs(MathToolkit::power(3.0, 0) - 1.0) < 0.001) {
+              cout << "POWER_EXPLICIT_OK";
+          } else {
+              cout << "FAIL:" << MathToolkit::power(2.0, 10)
+                   << ":" << MathToolkit::power(3.0, 0);
+          }
+          return 0;
+      }

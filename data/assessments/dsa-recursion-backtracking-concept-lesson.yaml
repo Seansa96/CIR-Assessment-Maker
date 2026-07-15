@@ -1,0 +1,158 @@
+schemaVersion: 1
+id: dsa-recursion-backtracking-concept-lesson
+title: 'DSA: Recursion, Backtracking, and Divide-and-Conquer'
+assessmentType: conceptLesson
+categoryId: dsa
+subcategoryIds:
+- dsa-recursion-backtracking
+modeDefault: learn
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - dsa
+  - recursion-backtracking
+lesson:
+  introduction: An in-depth, practical lesson on Recursion, Backtracking, and Divide-and-Conquer. It teaches the purpose, implementation model, tradeoffs, and the point at which a standard library is preferable.
+  sections:
+  - id: recursion-backtracking-purpose
+    title: Purpose and decision signal
+    required: true
+    content: 'Recursion, Backtracking, and Divide-and-Conquer exists to make a recurring kind of work predictable: **breaking a problem into smaller instances and undoing choices**. Start with the workload, not the name of the structure. In exploring valid configuration combinations, identify the operation that happens most often, the latency limit, and the memory budget. A built-in collection is usually the correct production default; learn the internal idea so you can select and debug it.'
+    check:
+      id: recursion-backtracking-purpose-check
+      type: multipleChoice
+      prompt: Which question should be answered before choosing a structure?
+      choices:
+      - id: a
+        text: Which operation and constraint dominate the workload?
+      - id: b
+        text: Which algorithm has the shortest name?
+      - id: c
+        text: Which structure was invented first?
+      - id: d
+        text: Which syntax is most compact?
+      answer:
+        choiceId: a
+      explanation: Selection starts with workload and constraints, not a favorite container.
+  - id: recursion-backtracking-model
+    title: Representation and invariant
+    required: true
+    content: 'The representation is only useful while its invariant holds. For this module, the key invariant is: **each recursive path must reach a base case and restore temporary state**. Write the invariant in a comment before implementing an update. After every insert, delete, or resize, ask which links, bounds, ordering facts, or bookkeeping values must be repaired.'
+    check:
+      id: recursion-backtracking-model-check
+      type: multipleChoice
+      prompt: What is the best use of an invariant during implementation?
+      choices:
+      - id: a
+        text: Use it to check every update preserves the structure's promise.
+      - id: b
+        text: Use it only in benchmark reports.
+      - id: c
+        text: Use it instead of testing.
+      - id: d
+        text: Use it to make all operations constant time.
+      answer:
+        choiceId: a
+      explanation: An invariant is a condition that must remain true after each valid operation.
+  - id: recursion-backtracking-operations
+    title: Core operations
+    required: true
+    content: 'Practice the operations that make the structure worthwhile: **generating choices with backtracking**. Trace one small input by hand before code. Name the precondition, mutate the smallest safe part of the structure, then update metadata such as size, head/tail, visited, or capacity. Prefer the standard library when it already exposes the needed operation and guarantees.'
+    check:
+      id: recursion-backtracking-operations-check
+      type: multipleChoice
+      prompt: When is a hand implementation most justified?
+      choices:
+      - id: a
+        text: When its memory, latency, or learning constraint matters and the invariant can be tested.
+      - id: b
+        text: Whenever a built-in container exists.
+      - id: c
+        text: Only when the input has one element.
+      - id: d
+        text: Never; internal behavior is irrelevant.
+      answer:
+        choiceId: a
+      explanation: Hand implementations are valuable for learning and specialized constraints, not as a reflex.
+  - id: recursion-backtracking-implementation
+    title: Implementation walkthrough
+    required: true
+    content: "A small Python sketch makes the control flow visible:\n\n```python\ndef process(items):\n    result = []\n    for item in items:\n        # apply the module invariant before recording work\n        result.append(item)\n    return result\n```\n\nReplace the placeholder with generating choices with backtracking. Keep mutation isolated in a small function, and add tests for empty input, one item, duplicates, and the largest allowed input."
+    check:
+      id: recursion-backtracking-implementation-check
+      type: multipleChoice
+      prompt: Which test most often reveals a broken boundary update?
+      choices:
+      - id: a
+        text: An empty-input or one-item test.
+      - id: b
+        text: Only a million-item benchmark.
+      - id: c
+        text: A test that avoids deletion.
+      - id: d
+        text: A test with random comments.
+      answer:
+        choiceId: a
+      explanation: Small boundary cases expose missing initialization and off-by-one errors.
+  - id: recursion-backtracking-cost
+    title: Complexity, memory, and locality
+    required: true
+    content: The representative operation has a typical cost of **depends on search space**, but Big-O is not a stopwatch. Allocation, pointer chasing, cache locality, collisions, branch behavior, and copying can dominate at real sizes. Measure production-shaped inputs after selecting an asymptotically suitable approach. Track both time and additional memory.
+    check:
+      id: recursion-backtracking-cost-check
+      type: multipleChoice
+      prompt: Why can two O(n) solutions behave differently in practice?
+      choices:
+      - id: a
+        text: Their allocation patterns, locality, and constant costs can differ.
+      - id: b
+        text: Big-O guarantees identical elapsed time.
+      - id: c
+        text: Only the programming language matters.
+      - id: d
+        text: Input shape never affects performance.
+      answer:
+        choiceId: a
+      explanation: Asymptotic cost guides selection; profiling validates the actual workload.
+  - id: recursion-backtracking-applications
+    title: Application choices
+    required: true
+    content: 'Use Recursion, Backtracking, and Divide-and-Conquer as a decision tool in real systems. In exploring valid configuration combinations, state why the access pattern fits, then state one alternative and why it loses: slower lookup, wrong ordering, excess allocation, or missing bounds. Avoid rebuilding a specialized structure if a library type or database index already provides the behavior.'
+    check:
+      id: recursion-backtracking-applications-check
+      type: multipleChoice
+      prompt: What makes an example a good fit for this module?
+      choices:
+      - id: a
+        text: Its dominant access pattern matches the structure's guarantee.
+      - id: b
+        text: It uses the most lines of code.
+      - id: c
+        text: It avoids all library APIs.
+      - id: d
+        text: It has the largest input regardless of operations.
+      answer:
+        choiceId: a
+      explanation: The best structure is the one whose operations match the workload.
+  - id: recursion-backtracking-failure-modes
+    title: Failure modes and selection guide
+    required: true
+    content: Common mistakes are applying Recursion, Backtracking, and Divide-and-Conquer where its assumptions do not hold, ignoring worst cases, and optimizing before measuring. Record the input bounds, ordering assumptions, duplicate policy, and failure behavior. For bit operations and fixed storage, continue with **Computer Arithmetic Algorithms** for machine-level representation; this course keeps the focus on data-structure selection.
+    check:
+      id: recursion-backtracking-failure-modes-check
+      type: multipleChoice
+      prompt: What should a production selection note include?
+      choices:
+      - id: a
+        text: Input bounds, required operations, memory limit, and behavior on failure.
+      - id: b
+        text: Only the preferred API name.
+      - id: c
+        text: A claim that every lookup is O(1).
+      - id: d
+        text: A benchmark with no input description.
+      answer:
+        choiceId: a
+      explanation: A useful decision records constraints and failure behavior as well as expected speed.
