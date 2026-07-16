@@ -22,6 +22,7 @@ import "../styles/global.css";
 
       <nav class="tabs" aria-label="Primary">
         <button class="tab active" data-tab="load">Load Assessment</button>
+        <button class="tab" data-tab="curriculums">Category Curriculums</button>
         <button class="tab" data-tab="create">Create Quiz/Test</button>
         <button class="tab" data-tab="settings">Settings</button>
         <button class="tab" data-tab="grades">Grade Log</button>
@@ -159,6 +160,21 @@ import "../styles/global.css";
         </section>
       </section>
 
+      <section class="view" id="view-curriculums" aria-labelledby="curriculums-title">
+        <section class="panel">
+          <h2 id="curriculums-title">Category Curriculums</h2>
+          <p class="quiet-hint">Browse the intended path for each category and track your progress.</p>
+          
+          <div class="field compact" style="margin-top: 1rem; max-width: 300px;">
+            <label for="curriculum-subject-select">Subject</label>
+            <select id="curriculum-subject-select"></select>
+          </div>
+
+          <div id="curriculum-roadmap" class="curriculum-roadmap" style="margin-top: 2rem;">
+            <!-- Rendered via JS -->
+          </div>
+        </section>
+      </section>
 
       <section class="view" id="view-create" aria-labelledby="create-title">
         <section class="panel">
@@ -1799,7 +1815,8 @@ import "../styles/global.css";
         renderNavigationTiles("nav-area-tiles", areas.map(({ area, count }) => {
           const areaRecs = recommendations.filter(r => r.areaIds.includes(area.id) && r.state === "review");
           const reviewCount = areaRecs.length;
-          const badgeHtml = reviewCount > 0 ? `<span class="quiet-badge" style="font-size: 0.85em; opacity: 0.8; margin-left: 6px;">${reviewCount} topics need review</span>` : "";
+          const badgeHtml = reviewCount > 0 ? `<span class="review-badge">${reviewCount} needs review</span>` : "";
+          const numberTagHtml = area.index > 0 ? `<span class="nav-tile-number">${area.index}</span>` : "";
           return {
             id: area.id,
             label: area.title,
@@ -1807,7 +1824,8 @@ import "../styles/global.css";
             count,
             selected: selection.areaId === area.id,
             disabled: false,
-            badgeHtml: badgeHtml
+            badgeHtml: badgeHtml,
+            numberTagHtml: numberTagHtml
           };
         }), (id) => selectNavigationStage("area", id));
 
@@ -1921,6 +1939,7 @@ import "../styles/global.css";
           disabled?: boolean;
           suggested?: boolean;
           badgeHtml?: string;
+          numberTagHtml?: string;
         }>,
         onSelect: (id: string) => void
       ) {
@@ -1935,6 +1954,7 @@ import "../styles/global.css";
             aria-selected="${item.selected ?? false}"
             ${item.disabled ? "disabled" : ""}
           >
+            ${item.numberTagHtml ?? ""}
             ${item.suggested ? `<span class="nav-tile-suggested">★ Suggested</span>` : ""}
             <span class="nav-tile-label">${escapeHtml(item.label)} ${item.badgeHtml ?? ""}</span>
             <span class="nav-tile-count">${item.count} available</span>
@@ -3192,7 +3212,7 @@ import "../styles/global.css";
           code: "Code",
           symbolicResponse: "Symbolic response",
           circuit: "Circuit interaction",
-          graphingResponse: "Graphing interaction"
+        graphingResponse: "Graphing interaction"
         }[type] ?? type;
       }
 
@@ -3204,6 +3224,102 @@ import "../styles/global.css";
         document.querySelectorAll(".tab").forEach((item) => item.classList.toggle("active", (item as HTMLButtonElement).dataset.tab === tabName));
         document.querySelectorAll(".view").forEach((item) => item.classList.remove("active"));
         document.querySelector(`#view-${tabName}`)?.classList.add("active");
+
+        if (tabName === "curriculums") {
+          renderCurriculumSubjects();
+        }
+      }
+
+      function renderCurriculumSubjects() {
+        const catalog = state.navigationCatalog;
+        if (!catalog) return;
+        const select = document.getElementById("curriculum-subject-select") as HTMLSelectElement;
+        const currentVal = select.value;
+        select.innerHTML = catalog.subjects.map(s => `<option value="${escapeHtml(s.id)}">${escapeHtml(s.title)}</option>`).join("");
+        
+        if (currentVal && catalog.subjects.some(s => s.id === currentVal)) {
+          select.value = currentVal;
+        } else if (catalog.subjects.length > 0) {
+          select.value = catalog.subjects[0].id;
+        }
+
+        select.onchange = () => renderCurriculumRoadmap(select.value);
+        if (select.value) {
+          renderCurriculumRoadmap(select.value);
+        }
+      }
+
+      function renderCurriculumRoadmap(subjectId: string) {
+        const catalog = state.navigationCatalog;
+        const container = document.getElementById("curriculum-roadmap");
+        if (!catalog || !container) return;
+
+        const subjectAreas = catalog.areas
+          .filter(a => a.subjectIds.includes(subjectId))
+          .sort((a, b) => a.index - b.index);
+
+        const subjectTopics = catalog.topics.filter(t => t.subjectId === subjectId);
+        const subjectAssessments = catalog.assessments.filter(a => a.subjectId === subjectId);
+        
+        const completedIds = new Set(state.completedAssessmentIds);
+        let foundNext = false;
+
+        let html = "";
+        for (const area of subjectAreas) {
+          html += `
+            <div class="roadmap-area">
+              <h3>
+                ${area.index > 0 ? `<div class="roadmap-area-number">${area.index}</div>` : ""}
+                ${escapeHtml(area.title)}
+              </h3>
+          `;
+
+          const areaTopics = subjectTopics
+            .filter(t => subjectAssessments.some(a => a.topicIds.includes(t.id) && a.areaIds.includes(area.id)))
+            .sort((a, b) => a.title.localeCompare(b.title));
+
+          for (const topic of areaTopics) {
+            const topicAssessments = subjectAssessments
+              .filter(a => a.topicIds.includes(topic.id) && a.areaIds.includes(area.id));
+
+            if (topicAssessments.length === 0) continue;
+
+            html += `
+              <div class="roadmap-topic">
+                <h4>${escapeHtml(topic.title)}</h4>
+                <div class="roadmap-assessments">
+            `;
+
+            for (const assessment of topicAssessments) {
+              const isCompleted = completedIds.has(assessment.id);
+              let isNext = false;
+              if (!isCompleted && !foundNext) {
+                isNext = true;
+                foundNext = true;
+              }
+
+              html += `
+                <div class="roadmap-assessment-chip ${isCompleted ? "completed" : ""} ${isNext ? "next-up" : ""}">
+                  ${isCompleted ? "✓" : (isNext ? "▶" : "○")} ${escapeHtml(assessment.title)}
+                  ${isNext ? `<span class="next-up-badge">Up Next</span>` : ""}
+                </div>
+              `;
+            }
+
+            html += `
+                </div>
+              </div>
+            `;
+          }
+
+          html += `</div>`;
+        }
+
+        if (!html) {
+          html = `<p class="muted">No roadmap available for this subject.</p>`;
+        }
+
+        container.innerHTML = html;
       }
 
       function renderCategories() {

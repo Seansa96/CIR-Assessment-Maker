@@ -78,7 +78,12 @@ public class DockerWorkspaceGuidedProjectRunnerTests
     public async Task CanRunTcpConversationScenario()
     {
         // Require docker in PATH
-        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = "docker", Arguments = "version", RedirectStandardOutput = true }).WaitForExit(); }
+        try 
+        { 
+            var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = "docker", Arguments = "info", RedirectStandardOutput = true, RedirectStandardError = true });
+            p.WaitForExit(); 
+            if (p.ExitCode != 0) return; // skip if docker daemon is not running
+        }
         catch { return; } // skip if no docker
 
         var runner = new DockerWorkspaceGuidedProjectRunner(new RealDockerRunner());

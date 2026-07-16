@@ -72,7 +72,8 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
                 a.Title,
                 a.CategoryIds.ToList(),
                 a.SubcategoryIds.Where(knownTopics.ContainsKey).ToList(),
-                a.Description))
+                a.Description,
+                a.Index))
             .ToList();
         navAreas = navAreas.Select(area =>
         {

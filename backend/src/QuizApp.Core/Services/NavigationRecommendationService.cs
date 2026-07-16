@@ -110,11 +110,13 @@ public sealed class NavigationRecommendationService
             else if (eligibleMasteryCount == 1)
             {
                 masteryPercent = masteryAttempts[0].Score;
-                if (masteryPercent < 80)
+                var lastAttemptTime = masteryAttempts[0].Attempt.CompletedAt ?? masteryAttempts[0].Attempt.StartedAt;
+                var daysSinceLastAttempt = (DateTimeOffset.UtcNow - lastAttemptTime).TotalDays;
+
+                if (masteryPercent < 90 || daysSinceLastAttempt > 14)
                 {
                     state = "review";
-                    var lastLowScoreTime = masteryAttempts[0].Attempt.CompletedAt ?? masteryAttempts[0].Attempt.StartedAt;
-                    var recallAfterLowScore = recallAttempts.Any(r => (r.CompletedAt ?? r.StartedAt) > lastLowScoreTime);
+                    var recallAfterLowScore = recallAttempts.Any(r => (r.CompletedAt ?? r.StartedAt) > lastAttemptTime);
                     recommendedGoal = recallAfterLowScore ? "practice" : "recall";
                 }
                 else
@@ -128,11 +130,13 @@ public sealed class NavigationRecommendationService
             {
                 var latestTwo = masteryAttempts.Take(2).ToList();
                 masteryPercent = latestTwo.Average(x => x.Score);
+                var lastAttemptTime = latestTwo[0].Attempt.CompletedAt ?? latestTwo[0].Attempt.StartedAt;
+                var daysSinceLastAttempt = (DateTimeOffset.UtcNow - lastAttemptTime).TotalDays;
 
-                if (masteryPercent < 80)
+                if (masteryPercent < 90 || daysSinceLastAttempt > 14)
                 {
                     state = "review";
-                    var mostRecentLowScore = masteryAttempts.FirstOrDefault(x => x.Score < 80);
+                    var mostRecentLowScore = masteryAttempts.FirstOrDefault(x => x.Score < 90);
                     if (mostRecentLowScore != null)
                     {
                         var lastLowScoreTime = mostRecentLowScore.Attempt.CompletedAt ?? mostRecentLowScore.Attempt.StartedAt;
@@ -158,6 +162,7 @@ public sealed class NavigationRecommendationService
             {
                 var candidates = topicAssessments
                     .Where(a => string.Equals(a.ActivityType, activityType, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(a => a.HasCompletedAttempt ? 1 : 0)
                     .Select(a => a.Id)
                     .ToList();
                 if (candidates.Count > 0)
@@ -175,6 +180,7 @@ public sealed class NavigationRecommendationService
                 {
                     var candidates = topicAssessments
                         .Where(a => string.Equals(a.ActivityType, fallbackActivity, StringComparison.OrdinalIgnoreCase))
+                        .OrderBy(a => a.HasCompletedAttempt ? 1 : 0)
                         .Select(a => a.Id)
                         .ToList();
                     if (candidates.Count > 0)

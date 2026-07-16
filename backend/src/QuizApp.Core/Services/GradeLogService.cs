@@ -28,7 +28,8 @@ public sealed class GradeLogService
             or AssessmentType.ConceptLesson
             or AssessmentType.InteractiveExploration
             or AssessmentType.DirectedProject
-            or AssessmentType.Sandbox)
+            or AssessmentType.Sandbox
+            or AssessmentType.RecallDrill)
         {
             throw new InvalidOperationException("Instructional sessions cannot be committed to the grade log.");
         }

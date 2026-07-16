@@ -18,7 +18,8 @@ public sealed record NavigationArea(
     string Title,
     IReadOnlyList<string> SubjectIds,
     IReadOnlyList<string> TopicIds,
-    string? Description = null);
+    string? Description = null,
+    int Index = 0);
 
 public sealed record NavigationTopic(
     string Id,

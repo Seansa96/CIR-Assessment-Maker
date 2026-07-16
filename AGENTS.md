@@ -90,6 +90,19 @@ Important rules:
 - Randomized question IDs are saved in the attempt and are part of attempt history.
 - Worked Examples and Recall Drills are practice-oriented and follow their dedicated completion rules.
 
+## Assessment Curriculum Progression
+
+Assessments are automatically organized into a curriculum roadmap based on their metadata:
+1. **Area**: Determined by `areaId`. Sequence is strictly defined by the order in `data/areas.yaml`.
+2. **Topic**: Determined by `topicId`. Topics are sorted alphabetically within their area.
+3. **Assessment Order**: Within a topic, assessments are sequenced by their intended pedagogical progression:
+   - **Learn**: `conceptLesson` -> `glossary` -> `guidedWorkedExample` -> `interactiveExploration`
+   - **Recall**: `mixedRecallSet` -> `clozeDrill` -> `recognitionDrill`
+   - **Practice**: `focusedPractice` -> `mixedPractice` -> `directedProject`
+   - **Evaluate**: `masteryCheck` -> `formalTest` -> `guidedProject`
+
+Always assign the correct `learningGoal` and `activityType` to new assessments so they slot into the correct place in this curriculum path.
+
 ## Assessment Authoring
 
 - Use YAML block scalars for long prompts, explanations, instructions, and LaTeX-heavy content.

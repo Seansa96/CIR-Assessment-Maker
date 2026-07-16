@@ -5,7 +5,8 @@ public sealed record AreaDefinition(
     string Title,
     IReadOnlyList<string> CategoryIds,
     IReadOnlyList<string> SubcategoryIds,
-    string? Description = null);
+    string? Description = null,
+    int Index = 0);
 
 public sealed record GradeAnalyticsFilter(
     AttemptStatus? Status,

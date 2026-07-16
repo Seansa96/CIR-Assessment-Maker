@@ -28,13 +28,13 @@ public sealed class FileAreaRepository : IAreaRepository
 
         return dto.Areas
             .Where(area => !string.IsNullOrWhiteSpace(area.Id))
-            .Select(area => new AreaDefinition(
+            .Select((area, idx) => new AreaDefinition(
                 area.Id!.Trim(),
                 string.IsNullOrWhiteSpace(area.Title) ? area.Id!.Trim() : area.Title!.Trim(),
                 area.CategoryIds?.ToList() ?? new List<string>(),
                 area.SubcategoryIds?.ToList() ?? new List<string>(),
-                area.Description))
-            .OrderBy(area => area.Title)
+                area.Description,
+                idx + 1))
             .ToList();
     }
 }

@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Services;
 using QuizApp.Infrastructure.Files;
@@ -52,6 +53,27 @@ public static class Program
                 try
                 {
                     var content = await File.ReadAllTextAsync(path);
+                    if (Path.GetFileName(path).StartsWith("aops-", StringComparison.OrdinalIgnoreCase)
+                        && (Path.GetFileName(path).EndsWith("-concept-lesson.yaml", StringComparison.OrdinalIgnoreCase)
+                            || Path.GetFileName(path).EndsWith("-worked-example.yaml", StringComparison.OrdinalIgnoreCase)
+                            || Path.GetFileName(path).EndsWith("-quiz.yaml", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        var name = Path.GetFileName(path);
+                        var banned = new[] { "This scenario mirrors", "An original .* problem variant", "The purpose is to test method selection", "This concept lesson introduces" };
+                        foreach (var pattern in banned.Where(pattern => Regex.IsMatch(content, pattern, RegexOptions.IgnoreCase)))
+                        {
+                            Console.WriteLine($"[ERROR] [AOPS_TEMPLATE_PHRASE] {path}: contains banned template phrase '{pattern}'.");
+                            errors++;
+                        }
+                        if (name.EndsWith("-quiz.yaml", StringComparison.OrdinalIgnoreCase) && Regex.Matches(content, @"(?m)^- id: q\d{3}$").Count < 15)
+                        {
+                            Console.WriteLine($"[ERROR] [AOPS_QUIZ_LENGTH] {path}: AoPS quizzes require at least 15 questions."); errors++;
+                        }
+                        if (name.EndsWith("-worked-example.yaml", StringComparison.OrdinalIgnoreCase) && Regex.Matches(content, @"(?m)^- id: aops-.*-problem-[123]$").Count < 3)
+                        {
+                            Console.WriteLine($"[ERROR] [AOPS_WORKED_PROBLEMS] {path}: AoPS worked examples require three problems."); errors++;
+                        }
+                    }
                     var inspection = sourceInspector.Inspect(content, Path.GetExtension(path), path);
                     
                     foreach (var diag in inspection.Diagnostics)
