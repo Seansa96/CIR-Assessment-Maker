@@ -1,0 +1,117 @@
+schemaVersion: 1
+id: calc2-diff-eq-linear-concept-lesson
+title: Concept Lesson First-Order Linear Equations
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - diff-eq-linear
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+modeDefault: practice
+randomizeQuestions: false
+
+lesson:
+  introduction: |
+    A **first-order linear differential equation** is one that can be put into the standard form:
+    
+    $$ \frac{dy}{dx} + P(x)y = Q(x) $$
+    
+    Notice that $y$ and $dy/dx$ only appear to the first power, and they are not multiplied together. 
+    
+    Unlike separable equations, we cannot simply separate the variables here. Instead, we must use a clever algebraic trick: multiplying the entire equation by a special function called an **integrating factor**.
+  
+  sections:
+    - id: standard-form
+      title: Identifying Standard Form
+      required: true
+      content: |
+        Before solving, the equation **must** be in the standard form $\frac{dy}{dx} + P(x)y = Q(x)$.
+        
+        If the equation is given as $x^2 \frac{dy}{dx} + x y = \sin x$, it is not in standard form because the coefficient of $\frac{dy}{dx}$ is $x^2$, not $1$.
+        We must first divide the entire equation by $x^2$:
+        $$ \frac{dy}{dx} + \frac{1}{x}y = \frac{\sin x}{x^2} $$
+        Now it is in standard form, with $P(x) = \frac{1}{x}$ and $Q(x) = \frac{\sin x}{x^2}$.
+      media: []
+      check:
+        id: check-standard-form
+        type: multipleChoice
+        prompt: |
+          What is $P(x)$ when the equation $t \frac{dy}{dt} - 2y = t^3$ is written in standard form?
+        choices:
+          - id: c1
+            text: $-2$
+          - id: c2
+            text: $-\frac{2}{t}$
+          - id: c3
+            text: $\frac{2}{t}$
+        answer:
+          choiceId: c2
+          explanation: |
+            Divide the entire equation by $t$ to get a coefficient of $1$ on the derivative: $\frac{dy}{dt} - \frac{2}{t}y = t^2$. Thus, $P(t) = -\frac{2}{t}$. Note the negative sign must be included!
+
+    - id: integrating-factor
+      title: The Integrating Factor
+      required: true
+      content: |
+        Once in standard form, we multiply both sides by an **integrating factor**, denoted $I(x)$. 
+        We choose $I(x)$ specifically so that the left side of the equation collapses into the exact derivative of a product: $\frac{d}{dx}[I(x)y]$.
+        
+        The formula for the integrating factor is:
+        $$ I(x) = e^{\int P(x) \, dx} $$
+        
+        After multiplying, the equation becomes:
+        $$ \frac{d}{dx} [I(x)y] = I(x)Q(x) $$
+        
+        We can then integrate both sides with respect to $x$ to solve for $y$.
+      media: []
+      check:
+        id: check-integrating-factor
+        type: multipleChoice
+        prompt: |
+          What is the integrating factor $I(x)$ for the equation $\frac{dy}{dx} + \frac{3}{x}y = e^x$?
+        choices:
+          - id: c1
+            text: $e^{3/x}$
+          - id: c2
+            text: $x^3$
+          - id: c3
+            text: $3\ln|x|$
+        answer:
+          choiceId: c2
+          explanation: |
+            $P(x) = \frac{3}{x}$. 
+            $I(x) = e^{\int \frac{3}{x} \, dx} = e^{3 \ln x} = e^{\ln(x^3)} = x^3$.
+
+    - id: mixture-problems
+      title: Modeling Mixture Problems
+      required: true
+      content: |
+        First-order linear equations are perfect for modeling mixture problems, such as a tank of brine where salt water is flowing in and flowing out.
+        
+        The basic principle is:
+        $$ \frac{dy}{dt} = (\text{Rate In}) - (\text{Rate Out}) $$
+        where $y(t)$ is the amount of substance (e.g., pounds of salt) in the tank at time $t$.
+        
+        *   **Rate In:** (Concentration of inflowing fluid) $\times$ (Flow rate in)
+        *   **Rate Out:** (Concentration of outflowing fluid) $\times$ (Flow rate out)
+        
+        The concentration of the outflow is $\frac{y(t)}{V(t)}$, where $V(t)$ is the volume of fluid in the tank at time $t$. If the inflow and outflow rates are different, the volume $V(t)$ changes over time!
+      media: []
+      check:
+        id: check-mixture
+        type: multipleChoice
+        prompt: |
+          A tank initially contains 100 gallons of pure water. Brine with 2 lbs of salt per gallon flows in at 3 gal/min. The well-stirred mixture flows out at 3 gal/min. 
+          Let $y(t)$ be the amount of salt in the tank. What is the "Rate Out" term?
+        choices:
+          - id: c1
+            text: $\frac{y}{100} \times 3$
+          - id: c2
+            text: $2 \times 3$
+          - id: c3
+            text: $3y$
+        answer:
+          choiceId: c1
+          explanation: |
+            The Rate Out is the concentration in the tank ($\frac{y}{100}$ lbs/gal, since the volume remains a constant 100 gallons) multiplied by the outflow rate ($3$ gal/min).

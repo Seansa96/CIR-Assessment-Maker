@@ -78,4 +78,26 @@ public class TaxonomyValidationTests
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.Contains("AREA_CATEGORY_UNKNOWN"));
     }
+
+    [Fact]
+    public void CatalogTaxonomyValidator_Rejects_invalid_prerequisite_graphs()
+    {
+        var first = new SubCategory("first", "First") { PrerequisiteIds = ["second"] };
+        var second = new SubCategory("second", "Second") { PrerequisiteIds = ["first"] };
+        var category = new Category(1, "cat-1", "Cat 1", [first, second]);
+        var area = new AreaDefinition("area-1", "Area 1", ["cat-1"], ["first", "second"]);
+        var validator = new CatalogTaxonomyValidator();
+
+        var result = validator.Validate([category], [area]);
+
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, error => error.Contains("PREREQUISITE_CYCLE"));
+
+        var selfReferencing = new SubCategory("only", "Only") { PrerequisiteIds = ["only", "missing"] };
+        result = validator.Validate([new Category(1, "cat-2", "Cat 2", [selfReferencing])],
+            [new AreaDefinition("area-2", "Area 2", ["cat-2"], ["only"])]);
+
+        Assert.Contains(result.Errors, error => error.Contains("PREREQUISITE_SELF_REFERENCE"));
+        Assert.Contains(result.Errors, error => error.Contains("PREREQUISITE_UNKNOWN_OR_CROSS_CATEGORY"));
+    }
 }

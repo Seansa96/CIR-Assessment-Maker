@@ -14,7 +14,10 @@ public static class FileDtoMapper
                 .Select(subcategory => new SubCategory(
                     subcategory.Id ?? string.Empty,
                     subcategory.Title ?? string.Empty,
-                    subcategory.Description))
+                    subcategory.Description)
+                {
+                    PrerequisiteIds = subcategory.PrerequisiteIds ?? new List<string>()
+                })
                 .ToList(),
             dto.Description);
     }

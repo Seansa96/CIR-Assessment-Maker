@@ -39,6 +39,64 @@ public class CatalogTaxonomyValidator : ICatalogTaxonomyValidator
                 {
                     errors.Add($"SUBCATEGORY_ID_DUPLICATE: Topic ID '{sub.Id}' in category '{category.Id}' is not unique within the category.");
                 }
+
+                foreach (var prerequisiteId in sub.PrerequisiteIds)
+                {
+                    if (string.Equals(prerequisiteId, sub.Id, StringComparison.OrdinalIgnoreCase))
+                    {
+                        errors.Add($"PREREQUISITE_SELF_REFERENCE: Topic '{sub.Id}' in category '{category.Id}' cannot require itself.");
+                    }
+                    else if (!category.Subcategories.Any(candidate => string.Equals(candidate.Id, prerequisiteId, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        errors.Add($"PREREQUISITE_UNKNOWN_OR_CROSS_CATEGORY: Topic '{sub.Id}' in category '{category.Id}' references unknown or cross-category prerequisite '{prerequisiteId}'.");
+                    }
+                }
+            }
+
+            var visitState = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            bool Visit(SubCategory topic)
+            {
+                if (visitState.TryGetValue(topic.Id, out var state))
+                    return state != 1;
+
+                visitState[topic.Id] = 1;
+                foreach (var prerequisiteId in topic.PrerequisiteIds)
+                {
+                    var prerequisite = category.Subcategories.FirstOrDefault(candidate => string.Equals(candidate.Id, prerequisiteId, StringComparison.OrdinalIgnoreCase));
+                    if (prerequisite is not null && !Visit(prerequisite))
+                        return false;
+                }
+
+                visitState[topic.Id] = 2;
+                return true;
+            }
+
+            foreach (var topic in category.Subcategories)
+            {
+                if (!Visit(topic))
+                {
+                    errors.Add($"PREREQUISITE_CYCLE: Category '{category.Id}' contains a prerequisite cycle involving '{topic.Id}'.");
+                    break;
+                }
+            }
+
+            var reachable = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var remaining = category.Subcategories.ToList();
+            bool madeProgress;
+            do
+            {
+                madeProgress = false;
+                foreach (var topic in remaining.Where(topic => topic.PrerequisiteIds.All(reachable.Contains)).ToList())
+                {
+                    reachable.Add(topic.Id);
+                    remaining.Remove(topic);
+                    madeProgress = true;
+                }
+            }
+            while (madeProgress);
+            foreach (var topic in category.Subcategories.Where(topic => !reachable.Contains(topic.Id)))
+            {
+                errors.Add($"PREREQUISITE_UNREACHABLE: Topic '{topic.Id}' in category '{category.Id}' has no valid route from a curriculum entry point.");
             }
         }
 

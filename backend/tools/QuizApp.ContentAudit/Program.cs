@@ -43,6 +43,7 @@ public static class Program
         }
 
         var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var auditByCategory = categories.ToDictionary(category => category.Id, _ => new CategoryAudit(), StringComparer.OrdinalIgnoreCase);
 
         foreach (var dir in new[] { files.AssessmentsPath, files.SamplesPath })
         {
@@ -94,6 +95,19 @@ public static class Program
                     }
 
                     var domain = dto.ToDomain();
+                    if (auditByCategory.TryGetValue(domain.CategoryId, out var categoryAudit))
+                    {
+                        categoryAudit.Assessments++;
+                        var navigation = domain.Navigation;
+                        if (domain.Skills.Count == 0) { categoryAudit.MissingSkills++; errors++; Console.WriteLine($"[ERROR] [MISSING_SKILLS] {path}: Assessment needs at least one skill."); }
+                        if (navigation is null || string.IsNullOrWhiteSpace(navigation.LearningGoal) || string.IsNullOrWhiteSpace(navigation.ActivityType)) { categoryAudit.MissingNavigation++; errors++; Console.WriteLine($"[ERROR] [MISSING_NAVIGATION] {path}: Assessment needs navigation learningGoal and activityType."); }
+                        if (navigation?.Tags.Count is null or 0) { categoryAudit.MissingTags++; errors++; Console.WriteLine($"[ERROR] [MISSING_TAGS] {path}: Assessment needs navigation tags."); }
+                        else
+                        {
+                            if (!navigation.Tags.Contains(domain.CategoryId, StringComparer.OrdinalIgnoreCase)) { categoryAudit.CategoryTagGaps++; errors++; Console.WriteLine($"[ERROR] [CATEGORY_TAG_GAP] {path}: Tags must include '{domain.CategoryId}'."); }
+                            if (domain.SubcategoryIds.Any(topic => !navigation.Tags.Contains(topic, StringComparer.OrdinalIgnoreCase))) { categoryAudit.TopicTagGaps++; errors++; Console.WriteLine($"[ERROR] [TOPIC_TAG_GAP] {path}: Tags must include every assigned topic ID."); }
+                        }
+                    }
 
                     var validation = validator.Validate(domain);
                     if (!validation.IsValid)
@@ -129,7 +143,28 @@ public static class Program
             }
         }
 
+        Console.WriteLine("\nCategory metadata and progression report:");
+        foreach (var category in categories.OrderBy(category => category.Id, StringComparer.OrdinalIgnoreCase))
+        {
+            var audit = auditByCategory[category.Id];
+            var missingAreaTopics = category.Subcategories.Count(topic => !areas.Any(area => area.CategoryIds.Contains(category.Id, StringComparer.OrdinalIgnoreCase) && area.SubcategoryIds.Contains(topic.Id, StringComparer.OrdinalIgnoreCase)));
+            var ranks = category.Subcategories.Select((topic, index) => (topic.Id, index)).ToDictionary(pair => pair.Id, pair => pair.index, StringComparer.OrdinalIgnoreCase);
+            var inversions = areas.Where(area => area.CategoryIds.Contains(category.Id, StringComparer.OrdinalIgnoreCase))
+                .Sum(area => area.SubcategoryIds.Where(ranks.ContainsKey).Select(id => ranks[id]).Zip(area.SubcategoryIds.Where(ranks.ContainsKey).Select(id => ranks[id]).Skip(1), (left, right) => left > right ? 1 : 0).Sum());
+            Console.WriteLine($"[REPORT] {category.Id}: assessments={audit.Assessments}, missingSkills={audit.MissingSkills}, missingNavigation={audit.MissingNavigation}, missingTags={audit.MissingTags}, categoryTagGaps={audit.CategoryTagGaps}, topicTagGaps={audit.TopicTagGaps}, unmappedTopics={missingAreaTopics}, areaOrderInversions={inversions}, explicitPrerequisiteTopics={category.Subcategories.Count(topic => topic.PrerequisiteIds.Count > 0)}.");
+        }
+
         Console.WriteLine($"Audit complete. {errors} error(s) found.");
         return errors > 0 ? 1 : 0;
+    }
+
+    private sealed class CategoryAudit
+    {
+        public int Assessments { get; set; }
+        public int MissingSkills { get; set; }
+        public int MissingNavigation { get; set; }
+        public int MissingTags { get; set; }
+        public int CategoryTagGaps { get; set; }
+        public int TopicTagGaps { get; set; }
     }
 }

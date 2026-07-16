@@ -475,6 +475,13 @@ import "../styles/global.css";
         eligibleMasteryAttemptCount: number;
         masteryPercent: number | null;
         provisionalMastery: boolean;
+        prerequisiteTopicIds?: string[];
+        prerequisiteTitles?: string[];
+        unmetPrerequisiteTopicIds?: string[];
+        unmetPrerequisiteTitles?: string[];
+        isEligible?: boolean;
+        isNextRecommended?: boolean;
+        progressionReason?: string | null;
       }
 
       interface NavigationSubject {
@@ -496,6 +503,7 @@ import "../styles/global.css";
         title: string;
         subjectId: string;
         description?: string | null;
+        prerequisiteIds?: string[];
       }
 
       interface NavigationGoal {
@@ -1841,14 +1849,16 @@ import "../styles/global.css";
           const rec = topicRecommendations.get(topic.id);
           let badgeHtml = "";
           if (rec) {
-            if (rec.state === "review") badgeHtml = `<span class="badge review" style="background: #ffd600; color: #000;">Review</span>`;
+            if (rec.isNextRecommended) badgeHtml = `<span class="badge evaluate" style="background: #1565c0; color: #fff;">Next</span>`;
+            else if (rec.isEligible === false) badgeHtml = `<span class="badge review" style="background: #6b7280; color: #fff;">Prerequisites</span>`;
+            else if (rec.state === "review") badgeHtml = `<span class="badge review" style="background: #ffd600; color: #000;">Review</span>`;
             else if (rec.state === "evaluate") badgeHtml = `<span class="badge evaluate" style="background: #00c853; color: #fff;">Ready to Evaluate</span>`;
             else if (rec.provisionalMastery) badgeHtml = `<span class="badge provisional" style="background: #e0e0e0; color: #000;">Provisional</span>`;
           }
           return {
             id: topic.id,
             label: topic.title,
-            description: topic.description,
+            description: rec?.progressionReason ?? topic.description,
             count,
             selected: selection.topicId === topic.id,
             disabled: false,
@@ -1957,6 +1967,7 @@ import "../styles/global.css";
             ${item.numberTagHtml ?? ""}
             ${item.suggested ? `<span class="nav-tile-suggested">★ Suggested</span>` : ""}
             <span class="nav-tile-label">${escapeHtml(item.label)} ${item.badgeHtml ?? ""}</span>
+            ${item.description ? `<span class="nav-tile-description">${escapeHtml(item.description)}</span>` : ""}
             <span class="nav-tile-count">${item.count} available</span>
           </button>
         `).join("");

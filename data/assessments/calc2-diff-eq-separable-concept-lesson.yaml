@@ -1,0 +1,82 @@
+schemaVersion: 1
+id: calc2-diff-eq-separable-concept-lesson
+title: Concept Lesson Separable Equations
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - diff-eq-separable
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+modeDefault: practice
+randomizeQuestions: false
+
+lesson:
+  introduction: |
+    A **separable equation** is a first-order differential equation in which the expression for $\frac{dy}{dx}$ can be factored as a function of $x$ times a function of $y$:
+    
+    $$ \frac{dy}{dx} = g(x) f(y) $$
+    
+    This is the simplest class of differential equations to solve. Our strategy will be to "separate the variables" by moving all $y$ terms and $dy$ to the left side, and all $x$ terms and $dx$ to the right side, before integrating both sides.
+  
+  sections:
+    - id: separation-strategy
+      title: The Separation Strategy
+      required: true
+      content: |
+        If we have $\frac{dy}{dx} = g(x)f(y)$, we divide by $f(y)$ and multiply by $dx$:
+        
+        $$ \frac{1}{f(y)} dy = g(x) dx $$
+        
+        Now, we integrate both sides:
+        
+        $$ \int \frac{1}{f(y)} \, dy = \int g(x) \, dx $$
+        
+        This will yield an implicit equation relating $y$ and $x$, plus an arbitrary constant $C$. We then solve for $y$ to find the explicit solution.
+      media: []
+      check:
+        id: check-separable-id
+        type: multipleChoice
+        prompt: |
+          Which of the following differential equations is **separable**?
+        choices:
+          - id: c1
+            text: $\frac{dy}{dx} = x + y$
+          - id: c2
+            text: $\frac{dy}{dx} = e^{x+y}$
+          - id: c3
+            text: $\frac{dy}{dx} = \sin(xy)$
+        answer:
+          choiceId: c2
+          explanation: |
+            By exponent rules, $e^{x+y} = e^x e^y$. This factors into a function of $x$ strictly multiplied by a function of $y$, making it separable: $\frac{dy}{dx} = e^x e^y \implies e^{-y}dy = e^x dx$.
+
+    - id: solving-ivp
+      title: Solving Initial Value Problems
+      required: true
+      content: |
+        When solving a separable equation, the integration process introduces an arbitrary constant $C$, giving the **general solution**. 
+        If we are given an initial condition, such as $y(0) = 4$, we can substitute $x=0$ and $y=4$ into our general solution to solve for $C$. This yields a **particular solution**.
+        
+        **Example:** Solve $\frac{dy}{dx} = \frac{x}{y}$ with $y(0) = 2$.
+        1. Separate: $y \, dy = x \, dx$
+        2. Integrate: $\frac{y^2}{2} = \frac{x^2}{2} + C \implies y^2 = x^2 + 2C$
+        3. Apply condition $y(0) = 2$: $2^2 = 0^2 + 2C \implies 4 = 2C \implies 2C = 4$.
+        4. Particular solution: $y^2 = x^2 + 4$. Since $y(0)=2$ is positive, $y = \sqrt{x^2 + 4}$.
+      media: []
+      check:
+        id: check-ivp-constant
+        type: multipleChoice
+        prompt: |
+          When solving $\frac{dy}{dx} = 2xy$ with $y(0) = 5$, what is the correct first step in separation?
+        choices:
+          - id: c1
+            text: $dy = 2xy \, dx$
+          - id: c2
+            text: $\frac{dy}{y} = 2x \, dx$
+          - id: c3
+            text: $y \, dy = 2x \, dx$
+        answer:
+          choiceId: c2
+          explanation: |
+            We must divide both sides by $y$ to isolate the $y$ variables on the left with $dy$, and the $x$ variables on the right with $dx$. Thus, $\frac{dy}{y} = 2x \, dx$.

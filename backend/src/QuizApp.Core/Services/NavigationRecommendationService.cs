@@ -42,11 +42,50 @@ public sealed class NavigationRecommendationService
         var gradeEntries = await gradeLogRepository.ListAsync(cancellationToken);
         var committedAttemptIds = gradeEntries.Select(e => e.AttemptId).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+        // Progression is guidance rather than access control. A completed assessment supplies
+        // completion evidence for each topic it teaches; an eligible topic has no unmet edges.
+        var completedAssessmentIds = allAttempts
+            .Where(attempt => attempt.Status == AttemptStatus.Completed)
+            .Select(attempt => attempt.AssessmentId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var completedTopicIds = catalog.Assessments
+            .Where(assessment => completedAssessmentIds.Contains(assessment.Id))
+            .SelectMany(assessment => assessment.TopicIds)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var topicsById = catalog.Topics.ToDictionary(topic => topic.Id, StringComparer.OrdinalIgnoreCase);
+        var unmetPrerequisitesByTopic = catalog.Topics.ToDictionary(
+            topic => topic.Id,
+            topic => topic.Prerequisites
+                .Where(prerequisiteId => !completedTopicIds.Contains(prerequisiteId))
+                .ToList(),
+            StringComparer.OrdinalIgnoreCase);
+        var nextTopicIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var categoryTopics in catalog.Topics.GroupBy(topic => topic.SubjectId, StringComparer.OrdinalIgnoreCase))
+        {
+            var eligible = categoryTopics
+                .Where(topic => !completedTopicIds.Contains(topic.Id) && unmetPrerequisitesByTopic[topic.Id].Count == 0)
+                .OrderBy(topic => topic.ProgressionIndex)
+                .ToList();
+            if (eligible.Count == 0) continue;
+
+            // The first entry-point follows the curated category order. Once a topic
+            // explicitly declares prerequisites, every newly eligible branch is surfaced.
+            var branches = eligible.Where(topic => topic.Prerequisites.Count > 0).ToList();
+            if (branches.Count > 0)
+                nextTopicIds.UnionWith(branches.Select(topic => topic.Id));
+            else
+                nextTopicIds.Add(eligible[0].Id);
+        }
+
         var topicIds = catalog.Topics.Select(t => t.Id).ToList();
         var recommendations = new List<NavigationRecommendation>();
 
         foreach (var topicId in topicIds)
         {
+            var topic = topicsById[topicId];
+            var unmetPrerequisites = unmetPrerequisitesByTopic[topicId];
+            var isEligible = unmetPrerequisites.Count == 0;
+            var isNextRecommended = nextTopicIds.Contains(topicId);
             var areaIds = catalog.Areas
                 .Where(a => a.TopicIds.Contains(topicId, StringComparer.OrdinalIgnoreCase))
                 .Select(a => a.Id)
@@ -202,11 +241,37 @@ public sealed class NavigationRecommendationService
                 recallCount,
                 eligibleMasteryCount,
                 masteryPercent,
-                provisionalMastery
+                provisionalMastery,
+                topic.Prerequisites,
+                topic.Prerequisites.Select(id => topicsById.TryGetValue(id, out var prerequisite) ? prerequisite.Title : id).ToList(),
+                unmetPrerequisites,
+                unmetPrerequisites.Select(id => topicsById.TryGetValue(id, out var prerequisite) ? prerequisite.Title : id).ToList(),
+                isEligible,
+                isNextRecommended,
+                BuildProgressionReason(topic, completedTopicIds.Contains(topicId), unmetPrerequisites.Select(id => topicsById.TryGetValue(id, out var prerequisite) ? prerequisite.Title : id).ToList(), isNextRecommended)
             ));
         }
 
         return recommendations;
+    }
+
+    private static string BuildProgressionReason(
+        NavigationTopic topic,
+        bool isCompleted,
+        IReadOnlyList<string> unmetPrerequisiteTitles,
+        bool isNextRecommended)
+    {
+        if (unmetPrerequisiteTitles.Count > 0)
+            return $"Complete {string.Join(", ", unmetPrerequisiteTitles)} before this topic is recommended.";
+
+        if (isNextRecommended)
+            return topic.Prerequisites.Count == 0
+                ? "This is an available starting topic for this curriculum."
+                : "Its prerequisite topics are complete, so this is the next recommended topic.";
+
+        return isCompleted
+            ? "You have completion evidence for this topic."
+            : "This topic is available when you are ready.";
     }
 
     private decimal GetScore(Attempt attempt, IReadOnlyList<GradeLogEntry> entries, NavigationAssessmentSummary assessmentSummary)

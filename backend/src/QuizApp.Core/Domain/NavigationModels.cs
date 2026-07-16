@@ -25,7 +25,12 @@ public sealed record NavigationTopic(
     string Id,
     string Title,
     string SubjectId,
-    string? Description = null);
+    string? Description = null,
+    IReadOnlyList<string>? PrerequisiteIds = null,
+    int ProgressionIndex = 0)
+{
+    public IReadOnlyList<string> Prerequisites => PrerequisiteIds ?? Array.Empty<string>();
+}
 
 public sealed record NavigationGoal(
     string Id,

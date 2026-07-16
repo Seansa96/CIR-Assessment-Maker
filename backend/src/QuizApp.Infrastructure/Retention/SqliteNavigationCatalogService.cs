@@ -38,7 +38,7 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
             .ToList();
 
         var topics = categories
-            .SelectMany(c => c.Subcategories.Select(s => new NavigationTopic(s.Id, s.Title, c.Id, s.Description)))
+            .SelectMany(c => c.Subcategories.Select((s, index) => new NavigationTopic(s.Id, s.Title, c.Id, s.Description, s.PrerequisiteIds, index)))
             .ToList();
         var knownTopics = topics.ToDictionary(topic => topic.Id, StringComparer.OrdinalIgnoreCase);
 

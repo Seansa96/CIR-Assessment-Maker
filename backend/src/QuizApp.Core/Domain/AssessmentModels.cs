@@ -58,7 +58,14 @@ public sealed record Category(
     IReadOnlyList<SubCategory> Subcategories,
     string? Description = null);
 
-public sealed record SubCategory(string Id, string Title, string? Description = null);
+public sealed record SubCategory(string Id, string Title, string? Description = null)
+{
+    /// <summary>
+    /// Topic IDs in the same category that should be completed before this topic is recommended.
+    /// An empty list represents a valid entry point into a curriculum branch.
+    /// </summary>
+    public IReadOnlyList<string> PrerequisiteIds { get; init; } = Array.Empty<string>();
+}
 
 public sealed record AppSettings(
     int SchemaVersion,

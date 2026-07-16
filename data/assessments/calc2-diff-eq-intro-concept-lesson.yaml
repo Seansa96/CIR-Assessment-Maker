@@ -1,0 +1,130 @@
+schemaVersion: 1
+id: calc2-diff-eq-intro-concept-lesson
+title: Concept Lesson Introduction to Differential Equations
+assessmentType: conceptLesson
+categoryId: calculus-2
+subcategoryIds:
+  - diff-eq-intro-modeling
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+modeDefault: practice
+randomizeQuestions: false
+
+lesson:
+  introduction: |
+    A **differential equation** is an equation that contains an unknown function and one or more of its derivatives. 
+
+    While algebraic equations ask you to solve for a specific *number* (e.g., $x^2 = 4$), differential equations ask you to solve for a specific *function* (e.g., $y' = y$).
+
+    In this lesson, we will learn how to identify the order of a differential equation, verify solutions, construct direction fields, and understand how differential equations model real-world phenomena like population growth and predator-prey dynamics.
+  
+  sections:
+    - id: order-and-solutions
+      title: Order and Verification of Solutions
+      required: true
+      content: |
+        The **order** of a differential equation is the order of the highest derivative that occurs in the equation.
+        For example:
+        * $y' = 1 + 7x - 4y$ is a **first-order** differential equation because the highest derivative is $y'$.
+        * $y'' + 3y' + 12y = 0$ is a **second-order** differential equation because the highest derivative is $y''$.
+
+        A function $f$ is called a **solution** of a differential equation if the equation is satisfied when $y = f(x)$ and its derivatives are substituted into the equation.
+
+        For example, to verify if $y = e^{3x}$ is a solution to $y'' - 9y = 0$:
+        1. Find $y' = 3e^{3x}$
+        2. Find $y'' = 9e^{3x}$
+        3. Substitute: $(9e^{3x}) - 9(e^{3x}) = 0$. Since $0 = 0$, it is a valid solution!
+
+        An **Initial Value Problem (IVP)** is a differential equation combined with an initial condition (like $y(0) = 5$) which allows us to find the specific constant $C$ for a particular solution.
+      media: []
+      check:
+        id: check-order
+        type: multipleChoice
+        prompt: |
+          What is the order of the differential equation: $\frac{d^3y}{dx^3} + \left(\frac{dy}{dx}\right)^4 = \sin x$?
+        choices:
+          - id: c1
+            text: First-order
+          - id: c2
+            text: Third-order
+          - id: c3
+            text: Fourth-order
+          - id: c4
+            text: Seventh-order
+        answer:
+          choiceId: c2
+          explanation: |
+            The order is determined by the highest derivative present in the equation, which is $\frac{d^3y}{dx^3}$ (the third derivative). The power of $4$ on the first derivative does not affect the order.
+
+    - id: direction-fields
+      title: Direction Slope Fields
+      required: true
+      content: |
+        For a first-order differential equation of the form $y' = F(x,y)$, we cannot always find an explicit formula for the solution $y(x)$. However, we can analyze its behavior graphically.
+        
+        At any point $(x,y)$, the equation tells us the slope $y'$ of the solution curve passing through that point. By drawing short line segments with slope $F(x,y)$ at a dense grid of points, we create a **direction field** (or slope field). 
+        
+        The solution curves must flow parallel to these line segments. This allows us to sketch solutions to Initial Value Problems by simply "following the current" starting from the initial point.
+      media: 
+        - type: image
+          src: /data/media/slope_field_xy.png
+          alt: Direction Field for dy/dx = xy
+          caption: Direction Field for dy/dx = xy. Notice how the slopes depend on both x and y.
+      check:
+        id: check-slope-field
+        type: multipleChoice
+        prompt: |
+          In the slope field for $y' = x/y$, what happens to the slope segments as you approach the x-axis ($y \to 0$)?
+        choices:
+          - id: c1
+            text: The slopes become horizontal (zero slope).
+          - id: c2
+            text: The slopes become vertical (undefined slope).
+          - id: c3
+            text: The slopes become 1 or -1.
+        answer:
+          choiceId: c2
+          explanation: |
+            As $y \to 0$, the denominator approaches zero, causing the slope $y' = x/y$ to approach infinity (becoming vertical).
+
+    - id: intro-to-modeling
+      title: Introduction to Modeling
+      required: true
+      content: |
+        When a physical situation includes a rate of change, it may be modeled with a differential equation.
+
+        **Exponential Growth:**
+        "A population grows at a rate proportional to its size."
+        This translates directly to the differential equation: $\frac{dP}{dt} = kP$.
+        
+        **Logistic Growth:**
+        Environments have a carrying capacity $M$. As the population $P$ approaches $M$, the growth rate slows down to 0.
+        The Logistic Equation models this: $\frac{dP}{dt} = kP(1 - \frac{P}{M})$.
+        If $P$ is small, it acts like exponential growth. If $P \approx M$, the rate approaches $0$.
+      media:
+        - type: image
+          src: /data/media/logistic_curve.png
+          alt: Logistic Growth Curve
+          caption: Logistic Growth Curve showing the population stabilizing at the carrying capacity M.
+        - type: image
+          src: /data/media/predator_prey_time.png
+          alt: Predator Prey Dynamics over Time
+          caption: Lotka-Volterra Predator-Prey Dynamics. Notice how the predator population lags slightly behind the prey population.
+      check:
+        id: check-modeling
+        type: multipleChoice
+        prompt: |
+          Translate the following sentence into a differential equation: 
+          "The rate at which a rumor spreads is proportional to the product of the number of people who have heard it ($y$) and the number of people who have not heard it ($M - y$)."
+        choices:
+          - id: c1
+            text: $\frac{dy}{dt} = ky(M - y)$
+          - id: c2
+            text: $\frac{dy}{dt} = k(M - y)$
+          - id: c3
+            text: $\frac{dy}{dt} = \frac{ky}{M-y}$
+        answer:
+          choiceId: c1
+          explanation: |
+            "Proportional to" means we multiply by a constant $k$. "The product of... and..." means we multiply $y$ and $(M-y)$ together. Thus, $\frac{dy}{dt} = ky(M - y)$.
