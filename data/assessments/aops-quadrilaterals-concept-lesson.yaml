@@ -1,10 +1,10 @@
 schemaVersion: 1
 id: aops-quadrilaterals-concept-lesson
 title: Quadrilaterals Concept Lesson
+description: Build quadrilateral results from definitions, diagonals, and sufficient classification tests instead of trusting appearance.
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-quadrilaterals
+topicId: aops-quadrilaterals
 modeDefault: learn
 randomizeQuestions: false
 navigation:
@@ -13,150 +13,164 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-quadrilaterals
-  - aops
+  - geometry
+  - parallelograms
+  - trapezoids
+  - quadrilateral-classification
 skills:
-- Apply aops-quadrilaterals
-- aops-quadrilaterals
+- Derive and apply the quadrilateral interior-angle sum
+- Distinguish definitions, consequences, converses, and sufficient classification tests
+- Prove and use parallelogram side, angle, and diagonal properties
+- Classify rectangles, rhombi, squares, trapezoids, and kites from stated evidence
+- Select and verify quadrilateral area methods
 lesson:
-  introduction: Learn to solve Quadrilaterals problems by recognizing trapezoids, parallelograms, rhombi, rectangles, squares and justifying each theorem or transformation.
+  introduction: |
+    Quadrilateral problems reward careful classification. A picture may resemble a rectangle or rhombus, but only stated or proved conditions authorize those properties. The central workflow is to translate markings into facts, choose a definition or theorem in the correct direction, use a diagonal when a triangle argument is useful, and verify that the conclusion is no stronger than the evidence.
   sections:
   - id: aops-quadrilaterals-motivation
-    title: What the topic helps you notice
+    title: Four angles become two triangle sums
     required: true
-    content: Quadrilaterals is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are trapezoids, parallelograms, rhombi, rectangles, squares.
+    content: |
+      Draw a diagonal in a convex quadrilateral. It divides the figure into two triangles without changing the four corner angles: each endpoint angle may be split, but its pieces recombine to the original angle. Because the two triangle sums total $180^\circ+180^\circ$, every convex quadrilateral has interior-angle sum $360^\circ$. This explains the formula and makes it reusable: if three angles are known, the fourth is $360^\circ$ minus their sum. In a concave quadrilateral the same total holds, although the interior reflex angle must be interpreted correctly.
+    media:
+    - type: image
+      src: /assessments/aops/aops-quadrilaterals-angle-sum.svg
+      alt: Convex quadrilateral ABCD divided by diagonal AC into triangles ABC and ACD.
+      caption: The diagonal partitions the four interior angles into two complete triangle-angle sums.
     check:
       id: aops-quadrilaterals-motivation-check
       type: multipleChoice
-      prompt: In Quadrilaterals, what should be checked before applying a method?
+      prompt: Three angles of a convex quadrilateral are $72^\circ$, $91^\circ$, and $104^\circ$. What is the fourth angle?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+      - {id: a, text: '$83^\circ$'}
+      - {id: b, text: '$87^\circ$'}
+      - {id: c, text: '$93^\circ$'}
+      - {id: d, text: '$97^\circ$'}
+      answer: {choiceId: c}
+      explanation: The missing angle is $360-(72+91+104)=93$ degrees.
   - id: aops-quadrilaterals-definitions
-    title: Definitions and theorem conditions
+    title: Definitions form a hierarchy, not separate boxes
     required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+    content: |
+      A parallelogram has two pairs of opposite parallel sides. A rectangle is a parallelogram with four right angles; a rhombus is a parallelogram with four congruent sides; a square satisfies both extra conditions. Therefore every square is both a rectangle and a rhombus, and all three are parallelograms. A kite has two pairs of adjacent congruent sides. For trapezoids, conventions differ: this curriculum uses the inclusive definition, at least one designated pair of opposite sides parallel, so parallelograms are special trapezoids. To keep the familiar base-angle and diagonal theorems unambiguous, “isosceles trapezoid” here means a non-parallelogram trapezoid with congruent legs. A source using another convention must state it. Definitions tell you what is guaranteed; drawings do not.
+    media:
+    - type: image
+      src: /assessments/aops/aops-quadrilaterals-special-types.svg
+      alt: Rectangle, rhombus, and square with right-angle, equal-side, and diagonal markings.
+      caption: A square combines the defining restrictions of a rectangle and a rhombus.
     check:
       id: aops-quadrilaterals-definitions-check
       type: multipleChoice
-      prompt: In Quadrilaterals, what should be checked before applying a method?
+      prompt: Which statement follows from the definitions used in this lesson?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadrilaterals-recognition
-    title: Recognition cues
+      - {id: a, text: Every rhombus is a rectangle.}
+      - {id: b, text: Every rectangle has four congruent sides.}
+      - {id: c, text: Every square is both a rectangle and a rhombus.}
+      - {id: d, text: Every kite is a parallelogram.}
+      answer: {choiceId: c}
+      explanation: A square has both four right angles and four congruent sides, in addition to being a parallelogram.
+  - id: aops-quadrilaterals-parallelogram-properties
+    title: Why parallelogram properties hold
     required: true
-    content: 'Look for these triggers: use defining properties, separate necessary from sufficient conditions, exploit diagonals. Record the givens, unknown, and any restriction before selecting a method.'
+    content: |
+      In parallelogram $ABCD$, opposite sides are parallel. Diagonal $AC$ creates alternate-interior angle pairs, so triangles $ABC$ and $CDA$ are congruent by ASA using their shared diagonal. That triangle proof yields opposite sides congruent and opposite angles congruent. Consecutive angles are supplementary because a transversal crosses parallel sides. Drawing both diagonals and applying the same parallel-line angle logic shows that they bisect one another: if they meet at $O$, then $AO=OC$ and $BO=OD$. Notice what is not guaranteed: the diagonals need not be congruent or perpendicular.
+    media:
+    - type: image
+      src: /assessments/aops/aops-quadrilaterals-parallelogram.svg
+      alt: Parallelogram ABCD with parallel-side arrows and diagonals AC and BD intersecting at O with matching half-diagonal tick marks.
+      caption: Parallel sides support triangle congruence; the tick marks summarize the resulting diagonal bisection.
     check:
-      id: aops-quadrilaterals-recognition-check
+      id: aops-quadrilaterals-parallelogram-properties-check
       type: multipleChoice
-      prompt: In Quadrilaterals, what should be checked before applying a method?
+      prompt: In parallelogram $ABCD$, diagonals meet at $O$, $AO=3x+2$, and $OC=5x-10$. What is $x$?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadrilaterals-method
-    title: Choose a method
+      - {id: a, text: '$4$'}
+      - {id: b, text: '$6$'}
+      - {id: c, text: '$8$'}
+      - {id: d, text: '$12$'}
+      answer: {choiceId: b}
+      explanation: Diagonals of a parallelogram bisect each other, so $3x+2=5x-10$ and $x=6$.
+  - id: aops-quadrilaterals-parallelogram-tests
+    title: Proving that a quadrilateral is a parallelogram
     required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+    content: |
+      A property and its converse are different claims, so classification needs a known sufficient test. Any one of these conditions proves a quadrilateral is a parallelogram: both pairs of opposite sides are parallel; both pairs are congruent; one opposite pair is both parallel and congruent; both pairs of opposite angles are congruent; or the diagonals bisect each other. Each test can be proved by congruent triangles and parallel-line converses. Weaker facts do not suffice: one pair of parallel sides describes many trapezoids, and congruent diagonals occur in isosceles trapezoids as well as rectangles.
+    media:
+    - type: image
+      src: /assessments/aops/aops-quadrilaterals-counterexamples.svg
+      alt: A non-rhombus kite with perpendicular diagonals and a non-rectangle isosceles trapezoid with congruent diagonals.
+      caption: A single attractive diagonal property may be necessary in a special family without being sufficient for classification.
     check:
-      id: aops-quadrilaterals-method-check
+      id: aops-quadrilaterals-parallelogram-tests-check
       type: multipleChoice
-      prompt: In Quadrilaterals, what should be checked before applying a method?
+      prompt: Which fact alone is sufficient to prove that a quadrilateral is a parallelogram?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadrilaterals-mini-example
-    title: A small original example
+      - {id: a, text: Its diagonals are congruent.}
+      - {id: b, text: Its diagonals bisect each other.}
+      - {id: c, text: One pair of opposite sides is congruent.}
+      - {id: d, text: Its diagonals are perpendicular.}
+      answer: {choiceId: b}
+      explanation: Mutual diagonal bisection is a parallelogram test; each other option occurs in non-parallelograms.
+  - id: aops-quadrilaterals-specialization
+    title: Rectangle, rhombus, and square evidence
     required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+    content: |
+      Start by proving a parallelogram unless that status is given. Within the parallelogram family, congruent diagonals are sufficient for a rectangle, while perpendicular diagonals or a diagonal that bisects an angle are sufficient for a rhombus. A square needs evidence for both families, such as a parallelogram with congruent and perpendicular diagonals. These statements require the parallelogram hypothesis: an isosceles trapezoid can have congruent diagonals, and a kite can have perpendicular diagonals. A rhombus with diagonals $p,q$ consists of four right triangles with legs $p/2,q/2$, so its area is $pq/2$ and its side can be found with Pythagoras.
+    media:
+    - type: image
+      src: /assessments/aops/aops-quadrilaterals-special-types.svg
+      alt: Comparison of a rectangle with congruent diagonals, a rhombus with perpendicular diagonals, and a square with both structures.
+      caption: The diagonal markings distinguish additional properties after the parallelogram foundation is established.
     check:
-      id: aops-quadrilaterals-mini-example-check
+      id: aops-quadrilaterals-specialization-check
       type: multipleChoice
-      prompt: In Quadrilaterals, what should be checked before applying a method?
+      prompt: A parallelogram has diagonals that are both congruent and perpendicular. What classification is forced?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadrilaterals-trap
-    title: Common misconception
+      - {id: a, text: Kite only}
+      - {id: b, text: Rectangle but not rhombus}
+      - {id: c, text: Rhombus but not rectangle}
+      - {id: d, text: Square}
+      answer: {choiceId: d}
+      explanation: Congruent diagonals make the parallelogram a rectangle; perpendicular diagonals make it a rhombus, so it is a square.
+  - id: aops-quadrilaterals-trapezoids
+    title: Trapezoids, kites, and area structure
     required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+    content: |
+      In a trapezoid, the designated parallel sides are bases and the remaining sides are legs. A segment joining the leg midpoints is parallel to both bases and has length $(b_1+b_2)/2$. This average also explains the area formula $K=\tfrac12(b_1+b_2)h$: area is average width times perpendicular height. In a non-parallelogram isosceles trapezoid the legs are congruent, each pair of base angles is congruent, and the diagonals are congruent. Dropping two altitudes often produces matching right triangles. For a kite, one diagonal is the perpendicular bisector of the other, but the reverse diagonal need not bisect the first.
+    media:
+    - type: image
+      src: /assessments/aops/aops-quadrilaterals-trapezoid.svg
+      alt: Isosceles trapezoid with bases 10 and 18, legs 5, height 3, and midsegment 14.
+      caption: The base difference splits equally, creating 3-4-5 corner triangles and a midsegment equal to the average base length.
     check:
-      id: aops-quadrilaterals-trap-check
+      id: aops-quadrilaterals-trapezoids-check
       type: multipleChoice
-      prompt: In Quadrilaterals, what should be checked before applying a method?
+      prompt: A trapezoid has bases 9 and 17 and height 6. What is its area?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+      - {id: a, text: '$52$'}
+      - {id: b, text: '$72$'}
+      - {id: c, text: '$78$'}
+      - {id: d, text: '$156$'}
+      answer: {choiceId: c}
+      explanation: $K=\tfrac12(9+17)(6)=13\cdot6=78$.
   - id: aops-quadrilaterals-synthesis
-    title: Contest synthesis
+    title: Contest workflow and counterexample safeguards
     required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+    content: |
+      A reliable solution separates four tasks. First, inventory only marked or stated facts. Second, decide whether the target is a measurement or a classification. Third, choose a theorem in the correct direction: use a property after classification, or use a sufficient test to establish classification. Fourth, verify units, angle totals, positivity, and whether the conclusion is stronger than the premises. When uncertain about a proposed converse, try to draw a counterexample from another family. Kites defeat the claim that perpendicular diagonals force a rhombus; isosceles trapezoids defeat the claim that congruent diagonals force a rectangle.
+    media:
+    - type: image
+      src: /assessments/aops/aops-quadrilaterals-counterexamples.svg
+      alt: Two labeled counterexamples showing perpendicular and congruent diagonals without the stronger claimed classifications.
+      caption: Counterexamples are structural tests for whether a proposed converse is genuinely sufficient.
     check:
       id: aops-quadrilaterals-synthesis-check
       type: multipleChoice
-      prompt: In Quadrilaterals, what should be checked before applying a method?
+      prompt: A quadrilateral has perpendicular diagonals. What is the strongest universally valid conclusion from that fact alone?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+      - {id: a, text: It is a rhombus.}
+      - {id: b, text: It is a kite.}
+      - {id: c, text: It is a square.}
+      - {id: d, text: No one of those classifications is forced.}
+      answer: {choiceId: d}
+      explanation: Perpendicular diagonals occur in several families and in irregular orthodiagonal quadrilaterals, so more evidence is required.

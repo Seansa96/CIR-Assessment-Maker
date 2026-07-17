@@ -26,19 +26,11 @@ function Get-CategoryTopics([string]$Root) {
     return $topics
 }
 
-function Get-SubcategoryIds([string[]]$Lines) {
-    $start = [Array]::FindIndex($Lines, [Predicate[string]]{ param($line) $line -match '^subcategoryIds:' })
-    if ($start -lt 0) { return [PSCustomObject]@{ Ids = @(); End = -1 } }
-    if ($Lines[$start] -match '^subcategoryIds:\s*\[(.*)\]\s*$') {
-        return [PSCustomObject]@{ Ids = @($Matches[1].Split(',') | ForEach-Object { Get-Unquoted $_ } | Where-Object { $_ }); End = $start }
-    }
-    $ids = @()
-    $end = $start
-    for ($i = $start + 1; $i -lt $Lines.Count; $i++) {
-        if ($Lines[$i] -match '^\s*-\s*(.+)$') { $ids += Get-Unquoted $Matches[1]; $end = $i; continue }
-        if ($Lines[$i] -match '^\S') { break }
-    }
-    return [PSCustomObject]@{ Ids = @($ids); End = $end }
+function Get-TopicId([string[]]$Lines) {
+    $start = [Array]::FindIndex($Lines, [Predicate[string]]{ param($line) $line -match '^topicId:\s*(.+)$' })
+    if ($start -lt 0) { return [PSCustomObject]@{ Id = $null; End = -1 } }
+    $value = Get-Unquoted (($Lines[$start] -replace '^topicId:\s*', ''))
+    return [PSCustomObject]@{ Id = $value; End = $start }
 }
 
 function Get-Activity([string]$AssessmentType) {
@@ -129,54 +121,29 @@ function Normalize-NavigationTags([System.Collections.Generic.List[string]]$Line
 }
 
 $topicTitles = Get-CategoryTopics $DataRoot
-$fallbackTopics = @{
-    'dsa-bst-concept-lesson.yaml' = 'dsa-trees'
-    'ee-semiconductor-physics-concept-lesson.yaml' = 'ee-semiconductor-physics'
-    'ee-signals-systems-concept-lesson.yaml' = 'ee-signals-systems'
-    'ee-transformers-worked-example.yaml' = 'ee-transformers'
-    'ee-voltage-regulation-concept-lesson.yaml' = 'ee-voltage-regulation'
-    'pwsh-basics-directed-project.yaml' = 'pwsh-cmdlets'
-    'pwsh-basics-directed-project-2.yaml' = 'pwsh-cmdlets'
-    'pwsh-basics-directed-project-3.yaml' = 'pwsh-navigation'
-    'pwsh-basics-guided-project-2.yaml' = 'pwsh-object-pipeline'
-    'pwsh-string-directed-project.yaml' = 'pwsh-string-basics'
-    'pwsh-string-directed-project-2.yaml' = 'pwsh-string-methods'
-    'pwsh-string-directed-project-3.yaml' = 'pwsh-string-methods'
-    'pwsh-string-guided-project-2.yaml' = 'pwsh-string-methods'
-    'pwsh-string-guided-project-3.yaml' = 'pwsh-regex'
-    'test-graphing-assessment.yaml' = 'parametric-curves'
-}
 $changed = 0; $skipped = 0
 Get-ChildItem (Join-Path $DataRoot "assessments") -Filter *.yaml -Recurse | ForEach-Object {
     $raw = [System.IO.File]::ReadAllText($_.FullName)
-    if ($raw -notmatch '(?m)^id:' -or $raw -notmatch '(?m)^categoryId:' -or $raw -notmatch '(?m)^subcategoryIds:') { $skipped++; return }
+    if ($raw -notmatch '(?m)^id:' -or $raw -notmatch '(?m)^categoryId:' -or $raw -notmatch '(?m)^topicId:\s*\S+') { $skipped++; return }
     $lines = [System.Collections.Generic.List[string]]::new([string[]]($raw -split "`r?`n"))
     $categoryLine = $lines | Where-Object { $_ -match '^categoryId:' } | Select-Object -First 1
     $typeLine = $lines | Where-Object { $_ -match '^assessmentType:' } | Select-Object -First 1
     $categoryId = Get-Unquoted (($categoryLine -replace '^categoryId:\s*', ''))
     $assessmentType = Get-Unquoted (($typeLine -replace '^assessmentType:\s*', ''))
-    $subcategoryBlock = Get-SubcategoryIds $lines.ToArray()
-    $subcategories = $subcategoryBlock.Ids
-    $subcategoriesEnd = $subcategoryBlock.End
-    if ($subcategories.Count -eq 0 -and $fallbackTopics.ContainsKey($_.Name)) {
-        $subcategoryIndex = [Array]::FindIndex($lines.ToArray(), [Predicate[string]]{ param($line) $line -match '^subcategoryIds:' })
-        Insert-At $lines ($subcategoryIndex + 1) @("- $($fallbackTopics[$_.Name])")
-        $subcategories = @($fallbackTopics[$_.Name])
-        $subcategoriesEnd = $subcategoryIndex + 1
-    }
-    if ($subcategoriesEnd -lt 0 -or $subcategories.Count -eq 0) { $skipped++; return }
-    $skillValues = @($subcategories | ForEach-Object {
-        $topicTitle = $topicTitles[$_]
-        if ([string]::IsNullOrWhiteSpace($topicTitle)) { $topicTitle = $_ }
-        "Apply $topicTitle"
-    })
+    $topicBlock = Get-TopicId $lines.ToArray()
+    $topicId = $topicBlock.Id
+    $topicEnd = $topicBlock.End
+    if ($topicEnd -lt 0 -or [string]::IsNullOrWhiteSpace($topicId)) { $skipped++; return }
+    $topicTitle = $topicTitles[$topicId]
+    if ([string]::IsNullOrWhiteSpace($topicTitle)) { $topicTitle = $topicId }
+    $skillValues = @("Apply $topicTitle")
     if ($skillValues.Count -eq 0) { $skillValues = @("Apply $categoryId concepts") }
-    $tagValues = @($categoryId) + @($subcategories)
+    $tagValues = @($categoryId, $topicId)
     $activity = Get-Activity $assessmentType
     $fileChanged = $false
 
     if (-not ($lines | Where-Object { $_ -match '^skills:' } | Select-Object -First 1)) {
-        Insert-At $lines ($subcategoriesEnd + 1) (@('skills:') + ($skillValues | ForEach-Object { "- $_" }))
+        Insert-At $lines ($topicEnd + 1) (@('skills:') + ($skillValues | ForEach-Object { "- $_" }))
         $fileChanged = $true
     }
     $skillsIndex = [Array]::FindIndex($lines.ToArray(), [Predicate[string]]{ param($line) $line -match '^skills:' })

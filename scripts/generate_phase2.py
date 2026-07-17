@@ -3,6 +3,11 @@ import yaml
 
 out_dir = r"c:\Users\SeanS\Downloads\cir_app\data\assessments"
 
+def single_topic(topic_ids):
+    if len(topic_ids) != 1:
+        raise ValueError("Assessment generators require exactly one topicId; create a review topic for cumulative content.")
+    return topic_ids[0]
+
 def write_yaml(filename, data):
     path = os.path.join(out_dir, filename)
     with open(path, 'w', encoding='utf-8') as f:
@@ -20,7 +25,7 @@ def generate_ch6():
         "title": "Capacitance and Inductance Basics",
         "assessmentType": "workedExample",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "workedExamples": [
             {
                 "id": "l1",
@@ -56,7 +61,7 @@ def generate_ch6():
         "title": "Inductance and Capacitance Quiz",
         "assessmentType": "quiz",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "modeDefault": "practice",
         "questions": [
             {
@@ -110,7 +115,7 @@ def generate_ch6():
         "title": "Inductance and Capacitance Test",
         "assessmentType": "test",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "attemptQuestionCount": 15,
         "questions": test_questions
     }
@@ -128,7 +133,7 @@ def generate_ch7():
         "title": "First-Order Response Quiz",
         "assessmentType": "quiz",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "modeDefault": "practice",
         "questions": [
             {
@@ -169,7 +174,7 @@ def generate_ch7():
         "title": "First-Order Response Test",
         "assessmentType": "test",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "attemptQuestionCount": 15,
         "questions": test_questions
     }
@@ -186,7 +191,7 @@ def generate_ch8():
         "title": "RLC Response Quiz",
         "assessmentType": "quiz",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "modeDefault": "practice",
         "questions": [
             {
@@ -225,7 +230,7 @@ def generate_ch8():
         "title": "RLC Response Test",
         "assessmentType": "test",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "attemptQuestionCount": 15,
         "questions": test_questions
     }

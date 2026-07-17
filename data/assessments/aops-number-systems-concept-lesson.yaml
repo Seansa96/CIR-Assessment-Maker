@@ -1,10 +1,9 @@
 schemaVersion: 1
 id: aops-number-systems-concept-lesson
-title: What Numbers Really Are Concept Lesson
+title: Number Systems Concept Lesson
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-number-systems
+topicId: aops-number-systems
 modeDefault: learn
 randomizeQuestions: false
 navigation:
@@ -13,150 +12,147 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-number-systems
-  - aops
+  - rational-numbers
+  - irrationality
+  - complex-numbers
 skills:
-- Apply aops-number-systems
-- aops-number-systems
+- Classify numbers in the smallest standard number set
+- Convert terminating and repeating decimals exactly
+- Prove square-root irrationality using lowest terms
+- Test closure claims and distinguish real from complex solutions
 lesson:
-  introduction: Learn to solve What Numbers Really Are problems by recognizing integers, rationals, irrationals, complex numbers, lowest terms and justifying each theorem or transformation.
+  introduction: |-
+    Number systems record which operations and equations are permitted. A negative count forces an extension from natural numbers to integers; division forces rational numbers; limits and lengths require irrational reals; square roots of negative numbers require complex numbers. Precise classification replaces guesses from decimal displays with definitions and proofs.
   sections:
-  - id: aops-number-systems-motivation
-    title: What the topic helps you notice
+  - id: nested-number-sets
+    title: Number systems are nested extensions
     required: true
-    content: What Numbers Really Are is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are integers, rationals, irrationals, complex numbers, lowest terms.
+    content: |-
+      Using the common convention $\mathbb N=\{1,2,3,\ldots\}$,
+
+      $$\mathbb N\subset\mathbb Z\subset\mathbb Q\subset\mathbb R\subset\mathbb C.$$
+
+      Some courses include $0$ in $\mathbb N$, so that convention must be stated. Integers include negatives and zero. Rationals include every integer because $n=n/1$. Reals consist of rationals and irrationals; complex numbers have form $a+bi$ with real $a,b$.
+
+      “Smallest set” means the first set in the chain containing the number. Thus $5$ is also rational, real, and complex, but its smallest listed set is natural.
     check:
-      id: aops-number-systems-motivation-check
+      id: nested-number-sets-check
       type: multipleChoice
-      prompt: In What Numbers Really Are, what should be checked before applying a method?
+      prompt: Under the convention $\mathbb N=\{1,2,3,\ldots\}$, what is the smallest listed set containing $-4$?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-number-systems-definitions
-    title: Definitions and theorem conditions
+      - {id: a, text: '$\mathbb N$'}
+      - {id: b, text: '$\mathbb Z$'}
+      - {id: c, text: '$\mathbb Q\setminus\mathbb Z$'}
+      - {id: d, text: '$\mathbb C\setminus\mathbb R$'}
+      answer: {choiceId: b}
+      explanation: $-4$ is an integer but not a positive counting number.
+  - id: rational-definition-and-lowest-terms
+    title: Rationality is an exact quotient condition
     required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+    content: |-
+      A number is rational if it equals $p/q$ for integers $p,q$ with $q\ne0$. The representation need not be unique: $2/3=4/6=-10/-15$. A fraction is in lowest terms when $\gcd(p,q)=1$.
+
+      Lowest terms are crucial in contradiction proofs because a conclusion that both $p$ and $q$ share a prime factor then contradicts the starting representation. A long or inconvenient decimal may still be rational; classification depends on an exact quotient, not appearance.
     check:
-      id: aops-number-systems-definitions-check
+      id: rational-definition-check
       type: multipleChoice
-      prompt: In What Numbers Really Are, what should be checked before applying a method?
+      prompt: Which statement proves that $-0.125$ is rational?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-number-systems-recognition
-    title: Recognition cues
+      - {id: a, text: It has three decimal places.}
+      - {id: b, text: '$-0.125=-1/8$, a quotient of integers with nonzero denominator.'}
+      - {id: c, text: It is negative.}
+      - {id: d, text: Its absolute value is less than one.}
+      answer: {choiceId: b}
+      explanation: The exact fraction meets the definition of rationality.
+  - id: terminating-and-repeating-decimals
+    title: Rational decimals terminate or eventually repeat
     required: true
-    content: 'Look for these triggers: classify number sets, prove irrationality by contradiction, respect closure properties. Record the givens, unknown, and any restriction before selecting a method.'
+    content: |-
+      A terminating decimal is a fraction with denominator a power of ten. For example, $0.037=37/1000$.
+
+      A repeating decimal is also rational. If $x=0.\overline{27}$, then $100x=27.\overline{27}$, so subtracting gives $99x=27$ and $x=3/11$. The power of ten must shift exactly one full repeating block.
+
+      In lowest terms, a rational number has a terminating decimal exactly when its positive denominator contains no prime factors other than $2$ and $5$. Other denominators produce repetition because long division has only finitely many possible nonzero remainders.
     check:
-      id: aops-number-systems-recognition-check
+      id: terminating-and-repeating-decimals-check
       type: multipleChoice
-      prompt: In What Numbers Really Are, what should be checked before applying a method?
+      prompt: Which fraction has a terminating decimal expansion?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-number-systems-method
-    title: Choose a method
+      - {id: a, text: '$7/24$'}
+      - {id: b, text: '$11/30$'}
+      - {id: c, text: '$13/40$'}
+      - {id: d, text: '$5/21$'}
+      answer: {choiceId: c}
+      explanation: $40=2^3\cdot5$ contains only the primes $2$ and $5$.
+  - id: irrational-numbers-and-square-roots
+    title: Irrational numbers require proof, not a decimal guess
     required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+    content: |-
+      An irrational number is real but not rational. A nonterminating decimal approximation does not prove irrationality because every displayed decimal is finite and therefore rational.
+
+      For a positive integer $n$, $\sqrt n$ is rational exactly when $n$ is a perfect square. One way to see the forward direction uses prime exponents: a square has even exponent on every prime. If $\sqrt n=p/q$ in lowest terms, then $nq^2=p^2$ forces the parity of prime exponents to match, which is possible only when $n$ already has even exponents.
     check:
-      id: aops-number-systems-method-check
+      id: irrational-square-roots-check
       type: multipleChoice
-      prompt: In What Numbers Really Are, what should be checked before applying a method?
+      prompt: Which number is irrational?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-number-systems-mini-example
-    title: A small original example
+      - {id: a, text: '$\sqrt{49}$'}
+      - {id: b, text: '$\sqrt{18}/3$'}
+      - {id: c, text: '$0.\overline{18}$'}
+      - {id: d, text: '$-7/4$'}
+      answer: {choiceId: b}
+      explanation: $\sqrt{18}/3=\sqrt2$ is irrational; the other values are rational.
+  - id: lowest-terms-irrationality-proof
+    title: The lowest-terms contradiction for $\sqrt2$
     required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+    content: |-
+      Assume $\sqrt2=p/q$ with integers $p,q$, $q\ne0$, and $\gcd(p,q)=1$. Squaring gives $p^2=2q^2$, so $p^2$ is even. A square is even only when its base is even, hence $p=2k$. Substitution gives $4k^2=2q^2$, or $q^2=2k^2$, so $q$ is also even.
+
+      Then $p$ and $q$ share factor $2$, contradicting lowest terms. Therefore no rational representation exists. The proof obligation is not merely to obtain evenness once; it must force a common factor in both numerator and denominator.
     check:
-      id: aops-number-systems-mini-example-check
+      id: lowest-terms-proof-check
       type: multipleChoice
-      prompt: In What Numbers Really Are, what should be checked before applying a method?
+      prompt: What creates the contradiction in the standard proof that $\sqrt2$ is irrational?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-number-systems-trap
-    title: Common misconception
+      - {id: a, text: '$p$ and $q$ are both forced to be even despite being chosen coprime.'}
+      - {id: b, text: '$p^2$ is larger than $q^2$.'}
+      - {id: c, text: The decimal expansion is long.}
+      - {id: d, text: Every square is odd.}
+      answer: {choiceId: a}
+      explanation: A common factor contradicts the assumed lowest-terms representation.
+  - id: closure-and-counterexamples
+    title: Closure claims need exact hypotheses
     required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+    content: |-
+      A set is closed under an operation if applying that operation to any permitted members remains in the set. Integers are closed under addition and multiplication but not division: $1/2$ is not an integer. Rationals are closed under addition, subtraction, and multiplication, and under division by a nonzero rational.
+
+      Irrational numbers are not closed under addition or multiplication. For example, $\sqrt2+(-\sqrt2)=0$ and $\sqrt2\cdot\sqrt2=2$. A universal claim is disproved by one valid counterexample; a single supporting example cannot prove it.
     check:
-      id: aops-number-systems-trap-check
+      id: closure-and-counterexamples-check
       type: multipleChoice
-      prompt: In What Numbers Really Are, what should be checked before applying a method?
+      prompt: Which example disproves “the sum of two irrational numbers is always irrational”?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-number-systems-synthesis
-    title: Contest synthesis
+      - {id: a, text: '$\sqrt2+\sqrt3$'}
+      - {id: b, text: '$\sqrt2+(-\sqrt2)=0$'}
+      - {id: c, text: '$1/2+1/3=5/6$'}
+      - {id: d, text: '$2+3=5$'}
+      answer: {choiceId: b}
+      explanation: Both summands are irrational, while their sum is rational.
+  - id: real-versus-complex-universe
+    title: The allowed number system changes the solution set
     required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+    content: |-
+      Over the reals, $x^2=-9$ has no solution because real squares are nonnegative. Over the complex numbers, $i^2=-1$, so the solutions are $x=\pm3i$. A problem must therefore specify or imply its universe.
+
+      Complex numbers $a+bi$ include the reals as the case $b=0$. The conjugate $a-bi$ reverses the imaginary part, and $(a+bi)(a-bi)=a^2+b^2$ is real. Classification and solution claims should name the smallest relevant set and record restrictions such as nonzero denominators or nonnegative real radicands.
     check:
-      id: aops-number-systems-synthesis-check
+      id: real-versus-complex-universe-check
       type: multipleChoice
-      prompt: In What Numbers Really Are, what should be checked before applying a method?
+      prompt: What are the solutions of $x^2+16=0$ in $\mathbb C$?
       choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+      - {id: a, text: No solutions}
+      - {id: b, text: '$x=4$ only'}
+      - {id: c, text: '$x=-4$ only'}
+      - {id: d, text: '$x=\pm4i$'}
+      answer: {choiceId: d}
+      explanation: $x^2=-16$ gives $x=\pm4i$ in the complex numbers.

@@ -6,8 +6,7 @@ id: chem-periodic-trends-concept-lesson
 title: "Periodic Trends: Atomic Radius and Ionization Energy"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-periodic-trends
+topicId: chem-periodic-trends
 modeDefault: study
 lesson:
   introduction: "The arrangement of the periodic table allows us to predict the properties of elements based on their position. These predictable patterns are called periodic trends."
@@ -52,8 +51,7 @@ id: chem-ions-formation-concept-lesson
 title: "Ion Formation: Cations and Anions"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-ions
+topicId: chem-ions
 modeDefault: study
 lesson:
   introduction: "Atoms are neutral because they have an equal number of protons and electrons. When atoms gain or lose electrons to achieve a stable electron configuration, they become charged particles called ions."
@@ -96,8 +94,7 @@ id: chem-ionic-covalent-distinction-concept-lesson
 title: "Distinguishing Ionic and Covalent Bonds"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-ionic-covalent-distinction
+topicId: chem-ionic-covalent-distinction
 modeDefault: study
 lesson:
   introduction: "Chemical bonds hold atoms together in compounds. The two primary types of intramolecular bonds are ionic and covalent, which differ fundamentally in how electrons are shared or transferred."
@@ -140,8 +137,7 @@ id: chem-ionic-covalent-properties-worked-example
 title: "Properties of Ionic vs Covalent Compounds"
 type: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chem-ionic-covalent-distinction
+topicId: chem-ionic-covalent-distinction
 modeDefault: study
 workedExamples:
   - id: we-bond-properties
@@ -181,8 +177,7 @@ id: chemistry-reactions-classification-concept-lesson
 title: "Classifying Chemical Reactions"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-reactions
+topicId: chemistry-reactions
 modeDefault: study
 lesson:
   introduction: "Chemical reactions can be grouped into several major categories based on how the atoms rearrange themselves. Identifying the reaction type helps predict the products."
@@ -234,8 +229,7 @@ id: chemistry-reactions-classification-recall
 title: "Reaction Classification Drill"
 type: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-reactions
+topicId: chemistry-reactions
 modeDefault: practice
 items:
   - id: rc-drill-1

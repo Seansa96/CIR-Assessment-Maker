@@ -82,6 +82,8 @@ Important rules:
 
 - Use stable lowercase hyphenated IDs.
 - Keep category, subcategory, assessment, question, step, and item IDs stable after publication.
+- Every assessment must declare exactly one non-empty scalar `topicId`. The topic must belong to `categoryId` and appear in exactly one same-category area in `data/areas.yaml`.
+- `skills` and `navigation.tags` are attribution/search evidence only; they never classify an assessment into another topic or area. Put cumulative content in an explicit review/capstone topic.
 - Quiz/test content uses `questions`.
 - Worked Examples use `workedExamples`.
 - Guided Projects use `guidedProject`.
@@ -95,7 +97,7 @@ Important rules:
 
 Assessments are automatically organized into a curriculum roadmap based on their metadata:
 1. **Area**: Determined by `areaId`. Sequence is strictly defined by the order in `data/areas.yaml`.
-2. **Topic**: Determined by `topicId`. Topics are sorted alphabetically within their area.
+2. **Topic**: Determined only by singular `topicId`. Tags and skills never affect placement. Topics are sorted alphabetically within their canonical area.
 3. **Assessment Order**: Within a topic, assessments are sequenced by their intended pedagogical progression:
    - **Learn**: `conceptLesson` -> `glossary` -> `guidedWorkedExample` -> `interactiveExploration`
    - **Recall**: `mixedRecallSet` -> `clozeDrill` -> `recognitionDrill`

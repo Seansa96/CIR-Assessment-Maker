@@ -1,6 +1,8 @@
 ---
 import "katex/dist/katex.min.css";
 import "../styles/global.css";
+
+const isDev = import.meta.env.DEV;
 ---
 
 <html lang="en">
@@ -340,8 +342,103 @@ import "../styles/global.css";
           </div>
           <div id="diagnostics-empty" class="empty-state">No diagnostics available.</div>
         </section>
+        {isDev && (
+          <section class="panel assessment-reports-panel" aria-labelledby="assessment-reports-title">
+            <div class="section-header">
+              <div>
+                <h2 id="assessment-reports-title">Assessment Reports</h2>
+                <p class="quiet-hint">Aggregate bugs, improvements, and comments submitted during assessment sessions.</p>
+              </div>
+              <div class="button-row">
+                <button type="button" id="copy-assessment-reports-markdown">Copy Markdown</button>
+                <button type="button" id="refresh-assessment-reports">Refresh</button>
+              </div>
+            </div>
+            <div class="assessment-report-filters" aria-label="Assessment report filters">
+              <div class="field compact">
+                <label for="assessment-report-status-filter">Status</label>
+                <select id="assessment-report-status-filter">
+                  <option value="open" selected>Open</option>
+                  <option value="">All</option>
+                  <option value="resolved">Resolved</option>
+                </select>
+              </div>
+              <div class="field compact">
+                <label for="assessment-report-kind-filter">Kind</label>
+                <select id="assessment-report-kind-filter">
+                  <option value="">All</option>
+                  <option value="bug">Bug</option>
+                  <option value="improvement">Improvement</option>
+                  <option value="comment">Comment</option>
+                </select>
+              </div>
+              <div class="field compact">
+                <label for="assessment-report-assessment-filter">Assessment</label>
+                <select id="assessment-report-assessment-filter">
+                  <option value="">All assessments</option>
+                </select>
+              </div>
+            </div>
+            <p id="assessment-reports-status" class="quiet-hint" role="status"></p>
+            <div id="assessment-report-summary" class="assessment-report-summary"></div>
+            <div class="table-container">
+              <table class="data-table" id="assessment-reports-table" hidden>
+                <thead>
+                  <tr>
+                    <th>Status</th>
+                    <th>Kind</th>
+                    <th>Assessment</th>
+                    <th>Context</th>
+                    <th>Comment</th>
+                    <th>Attempt</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="assessment-reports-tbody"></tbody>
+              </table>
+            </div>
+            <div id="assessment-reports-empty" class="empty-state">No assessment reports match these filters.</div>
+          </section>
+        )}
       </section>
     </main>
+
+    {isDev && (
+      <dialog id="assessment-report-dialog" class="assessment-report-dialog" aria-labelledby="assessment-report-dialog-title">
+        <form id="assessment-report-form" method="dialog">
+          <div class="section-header">
+            <div>
+              <p class="eyebrow">Developer report</p>
+              <h2 id="assessment-report-dialog-title">Report this assessment</h2>
+            </div>
+            <button type="button" id="close-assessment-report-dialog" aria-label="Close assessment report dialog">Close</button>
+          </div>
+          <p id="assessment-report-context-preview" class="assessment-report-context-preview"></p>
+          <div class="field">
+            <label for="assessment-report-kind">Kind</label>
+            <select id="assessment-report-kind" required>
+              <option value="bug">Bug</option>
+              <option value="improvement">Improvement</option>
+              <option value="comment">Comment</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="assessment-report-comment">Short ticket or comment</label>
+            <textarea id="assessment-report-comment" rows="6" maxlength="1000" required placeholder="Describe the problem or improvement clearly."></textarea>
+            <div class="assessment-report-character-row">
+              <span>Plain text, 1–1000 characters.</span>
+              <span id="assessment-report-character-count">0 / 1000</span>
+            </div>
+          </div>
+          <p id="assessment-report-form-status" class="quiet-hint" role="status"></p>
+          <div class="button-row">
+            <button type="submit" class="primary" id="submit-assessment-report">Save Report</button>
+            <button type="button" id="cancel-assessment-report">Cancel</button>
+          </div>
+        </form>
+      </dialog>
+    )}
 
     <script>
       import { unified } from "unified";
@@ -514,8 +611,8 @@ import "../styles/global.css";
 
       interface NavigationAssessment extends AssessmentSummary {
         subjectId: string;
-        areaIds: string[];
-        topicIds: string[];
+        areaId: string;
+        topicId: string;
         learningGoal: string;
         activityType: string;
         tags: string[];
@@ -1086,6 +1183,39 @@ import "../styles/global.css";
         results: AttemptResults;
       }
 
+      type AssessmentReportKind = "bug" | "improvement" | "comment";
+      type AssessmentReportStatus = "open" | "resolved";
+
+      interface AssessmentReportEntry {
+        id: string;
+        assessmentId: string;
+        assessmentTitle: string;
+        attemptId: string;
+        contextId: string | null;
+        kind: AssessmentReportKind;
+        comment: string;
+        status: AssessmentReportStatus;
+        createdAt: string;
+        resolvedAt: string | null;
+      }
+
+      interface AssessmentReportGroup {
+        assessmentId: string;
+        assessmentTitle: string;
+        totalCount: number;
+        openCount: number;
+        resolvedCount: number;
+        bugCount: number;
+        improvementCount: number;
+        commentCount: number;
+        latestReportAt: string;
+      }
+
+      interface AssessmentReportDashboard {
+        entries: AssessmentReportEntry[];
+        assessments: AssessmentReportGroup[];
+      }
+
       interface GradeLogEntry {
         attemptId: string;
         assessmentId: string;
@@ -1376,6 +1506,17 @@ import "../styles/global.css";
       document.querySelector<HTMLButtonElement>("#refresh-grades")!.addEventListener("click", loadGrades);
       document.querySelector<HTMLButtonElement>("#refresh-sessions")!.addEventListener("click", loadGrades);
       document.querySelector<HTMLButtonElement>("#refresh-diagnostics")?.addEventListener("click", loadDiagnostics);
+      if (IS_DEV) {
+        document.querySelector<HTMLButtonElement>("#refresh-assessment-reports")?.addEventListener("click", () => void loadAssessmentReports());
+        document.querySelector<HTMLButtonElement>("#copy-assessment-reports-markdown")?.addEventListener("click", copyAssessmentReportsMarkdown);
+        document.querySelectorAll<HTMLSelectElement>("#assessment-report-status-filter, #assessment-report-kind-filter, #assessment-report-assessment-filter").forEach((filter) => {
+          filter.addEventListener("change", () => void loadAssessmentReports());
+        });
+        document.querySelector<HTMLTextAreaElement>("#assessment-report-comment")?.addEventListener("input", updateAssessmentReportCharacterCount);
+        document.querySelector<HTMLFormElement>("#assessment-report-form")?.addEventListener("submit", submitAssessmentReport);
+        document.querySelector<HTMLButtonElement>("#close-assessment-report-dialog")?.addEventListener("click", closeAssessmentReportDialog);
+        document.querySelector<HTMLButtonElement>("#cancel-assessment-report")?.addEventListener("click", closeAssessmentReportDialog);
+      }
       settingsForm.addEventListener("submit", saveSettings);
       document.addEventListener("keydown", handleAnswerShortcut);
       createForm.addEventListener("submit", saveDraftAssessment);
@@ -1817,7 +1958,7 @@ import "../styles/global.css";
           .filter((area) => area.subjectIds.includes(selection.subjectId))
           .map((area) => ({
             area,
-            count: subjectAssessments.filter((assessment) => assessment.areaIds.includes(area.id)).length
+            count: subjectAssessments.filter((assessment) => assessment.areaId === area.id).length
           }))
           .filter((entry) => entry.count > 0);
         renderNavigationTiles("nav-area-tiles", areas.map(({ area, count }) => {
@@ -1837,13 +1978,13 @@ import "../styles/global.css";
           };
         }), (id) => selectNavigationStage("area", id));
 
-        const areaAssessments = subjectAssessments.filter((assessment) => assessment.areaIds.includes(selection.areaId));
-        const availableTopicIds = new Set(areaAssessments.flatMap((assessment) => assessment.topicIds));
+        const areaAssessments = subjectAssessments.filter((assessment) => assessment.areaId === selection.areaId);
+        const availableTopicIds = new Set(areaAssessments.map((assessment) => assessment.topicId));
         const topics = catalog.topics
           .filter((topic) => topic.subjectId === selection.subjectId && availableTopicIds.has(topic.id))
           .map((topic) => ({
             topic,
-            count: areaAssessments.filter((assessment) => assessment.topicIds.includes(topic.id)).length
+            count: areaAssessments.filter((assessment) => assessment.topicId === topic.id).length
           }));
         renderNavigationTiles("nav-topic-tiles", topics.map(({ topic, count }) => {
           const rec = topicRecommendations.get(topic.id);
@@ -1867,7 +2008,7 @@ import "../styles/global.css";
         }), (id) => selectNavigationStage("topic", id));
 
         const activeTopicRec = topicRecommendations.get(selection.topicId);
-        const topicAssessments = areaAssessments.filter((assessment) => assessment.topicIds.includes(selection.topicId));
+        const topicAssessments = areaAssessments.filter((assessment) => assessment.topicId === selection.topicId);
         renderNavigationTiles("nav-goal-tiles", catalog.goals.map((goal) => {
           const count = topicAssessments.filter((assessment) => assessment.learningGoal === goal.id).length;
           const isSuggested = activeTopicRec?.recommendedLearningGoal === goal.id;
@@ -2582,6 +2723,206 @@ import "../styles/global.css";
         }
       }
 
+      function assessmentReportFilterQuery() {
+        const params = new URLSearchParams();
+        const assessmentId = document.querySelector<HTMLSelectElement>("#assessment-report-assessment-filter")?.value ?? "";
+        const kind = document.querySelector<HTMLSelectElement>("#assessment-report-kind-filter")?.value ?? "";
+        const status = document.querySelector<HTMLSelectElement>("#assessment-report-status-filter")?.value ?? "";
+        if (assessmentId) params.set("assessment", assessmentId);
+        if (kind) params.set("kind", kind);
+        if (status) params.set("status", status);
+        const query = params.toString();
+        return query ? `?${query}` : "";
+      }
+
+      async function loadAssessmentReports() {
+        if (!IS_DEV) return;
+        const statusElement = document.querySelector<HTMLParagraphElement>("#assessment-reports-status");
+        if (statusElement) statusElement.textContent = "Loading assessment reports…";
+
+        try {
+          const dashboard = await api<AssessmentReportDashboard>(`/dev/assessment-reports${assessmentReportFilterQuery()}`);
+          renderAssessmentReportDashboard(dashboard);
+          if (statusElement) {
+            statusElement.textContent = `${dashboard.entries.length} matching report${dashboard.entries.length === 1 ? "" : "s"} across ${dashboard.assessments.length} assessment${dashboard.assessments.length === 1 ? "" : "s"}.`;
+          }
+        } catch (error) {
+          if (statusElement) statusElement.textContent = `Unable to load assessment reports: ${readableError(error)}`;
+        }
+      }
+
+      function renderAssessmentReportDashboard(dashboard: AssessmentReportDashboard) {
+        const assessmentFilter = document.querySelector<HTMLSelectElement>("#assessment-report-assessment-filter");
+        if (assessmentFilter) {
+          const selected = assessmentFilter.value;
+          assessmentFilter.innerHTML = `<option value="">All assessments</option>${dashboard.assessments.map((group) => `
+            <option value="${escapeHtml(group.assessmentId)}">${escapeHtml(group.assessmentTitle)} (${group.openCount} open)</option>
+          `).join("")}`;
+          assessmentFilter.value = dashboard.assessments.some((group) => group.assessmentId === selected) ? selected : "";
+        }
+
+        const summary = document.querySelector<HTMLDivElement>("#assessment-report-summary");
+        if (summary) {
+          summary.innerHTML = dashboard.assessments.map((group) => `
+            <article class="assessment-report-summary-card">
+              <strong>${escapeHtml(group.assessmentTitle)}</strong>
+              <code>${escapeHtml(group.assessmentId)}</code>
+              <span>${group.openCount} open · ${group.resolvedCount} resolved · ${group.totalCount} total</span>
+              <span>${group.bugCount} bugs · ${group.improvementCount} improvements · ${group.commentCount} comments</span>
+            </article>
+          `).join("");
+        }
+
+        const table = document.querySelector<HTMLTableElement>("#assessment-reports-table");
+        const tbody = document.querySelector<HTMLTableSectionElement>("#assessment-reports-tbody");
+        const empty = document.querySelector<HTMLDivElement>("#assessment-reports-empty");
+        if (!table || !tbody || !empty) return;
+
+        table.hidden = dashboard.entries.length === 0;
+        empty.hidden = dashboard.entries.length > 0;
+        tbody.innerHTML = dashboard.entries.map((entry) => `
+          <tr>
+            <td><span class="assessment-report-status-badge" data-status="${entry.status}">${escapeHtml(entry.status)}</span></td>
+            <td>${escapeHtml(entry.kind)}</td>
+            <td><strong>${escapeHtml(entry.assessmentTitle)}</strong><br><code>${escapeHtml(entry.assessmentId)}</code></td>
+            <td><code>${escapeHtml(entry.contextId ?? "Assessment")}</code></td>
+            <td class="assessment-report-comment">${escapeHtml(entry.comment).replace(/\r?\n/g, "<br>")}</td>
+            <td><code>${escapeHtml(entry.attemptId)}</code></td>
+            <td>${escapeHtml(formatDate(entry.createdAt))}</td>
+            <td><button type="button" data-assessment-report-id="${escapeHtml(entry.id)}" data-assessment-report-next-status="${entry.status === "open" ? "resolved" : "open"}">${entry.status === "open" ? "Resolve" : "Reopen"}</button></td>
+          </tr>
+        `).join("");
+
+        tbody.querySelectorAll<HTMLButtonElement>("[data-assessment-report-id]").forEach((button) => {
+          button.addEventListener("click", () => void updateAssessmentReportStatus(button));
+        });
+      }
+
+      async function updateAssessmentReportStatus(button: HTMLButtonElement) {
+        const reportId = button.dataset.assessmentReportId;
+        const status = button.dataset.assessmentReportNextStatus as AssessmentReportStatus | undefined;
+        if (!reportId || !status) return;
+
+        setBusy(button, status === "resolved" ? "Resolving" : "Reopening");
+        try {
+          await api<AssessmentReportEntry>(`/dev/assessment-reports/${encodeURIComponent(reportId)}/status`, {
+            method: "PATCH",
+            body: JSON.stringify({ status })
+          });
+          await loadAssessmentReports();
+        } catch (error) {
+          const statusElement = document.querySelector<HTMLParagraphElement>("#assessment-reports-status");
+          if (statusElement) statusElement.textContent = `Unable to update report: ${readableError(error)}`;
+          clearBusy(button, status === "resolved" ? "Resolve" : "Reopen");
+        }
+      }
+
+      async function copyAssessmentReportsMarkdown() {
+        if (!IS_DEV) return;
+        const button = document.querySelector<HTMLButtonElement>("#copy-assessment-reports-markdown");
+        if (!button) return;
+
+        setBusy(button, "Copying");
+        try {
+          const response = await fetch(`${API_BASE}/dev/assessment-reports/markdown${assessmentReportFilterQuery()}`);
+          if (!response.ok) throw new Error(await response.text());
+          await copyPlainText(await response.text());
+          button.textContent = "Copied";
+          window.setTimeout(() => clearBusy(button, "Copy Markdown"), 1000);
+        } catch (error) {
+          const statusElement = document.querySelector<HTMLParagraphElement>("#assessment-reports-status");
+          if (statusElement) statusElement.textContent = `Unable to copy Markdown: ${readableError(error)}`;
+          clearBusy(button, "Copy Markdown");
+        }
+      }
+
+      async function copyPlainText(text: string) {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.opacity = "0";
+        document.body.append(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+      }
+
+      function openAssessmentReportDialog(contextId: string | null) {
+        if (!IS_DEV || !state.assessment || !state.attempt) return;
+        const dialog = document.querySelector<HTMLDialogElement>("#assessment-report-dialog");
+        const comment = document.querySelector<HTMLTextAreaElement>("#assessment-report-comment");
+        const kind = document.querySelector<HTMLSelectElement>("#assessment-report-kind");
+        const preview = document.querySelector<HTMLParagraphElement>("#assessment-report-context-preview");
+        const formStatus = document.querySelector<HTMLParagraphElement>("#assessment-report-form-status");
+        if (!dialog || !comment || !kind || !preview || !formStatus) return;
+
+        dialog.dataset.assessmentId = state.assessment.id;
+        dialog.dataset.attemptId = state.attempt.id;
+        dialog.dataset.contextId = contextId ?? "";
+        preview.textContent = `${state.assessment.title} (${state.assessment.id}) · ${contextId ? `Context: ${contextId}` : "Assessment-level report"}`;
+        kind.value = "bug";
+        comment.value = "";
+        formStatus.textContent = "";
+        updateAssessmentReportCharacterCount();
+        dialog.showModal();
+        comment.focus();
+      }
+
+      function closeAssessmentReportDialog() {
+        document.querySelector<HTMLDialogElement>("#assessment-report-dialog")?.close();
+      }
+
+      function updateAssessmentReportCharacterCount() {
+        const comment = document.querySelector<HTMLTextAreaElement>("#assessment-report-comment");
+        const count = document.querySelector<HTMLSpanElement>("#assessment-report-character-count");
+        if (comment && count) count.textContent = `${comment.value.length} / 1000`;
+      }
+
+      async function submitAssessmentReport(event: SubmitEvent) {
+        event.preventDefault();
+        if (!IS_DEV) return;
+        const dialog = document.querySelector<HTMLDialogElement>("#assessment-report-dialog");
+        const kind = document.querySelector<HTMLSelectElement>("#assessment-report-kind");
+        const comment = document.querySelector<HTMLTextAreaElement>("#assessment-report-comment");
+        const status = document.querySelector<HTMLParagraphElement>("#assessment-report-form-status");
+        const button = document.querySelector<HTMLButtonElement>("#submit-assessment-report");
+        if (!dialog || !kind || !comment || !status || !button) return;
+
+        const normalizedComment = comment.value.trim();
+        if (!normalizedComment) {
+          status.textContent = "Enter a short ticket or comment before saving.";
+          comment.focus();
+          return;
+        }
+
+        setBusy(button, "Saving");
+        status.textContent = "";
+        try {
+          await api<AssessmentReportEntry>("/dev/assessment-reports", {
+            method: "POST",
+            body: JSON.stringify({
+              assessmentId: dialog.dataset.assessmentId,
+              attemptId: dialog.dataset.attemptId,
+              contextId: dialog.dataset.contextId || null,
+              kind: kind.value,
+              comment: normalizedComment
+            })
+          });
+          status.textContent = "Report saved.";
+          await loadAssessmentReports();
+          window.setTimeout(closeAssessmentReportDialog, 500);
+        } catch (error) {
+          status.textContent = `Unable to save report: ${readableError(error)}`;
+        } finally {
+          clearBusy(button, "Save Report");
+        }
+      }
+
       async function updateCompletedAssessments() {
         try {
           state.completedAssessmentIds = await api<string[]>("/attempts/completed-assessments");
@@ -3239,6 +3580,9 @@ import "../styles/global.css";
         if (tabName === "curriculums") {
           renderCurriculumSubjects();
         }
+        if (tabName === "diagnostics" && IS_DEV) {
+          void loadAssessmentReports();
+        }
       }
 
       function renderCurriculumSubjects() {
@@ -3286,12 +3630,12 @@ import "../styles/global.css";
           `;
 
           const areaTopics = subjectTopics
-            .filter(t => subjectAssessments.some(a => a.topicIds.includes(t.id) && a.areaIds.includes(area.id)))
+            .filter(t => subjectAssessments.some(a => a.topicId === t.id && a.areaId === area.id))
             .sort((a, b) => a.title.localeCompare(b.title));
 
           for (const topic of areaTopics) {
             const topicAssessments = subjectAssessments
-              .filter(a => a.topicIds.includes(topic.id) && a.areaIds.includes(area.id));
+              .filter(a => a.topicId === topic.id && a.areaId === area.id);
 
             if (topicAssessments.length === 0) continue;
 
@@ -3946,7 +4290,7 @@ import "../styles/global.css";
           title: String(form.get("title") ?? "").trim(),
           assessmentType: String(form.get("assessmentType") ?? "quiz"),
           categoryId: String(form.get("categoryId") ?? "").trim(),
-          subcategoryIds: [String(form.get("subcategoryId") ?? "").trim()].filter(Boolean),
+          topicId: String(form.get("subcategoryId") ?? "").trim(),
           modeDefault: String(form.get("modeDefault") ?? "practice"),
           randomizeQuestions: form.get("randomizeQuestions") === "on",
           attemptQuestionCount: null,
@@ -3961,6 +4305,7 @@ import "../styles/global.css";
         if (!assessment.id) errors.push("Assessment ID is required.");
         if (!assessment.title) errors.push("Title is required.");
         if (!assessment.categoryId) errors.push("Category is required.");
+        if (!assessment.topicId) errors.push("Exactly one topic is required.");
 
         const questionIds = new Set<string>();
         assessment.questions.forEach((question, index) => {
@@ -4142,7 +4487,7 @@ import "../styles/global.css";
                 <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
                 <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
                 <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
-                ${renderDevAssessmentRefreshButton()}
+                ${renderDevAssessmentTools(question.id)}
                 <button type="button" id="pause-attempt">Save and Quit</button>
               </div>
               <div class="button-row terminal-actions" aria-label="Assessment ending actions">
@@ -4170,7 +4515,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
         setupQuestionNavigator();
         setupChoiceCards(question);
         setupCodeEditor(question);
@@ -4258,7 +4603,7 @@ import "../styles/global.css";
                   <div class="button-row">
                     <button type="button" id="previous-glossary-section" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Section</button>
                     <button class="primary chunky" type="button" id="complete-glossary-section">${state.currentIndex === glossary.sections.length - 1 ? "Begin Recall" : "Mark Reviewed and Continue"}</button>
-                    ${renderDevAssessmentRefreshButton()}
+                    ${renderDevAssessmentTools(section.id)}
                     <button type="button" id="pause-attempt">Save and Quit</button>
                   </div>
                   <div class="button-row terminal-actions">
@@ -4285,7 +4630,7 @@ import "../styles/global.css";
         });
         document.querySelector<HTMLButtonElement>("#pause-attempt")?.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
       }
 
       function getLearningSections() {
@@ -4384,7 +4729,7 @@ import "../styles/global.css";
                   <div class="button-row">
                     <button type="button" id="previous-learning-section" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Section</button>
                     <button class="primary chunky" type="button" id="complete-learning-section" ${canComplete ? "" : "disabled"}>${continueLabel}</button>
-                    ${renderDevAssessmentRefreshButton()}
+                    ${renderDevAssessmentTools(section.id)}
                     <button type="button" id="pause-attempt">Save and Quit</button>
                   </div>
                   <div class="button-row terminal-actions">
@@ -4423,7 +4768,7 @@ import "../styles/global.css";
         });
         document.querySelector<HTMLButtonElement>("#pause-attempt")?.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
         if (check) {
           setupChoiceCards(check);
           setupCodeEditor(check);
@@ -4652,7 +4997,7 @@ import "../styles/global.css";
                       <button type="button" id="previous-worked-step" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Step</button>
                       <button class="primary chunky" id="submit-answer" type="submit" ${isReviewingPreviousStep || isLockedFutureStep ? "disabled" : ""}>${result?.isCorrect ? "Continue" : "Check Step"}</button>
                       ${IS_DEV && !result?.isCorrect && !isReviewingPreviousStep && !isLockedFutureStep ? `<button type="button" id="dev-override-step" class="danger-action" title="Force override this step as correct">Override (Dev)</button>` : ""}
-                      ${renderDevAssessmentRefreshButton()}
+                      ${renderDevAssessmentTools(step.id)}
                       <button type="button" id="pause-attempt">Save and Quit</button>
                     </div>
                     <div class="button-row terminal-actions" aria-label="Assessment ending actions">
@@ -4702,7 +5047,7 @@ import "../styles/global.css";
         });
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
         setupChoiceCards(question);
         setupCodeEditor(question);
         setupSymbolicResponseField(question);
@@ -4768,7 +5113,7 @@ import "../styles/global.css";
                 <div class="button-row">
                   <button class="primary chunky" type="button" id="run-guided-project">Run Checks</button>
                   <button type="button" id="save-guided-project">Save Progress</button>
-                  ${renderDevAssessmentRefreshButton()}
+                  ${renderDevAssessmentTools()}
                   <button type="button" id="pause-attempt">Save and Quit</button>
                 </div>
                 <div class="button-row terminal-actions" aria-label="Project ending actions">
@@ -4797,7 +5142,7 @@ import "../styles/global.css";
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#complete-attempt")!.addEventListener("click", completeAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
       }
 
       async function renderDirectedProject() {
@@ -4950,8 +5295,9 @@ import "../styles/global.css";
               </div>
               
               ${projectResourcesHtml}
-              
+
               <div class="assessment-control-bar" style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem;">
+                <div class="button-row">${renderDevAssessmentTools(activeStep?.id ?? null)}</div>
                 <button class="chunky complete-action" type="button" id="complete-attempt" style="width: 100%;">Complete Project</button>
                 <div style="text-align: center;">
                   <button type="button" id="abandon-attempt" style="background: none; border: none; font-size: 0.9rem; padding: 0.5rem; cursor: pointer; color: var(--danger); text-decoration: underline;">Quit Early</button>
@@ -4988,6 +5334,7 @@ import "../styles/global.css";
 
         document.querySelector<HTMLButtonElement>("#complete-attempt")?.addEventListener("click", completeAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
+        setupDevAssessmentTools();
       }
 
       function advanceDirectedProjectStep(project: DirectedProject) {
@@ -5114,7 +5461,7 @@ import "../styles/global.css";
                   <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
                   <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
                   ${!isRevealed ? `<button class="primary chunky" type="button" id="reveal-recall-answer">Reveal Answer</button>` : ""}
-                  ${renderDevAssessmentRefreshButton()}
+                  ${renderDevAssessmentTools(item.id)}
                   <button type="button" id="pause-attempt">Save and Quit</button>
                 </div>
                 <div class="button-row terminal-actions" aria-label="Recall drill ending actions">
@@ -5155,7 +5502,7 @@ import "../styles/global.css";
         });
         document.querySelector<HTMLButtonElement>("#pause-attempt")!.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")!.addEventListener("click", abandonAttempt);
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
       }
 
       function getRecallItems() {
@@ -5470,13 +5817,13 @@ import "../styles/global.css";
             <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>
-          ${renderDevAssessmentRefreshButton()}
+          ${renderDevAssessmentTools()}
         `;
 
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
         document.querySelector<HTMLButtonElement>("#redo-assessment")?.addEventListener("click", redoAssessment);
         document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
         setupSelfCheckButtons();
 
         document.querySelectorAll<HTMLButtonElement>(".override-correct-btn").forEach(btn => {
@@ -5564,9 +5911,9 @@ import "../styles/global.css";
             <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>
-          ${renderDevAssessmentRefreshButton()}
+          ${renderDevAssessmentTools()}
         `;
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
         document.querySelector<HTMLButtonElement>("#redo-assessment")?.addEventListener("click", redoAssessment);
         document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
       }
@@ -5627,10 +5974,10 @@ import "../styles/global.css";
             <button type="button" class="chunky" id="redo-assessment">Redo Assessment</button>
             <button type="button" class="chunky" id="close-assessment">Close Assessment</button>
           </div>
-          ${renderDevAssessmentRefreshButton()}
+          ${renderDevAssessmentTools()}
         `;
 
-        setupDevAssessmentRefresh();
+        setupDevAssessmentTools();
         document.querySelector<HTMLButtonElement>("#commit-grade")?.addEventListener("click", commitGrade);
         document.querySelector<HTMLButtonElement>("#redo-assessment")?.addEventListener("click", redoAssessment);
         document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
@@ -6771,17 +7118,23 @@ import "../styles/global.css";
         return assessment.questions.map((question) => question.id);
       }
 
-      function renderDevAssessmentRefreshButton() {
+      function renderDevAssessmentTools(contextId: string | null = null) {
         return IS_DEV
-          ? `<button type="button" data-refresh-current-assessment title="Reload the current assessment YAML without ending this session">Refresh Assessment</button>`
+          ? `
+              <button type="button" data-refresh-current-assessment title="Reload the current assessment YAML without ending this session">Refresh Assessment</button>
+              <button type="button" data-report-current-assessment data-report-context-id="${escapeHtml(contextId ?? "")}">Report This Assessment</button>
+            `
           : "";
       }
 
-      function setupDevAssessmentRefresh() {
+      function setupDevAssessmentTools() {
         if (!IS_DEV) return;
 
         document.querySelectorAll<HTMLButtonElement>("[data-refresh-current-assessment]").forEach((button) => {
           button.addEventListener("click", refreshCurrentAssessment);
+        });
+        document.querySelectorAll<HTMLButtonElement>("[data-report-current-assessment]").forEach((button) => {
+          button.addEventListener("click", () => openAssessmentReportDialog(button.dataset.reportContextId || null));
         });
       }
 

@@ -2,6 +2,17 @@
 
 Use this reference whenever creating or editing assessment YAML that contains LaTeX.
 
+## Classification Contract
+
+Every assessment has one authoritative placement:
+
+```yaml
+categoryId: calculus-2
+topicId: convergence-tests
+```
+
+`topicId` must be a non-empty scalar declared by that category and mapped to exactly one same-category area in `data/areas.yaml`. Do not use `subcategoryId`, `subcategoryIds`, or multiple topics. `skills` and `navigation.tags` are searchable attribution only and cannot place an assessment in additional topics or areas. Create a dedicated review/capstone topic for genuinely cumulative content.
+
 ## Core Rule
 
 Do not put LaTeX backslashes inside double-quoted YAML strings.

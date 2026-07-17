@@ -16,7 +16,7 @@ def generate_ch4():
         "title": "Circuit Analysis: Node-Voltage and Mesh-Current",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "workedExamples": [
             {
                 "id": "l1-sec1",
@@ -39,7 +39,7 @@ def generate_ch4():
         "title": "Circuit Analysis: Source Transformations & Equivalents",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "workedExamples": [
             {
                 "id": "l2-sec1",
@@ -67,7 +67,7 @@ def generate_ch4():
         "title": "Circuit Analysis: Superposition and Maximum Power",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "workedExamples": [
             {
                 "id": "l3-sec1",
@@ -90,7 +90,7 @@ def generate_ch4():
         "title": "Worked Example: Node-Voltage Analysis",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "workedExamples": [
             {
                 "id": "we1",
@@ -120,7 +120,7 @@ def generate_ch4():
         "title": "Techniques of Circuit Analysis Glossary",
         "assessmentType": "glossary",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "glossary": [
             {
                 "term": "Node-Voltage Method",
@@ -161,7 +161,7 @@ def generate_ch4():
         "title": "Techniques of Circuit Analysis Recall Drill",
         "assessmentType": "recallDrill",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "items": [
             {
                 "id": "rd1",
@@ -213,7 +213,7 @@ def generate_ch4():
         "title": "Techniques of Circuit Analysis Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "modeDefault": "practice",
         "questions": quiz_questions
     }
@@ -238,7 +238,7 @@ def generate_ch4():
         "title": "Techniques of Circuit Analysis Math Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "modeDefault": "practice",
         "questions": math_quiz_questions
     }
@@ -265,7 +265,7 @@ def generate_ch4():
         "title": "Techniques of Circuit Analysis Test",
         "assessmentType": "test",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "attemptQuestionCount": 15,
         "questions": test_questions
     }
@@ -278,7 +278,7 @@ def generate_ch4():
         "title": "Circuit Analysis Topology Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-techniques-analysis"],
+        "topicId": "ec-techniques-analysis",
         "modeDefault": "practice",
         "questions": [
             {

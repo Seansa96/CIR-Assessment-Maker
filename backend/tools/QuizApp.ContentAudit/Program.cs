@@ -59,20 +59,11 @@ public static class Program
                             || Path.GetFileName(path).EndsWith("-worked-example.yaml", StringComparison.OrdinalIgnoreCase)
                             || Path.GetFileName(path).EndsWith("-quiz.yaml", StringComparison.OrdinalIgnoreCase)))
                     {
-                        var name = Path.GetFileName(path);
                         var banned = new[] { "This scenario mirrors", "An original .* problem variant", "The purpose is to test method selection", "This concept lesson introduces" };
                         foreach (var pattern in banned.Where(pattern => Regex.IsMatch(content, pattern, RegexOptions.IgnoreCase)))
                         {
                             Console.WriteLine($"[ERROR] [AOPS_TEMPLATE_PHRASE] {path}: contains banned template phrase '{pattern}'.");
                             errors++;
-                        }
-                        if (name.EndsWith("-quiz.yaml", StringComparison.OrdinalIgnoreCase) && Regex.Matches(content, @"(?m)^- id: q\d{3}$").Count < 15)
-                        {
-                            Console.WriteLine($"[ERROR] [AOPS_QUIZ_LENGTH] {path}: AoPS quizzes require at least 15 questions."); errors++;
-                        }
-                        if (name.EndsWith("-worked-example.yaml", StringComparison.OrdinalIgnoreCase) && Regex.Matches(content, @"(?m)^- id: aops-.*-problem-[123]$").Count < 3)
-                        {
-                            Console.WriteLine($"[ERROR] [AOPS_WORKED_PROBLEMS] {path}: AoPS worked examples require three problems."); errors++;
                         }
                     }
                     var inspection = sourceInspector.Inspect(content, Path.GetExtension(path), path);
@@ -94,6 +85,23 @@ public static class Program
                         continue;
                     }
 
+                    if (string.Equals(dto.CategoryId, "art-of-problem-solving", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (string.Equals(dto.AssessmentType, "quiz", StringComparison.OrdinalIgnoreCase)
+                            && (dto.Questions?.Count ?? 0) < 15)
+                        {
+                            Console.WriteLine($"[ERROR] [AOPS_QUIZ_LENGTH] {path}: AoPS quizzes require at least 15 questions.");
+                            errors++;
+                        }
+
+                        if (string.Equals(dto.AssessmentType, "workedExample", StringComparison.OrdinalIgnoreCase)
+                            && (dto.WorkedExamples?.Count ?? 0) < 3)
+                        {
+                            Console.WriteLine($"[ERROR] [AOPS_WORKED_PROBLEMS] {path}: AoPS worked examples require three problems.");
+                            errors++;
+                        }
+                    }
+
                     var domain = dto.ToDomain();
                     if (auditByCategory.TryGetValue(domain.CategoryId, out var categoryAudit))
                     {
@@ -105,7 +113,7 @@ public static class Program
                         else
                         {
                             if (!navigation.Tags.Contains(domain.CategoryId, StringComparer.OrdinalIgnoreCase)) { categoryAudit.CategoryTagGaps++; errors++; Console.WriteLine($"[ERROR] [CATEGORY_TAG_GAP] {path}: Tags must include '{domain.CategoryId}'."); }
-                            if (domain.SubcategoryIds.Any(topic => !navigation.Tags.Contains(topic, StringComparer.OrdinalIgnoreCase))) { categoryAudit.TopicTagGaps++; errors++; Console.WriteLine($"[ERROR] [TOPIC_TAG_GAP] {path}: Tags must include every assigned topic ID."); }
+                            if (!navigation.Tags.Contains(domain.TopicId, StringComparer.OrdinalIgnoreCase)) { categoryAudit.TopicTagGaps++; errors++; Console.WriteLine($"[ERROR] [TOPIC_TAG_GAP] {path}: Tags must include the singular topicId '{domain.TopicId}'."); }
                         }
                     }
 

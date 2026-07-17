@@ -24,7 +24,7 @@ public sealed record AssessmentCatalogImportSummary(
 
 public sealed class SqliteAssessmentCatalogImporter
 {
-    private const string PipelineVersion = "v3"; // Phase 7: Add pipeline version invalidation
+    private const string PipelineVersion = "v4-single-topic";
 
     private readonly SqliteRetentionOptions retentionOptions;
     private readonly FileStorageOptions storageOptions;
@@ -118,7 +118,6 @@ public sealed class SqliteAssessmentCatalogImporter
             }
 
             var areasBySubcategory = BuildSubcategoryToAreaIndex(areas);
-            var areasByCategory = BuildCategoryToAreaIndex(areas);
 
             var files = EnumerateAssessmentFiles().ToList();
             totalFiles = files.Count;
@@ -132,7 +131,7 @@ public sealed class SqliteAssessmentCatalogImporter
             {
                 try
                 {
-                    var outcome = await ImportFileAsync(connection, runId, path, categories, areas, areasBySubcategory, areasByCategory, seenIds, forceFullReimport, cancellationToken);
+                    var outcome = await ImportFileAsync(connection, runId, path, categories, areas, areasBySubcategory, seenIds, forceFullReimport, cancellationToken);
                     switch (outcome)
                     {
                         case CatalogImportOutcome.SkippedUnchanged:
@@ -228,11 +227,10 @@ public sealed class SqliteAssessmentCatalogImporter
             var nav = NavigationInference.Infer(assessment);
             var resolvedAreas = ResolveAreas(
                 assessment,
-                BuildSubcategoryToAreaIndex(areas),
-                BuildCategoryToAreaIndex(areas));
+                BuildSubcategoryToAreaIndex(areas));
             var subjectTitle = categories.FirstOrDefault(c => c.Id == assessment.CategoryId)?.Title ?? string.Empty;
             var areaTitles = areas.Where(a => resolvedAreas.Contains(a.Id)).Select(a => a.Title).ToList();
-            var topicTitles = categories.SelectMany(c => c.Subcategories).Where(s => assessment.SubcategoryIds.Contains(s.Id)).Select(s => s.Title).ToList();
+            var topicTitles = categories.SelectMany(c => c.Subcategories).Where(s => string.Equals(s.Id, assessment.TopicId, StringComparison.OrdinalIgnoreCase)).Select(s => s.Title).ToList();
 
             await using var connection = new SqliteConnectionFactory(retentionOptions).CreateConnection();
             await connection.OpenAsync(cancellationToken);
@@ -269,7 +267,6 @@ public sealed class SqliteAssessmentCatalogImporter
         IReadOnlyList<Category> categories,
         IReadOnlyList<AreaDefinition> areas,
         Dictionary<string, List<string>> areasBySubcategory,
-        Dictionary<string, List<string>> areasByCategory,
         HashSet<string> seenIds,
         bool forceFullReimport,
         CancellationToken cancellationToken)
@@ -295,10 +292,10 @@ public sealed class SqliteAssessmentCatalogImporter
             if (existingDomain is not null)
             {
                 var reindexNav = NavigationInference.Infer(existingDomain);
-                var reindexResolvedAreas = ResolveAreas(existingDomain, areasBySubcategory, areasByCategory);
+                var reindexResolvedAreas = ResolveAreas(existingDomain, areasBySubcategory);
                 var reindexSubjectTitle = categories.FirstOrDefault(c => c.Id == existingDomain.CategoryId)?.Title ?? string.Empty;
                 var reindexAreaTitles = areas.Where(a => reindexResolvedAreas.Contains(a.Id)).Select(a => a.Title).ToList();
-                var reindexTopicTitles = categories.SelectMany(c => c.Subcategories).Where(s => existingDomain.SubcategoryIds.Contains(s.Id)).Select(s => s.Title).ToList();
+                var reindexTopicTitles = categories.SelectMany(c => c.Subcategories).Where(s => string.Equals(s.Id, existingDomain.TopicId, StringComparison.OrdinalIgnoreCase)).Select(s => s.Title).ToList();
                 var reindexNow = DateTimeOffset.UtcNow.ToString("O");
 
                 seenIds.Add(existingDomain.Id);
@@ -380,10 +377,10 @@ public sealed class SqliteAssessmentCatalogImporter
 
         var nav = NavigationInference.Infer(domain);
 
-        var resolvedAreas = ResolveAreas(domain, areasBySubcategory, areasByCategory);
+        var resolvedAreas = ResolveAreas(domain, areasBySubcategory);
         var subjectTitle = categories.FirstOrDefault(c => c.Id == domain.CategoryId)?.Title ?? string.Empty;
         var areaTitles = areas.Where(a => resolvedAreas.Contains(a.Id)).Select(a => a.Title).ToList();
-        var topicTitles = categories.SelectMany(c => c.Subcategories).Where(s => domain.SubcategoryIds.Contains(s.Id)).Select(s => s.Title).ToList();
+        var topicTitles = categories.SelectMany(c => c.Subcategories).Where(s => string.Equals(s.Id, domain.TopicId, StringComparison.OrdinalIgnoreCase)).Select(s => s.Title).ToList();
         
         var definitionJson = JsonSerializer.Serialize(domain, JsonOptions);
         var now = DateTimeOffset.UtcNow.ToString("O");
@@ -396,27 +393,14 @@ public sealed class SqliteAssessmentCatalogImporter
 
     private static List<string> ResolveAreas(
         AssessmentDefinition domain,
-        Dictionary<string, List<string>> areasBySubcategory,
-        Dictionary<string, List<string>> areasByCategory)
+        Dictionary<string, List<string>> areasBySubcategory)
     {
-        var areaIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (areasBySubcategory.TryGetValue(domain.TopicId, out var matchedAreas) && matchedAreas.Count == 1)
+            return [matchedAreas[0]];
 
-        // Primary: resolve through subcategories
-        foreach (var subId in domain.SubcategoryIds)
-        {
-            if (areasBySubcategory.TryGetValue(subId, out var matchedAreas))
-                foreach (var a in matchedAreas) areaIds.Add(a);
-        }
-
-        // Fallback: category-level area membership (only when area has no subcategories or no subcategory matched)
-        if (areaIds.Count == 0 && areasByCategory.TryGetValue(domain.CategoryId, out var catAreas))
-            foreach (var a in catAreas) areaIds.Add(a);
-
-        // If still none, add to synthetic unmapped area
-        if (areaIds.Count == 0)
-            areaIds.Add("other-unmapped");
-
-        return areaIds.ToList();
+        // Invalid or ambiguous taxonomy is rejected before import. Keep this
+        // sentinel only for defensive compatibility with stale database rows.
+        return ["other-unmapped"];
     }
 
     private static async Task UpsertAssessmentAsync(
@@ -485,7 +469,7 @@ public sealed class SqliteAssessmentCatalogImporter
 
         // Replace subcategory rows
         await DeleteAndInsertRelationsAsync(connection, tx, domain.Id, "assessment_subcategories", "subcategory_id",
-            domain.SubcategoryIds, cancellationToken);
+            [domain.TopicId], cancellationToken);
 
         // Replace area rows
         await DeleteAndInsertRelationsAsync(connection, tx, domain.Id, "assessment_areas", "area_id",
@@ -801,19 +785,6 @@ public sealed class SqliteAssessmentCatalogImporter
             {
                 if (!index.TryGetValue(sub, out var list))
                     index[sub] = list = new List<string>();
-                list.Add(area.Id);
-            }
-        return index;
-    }
-
-    private static Dictionary<string, List<string>> BuildCategoryToAreaIndex(IReadOnlyList<AreaDefinition> areas)
-    {
-        var index = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-        foreach (var area in areas.Where(candidate => candidate.SubcategoryIds.Count == 0))
-            foreach (var cat in area.CategoryIds)
-            {
-                if (!index.TryGetValue(cat, out var list))
-                    index[cat] = list = new List<string>();
                 list.Add(area.Id);
             }
         return index;

@@ -3,6 +3,11 @@ import yaml
 
 out_dir = r"c:\Users\SeanS\Downloads\cir_app\data\assessments"
 
+def single_topic(topic_ids):
+    if len(topic_ids) != 1:
+        raise ValueError("Assessment generators require exactly one topicId; create a review topic for cumulative content.")
+    return topic_ids[0]
+
 def write_yaml(filename, data):
     path = os.path.join(out_dir, filename)
     with open(path, 'w', encoding='utf-8') as f:
@@ -19,7 +24,7 @@ def gen_ch(ch_num, subcat_id, title, math_problem, math_explanation):
         "title": f"{title} - Concepts Part 1",
         "assessmentType": "workedExample",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "workedExamples": [{
             "id": "l1-main",
             "title": f"{title} Fundamentals",
@@ -43,7 +48,7 @@ def gen_ch(ch_num, subcat_id, title, math_problem, math_explanation):
         "title": f"{title} - Concepts Part 2",
         "assessmentType": "workedExample",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "workedExamples": [{
             "id": "l2-main",
             "title": f"Advanced {title}",
@@ -67,7 +72,7 @@ def gen_ch(ch_num, subcat_id, title, math_problem, math_explanation):
         "title": f"{title} Worked Example",
         "assessmentType": "workedExample",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "workedExamples": [{
             "id": "we-main",
             "title": "Problem Solving",
@@ -91,7 +96,7 @@ def gen_ch(ch_num, subcat_id, title, math_problem, math_explanation):
         "title": f"{title} Recall Drill",
         "assessmentType": "recallDrill",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "items": [{
             "id": "rd1",
             "type": "typed",
@@ -108,7 +113,7 @@ def gen_ch(ch_num, subcat_id, title, math_problem, math_explanation):
         "title": f"{title} Glossary",
         "assessmentType": "glossary",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "glossary": {
             "introduction": "Review terms.",
             "sections": [{
@@ -142,7 +147,7 @@ def gen_ch(ch_num, subcat_id, title, math_problem, math_explanation):
         "title": f"{title} Quiz",
         "assessmentType": "quiz",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "modeDefault": "practice",
         "questions": q_items
     }
@@ -164,7 +169,7 @@ def gen_ch(ch_num, subcat_id, title, math_problem, math_explanation):
         "title": f"{title} Test",
         "assessmentType": "test",
         "categoryId": cat,
-        "subcategoryIds": sub,
+        "topicId": single_topic(sub),
         "attemptQuestionCount": 15,
         "questions": t_items
     }

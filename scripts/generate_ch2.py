@@ -16,7 +16,7 @@ def generate_ch2():
         "title": "Circuit Elements: Voltage and Current Sources",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "workedExamples": [
             {
                 "id": "l1-sec1",
@@ -44,7 +44,7 @@ def generate_ch2():
         "title": "Circuit Elements: Resistance and Ohm's Law",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "workedExamples": [
             {
                 "id": "l2-sec1",
@@ -72,7 +72,7 @@ def generate_ch2():
         "title": "Circuit Elements: Kirchhoff's Laws",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "workedExamples": [
             {
                 "id": "l3-sec1",
@@ -100,7 +100,7 @@ def generate_ch2():
         "title": "Circuit Elements Glossary",
         "assessmentType": "glossary",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "glossary": [
             {
                 "term": "Ideal Voltage Source",
@@ -145,7 +145,7 @@ def generate_ch2():
         "title": "Circuit Elements Recall Drill",
         "assessmentType": "recallDrill",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "items": [
             {
                 "id": "rd1",
@@ -198,7 +198,7 @@ def generate_ch2():
         "title": "Circuit Elements Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "modeDefault": "practice",
         "questions": quiz_questions
     }
@@ -225,7 +225,7 @@ def generate_ch2():
         "title": "Circuit Elements Test",
         "assessmentType": "test",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "attemptQuestionCount": 15,
         "questions": test_questions
     }
@@ -238,7 +238,7 @@ def generate_ch2():
         "title": "Circuit Elements Topology Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-elements"],
+        "topicId": "ec-circuit-elements",
         "modeDefault": "practice",
         "questions": [
             {

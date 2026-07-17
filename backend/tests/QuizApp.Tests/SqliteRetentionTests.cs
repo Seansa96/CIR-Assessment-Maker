@@ -81,6 +81,94 @@ public sealed class SqliteRetentionTests
     }
 
     [Fact]
+    public async Task Assessment_report_repository_round_trips_status_and_survives_attempt_deletion()
+    {
+        var options = CreateOptions();
+        var attempts = new SqliteAttemptRepository(options);
+        var reports = new SqliteAssessmentReportRepository(options);
+        var attempt = SampleAttempt("report-attempt", AttemptStatus.Completed);
+        var createdAt = DateTimeOffset.UtcNow.AddMinutes(-5);
+        var report = new AssessmentReportEntry(
+            "report-1",
+            attempt.AssessmentId,
+            "Assessment title snapshot",
+            attempt.Id,
+            "q002",
+            AssessmentReportKind.Bug,
+            "The explanation and answer disagree.",
+            AssessmentReportStatus.Open,
+            createdAt,
+            null);
+        await attempts.SaveAsync(attempt);
+
+        await reports.AddAsync(report);
+
+        var stored = Assert.Single(await reports.ListAsync());
+        Assert.Equal(report, stored);
+
+        var resolvedAt = DateTimeOffset.UtcNow;
+        var resolved = await reports.SetStatusAsync(report.Id, AssessmentReportStatus.Resolved, resolvedAt);
+        Assert.NotNull(resolved);
+        Assert.Equal(AssessmentReportStatus.Resolved, resolved.Status);
+        Assert.Equal(resolvedAt.ToString("O"), resolved.ResolvedAt?.ToString("O"));
+
+        var reopened = await reports.SetStatusAsync(report.Id, AssessmentReportStatus.Open, null);
+        Assert.NotNull(reopened);
+        Assert.Equal(AssessmentReportStatus.Open, reopened.Status);
+        Assert.Null(reopened.ResolvedAt);
+
+        await attempts.DeleteAsync(attempt.Id);
+
+        Assert.NotNull(await reports.GetByIdAsync(report.Id));
+    }
+
+    [Fact]
+    public async Task Retention_initializer_creates_assessment_report_table_and_indexes_additively()
+    {
+        var options = CreateOptions();
+        var initializer = new SqliteRetentionInitializer(options);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(options.DatabasePath)!);
+        await using (var existingConnection = new SqliteConnectionFactory(options).CreateConnection())
+        {
+            await existingConnection.OpenAsync();
+            await using var existingCommand = existingConnection.CreateCommand();
+            existingCommand.CommandText = "CREATE TABLE existing_retention_data (id TEXT PRIMARY KEY); INSERT INTO existing_retention_data (id) VALUES ('preserved');";
+            await existingCommand.ExecuteNonQueryAsync();
+        }
+
+        await initializer.InitializeAsync();
+        await initializer.InitializeAsync();
+
+        await using var connection = new SqliteConnectionFactory(options).CreateConnection();
+        await connection.OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT name
+            FROM sqlite_master
+            WHERE (type = 'table' AND name = 'assessment_reports')
+               OR (type = 'index' AND name LIKE 'idx_assessment_reports_%')
+            ORDER BY name;
+            """;
+        var names = new List<string>();
+        await using var reader = await command.ExecuteReaderAsync();
+        while (await reader.ReadAsync())
+        {
+            names.Add(reader.GetString(0));
+        }
+
+        Assert.Contains("assessment_reports", names);
+        Assert.Contains("idx_assessment_reports_assessment", names);
+        Assert.Contains("idx_assessment_reports_status", names);
+        Assert.Contains("idx_assessment_reports_kind", names);
+        Assert.Contains("idx_assessment_reports_created", names);
+
+        await reader.DisposeAsync();
+        command.CommandText = "SELECT id FROM existing_retention_data;";
+        Assert.Equal("preserved", await command.ExecuteScalarAsync());
+    }
+
+    [Fact]
     public async Task Legacy_migration_imports_attempts_and_grades_once()
     {
         var dataRoot = CreateDataRoot();

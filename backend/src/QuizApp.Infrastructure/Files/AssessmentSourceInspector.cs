@@ -54,8 +54,14 @@ public class AssessmentSourceInspector : IAssessmentSourceInspector
                 if (key == "subcategoryId")
                 {
                     AddDiagnostic(diagnostics, "LEGACY_SUBCATEGORY_ID", 
-                        "Top-level 'subcategoryId' is unsupported. Use 'subcategoryIds'.", 
-                        sourcePath, keyNode, key, "subcategoryIds");
+                        "Top-level 'subcategoryId' is unsupported. Use singular 'topicId'.", 
+                        sourcePath, keyNode, key, "topicId");
+                }
+                else if (key == "subcategoryIds")
+                {
+                    AddDiagnostic(diagnostics, "LEGACY_SUBCATEGORY_IDS", 
+                        "Top-level 'subcategoryIds' is unsupported. Every assessment must use exactly one singular 'topicId'.", 
+                        sourcePath, keyNode, key, "topicId");
                 }
                 else if (key == "learningGoal")
                 {

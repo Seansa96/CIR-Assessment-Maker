@@ -39,7 +39,7 @@ public sealed class AssessmentFileDto
     public string? Title { get; set; }
     public string? AssessmentType { get; set; }
     public string? CategoryId { get; set; }
-    public List<string>? SubcategoryIds { get; set; }
+    public string? TopicId { get; set; }
     public string? ModeDefault { get; set; }
     public bool? RandomizeQuestions { get; set; }
     public int? AttemptQuestionCount { get; set; }

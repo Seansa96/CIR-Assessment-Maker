@@ -6,8 +6,7 @@ id: chemistry-measurements-sig-figs-concept-lesson
 title: "Significant Figures in Measurements"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-measurements
+topicId: chemistry-measurements
 modeDefault: study
 lesson:
   introduction: "In science, a measurement is only as accurate as the instrument used to make it. Significant figures communicate the precision of a measurement."
@@ -52,8 +51,7 @@ id: chemistry-measurements-sig-figs-worked-example
 title: "Calculations with Significant Figures"
 type: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-measurements
+topicId: chemistry-measurements
 modeDefault: study
 workedExamples:
   - id: we-sig-fig-calc
@@ -93,8 +91,7 @@ id: chemistry-units-dimensional-analysis-worked-example
 title: "Dimensional Analysis and Conversions"
 type: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-units
+topicId: chemistry-units
 modeDefault: study
 workedExamples:
   - id: we-dim-analysis
@@ -132,8 +129,7 @@ id: chemistry-matter-classification-recall
 title: "Classification of Matter"
 type: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-matter
+topicId: chemistry-matter
 modeDefault: practice
 items:
   - id: matter-element
@@ -172,8 +168,7 @@ id: chemistry-gases-ideal-gas-law-worked-example
 title: "Ideal Gas Law Applications"
 type: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-gases
+topicId: chemistry-gases
 modeDefault: study
 workedExamples:
   - id: we-ideal-gas
@@ -231,8 +226,7 @@ id: chemistry-thermochemistry-enthalpy-concept-lesson
 title: "Enthalpy and Heat of Reaction"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-thermochemistry
+topicId: chemistry-thermochemistry
 modeDefault: study
 lesson:
   introduction: "Thermochemistry studies the heat absorbed or released during chemical and physical changes. Central to this is Enthalpy ($H$)."

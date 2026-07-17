@@ -1,0 +1,196 @@
+schemaVersion: 1
+id: aops-triangles-centers-trig-area-concept-lesson
+title: 'Triangles III: Centers, Trigonometry, and Area'
+description: Connect triangle loci, cevian concurrency, right-triangle ratios, and complementary area formulas through theorem-driven selection.
+assessmentType: conceptLesson
+categoryId: art-of-problem-solving
+topicId: aops-triangles
+modeDefault: learn
+randomizeQuestions: false
+skills:
+- Match triangle centers to their defining cevians and locus properties
+- Use centroid ratios and center-location facts
+- Select sine, cosine, or tangent from known side roles
+- Choose and verify an appropriate triangle area formula
+- Derive the inradius-area relation and apply Heron formula
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - art-of-problem-solving
+  - aops-triangles
+  - geometry
+  - triangle-centers
+  - right-triangle-trigonometry
+  - triangle-area
+lesson:
+  introduction: |
+    Triangle centers, trigonometric ratios, and area formulas are often taught as separate lists. They become easier to select when each is tied to the structure that creates it. A center is the intersection of a particular family of cevians and solves a distance problem. A trigonometric ratio compares side roles relative to a chosen acute angle. An area formula packages exactly the measurements supplied by the problem. This lesson emphasizes those selection cues and the proof obligations behind them.
+  sections:
+  - id: aops-triangles-cevians-loci
+    title: Cevians and locus questions
+    required: true
+    content: |
+      A cevian is a segment from a triangle vertex to a point on the opposite side or its extension. Medians, internal angle bisectors, and altitudes are special cevians. A perpendicular bisector is different: it is attached to a side and need not pass through a vertex. Each classical center arises because three related lines are concurrent.
+
+      The cleanest concurrency arguments use loci. A point equidistant from the endpoints of a segment lies on its perpendicular bisector. A point inside an angle and equidistant from its sides lies on the internal angle bisector. If the intersection of two such lines satisfies the condition for the third, concurrency follows instead of being assumed from the drawing.
+    media:
+    - type: image
+      src: /assessments/aops/aops-triangles-four-centers.svg
+      alt: Four panels compare angle bisectors, perpendicular bisectors, medians, and altitudes in triangles.
+      caption: The line family—not the center's visual location—determines which center is present.
+    check:
+      id: aops-triangles-cevians-loci-check
+      type: multipleChoice
+      prompt: Which line is generally not a cevian because it need not pass through a vertex?
+      choices:
+      - {id: a, text: Median}
+      - {id: b, text: Internal angle bisector}
+      - {id: c, text: Altitude}
+      - {id: d, text: Perpendicular bisector of a side}
+      answer: {choiceId: d}
+      explanation: A perpendicular bisector is defined from a side's midpoint and perpendicular direction, not from a triangle vertex.
+  - id: aops-triangles-incenter-circumcenter
+    title: Incenter and circumcenter as distance solvers
+    required: true
+    content: |
+      The internal angle bisectors meet at the incenter $I$. Because $I$ is equidistant from all three side lines, a circle centered at $I$ with that common perpendicular distance as radius is tangent to every side. The incenter lies inside every nondegenerate triangle.
+
+      The perpendicular bisectors of the sides meet at the circumcenter $O$. Because $O$ is equidistant from all three vertices, the circle centered at $O$ through one vertex passes through all three. Its location depends on triangle type: inside for acute, at the hypotenuse midpoint for right, and outside for obtuse triangles. Do not interchange “equidistant from sides” with “equidistant from vertices.”
+    media:
+    - type: image
+      src: /assessments/aops/aops-triangles-four-centers.svg
+      alt: Incenter panel with incircle tangent to three sides and circumcenter panel with equal radii to three vertices.
+      caption: Incenter distances are perpendicular to sides; circumcenter distances run to vertices.
+    check:
+      id: aops-triangles-incenter-circumcenter-check
+      type: multipleChoice
+      prompt: A point is equidistant from all three vertices of a triangle. Which center must it be?
+      choices:
+      - {id: a, text: Incenter}
+      - {id: b, text: Circumcenter}
+      - {id: c, text: Centroid}
+      - {id: d, text: Orthocenter}
+      answer: {choiceId: b}
+      explanation: Equal distances to vertices place the point on all three perpendicular bisectors, whose intersection is the circumcenter.
+  - id: aops-triangles-centroid-orthocenter
+    title: Centroid ratios and orthocenter locations
+    required: true
+    content: |
+      The medians meet at the centroid $G$, the balance point of a uniform triangular region. Along every median, $G$ divides the segment in a $2:1$ ratio measured from the vertex toward the midpoint. Thus a median of length 18 has vertex-to-centroid length 12 and centroid-to-midpoint length 6. Each median also divides the triangle into two equal-area triangles because the two bases are equal and share an altitude.
+
+      The altitudes meet at the orthocenter $H$. An altitude is perpendicular to the opposite side line, so in an obtuse triangle some altitude segments must be extended outside the triangle. The orthocenter is inside an acute triangle, at the right-angle vertex of a right triangle, and outside an obtuse triangle. These location facts are checks, not definitions.
+    media:
+    - type: image
+      src: /assessments/aops/aops-triangles-four-centers.svg
+      alt: Centroid panel with three medians meeting at G and orthocenter panel with three altitudes meeting at H.
+      caption: Medians use midpoints and a 2-to-1 ratio; altitudes use perpendicularity.
+    check:
+      id: aops-triangles-centroid-orthocenter-check
+      type: multipleChoice
+      prompt: A median has length 21. How far is the centroid from the vertex on that median?
+      choices:
+      - {id: a, text: '$7$'}
+      - {id: b, text: '$10.5$'}
+      - {id: c, text: '$14$'}
+      - {id: d, text: '$18$'}
+      answer: {choiceId: c}
+      explanation: The vertex-to-centroid portion is two thirds of the median, so it is $(2/3)(21)=14$.
+  - id: aops-triangles-trig-ratios
+    title: Right-triangle trigonometry as side-role language
+    required: true
+    content: |
+      Relative to a chosen acute angle $\theta$, the hypotenuse is opposite the right angle, the opposite leg lies across from $\theta$, and the adjacent leg touches $\theta$. The primary ratios are
+
+      $$\sin\theta=\frac{\text{opposite}}{\text{hypotenuse}},\qquad
+      \cos\theta=\frac{\text{adjacent}}{\text{hypotenuse}},\qquad
+      \tan\theta=\frac{\text{opposite}}{\text{adjacent}}.$$
+
+      Choose the ratio containing the known and requested side roles. The same physical leg can be opposite one acute angle and adjacent to the other, so label roles only after the reference angle is fixed. Similarity proves that these ratios depend on the angle rather than the overall triangle size.
+    media:
+    - type: image
+      src: /assessments/aops/aops-triangles-trigonometry.svg
+      alt: Right triangle labeling the opposite side, adjacent side, and hypotenuse relative to angle theta.
+      caption: Opposite and adjacent depend on theta; hypotenuse does not.
+    check:
+      id: aops-triangles-trig-ratios-check
+      type: multipleChoice
+      prompt: Relative to $\theta$, the opposite leg is 9 and adjacent leg is 12. Which ratio directly uses exactly those two known sides?
+      choices:
+      - {id: a, text: '$\sin\theta=9/12$'}
+      - {id: b, text: '$\cos\theta=9/12$'}
+      - {id: c, text: '$\tan\theta=9/12$'}
+      - {id: d, text: '$\tan\theta=12/9$'}
+      answer: {choiceId: c}
+      explanation: Tangent is opposite divided by adjacent, so $\tan\theta=9/12=3/4$.
+  - id: aops-triangles-base-sine-area
+    title: Area from a perpendicular height or an included angle
+    required: true
+    content: |
+      The universal base-height formula is $K=\tfrac12 bh$, where $h$ is perpendicular distance to the chosen base line. A labeled side is not automatically a height; perpendicularity must be marked or proved. Any side can serve as base if the matching altitude is used.
+
+      When two sides $a,b$ and their included angle $C$ are known, drop an altitude. Its length is $a\sin C$ relative to side $b$, giving $K=\tfrac12 ab\sin C$. The included-angle requirement matters. Using a nonincluded angle with the same two sides generally gives the wrong altitude. Since $0<\sin C\le1$ for an interior angle, this formula also gives the bound $K\le ab/2$.
+    media:
+    - type: image
+      src: /assessments/aops/aops-triangles-area-methods.svg
+      alt: Panels show a triangle with base and perpendicular height and a triangle with two sides surrounding included angle C.
+      caption: Choose the area formula whose marked measurements match its inputs.
+    check:
+      id: aops-triangles-base-sine-area-check
+      type: multipleChoice
+      prompt: A triangle has sides 8 and 11 enclosing a $30^\circ$ angle. What is its area?
+      choices:
+      - {id: a, text: '$22$'}
+      - {id: b, text: '$44$'}
+      - {id: c, text: '$76$'}
+      - {id: d, text: '$88$'}
+      answer: {choiceId: a}
+      explanation: $K=\tfrac12(8)(11)\sin30^\circ=44(1/2)=22$.
+  - id: aops-triangles-heron-inradius
+    title: Area from three sides or an incircle
+    required: true
+    content: |
+      If all three side lengths are known but no altitude or angle is convenient, first test triangle inequality, then use Heron formula
+
+      $$K=\sqrt{s(s-a)(s-b)(s-c)},\qquad s=\frac{a+b+c}{2}.$$
+
+      Each factor must be nonnegative for a real nondegenerate triangle, so Heron formula does not replace the existence check. If the inradius $r$ is known, join the incenter to the vertices. The triangle splits into three smaller triangles, each with height $r$ and bases $a,b,c$. Their areas sum to $K=\tfrac12r(a+b+c)=rs$. This is a derivation, not an unrelated formula to memorize.
+    media:
+    - type: image
+      src: /assessments/aops/aops-triangles-area-methods.svg
+      alt: Triangle with side labels a, b, c and an incircle whose radius r is perpendicular to a side.
+      caption: Equal perpendicular distances from the incenter turn three base-height areas into K equals rs.
+    check:
+      id: aops-triangles-heron-inradius-check
+      type: multipleChoice
+      prompt: A triangle has area 42 and semiperimeter 14. What is its inradius?
+      choices:
+      - {id: a, text: '$2$'}
+      - {id: b, text: '$3$'}
+      - {id: c, text: '$6$'}
+      - {id: d, text: '$28$'}
+      answer: {choiceId: b}
+      explanation: From $K=rs$, $r=K/s=42/14=3$.
+  - id: aops-triangles-area-selection
+    title: Selection, bounds, and independent verification
+    required: true
+    content: |
+      Select by data rather than by familiarity. Use $\tfrac12bh$ for a base and perpendicular height, $\tfrac12ab\sin C$ for two sides and their included angle, Heron for three sides, and $rs$ for inradius plus semiperimeter. A right triangle offers an independent check because its legs are perpendicular and can be used as base and height.
+
+      Verify dimensions and bounds. Area uses square units and must be positive. It cannot exceed $ab/2$ when computed from sides $a,b$. For Heron data, each side must be shorter than the other two combined. For $K=rs$, $s$ is semiperimeter, not full perimeter. When two methods are available, agreement is stronger evidence than repeating the same calculation.
+    media:
+    - type: image
+      src: /assessments/aops/aops-triangles-area-methods.svg
+      alt: Side-by-side triangle diagrams for base-height, included-angle, Heron, and inradius area methods.
+      caption: The diagram configuration determines the usable inputs and supplies natural error checks.
+    check:
+      id: aops-triangles-area-selection-check
+      type: multipleChoice
+      prompt: A triangle has side lengths 13, 14, and 15, with no altitude or angle given. Which first method is most direct after checking triangle inequality?
+      choices:
+      - {id: a, text: Heron formula}
+      - {id: b, text: '$K=rs$ without knowing $r$'}
+      - {id: c, text: '$K=\tfrac12ab\sin C$ while assuming $C=90^\circ$'}
+      - {id: d, text: Circumference formula}
+      answer: {choiceId: a}
+      explanation: Three side lengths supply exactly the inputs for Heron formula; no right angle, altitude, or inradius may be assumed.

@@ -60,6 +60,10 @@ areas:
     description: Core mapped material.
     categoryIds: [subject-one]
     subcategoryIds: [known-topic]
+  - id: other-area
+    title: Other Area
+    categoryIds: [subject-one]
+    subcategoryIds: [other-topic]
 """);
 
         var summary = await fixture.Importer.ImportAsync();
@@ -69,7 +73,28 @@ areas:
     }
 
     [Fact]
-    public async Task NavigationCatalog_infers_overrides_unmapped_topics_and_refreshes_after_save()
+    public async Task Catalog_persistence_rejects_second_topic_or_area_for_an_assessment()
+    {
+        var fixture = CreateFixture();
+        await File.WriteAllTextAsync(
+            Path.Combine(fixture.Files.AssessmentsPath, "sample-quiz.yaml"),
+            QuizYaml("sample-quiz", "First title", "known-topic"));
+        await fixture.Initializer.InitializeAsync();
+        Assert.Equal(1, (await fixture.Importer.ImportAsync()).Imported);
+
+        await using var connection = new SqliteConnection($"Data Source={fixture.Sqlite.DatabasePath}");
+        await connection.OpenAsync();
+        Assert.Equal(1L, await CountRelationsAsync(connection, "assessment_subcategories", "sample-quiz"));
+        Assert.Equal(1L, await CountRelationsAsync(connection, "assessment_areas", "sample-quiz"));
+
+        await Assert.ThrowsAsync<SqliteException>(() => InsertRelationAsync(
+            connection, "assessment_subcategories", "subcategory_id", "sample-quiz", "another-topic"));
+        await Assert.ThrowsAsync<SqliteException>(() => InsertRelationAsync(
+            connection, "assessment_areas", "area_id", "sample-quiz", "another-area"));
+    }
+
+    [Fact]
+    public async Task NavigationCatalog_infers_metadata_preserves_single_topic_and_refreshes_after_save()
     {
         var fixture = CreateFixture();
         await File.WriteAllTextAsync(
@@ -77,7 +102,7 @@ areas:
             RecallYaml("recall-set", "known-topic"));
         await File.WriteAllTextAsync(
             Path.Combine(fixture.Files.AssessmentsPath, "override.yaml"),
-            QuizYaml("override-quiz", "Override quiz", "missing-topic", """
+            QuizYaml("override-quiz", "Override quiz", "known-topic", """
 navigation:
   learningGoal: evaluate
   activityType: masteryCheck
@@ -102,7 +127,9 @@ navigation:
             assessment.Id == "override-quiz"
             && assessment.LearningGoal == LearningGoals.Evaluate
             && assessment.ActivityType == "masteryCheck"
-            && assessment.TopicIds.Contains("subject-one--other-unmapped"));
+            && assessment.TopicIds.SequenceEqual(["known-topic"])
+            && assessment.AreaIds.SequenceEqual(["core-area"]));
+        Assert.DoesNotContain(catalog.Topics, topic => topic.Id.EndsWith("--other-unmapped", StringComparison.OrdinalIgnoreCase));
 
         var fileRepository = new FileAssessmentRepository(fixture.Files, new AssessmentValidator());
         var hybrid = new HybridAssessmentRepository(fixture.Importer, fixture.Sqlite, fileRepository);
@@ -111,11 +138,17 @@ navigation:
             Id = "saved-immediately",
             Title = "Saved Immediately",
             CategoryId = "subject-one",
-            SubcategoryIds = new[] { "known-topic" }
+            TopicId = "known-topic",
+            Skills = ["other-topic"],
+            Navigation = new NavigationMetadata("practice", "focusedPractice", ["subject-one", "known-topic", "other-topic", "other-area"])
         };
         await hybrid.SaveAsync(saved);
         Assert.NotNull(await hybrid.GetByIdAsync(saved.Id));
         Assert.Contains(await hybrid.ListByCategoryAsync("subject-one"), assessment => assessment.Id == saved.Id);
+        var refreshed = await catalogService.GetCatalogAsync();
+        var savedSummary = Assert.Single(refreshed.Assessments, assessment => assessment.Id == saved.Id);
+        Assert.Equal(["known-topic"], savedSummary.TopicIds);
+        Assert.Equal(["core-area"], savedSummary.AreaIds);
 
         var unavailableImporter = new SqliteAssessmentCatalogImporter(
             fixture.Sqlite,
@@ -145,6 +178,8 @@ title: Subject One
 subcategories:
   - id: known-topic
     title: Known Topic
+  - id: other-topic
+    title: Other Topic
 """);
         File.WriteAllText(Path.Combine(root, "areas.yaml"), """
 schemaVersion: 1
@@ -154,6 +189,10 @@ areas:
     description: Core mapped material.
     categoryIds: [subject-one]
     subcategoryIds: [known-topic]
+  - id: other-area
+    title: Other Area
+    categoryIds: [subject-one]
+    subcategoryIds: [other-topic]
 """);
 
         var files = new FileStorageOptions { DataRoot = root };
@@ -205,6 +244,23 @@ areas:
         return Assert.IsType<string>(result);
     }
 
+    private static async Task<long> CountRelationsAsync(SqliteConnection connection, string table, string assessmentId)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"SELECT COUNT(*) FROM {table} WHERE assessment_id = $id;";
+        command.Parameters.AddWithValue("$id", assessmentId);
+        return (long)(await command.ExecuteScalarAsync() ?? 0L);
+    }
+
+    private static async Task InsertRelationAsync(SqliteConnection connection, string table, string column, string assessmentId, string value)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"INSERT INTO {table} (assessment_id, {column}) VALUES ($id, $value);";
+        command.Parameters.AddWithValue("$id", assessmentId);
+        command.Parameters.AddWithValue("$value", value);
+        await command.ExecuteNonQueryAsync();
+    }
+
     private static string QuizYaml(string id, string title, string topic, string navigation = "")
     {
         var navigationBlock = string.IsNullOrWhiteSpace(navigation)
@@ -216,7 +272,7 @@ id: {{id}}
 title: {{title}}
 assessmentType: quiz
 categoryId: subject-one
-subcategoryIds: [{{topic}}]
+topicId: {{topic}}
 modeDefault: practice
 randomizeQuestions: false
 {{navigationBlock}}questions:
@@ -242,7 +298,7 @@ id: {{id}}
 title: Recall Set
 assessmentType: recallDrill
 categoryId: subject-one
-subcategoryIds: [{{topic}}]
+topicId: {{topic}}
 modeDefault: practice
 randomizeQuestions: false
 items:

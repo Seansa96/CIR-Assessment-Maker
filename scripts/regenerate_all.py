@@ -6,8 +6,7 @@ id: chemistry-measurements-sig-figs-concept-lesson
 title: "Significant Figures in Measurements"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-measurements
+topicId: chemistry-measurements
 modeDefault: study
 lesson:
   introduction: "In science, a measurement is only as accurate as the instrument used to make it. Significant figures communicate the precision of a measurement."
@@ -53,8 +52,7 @@ id: chemistry-measurements-sig-figs-worked-example
 title: "Calculations with Significant Figures"
 assessmentType: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-measurements
+topicId: chemistry-measurements
 modeDefault: study
 workedExamples:
   - id: we-sig-fig-calc
@@ -114,8 +112,7 @@ id: chemistry-units-dimensional-analysis-worked-example
 title: "Dimensional Analysis and Conversions"
 assessmentType: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-units
+topicId: chemistry-units
 modeDefault: study
 workedExamples:
   - id: we-dim-analysis
@@ -175,8 +172,7 @@ id: chemistry-matter-classification-recall
 title: "Matter Classification Drill"
 assessmentType: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-matter
+topicId: chemistry-matter
 modeDefault: practice
 items:
   - id: mc-drill-1
@@ -216,8 +212,7 @@ id: chemistry-gases-ideal-gas-law-worked-example
 title: "The Ideal Gas Law"
 assessmentType: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-gases
+topicId: chemistry-gases
 modeDefault: study
 workedExamples:
   - id: we-ideal-gas
@@ -279,8 +274,7 @@ id: chemistry-thermochemistry-enthalpy-concept-lesson
 title: "Enthalpy and Heat of Reaction"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-thermochemistry
+topicId: chemistry-thermochemistry
 modeDefault: study
 lesson:
   introduction: "Thermochemistry studies the heat absorbed or released during chemical and physical changes. Central to this is Enthalpy (H)."
@@ -323,8 +317,7 @@ id: chem-periodic-trends-concept-lesson
 title: "Periodic Trends: Atomic Radius and Ionization Energy"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-periodic-trends
+topicId: chem-periodic-trends
 modeDefault: study
 lesson:
   introduction: "The arrangement of the periodic table allows us to predict the properties of elements based on their position. These predictable patterns are called periodic trends."
@@ -370,8 +363,7 @@ id: chem-ions-formation-concept-lesson
 title: "Ion Formation: Cations and Anions"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-ions
+topicId: chem-ions
 modeDefault: study
 lesson:
   introduction: "Atoms are neutral because they have an equal number of protons and electrons. When atoms gain or lose electrons to achieve a stable electron configuration, they become charged particles called ions."
@@ -411,8 +403,7 @@ id: chem-ionic-covalent-distinction-concept-lesson
 title: "Distinguishing Ionic and Covalent Bonds"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-ionic-covalent-distinction
+topicId: chem-ionic-covalent-distinction
 modeDefault: study
 lesson:
   introduction: "Chemical bonds hold atoms together in compounds. The two primary types of intramolecular bonds are ionic and covalent, which differ fundamentally in how electrons are shared or transferred."
@@ -456,8 +447,7 @@ id: chem-ionic-covalent-properties-worked-example
 title: "Properties of Ionic vs Covalent Compounds"
 assessmentType: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chem-ionic-covalent-distinction
+topicId: chem-ionic-covalent-distinction
 modeDefault: study
 workedExamples:
   - id: we-bond-properties
@@ -510,8 +500,7 @@ id: chemistry-reactions-classification-concept-lesson
 title: "Classifying Chemical Reactions"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-reactions
+topicId: chemistry-reactions
 modeDefault: study
 lesson:
   introduction: "Chemical reactions can be grouped into several major categories based on how the atoms rearrange themselves. Identifying the reaction type helps predict the products."
@@ -564,8 +553,7 @@ id: chemistry-reactions-classification-recall
 title: "Reaction Classification Drill"
 assessmentType: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-reactions
+topicId: chemistry-reactions
 modeDefault: practice
 items:
   - id: rc-drill-1
@@ -605,8 +593,7 @@ id: chemistry-solutions-concentration-concept-lesson
 title: "Solution Concentration: Molarity"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-solutions
+topicId: chemistry-solutions
 modeDefault: study
 lesson:
   introduction: "A solution is a homogeneous mixture of a solute dissolved in a solvent. To quantify how much solute is present, chemists use concentration."
@@ -648,8 +635,7 @@ id: chemistry-solutions-molarity-worked-example
 title: "Calculating Molarity"
 assessmentType: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-solutions
+topicId: chemistry-solutions
 modeDefault: study
 workedExamples:
   - id: we-molarity
@@ -703,8 +689,7 @@ id: chem-aqueous-solutions-solubility-rules-recall
 title: "Solubility Rules Drill"
 assessmentType: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chem-aqueous-solutions
+topicId: chem-aqueous-solutions
 modeDefault: practice
 items:
   - id: sr-nitrates
@@ -744,8 +729,7 @@ id: chem-aqueous-solutions-net-ionic-equations-worked-example
 title: "Writing Net Ionic Equations"
 assessmentType: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chem-aqueous-solutions
+topicId: chem-aqueous-solutions
 modeDefault: study
 workedExamples:
   - id: we-net-ionic
@@ -812,8 +796,7 @@ id: chem-aqueous-solutions-precipitates-concept-lesson
 title: "Precipitation Reactions"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-aqueous-solutions
+topicId: chem-aqueous-solutions
 modeDefault: study
 lesson:
   introduction: "When two aqueous solutions are mixed, they sometimes form a solid that settles out of solution. This solid is called a precipitate."
@@ -854,8 +837,7 @@ id: chem-acids-strong-weak-concept-lesson
 title: "Strong vs Weak Acids"
 assessmentType: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-acids
+topicId: chem-acids
 modeDefault: study
 lesson:
   introduction: "Acids are substances that donate protons (H+) in aqueous solution. Their 'strength' refers to how completely they dissociate into ions."
@@ -901,8 +883,7 @@ id: chem-acids-ph-poh-worked-example
 title: "Calculating pH and pOH"
 assessmentType: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chem-acids
+topicId: chem-acids
 modeDefault: study
 workedExamples:
   - id: we-ph-calc
@@ -950,8 +931,7 @@ id: chem-acids-conjugate-pairs-recall
 title: "Conjugate Acid-Base Pairs Drill"
 assessmentType: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chem-acids
+topicId: chem-acids
 modeDefault: practice
 items:
   - id: ca-drill-1

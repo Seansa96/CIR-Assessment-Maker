@@ -39,7 +39,7 @@ def generate_concept_lesson(subcat, idx):
         "description": "Interactive exploration of the concepts.",
         "assessmentType": "conceptLesson",
         "categoryId": "cpp-programming",
-        "subcategoryIds": [subcat],
+        "topicId": subcat,
         "difficulty": 2,
         "navigation": {
             "tags": ["cpp", "lesson"]
@@ -100,7 +100,7 @@ def generate_glossary(subcat, idx):
         "description": "Key terms and definitions.",
         "assessmentType": "glossary",
         "categoryId": "cpp-programming",
-        "subcategoryIds": [subcat],
+        "topicId": subcat,
         "difficulty": 1,
         "navigation": {
             "tags": ["cpp", "glossary"]
@@ -159,7 +159,7 @@ def generate_recalldrill(subcat, idx):
         "description": "Flashcard-style recall for key terms.",
         "assessmentType": "recallDrill",
         "categoryId": "cpp-programming",
-        "subcategoryIds": [subcat],
+        "topicId": subcat,
         "difficulty": 1,
         "navigation": {
             "tags": ["cpp", "recall"]
@@ -195,7 +195,7 @@ def generate_quiz(subcat, idx):
         "description": "A 10-question quiz to test your understanding.",
         "assessmentType": "quiz",
         "categoryId": "cpp-programming",
-        "subcategoryIds": [subcat],
+        "topicId": subcat,
         "difficulty": 2,
         "navigation": {
             "tags": ["cpp", "quiz"]
@@ -259,7 +259,7 @@ def generate_test(subcat, idx):
         "description": "A comprehensive test sampled from a large pool of questions.",
         "assessmentType": "test",
         "categoryId": "cpp-programming",
-        "subcategoryIds": [subcat],
+        "topicId": subcat,
         "difficulty": 3,
         "navigation": {
             "tags": ["cpp", "test"]
@@ -318,7 +318,7 @@ def generate_worked_example(subcat, idx):
         "description": "A guided walkthrough of a complex C++ implementation.",
         "assessmentType": "workedExample",
         "categoryId": "cpp-programming",
-        "subcategoryIds": [subcat],
+        "topicId": subcat,
         "difficulty": 3,
         "navigation": {
             "tags": ["cpp", "worked-example"]

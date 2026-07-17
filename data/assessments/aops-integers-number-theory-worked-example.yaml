@@ -3,8 +3,7 @@ id: aops-integers-number-theory-worked-example
 title: Using the Integers Worked Examples
 assessmentType: workedExample
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-integers-number-theory
+topicId: aops-integers-number-theory
 modeDefault: practice
 randomizeQuestions: false
 navigation:
@@ -13,224 +12,326 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-integers-number-theory
-  - aops
+  - prime-factorization
+  - modular-powers
+  - divisibility-proof
 skills:
-- Apply aops-integers-number-theory
-- aops-integers-number-theory
+- Extract divisor, gcd, and lcm information from prime exponents
+- Find final digits using a justified modular expansion
+- Prove universal divisibility through factor structure
 workedExamples:
 - id: aops-integers-number-theory-problem-1
-  title: 'Direct application: Using the Integers'
-  problem: 'Original Using the Integers problem 1: use the givens to identify divisibility, number bases, last digits, modular arithmetic, primes, gcd and lcm, then solve without assuming unstated facts.'
+  title: One factorization answers three questions
+  problem: |-
+    Let $A=360$ and $B=504$. Find $gcd(A,B)$, $\operatorname{lcm}(A,B)$, and the number of positive divisors of $A$.
   steps:
   - id: aops-integers-number-theory-p1-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+    title: Factor both numbers completely
+    instruction: |-
+      Prime factorization gives
+
+      $$360=2^3\cdot3^2\cdot5,$$
+
+      $$504=2^3\cdot3^2\cdot7.$$
+
+      Stopping at composite factors would hide the exponent comparison.
     type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
+    prompt: Which displayed factorization is correct for 504?
     choices:
     - id: a
-      text: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+      text: '$2^3\cdot3^2\cdot7$'
     - id: b
-      text: Assume the diagram is to scale.
+      text: '$2^2\cdot3^3\cdot7$'
     - id: c
-      text: Discard inconvenient cases.
+      text: '$2^3\cdot3\cdot7$'
     - id: d
-      text: Choose an answer before reasoning.
+      text: '$2^4\cdot3^2$'
     answer:
       choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+    explanation: $8\cdot9\cdot7=504$.
   - id: aops-integers-number-theory-p1-s2
-    title: Select the tool
-    instruction: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+    title: Take minimum exponents for the gcd
+    instruction: |-
+      The shared primes are 2 and 3, both with exponent 3 and 2 respectively. Thus
+
+      $$\gcd(360,504)=2^3\cdot3^2=72.$$
     type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
+    prompt: Why are 5 and 7 absent from the gcd?
     choices:
     - id: a
-      text: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+      text: Neither prime divides both numbers.
     - id: b
-      text: Assume the diagram is to scale.
+      text: Gcd calculations ignore all primes above 3.
     - id: c
-      text: Discard inconvenient cases.
+      text: Five and 7 are not prime.
     - id: d
-      text: Choose an answer before reasoning.
+      text: Their sum is too large.
     answer:
       choiceId: a
-    explanation: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+    explanation: A common divisor can contain only prime factors shared by both integers.
   - id: aops-integers-number-theory-p1-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+    title: Take maximum exponents for the lcm
+    instruction: |-
+      The least common multiple must contain every required prime power:
+
+      $$\operatorname{lcm}(360,504)=2^3\cdot3^2\cdot5\cdot7=2520.$$
     type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
+    prompt: What role do 5 and 7 play in the lcm?
     choices:
     - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+      text: Both are required so the lcm is divisible by both original numbers.
     - id: b
-      text: Assume the diagram is to scale.
+      text: They cancel each other.
     - id: c
-      text: Discard inconvenient cases.
+      text: Only their difference is used.
     - id: d
-      text: Choose an answer before reasoning.
+      text: Neither may appear in an lcm.
     answer:
       choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+    explanation: The lcm contains each prime at the largest exponent appearing in either factorization.
   - id: aops-integers-number-theory-p1-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+    title: Count the divisors of A
+    instruction: |-
+      A divisor of $360=2^3 3^2 5^1$ chooses exponents
+
+      $$0\le a\le3,\quad0\le b\le2,\quad0\le c\le1.$$
+
+      There are $(3+1)(2+1)(1+1)=24$ choices.
     type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
+    prompt: How many positive divisors does 360 have?
     choices:
     - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+      text: '6'
     - id: b
-      text: Assume the diagram is to scale.
+      text: '12'
     - id: c
-      text: Discard inconvenient cases.
+      text: '18'
     - id: d
-      text: Choose an answer before reasoning.
+      text: '24'
     answer:
-      choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+      choiceId: d
+    explanation: Independent exponent choices are multiplied.
+  - id: aops-integers-number-theory-p1-s5
+    title: Verify the gcd-lcm product identity
+    instruction: |-
+      Check
+
+      $$72\cdot2520=181440=360\cdot504.$$
+
+      This verifies the exponent selections for gcd and lcm.
+    type: multipleChoice
+    prompt: Which identity provides the check for positive $A,B$?
+    choices:
+    - id: a
+      text: '$\gcd(A,B)+\operatorname{lcm}(A,B)=A+B$'
+    - id: b
+      text: '$\gcd(A,B)\operatorname{lcm}(A,B)=AB$'
+    - id: c
+      text: '$\gcd(A,B)=A/B$'
+    - id: d
+      text: '$\operatorname{lcm}(A,B)=A-B$'
+    answer:
+      choiceId: b
+    explanation: Each prime's minimum and maximum exponents add to the two original exponents.
 - id: aops-integers-number-theory-problem-2
-  title: 'Changed condition: Using the Integers'
-  problem: 'Original Using the Integers problem 2: use the givens to identify divisibility, number bases, last digits, modular arithmetic, primes, gcd and lcm, then solve without assuming unstated facts.'
+  title: Last two digits through a binomial remainder
+  problem: |-
+    Find the last two digits of $11^{20}$ without expanding the full integer.
   steps:
   - id: aops-integers-number-theory-p2-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+    title: Choose the modulus that matches the target
+    instruction: |-
+      The last two decimal digits are determined by the residue modulo 100. We therefore seek $11^{20}\pmod{100}$.
     type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
+    prompt: Which modulus preserves exactly the last two decimal digits?
     choices:
     - id: a
-      text: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+      text: '2'
     - id: b
-      text: Assume the diagram is to scale.
+      text: '10'
     - id: c
-      text: Discard inconvenient cases.
+      text: '20'
     - id: d
-      text: Choose an answer before reasoning.
+      text: '100'
     answer:
-      choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+      choiceId: d
+    explanation: Two base-ten digits represent a residue from 0 through 99.
   - id: aops-integers-number-theory-p2-s2
-    title: Select the tool
-    instruction: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+    title: Rewrite the base to expose powers of 10
+    instruction: |-
+      Write $11=1+10$. The binomial theorem gives
+
+      $$(1+10)^{20}=1+20(10)+\binom{20}{2}10^2+\cdots.$$
     type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
+    prompt: Why is the rewrite $11=1+10$ useful modulo 100?
     choices:
     - id: a
-      text: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+      text: Terms containing $10^2$ are divisible by 100.
     - id: b
-      text: Assume the diagram is to scale.
+      text: It makes 11 equal to 1.
     - id: c
-      text: Discard inconvenient cases.
+      text: It removes the exponent.
     - id: d
-      text: Choose an answer before reasoning.
+      text: It changes the number base to binary.
     answer:
       choiceId: a
-    explanation: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+    explanation: The modulus eliminates every term with at least two factors of 10.
   - id: aops-integers-number-theory-p2-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+    title: Discard only terms known to be divisible by 100
+    instruction: |-
+      Modulo 100, all terms from $\binom{20}{2}10^2$ onward are congruent to zero. Hence
+
+      $$11^{20}\equiv1+200\pmod{100}.$$
     type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
+    prompt: Which terms survive modulo 100?
     choices:
     - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+      text: Only the constant and linear terms
     - id: b
-      text: Assume the diagram is to scale.
+      text: Only the quadratic term
     - id: c
-      text: Discard inconvenient cases.
+      text: Every binomial term
     - id: d
-      text: Choose an answer before reasoning.
+      text: No terms
     answer:
       choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+    explanation: Higher terms contain $10^2=100$ as a factor.
   - id: aops-integers-number-theory-p2-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+    title: Reduce to the required two-digit residue
+    instruction: |-
+      Since $1+200=201$,
+
+      $$11^{20}\equiv1\pmod{100}.$$
+
+      Written as two digits, the residue is $01$.
     type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
+    prompt: What are the last two digits?
     choices:
     - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+      text: '01'
     - id: b
-      text: Assume the diagram is to scale.
+      text: '11'
     - id: c
-      text: Discard inconvenient cases.
+      text: '21'
     - id: d
-      text: Choose an answer before reasoning.
+      text: '81'
     answer:
       choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+    explanation: A one-digit residue is padded with a leading zero when two final digits are requested.
+  - id: aops-integers-number-theory-p2-s5
+    title: Check a smaller instance of the pattern
+    instruction: |-
+      The same reasoning predicts $11^2\equiv1+20=21\pmod{100}$, matching $11^2=121$. This check confirms the truncation logic on a visible case.
+    type: multipleChoice
+    prompt: What does $11^3$ reduce to modulo 100 by the same pattern?
+    choices:
+    - id: a
+      text: '11'
+    - id: b
+      text: '21'
+    - id: c
+      text: '31'
+    - id: d
+      text: '41'
+    answer:
+      choiceId: c
+    explanation: $(1+10)^3\equiv1+30=31\pmod{100}$.
 - id: aops-integers-number-theory-problem-3
-  title: 'Synthesis: Using the Integers'
-  problem: 'Original Using the Integers problem 3: use the givens to identify divisibility, number bases, last digits, modular arithmetic, primes, gcd and lcm, then solve without assuming unstated facts.'
+  title: A universal divisibility proof
+  problem: |-
+    Prove that $n^3-n$ is divisible by 6 for every integer $n$.
   steps:
   - id: aops-integers-number-theory-p3-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+    title: Factor before testing examples
+    instruction: |-
+      Difference-of-powers factorization gives
+
+      $$n^3-n=n(n^2-1)=n(n-1)(n+1).$$
+
+      These factors are three consecutive integers.
     type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
+    prompt: Which structural feature makes the factorization useful?
     choices:
     - id: a
-      text: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+      text: It exposes three consecutive integers.
     - id: b
-      text: Assume the diagram is to scale.
+      text: It proves every factor is divisible by 6.
     - id: c
-      text: Discard inconvenient cases.
+      text: It makes the expression positive.
     - id: d
-      text: Choose an answer before reasoning.
+      text: It assumes $n$ is prime.
     answer:
       choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Using the Integers problem.
+    explanation: Consecutive integers have predictable parity and residues modulo 3.
   - id: aops-integers-number-theory-p3-s2
-    title: Select the tool
-    instruction: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+    title: Supply a factor of 2
+    instruction: |-
+      Among any two consecutive integers, one is even. Therefore among $n-1,n,n+1$, at least one supplies a factor of 2.
     type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
+    prompt: What conclusion is justified?
     choices:
     - id: a
-      text: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+      text: The product $n(n-1)(n+1)$ is even.
     - id: b
-      text: Assume the diagram is to scale.
+      text: Every one of the three factors is even.
     - id: c
-      text: Discard inconvenient cases.
+      text: The product is odd.
     - id: d
-      text: Choose an answer before reasoning.
+      text: Only $n$ can be even.
     answer:
       choiceId: a
-    explanation: Choose a method from use remainders, factor integers, work modulo a convenient base and state the exact condition that permits it.
+    explanation: One even factor is enough to make the full product divisible by 2.
   - id: aops-integers-number-theory-p3-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+    title: Supply a factor of 3
+    instruction: |-
+      Three consecutive integers represent all three residues modulo 3. Exactly one is congruent to 0 modulo 3, so the product is divisible by 3.
     type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
+    prompt: Why must one of the factors be divisible by 3?
     choices:
     - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+      text: Three consecutive integers cover residues 0, 1, and 2 modulo 3.
     - id: b
-      text: Assume the diagram is to scale.
+      text: Every third power is divisible by 3.
     - id: c
-      text: Discard inconvenient cases.
+      text: Their sum is always zero.
     - id: d
-      text: Choose an answer before reasoning.
+      text: The middle factor is always divisible by 3.
     answer:
       choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
+    explanation: The divisible factor depends on the residue class of $n$.
   - id: aops-integers-number-theory-p3-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+    title: Combine coprime divisors
+    instruction: |-
+      The product is divisible by 2 and by 3. Since $\gcd(2,3)=1$, it is divisible by $2\cdot3=6$.
     type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
+    prompt: Which final inference is valid?
     choices:
     - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+      text: Divisibility by both coprime numbers 2 and 3 implies divisibility by 6.
     - id: b
-      text: Assume the diagram is to scale.
+      text: Divisibility by 2 alone implies divisibility by 6.
     - id: c
-      text: Discard inconvenient cases.
+      text: The same factor must contain both 2 and 3.
     - id: d
-      text: Choose an answer before reasoning.
+      text: The product must equal 6.
     answer:
       choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+    explanation: Coprime required factors may be supplied by different factors in the product.
+  - id: aops-integers-number-theory-p3-s5
+    title: State the universal conclusion precisely
+    instruction: |-
+      Because the argument used only facts true for every integer $n$, there is an integer $k$ such that $n^3-n=6k$ for every integer $n$. Numerical examples may illustrate this claim but do not replace the proof.
+    type: multipleChoice
+    prompt: What makes the proof universal?
+    choices:
+    - id: a
+      text: It reasons from the structure of arbitrary consecutive integers.
+    - id: b
+      text: It checks the first six values of $n$.
+    - id: c
+      text: It assumes the desired conclusion.
+    - id: d
+      text: It uses a calculator for large $n$.
+    answer:
+      choiceId: a
+    explanation: The variable $n$ remained arbitrary throughout the argument.

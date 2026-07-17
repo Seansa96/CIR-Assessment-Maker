@@ -8,11 +8,13 @@ using System.Threading.Tasks;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Services;
 using QuizApp.Infrastructure.Files;
+using YamlDotNet.RepresentationModel;
 
 namespace QuizApp.Tests;
 
 public sealed class AssessmentContentAudit
 {
+    private readonly string basePath;
     private readonly FileStorageOptions options;
     private readonly FileAssessmentRepository assessmentRepo;
     private readonly FileCategoryRepository categoryRepo;
@@ -22,6 +24,7 @@ public sealed class AssessmentContentAudit
 
     public AssessmentContentAudit(string basePath)
     {
+        this.basePath = basePath;
         options = new FileStorageOptions 
         { 
             DataRoot = Path.Combine(basePath, "data")
@@ -32,6 +35,21 @@ public sealed class AssessmentContentAudit
         assessmentRepo = new FileAssessmentRepository(options, validator);
         categoryRepo = new FileCategoryRepository(options);
         areaRepo = new FileAreaRepository(options);
+    }
+
+    public async Task<List<string>> ValidateAssessmentGeneratorsUseSingularTopicAsync(CancellationToken cancellationToken = default)
+    {
+        var errors = new List<string>();
+        var scripts = Path.Combine(basePath, "scripts");
+        if (!Directory.Exists(scripts)) return errors;
+        foreach (var path in Directory.EnumerateFiles(scripts, "*.py"))
+        {
+            if (Path.GetFileName(path) is "add_areas.py" or "update_areas_file.py") continue;
+            var content = await File.ReadAllTextAsync(path, cancellationToken);
+            if (content.Contains("subcategoryIds", StringComparison.Ordinal))
+                errors.Add($"{Path.GetFileName(path)} [LEGACY_GENERATOR_CLASSIFICATION]: Assessment generators must emit singular topicId.");
+        }
+        return errors;
     }
 
     public IEnumerable<string> EnumerateAssessmentFiles()
@@ -125,6 +143,46 @@ public sealed class AssessmentContentAudit
             }
         }
         return errors;
+    }
+
+    public async Task<List<string>> ValidateSingleTopicContractAsync(CancellationToken cancellationToken = default)
+    {
+        var errors = new List<string>();
+        foreach (var file in EnumerateAssessmentFiles())
+        {
+            try
+            {
+                var yaml = new YamlStream();
+                using var reader = new StringReader(await File.ReadAllTextAsync(file, cancellationToken));
+                yaml.Load(reader);
+                if (yaml.Documents.Single().RootNode is not YamlMappingNode root)
+                {
+                    errors.Add($"{Path.GetFileName(file)} [INVALID_ROOT]: Assessment root must be a mapping.");
+                    continue;
+                }
+
+                var keys = root.Children.Keys.OfType<YamlScalarNode>().Select(key => key.Value).ToList();
+                if (keys.Contains("subcategoryId") || keys.Contains("subcategoryIds"))
+                    errors.Add($"{Path.GetFileName(file)} [LEGACY_TOPIC_CLASSIFICATION]: Use only singular topicId.");
+                if (!root.Children.TryGetValue(new YamlScalarNode("topicId"), out var topicNode)
+                    || topicNode is not YamlScalarNode topicScalar
+                    || string.IsNullOrWhiteSpace(topicScalar.Value))
+                    errors.Add($"{Path.GetFileName(file)} [MISSING_TOPIC_ID]: Exactly one non-empty scalar topicId is required.");
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"{Path.GetFileName(file)} [PARSE_ERROR]: {ex.Message}");
+            }
+        }
+        return errors;
+    }
+
+    public async Task<List<string>> ValidateCatalogTaxonomyAsync(CancellationToken cancellationToken = default)
+    {
+        var result = new CatalogTaxonomyValidator().Validate(
+            await categoryRepo.ListAsync(cancellationToken),
+            await areaRepo.ListAsync(cancellationToken));
+        return result.Errors.ToList();
     }
 
     public async Task<List<string>> ValidateNavigationMetadataAsync(CancellationToken cancellationToken = default)

@@ -506,13 +506,15 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
-    public async Task Recall_drill_cannot_rate_before_reveal_or_commit_to_grade_log()
+    public async Task Recall_drill_requires_reveal_and_all_ratings_before_grade_commit()
     {
         var assessment = TestData.RecallDrillAssessment();
         var attemptService = CreateAttemptService(assessment);
-        var gradeService = new GradeLogService(new InMemoryGradeLogRepository(), attemptService);
+        var gradeRepository = new InMemoryGradeLogRepository();
+        var gradeService = new GradeLogService(gradeRepository, attemptService);
         var attempt = await attemptService.StartAsync(assessment.Id, AssessmentMode.Practice);
 
+        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             attemptService.RateRecallItemAsync(attempt.Id, "typed-1", RecallRating.Correct));
 
@@ -521,7 +523,16 @@ public sealed class AttemptFlowTests
             await attemptService.RevealRecallItemAsync(attempt.Id, itemId, "response");
             await attemptService.RateRecallItemAsync(attempt.Id, itemId, RecallRating.Correct);
         }
-        await Assert.ThrowsAsync<InvalidOperationException>(() => gradeService.CommitAttemptAsync(attempt.Id));
+
+        var committed = await gradeService.CommitAttemptAsync(attempt.Id);
+        var summary = await gradeService.GetSummaryAsync();
+
+        Assert.Equal(attempt.Id, committed.AttemptId);
+        Assert.Equal(assessment.Id, committed.AssessmentId);
+        Assert.Equal(3.4m, committed.EarnedPoints);
+        Assert.Equal(4m, committed.PossiblePoints);
+        Assert.Equal(85m, committed.PercentScore);
+        Assert.Single(summary.Entries);
     }
 
     [Fact]
@@ -674,7 +685,7 @@ internal static class TestData
             "Area Between Curves Basic Quiz",
             type,
             "calculus-2",
-            new[] { "area-between-curves" },
+            "area-between-curves",
             AssessmentMode.Practice,
             true,
             null,
@@ -740,7 +751,7 @@ internal static class TestData
             Id = "cpp-runner-guided-project",
             Title = "C++ Runner Guided Project",
             CategoryId = "c++",
-            SubcategoryIds = new[] { "c++-oop" },
+            TopicId = "c++-oop",
             GuidedProject = new GuidedProjectDefinition(
                 "cpp",
                 null,
@@ -779,7 +790,7 @@ internal static class TestData
             Id = "trig-identities-basic-recall",
             Title = "Trig Identities Basic Recall",
             CategoryId = "trigonometry",
-            SubcategoryIds = new[] { "trig-identities" },
+            TopicId = "trig-identities",
             Items = new[]
             {
                 new RecallItemDefinition(
@@ -895,7 +906,7 @@ internal static class TestData
             Id = "python-loops-concept-lesson",
             Title = "Python Loops Concept Lesson",
             CategoryId = "python",
-            SubcategoryIds = new[] { "python-control-flow" },
+            TopicId = "python-control-flow",
             Lesson = new ConceptLessonDefinition(
                 "Learn how loops repeat work.",
                 new[]
@@ -1117,7 +1128,7 @@ internal sealed class InMemoryAssessmentRepository : IAssessmentRepository
                 assessment.Title,
                 assessment.AssessmentType,
                 assessment.CategoryId,
-                assessment.SubcategoryIds,
+                assessment.TopicId,
                 assessment.AssessmentType is AssessmentType.WorkedExample
                     ? assessment.WorkedExamples.Sum(example => example.Steps.Count)
                     : assessment.AssessmentType is AssessmentType.RecallDrill

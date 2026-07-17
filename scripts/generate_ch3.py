@@ -16,7 +16,7 @@ def generate_ch3():
         "title": "Simple Resistive Circuits: Series and Parallel Resistors",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "workedExamples": [
             {
                 "id": "l1-sec1",
@@ -39,7 +39,7 @@ def generate_ch3():
         "title": "Simple Resistive Circuits: Voltage and Current Dividers",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "workedExamples": [
             {
                 "id": "l2-sec1",
@@ -62,7 +62,7 @@ def generate_ch3():
         "title": "Simple Resistive Circuits: Delta-Wye Transformations",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "workedExamples": [
             {
                 "id": "l3-sec1",
@@ -85,7 +85,7 @@ def generate_ch3():
         "title": "Worked Example: Complex Resistor Network",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "workedExamples": [
             {
                 "id": "we1",
@@ -115,7 +115,7 @@ def generate_ch3():
         "title": "Simple Resistive Circuits Glossary",
         "assessmentType": "glossary",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "glossary": [
             {
                 "term": "Series Connection",
@@ -152,7 +152,7 @@ def generate_ch3():
         "title": "Simple Resistive Circuits Recall Drill",
         "assessmentType": "recallDrill",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "items": [
             {
                 "id": "rd1",
@@ -204,7 +204,7 @@ def generate_ch3():
         "title": "Simple Resistive Circuits Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "modeDefault": "practice",
         "questions": quiz_questions
     }
@@ -231,7 +231,7 @@ def generate_ch3():
         "title": "Simple Resistive Circuits Test",
         "assessmentType": "test",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "attemptQuestionCount": 15,
         "questions": test_questions
     }
@@ -244,7 +244,7 @@ def generate_ch3():
         "title": "Resistor Network Topology Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-simple-resistive"],
+        "topicId": "ec-simple-resistive",
         "modeDefault": "practice",
         "questions": [
             {

@@ -44,6 +44,15 @@ public sealed record CommitGradeRequest(string AttemptId);
 
 public sealed record BulkDeleteAttemptsRequest(IReadOnlyList<string>? AttemptIds);
 
+public sealed record CreateAssessmentReportRequest(
+    string AssessmentId,
+    string AttemptId,
+    string? ContextId,
+    string Kind,
+    string Comment);
+
+public sealed record UpdateAssessmentReportStatusRequest(string Status);
+
 public sealed record RevealRecallItemRequest(string? UserResponse);
 
 public sealed record RateRecallItemRequest(RecallRating Rating);
@@ -79,7 +88,7 @@ public sealed record SaveAssessmentRequest(
     string Title,
     AssessmentType AssessmentType,
     string CategoryId,
-    IReadOnlyList<string>? SubcategoryIds,
+    string TopicId,
     AssessmentMode ModeDefault,
     bool RandomizeQuestions,
     int? AttemptQuestionCount,
@@ -103,7 +112,7 @@ public sealed record SaveAssessmentRequest(
             Title.Trim(),
             AssessmentType,
             CategoryId.Trim(),
-            SubcategoryIds ?? Array.Empty<string>(),
+            TopicId.Trim(),
             ModeDefault,
             RandomizeQuestions,
             AttemptQuestionCount,

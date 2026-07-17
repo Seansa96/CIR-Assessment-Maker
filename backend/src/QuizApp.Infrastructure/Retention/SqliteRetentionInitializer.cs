@@ -78,6 +78,25 @@ public sealed class SqliteRetentionInitializer
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_attempts_started_at ON attempts(started_at DESC);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_grades_committed_at ON grade_log_entries(committed_at DESC);", cancellationToken);
 
+        await ExecuteAsync(connection, """
+            CREATE TABLE IF NOT EXISTS assessment_reports (
+                id TEXT PRIMARY KEY,
+                assessment_id TEXT NOT NULL,
+                assessment_title TEXT NOT NULL,
+                attempt_id TEXT NOT NULL,
+                context_id TEXT NULL,
+                kind TEXT NOT NULL CHECK (kind IN ('bug', 'improvement', 'comment')),
+                comment TEXT NOT NULL,
+                status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'resolved')),
+                created_at TEXT NOT NULL,
+                resolved_at TEXT NULL
+            );
+            """, cancellationToken);
+        await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessment_reports_assessment ON assessment_reports(assessment_id);", cancellationToken);
+        await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessment_reports_status ON assessment_reports(status);", cancellationToken);
+        await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessment_reports_kind ON assessment_reports(kind);", cancellationToken);
+        await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessment_reports_created ON assessment_reports(created_at DESC);", cancellationToken);
+
         if (!await ColumnExistsAsync(connection, "grade_log_entries", "earned_points", cancellationToken))
         {
             await ExecuteAsync(connection, "ALTER TABLE grade_log_entries ADD COLUMN earned_points TEXT NOT NULL DEFAULT '0';", cancellationToken);
@@ -164,6 +183,13 @@ public sealed class SqliteRetentionInitializer
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_goal ON assessments(learning_goal);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_activity ON assessments(activity_type);", cancellationToken);
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_assessments_active ON assessments(is_active);", cancellationToken);
+        // Assessment placement is singular. Collapse legacy relation fan-out so
+        // the uniqueness constraints can be added to existing catalogs; the
+        // importer then repopulates the authoritative topic/area from YAML.
+        await ExecuteAsync(connection, "DELETE FROM assessment_subcategories WHERE rowid NOT IN (SELECT MIN(rowid) FROM assessment_subcategories GROUP BY assessment_id);", cancellationToken);
+        await ExecuteAsync(connection, "DELETE FROM assessment_areas WHERE rowid NOT IN (SELECT MIN(rowid) FROM assessment_areas GROUP BY assessment_id);", cancellationToken);
+        await ExecuteAsync(connection, "CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_single_topic ON assessment_subcategories(assessment_id);", cancellationToken);
+        await ExecuteAsync(connection, "CREATE UNIQUE INDEX IF NOT EXISTS ux_assessment_single_area ON assessment_areas(assessment_id);", cancellationToken);
         
         await ExecuteAsync(connection, """
             CREATE VIRTUAL TABLE IF NOT EXISTS assessment_search_fts

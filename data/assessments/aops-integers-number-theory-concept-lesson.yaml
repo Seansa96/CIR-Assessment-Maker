@@ -3,9 +3,8 @@ id: aops-integers-number-theory-concept-lesson
 title: Using the Integers Concept Lesson
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-integers-number-theory
-modeDefault: learn
+topicId: aops-integers-number-theory
+modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
@@ -13,150 +12,207 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-integers-number-theory
-  - aops
+  - divisibility
+  - modular-arithmetic
+  - positional-bases
 skills:
-- Apply aops-integers-number-theory
-- aops-integers-number-theory
+- Prove and apply integer divisibility statements
+- Use prime exponents for divisors, gcd, and lcm
+- Convert positional numerals and interpret remainders
+- Compute and justify modular patterns without invalid cancellation
 lesson:
-  introduction: Learn to solve Using the Integers problems by recognizing divisibility, number bases, last digits, modular arithmetic, primes, gcd and lcm and justifying each theorem or transformation.
+  introduction: |-
+    Integer problems often hide a small invariant inside a huge expression. Prime exponents control factors, a remainder controls a last digit, and place value controls a numeral in any base. The goal is not faster arithmetic; it is choosing the representation that preserves exactly the property being asked about.
   sections:
-  - id: aops-integers-number-theory-motivation
-    title: What the topic helps you notice
+  - id: divisibility-primes-and-factorization
+    title: Divisibility is an existence statement
     required: true
-    content: Using the Integers is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are divisibility, number bases, last digits, modular arithmetic, primes, gcd and lcm.
+    content: |-
+      For integers $d\ne0$ and $n$, the notation $d\mid n$ means that $n=dk$ for some integer $k$. The integer $k$ is a witness to divisibility. The direction matters: $3\mid15$, while $15\nmid3$.
+
+      A prime is a positive integer with exactly two positive divisors, 1 and itself. The number 1 is neither prime nor composite. Every integer greater than 1 has a prime factorization unique up to factor order.
+
+      Divisibility is stable under integer linear combinations. If $d\mid a$ and $d\mid b$, then $d\mid(ma+nb)$ for all integers $m,n$. This fact powers the Euclidean algorithm and many proofs.
     check:
-      id: aops-integers-number-theory-motivation-check
+      id: divisibility-primes-and-factorization-check
       type: multipleChoice
-      prompt: In Using the Integers, what should be checked before applying a method?
+      prompt: 'Which statement correctly interprets $7\mid42$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: There is an integer $k=6$ such that $42=7k$.
       - id: b
-        text: Whether the diagram looks proportional.
+        text: There is an integer $k$ such that $7=42k$.
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: Seven and 42 have no common factor.
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: The remainder when 7 is divided by 42 is zero.
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-integers-number-theory-definitions
-    title: Definitions and theorem conditions
+      explanation: The divisor appears as a factor of the dividend.
+  - id: prime-exponents-divisors-gcd-and-lcm
+    title: Prime exponents organize factor information
     required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+    content: |-
+      If
+
+      $$N=p_1^{e_1}\cdots p_r^{e_r},$$
+
+      a positive divisor chooses an exponent from $0$ through $e_j$ for each prime. Therefore $N$ has $(e_1+1)\cdots(e_r+1)$ positive divisors.
+
+      For gcd, take each shared prime to the smaller exponent. For lcm, take every prime that appears to the larger exponent. For positive $a,b$,
+
+      $$\gcd(a,b)\operatorname{lcm}(a,b)=ab.$$
+
+      Example: $72=2^3\cdot3^2$ and $120=2^3\cdot3\cdot5$, so the gcd is $2^3\cdot3=24$ and the lcm is $2^3\cdot3^2\cdot5=360$.
     check:
-      id: aops-integers-number-theory-definitions-check
+      id: prime-exponents-divisors-gcd-and-lcm-check
       type: multipleChoice
-      prompt: In Using the Integers, what should be checked before applying a method?
+      prompt: 'How many positive divisors does $2^3\cdot3^2\cdot5$ have?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '6'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '12'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '24'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '30'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-integers-number-theory-recognition
-    title: Recognition cues
+        choiceId: c
+      explanation: Choose exponents independently in $(3+1)(2+1)(1+1)=24$ ways.
+  - id: euclidean-division-and-positional-bases
+    title: Quotient and remainder also explain place value
     required: true
-    content: 'Look for these triggers: use remainders, factor integers, work modulo a convenient base. Record the givens, unknown, and any restriction before selecting a method.'
+    content: |-
+      For positive $m$, every integer $n$ can be written uniquely as
+
+      $$n=qm+r,\qquad0\le r<m.$$
+
+      The integer $r$ is the least nonnegative remainder. Repeated division by a base extracts a numeral's digits from right to left.
+
+      In base $b$, the numeral $(d_k\cdots d_0)_b$ represents
+
+      $$d_kb^k+\cdots+d_1b+d_0,$$
+
+      with every digit satisfying $0\le d_j<b$. Thus $101101_2=32+8+4+1=45$, and the smallest possible base for the numeral $234_b$ is 5 because every digit must be smaller than the base.
     check:
-      id: aops-integers-number-theory-recognition-check
+      id: euclidean-division-and-positional-bases-check
       type: multipleChoice
-      prompt: In Using the Integers, what should be checked before applying a method?
+      prompt: 'What is the base-ten value of $123_4$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '6'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '18'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '27'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '123'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-integers-number-theory-method
-    title: Choose a method
+        choiceId: c
+      explanation: |-
+        Expand by place value: $1(4^2)+2(4)+3=27$.
+  - id: congruence-and-legal-operations
+    title: Congruence records equal remainders
     required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+    content: |-
+      The statement
+
+      $$a\equiv b\pmod m$$
+
+      means $m\mid(a-b)$. Congruent integers may be different, but they have the same remainder modulo $m$. Addition, subtraction, and multiplication respect congruence because they preserve divisibility of differences.
+
+      Cancellation needs care. From $2\cdot1\equiv2\cdot3\pmod4$, one cannot cancel 2: the conclusion $1\equiv3\pmod4$ is false. A factor may be cancelled modulo $m$ only when it is invertible modulo $m$, equivalently coprime to $m$ in this elementary setting.
     check:
-      id: aops-integers-number-theory-method-check
+      id: congruence-and-legal-operations-check
       type: multipleChoice
-      prompt: In Using the Integers, what should be checked before applying a method?
+      prompt: 'What is the least nonnegative residue of $-17$ modulo 6?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$-5$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$-1$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '1'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '5'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-integers-number-theory-mini-example
-    title: A small original example
+        choiceId: c
+      explanation: Since $-17=6(-3)+1$, the residue in $\{0,1,\ldots,5\}$ is 1.
+  - id: cycles-last-digits-and-powers
+    title: Establish a cycle before reducing an exponent
     required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+    content: |-
+      A units digit is a residue modulo 10; the last two digits form a residue modulo 100. Powers often repeat because there are finitely many residues, but the cycle length must be established rather than guessed.
+
+      Powers of 7 modulo 10 cycle as $7,9,3,1$. Since $23\equiv3\pmod4$, $7^{23}$ has units digit 3. For $2^{20}\pmod7$, observe $2^3\equiv1$, so $2^{20}=2^{18}2^2\equiv4$.
+
+      Reduce an exponent modulo the proven power-cycle length, not modulo the divisor itself.
     check:
-      id: aops-integers-number-theory-mini-example-check
+      id: cycles-last-digits-and-powers-check
       type: multipleChoice
-      prompt: In Using the Integers, what should be checked before applying a method?
+      prompt: 'What is the units digit of $3^{100}$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '1'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '3'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '7'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '9'
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-integers-number-theory-trap
-    title: Common misconception
+      explanation: The units cycle $3,9,7,1$ has length 4, and 100 is divisible by 4.
+  - id: divisibility-tests-from-place-value
+    title: Digit tests are modular proofs
     required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+    content: |-
+      Decimal place value explains divisibility tests. Since $10\equiv1\pmod9$, every power $10^j\equiv1\pmod9$. Therefore a decimal integer is congruent modulo 9 to the sum of its digits. The same argument works modulo 3.
+
+      Since $10\equiv-1\pmod{11}$, powers of 10 alternate between $1$ and $-1$ modulo 11. This produces the alternating-digit-sum test for 11.
+
+      A test is trustworthy when its place-value congruence is shown. Memorizing a digit pattern without the modulus makes it easy to apply the wrong test.
     check:
-      id: aops-integers-number-theory-trap-check
+      id: divisibility-tests-from-place-value-check
       type: multipleChoice
-      prompt: In Using the Integers, what should be checked before applying a method?
+      prompt: 'Why is $123456$ divisible by 3 but not by 9?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: Its digit sum is 21, which is divisible by 3 but not by 9.
       - id: b
-        text: Whether the diagram looks proportional.
+        text: Its final digit is 6.
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: It has six digits.
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: Its first and last digits differ by 5.
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-integers-number-theory-synthesis
-    title: Contest synthesis
+      explanation: Modulo 3 or 9, a decimal number has the same residue as its digit sum.
+  - id: synthesis-three-consecutive-integers
+    title: Synthesis—prove $n^3-n$ is always divisible by 6
     required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+    content: |-
+      Factor the expression:
+
+      $$n^3-n=n(n-1)(n+1).$$
+
+      These are three consecutive integers. At least one is even, so their product is divisible by 2. Exactly one of every three consecutive integers is divisible by 3, so the product is divisible by 3. Since 2 and 3 are coprime, the product is divisible by 6.
+
+      The proof does not claim that one factor must be divisible by 6. The factors can supply the 2 and 3 separately. This distinction between “the product contains the needed prime factors” and “one factor contains all of them” appears throughout number theory.
     check:
-      id: aops-integers-number-theory-synthesis-check
+      id: synthesis-three-consecutive-integers-check
       type: multipleChoice
-      prompt: In Using the Integers, what should be checked before applying a method?
+      prompt: 'Which factorization best begins a proof that $n^3-n$ is divisible by 6?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$n(n-1)(n+1)$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$n(n^2+1)$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$(n-1)^3$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$3n(n-1)$'
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+      explanation: The factorization exposes three consecutive integers, which supply factors 2 and 3.

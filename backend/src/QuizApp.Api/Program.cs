@@ -47,6 +47,7 @@ builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
 builder.Services.AddSingleton<GradeAnalyticsService>();
+builder.Services.AddSingleton<AssessmentReportService>();
 builder.Services.AddSingleton<IDockerCommandRunner, QuizApp.Infrastructure.CodeRunner.DockerCommandRunner>();
 builder.Services.AddSingleton<IGuidedProjectRunner, LegacyHarnessGuidedProjectRunner>();
 builder.Services.AddSingleton<IGuidedProjectRunner, DockerWorkspaceGuidedProjectRunner>();
@@ -57,6 +58,7 @@ builder.Services.AddSingleton(new SqliteRetentionOptions { DatabasePath = sqlite
 builder.Services.AddSingleton<SqliteRetentionInitializer>();
 builder.Services.AddSingleton<SqliteAttemptRepository>();
 builder.Services.AddSingleton<SqliteGradeLogRepository>();
+builder.Services.AddSingleton<SqliteAssessmentReportRepository>();
 builder.Services.AddSingleton<LegacyRetentionMigrationService>();
 builder.Services.AddSingleton<ISettingsRepository, FileSettingsRepository>();
 builder.Services.AddSingleton<ICategoryRepository, FileCategoryRepository>();
@@ -70,6 +72,7 @@ builder.Services.AddSingleton<IAssessmentRepository>(provider => provider.GetReq
 builder.Services.AddSingleton<IAttemptRepository>(provider => provider.GetRequiredService<SqliteAttemptRepository>());
 builder.Services.AddSingleton<IAttemptSessionStore, InMemoryAttemptSessionStore>();
 builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequiredService<SqliteGradeLogRepository>());
+builder.Services.AddSingleton<IAssessmentReportRepository>(provider => provider.GetRequiredService<SqliteAssessmentReportRepository>());
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
 builder.Services.AddSingleton<IGuidedProjectSessionRepository, FileGuidedProjectSessionRepository>();
 builder.Services.AddSingleton<SqliteNavigationCatalogService>();
@@ -128,6 +131,116 @@ app.MapHub<SandboxHub>("/sandbox-hub").RequireCors("LocalFrontend");
 app.MapHub<DiagnosticHub>("/diagnostic-hub").RequireCors("LocalFrontend");
 
 var api = app.MapGroup("/api");
+
+if (app.Environment.IsDevelopment())
+{
+    var reportApi = api.MapGroup("/dev/assessment-reports");
+
+    reportApi.MapPost("", async (
+        CreateAssessmentReportRequest request,
+        AssessmentReportService reportService,
+        CancellationToken cancellationToken) =>
+    {
+        if (!TryParseDefinedEnum<AssessmentReportKind>(request.Kind, out var kind))
+        {
+            return Results.BadRequest(ApiError(
+                "INVALID_REPORT_KIND",
+                "Report kind must be bug, improvement, or comment."));
+        }
+
+        try
+        {
+            var report = await reportService.CreateAsync(
+                request.AssessmentId,
+                request.AttemptId,
+                request.ContextId,
+                kind,
+                request.Comment,
+                cancellationToken);
+            return Results.Created("/api/dev/assessment-reports", report);
+        }
+        catch (AssessmentReportException ex)
+        {
+            return AssessmentReportError(ex);
+        }
+    });
+
+    reportApi.MapGet("", async (
+        string? assessment,
+        string? kind,
+        string? status,
+        AssessmentReportService reportService,
+        CancellationToken cancellationToken) =>
+    {
+        if (!TryParseOptionalDefinedEnum<AssessmentReportKind>(kind, out var parsedKind))
+        {
+            return Results.BadRequest(ApiError(
+                "INVALID_REPORT_KIND",
+                "Report kind must be bug, improvement, or comment."));
+        }
+
+        if (!TryParseOptionalDefinedEnum<AssessmentReportStatus>(status, out var parsedStatus))
+        {
+            return Results.BadRequest(ApiError(
+                "INVALID_REPORT_STATUS",
+                "Report status must be open or resolved."));
+        }
+
+        return Results.Ok(await reportService.GetDashboardAsync(
+            new AssessmentReportFilter(assessment, parsedKind, parsedStatus),
+            cancellationToken));
+    });
+
+    reportApi.MapPatch("/{reportId}/status", async (
+        string reportId,
+        UpdateAssessmentReportStatusRequest request,
+        AssessmentReportService reportService,
+        CancellationToken cancellationToken) =>
+    {
+        if (!TryParseDefinedEnum<AssessmentReportStatus>(request.Status, out var status))
+        {
+            return Results.BadRequest(ApiError(
+                "INVALID_REPORT_STATUS",
+                "Report status must be open or resolved."));
+        }
+
+        try
+        {
+            return Results.Ok(await reportService.SetStatusAsync(reportId, status, cancellationToken));
+        }
+        catch (AssessmentReportException ex)
+        {
+            return AssessmentReportError(ex);
+        }
+    });
+
+    reportApi.MapGet("/markdown", async (
+        string? assessment,
+        string? kind,
+        string? status,
+        AssessmentReportService reportService,
+        CancellationToken cancellationToken) =>
+    {
+        if (!TryParseOptionalDefinedEnum<AssessmentReportKind>(kind, out var parsedKind))
+        {
+            return Results.BadRequest(ApiError(
+                "INVALID_REPORT_KIND",
+                "Report kind must be bug, improvement, or comment."));
+        }
+
+        if (!TryParseOptionalDefinedEnum<AssessmentReportStatus>(status, out var parsedStatus))
+        {
+            return Results.BadRequest(ApiError(
+                "INVALID_REPORT_STATUS",
+                "Report status must be open or resolved."));
+        }
+
+        var markdown = await reportService.FormatMarkdownAsync(
+            new AssessmentReportFilter(assessment, parsedKind, parsedStatus),
+            cancellationToken);
+        return Results.Text(markdown, "text/markdown; charset=utf-8");
+    });
+}
 
 api.MapGet("/diagnostics/docker-stream-test", async (QuizApp.Core.Services.ISandboxService sandboxService, CancellationToken ct) =>
 {
@@ -339,6 +452,9 @@ api.MapPost("/assessments", async (
     SaveAssessmentRequest request,
     IAssessmentRepository repository,
     AssessmentValidator validator,
+    IAssessmentTaxonomyValidator taxonomyValidator,
+    ICategoryRepository categoryRepository,
+    IAreaRepository areaRepository,
     CancellationToken cancellationToken) =>
 {
     var assessment = request.ToDomain();
@@ -347,6 +463,13 @@ api.MapPost("/assessments", async (
     {
         return Results.BadRequest(new { error = new { code = "ASSESSMENT_INVALID", message = "Assessment validation failed.", details = validation.Issues } });
     }
+
+    var taxonomy = taxonomyValidator.Validate(
+        assessment,
+        await categoryRepository.ListAsync(cancellationToken),
+        await areaRepository.ListAsync(cancellationToken));
+    if (!taxonomy.IsValid)
+        return Results.BadRequest(new { error = new { code = "ASSESSMENT_TAXONOMY_INVALID", message = "Assessment taxonomy validation failed.", details = taxonomy.Errors } });
 
     await repository.SaveAsync(assessment, cancellationToken);
     return Results.Created($"/api/assessments/{assessment.Id}", assessment);
@@ -357,6 +480,9 @@ api.MapPut("/assessments/{assessmentId}", async (
     SaveAssessmentRequest request,
     IAssessmentRepository repository,
     AssessmentValidator validator,
+    IAssessmentTaxonomyValidator taxonomyValidator,
+    ICategoryRepository categoryRepository,
+    IAreaRepository areaRepository,
     CancellationToken cancellationToken) =>
 {
     var assessment = request.ToDomain() with { Id = assessmentId.Trim() };
@@ -365,6 +491,13 @@ api.MapPut("/assessments/{assessmentId}", async (
     {
         return Results.BadRequest(new { error = new { code = "ASSESSMENT_INVALID", message = "Assessment validation failed.", details = validation.Issues } });
     }
+
+    var taxonomy = taxonomyValidator.Validate(
+        assessment,
+        await categoryRepository.ListAsync(cancellationToken),
+        await areaRepository.ListAsync(cancellationToken));
+    if (!taxonomy.IsValid)
+        return Results.BadRequest(new { error = new { code = "ASSESSMENT_TAXONOMY_INVALID", message = "Assessment taxonomy validation failed.", details = taxonomy.Errors } });
 
     await repository.SaveAsync(assessment, cancellationToken);
     return Results.Ok(assessment);
@@ -812,6 +945,43 @@ app.Run();
 static object ApiError(string code, string message)
 {
     return new { error = new { code, message } };
+}
+
+static IResult AssessmentReportError(AssessmentReportException exception)
+{
+    var error = ApiError(exception.Code, exception.Message);
+    return exception.Kind switch
+    {
+        AssessmentReportErrorKind.Validation => Results.BadRequest(error),
+        AssessmentReportErrorKind.NotFound => Results.NotFound(error),
+        AssessmentReportErrorKind.Conflict => Results.Conflict(error),
+        _ => Results.BadRequest(error)
+    };
+}
+
+static bool TryParseDefinedEnum<TEnum>(string? value, out TEnum parsed)
+    where TEnum : struct, Enum
+{
+    return Enum.TryParse(value, true, out parsed) && Enum.IsDefined(parsed);
+}
+
+static bool TryParseOptionalDefinedEnum<TEnum>(string? value, out TEnum? parsed)
+    where TEnum : struct, Enum
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        parsed = null;
+        return true;
+    }
+
+    if (TryParseDefinedEnum<TEnum>(value, out var defined))
+    {
+        parsed = defined;
+        return true;
+    }
+
+    parsed = null;
+    return false;
 }
 
 static TEnum? ParseEnum<TEnum>(string? value)

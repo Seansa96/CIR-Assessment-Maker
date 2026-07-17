@@ -42,7 +42,7 @@ public class AssessmentSearchTests
         var results = await service.SearchAsync(new AssessmentSearchRequest(
             "ATWOOD",
             "PHYSICS-1",
-            null,
+            "PHYSICS-ENERGY",
             "PHYSICS-WORK-ENERGY",
             "LEARN",
             "GUIDEDWORKEDEXAMPLE",
@@ -54,8 +54,19 @@ public class AssessmentSearchTests
         Assert.Single(results);
         Assert.Equal("physics-work-energy-atwood-worked-example", results[0].Id);
 
-        var suggestions = await service.GetSuggestionsAsync("ATW", "PHYSICS-1", null, null);
+        var wrongArea = await service.SearchAsync(new AssessmentSearchRequest(
+            "ATWOOD", "PHYSICS-1", "physics-dynamics", "PHYSICS-WORK-ENERGY",
+            null, null, null, null, null, 10));
+        Assert.Empty(wrongArea);
+
+        var wrongTopic = await service.SearchAsync(new AssessmentSearchRequest(
+            "ATWOOD", "PHYSICS-1", "PHYSICS-ENERGY", "physics-momentum-collisions",
+            null, null, null, null, null, 10));
+        Assert.Empty(wrongTopic);
+
+        var suggestions = await service.GetSuggestionsAsync("ATW", "PHYSICS-1", "physics-energy", "physics-work-energy");
         Assert.Contains(suggestions, suggestion => suggestion.Label == "Atwood Machine");
+        Assert.Empty(await service.GetSuggestionsAsync("ATW", "PHYSICS-1", "physics-dynamics", null));
     }
 
     private static SqliteRetentionOptions CreateSearchDatabase()
@@ -70,7 +81,7 @@ public class AssessmentSearchTests
             Id = "physics-work-energy-atwood-worked-example",
             Title = "Atwood Machine using Energy Methods",
             CategoryId = "physics-1",
-            SubcategoryIds = new[] { "physics-work-energy" },
+            TopicId = "physics-work-energy",
             Navigation = new NavigationMetadata("learn", "guidedWorkedExample", new[] { "atwood-machine" }),
             Skills = new[] { "physics-work-energy", "atwood-machine" }
         };
@@ -112,6 +123,14 @@ public class AssessmentSearchTests
             command.CommandText = "INSERT INTO assessment_subcategories (assessment_id, subcategory_id) VALUES (@id, @topic);";
             command.Parameters.AddWithValue("@id", definition.Id);
             command.Parameters.AddWithValue("@topic", "physics-work-energy");
+            command.ExecuteNonQuery();
+        }
+
+        using (var command = connection.CreateCommand())
+        {
+            command.CommandText = "INSERT INTO assessment_areas (assessment_id, area_id) VALUES (@id, @area);";
+            command.Parameters.AddWithValue("@id", definition.Id);
+            command.Parameters.AddWithValue("@area", "physics-energy");
             command.ExecuteNonQuery();
         }
 

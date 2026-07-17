@@ -169,7 +169,7 @@ int main() {
             "Test",
             AssessmentType.GuidedProject,
             "cat-1",
-            new List<string>(),
+            "topic-1",
             AssessmentMode.Practice,
             false,
             null,

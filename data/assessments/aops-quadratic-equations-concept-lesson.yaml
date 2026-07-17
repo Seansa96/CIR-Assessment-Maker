@@ -3,9 +3,8 @@ id: aops-quadratic-equations-concept-lesson
 title: Quadratic Equations Concept Lesson
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-quadratic-equations
-modeDefault: learn
+topicId: aops-quadratic-equations
+modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
@@ -13,150 +12,212 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-quadratic-equations
-  - aops
+  - factoring
+  - discriminant
+  - vieta-relations
 skills:
-- Apply aops-quadratic-equations
-- aops-quadratic-equations
+- Select factoring, completing the square, or the quadratic formula
+- Analyze real and complex roots with the discriminant
+- Use root-coefficient relations without solving explicitly
+- Reverse quadratic substitutions and reject extraneous candidates
 lesson:
-  introduction: Learn to solve Quadratic Equations problems by recognizing quadratics, factoring, quadratic formula, substitution, irrational roots and justifying each theorem or transformation.
+  introduction: |-
+    Quadratic equations arise from products, areas, squared distances, and repeated nonlinear structure. Their three main forms reveal different information: expanded form displays coefficients, factored form displays roots, and vertex form displays a shifted square. Skilled solving means moving deliberately between these forms and checking which algebraic roots belong to the original problem.
   sections:
-  - id: aops-quadratic-equations-motivation
-    title: What the topic helps you notice
+  - id: quadratic-definition-and-representations
+    title: Degree two is the defining structure
     required: true
-    content: Quadratic Equations is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are quadratics, factoring, quadratic formula, substitution, irrational roots.
+    content: |-
+      A quadratic polynomial in $x$ has expanded form
+
+      $$ax^2+bx+c,$$
+
+      where $a\ne0$. If $a=0$, the squared term disappears and the equation has degree at most one.
+
+      The same polynomial may appear as $a(x-r)(x-s)$, which exposes roots $r,s$, or as $a(x-h)^2+k$, which exposes the vertex and axis $x=h$. Before solving, move all terms to one side and identify the actual coefficients, including their signs.
     check:
-      id: aops-quadratic-equations-motivation-check
+      id: quadratic-definition-and-representations-check
       type: multipleChoice
-      prompt: In Quadratic Equations, what should be checked before applying a method?
+      prompt: 'Which expression is quadratic in $x$ for every allowed parameter value?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$3x^2-5x+1$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$kx^2+x+1$ for every real $k$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$x^3-x$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$4x-7$'
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadratic-equations-definitions
-    title: Definitions and theorem conditions
+      explanation: Its squared coefficient is the fixed nonzero number 3.
+  - id: factoring-and-zero-product-property
+    title: Factoring converts one equation into root branches
     required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+    content: |-
+      The zero-product property says that if $uv=0$, then $u=0$ or $v=0$. It applies only after the equation is written with zero on one side.
+
+      Example:
+
+      $$x^2-5x+6=(x-2)(x-3).$$
+
+      Therefore $x^2-5x+6=0$ has roots 2 and 3. Factoring is usually fastest when integer or simple rational factor pairs are visible. Do not divide by a factor containing $x$; that can discard the root that makes the factor zero.
     check:
-      id: aops-quadratic-equations-definitions-check
+      id: factoring-and-zero-product-property-check
       type: multipleChoice
-      prompt: In Quadratic Equations, what should be checked before applying a method?
+      prompt: 'Solve $5x^2-20x=0$ without losing a root.'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$x=4$ only'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$x=0$ only'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$x=0$ or $x=4$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$x=-4$ or $x=0$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadratic-equations-recognition
-    title: Recognition cues
+        choiceId: c
+      explanation: Factor as $5x(x-4)=0$ and set each factor equal to zero.
+  - id: completing-the-square-and-formula
+    title: Completing the square explains the general formula
     required: true
-    content: 'Look for these triggers: standard form, choose factoring vs formula, substitute to reduce degree. Record the givens, unknown, and any restriction before selecting a method.'
+    content: |-
+      For $x^2+px$, add $(p/2)^2$ to create
+
+      $$x^2+px+\left(\frac p2\right)^2=\left(x+\frac p2\right)^2.$$
+
+      Applied to $ax^2+bx+c=0$, first divide by $a\ne0$, isolate the constant, and complete the square. Solving the resulting square equation gives
+
+      $$x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}.$$
+
+      The $\pm$ represents two branches. Completing the square is useful when vertex information matters; the formula is reliable when factoring is not apparent.
     check:
-      id: aops-quadratic-equations-recognition-check
+      id: completing-the-square-and-formula-check
       type: multipleChoice
-      prompt: In Quadratic Equations, what should be checked before applying a method?
+      prompt: 'What number completes the square in $x^2+8x+\_\,$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '4'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '8'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '16'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '64'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadratic-equations-method
-    title: Choose a method
+        choiceId: c
+      explanation: Half of 8 is 4, and $4^2=16$.
+  - id: discriminant-and-root-types
+    title: The discriminant predicts the root geometry
     required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+    content: |-
+      The discriminant
+
+      $$\Delta=b^2-4ac$$
+
+      is the expression under the square root in the quadratic formula. Over the reals, $\Delta>0$ gives two distinct roots, $\Delta=0$ gives one repeated root, and $\Delta<0$ gives no real roots. Over the complex numbers, a negative discriminant gives two conjugate nonreal roots.
+
+      The repeated-root case corresponds to a perfect square and a parabola tangent to the horizontal axis. A negative discriminant means “no real roots,” not “no solutions in every number system.”
     check:
-      id: aops-quadratic-equations-method-check
+      id: discriminant-and-root-types-check
       type: multipleChoice
-      prompt: In Quadratic Equations, what should be checked before applying a method?
+      prompt: 'How many real roots does $3x^2-4x+5=0$ have?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: Two distinct real roots
       - id: b
-        text: Whether the diagram looks proportional.
+        text: One repeated real root
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: No real roots
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: Infinitely many real roots
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadratic-equations-mini-example
-    title: A small original example
+        choiceId: c
+      explanation: The discriminant is $16-60=-44<0$.
+  - id: roots-coefficients-and-vieta
+    title: Root sums and products are encoded in coefficients
     required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+    content: |-
+      If a monic quadratic has roots $r,s$, then
+
+      $$(x-r)(x-s)=x^2-(r+s)x+rs.$$
+
+      More generally, for $ax^2+bx+c=0$,
+
+      $$r+s=-\frac ba,\qquad rs=\frac ca.$$
+
+      These relations can answer symmetric questions without solving for each root. For example,
+
+      $$r^2+s^2=(r+s)^2-2rs.$$
+
+      Signs matter: the root sum uses $-b/a$, while the product uses $c/a$.
     check:
-      id: aops-quadratic-equations-mini-example-check
+      id: roots-coefficients-and-vieta-check
       type: multipleChoice
-      prompt: In Quadratic Equations, what should be checked before applying a method?
+      prompt: 'If $r,s$ are roots of $x^2-5x+1=0$, what is $r^2+s^2$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '21'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '23'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '25'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '27'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadratic-equations-trap
-    title: Common misconception
+        choiceId: b
+      explanation: $r+s=5$ and $rs=1$, so $r^2+s^2=25-2=23$.
+  - id: disguised-quadratics-and-substitution
+    title: Name repeated structure before expanding
     required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+    content: |-
+      An equation may be quadratic in an expression rather than directly in $x$. For
+
+      $$x^4-5x^2+4=0,$$
+
+      let $u=x^2$. Then $(u-1)(u-4)=0$, so $u=1$ or $u=4$. Reversing the substitution gives $x=\pm1,\pm2$.
+
+      Every substitution carries a range restriction. If $u=x^2$ over the reals, then $u\ge0$; a negative algebraic root for $u$ would be rejected. If $u=2^x$, then $u>0$ and each positive value must be converted back to an exponent.
     check:
-      id: aops-quadratic-equations-trap-check
+      id: disguised-quadratics-and-substitution-check
       type: multipleChoice
-      prompt: In Quadratic Equations, what should be checked before applying a method?
+      prompt: 'Solve $x^4-10x^2+9=0$ over the reals.'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$x=1$ or $x=9$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$x=\pm1$ or $x=\pm3$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$x=\pm9$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$x=0$ or $x=10$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-quadratic-equations-synthesis
-    title: Contest synthesis
+        choiceId: b
+      explanation: Let $u=x^2$; then $(u-1)(u-9)=0$ and reverse both positive square values.
+  - id: restrictions-extraneous-roots-and-parameters
+    title: Synthesis—root candidates are not automatically solutions
     required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+    content: |-
+      Squaring a radical equation may add candidates because $A^2=B^2$ allows $A=B$ or $A=-B$. Denominator clearing may retain values where an original denominator was zero. Record restrictions first and verify candidates in the original equation.
+
+      Parameters can change root count. For
+
+      $$x^2+kx+9=0,$$
+
+      a repeated real root requires $k^2-36=0$, so $k=\pm6$. A parameter problem should be classified through the discriminant or coefficient structure, not by testing one convenient value.
     check:
-      id: aops-quadratic-equations-synthesis-check
+      id: restrictions-extraneous-roots-and-parameters-check
       type: multipleChoice
-      prompt: In Quadratic Equations, what should be checked before applying a method?
+      prompt: 'Squaring $\sqrt{x+5}=x-1$ produces candidates $4$ and $-1$. Which conclusion is correct?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: Both are solutions.
       - id: b
-        text: Whether the diagram looks proportional.
+        text: Only $x=4$ satisfies the original equation and its condition $x\ge1$.
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: Only $x=-1$ is a solution.
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: Neither is a solution.
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+        choiceId: b
+      explanation: The negative candidate is extraneous; direct substitution gives unequal sides.

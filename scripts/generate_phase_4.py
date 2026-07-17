@@ -6,8 +6,7 @@ id: chemistry-solutions-concentration-concept-lesson
 title: "Solution Concentration: Molarity"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-solutions
+topicId: chemistry-solutions
 modeDefault: study
 lesson:
   introduction: "A solution is a homogeneous mixture of a solute dissolved in a solvent. To quantify how much solute is present, chemists use concentration."
@@ -48,8 +47,7 @@ id: chemistry-solutions-molarity-worked-example
 title: "Calculating Molarity"
 type: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chemistry-solutions
+topicId: chemistry-solutions
 modeDefault: study
 workedExamples:
   - id: we-molarity
@@ -83,8 +81,7 @@ id: chem-aqueous-solutions-solubility-rules-recall
 title: "Solubility Rules Drill"
 type: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chem-aqueous-solutions
+topicId: chem-aqueous-solutions
 modeDefault: practice
 items:
   - id: sr-nitrates
@@ -123,8 +120,7 @@ id: chem-aqueous-solutions-net-ionic-equations-worked-example
 title: "Writing Net Ionic Equations"
 type: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chem-aqueous-solutions
+topicId: chem-aqueous-solutions
 modeDefault: study
 workedExamples:
   - id: we-net-ionic
@@ -172,8 +168,7 @@ id: chem-aqueous-solutions-precipitates-concept-lesson
 title: "Precipitation Reactions"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-aqueous-solutions
+topicId: chem-aqueous-solutions
 modeDefault: study
 lesson:
   introduction: "When two aqueous solutions are mixed, they sometimes form a solid that settles out of solution. This solid is called a precipitate."
@@ -213,8 +208,7 @@ id: chem-acids-strong-weak-concept-lesson
 title: "Strong vs Weak Acids"
 type: conceptLesson
 categoryId: chemistry
-subcategoryIds:
-  - chem-acids
+topicId: chem-acids
 modeDefault: study
 lesson:
   introduction: "Acids are substances that donate protons ($H^+$) in aqueous solution. Their 'strength' refers to how completely they dissociate into ions."
@@ -259,8 +253,7 @@ id: chem-acids-ph-poh-worked-example
 title: "Calculating pH and pOH"
 type: workedExample
 categoryId: chemistry
-subcategoryIds:
-  - chem-acids
+topicId: chem-acids
 modeDefault: study
 workedExamples:
   - id: we-ph-calc
@@ -294,8 +287,7 @@ id: chem-acids-conjugate-pairs-recall
 title: "Conjugate Acid-Base Pairs Drill"
 type: recallDrill
 categoryId: chemistry
-subcategoryIds:
-  - chem-acids
+topicId: chem-acids
 modeDefault: practice
 items:
   - id: ca-drill-1

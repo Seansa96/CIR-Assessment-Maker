@@ -84,6 +84,30 @@ public sealed class AssessmentContentAuditTests
 
     [Fact]
     [Trait("Category", "ContentValidation")]
+    public async Task Every_authored_assessment_has_exactly_one_scalar_topic_id()
+    {
+        var errors = await audit.ValidateSingleTopicContractAsync();
+        Assert.True(errors.Count == 0, string.Join(Environment.NewLine, errors));
+    }
+
+    [Fact]
+    [Trait("Category", "ContentValidation")]
+    public async Task Every_declared_topic_has_exactly_one_canonical_area()
+    {
+        var errors = await audit.ValidateCatalogTaxonomyAsync();
+        Assert.True(errors.Count == 0, string.Join(Environment.NewLine, errors));
+    }
+
+    [Fact]
+    [Trait("Category", "ContentValidation")]
+    public async Task Assessment_generators_cannot_emit_legacy_multi_topic_classification()
+    {
+        var errors = await audit.ValidateAssessmentGeneratorsUseSingularTopicAsync();
+        Assert.True(errors.Count == 0, string.Join(Environment.NewLine, errors));
+    }
+
+    [Fact]
+    [Trait("Category", "ContentValidation")]
     public async Task All_authored_assessments_have_valid_navigation_metadata()
     {
         var errors = await audit.ValidateNavigationMetadataAsync();

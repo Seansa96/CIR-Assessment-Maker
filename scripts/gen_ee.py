@@ -44,8 +44,7 @@ id: ee-signals-systems-concept-lesson
 title: "Introduction to Signals and Systems"
 assessmentType: conceptLesson
 categoryId: electrical-engineering
-subcategoryIds:
-  - ee-signals-systems
+topicId: ee-signals-systems
 modeDefault: study
 lesson:
   introduction: "Digital Signal Processing (DSP) begins with understanding the properties of signals and the systems that process them."
@@ -92,8 +91,7 @@ id: ee-semiconductor-physics-concept-lesson
 title: "Band Gap and Doping"
 assessmentType: conceptLesson
 categoryId: electrical-engineering
-subcategoryIds:
-  - ee-semiconductor-physics
+topicId: ee-semiconductor-physics
 modeDefault: study
 lesson:
   introduction: "The behavior of modern electronics relies on manipulating the conductivity of semiconductors, primarily Silicon."
@@ -137,8 +135,7 @@ id: ee-transformers-worked-example
 title: "Ideal Transformer Calculations"
 assessmentType: workedExample
 categoryId: electrical-engineering
-subcategoryIds:
-  - ee-transformers
+topicId: ee-transformers
 modeDefault: study
 workedExamples:
   - id: we-ideal-transformer
@@ -198,8 +195,7 @@ id: ee-voltage-regulation-concept-lesson
 title: "Linear vs Switching Regulators"
 assessmentType: conceptLesson
 categoryId: electrical-engineering
-subcategoryIds:
-  - ee-voltage-regulation
+topicId: ee-voltage-regulation
 modeDefault: study
 lesson:
   introduction: "Voltage regulators maintain a constant output voltage despite variations in input voltage or load current. They are essential for protecting sensitive electronic components."

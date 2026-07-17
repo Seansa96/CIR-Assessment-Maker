@@ -15,3 +15,11 @@ Files are original paraphrases and original question banks. Do not copy source e
 - Chapter 6: [Quadratic Equations](chapter-06-quadratic-equations.md), [bank](chapter-06-quadratic-equations-question-bank.yaml) -> `aops-quadratic-equations` (pdf 66-80; printed 52-66)
 - Chapter 7: [Special Factorizations and Clever Manipulations](chapter-07-special-factorizations.md), [bank](chapter-07-special-factorizations-question-bank.yaml) -> `aops-special-factorizations` (pdf 81-88; printed 67-74)
 - Chapter 8: [What Numbers Really Are](chapter-08-number-systems.md), [bank](chapter-08-number-systems-question-bank.yaml) -> `aops-number-systems` (pdf 89-94; printed 75-80)
+
+## Geometry Batch
+- Chapter 9: [An Introduction to Circles](chapter-09-circles-introduction.md) -> `aops-circles-introduction` (pdf 95-97; printed 81-83)
+- Chapter 10: [Angles](chapter-10-angles.md) -> `aops-angles` (pdf 98-106; printed 84-92)
+- Chapter 11: [Triangles](chapter-11-triangles.md), [bank](chapter-11-triangles-question-bank.yaml) -> `aops-triangles` (pdf 107-131; printed 93-117)
+- Chapter 12: [Quadrilaterals](chapter-12-quadrilaterals.md), [bank](chapter-12-quadrilaterals-question-bank.yaml) -> `aops-quadrilaterals` (pdf 132-140; printed 118-126)
+- Chapter 13: [Polygons](chapter-13-polygons.md), [bank](chapter-13-polygons-question-bank.yaml) -> `aops-polygons` (pdf 141-146; printed 127-132)
+- Chapter 14: [Angle Chasing](chapter-14-angle-chasing.md), [bank](chapter-14-angle-chasing-question-bank.yaml) -> `aops-angle-chasing` (pdf 147-149; printed 133-135)

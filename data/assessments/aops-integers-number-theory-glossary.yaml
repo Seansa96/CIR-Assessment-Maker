@@ -3,160 +3,247 @@ id: aops-integers-number-theory-glossary
 title: Using the Integers Glossary
 assessmentType: glossary
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-integers-number-theory
+topicId: aops-integers-number-theory
 modeDefault: practice
-randomizeQuestions: true
+randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: glossary
   tags:
   - art-of-problem-solving
   - aops-integers-number-theory
-  - aops-volume-1
-  - number-theory
-  - divisibility
-  - number-bases
-  - last-digits
-  - modular-arithmetic
+  - number-theory-vocabulary
 skills:
-- Apply aops-integers-number-theory
-- aops-integers-number-theory
+- Interpret divisibility, factorization, and congruence notation
+- Distinguish gcd, lcm, coprimality, quotient, and residue
+- Read positional numerals in arbitrary bases
 glossary:
-  introduction: Review these Using the Integers terms before attempting the worked examples and quizzes.
+  introduction: |-
+    Integer notation is compact but directional. Learn each term with its defining equation or divisibility claim so that factor, multiple, residue, and congruence are not confused.
   sections:
-  - id: aops-integers-number-theory-terms
-    title: Using the Integers Terms and Cues
+  - id: factors-and-primes
+    title: Factors and Prime Structure
     required: true
-    content: This glossary emphasizes recognition cues for Using the Integers.
+    content: Prime factorizations encode all positive divisor information.
     entries:
-    - id: divisibility
-      term: Divisibility
-      definition: |-
-        A core Using the Integers idea used to recognize, transform, or check problems involving divisibility.
-      notation: ''
-      examples:
-      - |-
-        Use divisibility when the prompt asks for a relationship, classification, or transformed form tied to Using the Integers.
+    - id: divides
+      term: Divides
+      definition: For $d\ne0$, $d\mid n$ means $n=dk$ for some integer $k$.
+      notation: '$d\mid n$'
+      examples: ['$7\mid42$ because $42=7\cdot6$.']
+      aliases: [is a divisor of]
+      media: []
+      tags: [divisibility]
+      drills:
+      - id: divides-drill
+        type: flashcard
+        prompt: What witness proves $d\mid n$?
+        answer:
+          expected: An integer k such that n=dk.
+        explanation: Divisibility is an existence claim.
+        tags: [divisibility]
+    - id: divisor
+      term: Divisor
+      definition: An integer that divides another integer without remainder.
+      notation: null
+      examples: ['Six is a positive divisor of 18.']
+      aliases: [factor]
+      media: []
+      tags: [divisor]
+      drills:
+      - id: divisor-drill
+        type: typed
+        prompt: Give the greatest positive divisor of 18 smaller than 18.
+        answer:
+          expected: '9'
+          aliases: [nine]
+        explanation: $18=9\cdot2$.
+        tags: [divisor]
+    - id: prime-number
+      term: Prime Number
+      definition: A positive integer greater than 1 with exactly two positive divisors, 1 and itself.
+      notation: null
+      examples: ['Seven is prime; 1 is neither prime nor composite.']
+      aliases: [prime]
+      media: []
+      tags: [prime]
+      drills:
+      - id: prime-number-drill
+        type: flashcard
+        prompt: Why is 1 not prime?
+        answer:
+          expected: It has only one positive divisor, not exactly two.
+        explanation: The definition deliberately begins above 1.
+        tags: [prime]
+    - id: composite-number
+      term: Composite Number
+      definition: A positive integer greater than 1 that is not prime and can be expressed as a product of smaller positive integers greater than 1.
+      notation: null
+      examples: ['$12=3\cdot4$ is composite.']
+      aliases: [composite]
+      media: []
+      tags: [composite]
+      drills:
+      - id: composite-number-drill
+        type: typed
+        prompt: Is 21 prime or composite?
+        answer:
+          expected: composite
+          aliases: [composite number]
+        explanation: $21=3\cdot7$.
+        tags: [composite]
+    - id: prime-factorization
+      term: Prime Factorization
+      definition: A product of prime powers equal to an integer, unique up to the order of factors.
+      notation: null
+      examples: ['$360=2^3\cdot3^2\cdot5$.']
+      aliases: [canonical factorization]
+      media: []
+      tags: [prime-factorization]
+      drills:
+      - id: prime-factorization-drill
+        type: flashcard
+        prompt: What feature makes a factorization complete?
+        answer:
+          expected: Every displayed factor is prime.
+        explanation: Composite factors must be split further.
+        tags: [prime-factorization]
+    - id: greatest-common-divisor
+      term: Greatest Common Divisor
+      definition: The greatest positive integer dividing every integer in a given collection.
+      notation: '$\gcd(a,b)$'
+      examples: ['$\gcd(72,120)=24$.']
+      aliases: [gcd, greatest common factor]
+      media: []
+      tags: [gcd]
+      drills:
+      - id: greatest-common-divisor-drill
+        type: flashcard
+        prompt: Which prime exponents are chosen for a gcd?
+        answer:
+          expected: The smaller exponent for every prime shared by the numbers.
+        explanation: A common divisor cannot demand more of a prime than either number contains.
+        tags: [gcd]
+    - id: least-common-multiple
+      term: Least Common Multiple
+      definition: The least positive integer divisible by every integer in a given collection.
+      notation: '$\operatorname{lcm}(a,b)$'
+      examples: ['$\operatorname{lcm}(18,24)=72$.']
+      aliases: [lcm]
+      media: []
+      tags: [lcm]
+      drills:
+      - id: least-common-multiple-drill
+        type: flashcard
+        prompt: Which prime exponents are chosen for an lcm?
+        answer:
+          expected: The largest exponent required by any of the numbers.
+        explanation: The lcm must contain every original prime power.
+        tags: [lcm]
+    - id: coprime
+      term: Coprime
+      definition: Integers whose greatest common divisor is 1.
+      notation: '$\gcd(a,b)=1$'
+      examples: ['Consecutive integers are coprime.']
+      aliases: [relatively prime]
+      media: []
+      tags: [coprime]
+      drills:
+      - id: coprime-drill
+        type: typed
+        prompt: What gcd do coprime integers have?
+        answer:
+          expected: '1'
+          aliases: [one]
+        explanation: They share no prime factor.
+        tags: [coprime]
+  - id: division-congruence-and-bases
+    title: Division, Congruence, and Bases
+    required: true
+    content: Quotient-remainder form connects modular arithmetic with positional notation.
+    entries:
+    - id: remainder
+      term: Remainder
+      definition: In $n=qm+r$ with $m>0$, the unique integer $r$ satisfying $0\le r<m$.
+      notation: null
+      examples: ['$-17=6(-3)+1$, so the least nonnegative remainder is 1.']
       aliases: []
       media: []
-      tags:
-      - divisibility
-      - aops-integers-number-theory
+      tags: [remainder]
       drills:
-      - id: divisibility-definition-drill
+      - id: remainder-drill
         type: typed
-        prompt: 'Which Using the Integers term describes the idea: divisibility?'
+        prompt: What range contains the least nonnegative remainder modulo $m>0$?
         answer:
-          expected: Divisibility
-          aliases:
-          - divisibility
-        explanation: |-
-          This term belongs to the Using the Integers toolkit and should be recognized before choosing a method.
-        tags:
-        - divisibility
-        - aops-integers-number-theory
-    - id: number-bases
-      term: Number Bases
-      definition: |-
-        A core Using the Integers idea used to recognize, transform, or check problems involving number bases.
-      notation: ''
-      examples:
-      - |-
-        Use number bases when the prompt asks for a relationship, classification, or transformed form tied to Using the Integers.
+          expected: 0 through m-1
+          aliases: ['$0\le r<m$']
+        explanation: This range makes the quotient-remainder representation unique.
+        tags: [remainder]
+    - id: congruence
+      term: Congruence
+      definition: The relation $a\equiv b\pmod m$ meaning that $m$ divides $a-b$.
+      notation: '$a\equiv b\pmod m$'
+      examples: ['$17\equiv2\pmod5$.']
+      aliases: [modular equivalence]
+      media: []
+      tags: [congruence]
+      drills:
+      - id: congruence-drill
+        type: flashcard
+        prompt: What divisibility statement is equivalent to $a\equiv b\pmod m$?
+        answer:
+          expected: m divides a-b.
+          aliases: ['$m\mid(a-b)$']
+        explanation: Congruence records that the difference is a multiple of the modulus.
+        tags: [congruence]
+    - id: modulus
+      term: Modulus
+      definition: The positive integer $m$ specifying which multiples are ignored in congruence modulo $m$.
+      notation: '$\pmod m$'
+      examples: ['Modulo 10 preserves the units digit.']
       aliases: []
       media: []
-      tags:
-      - number-bases
-      - aops-integers-number-theory
+      tags: [modulus]
       drills:
-      - id: number-bases-definition-drill
+      - id: modulus-drill
         type: typed
-        prompt: 'Which Using the Integers term describes the idea: number bases?'
+        prompt: Which modulus preserves the last two decimal digits?
         answer:
-          expected: Number Bases
-          aliases:
-          - number bases
-        explanation: |-
-          This term belongs to the Using the Integers toolkit and should be recognized before choosing a method.
-        tags:
-        - number-bases
-        - aops-integers-number-theory
-    - id: last-digits
-      term: Last Digits
-      definition: |-
-        A core Using the Integers idea used to recognize, transform, or check problems involving last digits.
-      notation: ''
-      examples:
-      - |-
-        Use last digits when the prompt asks for a relationship, classification, or transformed form tied to Using the Integers.
-      aliases: []
+          expected: '100'
+          aliases: [one hundred]
+        explanation: Two base-ten digits represent a residue modulo $10^2$.
+        tags: [modulus]
+    - id: least-nonnegative-residue
+      term: Least Nonnegative Residue
+      definition: The unique representative of a congruence class in $\{0,1,\ldots,m-1\}$.
+      notation: null
+      examples: ['The least nonnegative residue of $-1$ modulo 5 is 4.']
+      aliases: [canonical residue]
       media: []
-      tags:
-      - last-digits
-      - aops-integers-number-theory
+      tags: [residue]
       drills:
-      - id: last-digits-definition-drill
+      - id: least-nonnegative-residue-drill
         type: typed
-        prompt: 'Which Using the Integers term describes the idea: last digits?'
+        prompt: Give the least nonnegative residue of $-2$ modulo 7.
         answer:
-          expected: Last Digits
-          aliases:
-          - last digits
-        explanation: |-
-          This term belongs to the Using the Integers toolkit and should be recognized before choosing a method.
-        tags:
-        - last-digits
-        - aops-integers-number-theory
-    - id: modular-arithmetic
-      term: Modular Arithmetic
-      definition: |-
-        A core Using the Integers idea used to recognize, transform, or check problems involving modular arithmetic.
-      notation: ''
-      examples:
-      - |-
-        Use modular arithmetic when the prompt asks for a relationship, classification, or transformed form tied to Using the Integers.
-      aliases: []
+          expected: '5'
+          aliases: [five]
+        explanation: Add 7 to obtain the representative 5.
+        tags: [residue]
+    - id: positional-base
+      term: Positional Base
+      definition: A place-value system in which the $j$th position represents a multiple of $b^j$ and every digit is smaller than $b$.
+      notation: '$(d_k\cdots d_0)_b$'
+      examples: ['$101_2=1(4)+0(2)+1=5$.']
+      aliases: [number base, radix]
       media: []
-      tags:
-      - modular-arithmetic
-      - aops-integers-number-theory
+      tags: [positional-base]
       drills:
-      - id: modular-arithmetic-definition-drill
+      - id: positional-base-drill
         type: typed
-        prompt: 'Which Using the Integers term describes the idea: modular arithmetic?'
+        prompt: What is the smallest base in which $234$ is a valid numeral?
         answer:
-          expected: Modular Arithmetic
-          aliases:
-          - modular arithmetic
-        explanation: |-
-          This term belongs to the Using the Integers toolkit and should be recognized before choosing a method.
-        tags:
-        - modular-arithmetic
-        - aops-integers-number-theory
-    - id: primes
-      term: Primes
-      definition: |-
-        A core Using the Integers idea used to recognize, transform, or check problems involving primes.
-      notation: ''
-      examples:
-      - |-
-        Use primes when the prompt asks for a relationship, classification, or transformed form tied to Using the Integers.
-      aliases: []
-      media: []
-      tags:
-      - primes
-      - aops-integers-number-theory
-      drills:
-      - id: primes-definition-drill
-        type: typed
-        prompt: 'Which Using the Integers term describes the idea: primes?'
-        answer:
-          expected: Primes
-          aliases:
-          - primes
-        explanation: |-
-          This term belongs to the Using the Integers toolkit and should be recognized before choosing a method.
-        tags:
-        - primes
-        - aops-integers-number-theory
+          expected: '5'
+          aliases: [base 5]
+        explanation: The largest digit 4 must be strictly smaller than the base.
+        tags: [positional-base]

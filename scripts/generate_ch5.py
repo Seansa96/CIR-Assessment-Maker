@@ -16,7 +16,7 @@ def generate_ch5():
         "title": "The Operational Amplifier: Terminals and Ideal Model",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-operational-amplifier"],
+        "topicId": "ec-operational-amplifier",
         "workedExamples": [
             {
                 "id": "l1-sec1",
@@ -46,7 +46,7 @@ def generate_ch5():
         "title": "The Operational Amplifier: Common Circuit Topologies",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-operational-amplifier"],
+        "topicId": "ec-operational-amplifier",
         "workedExamples": [
             {
                 "id": "l2-sec1",
@@ -74,7 +74,7 @@ def generate_ch5():
         "title": "Worked Example: Analyzing an Op-Amp Circuit",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-operational-amplifier"],
+        "topicId": "ec-operational-amplifier",
         "workedExamples": [
             {
                 "id": "we1",
@@ -109,7 +109,7 @@ def generate_ch5():
         "title": "Operational Amplifier Glossary",
         "assessmentType": "glossary",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-operational-amplifier"],
+        "topicId": "ec-operational-amplifier",
         "glossary": {
             "sections": [
                 {
@@ -151,7 +151,7 @@ def generate_ch5():
         "title": "Operational Amplifier Recall Drill",
         "assessmentType": "recallDrill",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-operational-amplifier"],
+        "topicId": "ec-operational-amplifier",
         "items": [
             {
                 "id": "rd1",
@@ -182,7 +182,7 @@ def generate_ch5():
         "title": "Operational Amplifier Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-operational-amplifier"],
+        "topicId": "ec-operational-amplifier",
         "modeDefault": "practice",
         "questions": [
             {
@@ -234,7 +234,7 @@ def generate_ch5():
         "title": "Operational Amplifier Test",
         "assessmentType": "test",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-operational-amplifier"],
+        "topicId": "ec-operational-amplifier",
         "attemptQuestionCount": 15,
         "questions": test_questions
     }

@@ -49,7 +49,11 @@ public sealed record RecallTagAnalytics(
     string Tag,
     int AttemptCount,
     decimal AverageRating,
-    int WeakCount);
+    int WeakCount)
+{
+    public string? CategoryId { get; init; }
+    public string? TopicId { get; init; }
+}
 
 public sealed record RecallGroupAnalytics(
     string Id,
@@ -101,7 +105,11 @@ public sealed record SkillPerformance(
     string SkillId,
     int AnsweredCount,
     int CorrectCount,
-    decimal CorrectPercent);
+    decimal CorrectPercent)
+{
+    public string? CategoryId { get; init; }
+    public string? TopicId { get; init; }
+}
 
 public sealed record ActionableNextStep(
     string SkillId,

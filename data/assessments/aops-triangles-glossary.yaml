@@ -1,162 +1,531 @@
 schemaVersion: 1
 id: aops-triangles-glossary
 title: Triangles Glossary
+description: Precise vocabulary for triangle existence, rigidity, similarity, centers, trigonometry, and area.
 assessmentType: glossary
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-triangles
+topicId: aops-triangles
 modeDefault: practice
-randomizeQuestions: true
+randomizeQuestions: false
+skills:
+- Interpret triangle theorem hypotheses from technical vocabulary
+- Distinguish congruence, similarity, cevian, center, and area terminology
+- Recall notation and selection cues without relying on a diagram's appearance
 navigation:
   learningGoal: learn
   activityType: glossary
-  tags:
-  - art-of-problem-solving
-  - aops-triangles
-  - aops-volume-1
-  - geometry
-  - triangle-classification
-  - triangle-inequality
-  - pythagorean-theorem
-  - congruence
-skills:
-- Apply aops-triangles
-- aops-triangles
+  tags: [art-of-problem-solving, aops-triangles, geometry, triangle-vocabulary, congruence, similarity, triangle-centers, triangle-area]
 glossary:
-  introduction: Review these Triangles terms before attempting the worked examples and quizzes.
+  introduction: |
+    Triangle terminology is operational: each term identifies a construction, a theorem hypothesis, or a quantity that controls which equation is valid. The drills emphasize those distinctions rather than isolated word recognition.
   sections:
-  - id: aops-triangles-terms
-    title: Triangles Terms and Cues
+  - id: triangle-structure-terms
+    title: Existence, Angles, and Right-Triangle Structure
     required: true
-    content: This glossary emphasizes recognition cues for Triangles.
+    content: These terms control whether a triangle exists and what side data imply about its angles.
     entries:
-    - id: triangle-classification
-      term: Triangle Classification
-      definition: |-
-        A core Triangles idea used to recognize, transform, or check problems involving triangle classification.
-      notation: ''
-      examples:
-      - |-
-        Use triangle classification when the prompt asks for a relationship, classification, or transformed form tied to Triangles.
-      aliases: []
+    - id: nondegenerate-triangle
+      term: Nondegenerate Triangle
+      definition: A triangle with positive area; equivalently, every side is strictly shorter than the sum of the other two.
+      notation: null
+      examples: ['Sides 3, 4, and 7 are degenerate because $3+4=7$.']
+      aliases: [proper triangle]
       media: []
-      tags:
-      - triangle-classification
-      - aops-triangles
+      tags: [nondegenerate-triangle]
       drills:
-      - id: triangle-classification-definition-drill
-        type: typed
-        prompt: 'Which Triangles term describes the idea: triangle classification?'
-        answer:
-          expected: Triangle Classification
-          aliases:
-          - triangle classification
-        explanation: |-
-          This term belongs to the Triangles toolkit and should be recognized before choosing a method.
-        tags:
-        - triangle-classification
-        - aops-triangles
+      - id: nondegenerate-triangle-drill
+        type: flashcard
+        prompt: What does equality in one triangle inequality produce?
+        answer: {expected: A degenerate straight-line arrangement with zero area.}
+        explanation: Strict inequality is required for a nondegenerate triangle.
+        tags: [nondegenerate-triangle]
     - id: triangle-inequality
       term: Triangle Inequality
-      definition: |-
-        A core Triangles idea used to recognize, transform, or check problems involving triangle inequality.
-      notation: ''
-      examples:
-      - |-
-        Use triangle inequality when the prompt asks for a relationship, classification, or transformed form tied to Triangles.
+      definition: Each side of a nondegenerate triangle is strictly less than the sum of the other two; for known sides $p,q$, a third side $x$ satisfies $|p-q|<x<p+q$.
+      notation: '$|p-q|<x<p+q$'
+      examples: ['With sides 5 and 8, the third side must satisfy $3<x<13$.']
       aliases: []
       media: []
-      tags:
-      - triangle-inequality
-      - aops-triangles
+      tags: [triangle-inequality]
       drills:
       - id: triangle-inequality-definition-drill
         type: typed
-        prompt: 'Which Triangles term describes the idea: triangle inequality?'
-        answer:
-          expected: Triangle Inequality
-          aliases:
-          - triangle inequality
-        explanation: |-
-          This term belongs to the Triangles toolkit and should be recognized before choosing a method.
-        tags:
-        - triangle-inequality
-        - aops-triangles
+        prompt: Give the combined strict bounds for a third side $x$ when the other sides are 7 and 11.
+        answer: {expected: '4 < x < 18', aliases: ['$4<x<18$']}
+        explanation: Use difference as the lower bound and sum as the upper bound.
+        tags: [triangle-inequality]
+    - id: interior-angle-sum
+      term: Triangle Interior-Angle Sum
+      definition: The three interior angles of a Euclidean triangle have total measure $180^\circ$.
+      notation: '$A+B+C=180^\circ$'
+      examples: ['Angles $48^\circ$ and $71^\circ$ leave $61^\circ$.']
+      aliases: [triangle sum theorem]
+      media: []
+      tags: [interior-angle-sum]
+      drills:
+      - id: interior-angle-sum-drill
+        type: typed
+        prompt: Two triangle angles are $36^\circ$ and $89^\circ$. Find the third.
+        answer: {expected: '55 degrees', aliases: ['$55^\circ$', '55']}
+        explanation: Subtract their sum from $180^\circ$.
+        tags: [interior-angle-sum]
+    - id: exterior-angle
+      term: Triangle Exterior Angle
+      definition: An angle formed by one triangle side and the extension of an adjacent side; it equals the sum of the two remote interior angles.
+      notation: null
+      examples: ['Remote angles $48^\circ$ and $71^\circ$ give exterior angle $119^\circ$.']
+      aliases: []
+      media: []
+      tags: [exterior-angle]
+      drills:
+      - id: exterior-angle-drill
+        type: flashcard
+        prompt: Which two interior angles sum to a chosen exterior angle?
+        answer: {expected: The two remote interior angles.}
+        explanation: The adjacent interior angle forms a linear pair with the exterior angle.
+        tags: [exterior-angle]
+    - id: hypotenuse
+      term: Hypotenuse
+      definition: The side opposite the right angle in a right triangle; it is the triangle's longest side.
+      notation: '$c$ in $a^2+b^2=c^2$'
+      examples: ['In a 7-24-25 right triangle, 25 is the hypotenuse.']
+      aliases: []
+      media: []
+      tags: [hypotenuse]
+      drills:
+      - id: hypotenuse-drill
+        type: flashcard
+        prompt: How is the hypotenuse identified without measuring the drawing?
+        answer: {expected: It is opposite the marked or proved right angle.}
+        explanation: Position relative to the right angle, not visual slope, defines it.
+        tags: [hypotenuse]
     - id: pythagorean-theorem
       term: Pythagorean Theorem
-      definition: |-
-        A core Triangles idea used to recognize, transform, or check problems involving Pythagorean theorem.
-      notation: ''
-      examples:
-      - |-
-        Use Pythagorean theorem when the prompt asks for a relationship, classification, or transformed form tied to Triangles.
+      definition: In a right triangle, the sum of the squares of the legs equals the square of the hypotenuse.
+      notation: '$a^2+b^2=c^2$'
+      examples: ['$7^2+24^2=25^2$.']
       aliases: []
       media: []
-      tags:
-      - pythagorean-theorem
-      - aops-triangles
+      tags: [pythagorean-theorem]
       drills:
       - id: pythagorean-theorem-definition-drill
-        type: typed
-        prompt: 'Which Triangles term describes the idea: Pythagorean theorem?'
-        answer:
-          expected: Pythagorean Theorem
-          aliases:
-          - Pythagorean theorem
-        explanation: |-
-          This term belongs to the Triangles toolkit and should be recognized before choosing a method.
-        tags:
-        - pythagorean-theorem
-        - aops-triangles
+        type: flashcard
+        prompt: What hypothesis must be established before using the Pythagorean theorem forward?
+        answer: {expected: The triangle is right.}
+        explanation: The forward theorem computes within a right triangle.
+        tags: [pythagorean-theorem]
+    - id: pythagorean-converse
+      term: Pythagorean Converse
+      definition: If positive triangle side lengths with longest side $c$ satisfy $a^2+b^2=c^2$, then the angle opposite $c$ is right.
+      notation: null
+      examples: ['Because $20^2+21^2=29^2$, a 20-21-29 triangle is right.']
+      aliases: [converse of the Pythagorean theorem]
+      media: []
+      tags: [pythagorean-converse]
+      drills:
+      - id: pythagorean-converse-drill
+        type: flashcard
+        prompt: In a converse problem, what must be checked before comparing squares?
+        answer: {expected: That the side lengths form a nondegenerate triangle and that c is the longest side.}
+        explanation: The comparison classifies an existing triangle relative to its longest side.
+        tags: [pythagorean-converse]
+    - id: triangle-classification
+      term: Longest-Side Square Classification
+      definition: For longest side $c$, compare $c^2$ with $a^2+b^2$; a smaller, equal, or larger value makes the triangle acute, right, or obtuse respectively.
+      notation: '$c^2\lessgtr a^2+b^2$'
+      examples: ['$30^2>20^2+21^2$, so a 20-21-30 triangle is obtuse.']
+      aliases: [side-square classification]
+      media: []
+      tags: [triangle-classification]
+      drills:
+      - id: triangle-classification-definition-drill
+        type: flashcard
+        prompt: If $c^2<a^2+b^2$ for the longest side, how is the triangle classified?
+        answer: {expected: Acute.}
+        explanation: The largest angle is less than $90^\circ$.
+        tags: [triangle-classification]
+  - id: triangle-rigidity-scale-terms
+    title: Congruence, Correspondence, and Similarity
+    required: true
+    content: These terms distinguish exact rigid matching from proportional matching at a different scale.
+    entries:
     - id: congruence
-      term: Congruence
-      definition: |-
-        A core Triangles idea used to recognize, transform, or check problems involving congruence.
-      notation: ''
-      examples:
-      - |-
-        Use congruence when the prompt asks for a relationship, classification, or transformed form tied to Triangles.
+      term: Triangle Congruence
+      definition: Equality of shape and size; one triangle can be mapped onto the other by rigid motions, including reflection.
+      notation: '$\triangle ABC\cong\triangle DEF$'
+      examples: ['Congruent triangles have all six corresponding parts equal.']
       aliases: []
       media: []
-      tags:
-      - congruence
-      - aops-triangles
+      tags: [congruence]
       drills:
       - id: congruence-definition-drill
+        type: flashcard
+        prompt: Does a reflection preserve congruence?
+        answer: {expected: 'Yes.'}
+        explanation: Reflection preserves all lengths and angles while reversing orientation.
+        tags: [congruence]
+    - id: correspondence
+      term: Triangle Correspondence
+      definition: The ordered pairing of vertices, sides, and angles between two triangles.
+      notation: '$ABC\leftrightarrow DEF$'
+      examples: ['In $\triangle ABC\cong\triangle DFE$, side $BC$ corresponds to $FE$.']
+      aliases: [matching order]
+      media: []
+      tags: [correspondence]
+      drills:
+      - id: correspondence-drill
         type: typed
-        prompt: 'Which Triangles term describes the idea: congruence?'
-        answer:
-          expected: Congruence
-          aliases:
-          - congruence
-        explanation: |-
-          This term belongs to the Triangles toolkit and should be recognized before choosing a method.
-        tags:
-        - congruence
-        - aops-triangles
-    - id: similarity
-      term: Similarity
-      definition: |-
-        A core Triangles idea used to recognize, transform, or check problems involving similarity.
-      notation: ''
-      examples:
-      - |-
-        Use similarity when the prompt asks for a relationship, classification, or transformed form tied to Triangles.
+        prompt: In $\triangle ABC\sim\triangle PQR$, which vertex corresponds to $B$?
+        answer: {expected: Q}
+        explanation: Corresponding positions in the ordered names match.
+        tags: [correspondence]
+    - id: sss-congruence
+      term: SSS Congruence
+      definition: Three pairs of congruent corresponding sides determine congruent triangles.
+      notation: SSS
+      examples: ['One-, two-, and three-tick side pairs establish SSS.']
+      aliases: [side-side-side]
+      media: []
+      tags: [sss-congruence]
+      drills:
+      - id: sss-congruence-drill
+        type: flashcard
+        prompt: What data does SSS require?
+        answer: {expected: Three pairs of equal corresponding sides.}
+        explanation: No angle equality needs to be supplied separately.
+        tags: [sss-congruence]
+    - id: sas-congruence
+      term: SAS Congruence
+      definition: Two corresponding side pairs and the congruent angle included between them determine congruent triangles.
+      notation: SAS
+      examples: ['The angle must lie between the two known sides.']
+      aliases: [side-angle-side]
+      media: []
+      tags: [sas-congruence]
+      drills:
+      - id: sas-congruence-drill
+        type: flashcard
+        prompt: What does included mean in SAS?
+        answer: {expected: The known angle is between the two known sides.}
+        explanation: A nonincluded angle creates the ambiguous SSA setting.
+        tags: [sas-congruence]
+    - id: asa-aas-congruence
+      term: ASA and AAS Congruence
+      definition: Two corresponding angles plus one corresponding side determine congruence, whether the side is included or nonincluded.
+      notation: ASA or AAS
+      examples: ['Two angles fix the third; the side fixes scale.']
+      aliases: [angle-side-angle, angle-angle-side]
+      media: []
+      tags: [asa-aas-congruence]
+      drills:
+      - id: asa-aas-congruence-drill
+        type: flashcard
+        prompt: Why does AAA not replace ASA or AAS for congruence?
+        answer: {expected: AAA fixes shape but not size; a side is needed to fix scale.}
+        explanation: Angle data alone allow infinitely many similar sizes.
+        tags: [asa-aas-congruence]
+    - id: hl-congruence
+      term: Hypotenuse-Leg Congruence
+      definition: Two right triangles are congruent when their hypotenuses and one pair of corresponding legs are congruent.
+      notation: HL
+      examples: ['HL is a right-triangle criterion, not a general SSA rule.']
+      aliases: [RHS congruence]
+      media: []
+      tags: [hl-congruence]
+      drills:
+      - id: hl-congruence-drill
+        type: flashcard
+        prompt: What special hypothesis makes HL valid?
+        answer: {expected: Both triangles are right triangles.}
+        explanation: The known right angles remove the usual SSA ambiguity.
+        tags: [hl-congruence]
+    - id: ambiguous-ssa
+      term: Ambiguous SSA Case
+      definition: Two sides and a nonincluded angle may determine zero, one, or two triangles, so SSA is not a general congruence criterion.
+      notation: SSA
+      examples: ['The unknown side can sometimes swing to two different endpoints.']
+      aliases: [ambiguous case]
+      media: []
+      tags: [ambiguous-ssa]
+      drills:
+      - id: ambiguous-ssa-drill
+        type: flashcard
+        prompt: Why is ordinary SSA insufficient for congruence?
+        answer: {expected: The data can produce two noncongruent triangles.}
+        explanation: A nonincluded angle need not rigidly fix the triangle.
+        tags: [ambiguous-ssa]
+    - id: cpctc
+      term: Corresponding Parts of Congruent Triangles
+      definition: After triangle congruence is proved, every matching side and angle pair is congruent.
+      notation: CPCTC
+      examples: ['Prove SSS first, then use CPCTC to transfer an angle equality.']
       aliases: []
       media: []
-      tags:
-      - similarity
-      - aops-triangles
+      tags: [cpctc]
+      drills:
+      - id: cpctc-drill
+        type: flashcard
+        prompt: Is CPCTC a criterion for proving triangles congruent?
+        answer: {expected: 'No; it is used after congruence has been proved.'}
+        explanation: CPCTC transfers consequences of an established congruence.
+        tags: [cpctc]
+    - id: similarity
+      term: Triangle Similarity
+      definition: 'Equality of shape: corresponding angles are congruent and corresponding side lengths share one positive scale factor.'
+      notation: '$\triangle ABC\sim\triangle DEF$'
+      examples: ['Similar triangles may have different perimeters and areas.']
+      aliases: []
+      media: []
+      tags: [similarity]
       drills:
       - id: similarity-definition-drill
+        type: flashcard
+        prompt: What is true of corresponding angles in similar triangles?
+        answer: {expected: They are congruent.}
+        explanation: Similarity preserves angle measure and scales lengths proportionally.
+        tags: [similarity]
+    - id: aa-similarity
+      term: AA Similarity
+      definition: Two pairs of congruent corresponding angles are sufficient to prove two triangles similar.
+      notation: AA
+      examples: ['A parallel segment in a triangle usually creates AA similarity.']
+      aliases: [angle-angle similarity]
+      media: []
+      tags: [aa-similarity]
+      drills:
+      - id: aa-similarity-drill
+        type: flashcard
+        prompt: Why are two angle pairs enough for triangle similarity?
+        answer: {expected: The triangle angle sum forces the third angle pair to match.}
+        explanation: Every triangle has total angle measure $180^\circ$.
+        tags: [aa-similarity]
+    - id: scale-factor
+      term: Scale Factor
+      definition: The constant ratio of every length in one similar figure to its corresponding length in the other.
+      notation: '$k$'
+      examples: ['Length factor $k$ gives perimeter factor $k$ and area factor $k^2$.']
+      aliases: [linear scale factor]
+      media: []
+      tags: [scale-factor]
+      drills:
+      - id: scale-factor-drill
         type: typed
-        prompt: 'Which Triangles term describes the idea: similarity?'
-        answer:
-          expected: Similarity
-          aliases:
-          - similarity
-        explanation: |-
-          This term belongs to the Triangles toolkit and should be recognized before choosing a method.
-        tags:
-        - similarity
-        - aops-triangles
+        prompt: If a linear scale factor is 4, what is the area factor?
+        answer: {expected: '16'}
+        explanation: Area scales in two length dimensions, so use $4^2$.
+        tags: [scale-factor]
+  - id: triangle-centers-measurement-terms
+    title: Centers, Trigonometry, and Area
+    required: true
+    content: These terms identify concurrency structures, side roles, and the inputs used by complementary area formulas.
+    entries:
+    - id: cevian
+      term: Cevian
+      definition: A segment from a triangle vertex to a point on the opposite side or its extension.
+      notation: null
+      examples: ['Medians, internal angle bisectors, and altitudes are cevians.']
+      aliases: []
+      media: []
+      tags: [cevian]
+      drills:
+      - id: cevian-drill
+        type: flashcard
+        prompt: Where must a cevian begin?
+        answer: {expected: At a triangle vertex.}
+        explanation: A perpendicular bisector need not be a cevian because it need not pass through a vertex.
+        tags: [cevian]
+    - id: median
+      term: Median
+      definition: A cevian joining a vertex to the midpoint of the opposite side.
+      notation: null
+      examples: ['A median divides a triangle into two equal-area triangles.']
+      aliases: []
+      media: []
+      tags: [median]
+      drills:
+      - id: median-drill
+        type: flashcard
+        prompt: What property must the endpoint on the opposite side have?
+        answer: {expected: It is the midpoint of that side.}
+        explanation: A median is defined by midpoint, not perpendicularity or angle equality.
+        tags: [median]
+    - id: angle-bisector
+      term: Internal Angle Bisector
+      definition: A cevian that divides a vertex angle into two congruent angles.
+      notation: null
+      examples: ['A point equidistant from two side lines lies on their internal angle bisector.']
+      aliases: [angle bisector]
+      media: []
+      tags: [angle-bisector]
+      drills:
+      - id: angle-bisector-drill
+        type: flashcard
+        prompt: What equal quantities define an angle bisector?
+        answer: {expected: The two angles it creates at the vertex are equal.}
+        explanation: Equal opposite-side segments would instead indicate a median.
+        tags: [angle-bisector]
+    - id: altitude
+      term: Triangle Altitude
+      definition: A perpendicular segment from a vertex to the line containing the opposite side.
+      notation: '$h$'
+      examples: ['An obtuse triangle may require extending a side to meet an altitude.']
+      aliases: [height]
+      media: []
+      tags: [altitude]
+      drills:
+      - id: altitude-drill
+        type: flashcard
+        prompt: Must an altitude always lie entirely inside the triangle?
+        answer: {expected: 'No; some altitudes of an obtuse triangle meet side extensions.'}
+        explanation: The perpendicular target is the opposite side line, not only the side segment.
+        tags: [altitude]
+    - id: perpendicular-bisector
+      term: Perpendicular Bisector
+      definition: A line perpendicular to a segment at its midpoint; every point on it is equidistant from the segment endpoints.
+      notation: null
+      examples: ['Triangle side perpendicular bisectors meet at the circumcenter.']
+      aliases: []
+      media: []
+      tags: [perpendicular-bisector]
+      drills:
+      - id: perpendicular-bisector-drill
+        type: flashcard
+        prompt: What two conditions define a perpendicular bisector?
+        answer: {expected: It is perpendicular to the segment and passes through its midpoint.}
+        explanation: Either condition alone is insufficient.
+        tags: [perpendicular-bisector]
+    - id: incenter
+      term: Incenter
+      definition: The intersection of a triangle's internal angle bisectors; it is equidistant from the three side lines and centers the incircle.
+      notation: '$I$'
+      examples: ['The incenter lies inside every nondegenerate triangle.']
+      aliases: []
+      media: []
+      tags: [incenter]
+      drills:
+      - id: incenter-drill
+        type: flashcard
+        prompt: From what objects is the incenter equidistant?
+        answer: {expected: The three side lines.}
+        explanation: Perpendicular distances to the sides are all the inradius.
+        tags: [incenter]
+    - id: circumcenter
+      term: Circumcenter
+      definition: The intersection of the three side perpendicular bisectors; it is equidistant from all vertices and centers the circumcircle.
+      notation: '$O$'
+      examples: ['In a right triangle it is the hypotenuse midpoint.']
+      aliases: []
+      media: []
+      tags: [circumcenter]
+      drills:
+      - id: circumcenter-drill
+        type: flashcard
+        prompt: From what objects is the circumcenter equidistant?
+        answer: {expected: The three vertices.}
+        explanation: Those equal distances are circumradii.
+        tags: [circumcenter]
+    - id: centroid
+      term: Centroid
+      definition: The intersection of the three medians; it divides each median in a $2:1$ ratio from vertex to midpoint.
+      notation: '$G$'
+      examples: ['On a length-15 median, vertex to centroid is 10.']
+      aliases: [barycenter]
+      media: []
+      tags: [centroid]
+      drills:
+      - id: centroid-drill
+        type: typed
+        prompt: A median is 18 long. Find the vertex-to-centroid distance.
+        answer: {expected: '12'}
+        explanation: Take two thirds of the median from the vertex.
+        tags: [centroid]
+    - id: orthocenter
+      term: Orthocenter
+      definition: The intersection of the three altitude lines.
+      notation: '$H$'
+      examples: ['In a right triangle it is the right-angle vertex.']
+      aliases: []
+      media: []
+      tags: [orthocenter]
+      drills:
+      - id: orthocenter-drill
+        type: flashcard
+        prompt: Where is the orthocenter of an obtuse triangle?
+        answer: {expected: Outside the triangle.}
+        explanation: Some altitude lines must be extended beyond the triangle.
+        tags: [orthocenter]
+    - id: trigonometric-side-roles
+      term: Opposite, Adjacent, and Hypotenuse
+      definition: Side roles in a right triangle relative to a chosen acute angle; opposite and adjacent change with the reference angle, while hypotenuse does not.
+      notation: null
+      examples: ['$\tan\theta=\text{opposite}/\text{adjacent}$.']
+      aliases: [right-triangle side roles]
+      media: []
+      tags: [trigonometric-side-roles]
+      drills:
+      - id: trigonometric-side-roles-drill
+        type: flashcard
+        prompt: Which side role never changes when the reference acute angle changes?
+        answer: {expected: Hypotenuse.}
+        explanation: It remains opposite the right angle.
+        tags: [trigonometric-side-roles]
+    - id: included-angle
+      term: Included Angle
+      definition: The angle formed by two specified sides; it lies between those sides.
+      notation: '$C$ in $\tfrac12ab\sin C$'
+      examples: ['The sine area formula uses the angle included by sides $a$ and $b$.']
+      aliases: []
+      media: []
+      tags: [included-angle]
+      drills:
+      - id: included-angle-drill
+        type: flashcard
+        prompt: Which angle belongs in $K=\tfrac12ab\sin C$?
+        answer: {expected: The angle between sides a and b.}
+        explanation: A nonincluded angle does not generate the matching altitude.
+        tags: [included-angle]
+    - id: semiperimeter
+      term: Semiperimeter
+      definition: Half a triangle's perimeter.
+      notation: '$s=(a+b+c)/2$'
+      examples: ['A 13-14-15 triangle has semiperimeter 21.']
+      aliases: []
+      media: []
+      tags: [semiperimeter]
+      drills:
+      - id: semiperimeter-drill
+        type: typed
+        prompt: Find the semiperimeter of a triangle with sides 9, 10, and 11.
+        answer: {expected: '15'}
+        explanation: Add the sides to get 30 and divide by 2.
+        tags: [semiperimeter]
+    - id: inradius
+      term: Inradius
+      definition: The radius of the incircle, equal to the perpendicular distance from the incenter to each side.
+      notation: '$r$'
+      examples: ['Triangle area satisfies $K=rs$.']
+      aliases: []
+      media: []
+      tags: [inradius]
+      drills:
+      - id: inradius-drill
+        type: typed
+        prompt: A triangle has area 60 and semiperimeter 15. Find its inradius.
+        answer: {expected: '4'}
+        explanation: Solve $60=15r$.
+        tags: [inradius]
+    - id: heron-formula
+      term: Heron Formula
+      definition: A triangle area formula using its three side lengths and semiperimeter.
+      notation: '$K=\sqrt{s(s-a)(s-b)(s-c)}$'
+      examples: ['It is direct when three sides are known but no altitude is given.']
+      aliases: [Heron's formula]
+      media: []
+      tags: [heron-formula]
+      drills:
+      - id: heron-formula-drill
+        type: flashcard
+        prompt: What input should be checked before applying Heron formula?
+        answer: {expected: The side lengths satisfy the strict triangle inequality.}
+        explanation: The formula does not turn impossible side data into a triangle.
+        tags: [heron-formula]

@@ -20,7 +20,10 @@ description: Create, refine, validate, or review CIR Assessment Maker quiz/test 
    - Do not bulk scrape by default. Recommend a corpus pipeline only when repeated refresh, large coverage, provenance tracking, or offline retrieval is required.
 
 3. Draft content against the app contract:
-   - Shared top level: `schemaVersion`, `id`, `title`, `assessmentType`, `categoryId`, `subcategoryIds`, `modeDefault`, `randomizeQuestions`, and optional timers.
+   - Shared top level: `schemaVersion`, `id`, `title`, `assessmentType`, `categoryId`, singular `topicId`, `modeDefault`, `randomizeQuestions`, and optional timers.
+   - Classification is authoritative and singular: `topicId` places the assessment in exactly one topic, and that topic has exactly one canonical area in `data/areas.yaml`.
+   - `skills` and `navigation.tags` describe searchable capabilities and evidence only. Never use them as additional topic or area assignments, even when a skill/tag happens to equal another topic or area ID.
+   - A genuinely cumulative assessment belongs to a declared review/capstone topic; do not list several content topics or choose one narrow supporting topic merely to satisfy the schema.
    - Quiz/test: `questions`; optional `attemptQuestionCount` can sample an attempt from a larger authored bank.
    - Worked Example: `workedExamples`.
    - Guided Project: `guidedProject`.
@@ -38,6 +41,7 @@ description: Create, refine, validate, or review CIR Assessment Maker quiz/test 
 
 5. Validate before finishing:
    - Parse changed YAML/JSON.
+   - Confirm exactly one non-empty scalar `topicId`; reject `subcategoryId`, `subcategoryIds`, or inferred placement from tags/skills.
    - Count questions if the user specified a count.
    - Check every question type matches the requested type.
    - Check no old math delimiters remain in rendered fields.

@@ -67,6 +67,10 @@ public sealed class SqliteAssessmentSearchService
         {
             sql.Append(" AND (subject_id = @subjectId COLLATE NOCASE OR subject_id IS NULL)");
         }
+        if (!string.IsNullOrWhiteSpace(areaId))
+            sql.Append(" AND EXISTS (SELECT 1 FROM assessment_areas aa WHERE aa.assessment_id = source_id AND aa.area_id = @areaId COLLATE NOCASE)");
+        if (!string.IsNullOrWhiteSpace(topicId))
+            sql.Append(" AND EXISTS (SELECT 1 FROM assessment_subcategories st WHERE st.assessment_id = source_id AND st.subcategory_id = @topicId COLLATE NOCASE)");
         
         // SQLite doesn't natively do fast bounded Levenshtein without custom extensions, 
         // so we load a candidate set. Prefix matches first.
@@ -79,6 +83,8 @@ public sealed class SqliteAssessmentSearchService
         {
             cmd.Parameters.AddWithValue("@subjectId", subjectId);
         }
+        if (!string.IsNullOrWhiteSpace(areaId)) cmd.Parameters.AddWithValue("@areaId", areaId);
+        if (!string.IsNullOrWhiteSpace(topicId)) cmd.Parameters.AddWithValue("@topicId", topicId);
         cmd.Parameters.AddWithValue("@prefix", normalizedQuery + "%");
         cmd.Parameters.AddWithValue("@contains", "%" + normalizedQuery + "%");
 
@@ -148,9 +154,12 @@ public sealed class SqliteAssessmentSearchService
         if (hasQuery)
         {
             sql.Append("""
-                SELECT a.definition_json, a.content_hash, bm25(assessment_search_fts) as score
+                SELECT a.definition_json, a.content_hash, bm25(assessment_search_fts) as score,
+                       aa.area_id, st.subcategory_id
                 FROM assessment_search_fts
                 JOIN assessments a ON a.id = assessment_search_fts.assessment_id
+                JOIN assessment_areas aa ON aa.assessment_id = a.id
+                JOIN assessment_subcategories st ON st.assessment_id = a.id
                 WHERE a.is_active = 1
                 """);
             
@@ -160,8 +169,11 @@ public sealed class SqliteAssessmentSearchService
         else
         {
             sql.Append("""
-                SELECT a.definition_json, a.content_hash, 0 as score
+                SELECT a.definition_json, a.content_hash, 0 as score,
+                       aa.area_id, st.subcategory_id
                 FROM assessments a
+                JOIN assessment_areas aa ON aa.assessment_id = a.id
+                JOIN assessment_subcategories st ON st.assessment_id = a.id
                 WHERE a.is_active = 1
                 """);
         }
@@ -170,6 +182,8 @@ public sealed class SqliteAssessmentSearchService
         if (!string.IsNullOrWhiteSpace(request.LearningGoal)) sql.Append(" AND a.learning_goal = @goal COLLATE NOCASE");
         if (!string.IsNullOrWhiteSpace(request.ActivityType)) sql.Append(" AND a.activity_type = @activity COLLATE NOCASE");
         if (!string.IsNullOrWhiteSpace(request.AssessmentType)) sql.Append(" AND a.assessment_type = @type COLLATE NOCASE");
+        if (!string.IsNullOrWhiteSpace(request.AreaId)) sql.Append(" AND aa.area_id = @areaId COLLATE NOCASE");
+        if (!string.IsNullOrWhiteSpace(request.TopicId)) sql.Append(" AND st.subcategory_id = @topicId COLLATE NOCASE");
 
         if (hasQuery) sql.Append(" ORDER BY bm25(assessment_search_fts) LIMIT 200"); // Limit for C# reranking
         else sql.Append(" ORDER BY a.title LIMIT @limit"); // No query, just filter
@@ -193,8 +207,10 @@ public sealed class SqliteAssessmentSearchService
         if (!string.IsNullOrWhiteSpace(request.LearningGoal)) cmd.Parameters.AddWithValue("@goal", request.LearningGoal);
         if (!string.IsNullOrWhiteSpace(request.ActivityType)) cmd.Parameters.AddWithValue("@activity", request.ActivityType);
         if (!string.IsNullOrWhiteSpace(request.AssessmentType)) cmd.Parameters.AddWithValue("@type", request.AssessmentType);
+        if (!string.IsNullOrWhiteSpace(request.AreaId)) cmd.Parameters.AddWithValue("@areaId", request.AreaId);
+        if (!string.IsNullOrWhiteSpace(request.TopicId)) cmd.Parameters.AddWithValue("@topicId", request.TopicId);
 
-        var candidates = new List<(AssessmentDefinition Def, double InitialScore)>();
+        var candidates = new List<(AssessmentDefinition Def, double InitialScore, string AreaId, string TopicId)>();
         
         await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
@@ -204,21 +220,12 @@ public sealed class SqliteAssessmentSearchService
             var def = JsonSerializer.Deserialize<AssessmentDefinition>(json, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter(JsonNamingPolicy.CamelCase) } });
             if (def != null)
             {
-                candidates.Add((def, score));
+                candidates.Add((def, score, reader.GetString(3), reader.GetString(4)));
             }
         }
 
         // Apply remaining filters in memory
         var filtered = candidates.AsEnumerable();
-
-        if (!string.IsNullOrWhiteSpace(request.AreaId))
-        {
-            // We need to resolve areas. In a real system, we might join the `assessment_areas` table.
-            // For now, we can check if the definition has matching subcategories for the area, but that requires area repo.
-            // Wait, we populated `area_titles` in FTS but not `areaIds` explicitly in a regular table other than `assessment_areas`.
-            // Let's filter by checking the DB explicitly or rely on the caller sending `TopicId` instead.
-            // Actually, we can fetch assessment_areas.
-        }
 
         // Apply Tag / Skill filters
         if (request.Tags?.Count > 0)
@@ -237,28 +244,16 @@ public sealed class SqliteAssessmentSearchService
             var nav = NavigationInference.Infer(def);
             decimal score = hasQuery ? RankCandidate(def, nav, normalizedQuery, c.InitialScore) : 0;
             
-            // Re-evaluating Area/Topic filters since they are not in the `assessments` table directly.
-            // For a robust implementation, we would join the mapping tables. Here we do an approximation or just skip if we can't efficiently filter.
-            // If topicId is provided, we can just check if def.SubcategoryIds contains it!
-            if (!string.IsNullOrWhiteSpace(request.TopicId)
-                && !def.SubcategoryIds.Contains(request.TopicId, StringComparer.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-            
-            // To properly filter by areaId without hitting the DB again, we assume areaId is handled externally 
-            // or we skip it here and rely on TopicId (which is what the UI primarily uses for leaf filtering).
-
             results.Add(new AssessmentSearchResult(
                 def.Id,
                 def.Title,
                 def.AssessmentType,
                 def.CategoryId,
                 def.CategoryId, // We don't have subject title here easily without joining, but UI doesn't strict need it usually.
-                Array.Empty<string>(), // We don't have area IDs here easily
-                Array.Empty<string>(),
-                def.SubcategoryIds,
-                def.SubcategoryIds, // Topic titles...
+                [c.AreaId],
+                [c.AreaId],
+                [c.TopicId],
+                [c.TopicId],
                 nav.LearningGoal ?? string.Empty,
                 nav.ActivityType ?? string.Empty,
                 nav.Tags,

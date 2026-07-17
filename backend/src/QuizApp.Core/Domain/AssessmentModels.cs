@@ -108,7 +108,7 @@ public sealed record AssessmentDefinition(
     string Title,
     AssessmentType AssessmentType,
     string CategoryId,
-    IReadOnlyList<string> SubcategoryIds,
+    string TopicId,
     AssessmentMode ModeDefault,
     bool RandomizeQuestions,
     int? AttemptQuestionCount,
@@ -117,6 +117,12 @@ public sealed record AssessmentDefinition(
     IReadOnlyList<QuestionDefinition> Questions,
     QuestionSelectionDefinition? QuestionSelection = null)
 {
+    /// <summary>
+    /// Compatibility projection for code that still consumes topic collections.
+    /// Authored assessments have exactly one authoritative topic.
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<string> SubcategoryIds => string.IsNullOrWhiteSpace(TopicId) ? Array.Empty<string>() : [TopicId];
     public IReadOnlyList<WorkedExampleDefinition> WorkedExamples { get; init; } = Array.Empty<WorkedExampleDefinition>();
     public GuidedProjectDefinition? GuidedProject { get; init; }
     public IReadOnlyList<RecallItemDefinition> Items { get; init; } = Array.Empty<RecallItemDefinition>();
@@ -588,13 +594,17 @@ public sealed record AssessmentSummary(
     string Title,
     AssessmentType AssessmentType,
     string CategoryId,
-    IReadOnlyList<string> SubcategoryIds,
+    string TopicId,
     int QuestionCount,
     int AuthoredQuestionCount = 0,
     int? AttemptQuestionCount = null,
     bool HasCompletedAttempt = false)
 {
-    public IReadOnlyList<string> AreaIds { get; init; } = Array.Empty<string>();
+    public string? AreaId { get; init; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<string> SubcategoryIds => string.IsNullOrWhiteSpace(TopicId) ? Array.Empty<string>() : [TopicId];
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<string> AreaIds => string.IsNullOrWhiteSpace(AreaId) ? Array.Empty<string>() : [AreaId];
     public string? LearningGoal { get; init; }
     public string? ActivityType { get; init; }
     public IReadOnlyList<string> Tags { get; init; } = Array.Empty<string>();

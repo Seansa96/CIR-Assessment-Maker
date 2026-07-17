@@ -18,7 +18,7 @@ public sealed class FileAssessmentRepositoryTests
             Id = "new-algebra-quiz",
             Title = "New Algebra Quiz",
             CategoryId = "algebra",
-            SubcategoryIds = new[] { "linear-equations" }
+            TopicId = "linear-equations"
         };
 
         await repository.SaveAsync(assessment);
@@ -144,8 +144,7 @@ public sealed class FileAssessmentRepositoryTests
             title: Ordered Default Test
             assessmentType: test
             categoryId: calculus-2
-            subcategoryIds:
-              - integration-techniques
+            topicId: integration-techniques
             modeDefault: practice
             randomizeQuestions: true
             questionSelection:

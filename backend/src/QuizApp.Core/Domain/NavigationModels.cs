@@ -42,8 +42,8 @@ public sealed record NavigationAssessmentSummary(
     string Title,
     AssessmentType AssessmentType,
     string SubjectId,
-    IReadOnlyList<string> AreaIds,
-    IReadOnlyList<string> TopicIds,
+    string AreaId,
+    string TopicId,
     string LearningGoal,
     string ActivityType,
     IReadOnlyList<string> Tags,
@@ -51,7 +51,13 @@ public sealed record NavigationAssessmentSummary(
     int AuthoredQuestionCount,
     int? AttemptQuestionCount,
     bool HasCompletedAttempt,
-    IReadOnlyList<string> Skills);
+    IReadOnlyList<string> Skills)
+{
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<string> AreaIds => string.IsNullOrWhiteSpace(AreaId) ? Array.Empty<string>() : [AreaId];
+    [System.Text.Json.Serialization.JsonIgnore]
+    public IReadOnlyList<string> TopicIds => string.IsNullOrWhiteSpace(TopicId) ? Array.Empty<string>() : [TopicId];
+}
 
 /// <summary>Known learning-goal IDs.</summary>
 public static class LearningGoals

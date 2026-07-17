@@ -1,7 +1,7 @@
 # Assessment Taxonomy And SQLite Ingest Incident Report
 
 **Audience:** Gemini / Antigravity IDE agent  
-**Status:** Active reference until the taxonomy migration and ingest hardening plan is implemented  
+**Status:** Resolved; retained as migration history. The singular-topic contract below is authoritative.  
 **Implementation plan:** `docs/plans/antigravity-assessment-taxonomy-validation-and-ingest.md`
 
 ## Read This Before Taxonomy Or Catalog Work
@@ -17,12 +17,11 @@ Category / Subject
   -> Assessment
 ```
 
-There is no separate authored `topicId` field. A category's `subcategories` are the
-navigation topics. Assessments link to topics through the plural field:
+Category `subcategories` remain the navigation topics. Every assessment links to
+exactly one of them through the singular authored field:
 
 ```yaml
-subcategoryIds:
-  - physics-circular-motion
+topicId: physics-circular-motion
 ```
 
 Areas independently list the same topic IDs:
@@ -37,8 +36,11 @@ subcategoryIds:
 An assessment is properly mapped only when:
 
 1. `categoryId` identifies an existing category.
-2. Every assessment `subcategoryIds` value exists in that category.
-3. At least one matching area contains both that category and topic.
+2. The singular `topicId` exists in that category.
+3. Exactly one same-category area contains that topic.
+
+Skills and navigation tags are attribution/search metadata only. They never add
+topic or area placement. Cumulative content uses an explicit review/capstone topic.
 
 ## Confirmed Root Cause
 
@@ -52,11 +54,10 @@ tags:
   - physics
 ```
 
-The supported schema is:
+The corrected schema is:
 
 ```yaml
-subcategoryIds:
-  - physics-circular-motion
+topicId: physics-circular-motion
 navigation:
   learningGoal: practice
   activityType: focusedPractice
@@ -64,12 +65,12 @@ navigation:
     - physics
 ```
 
-`AssessmentFileDto` has `SubcategoryIds` but no singular `SubcategoryId`.
-`FileFormat` uses YamlDotNet's `IgnoreUnmatchedProperties()`. The singular field and
-top-level navigation fields are therefore discarded without an error.
+The former DTO accepted plural `SubcategoryIds` but not singular `SubcategoryId`.
+The current DTO accepts only `TopicId`, and the source inspector rejects both
+legacy spellings before deserialization.
 
-The resulting `AssessmentDefinition.SubcategoryIds` is empty. The SQLite importer
-cannot resolve an area and writes `other-unmapped`.
+The current importer persists one topic relation and its one canonical area;
+database uniqueness constraints reject relation fan-out.
 
 ## Affected Content Snapshot
 

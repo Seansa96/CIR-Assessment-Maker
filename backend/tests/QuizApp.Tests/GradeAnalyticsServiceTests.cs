@@ -106,6 +106,67 @@ public sealed class GradeAnalyticsServiceTests
         Assert.Contains(summary.QuestionTypes, type => type.QuestionType == QuestionType.SelectAll && type.CorrectPercent == 0m);
     }
 
+    [Fact]
+    public async Task Actionable_recommendations_do_not_cross_topics_or_categories_on_shared_skill_names()
+    {
+        var attempted = TestData.Assessment(questions: [TestData.MultipleChoiceQuestion("q001") with { Skills = ["model-selection"] }]) with
+        {
+            Id = "calc-attempted",
+            CategoryId = "calculus-2",
+            TopicId = "area-between-curves"
+        };
+        var calcLesson = TestData.Assessment(AssessmentType.ConceptLesson) with
+        {
+            Id = "calc-lesson",
+            CategoryId = "calculus-2",
+            TopicId = "area-between-curves",
+            Skills = ["model-selection"]
+        };
+        var physicsLesson = TestData.Assessment(AssessmentType.ConceptLesson) with
+        {
+            Id = "physics-lesson",
+            CategoryId = "physics-1",
+            TopicId = "physics-work-energy",
+            Skills = ["model-selection"]
+        };
+        var attempts = new InMemoryAttemptRepository();
+        await attempts.SaveAsync(new Attempt(
+            "attempt-1", attempted.Id, AssessmentMode.Practice, AttemptStatus.Completed, ["q001"], [WrongAnswer("q001")],
+            DateTimeOffset.UtcNow.AddMinutes(-2), null, DateTimeOffset.UtcNow, null));
+
+        var assessments = new[] { attempted, calcLesson, physicsLesson };
+        var navAssessments = new[]
+        {
+            NavSummary(physicsLesson), // Deliberately first: a global FirstOrDefault would bleed here.
+            NavSummary(calcLesson),
+            NavSummary(attempted)
+        };
+        var catalog = new NavigationCatalog(
+            [new("calculus-2", "Calculus II"), new("physics-1", "Physics I")],
+            [new("integration", "Integration", ["calculus-2"], ["area-between-curves"]), new("energy", "Energy", ["physics-1"], ["physics-work-energy"])],
+            [new("area-between-curves", "Area Between Curves", "calculus-2"), new("physics-work-energy", "Work and Energy", "physics-1")],
+            [], navAssessments);
+        var service = new GradeAnalyticsService(
+            new InMemoryGradeLogRepository(), attempts, new InMemoryAttemptSessionStore(), new MultiAssessmentRepository(assessments),
+            new StaticCategoryRepository([new(1, "calculus-2", "Calculus II", [new("area-between-curves", "Area Between Curves")]), new(1, "physics-1", "Physics I", [new("physics-work-energy", "Work and Energy")])]),
+            new StaticAreaRepository([new("integration", "Integration", ["calculus-2"], ["area-between-curves"]), new("energy", "Energy", ["physics-1"], ["physics-work-energy"])]),
+            new StaticNavigationCatalogService(catalog), new ScoringService(null!, null!, null!, null!));
+
+        var summary = await service.GetSummaryAsync(EmptyFilter());
+
+        var step = Assert.Single(summary.ActionableNextSteps, next => next.SkillId == "model-selection");
+        Assert.Equal("calc-lesson", step.RecommendedAssessmentId);
+        Assert.Equal("calculus-2", step.CategoryId);
+        Assert.Equal(["area-between-curves"], step.TopicIds);
+    }
+
+    private static NavigationAssessmentSummary NavSummary(AssessmentDefinition assessment) => new(
+        assessment.Id, assessment.Title, assessment.AssessmentType, assessment.CategoryId,
+        assessment.CategoryId == "calculus-2" ? "integration" : "energy", assessment.TopicId,
+        assessment.AssessmentType == AssessmentType.ConceptLesson ? "learn" : "practice",
+        assessment.AssessmentType == AssessmentType.ConceptLesson ? "conceptLesson" : "focusedPractice",
+        [], assessment.Questions.Count, assessment.Questions.Count, null, false, assessment.Skills);
+
     private static GradeAnalyticsService CreateService(
         IReadOnlyList<AssessmentDefinition> assessments,
         InMemoryAttemptRepository attempts,
@@ -160,6 +221,21 @@ public sealed class GradeAnalyticsServiceTests
     }
 }
 
+internal sealed class StaticNavigationCatalogService(NavigationCatalog catalog) : INavigationCatalogService
+{
+    public Task<NavigationCatalog> GetCatalogAsync(CancellationToken cancellationToken = default) => Task.FromResult(catalog);
+}
+
+internal sealed class StaticCategoryRepository(IReadOnlyList<Category> categories) : ICategoryRepository
+{
+    public Task<IReadOnlyList<Category>> ListAsync(CancellationToken cancellationToken = default) => Task.FromResult(categories);
+}
+
+internal sealed class StaticAreaRepository(IReadOnlyList<AreaDefinition> areas) : IAreaRepository
+{
+    public Task<IReadOnlyList<AreaDefinition>> ListAsync(CancellationToken cancellationToken = default) => Task.FromResult(areas);
+}
+
 internal sealed class MultiAssessmentRepository : IAssessmentRepository
 {
     private readonly IReadOnlyList<AssessmentDefinition> assessments;
@@ -173,7 +249,7 @@ internal sealed class MultiAssessmentRepository : IAssessmentRepository
     {
         return Task.FromResult<IReadOnlyList<AssessmentSummary>>(assessments
             .Where(assessment => string.Equals(assessment.CategoryId, categoryId, StringComparison.OrdinalIgnoreCase))
-            .Select(assessment => new AssessmentSummary(assessment.Id, assessment.Title, assessment.AssessmentType, assessment.CategoryId, assessment.SubcategoryIds, assessment.Questions.Count))
+            .Select(assessment => new AssessmentSummary(assessment.Id, assessment.Title, assessment.AssessmentType, assessment.CategoryId, assessment.TopicId, assessment.Questions.Count))
             .ToList());
     }
 

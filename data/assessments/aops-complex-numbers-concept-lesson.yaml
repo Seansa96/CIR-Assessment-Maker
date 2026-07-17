@@ -3,9 +3,8 @@ id: aops-complex-numbers-concept-lesson
 title: Complex Numbers Concept Lesson
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-complex-numbers
-modeDefault: learn
+topicId: aops-complex-numbers
+modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
@@ -13,150 +12,229 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-complex-numbers
-  - aops
+  - standard-form
+  - complex-conjugates
+  - powers-of-i
 skills:
-- Apply aops-complex-numbers
-- aops-complex-numbers
+- Represent complex numbers uniquely in standard form
+- Add and multiply complex numbers using component structure
+- Use powers of i, conjugates, and moduli strategically
+- Divide complex numbers and verify results by multiplication
 lesson:
-  introduction: Learn to solve Complex Numbers problems by recognizing imaginary unit, complex arithmetic, powers of i, real and imaginary parts and justifying each theorem or transformation.
+  introduction: |-
+    Complex numbers extend the real numbers so equations such as $z^2=-1$ can be solved without abandoning ordinary algebra. The new symbol $i$ obeys one defining relation, $i^2=-1$. Everything in this lesson follows from that relation, distributivity, and the unique standard form $a+bi$.
   sections:
-  - id: aops-complex-numbers-motivation
-    title: What the topic helps you notice
+  - id: complex-extension-and-standard-form
+    title: Why the number system is extended
     required: true
-    content: Complex Numbers is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are imaginary unit, complex arithmetic, powers of i, real and imaginary parts.
+    content: |-
+      No real number has square $-1$, because every real square is nonnegative. Define $i$ by $i^2=-1$. A complex number is then written
+
+      $$z=a+bi,$$
+
+      where $a,b$ are real. The number $a$ is the real part and $b$ is the imaginary part. This representation is unique: $a+bi=c+di$ exactly when $a=c$ and $b=d$.
+
+      A real number is the special case $a+0i$, while a purely imaginary number has real part zero. The complex number zero is $0+0i$; both components must vanish.
     check:
-      id: aops-complex-numbers-motivation-check
+      id: complex-extension-and-standard-form-check
       type: multipleChoice
-      prompt: In Complex Numbers, what should be checked before applying a method?
+      prompt: 'If $a+bi=7-3i$, what is $a-b$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '4'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '10'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$7-3i$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$-10$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-complex-numbers-definitions
-    title: Definitions and theorem conditions
+        choiceId: b
+      explanation: Uniqueness of standard form gives $a=7$ and $b=-3$, so $a-b=10$.
+  - id: componentwise-addition-and-subtraction
+    title: Addition preserves real and imaginary components
     required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+    content: |-
+      Addition and subtraction combine like components:
+
+      $$(a+bi)+(c+di)=(a+c)+(b+d)i.$$
+
+      For subtraction, distribute the minus sign to both components. For example,
+
+      $$(6-2i)-(1+7i)=6-2i-1-7i=5-9i.$$
+
+      This is analogous to combining like terms in a polynomial. A real component and an imaginary component do not combine because standard form records them independently.
     check:
-      id: aops-complex-numbers-definitions-check
+      id: componentwise-addition-and-subtraction-check
       type: multipleChoice
-      prompt: In Complex Numbers, what should be checked before applying a method?
+      prompt: 'Compute $(4+5i)-(-2+9i)$.'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$2+14i$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$6-4i$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$6+14i$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$2-4i$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-complex-numbers-recognition
-    title: Recognition cues
+        choiceId: b
+      explanation: Distribute the subtraction, giving $4+5i+2-9i=6-4i$.
+  - id: multiplication-and-the-power-cycle
+    title: Multiply normally, then use $i^2=-1$
     required: true
-    content: 'Look for these triggers: cycle powers of i, combine like components, avoid invalid radical multiplication. Record the givens, unknown, and any restriction before selecting a method.'
+    content: |-
+      Complex multiplication uses distributivity:
+
+      $$(a+bi)(c+di)=ac+adi+bci+bd i^2=(ac-bd)+(ad+bc)i.$$
+
+      The sign in the real part comes from $i^2=-1$. For instance,
+
+      $$(2-3i)^2=4-12i+9i^2=-5-12i.$$
+
+      Powers of $i$ repeat every four steps:
+
+      $$i^0=1,\quad i^1=i,\quad i^2=-1,\quad i^3=-i,\quad i^4=1.$$
+
+      Therefore reduce a large exponent modulo 4. Since $2026\equiv2\pmod4$, $i^{2026}=-1$.
     check:
-      id: aops-complex-numbers-recognition-check
+      id: multiplication-and-the-power-cycle-check
       type: multipleChoice
-      prompt: In Complex Numbers, what should be checked before applying a method?
+      prompt: 'What is $i^{12345}$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$1$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$i$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$-1$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$-i$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-complex-numbers-method
-    title: Choose a method
+        choiceId: b
+      explanation: The remainder when 12345 is divided by 4 is 1, so the power equals $i^1$.
+  - id: conjugates-and-modulus
+    title: Conjugates turn products into real sums of squares
     required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+    content: |-
+      The conjugate of $z=a+bi$ is $\overline z=a-bi$. Their product is
+
+      $$(a+bi)(a-bi)=a^2+b^2,$$
+
+      because the cross terms cancel and $-b^2i^2=b^2$. This real, nonnegative quantity is the squared modulus:
+
+      $$|z|=\sqrt{a^2+b^2},\qquad z\overline z=|z|^2.$$
+
+      The modulus measures the distance from the origin to the point $(a,b)$ in the complex plane. Comparing moduli often avoids square roots: compare $a^2+b^2$ instead.
     check:
-      id: aops-complex-numbers-method-check
+      id: conjugates-and-modulus-check
       type: multipleChoice
-      prompt: In Complex Numbers, what should be checked before applying a method?
+      prompt: 'Which number has the larger modulus: $3+4i$ or $1+5i$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$3+4i$, because its real part is larger.'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$1+5i$, because its squared modulus is 26 rather than 25.'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: They have equal modulus.
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: Moduli of nonreal numbers cannot be compared.
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-complex-numbers-mini-example
-    title: A small original example
+        choiceId: b
+      explanation: Compare $3^2+4^2=25$ with $1^2+5^2=26$.
+  - id: division-by-a-complex-number
+    title: Division uses a conjugate to create a real denominator
     required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+    content: |-
+      To divide by $c+di\ne0$, multiply numerator and denominator by its conjugate:
+
+      $$\frac{a+bi}{c+di}\cdot\frac{c-di}{c-di}.
+      $$
+
+      The denominator becomes $c^2+d^2$, a positive real number unless $c=d=0$. Expand the numerator and collect components.
+
+      Example:
+
+      $$\frac{8+6i}{2-i}\cdot\frac{2+i}{2+i}=\frac{10+20i}{5}=2+4i.$$
+
+      Verify a quotient by multiplying it by the original divisor: $(2+4i)(2-i)=8+6i$.
     check:
-      id: aops-complex-numbers-mini-example-check
+      id: division-by-a-complex-number-check
       type: multipleChoice
-      prompt: In Complex Numbers, what should be checked before applying a method?
+      prompt: 'Which factor should be used to simplify $\dfrac{3+i}{4-2i}$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$\dfrac{4-2i}{4-2i}$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$\dfrac{4+2i}{4+2i}$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$\dfrac{3-i}{3-i}$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$\dfrac{i}{i}$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-complex-numbers-trap
-    title: Common misconception
+        choiceId: b
+      explanation: Multiply by the conjugate of the denominator so its product becomes real.
+  - id: negative-radicands-and-equations
+    title: Negative radicands require care
     required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+    content: |-
+      In the complex numbers, $z^2=-r$ with $r>0$ has the two solutions $z=\pm i\sqrt r$. The symbol $\sqrt{-r}$ is commonly assigned the principal value $i\sqrt r$, but an equation still requires both roots.
+
+      Real radical identities cannot be transferred blindly. For example, taking principal complex square roots with $a=b=-1$ gives
+
+      $$\sqrt{ab}=\sqrt1=1,$$
+
+      while
+
+      $$\sqrt a\sqrt b=i\cdot i=-1.$$
+
+      Thus $\sqrt{ab}=\sqrt a\sqrt b$ is not a universal complex identity. Keep negative factors together until the role of $i$ is explicit.
     check:
-      id: aops-complex-numbers-trap-check
+      id: negative-radicands-and-equations-check
       type: multipleChoice
-      prompt: In Complex Numbers, what should be checked before applying a method?
+      prompt: 'What are all solutions of $z^2=-36$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$z=6i$ only'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$z=-6i$ only'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$z=\pm6i$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$z=\pm6$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-complex-numbers-synthesis
-    title: Contest synthesis
+        choiceId: c
+      explanation: Both $6i$ and $-6i$ square to $-36$.
+  - id: synthesis-solving-a-complex-square
+    title: Synthesis—solve by comparing components
     required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+    content: |-
+      Find every complex number $z$ such that $z^2=8i$. Write $z=a+bi$ with real $a,b$. Expanding gives
+
+      $$z^2=(a^2-b^2)+2abi.$$
+
+      Equality with $0+8i$ requires the component equations
+
+      $$a^2-b^2=0,\qquad 2ab=8.$$
+
+      The first equation gives $a=b$ or $a=-b$. If $a=b$, then $2a^2=8$, so $a=b=2$ or $a=b=-2$. If $a=-b$, then $2ab=-2a^2$ cannot equal 8. Hence
+
+      $$z=2+2i\quad\text{or}\quad z=-2-2i.$$
+
+      Squaring either answer returns $8i$. Component comparison turns one complex equation into a real system and makes completeness visible.
     check:
-      id: aops-complex-numbers-synthesis-check
+      id: synthesis-solving-a-complex-square-check
       type: multipleChoice
-      prompt: In Complex Numbers, what should be checked before applying a method?
+      prompt: 'Which pair gives all solutions of $z^2=-8i$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$2-2i$ and $-2+2i$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$2+2i$ and $-2-2i$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$4i$ and $-4i$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$\sqrt8$ and $-\sqrt8$'
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+      explanation: $(2-2i)^2=-8i$, and the negative of a square root is the second root.

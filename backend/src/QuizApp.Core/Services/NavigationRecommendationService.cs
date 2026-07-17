@@ -50,7 +50,7 @@ public sealed class NavigationRecommendationService
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         var completedTopicIds = catalog.Assessments
             .Where(assessment => completedAssessmentIds.Contains(assessment.Id))
-            .SelectMany(assessment => assessment.TopicIds)
+            .Select(assessment => assessment.TopicId)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
         var topicsById = catalog.Topics.ToDictionary(topic => topic.Id, StringComparer.OrdinalIgnoreCase);
         var unmetPrerequisitesByTopic = catalog.Topics.ToDictionary(
@@ -92,7 +92,7 @@ public sealed class NavigationRecommendationService
                 .ToList();
 
             var topicAssessments = catalog.Assessments
-                .Where(a => a.TopicIds.Contains(topicId, StringComparer.OrdinalIgnoreCase))
+                .Where(a => string.Equals(a.TopicId, topicId, StringComparison.OrdinalIgnoreCase))
                 .ToList();
 
             // Evidence

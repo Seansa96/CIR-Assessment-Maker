@@ -49,18 +49,15 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
         var syntheticTopicIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var assessment in assessmentSummaries)
         {
-            var topicIds = assessment.TopicIds
-                .Where(topicId => knownTopics.TryGetValue(topicId, out var topic)
-                    && string.Equals(topic.SubjectId, assessment.SubjectId, StringComparison.OrdinalIgnoreCase))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            if (topicIds.Count == 0)
+            var topicId = assessment.TopicId;
+            if (!knownTopics.TryGetValue(topicId, out var topic)
+                || !string.Equals(topic.SubjectId, assessment.SubjectId, StringComparison.OrdinalIgnoreCase))
             {
                 var syntheticId = $"{assessment.SubjectId}--other-unmapped";
                 syntheticTopicIds[assessment.SubjectId] = syntheticId;
-                topicIds.Add(syntheticId);
+                topicId = syntheticId;
             }
-            normalizedAssessments.Add(assessment with { TopicIds = topicIds });
+            normalizedAssessments.Add(assessment with { TopicId = topicId });
         }
         topics.AddRange(syntheticTopicIds.Select(pair =>
             new NavigationTopic(pair.Value, "Other / Unmapped", pair.Key, "Assessments whose topic ID is not yet mapped to this subject.")));
@@ -78,8 +75,8 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
         navAreas = navAreas.Select(area =>
         {
             var syntheticTopics = normalizedAssessments
-                .Where(assessment => assessment.AreaIds.Contains(area.Id, StringComparer.OrdinalIgnoreCase))
-                .SelectMany(assessment => assessment.TopicIds)
+                .Where(assessment => string.Equals(assessment.AreaId, area.Id, StringComparison.OrdinalIgnoreCase))
+                .Select(assessment => assessment.TopicId)
                 .Where(topicId => topicId.EndsWith("--other-unmapped", StringComparison.OrdinalIgnoreCase));
             return area with
             {
@@ -93,11 +90,11 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
             if (!navAreas.Any(a => a.Id == "other-unmapped"))
             {
                 var unmappedAssessments = normalizedAssessments
-                    .Where(assessment => assessment.AreaIds.Contains("other-unmapped", StringComparer.OrdinalIgnoreCase))
+                    .Where(assessment => string.Equals(assessment.AreaId, "other-unmapped", StringComparison.OrdinalIgnoreCase))
                     .ToList();
                 navAreas.Add(new NavigationArea("other-unmapped", "Other / Unmapped",
                     unmappedAssessments.Select(assessment => assessment.SubjectId).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
-                    unmappedAssessments.SelectMany(assessment => assessment.TopicIds).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
+                    unmappedAssessments.Select(assessment => assessment.TopicId).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),
                     "Assessments not yet assigned to an area."));
             }
         }
@@ -161,8 +158,8 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
                 row.title,
                 assessmentType,
                 row.catId,
-                areaIds,
-                subcatIds,
+                areaIds.Single(),
+                subcatIds.Single(),
                 row.goal,
                 row.activity,
                 tags,

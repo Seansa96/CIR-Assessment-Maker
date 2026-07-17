@@ -18,7 +18,7 @@ def generate_ch1():
         "title": "Circuit Variables: SI Units, Voltage, and Current",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "workedExamples": [
             {
                 "id": "l1-sec1",
@@ -40,7 +40,7 @@ def generate_ch1():
         "title": "Circuit Variables: Power and Energy",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "workedExamples": [
             {
                 "id": "l2-sec1",
@@ -62,7 +62,7 @@ def generate_ch1():
         "title": "Worked Example: Power and Energy Integration",
         "assessmentType": "workedExample",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "workedExamples": [
             {
                 "id": "we1",
@@ -91,7 +91,7 @@ def generate_ch1():
         "title": "Circuit Variables Glossary",
         "assessmentType": "glossary",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "glossary": [
             {
                 "term": "Current",
@@ -123,7 +123,7 @@ def generate_ch1():
         "title": "Circuit Variables Recall Drill",
         "assessmentType": "recallDrill",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "items": [
             {
                 "id": "rd1",
@@ -174,7 +174,7 @@ def generate_ch1():
         "title": "Circuit Variables Math Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "modeDefault": "practice",
         "questions": math_quiz_questions
     }
@@ -309,7 +309,7 @@ def generate_ch1():
         "title": "Circuit Variables Quiz",
         "assessmentType": "quiz",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "modeDefault": "practice",
         "questions": quiz_questions
     }
@@ -340,7 +340,7 @@ def generate_ch1():
         "title": "Circuit Variables Test",
         "assessmentType": "test",
         "categoryId": "electronics-and-circuits",
-        "subcategoryIds": ["ec-circuit-variables"],
+        "topicId": "ec-circuit-variables",
         "attemptQuestionCount": 15,
         "questions": test_questions
     }

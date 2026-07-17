@@ -3,9 +3,8 @@ id: aops-exponents-logarithms-concept-lesson
 title: Exponents and Logarithms Concept Lesson
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
-subcategoryIds:
-- aops-exponents-logarithms
-modeDefault: learn
+topicId: aops-exponents-logarithms
+modeDefault: practice
 randomizeQuestions: false
 navigation:
   learningGoal: learn
@@ -13,150 +12,248 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-exponents-logarithms
-  - aops
+  - exponent-laws
+  - radicals
+  - logarithms
 skills:
-- Apply aops-exponents-logarithms
-- aops-exponents-logarithms
+- Derive and apply exponent laws with valid base restrictions
+- Interpret fractional exponents and simplify radicals over the reals
+- Use logarithms as inverse exponent operations
+- Solve exponential and logarithmic equations while checking domains
 lesson:
-  introduction: Learn to solve Exponents and Logarithms problems by recognizing integer exponents, fractional exponents, radicals, rationalizing denominators, logarithms and justifying each theorem or transformation.
+  introduction: |-
+    Exponents compress repeated multiplication, while logarithms reverse that compression. Contest problems become much easier when these operations are treated as relationships with domains—not as a list of symbols to manipulate. This lesson develops each law from its meaning, shows how radicals fit into the same system, and builds a method-selection routine for exponential and logarithmic equations.
   sections:
-  - id: aops-exponents-logarithms-motivation
-    title: What the topic helps you notice
+  - id: exponent-laws-from-factors
+    title: Exponent laws come from counting factors
     required: true
-    content: Exponents and Logarithms is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are integer exponents, fractional exponents, radicals, rationalizing denominators, logarithms.
+    content: |-
+      For a positive integer $m$, the expression $a^m$ contains $m$ factors equal to $a$. Therefore
+
+      $$a^m a^n=a^{m+n}$$
+
+      because the product contains $m+n$ factors. If $a\ne0$, division cancels common factors:
+
+      $$\frac{a^m}{a^n}=a^{m-n}.$$
+
+      The same-base condition matters. There is no corresponding rule that changes $2^m3^n$ into $6^{m+n}$, and addition does not combine exponents: $a^m+a^n$ is generally not $a^{m+n}$.
+
+      A power of a power multiplies exponents because $(a^m)^n$ forms $n$ groups of $m$ factors. A power of a product distributes because each repeated factor contains the whole product:
+
+      $$(a^m)^n=a^{mn},\qquad (ab)^n=a^nb^n.$$
+
+      Mini-example: $8^{11}=2^{33}$ and $4^{17}=2^{34}$, so $4^{17}$ is larger. Rewriting both quantities with a common base avoids enormous arithmetic.
     check:
-      id: aops-exponents-logarithms-motivation-check
+      id: exponent-laws-from-factors-check
       type: multipleChoice
-      prompt: In Exponents and Logarithms, what should be checked before applying a method?
+      prompt: 'Which rewrite correctly compares $27^8$ and $9^{13}$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$27^8=3^{24}$ and $9^{13}=3^{26}$, so $9^{13}$ is larger.'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$27^8=3^{11}$ and $9^{13}=3^{15}$, so $9^{13}$ is larger.'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$27^8=3^{24}$ and $9^{13}=3^{26}$, so $27^8$ is larger.'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$27^8=243^{21}$ and $9^{13}=243^{21}$, so they are equal.'
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-exponents-logarithms-definitions
-    title: Definitions and theorem conditions
+      explanation: Express both bases as powers of 3. Then compare the exponents 24 and 26.
+  - id: zero-negative-and-fractional-exponents
+    title: Extending exponents without breaking the laws
     required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+    content: |-
+      The familiar laws determine what zero and negative exponents must mean. For $a\ne0$,
+
+      $$1=\frac{a^m}{a^m}=a^{m-m}=a^0,$$
+
+      so $a^0=1$. Likewise, $a^n a^{-n}=a^0=1$, which forces
+
+      $$a^{-n}=\frac1{a^n}.$$
+
+      A negative exponent creates a reciprocal; it does not make the value negative. The restrictions are not decoration: $0^0$ is not assigned this elementary-algebra value, and $0^{-n}$ would require division by zero.
+
+      Fractional exponents preserve the power-of-a-power law. The expression $a^{1/q}$ denotes a real $q$th root when that root exists, and
+
+      $$a^{p/q}=\left(a^{1/q}\right)^p.$$
+
+      Over the reals, an even root requires a nonnegative radicand. An odd root accepts every real radicand. When the denominator $q$ is even, the usual real-valued interpretation of $a^{p/q}$ therefore requires $a\ge0$.
     check:
-      id: aops-exponents-logarithms-definitions-check
+      id: zero-negative-and-fractional-exponents-check
       type: multipleChoice
-      prompt: In Exponents and Logarithms, what should be checked before applying a method?
+      prompt: 'What is $81^{-3/4}$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$-27$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$\frac1{27}$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$\frac1{64}$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$27$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-exponents-logarithms-recognition
-    title: Recognition cues
+        choiceId: b
+      explanation: The fourth root of 81 is 3, cubing gives 27, and the negative exponent takes the reciprocal.
+  - id: radicals-principal-roots-and-absolute-value
+    title: Radicals, principal roots, and hidden absolute values
     required: true
-    content: 'Look for these triggers: same-base exponent laws, root-before-power structure, logarithm as inverse exponent, domain restrictions. Record the givens, unknown, and any restriction before selecting a method.'
+    content: |-
+      The symbol $\sqrt{x}$ names the nonnegative number whose square is $x$. It is a function, so it returns one value. By contrast, the equation $y^2=x$ may have two real solutions. This distinction explains the identity
+
+      $$\sqrt{x^2}=|x|,$$
+
+      not simply $x$. If $x=-5$, then $\sqrt{x^2}=5$.
+
+      To simplify a radical, separate a perfect power from the radicand. For example,
+
+      $$\sqrt{72}=\sqrt{36\cdot2}=6\sqrt2.$$
+
+      Radicals combine only when their remaining radicands and indices agree. Thus $3\sqrt2+5\sqrt2=8\sqrt2$, but $\sqrt2+\sqrt3$ does not simplify by addition.
+
+      Rationalizing a denominator changes representation without changing value. For a binomial denominator, multiply by its conjugate because $(u+v)(u-v)=u^2-v^2$ removes the cross terms. For example,
+
+      $$\frac1{2-\sqrt3}\cdot\frac{2+\sqrt3}{2+\sqrt3}=2+\sqrt3.$$
     check:
-      id: aops-exponents-logarithms-recognition-check
+      id: radicals-principal-roots-and-absolute-value-check
       type: multipleChoice
-      prompt: In Exponents and Logarithms, what should be checked before applying a method?
+      prompt: 'For real $t$, which simplification is always valid?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$\sqrt{t^2}=t$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$\sqrt{t^2}=|t|$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$\sqrt{t^2}=\pm t$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$\sqrt{t^2}=-t$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-exponents-logarithms-method
-    title: Choose a method
+        choiceId: b
+      explanation: The principal square root must be nonnegative, so it equals the absolute value of $t$.
+  - id: logarithms-as-inverse-statements
+    title: A logarithm answers an exponent question
     required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+    content: |-
+      The statement
+
+      $$\log_b x=y$$
+
+      means exactly that $b^y=x$. For a real logarithm, the base must satisfy $b>0$ and $b\ne1$, and the argument must satisfy $x>0$. These restrictions make the exponential function one-to-one and ensure it reaches every positive real number.
+
+      Logarithm laws are exponent laws read backward. If $u,v>0$, then
+
+      $$\log_b(uv)=\log_bu+\log_bv,$$
+
+      $$\log_b\left(\frac uv\right)=\log_bu-\log_bv,$$
+
+      and $\log_b(u^r)=r\log_bu$ whenever the real expression is defined. No exponent law turns a sum into a product, so $\log_b(u+v)$ does not split.
+
+      Change of base follows by writing $b^y=x$, taking a convenient logarithm of both sides, and solving for $y$:
+
+      $$\log_bx=\frac{\log_kx}{\log_kb}.$$
     check:
-      id: aops-exponents-logarithms-method-check
+      id: logarithms-as-inverse-statements-check
       type: multipleChoice
-      prompt: In Exponents and Logarithms, what should be checked before applying a method?
+      prompt: 'Which equation is equivalent to $\log_5(x-2)=3$ and preserves its domain requirement?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$x-2=15$, with $x\ne2$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$x-2=125$, with $x>2$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$3^{x-2}=5$, with $x>2$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$5(x-2)=3$, with $x\ge2$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-exponents-logarithms-mini-example
-    title: A small original example
+        choiceId: b
+      explanation: A logarithm is an inverse-exponent statement, and its argument $x-2$ must be positive.
+  - id: selecting-an-equation-strategy
+    title: Choose the structure before calculating
     required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+    content: |-
+      Exponential and logarithmic equations reward structural recognition.
+
+      1. Rewrite with a common base when possible. For $9^x=27^{x-1}$, use powers of 3 and equate exponents.
+      2. Substitute for a repeated power. In $4^x-5\cdot2^x+4=0$, let $u=2^x>0$, so $u^2-5u+4=0$.
+      3. Take logarithms when a common base is unavailable, as in $4^x=7$.
+      4. Combine logarithms only after stating that every argument is positive.
+
+      Always solve the transformed equation and then return to the original variable. A substitution such as $u=2^x$ carries the restriction $u>0$; a logarithmic equation carries its argument restrictions. Transformations may generate algebraic candidates that the original equation rejects.
     check:
-      id: aops-exponents-logarithms-mini-example-check
+      id: selecting-an-equation-strategy-check
       type: multipleChoice
-      prompt: In Exponents and Logarithms, what should be checked before applying a method?
+      prompt: 'What is the most efficient first move for $9^x-10\cdot3^x+9=0$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: Let $u=3^x$, producing $u^2-10u+9=0$ with $u>0$.
       - id: b
-        text: Whether the diagram looks proportional.
+        text: Divide the exponents by 9.
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: Take the square root of every term.
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: Expand $9^x$ as $9x$.
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-exponents-logarithms-trap
-    title: Common misconception
+      explanation: Since $9^x=(3^x)^2$, the repeated-power substitution converts the equation to a quadratic while preserving $u>0$.
+  - id: illegal-moves-and-counterexamples
+    title: Counterexamples expose illegal moves
     required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+    content: |-
+      A proposed identity must work for every input in its claimed domain. One small counterexample is enough to disprove it.
+
+      - $a^m+a^n=a^{m+n}$ fails at $a=2$ and $m=n=1$: $2+2\ne4$.
+      - $(a+b)^2=a^2+b^2$ fails because the middle term $2ab$ is missing.
+      - $\sqrt{a+b}=\sqrt a+\sqrt b$ fails at $a=b=1$.
+      - $\log(x+y)=\log x+\log y$ fails because the right side is $\log(xy)$ when $x,y>0$.
+
+      Another common failure is losing an exceptional case. Dividing an equation by an expression such as $x-3$ assumes $x\ne3$. Before dividing, check the zero case separately. Similarly, squaring preserves every original solution but may add candidates, so substitution into the original equation is mandatory.
     check:
-      id: aops-exponents-logarithms-trap-check
+      id: illegal-moves-and-counterexamples-check
       type: multipleChoice
-      prompt: In Exponents and Logarithms, what should be checked before applying a method?
+      prompt: 'Which choice disproves the claim $\sqrt{a+b}=\sqrt a+\sqrt b$ for all nonnegative $a,b$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$a=0,b=4$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$a=1,b=1$'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$a=9,b=0$'
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: '$a=0,b=0$'
       answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-exponents-logarithms-synthesis
-    title: Contest synthesis
+        choiceId: b
+      explanation: At $a=b=1$, the left side is $\sqrt2$ while the right side is 2.
+  - id: logarithmic-synthesis-with-domain-check
+    title: Synthesis—let the domain eliminate false candidates
     required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+    content: |-
+      Solve
+
+      $$\log_2(x-1)+\log_2(x-3)=3.$$
+
+      First record the domain: both arguments must be positive, so $x>3$. The product law is now legal:
+
+      $$\log_2\big((x-1)(x-3)\big)=3.$$
+
+      Convert to exponential form:
+
+      $$(x-1)(x-3)=8.$$
+
+      Expanding gives $x^2-4x-5=0$, or $(x-5)(x+1)=0$. The transformed equation offers $x=5$ and $x=-1$, but the original domain requires $x>3$. Therefore the only solution is $x=5$. Substitution confirms $\log_2 4+\log_2 2=2+1=3$.
+
+      The important sequence is reusable: domain, legal combination, algebra, restriction check, original-equation verification.
     check:
-      id: aops-exponents-logarithms-synthesis-check
+      id: logarithmic-synthesis-with-domain-check-check
       type: multipleChoice
-      prompt: In Exponents and Logarithms, what should be checked before applying a method?
+      prompt: 'When solving $\log_3(x+2)+\log_3(x-2)=2$, which candidate set and conclusion are correct?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: Candidates $x=\pm\sqrt{13}$; only $x=\sqrt{13}$ satisfies $x>2$.
       - id: b
-        text: Whether the diagram looks proportional.
+        text: Candidates $x=\pm5$; both are valid.
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: Candidate $x=13$ only.
       - id: d
-        text: Whether a decimal estimate is convenient.
+        text: Candidates $x=\pm\sqrt5$; neither is valid.
       answer:
         choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+      explanation: The product equation is $(x+2)(x-2)=9$, so $x^2=13$; the logarithm domain rejects the negative candidate.

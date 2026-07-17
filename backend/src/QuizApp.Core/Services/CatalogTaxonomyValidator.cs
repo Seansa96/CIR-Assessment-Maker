@@ -147,18 +147,22 @@ public class CatalogTaxonomyValidator : ICatalogTaxonomyValidator
             }
         }
 
-        // Every category topic is mapped to at least one same-category area
+        // Every category topic is mapped to exactly one canonical same-category area.
         foreach (var category in categories)
         {
             foreach (var sub in category.Subcategories)
             {
-                var mappedToArea = areas.Any(a => 
+                var mappedAreas = areas.Where(a => 
                     a.CategoryIds.Contains(category.Id, StringComparer.OrdinalIgnoreCase) && 
-                    a.SubcategoryIds.Contains(sub.Id, StringComparer.OrdinalIgnoreCase));
+                    a.SubcategoryIds.Contains(sub.Id, StringComparer.OrdinalIgnoreCase)).ToList();
 
-                if (!mappedToArea)
+                if (mappedAreas.Count == 0)
                 {
                     errors.Add($"SUBCATEGORY_NOT_MAPPED_TO_AREA: Topic '{sub.Id}' in category '{category.Id}' is not mapped to any same-category area.");
+                }
+                else if (mappedAreas.Count > 1)
+                {
+                    errors.Add($"TOPIC_MAPPED_TO_MULTIPLE_AREAS: Topic '{sub.Id}' in category '{category.Id}' is mapped to multiple canonical areas: {string.Join(", ", mappedAreas.Select(area => area.Id))}.");
                 }
             }
         }

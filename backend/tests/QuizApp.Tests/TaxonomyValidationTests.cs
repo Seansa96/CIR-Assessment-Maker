@@ -2,6 +2,7 @@ using QuizApp.Core.Domain;
 using QuizApp.Core.Services;
 using QuizApp.Infrastructure.Files;
 using Xunit;
+using System.Text.Json;
 
 namespace QuizApp.Tests;
 
@@ -13,6 +14,7 @@ public class TaxonomyValidationTests
         var yaml = """
             id: test-1
             subcategoryId: topic-1
+            subcategoryIds: [topic-1, topic-2]
             learningGoal: practice
             activityType: mixedPractice
             tags: [a, b]
@@ -26,6 +28,7 @@ public class TaxonomyValidationTests
 
         Assert.False(result.IsValid);
         Assert.Contains(result.Diagnostics, d => d.Code == "LEGACY_SUBCATEGORY_ID");
+        Assert.Contains(result.Diagnostics, d => d.Code == "LEGACY_SUBCATEGORY_IDS");
         Assert.Contains(result.Diagnostics, d => d.Code == "MISPLACED_LEARNING_GOAL");
         Assert.Contains(result.Diagnostics, d => d.Code == "MISPLACED_ACTIVITY_TYPE");
         Assert.Contains(result.Diagnostics, d => d.Code == "MISPLACED_NAVIGATION_TAGS");
@@ -39,7 +42,7 @@ public class TaxonomyValidationTests
         var area = new AreaDefinition("area-1", "Area 1", ["cat-1"], ["topic-1"]);
 
         var validator = new AssessmentTaxonomyValidator();
-        var assessment = new AssessmentDefinition(1, "a-1", "A 1", AssessmentType.Quiz, "cat-1", ["topic-1"], AssessmentMode.Practice, false, null, null, null, []);
+        var assessment = new AssessmentDefinition(1, "a-1", "A 1", AssessmentType.Quiz, "cat-1", "topic-1", AssessmentMode.Practice, false, null, null, null, []);
 
         var result = validator.Validate(assessment, [category], [area]);
         Assert.True(result.IsValid);
@@ -50,16 +53,21 @@ public class TaxonomyValidationTests
         Assert.False(result.IsValid);
         Assert.Contains(result.Errors, e => e.Contains("UNKNOWN_CATEGORY_ID"));
 
-        // Unknown subcategory
-        var badSubAsmt = assessment with { SubcategoryIds = ["topic-2"] };
+        // Unknown topic
+        var badSubAsmt = assessment with { TopicId = "topic-2" };
         result = validator.Validate(badSubAsmt, [category], [area]);
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.Contains("UNKNOWN_SUBCATEGORY_ID"));
+        Assert.Contains(result.Errors, e => e.Contains("UNKNOWN_TOPIC_ID"));
 
         // Not mapped to area
         result = validator.Validate(assessment, [category], []);
         Assert.False(result.IsValid);
-        Assert.Contains(result.Errors, e => e.Contains("SUBCATEGORY_NOT_MAPPED_TO_AREA"));
+        Assert.Contains(result.Errors, e => e.Contains("TOPIC_NOT_MAPPED_TO_AREA"));
+
+        var duplicateArea = new AreaDefinition("area-2", "Area 2", ["cat-1"], ["topic-1"]);
+        result = validator.Validate(assessment, [category], [area, duplicateArea]);
+        Assert.False(result.IsValid);
+        Assert.Contains(result.Errors, e => e.Contains("TOPIC_MAPPED_TO_MULTIPLE_AREAS"));
     }
 
     [Fact]
@@ -99,5 +107,20 @@ public class TaxonomyValidationTests
 
         Assert.Contains(result.Errors, error => error.Contains("PREREQUISITE_SELF_REFERENCE"));
         Assert.Contains(result.Errors, error => error.Contains("PREREQUISITE_UNKNOWN_OR_CROSS_CATEGORY"));
+    }
+
+    [Fact]
+    public void Navigation_assessment_json_exposes_only_singular_classification_fields()
+    {
+        var summary = new NavigationAssessmentSummary(
+            "a-1", "Assessment", AssessmentType.Quiz, "cat-1", "area-1", "topic-1",
+            "practice", "focusedPractice", [], 1, 1, null, false, []);
+
+        var json = JsonSerializer.Serialize(summary, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+
+        Assert.Contains("\"areaId\":\"area-1\"", json);
+        Assert.Contains("\"topicId\":\"topic-1\"", json);
+        Assert.DoesNotContain("areaIds", json);
+        Assert.DoesNotContain("topicIds", json);
     }
 }

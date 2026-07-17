@@ -147,7 +147,7 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             assessment.Title,
             assessment.AssessmentType,
             assessment.CategoryId,
-            assessment.SubcategoryIds,
+            assessment.TopicId,
             effectiveCount,
             authoredCount,
             GetEffectiveAttemptCount(assessment))

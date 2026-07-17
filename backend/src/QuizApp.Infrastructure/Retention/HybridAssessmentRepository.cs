@@ -191,12 +191,12 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
             assessment.Title,
             assessment.AssessmentType,
             assessment.CategoryId,
-            subcatIds,
+            assessment.TopicId,
             effectiveCount,
             authoredCount,
             GetEffectiveAttemptCount(assessment))
         {
-            AreaIds = areaIds,
+            AreaId = areaIds.SingleOrDefault(),
             LearningGoal = learningGoal,
             ActivityType = activityType,
             Tags = tags,
