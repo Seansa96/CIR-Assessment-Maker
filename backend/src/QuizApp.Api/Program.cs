@@ -74,6 +74,7 @@ builder.Services.AddSingleton<IAttemptSessionStore, InMemoryAttemptSessionStore>
 builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequiredService<SqliteGradeLogRepository>());
 builder.Services.AddSingleton<IAssessmentReportRepository>(provider => provider.GetRequiredService<SqliteAssessmentReportRepository>());
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
+builder.Services.AddSingleton<IAuthoringWorkspaceService, FileAuthoringWorkspaceService>();
 builder.Services.AddSingleton<IGuidedProjectSessionRepository, FileGuidedProjectSessionRepository>();
 builder.Services.AddSingleton<SqliteNavigationCatalogService>();
 builder.Services.AddSingleton<INavigationCatalogService>(sp => sp.GetRequiredService<SqliteNavigationCatalogService>());
@@ -317,6 +318,62 @@ api.MapGet("/categories", async (ICategoryRepository repository, CancellationTok
 {
     return Results.Ok(await repository.ListAsync(cancellationToken));
 });
+
+var authoringApi = api.MapGroup("/authoring");
+authoringApi.MapGet("/sources", async (IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+    Results.Ok(await workspace.ListSourcesAsync(cancellationToken)));
+authoringApi.MapGet("/sources/{sourceId}", async (string sourceId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    var source = await workspace.GetSourceAsync(sourceId, cancellationToken);
+    return source is null ? Results.NotFound(ApiError("SOURCE_NOT_FOUND", "Source was not found.")) : Results.Ok(source);
+});
+authoringApi.MapPost("/sources", async (ImportAuthoringSourceRequest request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { var source = await workspace.ImportSourceAsync(new SourceImportRequest(request.LocalPath, request.Title, request.LicenseNote), cancellationToken); return Results.Created($"/api/authoring/sources/{source.Manifest.Id}", source); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("SOURCE_IMPORT_FAILED", ex.Message)); }
+});
+authoringApi.MapPost("/sources/{sourceId}/retry", async (string sourceId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await workspace.RetryExtractionAsync(sourceId, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("SOURCE_RETRY_FAILED", ex.Message)); }
+});
+authoringApi.MapGet("/sources/search", async (string q, int? limit, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+    Results.Ok(await workspace.SearchSourcesAsync(q, limit ?? 25, cancellationToken)));
+authoringApi.MapGet("/curriculums", async (IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) => Results.Ok(await workspace.ListCurriculumsAsync(cancellationToken)));
+authoringApi.MapPut("/curriculums/{manifestId}", async (string manifestId, CurriculumManifest manifest, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { await workspace.SaveCurriculumAsync(manifest with { Id = manifestId }); return Results.Ok(manifest with { Id = manifestId }); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("CURRICULUM_INVALID", ex.Message)); }
+});
+authoringApi.MapGet("/blueprints", async (string? categoryId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) => Results.Ok(await workspace.ListBlueprintsAsync(categoryId, cancellationToken)));
+authoringApi.MapPut("/blueprints/{blueprintId}", async (string blueprintId, QuestionBlueprint blueprint, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { await workspace.SaveBlueprintAsync(blueprint with { Id = blueprintId }); return Results.Ok(blueprint with { Id = blueprintId }); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("BLUEPRINT_INVALID", ex.Message)); }
+});
+authoringApi.MapPut("/content/{manifestId}", async (string manifestId, ContentManifest manifest, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { await workspace.SaveContentManifestAsync(manifest with { Id = manifestId }); return Results.Ok(manifest with { Id = manifestId }); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("CONTENT_MANIFEST_INVALID", ex.Message)); }
+});
+authoringApi.MapPost("/packets", async (ExportAuthoringPacketRequest request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await workspace.ExportPacketAsync(request.CategoryId, request.TopicId, request.ObjectiveIds ?? [], request.ChunkIds ?? [], cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("PACKET_EXPORT_FAILED", ex.Message)); }
+});
+authoringApi.MapGet("/drafts", async (IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) => Results.Ok(await workspace.ListDraftsAsync(cancellationToken)));
+authoringApi.MapPost("/drafts", async (ImportAuthoringDraftRequest request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { return Results.Created("/api/authoring/drafts", await workspace.ImportDraftAsync(request.PacketId, request.PayloadJson, cancellationToken)); }
+    catch (Exception ex) when (ex is InvalidOperationException or JsonException) { return Results.BadRequest(ApiError("DRAFT_IMPORT_FAILED", ex.Message)); }
+});
+authoringApi.MapPatch("/drafts/{draftId}", async (string draftId, UpdateAuthoringDraftStateRequest request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    if (!Enum.TryParse<SourceReviewState>(request.State, true, out var state)) return Results.BadRequest(ApiError("DRAFT_STATE_INVALID", "State must be draft, needsReview, approved, quarantined, or superseded."));
+    try { return Results.Ok(await workspace.SetDraftStateAsync(draftId, state, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("DRAFT_STATE_FAILED", ex.Message)); }
+});
+authoringApi.MapGet("/coverage", async (string? categoryId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) => Results.Ok(await workspace.GetCoverageAsync(categoryId, cancellationToken)));
 
 api.MapGet("/assessments", async (string categoryId, IAssessmentRepository repository, CancellationToken cancellationToken) =>
 {

@@ -3,6 +3,7 @@ using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
+using QuizApp.Core.Services;
 
 namespace QuizApp.Infrastructure.Retention;
 
@@ -258,9 +259,9 @@ public sealed class SqliteAssessmentSearchService
                 nav.ActivityType ?? string.Empty,
                 nav.Tags,
                 def.Skills,
-                GetEffectiveQuestionCount(def),
-                def.Questions.Count + def.Items.Count,
-                GetEffectiveAttemptCount(def),
+                GetEffectiveItemCount(def),
+                AssessmentItemCounter.Count(def),
+                AssessmentItemCounter.EffectiveAttemptCount(def),
                 score,
                 Array.Empty<string>(), // matched fields
                 null
@@ -274,22 +275,12 @@ public sealed class SqliteAssessmentSearchService
             .ToList();
     }
 
-    private static int GetEffectiveQuestionCount(AssessmentDefinition definition)
+    private static int GetEffectiveItemCount(AssessmentDefinition definition)
     {
+        var authoredCount = AssessmentItemCounter.Count(definition);
         return definition.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            ? Math.Min(GetEffectiveAttemptCount(definition) ?? definition.Questions.Count, definition.Questions.Count)
-            : definition.Questions.Count + definition.Items.Count;
-    }
-
-    private static int? GetEffectiveAttemptCount(AssessmentDefinition definition)
-    {
-        if (definition.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            && definition.QuestionSelection?.Mode is QuestionSelectionMode.OrderedVariants)
-        {
-            return definition.QuestionSelection.Slots.Count;
-        }
-
-        return definition.AttemptQuestionCount;
+            ? Math.Min(AssessmentItemCounter.EffectiveAttemptCount(definition) ?? authoredCount, authoredCount)
+            : authoredCount;
     }
 
     private decimal RankCandidate(AssessmentDefinition def, NavigationMetadata nav, string query, double bm25Score)

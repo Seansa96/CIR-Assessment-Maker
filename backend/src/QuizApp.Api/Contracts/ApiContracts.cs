@@ -5,6 +5,15 @@ namespace QuizApp.Api.Contracts;
 
 public sealed record ValidateAssessmentFileRequest(string FileName);
 
+public sealed record ImportAuthoringSourceRequest(string LocalPath, string? Title, string? LicenseNote);
+public sealed record ExportAuthoringPacketRequest(
+    string CategoryId,
+    string TopicId,
+    IReadOnlyList<string>? ObjectiveIds,
+    IReadOnlyList<string>? ChunkIds);
+public sealed record ImportAuthoringDraftRequest(string PacketId, string PayloadJson);
+public sealed record UpdateAuthoringDraftStateRequest(string State);
+
 public sealed record StartAttemptRequest(string AssessmentId, AssessmentMode? Mode);
 
 public sealed record AttemptSessionResponse(

@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Data.Sqlite;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
@@ -148,7 +150,7 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
             var skills = await GetListAsync(connection, "assessment_skills", "skill_id", row.id, cancellationToken);
 
             // Parse authored/attempt count from definition_json briefly
-            var (authored, attemptCount) = ParseCounts(row.json, row.typeStr);
+            var (authored, attemptCount) = ParseCounts(row.json);
 
             if (!Enum.TryParse<AssessmentType>(row.typeStr, true, out var assessmentType))
                 assessmentType = AssessmentType.Unknown;
@@ -173,51 +175,23 @@ public sealed class SqliteNavigationCatalogService : INavigationCatalogService
         return result;
     }
 
-    private static (int Authored, int? AttemptCount) ParseCounts(string json, string typeStr)
+    private static (int Authored, int? AttemptCount) ParseCounts(string json)
     {
         try
         {
-            using var doc = System.Text.Json.JsonDocument.Parse(json);
-            var root = doc.RootElement;
-            int? attempt = root.TryGetProperty("attemptQuestionCount", out var aqc) && aqc.ValueKind != System.Text.Json.JsonValueKind.Null
-                ? aqc.GetInt32() : null;
-            if (root.TryGetProperty("questionSelection", out var selection)
-                && IsOrderedVariantSelection(selection)
-                && selection.TryGetProperty("slots", out var slots)
-                && slots.ValueKind is System.Text.Json.JsonValueKind.Array)
-            {
-                attempt = slots.GetArrayLength();
-            }
-
-            int authored = typeStr.ToLowerInvariant() switch
-            {
-                "recalldrill" => root.TryGetProperty("items", out var items) ? items.GetArrayLength() : 0,
-                "workedexample" => root.TryGetProperty("workedExamples", out var we)
-                    ? we.EnumerateArray().Sum(e => e.TryGetProperty("steps", out var steps) ? steps.GetArrayLength() : 0) : 0,
-                "guidedproject" => root.TryGetProperty("guidedProject", out var gp)
-                    && gp.TryGetProperty("requiredChecks", out var rc) ? rc.GetArrayLength() : 0,
-                "conceptlesson" => root.TryGetProperty("lesson", out var lesson)
-                    && lesson.TryGetProperty("sections", out var lessonSections) ? lessonSections.GetArrayLength() : 0,
-                "interactiveexploration" => root.TryGetProperty("exploration", out var exploration)
-                    && exploration.TryGetProperty("sections", out var explorationSections) ? explorationSections.GetArrayLength() : 0,
-                _ => root.TryGetProperty("questions", out var qs) ? qs.GetArrayLength() : 0
-            };
-
-            return (authored, attempt);
+            var assessment = JsonSerializer.Deserialize<AssessmentDefinition>(json, JsonOptions);
+            return assessment is null
+                ? (0, null)
+                : (AssessmentItemCounter.Count(assessment), AssessmentItemCounter.EffectiveAttemptCount(assessment));
         }
         catch { return (0, null); }
     }
 
-    private static bool IsOrderedVariantSelection(System.Text.Json.JsonElement selection)
+    private static readonly JsonSerializerOptions JsonOptions = new()
     {
-        if (!selection.TryGetProperty("mode", out var mode) || mode.ValueKind is System.Text.Json.JsonValueKind.Null)
-        {
-            return true;
-        }
-
-        var value = mode.GetString()?.Trim().ToLowerInvariant();
-        return string.IsNullOrWhiteSpace(value) || value is "orderedvariant" or "orderedvariants";
-    }
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+    };
 
     private static async Task<List<string>> GetListAsync(SqliteConnection connection, string table, string column, string id, CancellationToken cancellationToken)
     {

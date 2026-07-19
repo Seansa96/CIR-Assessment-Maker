@@ -26,6 +26,7 @@ const isDev = import.meta.env.DEV;
         <button class="tab active" data-tab="load">Load Assessment</button>
         <button class="tab" data-tab="curriculums">Category Curriculums</button>
         <button class="tab" data-tab="create">Create Quiz/Test</button>
+        <button class="tab" data-tab="authoring">Authoring Workspace</button>
         <button class="tab" data-tab="settings">Settings</button>
         <button class="tab" data-tab="grades">Grade Log</button>
         <button class="tab" data-tab="sessions">Attempt Sessions</button>
@@ -162,7 +163,51 @@ const isDev = import.meta.env.DEV;
         </section>
       </section>
 
-      <section class="view" id="view-curriculums" aria-labelledby="curriculums-title">
+      <section class="view" id="view-authoring" aria-labelledby="authoring-title">
+        <section class="panel authoring-workspace">
+          <h2 id="authoring-title">Source-to-Curriculum Workspace</h2>
+          <p class="quiet-hint">Private sources stay in the local source library. Export source-cited packets for an agent, then import drafts for review before publishing any content.</p>
+          <form id="authoring-import-form" class="authoring-import-grid">
+            <div class="field wide"><label for="authoring-source-path">Local source path</label><input id="authoring-source-path" name="localPath" required placeholder="C:\\Course Materials\\chapter.pdf" /></div>
+            <div class="field"><label for="authoring-source-title">Title</label><input id="authoring-source-title" name="title" placeholder="Optional display title" /></div>
+            <div class="field"><label for="authoring-license-note">Reuse note</label><input id="authoring-license-note" name="licenseNote" placeholder="CC BY 4.0, personal reference, etc." /></div>
+            <div class="button-row"><button class="primary" type="submit">Import source</button><button type="button" id="authoring-refresh">Refresh workspace</button></div>
+          </form>
+          <p id="authoring-status" class="form-status" aria-live="polite"></p>
+          <div class="authoring-summary" id="authoring-summary"></div>
+          <div class="authoring-columns">
+            <section><h3>Private sources</h3><div id="authoring-sources" class="authoring-list empty-state">No private sources have been imported.</div></section>
+            <section><h3>Review queue</h3><div id="authoring-drafts" class="authoring-list empty-state">No agent drafts are waiting for review.</div></section>
+          </div>
+          <section class="authoring-source-detail" id="authoring-source-detail" hidden aria-labelledby="authoring-source-detail-title">
+            <div class="section-header">
+              <div><h3 id="authoring-source-detail-title">Source chunks</h3><p id="authoring-source-detail-meta" class="muted"></p></div>
+              <div class="button-row"><button type="button" id="authoring-select-visible">Select visible</button><button type="button" id="authoring-clear-chunks">Clear selection</button></div>
+            </div>
+            <div class="authoring-chunk-controls">
+              <div class="field"><label for="authoring-chunk-search">Search this source</label><input id="authoring-chunk-search" type="search" placeholder="Search chunk text, locator, or ID" /></div>
+              <p id="authoring-chunk-selection" class="muted" aria-live="polite">No chunks selected.</p>
+            </div>
+            <div id="authoring-chunk-list" class="authoring-chunk-list"></div>
+          </section>
+          <section class="authoring-packet-panel">
+            <h3>Agent handoff</h3>
+            <p class="muted">Select source chunks, then copy the packet into Codex or Gemini. Drafts must be imported and reviewed before their manifests can be approved.</p>
+            <div class="authoring-import-grid">
+              <div class="field"><label for="authoring-category">Category ID</label><input id="authoring-category" placeholder="physics-1" /></div>
+              <div class="field"><label for="authoring-topic">Topic ID</label><input id="authoring-topic" placeholder="traveling-waves" /></div>
+              <div class="field wide"><label for="authoring-objectives">Objective IDs (comma-separated)</label><input id="authoring-objectives" placeholder="wave-speed,interpret-wave-graph" /></div>
+              <div class="field wide"><label for="authoring-chunks">Source chunk IDs (comma-separated)</label><input id="authoring-chunks" placeholder="src-...:chunk-0001" /></div>
+            </div>
+            <div class="button-row"><button id="authoring-export-packet" type="button">Create packet</button></div>
+            <textarea id="authoring-packet-output" class="authoring-json" readonly placeholder="Generated packet appears here."></textarea>
+            <div class="field"><label for="authoring-draft-input">Agent draft JSON</label><textarea id="authoring-draft-input" class="authoring-json" placeholder='{"contentManifests": [], "questionBlueprints": []}'></textarea></div>
+            <div class="button-row"><button id="authoring-import-draft" type="button">Import draft for review</button></div>
+          </section>
+        </section>
+      </section>
+
+      <section class="view" id="view-curriculums" aria-labelledby="curriculums-title">
         <section class="panel">
           <h2 id="curriculums-title">Category Curriculums</h2>
           <p class="quiet-hint">Browse the intended path for each category and track your progress.</p>
@@ -1425,6 +1470,8 @@ const isDev = import.meta.env.DEV;
           activityType: string;
           assessmentId: string;
         };
+        authoringSource: any | null;
+        authoringSelectedChunkIds: Set<string>;
       } = {
         settings: null,
         categories: [],
@@ -1466,7 +1513,9 @@ const isDev = import.meta.env.DEV;
           goalId: "",
           activityType: "",
           assessmentId: ""
-        }
+        },
+        authoringSource: null,
+        authoringSelectedChunkIds: new Set()
       };
 
       const apiStatus = document.querySelector<HTMLDivElement>("#api-status")!;
@@ -1493,6 +1542,15 @@ const isDev = import.meta.env.DEV;
       const navError = document.querySelector<HTMLParagraphElement>("#nav-error")!;
       const navActions = document.querySelector<HTMLDivElement>("#nav-actions")!;
       const navBreadcrumb = document.querySelector<HTMLElement>("#nav-breadcrumb")!;
+      const authoringImportForm = document.querySelector<HTMLFormElement>("#authoring-import-form")!;
+      const authoringStatus = document.querySelector<HTMLParagraphElement>("#authoring-status")!;
+      const authoringSources = document.querySelector<HTMLDivElement>("#authoring-sources")!;
+      const authoringDrafts = document.querySelector<HTMLDivElement>("#authoring-drafts")!;
+      const authoringSummary = document.querySelector<HTMLDivElement>("#authoring-summary")!;
+      const authoringSourceDetail = document.querySelector<HTMLElement>("#authoring-source-detail")!;
+      const authoringChunkSearch = document.querySelector<HTMLInputElement>("#authoring-chunk-search")!;
+      const authoringChunkList = document.querySelector<HTMLDivElement>("#authoring-chunk-list")!;
+      const authoringChunkSelection = document.querySelector<HTMLParagraphElement>("#authoring-chunk-selection")!;
 
       document.querySelectorAll<HTMLButtonElement>(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -1543,6 +1601,13 @@ const isDev = import.meta.env.DEV;
       document.querySelector<HTMLButtonElement>("#add-question")!.addEventListener("click", () => addDraftQuestion());
       document.querySelector<HTMLButtonElement>("#refresh-preview")!.addEventListener("click", renderAssessmentPreview);
       document.querySelector<HTMLButtonElement>("#validate-draft")!.addEventListener("click", validateDraftAssessment);
+      authoringImportForm.addEventListener("submit", (event) => { event.preventDefault(); void importAuthoringSource(); });
+      document.querySelector<HTMLButtonElement>("#authoring-refresh")!.addEventListener("click", () => void loadAuthoringWorkspace());
+      document.querySelector<HTMLButtonElement>("#authoring-export-packet")!.addEventListener("click", () => void exportAuthoringPacket());
+      document.querySelector<HTMLButtonElement>("#authoring-import-draft")!.addEventListener("click", () => void importAuthoringDraft());
+      authoringChunkSearch.addEventListener("input", renderAuthoringChunks);
+      document.querySelector<HTMLButtonElement>("#authoring-select-visible")!.addEventListener("click", selectVisibleAuthoringChunks);
+      document.querySelector<HTMLButtonElement>("#authoring-clear-chunks")!.addEventListener("click", clearAuthoringChunkSelection);
 
       startDevStatusPolling();
       await initialize();
@@ -2095,23 +2160,31 @@ const isDev = import.meta.env.DEV;
         onSelect: (id: string) => void
       ) {
         const container = document.querySelector<HTMLDivElement>(`#${containerId}`)!;
-        container.innerHTML = items.map((item) => `
+        container.innerHTML = items.map((item) => {
+          const descriptionId = `nav-description-${item.id}`;
+          const descriptionHtml = item.description
+            ? `
+              <span class="nav-tile-description" aria-hidden="true">${escapeHtml(item.description)}</span>
+              <span class="nav-tile-description-tooltip" id="${escapeHtml(descriptionId)}" role="tooltip">${escapeHtml(item.description)}</span>`
+            : "";
+          return `
           <button
             type="button"
             class="nav-tile ${item.selected ? "selected" : ""}"
             data-navigation-id="${escapeHtml(item.id)}"
-            title="${escapeHtml(item.description ?? item.label)}"
             role="option"
             aria-selected="${item.selected ?? false}"
+            ${item.description ? `aria-describedby="${escapeHtml(descriptionId)}"` : ""}
             ${item.disabled ? "disabled" : ""}
           >
             ${item.numberTagHtml ?? ""}
             ${item.suggested ? `<span class="nav-tile-suggested">★ Suggested</span>` : ""}
             <span class="nav-tile-label">${escapeHtml(item.label)} ${item.badgeHtml ?? ""}</span>
-            ${item.description ? `<span class="nav-tile-description">${escapeHtml(item.description)}</span>` : ""}
+            ${descriptionHtml}
             <span class="nav-tile-count">${item.count} available</span>
           </button>
-        `).join("");
+        `;
+        }).join("");
         container.querySelectorAll<HTMLButtonElement>("[data-navigation-id]").forEach((button) => {
           button.addEventListener("click", () => onSelect(button.dataset.navigationId ?? ""));
         });
@@ -3583,7 +3656,102 @@ const isDev = import.meta.env.DEV;
         if (tabName === "diagnostics" && IS_DEV) {
           void loadAssessmentReports();
         }
+        if (tabName === "authoring") void loadAuthoringWorkspace();
       }
+
+      function authoringValues(id: string) {
+        return (document.querySelector<HTMLInputElement>(id)?.value ?? "").split(",").map(value => value.trim()).filter(Boolean);
+      }
+
+      async function loadAuthoringWorkspace() {
+        try {
+          const [sources, drafts, coverage] = await Promise.all([
+            api<any[]>("/authoring/sources"), api<any[]>("/authoring/drafts"), api<any[]>("/authoring/coverage")
+          ]);
+          authoringSources.classList.remove("empty-state");
+          authoringSources.innerHTML = sources.length ? sources.map(source => `
+            <article class="authoring-card"><div><strong>${escapeHtml(source.title)}</strong><span class="authoring-state" data-state="${escapeHtml(source.extractionStatus)}">${escapeHtml(source.format)} · ${escapeHtml(source.extractionStatus)}</span></div>
+            <p>${escapeHtml(source.originalFileName)} · ${source.chunkCount} chunks</p><p class="muted">${escapeHtml(source.licenseNote)}</p>
+            ${source.warnings?.length ? `<details><summary>Extraction warnings</summary><p>${escapeHtml(source.warnings.join(" "))}</p></details>` : ""}
+            <div class="button-row"><button type="button" data-authoring-open-source="${escapeHtml(source.id)}">Browse chunks</button><button type="button" data-authoring-retry="${escapeHtml(source.id)}">Retry extraction</button></div></article>`).join("") : "No private sources have been imported.";
+          authoringDrafts.classList.remove("empty-state");
+          authoringDrafts.innerHTML = drafts.length ? drafts.map(draft => `
+            <article class="authoring-card"><div><strong>${escapeHtml(draft.id)}</strong><span class="authoring-state" data-state="${escapeHtml(draft.reviewState)}">${escapeHtml(draft.reviewState)}</span></div>
+            <p>Packet ${escapeHtml(draft.packetId)} · ${escapeHtml(formatDate(draft.importedAt))}</p>
+            ${draft.diagnostics?.length ? `<p class="warning-text">${escapeHtml(draft.diagnostics.join(" "))}</p>` : ""}
+            <button type="button" data-authoring-state="approved" data-authoring-draft="${escapeHtml(draft.id)}">Approve reviewed draft</button>
+            <button type="button" data-authoring-state="quarantined" data-authoring-draft="${escapeHtml(draft.id)}">Quarantine</button></article>`).join("") : "No agent drafts are waiting for review.";
+          authoringSummary.textContent = `${sources.length} private source${sources.length === 1 ? "" : "s"} · ${drafts.filter(draft => draft.reviewState === "needsReview").length} draft(s) need review · ${coverage.filter(row => !row.meetsContentRequirement || !row.meetsPracticeRequirement).length} curriculum coverage gap(s).`;
+          document.querySelectorAll<HTMLButtonElement>("[data-authoring-retry]").forEach(button => button.addEventListener("click", () => void retryAuthoringSource(button.dataset.authoringRetry!)));
+          document.querySelectorAll<HTMLButtonElement>("[data-authoring-open-source]").forEach(button => button.addEventListener("click", () => void openAuthoringSource(button.dataset.authoringOpenSource!)));
+          document.querySelectorAll<HTMLButtonElement>("[data-authoring-draft]").forEach(button => button.addEventListener("click", () => void setAuthoringDraftState(button.dataset.authoringDraft!, button.dataset.authoringState!)));
+        } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
+
+      async function importAuthoringSource() {
+        const form = new FormData(authoringImportForm);
+        try {
+          const source = await api<any>("/authoring/sources", { method: "POST", body: JSON.stringify({ localPath: String(form.get("localPath") ?? ""), title: String(form.get("title") ?? ""), licenseNote: String(form.get("licenseNote") ?? "") }) });
+          authoringStatus.textContent = `Imported ${source.manifest.title}: ${source.manifest.chunkCount} searchable chunks.`; authoringImportForm.reset(); await loadAuthoringWorkspace();
+        } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
+      async function retryAuthoringSource(sourceId: string) { try { await api(`/authoring/sources/${encodeURIComponent(sourceId)}/retry`, { method: "POST" }); authoringStatus.textContent = "Extraction retried."; await loadAuthoringWorkspace(); } catch (error) { authoringStatus.textContent = readableError(error); } }
+      async function openAuthoringSource(sourceId: string) {
+        try {
+          state.authoringSource = await api<any>(`/authoring/sources/${encodeURIComponent(sourceId)}`);
+          state.authoringSelectedChunkIds.clear();
+          authoringChunkSearch.value = "";
+          authoringSourceDetail.hidden = false;
+          syncAuthoringChunkSelection();
+          renderAuthoringChunks();
+          authoringSourceDetail.scrollIntoView({ behavior: "smooth", block: "start" });
+        } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
+      function visibleAuthoringChunks() {
+        const source = state.authoringSource;
+        if (!source) return [];
+        const query = authoringChunkSearch.value.trim().toLowerCase();
+        return (source.chunks as any[]).filter(chunk => !query || [chunk.id, chunk.locator, chunk.kind, chunk.text].some(value => String(value ?? "").toLowerCase().includes(query))).slice(0, 80);
+      }
+      function renderAuthoringChunks() {
+        const source = state.authoringSource;
+        if (!source) return;
+        const visible = visibleAuthoringChunks();
+        const totalMatches = (source.chunks as any[]).filter(chunk => {
+          const query = authoringChunkSearch.value.trim().toLowerCase();
+          return !query || [chunk.id, chunk.locator, chunk.kind, chunk.text].some(value => String(value ?? "").toLowerCase().includes(query));
+        }).length;
+        document.querySelector<HTMLElement>("#authoring-source-detail-title")!.textContent = source.manifest.title;
+        document.querySelector<HTMLElement>("#authoring-source-detail-meta")!.textContent = `${source.manifest.id} · ${source.chunks.length} chunks · showing ${visible.length} of ${totalMatches} matching chunks`;
+        authoringChunkList.innerHTML = visible.length ? visible.map(chunk => `
+          <article class="authoring-chunk"><label class="authoring-chunk-check"><input type="checkbox" data-authoring-chunk-id="${escapeHtml(chunk.id)}" ${state.authoringSelectedChunkIds.has(chunk.id) ? "checked" : ""} /><span>Select</span></label>
+            <div><strong>${escapeHtml(chunk.locator)} <span class="authoring-chunk-kind">${escapeHtml(chunk.kind)}</span></strong><code>${escapeHtml(chunk.id)}</code>
+            <pre>${escapeHtml(String(chunk.text).slice(0, 1200))}${String(chunk.text).length > 1200 ? "…" : ""}</pre></div>
+          </article>`).join("") : "<p class=\"empty-state\">No source chunks match that search.</p>";
+        document.querySelectorAll<HTMLInputElement>("[data-authoring-chunk-id]").forEach(input => input.addEventListener("change", () => {
+          const id = input.dataset.authoringChunkId!;
+          input.checked ? state.authoringSelectedChunkIds.add(id) : state.authoringSelectedChunkIds.delete(id);
+          syncAuthoringChunkSelection();
+        }));
+      }
+      function syncAuthoringChunkSelection() {
+        const selected = [...state.authoringSelectedChunkIds];
+        document.querySelector<HTMLInputElement>("#authoring-chunks")!.value = selected.join(",");
+        authoringChunkSelection.textContent = selected.length ? `${selected.length} chunk${selected.length === 1 ? "" : "s"} selected and ready for the packet.` : "No chunks selected.";
+      }
+      function selectVisibleAuthoringChunks() { visibleAuthoringChunks().forEach(chunk => state.authoringSelectedChunkIds.add(chunk.id)); syncAuthoringChunkSelection(); renderAuthoringChunks(); }
+      function clearAuthoringChunkSelection() { state.authoringSelectedChunkIds.clear(); syncAuthoringChunkSelection(); renderAuthoringChunks(); }
+      async function exportAuthoringPacket() {
+        try {
+          const packet = await api<any>("/authoring/packets", { method: "POST", body: JSON.stringify({ categoryId: (document.querySelector<HTMLInputElement>("#authoring-category")?.value ?? "").trim(), topicId: (document.querySelector<HTMLInputElement>("#authoring-topic")?.value ?? "").trim(), objectiveIds: authoringValues("#authoring-objectives"), chunkIds: authoringValues("#authoring-chunks") }) });
+          document.querySelector<HTMLTextAreaElement>("#authoring-packet-output")!.value = JSON.stringify(packet, null, 2); authoringStatus.textContent = "Packet created. Copy it into your authoring agent.";
+        } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
+      async function importAuthoringDraft() {
+        const packet = document.querySelector<HTMLTextAreaElement>("#authoring-packet-output")!.value; const payloadJson = document.querySelector<HTMLTextAreaElement>("#authoring-draft-input")!.value;
+        try { const packetId = JSON.parse(packet).id; await api("/authoring/drafts", { method: "POST", body: JSON.stringify({ packetId, payloadJson }) }); authoringStatus.textContent = "Draft queued for review."; document.querySelector<HTMLTextAreaElement>("#authoring-draft-input")!.value = ""; await loadAuthoringWorkspace(); } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
+      async function setAuthoringDraftState(draftId: string, state: string) { try { await api(`/authoring/drafts/${encodeURIComponent(draftId)}`, { method: "PATCH", body: JSON.stringify({ state }) }); authoringStatus.textContent = `Draft marked ${state}.`; await loadAuthoringWorkspace(); } catch (error) { authoringStatus.textContent = readableError(error); } }
 
       function renderCurriculumSubjects() {
         const catalog = state.navigationCatalog;

@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.Data.Sqlite;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
+using QuizApp.Core.Services;
 using QuizApp.Infrastructure.Files;
 
 namespace QuizApp.Infrastructure.Retention;
@@ -181,9 +182,9 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
         List<string> tags,
         List<string> skills)
     {
-        var authoredCount = CountItems(assessment);
+        var authoredCount = AssessmentItemCounter.Count(assessment);
         var effectiveCount = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            ? Math.Min(GetEffectiveAttemptCount(assessment) ?? authoredCount, authoredCount)
+            ? Math.Min(AssessmentItemCounter.EffectiveAttemptCount(assessment) ?? authoredCount, authoredCount)
             : authoredCount;
 
         return new AssessmentSummary(
@@ -194,7 +195,7 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
             assessment.TopicId,
             effectiveCount,
             authoredCount,
-            GetEffectiveAttemptCount(assessment))
+            AssessmentItemCounter.EffectiveAttemptCount(assessment))
         {
             AreaId = areaIds.SingleOrDefault(),
             LearningGoal = learningGoal,
@@ -204,27 +205,4 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
         };
     }
 
-    private static int? GetEffectiveAttemptCount(AssessmentDefinition assessment)
-    {
-        if (assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            && assessment.QuestionSelection?.Mode is QuestionSelectionMode.OrderedVariants)
-        {
-            return assessment.QuestionSelection.Slots.Count;
-        }
-
-        return assessment.AttemptQuestionCount;
-    }
-
-    private static int CountItems(AssessmentDefinition assessment) => assessment.AssessmentType switch
-    {
-        AssessmentType.WorkedExample => assessment.WorkedExamples.Sum(e => e.Steps.Count),
-        AssessmentType.GuidedProject => assessment.GuidedProject?.RequiredChecks.Count ?? 0,
-        AssessmentType.RecallDrill   => assessment.Items.Count,
-        AssessmentType.Glossary      => assessment.Glossary?.Sections
-            .SelectMany(section => section.Entries)
-            .Sum(entry => entry.Drills.Count) ?? 0,
-        AssessmentType.ConceptLesson => assessment.Lesson?.Sections.Count ?? 0,
-        AssessmentType.InteractiveExploration => assessment.Exploration?.Sections.Count ?? 0,
-        _                            => assessment.Questions.Count
-    };
 }

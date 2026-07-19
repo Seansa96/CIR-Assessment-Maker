@@ -1,41 +1,40 @@
 # Chapter 5: Newton's Laws of Motion
 
-## 5.1 Forces
-A force is a push or a pull on an object. It is a vector quantity, having both magnitude and direction. Forces can be contact forces (like tension or friction) or field forces (like gravity or electromagnetism). The SI unit of force is the Newton (N).
+Newton's laws of motion are the foundation of classical mechanics. They describe the relationship between a body and the forces acting upon it, and its motion in response to those forces.
 
-## 5.2 Newton's First Law
-**The Law of Inertia**: A body at rest remains at rest, or, if in motion, remains in motion at a constant velocity unless acted on by a net external force.
-- **Inertia**: The tendency of an object to resist changes in its state of motion.
-- **Inertial Reference Frame**: A frame of reference in which Newton's First Law is valid. If a frame is accelerating, it is non-inertial.
+## 5.1 Newton's First Law
+An object at rest stays at rest, and an object in motion stays in motion with the same speed and in the same direction, unless acted upon by a net external force.
 
-## 5.3 Newton's Second Law
+Mathematically, this means that if $\sum \vec{F} = 0$, then $\frac{d\vec{v}}{dt} = 0$.
+
+*   **Inertia**: The tendency of an object to resist changes in its velocity. Mass is a quantitative measure of inertia.
+*   **Inertial Reference Frames**: A reference frame in which Newton's first law holds valid. Accelerating frames are non-inertial.
+
+## 5.2 Newton's Second Law
 The acceleration of a system is directly proportional to and in the same direction as the net external force acting on the system, and inversely proportional to its mass.
+
 $$ \sum \vec{F} = m\vec{a} $$
-This is the fundamental equation of classical mechanics. It must be applied independently to each axis in a coordinate system (e.g., $\sum F_x = ma_x$ and $\sum F_y = ma_y$).
+
+*   This is a vector equation, meaning it can be broken down into components:
+    *   $\sum F_x = ma_x$
+    *   $\sum F_y = ma_y$
+    *   $\sum F_z = ma_z$
+*   **Momentum form**: The more general form is $\sum \vec{F} = \frac{d\vec{p}}{dt}$, where $\vec{p} = m\vec{v}$ is the linear momentum.
+
+## 5.3 Newton's Third Law
+Whenever one body exerts a force on a second body, the first body experiences a force that is equal in magnitude and opposite in direction to the force that it exerts.
+
+$$ \vec{F}_{AB} = -\vec{F}_{BA} $$
+
+*   **Action-Reaction Pairs**: These forces always act on *different* objects. They never cancel each other out on a free-body diagram of a single object.
 
 ## 5.4 Mass and Weight
-- **Mass ($m$)**: A fundamental property of an object that measures its inertia. It is independent of the object's location.
-- **Weight ($w$)**: The gravitational force exerted on an object. It depends on the local acceleration due to gravity $g$.
-  $$ \vec{w} = m\vec{g} $$
+*   **Mass ($m$)**: An intrinsic property of an object that measures its resistance to acceleration (inertia). It is a scalar quantity and independent of location.
+*   **Weight ($W$ or $F_g$)**: The magnitude of the gravitational force exerted on an object.
 
-## 5.5 Newton's Third Law
-For every action, there is an equal and opposite reaction.
-If object A exerts a force on object B ($\vec{F}_{AB}$), then object B exerts a force of equal magnitude and opposite direction on object A ($\vec{F}_{BA}$).
-$$ \vec{F}_{AB} = -\vec{F}_{BA} $$
-Importantly, action and reaction forces act on *different* objects and therefore do not cancel each other out when analyzing the motion of a single object.
+$$ W = mg $$
 
-## 5.6 Common Forces
-- **Normal Force ($N$ or $F_N$)**: The contact force exerted by a surface on an object, acting perpendicular to the surface.
-- **Tension ($T$)**: The pulling force transmitted axially by means of a string, cable, chain, or similar one-dimensional continuous object.
-- **Friction ($f$)**: A force that opposes relative motion or attempts at motion between systems in contact.
-- **Spring Force**: Described by Hooke's Law, $F_s = -kx$.
+*   Where $g$ is the acceleration due to gravity (approx. $9.8 \text{ m/s}^2$ on Earth). Weight is a force, so it is a vector directed toward the center of the gravitating body.
 
-## 5.7 Drawing Free-Body Diagrams
-A free-body diagram (FBD) is a visual representation used to analyze the forces acting on a single object. 
-1. Represent the object as a point or a simple box.
-2. Draw vectors representing all the **external** forces acting on the object.
-3. Establish a convenient coordinate system (e.g., align the x-axis with the direction of acceleration).
-4. Resolve all force vectors into components along the axes.
-5. Apply $\sum \vec{F} = m\vec{a}$.
-
-> **Placeholder:** This explanation requires generation of media showing multiple examples of Free-Body Diagrams, such as a block on an inclined plane with friction.
+## Media Requirements
+*   Placeholder: This explanation requires generation of media showing a simple Free-Body Diagram (FBD) of a block on a horizontal surface, illustrating the normal force $\vec{N}$ and weight $\vec{W}$ balancing out.

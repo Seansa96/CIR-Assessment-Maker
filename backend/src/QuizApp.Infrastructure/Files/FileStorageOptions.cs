@@ -11,4 +11,7 @@ public sealed class FileStorageOptions
     public string AttemptsPath => Path.Combine(DataRoot, "attempts");
     public string GradesPath => Path.Combine(DataRoot, "grades");
     public string ProjectSessionsPath => Path.Combine(DataRoot, "project-sessions");
+    /// <summary>Private, gitignored source files and verbatim extraction artifacts.</summary>
+    public string SourceLibraryPath => Path.Combine(DataRoot, "source-library");
+    public string AssessmentReferencePath => Path.GetFullPath(Path.Combine(DataRoot, "..", "docs", "assessment-reference"));
 }

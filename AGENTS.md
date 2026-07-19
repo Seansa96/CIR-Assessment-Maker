@@ -227,3 +227,12 @@ When documents conflict, use this order:
 6. `planned-features.md` and `newprojects.md`
 
 Roadmap files describe intent and may contain features that are already implemented or no longer prioritized.
+
+## File Organization & Workspace Hygiene
+
+To prevent repository drift and maintain clean human navigation, all agents must adhere to the following file organization rules:
+
+1. **Root Directory**: The root directory is strictly reserved for core project files, documentation (READMEs), and configuration. **Do NOT place one-off scripts, temporary files, or logs in the root directory.**
+2. **Agent Scratchpad (`scratch/`)**: This is the designated location for all temporary, one-off, and experimental files. This includes `fix_xyz.py` or `.ps1` scripts, HTML previews, debug text logs, and other transient artifacts. Always save agent-created maintenance scripts here or in your `<appDataDir>\brain\<conversation-id>\scratch\` directory.
+3. **Generator Scripts (`scripts/`)**: Reserved for long-term, reusable assessment generation and sync scripts (e.g., `generate_ch1.py`). If you write a script that generates a permanent segment of the curriculum, place it here.
+4. **User Scripts (`utility_user_scripts/`)**: Exclusively for scripts intended to be run manually by the human user (e.g., `start_cir.ps1`). Do not place agent-driven generation or maintenance scripts here.

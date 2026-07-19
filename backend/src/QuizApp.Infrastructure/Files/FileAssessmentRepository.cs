@@ -118,28 +118,11 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
         return new string(safeCharacters).Trim('-').ToLowerInvariant();
     }
 
-    private static int CountAssessmentItems(AssessmentDefinition assessment)
-    {
-        return assessment.AssessmentType switch
-        {
-            AssessmentType.WorkedExample => assessment.WorkedExamples.Sum(example => example.Steps.Count),
-            AssessmentType.GuidedProject => assessment.GuidedProject?.RequiredChecks.Count ?? 0,
-            AssessmentType.RecallDrill => assessment.Items.Count,
-            AssessmentType.Glossary => assessment.Glossary?.Sections
-                .SelectMany(section => section.Entries)
-                .Sum(entry => entry.Drills.Count) ?? 0,
-            AssessmentType.ConceptLesson => assessment.Lesson?.Sections.Count ?? 0,
-            AssessmentType.InteractiveExploration => assessment.Exploration?.Sections.Count ?? 0,
-            AssessmentType.DirectedProject => assessment.DirectedProject?.Phases.Sum(p => p.Steps.Count) ?? 0,
-            _ => assessment.Questions.Count
-        };
-    }
-
     private static AssessmentSummary CreateSummary(AssessmentDefinition assessment)
     {
-        var authoredCount = CountAssessmentItems(assessment);
+        var authoredCount = AssessmentItemCounter.Count(assessment);
         var effectiveCount = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            ? Math.Min(GetEffectiveAttemptCount(assessment) ?? authoredCount, authoredCount)
+            ? Math.Min(AssessmentItemCounter.EffectiveAttemptCount(assessment) ?? authoredCount, authoredCount)
             : authoredCount;
 
         return new AssessmentSummary(
@@ -150,7 +133,7 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             assessment.TopicId,
             effectiveCount,
             authoredCount,
-            GetEffectiveAttemptCount(assessment))
+            AssessmentItemCounter.EffectiveAttemptCount(assessment))
         {
             LearningGoal = assessment.Navigation?.LearningGoal,
             ActivityType = assessment.Navigation?.ActivityType,
@@ -159,14 +142,4 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
         };
     }
 
-    private static int? GetEffectiveAttemptCount(AssessmentDefinition assessment)
-    {
-        if (assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
-            && assessment.QuestionSelection?.Mode is QuestionSelectionMode.OrderedVariants)
-        {
-            return assessment.QuestionSelection.Slots.Count;
-        }
-
-        return assessment.AttemptQuestionCount;
-    }
 }
