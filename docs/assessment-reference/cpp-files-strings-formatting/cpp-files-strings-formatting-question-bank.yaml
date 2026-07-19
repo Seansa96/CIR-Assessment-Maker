@@ -1,0 +1,3327 @@
+schemaVersion: 1
+bankId: cpp-files-strings-formatting
+categoryId: c++
+topicIds:
+- cpp-working-with-files
+- cpp-strings-formatting
+minimumItemCount: 57
+items:
+- id: cpp-fsf-string-001
+  topicId: cpp-strings-formatting
+  skills:
+  - reverse-string-content
+  - use-standard-algorithms
+  archetype: whole-string-reversal
+  difficulty: foundation
+  reasoningDepth: 1
+  difficultyEvidence: Requires selecting a reversal operation while preserving every byte.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::string reverse_string(std::string text)`.
+    Return every character in reverse order. Empty strings and punctuation are
+    valid input. Example: `w3resource` becomes `ecruoser3w`.
+  answer:
+    functionSignature: std::string reverse_string(std::string text)
+    expectedCases:
+    - - w3resource
+      - ecruoser3w
+    - - ''
+      - ''
+    - - a b!
+      - '!b a'
+  sampleSolution: |
+    #include <algorithm>
+    #include <string>
+
+    std::string reverse_string(std::string text) {
+        std::reverse(text.begin(), text.end());
+        return text;
+    }
+  explanation: |
+    `std::reverse` swaps the first and last characters, then moves inward
+    until the range is exhausted. It works in place, takes linear time, and
+    uses constant auxiliary space.
+  solutionOutline: Reverse the complete half-open range `[begin, end)` and return the mutated copy.
+  commonTrap: Stopping at `size() - 1` as though the standard range endpoint were inclusive.
+  verification:
+    method: compile-and-edge-case-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-002
+  topicId: cpp-strings-formatting
+  skills:
+  - transform-ascii-letters
+  - preserve-nonletters
+  archetype: alphabet-successor-transform
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires wraparound for both cases while leaving digits and punctuation unchanged.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::string next_ascii_letters(std::string text)`. Replace
+    each ASCII letter by its alphabetic successor, wrapping `z` to `a` and
+    `Z` to `A`. Preserve all nonletters. Example: `w3resource` becomes
+    `x3sftpvsdf`.
+  answer:
+    functionSignature: std::string next_ascii_letters(std::string text)
+    expectedCases:
+    - - w3resource
+      - x3sftpvsdf
+    - - Zaz-9
+      - Aba-9
+  sampleSolution: |
+    #include <string>
+
+    std::string next_ascii_letters(std::string text) {
+        for (char& ch : text) {
+            if (ch == 'z') ch = 'a';
+            else if (ch == 'Z') ch = 'A';
+            else if ((ch >= 'a' && ch < 'z') ||
+                     (ch >= 'A' && ch < 'Z')) {
+                ++ch;
+            }
+        }
+        return text;
+    }
+  explanation: |
+    The explicit ASCII ranges make the alphabet and wrap rule unambiguous.
+    Digits are never passed through arithmetic intended for letters, so the
+    `3` in the example remains unchanged.
+  solutionOutline: Handle the two wraparound letters first, increment other ASCII letters, and skip every other
+    character.
+  commonTrap: Incrementing `z` directly, which produces `{` in ASCII instead of wrapping to `a`.
+  verification:
+    method: boundary-case-table
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-003
+  topicId: cpp-strings-formatting
+  skills:
+  - capitalize-word-initials
+  - track-token-boundaries
+  archetype: word-boundary-case-conversion
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires detecting the first letter and every letter following a space.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `std::string capitalize_words(std::string text)` for
+    ASCII text whose words are separated by one space. Capitalize the first
+    character of each nonempty word and preserve the remaining characters.
+    Example: `cpp string exercises` becomes `Cpp String Exercises`.
+  answer:
+    functionSignature: std::string capitalize_words(std::string text)
+    expectedCases:
+    - - cpp string exercises
+      - Cpp String Exercises
+    - - already Done
+      - Already Done
+  sampleSolution: |
+    #include <cctype>
+    #include <string>
+
+    std::string capitalize_words(std::string text) {
+        bool at_start = true;
+        for (char& ch : text) {
+            if (ch == ' ') {
+                at_start = true;
+            } else if (at_start) {
+                ch = static_cast<char>(
+                    std::toupper(static_cast<unsigned char>(ch)));
+                at_start = false;
+            }
+        }
+        return text;
+    }
+  explanation: |
+    `at_start` is true exactly when the next non-space character begins a
+    word. Casting to `unsigned char` before `std::toupper` avoids undefined
+    behavior for negative `char` values.
+  solutionOutline: Maintain a word-start flag, reset it at spaces, and uppercase the next non-space byte safely.
+  commonTrap: Uppercasing `text[i + 1]` after every space without checking that the index exists.
+  verification:
+    method: state-invariant-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-word-capitalization-directed-project
+- id: cpp-fsf-string-004
+  topicId: cpp-strings-formatting
+  skills:
+  - tokenize-words
+  - select-longest-token
+  archetype: longest-word-selection
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires a word definition and a deterministic first-longest tie rule.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string longest_word(std::string_view text)`. A word is a
+    maximal run of ASCII letters. Return the first longest word, or an empty
+    string when no word exists. In `C++ is a general-purpose programming
+    language.`, return `programming`.
+  answer:
+    functionSignature: std::string longest_word(std::string_view text)
+    expectedCases:
+    - - C++ is a general-purpose programming language.
+      - programming
+    - - one two
+      - one
+    - - 123!
+      - ''
+  sampleSolution: |
+    #include <cctype>
+    #include <string>
+    #include <string_view>
+
+    std::string longest_word(std::string_view text) {
+        std::string best;
+        for (std::size_t i = 0; i < text.size();) {
+            while (i < text.size() &&
+                   !std::isalpha(static_cast<unsigned char>(text[i]))) ++i;
+            const std::size_t start = i;
+            while (i < text.size() &&
+                   std::isalpha(static_cast<unsigned char>(text[i]))) ++i;
+            if (i - start > best.size()) {
+                best = std::string(text.substr(start, i - start));
+            }
+        }
+        return best;
+    }
+  explanation: |
+    The scan alternates between skipping delimiters and consuming one maximal
+    letter run. Using `>` rather than `>=` preserves the first word when two
+    words share the maximum length.
+  solutionOutline: Identify each maximal alphabetic interval and replace the saved word only when the new interval
+    is strictly longer.
+  commonTrap: Treating punctuation as part of a word, which would return `language.` with the period attached.
+  verification:
+    method: token-boundary-and-tie-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-005
+  topicId: cpp-strings-formatting
+  skills:
+  - sort-string-characters
+  - reason-about-ascii-order
+  archetype: character-sorting
+  difficulty: foundation
+  reasoningDepth: 1
+  difficultyEvidence: Requires sorting a letter-only input into ascending byte order.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::string sort_letters(std::string text)`. The input contains
+    only lowercase ASCII letters. Return the letters in ascending order.
+    Example: `python` becomes `hnopty`.
+  answer:
+    functionSignature: std::string sort_letters(std::string text)
+    expectedCases:
+    - - python
+      - hnopty
+    - - baba
+      - aabb
+    - - ''
+      - ''
+  sampleSolution: |
+    #include <algorithm>
+    #include <string>
+
+    std::string sort_letters(std::string text) {
+        std::sort(text.begin(), text.end());
+        return text;
+    }
+  explanation: |
+    For lowercase ASCII input, the ordinary character ordering is alphabetic.
+    `std::sort` runs in `O(n log n)` time and rearranges the owned copy.
+  solutionOutline: Sort the full mutable string range with the standard comparison and return it.
+  commonTrap: Claiming linear time without using a fixed-alphabet counting sort.
+  verification:
+    method: sorted-output-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-006
+  topicId: cpp-strings-formatting
+  skills:
+  - scan-fixed-distance-patterns
+  - avoid-index-underflow
+  archetype: separated-character-detection
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires translating “two characters between” into an index distance of three.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `bool has_e_g_gap_two(std::string_view text)`. Return true when
+    a lowercase `e` and lowercase `g` occur with exactly two characters
+    between them, in either order. Thus their indices differ by three.
+    Example: `e12g` returns true.
+  answer:
+    functionSignature: bool has_e_g_gap_two(std::string_view text)
+    expectedCases:
+    - - e12g
+      - true
+    - - g--e
+      - true
+    - - e-g
+      - false
+  sampleSolution: |
+    #include <string_view>
+
+    bool has_e_g_gap_two(std::string_view text) {
+        for (std::size_t i = 0; i + 3 < text.size(); ++i) {
+            if ((text[i] == 'e' && text[i + 3] == 'g') ||
+                (text[i] == 'g' && text[i + 3] == 'e')) {
+                return true;
+            }
+        }
+        return false;
+    }
+  explanation: |
+    Two intervening characters mean positions `i` and `i + 3`. The loop
+    condition proves that `i + 3` is a valid index before it is accessed.
+  solutionOutline: Compare each character with the character three positions later and accept either endpoint order.
+  commonTrap: Using an offset of two, which leaves only one character between the endpoints.
+  verification:
+    method: index-distance-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-007
+  topicId: cpp-strings-formatting
+  skills:
+  - count-vowels
+  - classify-ascii-case-insensitively
+  archetype: predicate-count
+  difficulty: foundation
+  reasoningDepth: 1
+  difficultyEvidence: Requires a case-insensitive vowel predicate and a count.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::size_t count_vowels(std::string_view text)`. Count ASCII
+    `a`, `e`, `i`, `o`, and `u` without regard to case. Do not count `y`.
+    Example: `eagerer` contains four vowels.
+  answer:
+    functionSignature: std::size_t count_vowels(std::string_view text)
+    expectedCases:
+    - - eagerer
+      - 4
+    - - USA
+      - 3
+    - - rhythm
+      - 0
+  sampleSolution: |
+    #include <cctype>
+    #include <string_view>
+
+    std::size_t count_vowels(std::string_view text) {
+        std::size_t count = 0;
+        for (char ch : text) {
+            const char lower = static_cast<char>(
+                std::tolower(static_cast<unsigned char>(ch)));
+            if (std::string_view{"aeiou"}.find(lower) !=
+                std::string_view::npos) {
+                ++count;
+            }
+        }
+        return count;
+    }
+  explanation: |
+    Normalizing each byte to lowercase reduces ten case variants to five
+    comparisons. The fixed five-character lookup keeps the algorithm linear
+    in the input length.
+  solutionOutline: Lowercase each byte safely, test membership in `aeiou`, and increment the accumulator on matches.
+  commonTrap: Forgetting uppercase vowels or accidentally treating `y` as a vowel without the prompt authorizing
+    it.
+  verification:
+    method: predicate-case-table
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-008
+  topicId: cpp-strings-formatting
+  skills:
+  - count-whitespace-delimited-words
+  - track-token-state
+  archetype: word-count-state-machine
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires handling leading, trailing, and repeated whitespace without creating empty words.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::size_t count_words(std::string_view text)`. A word is a
+    maximal non-whitespace run, and any ASCII whitespace may separate words.
+    Leading, trailing, or repeated whitespace must not create empty words.
+  answer:
+    functionSignature: std::size_t count_words(std::string_view text)
+    expectedCases:
+    - - Python
+      - 1
+    - - "  C++\tstreams\nwork  "
+      - 3
+    - - ''
+      - 0
+  sampleSolution: |
+    #include <cctype>
+    #include <string_view>
+
+    std::size_t count_words(std::string_view text) {
+        std::size_t count = 0;
+        bool in_word = false;
+        for (char ch : text) {
+            const bool space =
+                std::isspace(static_cast<unsigned char>(ch)) != 0;
+            if (!space && !in_word) ++count;
+            in_word = !space;
+        }
+        return count;
+    }
+  explanation: |
+    A word begins only on a transition from whitespace to non-whitespace.
+    Counting transitions avoids special cases for multiple separators and
+    does not allocate temporary tokens.
+  solutionOutline: Track whether the previous position was inside a word and count each transition into a non-whitespace
+    run.
+  commonTrap: Returning the number of spaces plus one, which fails for empty input and repeated spaces.
+  verification:
+    method: transition-state-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-009
+  topicId: cpp-strings-formatting
+  skills:
+  - compare-character-frequencies
+  - parameterize-string-queries
+  archetype: equal-frequency-comparison
+  difficulty: foundation
+  reasoningDepth: 1
+  difficultyEvidence: Requires counting two specified characters under an exact case-sensitive contract.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `bool equal_occurrences(std::string_view text, char first,
+    char second)`. Return whether the two case-sensitive characters occur
+    equally often. Two zero counts are equal.
+  answer:
+    functionSignature: bool equal_occurrences(std::string_view text, char first, char second)
+    expectedCases:
+    - - aabcdeef
+      - a
+      - e
+      - true
+    - - banana
+      - a
+      - n
+      - false
+    - - xyz
+      - a
+      - b
+      - true
+  sampleSolution: |
+    #include <algorithm>
+    #include <string_view>
+
+    bool equal_occurrences(std::string_view text, char first, char second) {
+        return std::count(text.begin(), text.end(), first) ==
+               std::count(text.begin(), text.end(), second);
+    }
+  explanation: |
+    The two standard counts make the contract direct and readable. This uses
+    two linear passes; a single pass with two counters is an equivalent
+    optimization when scanning cost matters.
+  solutionOutline: Count each requested byte across the same range and compare the two totals.
+  commonTrap: Assuming the example implies fixed letters rather than accepting the two characters as parameters.
+  verification:
+    method: independent-count-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-010
+  topicId: cpp-strings-formatting
+  skills:
+  - recognize-palindromes
+  - compare-from-both-ends
+  archetype: two-pointer-palindrome-test
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires a symmetric comparison that avoids unsigned-index underflow.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `bool is_palindrome(std::string_view text)`. Compare the input
+    exactly as supplied: case, spaces, and punctuation all matter. The empty
+    string and every one-character string are palindromes.
+  answer:
+    functionSignature: bool is_palindrome(std::string_view text)
+    expectedCases:
+    - - madam
+      - true
+    - - Madam
+      - false
+    - - ''
+      - true
+  sampleSolution: |
+    #include <algorithm>
+    #include <string_view>
+
+    bool is_palindrome(std::string_view text) {
+        return std::equal(text.begin(), text.begin() + text.size() / 2,
+                          text.rbegin());
+    }
+  explanation: |
+    Only the first half must be compared with characters read from the end.
+    `std::equal` avoids manually decrementing an unsigned index past zero and
+    performs at most half as many comparisons as constructing a reversal.
+  solutionOutline: Compare the first half of the forward range with the reverse range and require every paired byte
+    to match.
+  commonTrap: Silently discarding punctuation or changing case even though the contract requests an exact comparison.
+  verification:
+    method: symmetry-and-empty-case-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-011
+  topicId: cpp-strings-formatting
+  skills:
+  - measure-repeated-letters
+  - select-word-with-ties
+  archetype: frequency-scored-word-selection
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires tokenizing words, building a per-word frequency table, and applying a defined score
+    and tie rule.
+  assessmentUses:
+  - guided-project
+  questionType: code
+  prompt: |
+    Implement `std::string word_with_most_repetition(std::string_view text)`.
+    A word is a maximal ASCII-letter run. Score a word by the number of
+    distinct letters whose case-insensitive frequency is at least two.
+    Return the first word with the greatest positive score, or an empty
+    string when no word repeats a letter. For `Print a welcome text in a
+    separate line.`, return `separate`.
+  answer:
+    functionSignature: std::string word_with_most_repetition(std::string_view text)
+    expectedCases:
+    - - Print a welcome text in a separate line.
+      - separate
+    - - no repeats
+      - ''
+    - - letter better
+      - letter
+  sampleSolution: |
+    #include <array>
+    #include <cctype>
+    #include <string>
+    #include <string_view>
+
+    std::string word_with_most_repetition(std::string_view text) {
+        std::string best;
+        int best_score = 0;
+        for (std::size_t i = 0; i < text.size();) {
+            while (i < text.size() &&
+                   !std::isalpha(static_cast<unsigned char>(text[i]))) ++i;
+            const std::size_t start = i;
+            std::array<int, 26> counts{};
+            while (i < text.size() &&
+                   std::isalpha(static_cast<unsigned char>(text[i]))) {
+                const char lower = static_cast<char>(
+                    std::tolower(static_cast<unsigned char>(text[i++])));
+                ++counts[static_cast<std::size_t>(lower - 'a')];
+            }
+            int score = 0;
+            for (int count : counts) score += count >= 2;
+            if (score > best_score) {
+                best_score = score;
+                best = std::string(text.substr(start, i - start));
+            }
+        }
+        return best;
+    }
+  explanation: |
+    The original phrase “most repeated letters” is ambiguous, so the bank
+    defines a score: count distinct letters that repeat. A fresh 26-slot
+    table isolates each word, and strict improvement preserves the first tie.
+  solutionOutline: Parse each letter run, score its repeated case-insensitive letters, and retain the first word
+    that sets a new positive maximum.
+  commonTrap: Carrying letter counts from one word into the next or counting total word length as repetition.
+  verification:
+    method: score-definition-and-example-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-text-quality-analyzer-guided-project
+- id: cpp-fsf-string-012
+  topicId: cpp-strings-formatting
+  skills:
+  - insert-delimiters-conditionally
+  - classify-digit-parity
+  archetype: adjacent-digit-rewrite
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires checking adjacent original digits before appending a separator.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `std::string dash_between_odd_digits(std::string_view digits)`.
+    The input contains decimal digits only. Insert `-` between adjacent odd
+    digits and nowhere else. Example: `1345789` becomes `1-345-789`.
+  answer:
+    functionSignature: std::string dash_between_odd_digits(std::string_view digits)
+    expectedCases:
+    - - '1345789'
+      - 1-345-789
+    - - '135'
+      - 1-3-5
+    - - '246'
+      - '246'
+  sampleSolution: |
+    #include <string>
+    #include <string_view>
+
+    std::string dash_between_odd_digits(std::string_view digits) {
+        std::string result;
+        result.reserve(digits.size() * 2);
+        for (std::size_t i = 0; i < digits.size(); ++i) {
+            if (i > 0 && ((digits[i - 1] - '0') % 2 != 0) &&
+                ((digits[i] - '0') % 2 != 0)) {
+                result.push_back('-');
+            }
+            result.push_back(digits[i]);
+        }
+        return result;
+    }
+  explanation: |
+    Each separator belongs immediately before the current digit when both it
+    and the previous input digit are odd. Building a new string avoids
+    invalidating indices through repeated middle insertions.
+  solutionOutline: Walk the original digits once, append a dash before an odd digit whose predecessor is also odd,
+    then append the digit.
+  commonTrap: Testing the previously appended output character, which may be a dash rather than the preceding input
+    digit.
+  verification:
+    method: adjacency-case-enumeration
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-conditional-digit-rewriter-directed-project
+- id: cpp-fsf-string-013
+  topicId: cpp-strings-formatting
+  skills:
+  - toggle-letter-case
+  - use-cctype-safely
+  archetype: case-inversion
+  difficulty: foundation
+  reasoningDepth: 1
+  difficultyEvidence: Requires applying the complementary case conversion only to letters.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::string toggle_ascii_case(std::string text)`. Convert each
+    lowercase ASCII letter to uppercase and each uppercase ASCII letter to
+    lowercase. Preserve all other characters. Example: `Pythpn` becomes
+    `pYTHPN`.
+  answer:
+    functionSignature: std::string toggle_ascii_case(std::string text)
+    expectedCases:
+    - - Pythpn
+      - pYTHPN
+    - - C++17
+      - c++17
+  sampleSolution: |
+    #include <cctype>
+    #include <string>
+
+    std::string toggle_ascii_case(std::string text) {
+        for (char& ch : text) {
+            const auto u = static_cast<unsigned char>(ch);
+            if (std::islower(u)) {
+                ch = static_cast<char>(std::toupper(u));
+            } else if (std::isupper(u)) {
+                ch = static_cast<char>(std::tolower(u));
+            }
+        }
+        return text;
+    }
+  explanation: |
+    The mutually exclusive tests ensure a lowercase letter is not converted
+    and then immediately converted back. Nonletters take neither branch.
+  solutionOutline: Classify each byte once and replace it with the opposite case only when it is alphabetic.
+  commonTrap: Using two independent `if` statements, allowing a newly uppercased letter to be lowercased again.
+  verification:
+    method: upper-lower-nonletter-table
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-014
+  topicId: cpp-strings-formatting
+  skills:
+  - parse-embedded-integers
+  - accumulate-numeric-runs
+  archetype: digit-run-parsing
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires grouping adjacent digits into whole numbers, handling boundaries, and preventing
+    accidental digit-by-digit addition.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `long long sum_embedded_nonnegative_integers(std::string_view
+    text)`. Treat each maximal ASCII-digit run as one base-10 non-negative
+    integer and return their sum. Assume every run and the total fit in
+    `long long`. Example: `w3resource from 2008` returns `2011`.
+  answer:
+    functionSignature: long long sum_embedded_nonnegative_integers(std::string_view text)
+    expectedCases:
+    - - w3resource from 2008
+      - 2011
+    - - 12 apples, 30 pears
+      - 42
+    - - none
+      - 0
+  sampleSolution: |
+    #include <cctype>
+    #include <string_view>
+
+    long long sum_embedded_nonnegative_integers(std::string_view text) {
+        long long sum = 0;
+        long long current = 0;
+        bool reading = false;
+        for (char ch : text) {
+            if (std::isdigit(static_cast<unsigned char>(ch))) {
+                current = current * 10 + (ch - '0');
+                reading = true;
+            } else if (reading) {
+                sum += current;
+                current = 0;
+                reading = false;
+            }
+        }
+        if (reading) sum += current;
+        return sum;
+    }
+  explanation: |
+    Multiplying the current value by ten shifts its decimal digits before the
+    next digit is added. A delimiter commits the completed run; the final
+    conditional commits a number ending at the last character.
+  solutionOutline: Build one decimal value while digits continue, add it when the run ends, and separately flush
+    a run at end of input.
+  commonTrap: Forgetting the final flush, which loses a number when the string ends with a digit.
+  verification:
+    method: digit-run-state-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-015
+  topicId: cpp-strings-formatting
+  skills:
+  - format-integers-as-english
+  - decompose-place-values
+  archetype: recursive-number-word-formatting
+  difficulty: hard
+  reasoningDepth: 4
+  difficultyEvidence: Requires hierarchical place-value decomposition, zero suppression inside groups, and stable
+    spacing.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string integer_to_english(unsigned int value)` for values
+    from 0 through 999,999,999. Use American English without `and` or
+    hyphens, capitalize the first letter only, and use single spaces.
+    Examples: `12` becomes `Twelve`; `29` becomes `Twenty Nine`; `1005`
+    becomes `One Thousand Five`.
+  answer:
+    functionSignature: std::string integer_to_english(unsigned int value)
+    expectedCases:
+    - - 0
+      - Zero
+    - - 29
+      - Twenty Nine
+    - - 1005
+      - One Thousand Five
+    - - 999999999
+      - Nine Hundred Ninety Nine Million Nine Hundred Ninety Nine Thousand Nine Hundred Ninety Nine
+  sampleSolution: |
+    #include <array>
+    #include <string>
+
+    namespace {
+    std::string below_thousand(unsigned int n) {
+        static const std::array<std::string, 20> small{
+            "", "One", "Two", "Three", "Four", "Five", "Six", "Seven",
+            "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen",
+            "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen",
+            "Nineteen"};
+        static const std::array<std::string, 10> tens{
+            "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty",
+            "Seventy", "Eighty", "Ninety"};
+        std::string out;
+        auto add = [&](const std::string& word) {
+            if (!word.empty()) {
+                if (!out.empty()) out += ' ';
+                out += word;
+            }
+        };
+        if (n >= 100) {
+            add(small[n / 100]);
+            add("Hundred");
+            n %= 100;
+        }
+        if (n >= 20) {
+            add(tens[n / 10]);
+            n %= 10;
+        }
+        if (n > 0) add(small[n]);
+        return out;
+    }
+    }
+
+    std::string integer_to_english(unsigned int value) {
+        if (value == 0) return "Zero";
+        std::string out;
+        auto add_group = [&](unsigned int group, const char* scale) {
+            if (group == 0) return;
+            if (!out.empty()) out += ' ';
+            out += below_thousand(group);
+            if (*scale) {
+                out += ' ';
+                out += scale;
+            }
+        };
+        add_group(value / 1'000'000, "Million");
+        add_group((value / 1'000) % 1'000, "Thousand");
+        add_group(value % 1'000, "");
+        return out;
+    }
+  explanation: |
+    English number names are naturally grouped in blocks of three decimal
+    digits. A helper formats one block; the outer function appends only
+    nonzero million, thousand, and unit blocks, preventing unwanted `Zero`
+    words inside the number.
+  solutionOutline: Format each nonzero three-digit group with lookup tables, append its scale name, and join groups
+    with exactly one space.
+  commonTrap: Emitting `Zero` for empty internal groups, producing text such as `One Thousand Zero Five`.
+  verification:
+    method: place-value-boundary-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-016
+  topicId: cpp-strings-formatting
+  skills:
+  - find-common-prefix
+  - bound-parallel-indexing
+  archetype: vertical-prefix-scan
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires comparing the same position across variable-length strings and stopping safely at
+    the shortest.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string longest_common_prefix(const
+    std::vector<std::string>& words)`. Return the longest case-sensitive
+    prefix shared by every string. Return an empty string for an empty vector
+    or when the first characters differ.
+  answer:
+    functionSignature: std::string longest_common_prefix(const std::vector<std::string>& words)
+    expectedCases:
+    - - - Pasta
+        - Pastel
+        - Paste
+      - Past
+    - - - Java
+        - JavaScript
+        - Jam
+      - Ja
+    - - []
+      - ''
+  sampleSolution: |
+    #include <string>
+    #include <vector>
+
+    std::string longest_common_prefix(
+        const std::vector<std::string>& words) {
+        if (words.empty()) return {};
+        std::size_t length = 0;
+        while (length < words.front().size()) {
+            const char expected = words.front()[length];
+            for (const auto& word : words) {
+                if (length >= word.size() || word[length] != expected) {
+                    return words.front().substr(0, length);
+                }
+            }
+            ++length;
+        }
+        return words.front();
+    }
+  explanation: |
+    At index `length`, every string must both contain that position and match
+    the first string. The established invariant is that positions below
+    `length` already match across the entire vector.
+  solutionOutline: Advance a shared prefix index only after every word proves that the current character exists
+    and matches.
+  commonTrap: Indexing every word before checking its length, causing out-of-range access when one word is the prefix
+    of another.
+  verification:
+    method: shortest-word-and-empty-input-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-017
+  topicId: cpp-strings-formatting
+  skills:
+  - generate-balanced-parentheses
+  - maintain-backtracking-invariants
+  archetype: constrained-backtracking-generation
+  difficulty: hard
+  reasoningDepth: 4
+  difficultyEvidence: Requires exploring a combinatorial search tree while pruning every prefix that cannot become
+    balanced.
+  assessmentUses:
+  - guided-project
+  questionType: code
+  prompt: |
+    Implement `std::vector<std::string> balanced_parentheses(int pairs)`.
+    Return every well-formed string containing exactly `pairs` `(` characters
+    and `pairs` `)` characters, in lexicographic order. For `pairs == 0`,
+    return a vector containing the empty string. For `pairs < 0`, return an
+    empty vector.
+  answer:
+    functionSignature: std::vector<std::string> balanced_parentheses(int pairs)
+    expectedCases:
+    - - 2
+      - - (())
+        - ()()
+    - - 3
+      - - ((()))
+        - (()())
+        - (())()
+        - ()(())
+        - ()()()
+    - - 0
+      - - ''
+  sampleSolution: |
+    #include <string>
+    #include <vector>
+
+    namespace {
+    void build_parentheses(int pairs, int open, int close,
+                           std::string& current,
+                           std::vector<std::string>& out) {
+        if (open == pairs && close == pairs) {
+            out.push_back(current);
+            return;
+        }
+        if (open < pairs) {
+            current.push_back('(');
+            build_parentheses(pairs, open + 1, close, current, out);
+            current.pop_back();
+        }
+        if (close < open) {
+            current.push_back(')');
+            build_parentheses(pairs, open, close + 1, current, out);
+            current.pop_back();
+        }
+    }
+    }
+
+    std::vector<std::string> balanced_parentheses(int pairs) {
+        if (pairs < 0) return {};
+        std::vector<std::string> out;
+        std::string current;
+        build_parentheses(pairs, 0, 0, current, out);
+        return out;
+    }
+  explanation: |
+    An opening parenthesis is legal while fewer than `pairs` have been used.
+    A closing parenthesis is legal only when it closes an unmatched opening
+    one. Trying `(` before `)` produces the requested lexicographic order.
+  solutionOutline: Backtrack over valid next characters while maintaining `close <= open <= pairs`, and emit only
+    complete balanced strings.
+  commonTrap: Generating all binary strings and filtering afterward, which explores exponentially many prefixes
+    already known to be invalid.
+  verification:
+    method: invariant-and-catalan-count-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-delimiter-toolkit-guided-project
+- id: cpp-fsf-string-018
+  topicId: cpp-strings-formatting
+  skills:
+  - find-longest-valid-parentheses
+  - use-unmatched-index-stack
+  archetype: longest-valid-delimiter-substring
+  difficulty: hard
+  reasoningDepth: 4
+  difficultyEvidence: Requires preserving unmatched boundary positions so valid suffix lengths can be measured after
+    failures.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::size_t longest_valid_parentheses(std::string_view text)`.
+    The input contains only `(` and `)`. Return the length of the longest
+    contiguous well-formed parentheses substring. Examples: `(()` returns
+    `2`, `(()))` returns `4`, and `))))((((` returns `0`.
+  answer:
+    functionSignature: std::size_t longest_valid_parentheses(std::string_view text)
+    expectedCases:
+    - - (()
+      - 2
+    - - (()))
+      - 4
+    - - )()())
+      - 4
+  sampleSolution: |
+    #include <algorithm>
+    #include <string_view>
+    #include <vector>
+
+    std::size_t longest_valid_parentheses(std::string_view text) {
+        std::vector<long long> stack{-1};
+        std::size_t best = 0;
+        for (std::size_t i = 0; i < text.size(); ++i) {
+            if (text[i] == '(') {
+                stack.push_back(static_cast<long long>(i));
+            } else {
+                stack.pop_back();
+                if (stack.empty()) {
+                    stack.push_back(static_cast<long long>(i));
+                } else {
+                    best = std::max(
+                        best, i - static_cast<std::size_t>(stack.back()));
+                }
+            }
+        }
+        return best;
+    }
+  explanation: |
+    The stack stores unmatched opening indices plus a base boundary. After a
+    successful close, the distance to the current unmatched boundary is the
+    length of the valid suffix ending at that close. An unmatched close
+    becomes the next base.
+  solutionOutline: Track unmatched positions with a sentinel boundary, reset that boundary on unmatched closes,
+    and maximize each valid suffix length.
+  commonTrap: Keeping only a balance count, which cannot locate the start of the longest valid contiguous substring.
+  verification:
+    method: stack-boundary-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-019
+  topicId: cpp-strings-formatting
+  skills:
+  - reverse-selected-characters
+  - apply-two-pointer-invariant
+  archetype: predicate-filtered-reversal
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires moving two pointers over non-target characters while swapping only vowel positions.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `std::string reverse_vowels(std::string text)`. Reverse the
+    order of ASCII vowels `a e i o u`, case-insensitively, while every
+    consonant, digit, space, and punctuation mark remains at its original
+    index. Examples: `Hello` becomes `Holle` and `USA` becomes `ASU`.
+  answer:
+    functionSignature: std::string reverse_vowels(std::string text)
+    expectedCases:
+    - - w3resource
+      - w3resuorce
+    - - Hello
+      - Holle
+    - - USA
+      - ASU
+  sampleSolution: |
+    #include <cctype>
+    #include <string>
+    #include <string_view>
+
+    std::string reverse_vowels(std::string text) {
+        auto vowel = [](char ch) {
+            const char lower = static_cast<char>(
+                std::tolower(static_cast<unsigned char>(ch)));
+            return std::string_view{"aeiou"}.find(lower) !=
+                   std::string_view::npos;
+        };
+        std::size_t left = 0;
+        std::size_t right = text.size();
+        while (left < right) {
+            while (left < right && !vowel(text[left])) ++left;
+            while (left < right && !vowel(text[right - 1])) --right;
+            if (left < right) {
+                std::swap(text[left++], text[--right]);
+            }
+        }
+        return text;
+    }
+  explanation: |
+    `right` is kept one past the candidate index, which makes empty input
+    safe. Characters outside `[left, right)` are final; only two discovered
+    vowel positions are swapped.
+  solutionOutline: Advance inward to the next vowel on each side, swap those vowels, and repeat without moving any
+    nonvowel.
+  commonTrap: Reversing the whole string and filtering afterward, which changes consonant positions.
+  verification:
+    method: two-pointer-position-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-selective-character-reversal-directed-project
+- id: cpp-fsf-string-020
+  topicId: cpp-strings-formatting
+  skills:
+  - find-longest-palindromic-substring
+  - expand-around-centers
+  archetype: longest-palindrome-interval
+  difficulty: hard
+  reasoningDepth: 4
+  difficultyEvidence: Requires considering both odd and even centers and distinguishing a contiguous substring from
+    a rearrangeable multiset.
+  assessmentUses:
+  - worked-example
+  questionType: code
+  prompt: |
+    Implement `std::size_t longest_palindromic_substring_length(std::string_view
+    text)`. Comparison is case-sensitive. Return the length of the longest
+    contiguous palindromic substring, or `0` for empty input. Examples:
+    `adcdcdy` returns `5`, `abddddeeff` returns `4`, and `PYTHON` returns `1`.
+  answer:
+    functionSignature: std::size_t longest_palindromic_substring_length(std::string_view text)
+    expectedCases:
+    - - adcdcdy
+      - 5
+    - - abddddeeff
+      - 4
+    - - ''
+      - 0
+  sampleSolution: |
+    #include <algorithm>
+    #include <string_view>
+
+    std::size_t longest_palindromic_substring_length(
+        std::string_view text) {
+        std::size_t best = 0;
+        auto expand = [&](std::size_t left, std::size_t right) {
+            while (right < text.size() && text[left] == text[right]) {
+                best = std::max(best, right - left + 1);
+                if (left == 0) break;
+                --left;
+                ++right;
+            }
+        };
+        for (std::size_t center = 0; center < text.size(); ++center) {
+            expand(center, center);
+            if (center + 1 < text.size()) expand(center, center + 1);
+        }
+        return best;
+    }
+  explanation: |
+    Every palindrome has either one central character or a gap between two
+    central characters. Expanding from both center types enumerates all
+    palindromic intervals in `O(n^2)` time and constant auxiliary space.
+  solutionOutline: Expand around every odd and even center while endpoints match, recording the greatest interval
+    length encountered.
+  commonTrap: Counting character frequencies, which answers a different question about constructing a palindrome
+    after rearrangement.
+  verification:
+    method: center-parity-and-example-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-worked-example
+- id: cpp-fsf-string-021
+  topicId: cpp-strings-formatting
+  skills:
+  - recognize-subsequences
+  - use-forward-only-matching
+  archetype: subsequence-two-pointer-test
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires preserving order without requiring adjacency.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `bool is_subsequence(std::string_view candidate,
+    std::string_view text)`. Return whether every character of `candidate`
+    appears in `text` in the same order, not necessarily contiguously.
+    Matching is case-sensitive, and the empty string is a subsequence of
+    every string.
+  answer:
+    functionSignature: bool is_subsequence(std::string_view candidate, std::string_view text)
+    expectedCases:
+    - - apl
+      - apple
+      - true
+    - - ppe
+      - apple
+      - true
+    - - pae
+      - apple
+      - false
+  sampleSolution: |
+    #include <string_view>
+
+    bool is_subsequence(std::string_view candidate,
+                        std::string_view text) {
+        std::size_t next = 0;
+        for (char ch : text) {
+            if (next < candidate.size() && ch == candidate[next]) ++next;
+        }
+        return next == candidate.size();
+    }
+  explanation: |
+    `next` identifies the first unmatched candidate character. A text
+    character is consumed only when it advances that prefix, so matches can
+    never be reordered or reused.
+  solutionOutline: Scan the containing text once and advance the candidate index on each next required match.
+  commonTrap: Calling `find(candidate)`, which tests for a contiguous substring rather than a subsequence.
+  verification:
+    method: order-preservation-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-022
+  topicId: cpp-strings-formatting
+  skills:
+  - filter-special-characters
+  - preserve-letters-digits-spaces
+  archetype: character-filter-copy
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires an explicit keep predicate and safe character classification.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::string remove_special_characters(std::string_view text)`.
+    Keep ASCII letters, decimal digits, and whitespace exactly as supplied;
+    remove every other byte. Thus `abcd $ js# @acde$` becomes
+    `abcd  js acde` with the original spaces preserved.
+  answer:
+    functionSignature: std::string remove_special_characters(std::string_view text)
+    expectedCases:
+    - - abcd $ js# @acde$
+      - abcd  js acde
+    - - C++17
+      - C17
+  sampleSolution: |
+    #include <cctype>
+    #include <string>
+    #include <string_view>
+
+    std::string remove_special_characters(std::string_view text) {
+        std::string result;
+        result.reserve(text.size());
+        for (char ch : text) {
+            const auto u = static_cast<unsigned char>(ch);
+            if (std::isalnum(u) || std::isspace(u)) result.push_back(ch);
+        }
+        return result;
+    }
+  explanation: |
+    A positive keep predicate states the contract more safely than attempting
+    to enumerate every kind of punctuation. Appending to a reserved result
+    avoids repeated erasures and index shifts.
+  solutionOutline: Copy only alphanumeric or whitespace bytes into a preallocated output string.
+  commonTrap: Using `std::isalnum(ch)` directly when plain `char` may be negative.
+  verification:
+    method: keep-predicate-case-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-023
+  topicId: cpp-strings-formatting
+  skills:
+  - compute-character-set-union
+  - use-fixed-ascii-tables
+  archetype: distinct-union-cardinality
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires counting the union once rather than adding two distinct counts with overlap.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::size_t distinct_bytes_in_both(std::string_view first,
+    std::string_view second)`. Return the number of distinct byte values in
+    the union of both strings. Matching is case-sensitive and includes
+    spaces and punctuation. For `Python` and `Java`, return `9`.
+  answer:
+    functionSignature: std::size_t distinct_bytes_in_both(std::string_view first, std::string_view second)
+    expectedCases:
+    - - Python
+      - Java
+      - 9
+    - - abc
+      - bcd
+      - 4
+    - - ''
+      - ''
+      - 0
+  sampleSolution: |
+    #include <array>
+    #include <string_view>
+
+    std::size_t distinct_bytes_in_both(std::string_view first,
+                                       std::string_view second) {
+        std::array<bool, 256> seen{};
+        for (unsigned char ch : first) seen[ch] = true;
+        for (unsigned char ch : second) seen[ch] = true;
+        std::size_t count = 0;
+        for (bool present : seen) count += present;
+        return count;
+    }
+  explanation: |
+    The 256-entry table represents the set of possible byte values. Marking
+    from both strings performs set union automatically; the final true-count
+    is the union cardinality.
+  solutionOutline: Mark every byte from both inputs in one fixed membership table and count the marked slots.
+  commonTrap: Adding the two strings' individual unique counts, which double-counts characters appearing in both.
+  verification:
+    method: set-union-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-024
+  topicId: cpp-strings-formatting
+  skills:
+  - count-duplicated-character-values
+  - distinguish-occurrences-from-values
+  archetype: duplicate-value-cardinality
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires counting distinct byte values with frequency at least two, not all repeated occurrences.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::size_t duplicate_byte_count(std::string_view text)`.
+    Return how many distinct byte values occur at least twice. Comparison is
+    case-sensitive and includes every byte. For `aabcccdd` the answer is
+    `3`, corresponding to `a`, `c`, and `d`.
+  answer:
+    functionSignature: std::size_t duplicate_byte_count(std::string_view text)
+    expectedCases:
+    - - aabcccdd
+      - 3
+    - - abc
+      - 0
+    - - aaaa
+      - 1
+  sampleSolution: |
+    #include <array>
+    #include <string_view>
+
+    std::size_t duplicate_byte_count(std::string_view text) {
+        std::array<std::size_t, 256> counts{};
+        for (unsigned char ch : text) ++counts[ch];
+        std::size_t duplicates = 0;
+        for (std::size_t count : counts) duplicates += count >= 2;
+        return duplicates;
+    }
+  explanation: |
+    Frequencies separate the number of duplicated values from the number of
+    extra occurrences. A character appearing four times contributes one to
+    this result, not three or four.
+  solutionOutline: Build a byte-frequency table and count table entries whose frequency reaches two.
+  commonTrap: Summing `frequency - 1`, which measures extra occurrences instead of duplicated character values.
+  verification:
+    method: frequency-definition-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-025
+  topicId: cpp-strings-formatting
+  skills:
+  - find-longest-run
+  - scan-binary-strings
+  archetype: maximum-consecutive-run
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires resetting and maximizing a run counter at the correct times.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::size_t longest_ones_run(std::string_view bits)`. The input
+    contains only `0` and `1`. Return the length of the longest contiguous
+    run of `1` characters. Example: `1100110001` returns `2`.
+  answer:
+    functionSignature: std::size_t longest_ones_run(std::string_view bits)
+    expectedCases:
+    - - '1100110001'
+      - 2
+    - - '1111'
+      - 4
+    - - '000'
+      - 0
+  sampleSolution: |
+    #include <algorithm>
+    #include <string_view>
+
+    std::size_t longest_ones_run(std::string_view bits) {
+        std::size_t current = 0;
+        std::size_t best = 0;
+        for (char bit : bits) {
+            if (bit == '1') {
+                best = std::max(best, ++current);
+            } else {
+                current = 0;
+            }
+        }
+        return best;
+    }
+  explanation: |
+    `current` describes the run ending at the present position. A zero makes
+    that run empty; a one extends it and may establish a new maximum.
+  solutionOutline: Extend the current run at each one, reset it at each zero, and preserve the largest value reached.
+  commonTrap: Updating the maximum only when a zero appears, which misses a longest run ending at the final character.
+  verification:
+    method: run-state-boundary-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-026
+  topicId: cpp-strings-formatting
+  skills:
+  - validate-title-case
+  - parse-letter-words
+  archetype: all-words-case-validation
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires defining words around punctuation and checking both the initial and remaining letters.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `bool is_title_cased(std::string_view text)`. A word is a
+    maximal run of ASCII letters. At least one word must exist. Each word
+    must begin with an uppercase letter and all of its remaining letters
+    must be lowercase; nonletters delimit words and are otherwise ignored.
+    `The Quick Brown Fox.` returns true.
+  answer:
+    functionSignature: bool is_title_cased(std::string_view text)
+    expectedCases:
+    - - The Quick Brown Fox.
+      - true
+    - - The quick Brown Fox.
+      - false
+    - - '123'
+      - false
+  sampleSolution: |
+    #include <cctype>
+    #include <string_view>
+
+    bool is_title_cased(std::string_view text) {
+        bool at_start = true;
+        bool saw_word = false;
+        for (char ch : text) {
+            const auto u = static_cast<unsigned char>(ch);
+            if (!std::isalpha(u)) {
+                at_start = true;
+            } else if (at_start) {
+                if (!std::isupper(u)) return false;
+                at_start = false;
+                saw_word = true;
+            } else if (!std::islower(u)) {
+                return false;
+            }
+        }
+        return saw_word;
+    }
+  explanation: |
+    A nonletter ends the current word. The first following letter must be
+    uppercase, while later letters in the same run must be lowercase. The
+    separate `saw_word` flag prevents punctuation-only input from passing.
+  solutionOutline: Treat nonletters as boundaries, enforce uppercase at each new letter run and lowercase afterward,
+    and require one word.
+  commonTrap: Checking only that initials are uppercase while accepting internal capitals such as `McDONALD`.
+  verification:
+    method: word-state-case-table
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-027
+  topicId: cpp-strings-formatting
+  skills:
+  - split-camel-case
+  - detect-lower-to-upper-boundaries
+  archetype: camel-case-boundary-insertion
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires inserting before an uppercase letter only when the preceding character is lowercase.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string split_lower_upper_boundaries(std::string_view
+    text)`. Insert one space before an uppercase ASCII letter when the
+    immediately preceding input character is lowercase. Preserve all input
+    characters. `TheQuickBrownFox.` becomes `The Quick Brown Fox.`.
+  answer:
+    functionSignature: std::string split_lower_upper_boundaries(std::string_view text)
+    expectedCases:
+    - - TheQuickBrownFox.
+      - The Quick Brown Fox.
+    - - XMLParser
+      - XMLParser
+    - - aB
+      - a B
+  sampleSolution: |
+    #include <cctype>
+    #include <string>
+    #include <string_view>
+
+    std::string split_lower_upper_boundaries(std::string_view text) {
+        std::string result;
+        result.reserve(text.size());
+        for (std::size_t i = 0; i < text.size(); ++i) {
+            if (i > 0 &&
+                std::islower(static_cast<unsigned char>(text[i - 1])) &&
+                std::isupper(static_cast<unsigned char>(text[i]))) {
+                result.push_back(' ');
+            }
+            result.push_back(text[i]);
+        }
+        return result;
+    }
+  explanation: |
+    The boundary belongs between two original adjacent characters. Checking
+    the input rather than the growing result prevents an inserted space from
+    affecting later classification.
+  solutionOutline: For each input position after the first, insert a space exactly when the original adjacent pair
+    is lowercase then uppercase.
+  commonTrap: Splitting before every uppercase character, which breaks initialisms such as `XML`.
+  verification:
+    method: adjacent-pair-table
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-028
+  topicId: cpp-strings-formatting
+  skills:
+  - extract-first-matches
+  - report-insufficient-data
+  archetype: bounded-predicate-extraction
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires stopping at an exact match count and distinguishing zero from insufficient matches.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::optional<std::string> first_vowels(std::string_view text,
+    std::size_t count)`. Extract the first `count` ASCII vowels,
+    case-insensitively, preserving their original case. Return `nullopt` when
+    fewer than `count` vowels exist. A count of zero returns an empty string.
+  answer:
+    functionSignature: std::optional<std::string> first_vowels(std::string_view text, std::size_t count)
+    expectedCases:
+    - - Education
+      - 4
+      - Euai
+    - - sky
+      - 1
+      - null
+    - - abc
+      - 0
+      - ''
+  sampleSolution: |
+    #include <cctype>
+    #include <optional>
+    #include <string>
+    #include <string_view>
+
+    std::optional<std::string> first_vowels(std::string_view text,
+                                            std::size_t count) {
+        std::string result;
+        result.reserve(count);
+        for (char ch : text) {
+            const char lower = static_cast<char>(
+                std::tolower(static_cast<unsigned char>(ch)));
+            if (std::string_view{"aeiou"}.find(lower) !=
+                std::string_view::npos) {
+                result.push_back(ch);
+                if (result.size() == count) return result;
+            }
+        }
+        if (count == 0) return std::string{};
+        return std::nullopt;
+    }
+  explanation: |
+    The supplied exercise reversed its error condition. Failure occurs when
+    the requested count exceeds the available vowels. `optional` represents
+    that outcome without mixing an error sentence into the data value.
+  solutionOutline: Append vowels in encounter order, return immediately at the requested count, and report absence
+    if the scan ends too soon.
+  commonTrap: Returning an error when more vowels exist than requested, which is the opposite of the actual insufficiency
+    condition.
+  verification:
+    method: count-boundary-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-029
+  topicId: cpp-strings-formatting
+  skills:
+  - format-decimal-thousands
+  - preserve-integer-sign
+  archetype: grouped-decimal-formatting
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires grouping from the right while handling negative values and the minimum signed integer
+    safely.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string comma_separated(long long value)`. Return ordinary
+    base-10 notation with a comma before each group of three digits counted
+    from the right. Preserve a leading minus sign. Examples: `5000` becomes
+    `5,000` and `-1234567` becomes `-1,234,567`.
+  answer:
+    functionSignature: std::string comma_separated(long long value)
+    expectedCases:
+    - - 5000
+      - 5,000
+    - - -1234567
+      - -1,234,567
+    - - 12
+      - '12'
+  sampleSolution: |
+    #include <algorithm>
+    #include <string>
+
+    std::string comma_separated(long long value) {
+        std::string digits = std::to_string(value);
+        const std::size_t start = digits[0] == '-' ? 1 : 0;
+        for (std::size_t pos = digits.size();
+             pos > start + 3; pos -= 3) {
+            digits.insert(pos - 3, 1, ',');
+        }
+        return digits;
+    }
+  explanation: |
+    Starting with `std::to_string` avoids negating the most-negative
+    `long long`, which is not representable as a positive signed value.
+    Inserting from right to left keeps unprocessed positions stable.
+  solutionOutline: Convert once to decimal text, skip a possible sign, and insert separators every three digits
+    while moving leftward.
+  commonTrap: Taking the absolute value first, which can overflow for `LLONG_MIN`.
+  verification:
+    method: sign-and-group-boundary-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-030
+  topicId: cpp-strings-formatting
+  skills:
+  - detect-missing-sequence-letter
+  - validate-consecutive-input
+  archetype: alphabet-gap-detection
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires comparing adjacent letters against the expected successor.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::optional<char> missing_lowercase_letter(std::string_view
+    letters)`. The input is a strictly increasing sequence of distinct
+    lowercase ASCII letters with at most one omitted letter between the first
+    and last characters. Return that missing letter, or `nullopt` if the
+    sequence is consecutive. Example: `abdef` returns `c`; `abcdef` has no
+    missing letter.
+  answer:
+    functionSignature: std::optional<char> missing_lowercase_letter(std::string_view letters)
+    expectedCases:
+    - - abdef
+      - c
+    - - abcdef
+      - null
+    - - xz
+      - y
+  sampleSolution: |
+    #include <optional>
+    #include <string_view>
+
+    std::optional<char> missing_lowercase_letter(
+        std::string_view letters) {
+        for (std::size_t i = 1; i < letters.size(); ++i) {
+            if (letters[i] != letters[i - 1] + 1) {
+                return static_cast<char>(letters[i - 1] + 1);
+            }
+        }
+        return std::nullopt;
+    }
+  explanation: |
+    In a consecutive sequence, each character is exactly one code point after
+    its predecessor. Under the stated one-gap precondition, the first failed
+    adjacency identifies the omitted letter.
+  solutionOutline: Compare every adjacent pair with the expected ASCII successor and return the first missing value.
+  commonTrap: Searching the entire alphabet and reporting letters outside the supplied first-to-last interval.
+  verification:
+    method: adjacency-precondition-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-031
+  topicId: cpp-strings-formatting
+  skills:
+  - validate-uniform-letter-case
+  - handle-empty-input
+  archetype: uniform-case-validation
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires accepting either of two all-character predicates while rejecting nonletters.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `bool has_uniform_letter_case(std::string_view text)`. Return
+    true only when the input is nonempty, contains ASCII letters only, and
+    every letter is uppercase or every letter is lowercase. Mixed case,
+    digits, punctuation, and empty input return false.
+  answer:
+    functionSignature: bool has_uniform_letter_case(std::string_view text)
+    expectedCases:
+    - - ABCDEF
+      - true
+    - - abcdef
+      - true
+    - - Abc
+      - false
+    - - ABC1
+      - false
+  sampleSolution: |
+    #include <cctype>
+    #include <string_view>
+
+    bool has_uniform_letter_case(std::string_view text) {
+        if (text.empty()) return false;
+        bool all_upper = true;
+        bool all_lower = true;
+        for (char ch : text) {
+            const auto u = static_cast<unsigned char>(ch);
+            if (!std::isalpha(u)) return false;
+            all_upper = all_upper && std::isupper(u);
+            all_lower = all_lower && std::islower(u);
+        }
+        return all_upper || all_lower;
+    }
+  explanation: |
+    Two running predicates represent the only acceptable alternatives.
+    Rejecting nonletters explicitly prevents vacuous classification of
+    punctuation, and the initial empty check defines that edge case.
+  solutionOutline: Require letters throughout while accumulating all-uppercase and all-lowercase predicates, then
+    accept either complete predicate.
+  commonTrap: Inspecting only the first character and assuming the remainder has the same case.
+  verification:
+    method: exhaustive-case-category-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-032
+  topicId: cpp-strings-formatting
+  skills:
+  - transform-words-by-length
+  - preserve-space-layout
+  archetype: conditional-word-reversal
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires locating word intervals, applying a length threshold, and preserving all spaces.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `std::string reverse_words_at_least_three(std::string text)`.
+    Input contains ASCII letters and spaces only. Reverse each maximal word
+    whose length is at least three, in place; preserve every space. For
+    `The quick brown fox jumps over the lazy dog`, return
+    `ehT kciuq nworb xof spmuj revo eht yzal god`.
+  answer:
+    functionSignature: std::string reverse_words_at_least_three(std::string text)
+    expectedCases:
+    - - The quick brown fox jumps over the lazy dog
+      - ehT kciuq nworb xof spmuj revo eht yzal god
+    - - an ox
+      - an ox
+    - - '  abc  de '
+      - '  cba  de '
+  sampleSolution: |
+    #include <algorithm>
+    #include <string>
+
+    std::string reverse_words_at_least_three(std::string text) {
+        for (std::size_t start = 0; start < text.size();) {
+            if (text[start] == ' ') {
+                ++start;
+                continue;
+            }
+            std::size_t end = text.find(' ', start);
+            if (end == std::string::npos) end = text.size();
+            if (end - start >= 3) {
+                std::reverse(text.begin() + start, text.begin() + end);
+            }
+            start = end;
+        }
+        return text;
+    }
+  explanation: |
+    Each word is represented by a half-open interval `[start, end)`.
+    Reversing inside the original string leaves delimiters exactly where they
+    were, including repeated and trailing spaces.
+  solutionOutline: Find each non-space interval, reverse it when its length meets the threshold, and leave separator
+    positions untouched.
+  commonTrap: Rebuilding with stream extraction, which collapses repeated spaces and loses the original layout.
+  verification:
+    method: interval-and-spacing-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-length-based-word-transformer-directed-project
+- id: cpp-fsf-string-033
+  topicId: cpp-strings-formatting
+  skills:
+  - test-multiset-containment
+  - consume-character-counts
+  archetype: constructibility-by-frequency
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires multiplicity-aware containment rather than simple membership.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `bool can_construct_from(std::string_view available,
+    std::string_view requested)`. Each case-sensitive byte from `available`
+    may be used at most once. Return whether all bytes of `requested` can be
+    supplied. Examples: `("CPP", "Cpp")` is false, `("Java", "Ja")` is
+    true, and `("Check first string", "sifC")` is true.
+  answer:
+    functionSignature: bool can_construct_from(std::string_view available, std::string_view requested)
+    expectedCases:
+    - - CPP
+      - Cpp
+      - false
+    - - Java
+      - Ja
+      - true
+    - - a
+      - aa
+      - false
+  sampleSolution: |
+    #include <array>
+    #include <string_view>
+
+    bool can_construct_from(std::string_view available,
+                            std::string_view requested) {
+        std::array<std::size_t, 256> counts{};
+        for (unsigned char ch : available) ++counts[ch];
+        for (unsigned char ch : requested) {
+            if (counts[ch] == 0) return false;
+            --counts[ch];
+        }
+        return true;
+    }
+  explanation: |
+    The frequency table models a consumable inventory. Every requested byte
+    decrements one available copy; reaching zero before a request proves that
+    multiplicity cannot be satisfied.
+  solutionOutline: Count available bytes, consume one count per requested byte, and fail at the first exhausted
+    value.
+  commonTrap: Using a set, which would incorrectly allow one available `a` to satisfy multiple requested `a` characters.
+  verification:
+    method: multiset-accounting-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-034
+  topicId: cpp-strings-formatting
+  skills:
+  - remove-first-substring
+  - handle-not-found-results
+  archetype: exact-substring-erasure
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires exact matching and preserving all text outside the first occurrence.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string remove_first(std::string text,
+    std::string_view target)`. Remove the first exact occurrence of `target`.
+    If `target` is empty or absent, return the input unchanged. Do not trim or
+    normalize spaces. `("Exercises Practice Solution", "Solution")` becomes
+    `"Exercises Practice "`.
+  answer:
+    functionSignature: std::string remove_first(std::string text, std::string_view target)
+    expectedCases:
+    - - Exercises Practice Solution
+      - Solution
+      - 'Exercises Practice '
+    - - Exercises Practice Solution
+      - 'Practice '
+      - Exercises Solution
+    - - abc
+      - x
+      - abc
+  sampleSolution: |
+    #include <string>
+    #include <string_view>
+
+    std::string remove_first(std::string text, std::string_view target) {
+        if (target.empty()) return text;
+        const std::size_t pos = text.find(target);
+        if (pos != std::string::npos) text.erase(pos, target.size());
+        return text;
+    }
+  explanation: |
+    `find` supplies the starting index of the first exact match, and `erase`
+    removes exactly the matched number of bytes. Spaces not included in the
+    target remain because the contract forbids hidden cleanup.
+  solutionOutline: Locate one exact nonempty target and erase its half-open interval only when `find` succeeds.
+  commonTrap: Calling `erase(npos, ...)` when the target is absent, which throws `std::out_of_range`.
+  verification:
+    method: exact-range-and-whitespace-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-035
+  topicId: cpp-strings-formatting
+  skills:
+  - transform-odd-length-words
+  - preserve-delimiters
+  archetype: parity-conditioned-word-reversal
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires parsing word spans, checking length parity, and retaining punctuation and spacing.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string reverse_odd_length_words(std::string text)`. A
+    word is a maximal ASCII-letter run. Reverse each word with odd length and
+    preserve every nonletter at its original index. For
+    `The quick brown fox jumps over the lazy dog`, return
+    `ehT kciuq nworb xof spmuj over eht lazy god`.
+  answer:
+    functionSignature: std::string reverse_odd_length_words(std::string text)
+    expectedCases:
+    - - Exercises Practice Solution
+      - sesicrexE Practice Solution
+    - - The quick brown fox jumps over the lazy dog
+      - ehT kciuq nworb xof spmuj over eht lazy god
+    - - ab, cde!
+      - ab, edc!
+  sampleSolution: |
+    #include <algorithm>
+    #include <cctype>
+    #include <string>
+
+    std::string reverse_odd_length_words(std::string text) {
+        for (std::size_t i = 0; i < text.size();) {
+            while (i < text.size() &&
+                   !std::isalpha(static_cast<unsigned char>(text[i]))) ++i;
+            const std::size_t start = i;
+            while (i < text.size() &&
+                   std::isalpha(static_cast<unsigned char>(text[i]))) ++i;
+            if ((i - start) % 2 == 1) {
+                std::reverse(text.begin() + start, text.begin() + i);
+            }
+        }
+        return text;
+    }
+  explanation: |
+    Finding alphabetic intervals separates word content from delimiters.
+    Because reversal stays within each interval, commas, spaces, and periods
+    do not move.
+  solutionOutline: Scan maximal letter runs and reverse exactly those intervals whose lengths are odd.
+  commonTrap: Including punctuation in a word's length, which can flip the parity decision.
+  verification:
+    method: word-parity-and-delimiter-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-036
+  topicId: cpp-strings-formatting
+  skills:
+  - detect-adjacent-equality
+  - short-circuit-scans
+  archetype: adjacent-duplicate-detection
+  difficulty: foundation
+  reasoningDepth: 1
+  difficultyEvidence: Requires comparing each character with its immediate predecessor.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `bool has_adjacent_identical_letters(std::string_view text)`.
+    Return true if any two adjacent characters are the same ASCII letter with
+    the same case. Nonletters never form a match. `Exercises` returns false;
+    `Yellow` returns true because of `ll`.
+  answer:
+    functionSignature: bool has_adjacent_identical_letters(std::string_view text)
+    expectedCases:
+    - - Exercises
+      - false
+    - - Yellow
+      - true
+    - - '11'
+      - false
+  sampleSolution: |
+    #include <cctype>
+    #include <string_view>
+
+    bool has_adjacent_identical_letters(std::string_view text) {
+        for (std::size_t i = 1; i < text.size(); ++i) {
+            if (text[i] == text[i - 1] &&
+                std::isalpha(static_cast<unsigned char>(text[i]))) {
+                return true;
+            }
+        }
+        return false;
+    }
+  explanation: |
+    Every adjacent pair has a unique right endpoint from index one onward.
+    Equality plus the alphabetic test implements the exact case-sensitive
+    contract and permits immediate return on the first match.
+  solutionOutline: Examine each adjacent pair once and accept the first equal pair whose byte is alphabetic.
+  commonTrap: Using a frequency table, which detects repeated letters even when their occurrences are not consecutive.
+  verification:
+    method: adjacent-pair-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-037
+  topicId: cpp-strings-formatting
+  skills:
+  - count-specific-characters
+  - use-range-algorithms
+  archetype: exact-character-count
+  difficulty: foundation
+  reasoningDepth: 1
+  difficultyEvidence: Requires a case-sensitive count of one specified byte.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::size_t count_character(std::string_view text, char
+    target)`. Count exact, case-sensitive occurrences of `target`.
+    `("Exercises", 'e')` returns `2`; `("Compilation Time", 'i')` returns
+    `3`.
+  answer:
+    functionSignature: std::size_t count_character(std::string_view text, char target)
+    expectedCases:
+    - - Exercises
+      - e
+      - 2
+    - - Compilation Time
+      - i
+      - 3
+    - - Aa
+      - a
+      - 1
+  sampleSolution: |
+    #include <algorithm>
+    #include <string_view>
+
+    std::size_t count_character(std::string_view text, char target) {
+        return static_cast<std::size_t>(
+            std::count(text.begin(), text.end(), target));
+    }
+  explanation: |
+    `std::count` expresses an exact equality count over the entire range.
+    The result is converted to the public unsigned size type used by the
+    function contract.
+  solutionOutline: Apply the standard equality-count algorithm to the full view and the supplied target.
+  commonTrap: Lowercasing the input even though the requested comparison is case-sensitive.
+  verification:
+    method: direct-enumeration-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-quiz
+- id: cpp-fsf-string-038
+  topicId: cpp-strings-formatting
+  skills:
+  - remove-matching-characters
+  - use-erase-remove
+  archetype: erase-remove-filter
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires understanding the logical-end result of `std::remove`.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string remove_character(std::string text, char target)`.
+    Remove every exact, case-sensitive occurrence of `target` and preserve
+    the order of all other bytes. `("Filename", 'e')` becomes `Filnam`.
+  answer:
+    functionSignature: std::string remove_character(std::string text, char target)
+    expectedCases:
+    - - Filename
+      - e
+      - Filnam
+    - - Compilation Time
+      - i
+      - Complaton Tme
+    - - abc
+      - x
+      - abc
+  sampleSolution: |
+    #include <algorithm>
+    #include <string>
+
+    std::string remove_character(std::string text, char target) {
+        text.erase(std::remove(text.begin(), text.end(), target),
+                   text.end());
+        return text;
+    }
+  explanation: |
+    `std::remove` compacts retained characters toward the front and returns a
+    logical end; it does not change the container's size. `erase` removes the
+    leftover tail from that logical end to the physical end.
+  solutionOutline: Compact all non-target bytes with `std::remove`, then erase the obsolete suffix.
+  commonTrap: Calling only `std::remove` and expecting the string's size to shrink.
+  verification:
+    method: erase-remove-semantics-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-039
+  topicId: cpp-strings-formatting
+  skills:
+  - validate-character-uniqueness
+  - use-membership-tables
+  archetype: duplicate-rejection
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires rejecting the first repeated byte under a case-sensitive definition.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `bool all_bytes_unique(std::string_view text)`. Return true
+    when no byte value occurs more than once. Comparison is case-sensitive
+    and includes spaces and punctuation. `Filename` returns false; `abc`
+    returns true.
+  answer:
+    functionSignature: bool all_bytes_unique(std::string_view text)
+    expectedCases:
+    - - Filename
+      - false
+    - - abc
+      - true
+    - - Aa
+      - true
+  sampleSolution: |
+    #include <array>
+    #include <string_view>
+
+    bool all_bytes_unique(std::string_view text) {
+        std::array<bool, 256> seen{};
+        for (unsigned char ch : text) {
+            if (seen[ch]) return false;
+            seen[ch] = true;
+        }
+        return true;
+    }
+  explanation: |
+    Each table slot records whether its byte has already appeared. The first
+    repeated lookup proves non-uniqueness, so no full frequency count is
+    necessary.
+  solutionOutline: Mark bytes as they are encountered and fail immediately when a marked slot is visited again.
+  commonTrap: Storing signed `char` values as array indices, which can produce negative indices on some implementations.
+  verification:
+    method: membership-invariant-check
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-040
+  topicId: cpp-strings-formatting
+  skills:
+  - select-by-parallel-string-mask
+  - bound-zip-operations
+  archetype: positional-mask-selection
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires interpreting one string as a positional predicate over another and handling unequal
+    lengths.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string select_where_first_is_lower(std::string_view
+    mask, std::string_view values)`. For each index present in both strings,
+    append `values[i]` exactly when `mask[i]` is a lowercase ASCII letter.
+    Ignore unmatched suffixes. Examples: `("Java", "jscript")` returns
+    `scr`, `("jScript", "Java")` returns `Jva`, and `("cpp", "c++")`
+    returns `c++`.
+  answer:
+    functionSignature: std::string select_where_first_is_lower(std::string_view mask, std::string_view values)
+    expectedCases:
+    - - Java
+      - jscript
+      - scr
+    - - jScript
+      - Java
+      - Jva
+    - - cpp
+      - c++
+      - c++
+  sampleSolution: |
+    #include <algorithm>
+    #include <cctype>
+    #include <string>
+    #include <string_view>
+
+    std::string select_where_first_is_lower(std::string_view mask,
+                                            std::string_view values) {
+        std::string result;
+        const std::size_t length = std::min(mask.size(), values.size());
+        for (std::size_t i = 0; i < length; ++i) {
+            if (std::islower(static_cast<unsigned char>(mask[i]))) {
+                result.push_back(values[i]);
+            }
+        }
+        return result;
+    }
+  explanation: |
+    The first string supplies the condition, while the second supplies the
+    output byte. Limiting the loop to the shorter length makes the positional
+    zip operation safe for unequal inputs.
+  solutionOutline: Zip the common prefix of both strings and copy each value byte whose corresponding mask byte
+    is lowercase.
+  commonTrap: Returning lowercase characters from the first string instead of selecting same-position characters
+    from the second.
+  verification:
+    method: example-index-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-string-041
+  topicId: cpp-strings-formatting
+  skills:
+  - find-second-substring-occurrence
+  - define-overlap-policy
+  archetype: repeated-substring-search
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires starting the second search at the correct index and explicitly allowing overlaps.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `std::ptrdiff_t second_occurrence(std::string_view text,
+    std::string_view needle)`. Return the zero-based position of the second
+    occurrence, allowing overlaps. Return `-1` when `needle` is empty or
+    occurs fewer than twice. Examples: `("the qu qu", "qu")` returns `7`,
+    `("theququ", "qu")` returns `5`, and `("aaa", "aa")` returns `1`.
+  answer:
+    functionSignature: std::ptrdiff_t second_occurrence(std::string_view text, std::string_view needle)
+    expectedCases:
+    - - the qu qu
+      - qu
+      - 7
+    - - theququ
+      - qu
+      - 5
+    - - aaa
+      - aa
+      - 1
+    - - thequ
+      - qu
+      - -1
+  sampleSolution: |
+    #include <cstddef>
+    #include <string_view>
+
+    std::ptrdiff_t second_occurrence(std::string_view text,
+                                     std::string_view needle) {
+        if (needle.empty()) return -1;
+        const std::size_t first = text.find(needle);
+        if (first == std::string_view::npos) return -1;
+        const std::size_t second = text.find(needle, first + 1);
+        if (second == std::string_view::npos) return -1;
+        return static_cast<std::ptrdiff_t>(second);
+    }
+  explanation: |
+    Beginning the second search one byte after the first start permits
+    overlapping matches. Beginning at `first + needle.size()` would impose a
+    non-overlap rule and fail the `aaa` case.
+  solutionOutline: Reject an empty needle, find the first start, then search again from the following position and
+    translate failure to minus one.
+  commonTrap: Returning `std::string_view::npos` through a signed API without explicitly converting the absent result
+    to `-1`.
+  verification:
+    method: overlap-and-not-found-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-repeated-substring-finder-directed-project
+- id: cpp-fsf-string-042
+  topicId: cpp-strings-formatting
+  skills:
+  - alternate-letter-case
+  - preserve-nonletter-state
+  archetype: stateful-alternating-transform
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires alternating by letter count while ensuring punctuation neither changes nor advances
+    the state.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::string alternating_ascii_case(std::string text)`.
+    Convert the first ASCII letter to lowercase, the second letter to
+    uppercase, and continue alternating by letter count. Preserve nonletters,
+    and do not let them advance the alternation. Examples: `JavaScript`
+    becomes `jAvAsCrIpT`, `Python` becomes `pYtHoN`, and `C++` becomes
+    `c++`.
+  answer:
+    functionSignature: std::string alternating_ascii_case(std::string text)
+    expectedCases:
+    - - JavaScript
+      - jAvAsCrIpT
+    - - Python
+      - pYtHoN
+    - - C++
+      - c++
+    - - A-BC
+      - a-Bc
+  sampleSolution: |
+    #include <cctype>
+    #include <string>
+
+    std::string alternating_ascii_case(std::string text) {
+        bool lower_next = true;
+        for (char& ch : text) {
+            const auto u = static_cast<unsigned char>(ch);
+            if (!std::isalpha(u)) continue;
+            ch = static_cast<char>(
+                lower_next ? std::tolower(u) : std::toupper(u));
+            lower_next = !lower_next;
+        }
+        return text;
+    }
+  explanation: |
+    The boolean describes the required case of the next letter, not the next
+    byte. Skipping nonletters before toggling the flag preserves punctuation
+    and gives `C++` only one case conversion.
+  solutionOutline: Transform letters according to a toggled case flag and bypass nonletters without changing that
+    flag.
+  commonTrap: Alternating by raw string index, which lets spaces or punctuation shift the case pattern.
+  verification:
+    method: letter-index-state-trace
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-strings-formatting-test
+- id: cpp-fsf-file-001
+  topicId: cpp-working-with-files
+  skills:
+  - create-text-files
+  - detect-output-stream-failures
+  archetype: create-and-write-text-file
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires opening an output stream, defining newline behavior, and checking both open and write
+    failures.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `bool write_text_lines(const std::filesystem::path& path,
+    const std::vector<std::string>& lines)`. Create or truncate `path` and
+    write the supplied lines in order, placing `\n` between adjacent lines
+    but not after the final line. Return false if the file cannot be opened
+    or any write or flush fails.
+  answer:
+    functionSignature: bool write_text_lines(const std::filesystem::path& path, const std::vector<std::string>&
+      lines)
+    expectedBehavior:
+    - An empty vector creates an empty file.
+    - Existing content is replaced.
+    - A two-element vector produces exactly one newline separator.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+    #include <string>
+    #include <vector>
+
+    bool write_text_lines(const std::filesystem::path& path,
+                          const std::vector<std::string>& lines) {
+        std::ofstream output(path);
+        if (!output) return false;
+        for (std::size_t i = 0; i < lines.size(); ++i) {
+            if (i != 0) output.put('\n');
+            output << lines[i];
+            if (!output) return false;
+        }
+        output.flush();
+        return static_cast<bool>(output);
+    }
+  explanation: |
+    Constructing `std::ofstream` without `app` truncates an existing file.
+    Separators are written before every line except the first, which avoids a
+    special trailing newline. Checking after writes and after `flush`
+    captures errors that occur later than `open`.
+  solutionOutline: Open in truncating output mode, emit separators between lines, verify each write, flush, and
+    return the final stream state.
+  commonTrap: Checking only `is_open()`, even though a later disk or flush failure can still make the operation
+    unsuccessful.
+  verification:
+    method: temporary-file-byte-comparison
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-text-file-writer-directed-project
+- id: cpp-fsf-file-002
+  topicId: cpp-working-with-files
+  skills:
+  - read-complete-file-content
+  - preserve-text-bytes
+  archetype: whole-file-read
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires distinguishing open failure from a valid empty file and retaining embedded newlines.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::optional<std::string> read_complete_file(const
+    std::filesystem::path& path)`. Open the file in binary input mode and
+    return every byte unchanged. Return `nullopt` when opening or reading
+    fails. A successfully opened empty file returns an empty string.
+  answer:
+    functionSignature: std::optional<std::string> read_complete_file(const std::filesystem::path& path)
+    expectedBehavior:
+    - Newlines and null bytes are retained.
+    - Missing or unreadable files return nullopt.
+    - An empty readable file returns std::string{}.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+    #include <iterator>
+    #include <optional>
+    #include <string>
+
+    std::optional<std::string> read_complete_file(
+        const std::filesystem::path& path) {
+        std::ifstream input(path, std::ios::binary);
+        if (!input) return std::nullopt;
+        std::string content((std::istreambuf_iterator<char>(input)),
+                            std::istreambuf_iterator<char>());
+        if (input.bad()) return std::nullopt;
+        return content;
+    }
+  explanation: |
+    Stream-buffer iterators copy the entire byte sequence, including
+    whitespace. End-of-file is normal after a complete read, so the function
+    checks `bad()` rather than treating `eof()` as an error.
+  solutionOutline: Open in binary mode, construct a string from stream-buffer iterators, reject a bad stream, and
+    preserve empty success separately from failure.
+  commonTrap: Using formatted extraction with `operator>>`, which skips whitespace and stops after the first token.
+  verification:
+    method: binary-fixture-round-trip
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-quiz
+- id: cpp-fsf-file-003
+  topicId: cpp-working-with-files
+  skills:
+  - count-file-lines
+  - use-getline-loop-correctly
+  archetype: line-counting-stream-loop
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires counting successful reads rather than testing EOF before a read.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `std::optional<std::size_t> count_file_lines(const
+    std::filesystem::path& path)`. Count the number of lines successfully
+    produced by `std::getline`. Return `nullopt` if the file cannot be opened
+    or an I/O error occurs. An empty file has zero lines.
+  answer:
+    functionSignature: std::optional<std::size_t> count_file_lines(const std::filesystem::path& path)
+    expectedBehavior:
+    - Empty file returns 0.
+    - A file containing only one newline returns 1.
+    - A final non-newline-terminated line is counted.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+    #include <optional>
+    #include <string>
+
+    std::optional<std::size_t> count_file_lines(
+        const std::filesystem::path& path) {
+        std::ifstream input(path);
+        if (!input) return std::nullopt;
+        std::size_t count = 0;
+        std::string line;
+        while (std::getline(input, line)) ++count;
+        if (input.bad()) return std::nullopt;
+        return count;
+    }
+  explanation: |
+    The loop body runs only for lines actually extracted. A final line
+    without a delimiter still succeeds once; an empty file never succeeds.
+    Normal EOF sets fail/eof state, while `bad()` identifies an I/O failure.
+  solutionOutline: Increment only after each successful `getline`, then distinguish normal EOF from a bad stream.
+  commonTrap: Writing `while (!input.eof())`, which can count one extra iteration after the final failed read.
+  verification:
+    method: empty-and-trailing-newline-fixtures
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-line-counter-directed-project
+- id: cpp-fsf-file-004
+  topicId: cpp-working-with-files
+  skills:
+  - count-words-in-files
+  - detect-alphanumeric-boundaries
+  archetype: streamed-word-boundary-count
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires a documented word definition, state across line boundaries, and safe character classification.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `std::optional<std::size_t> count_file_words(const
+    std::filesystem::path& path)`. A word is a maximal run of ASCII letters
+    or decimal digits. Punctuation and whitespace delimit words. Stream the
+    file without loading it completely. Return `nullopt` on open or read
+    failure.
+  answer:
+    functionSignature: std::optional<std::size_t> count_file_words(const std::filesystem::path& path)
+    expectedBehavior:
+    - Multiple spaces do not create empty words.
+    - '`don''t stop` contains three words under the stated definition.'
+    - Word state remains correct across buffer and line boundaries.
+  sampleSolution: |
+    #include <cctype>
+    #include <filesystem>
+    #include <fstream>
+    #include <optional>
+
+    std::optional<std::size_t> count_file_words(
+        const std::filesystem::path& path) {
+        std::ifstream input(path, std::ios::binary);
+        if (!input) return std::nullopt;
+        std::size_t count = 0;
+        bool in_word = false;
+        char ch;
+        while (input.get(ch)) {
+            const bool word_byte =
+                std::isalnum(static_cast<unsigned char>(ch)) != 0;
+            if (word_byte && !in_word) ++count;
+            in_word = word_byte;
+        }
+        if (input.bad()) return std::nullopt;
+        return count;
+    }
+  explanation: |
+    Counting transitions into alphanumeric runs handles repeated delimiters
+    without token allocation. Reading one byte at a time also preserves state
+    across newlines and avoids assuming spaces are the only separators.
+  solutionOutline: Stream bytes, classify each as word or delimiter, count transitions into word state, and reject
+    only genuine read errors.
+  commonTrap: Splitting only on the space character, which mishandles tabs, newlines, and punctuation.
+  verification:
+    method: punctuation-and-whitespace-fixtures
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-quiz
+- id: cpp-fsf-file-005
+  topicId: cpp-working-with-files
+  skills:
+  - copy-files-exactly
+  - use-binary-streams
+  archetype: binary-safe-file-copy
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires exact byte copying and checking both source and destination stream states.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `bool copy_file_bytes(const std::filesystem::path& source,
+    const std::filesystem::path& destination)`. Copy the source byte-for-byte
+    into a newly created or truncated destination. Return false if either
+    file cannot be opened or if reading, writing, or flushing fails. Assume
+    the two paths do not identify the same file.
+  answer:
+    functionSignature: bool copy_file_bytes(const std::filesystem::path& source, const std::filesystem::path& destination)
+    expectedBehavior:
+    - Null bytes and line endings are preserved exactly.
+    - Existing destination content is replaced.
+    - Missing source returns false.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+
+    bool copy_file_bytes(const std::filesystem::path& source,
+                         const std::filesystem::path& destination) {
+        std::ifstream input(source, std::ios::binary);
+        if (!input) return false;
+        std::ofstream output(destination,
+                             std::ios::binary | std::ios::trunc);
+        if (!output) return false;
+        output << input.rdbuf();
+        output.flush();
+        return !input.bad() && static_cast<bool>(output);
+    }
+  explanation: |
+    Binary mode prevents text newline translation. Sending the input stream
+    buffer to the output streams the content without first storing the whole
+    file. Both sides are checked because either reading or writing may fail.
+  solutionOutline: Open source and destination in binary mode, stream the source buffer into the destination, flush,
+    and require healthy input and output states.
+  commonTrap: Comparing only file sizes afterward; equal sizes do not prove equal contents or a successful copy.
+  verification:
+    method: byte-for-byte-fixture-comparison
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-binary-file-copier-directed-project
+- id: cpp-fsf-file-006
+  topicId: cpp-working-with-files
+  skills:
+  - replace-whole-words-in-files
+  - preserve-source-files
+  archetype: boundary-aware-file-rewrite
+  difficulty: hard
+  reasoningDepth: 4
+  difficultyEvidence: Requires whole-word boundary checks, variable-length replacement, and separate input/output
+    error handling.
+  assessmentUses:
+  - worked-example
+  questionType: code
+  prompt: |
+    Implement `bool replace_ascii_word(const std::filesystem::path& source,
+    const std::filesystem::path& destination, std::string_view target,
+    std::string_view replacement)`. Read `source`, replace every
+    case-sensitive whole occurrence of `target`, and write the result to
+    `destination`. A word character is an ASCII letter, digit, or underscore.
+    Reject an empty target. Assume source and destination are different paths.
+  answer:
+    functionSignature: bool replace_ascii_word(const std::filesystem::path& source, const std::filesystem::path&
+      destination, std::string_view target, std::string_view replacement)
+    expectedBehavior:
+    - Replacing `cat` does not alter `catalog`.
+    - Adjacent punctuation forms valid word boundaries.
+    - The source file remains unchanged.
+  sampleSolution: |
+    #include <cctype>
+    #include <filesystem>
+    #include <fstream>
+    #include <iterator>
+    #include <string>
+    #include <string_view>
+
+    bool replace_ascii_word(const std::filesystem::path& source,
+                            const std::filesystem::path& destination,
+                            std::string_view target,
+                            std::string_view replacement) {
+        if (target.empty()) return false;
+        std::ifstream input(source, std::ios::binary);
+        if (!input) return false;
+        std::string text((std::istreambuf_iterator<char>(input)),
+                         std::istreambuf_iterator<char>());
+        if (input.bad()) return false;
+
+        auto word = [](char ch) {
+            const auto u = static_cast<unsigned char>(ch);
+            return std::isalnum(u) || ch == '_';
+        };
+        std::string result;
+        result.reserve(text.size());
+        for (std::size_t i = 0; i < text.size();) {
+            const bool match =
+                i + target.size() <= text.size() &&
+                text.compare(i, target.size(), target) == 0;
+            const bool left_ok = i == 0 || !word(text[i - 1]);
+            const bool right_ok =
+                match && (i + target.size() == text.size() ||
+                          !word(text[i + target.size()]));
+            if (match && left_ok && right_ok) {
+                result.append(replacement);
+                i += target.size();
+            } else {
+                result.push_back(text[i++]);
+            }
+        }
+
+        std::ofstream output(destination,
+                             std::ios::binary | std::ios::trunc);
+        if (!output) return false;
+        output.write(result.data(),
+                     static_cast<std::streamsize>(result.size()));
+        output.flush();
+        return static_cast<bool>(output);
+    }
+  explanation: |
+    A textual match is accepted only when neither neighboring byte is a word
+    character. Building a separate result supports replacements of different
+    lengths, and writing to another path avoids corrupting the source if
+    output fails.
+  solutionOutline: Read the source, scan for target matches with valid word boundaries, build the replacement text,
+    and write it to a distinct destination.
+  commonTrap: Replacing every substring match, which changes `cat` inside `catalog` despite the whole-word requirement.
+  verification:
+    method: boundary-fixture-and-output-review
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-worked-example
+- id: cpp-fsf-file-007
+  topicId: cpp-working-with-files
+  skills:
+  - append-file-bytes
+  - preserve-existing-content
+  archetype: append-mode-write
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires explicit append mode and exact ownership of newline insertion.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `bool append_file_bytes(const std::filesystem::path& path,
+    std::string_view data)`. Append `data` exactly as supplied in binary
+    mode, creating the file if it does not exist. Do not insert a newline
+    automatically. Return false if opening, writing, or flushing fails.
+  answer:
+    functionSignature: bool append_file_bytes(const std::filesystem::path& path, std::string_view data)
+    expectedBehavior:
+    - Existing bytes remain unchanged.
+    - Empty data is a successful no-op after opening.
+    - Newlines appear only when present in data.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+    #include <string_view>
+
+    bool append_file_bytes(const std::filesystem::path& path,
+                           std::string_view data) {
+        std::ofstream output(path, std::ios::binary | std::ios::app);
+        if (!output) return false;
+        output.write(data.data(),
+                     static_cast<std::streamsize>(data.size()));
+        output.flush();
+        return static_cast<bool>(output);
+    }
+  explanation: |
+    `std::ios::app` positions every write at the end, preserving earlier
+    content. The function writes the view's explicit size, so embedded null
+    bytes and the caller's exact newline choice are retained.
+  solutionOutline: Open with binary append semantics, write the complete view by length, flush, and report the final
+    stream state.
+  commonTrap: Opening with the default output mode, which truncates the existing file before writing.
+  verification:
+    method: before-after-byte-fixture
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-append-only-journal-directed-project
+- id: cpp-fsf-file-008
+  topicId: cpp-working-with-files
+  skills:
+  - sort-file-lines
+  - rewrite-normalized-text
+  archetype: read-sort-write-lines
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires materializing lines, defining lexical order and newline output, and checking both
+    I/O phases.
+  assessmentUses:
+  - quiz
+  questionType: code
+  prompt: |
+    Implement `bool sort_file_lines(const std::filesystem::path& source,
+    const std::filesystem::path& destination)`. Read all lines with
+    `std::getline`, sort them by ordinary case-sensitive `std::string`
+    ordering, and write them to `destination`, one line per entry with a
+    trailing `\n` after every line. Return false on any I/O failure. Assume
+    the paths differ.
+  answer:
+    functionSignature: bool sort_file_lines(const std::filesystem::path& source, const std::filesystem::path& destination)
+    expectedBehavior:
+    - Duplicate and empty lines are retained.
+    - Sorting is case-sensitive byte ordering.
+    - Nonempty output always ends in a newline.
+  sampleSolution: |
+    #include <algorithm>
+    #include <filesystem>
+    #include <fstream>
+    #include <string>
+    #include <vector>
+
+    bool sort_file_lines(const std::filesystem::path& source,
+                         const std::filesystem::path& destination) {
+        std::ifstream input(source);
+        if (!input) return false;
+        std::vector<std::string> lines;
+        std::string line;
+        while (std::getline(input, line)) lines.push_back(line);
+        if (input.bad()) return false;
+        std::sort(lines.begin(), lines.end());
+
+        std::ofstream output(destination, std::ios::trunc);
+        if (!output) return false;
+        for (const auto& value : lines) {
+            output << value << '\n';
+            if (!output) return false;
+        }
+        output.flush();
+        return static_cast<bool>(output);
+    }
+  explanation: |
+    Sorting needs random access to all lines, so a vector is an appropriate
+    materialization. The output contract intentionally normalizes line
+    endings and adds a final delimiter rather than claiming a byte-exact
+    transformation.
+  solutionOutline: Read every successful line, reject read errors, sort the vector, and emit each line with the
+    specified normalized delimiter.
+  commonTrap: Claiming the result is an exact rewrite while `getline` removes original line delimiters and text
+    mode may translate them.
+  verification:
+    method: duplicate-empty-line-fixture
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-quiz
+- id: cpp-fsf-file-009
+  topicId: cpp-working-with-files
+  skills:
+  - merge-files-in-order
+  - stream-multiple-inputs
+  archetype: ordered-file-concatenation
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires preserving caller-specified order, avoiding invented separators, and detecting failure
+    from any stream.
+  assessmentUses:
+  - guided-project
+  questionType: code
+  prompt: |
+    Implement `bool merge_file_bytes(const
+    std::vector<std::filesystem::path>& sources, const
+    std::filesystem::path& destination)`. Concatenate every source in the
+    supplied order into a newly created or truncated binary destination.
+    Insert no separators. Return false if any source or the destination
+    cannot be opened, read, written, or flushed. Assume the destination is
+    not among the sources.
+  answer:
+    functionSignature: bool merge_file_bytes(const std::vector<std::filesystem::path>& sources, const std::filesystem::path&
+      destination)
+    expectedBehavior:
+    - Empty source list creates an empty destination.
+    - Source order is exactly vector order.
+    - No newline is invented between adjacent files.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+    #include <vector>
+
+    bool merge_file_bytes(
+        const std::vector<std::filesystem::path>& sources,
+        const std::filesystem::path& destination) {
+        std::ofstream output(destination,
+                             std::ios::binary | std::ios::trunc);
+        if (!output) return false;
+        for (const auto& source : sources) {
+            std::ifstream input(source, std::ios::binary);
+            if (!input) return false;
+            output << input.rdbuf();
+            if (input.bad() || !output) return false;
+        }
+        output.flush();
+        return static_cast<bool>(output);
+    }
+  explanation: |
+    Opening and streaming one source at a time keeps memory usage bounded by
+    stream buffers. Because the contract is concatenation, the last byte of
+    one source is immediately followed by the first byte of the next.
+  solutionOutline: Open the destination once, stream each binary source buffer in caller order, check both streams
+    after every copy, and flush at the end.
+  commonTrap: Adding a newline between inputs, which corrupts a byte-exact concatenation and may create duplicate
+    blank lines.
+  verification:
+    method: ordered-binary-fixture-comparison
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-document-bundle-builder-guided-project
+- id: cpp-fsf-file-010
+  topicId: cpp-working-with-files
+  skills:
+  - split-files-by-line-count
+  - generate-sequential-paths
+  archetype: bounded-line-chunking
+  difficulty: hard
+  reasoningDepth: 4
+  difficultyEvidence: Requires chunk-boundary management, sequential naming, empty-input behavior, and cleanup-aware
+    error reporting.
+  assessmentUses:
+  - guided-project
+  questionType: code
+  prompt: |
+    Implement `std::optional<std::vector<std::filesystem::path>>
+    split_file_by_lines(const std::filesystem::path& source, const
+    std::filesystem::path& output_directory, std::size_t lines_per_part)`.
+    Reject zero `lines_per_part`. Write groups of at most that many lines to
+    `part-001.txt`, `part-002.txt`, and so on, with `\n` after every written
+    line. Return created paths in order, an empty vector for an empty file,
+    or `nullopt` on an I/O failure. The output directory already exists.
+  answer:
+    functionSignature: std::optional<std::vector<std::filesystem::path>> split_file_by_lines(const std::filesystem::path&
+      source, const std::filesystem::path& output_directory, std::size_t lines_per_part)
+    expectedBehavior:
+    - Five lines split by two produce parts containing 2, 2, and 1 line.
+    - Empty input creates no part.
+    - Part numbering is zero-padded to three digits.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+    #include <iomanip>
+    #include <optional>
+    #include <sstream>
+    #include <string>
+    #include <vector>
+
+    std::optional<std::vector<std::filesystem::path>>
+    split_file_by_lines(const std::filesystem::path& source,
+                        const std::filesystem::path& output_directory,
+                        std::size_t lines_per_part) {
+        if (lines_per_part == 0) return std::nullopt;
+        std::ifstream input(source);
+        if (!input) return std::nullopt;
+        std::vector<std::filesystem::path> created;
+        std::ofstream output;
+        std::size_t in_part = 0;
+        std::string line;
+        while (std::getline(input, line)) {
+            if (in_part == 0) {
+                std::ostringstream name;
+                name << "part-" << std::setw(3) << std::setfill('0')
+                     << created.size() + 1 << ".txt";
+                const auto path = output_directory / name.str();
+                output.open(path, std::ios::trunc);
+                if (!output) return std::nullopt;
+                created.push_back(path);
+            }
+            output << line << '\n';
+            if (!output) return std::nullopt;
+            if (++in_part == lines_per_part) {
+                output.close();
+                if (!output) return std::nullopt;
+                in_part = 0;
+            }
+        }
+        if (input.bad()) return std::nullopt;
+        if (output.is_open()) {
+            output.close();
+            if (!output) return std::nullopt;
+        }
+        return created;
+    }
+  explanation: |
+    A new part opens only when a successfully read line needs one, so empty
+    input creates no file. Closing each full part before the next resets the
+    chunk count and makes sequential ownership explicit.
+  solutionOutline: Validate the chunk size, open a numbered part on demand, write at most the requested line count,
+    close completed parts, and return their paths.
+  commonTrap: Creating the first output before the first successful read, which leaves an unwanted empty part for
+    an empty source.
+  verification:
+    method: chunk-size-and-empty-source-fixtures
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-log-archive-chunker-guided-project
+- id: cpp-fsf-file-011
+  topicId: cpp-working-with-files
+  skills:
+  - search-file-lines
+  - report-one-based-line-numbers
+  archetype: line-oriented-substring-search
+  difficulty: foundation
+  reasoningDepth: 2
+  difficultyEvidence: Requires exact substring semantics and correct one-based numbering.
+  assessmentUses:
+  - directed-project
+  questionType: code
+  prompt: |
+    Implement `std::optional<std::vector<std::size_t>>
+    containing_line_numbers(const std::filesystem::path& path,
+    std::string_view needle)`. Return the one-based number of every line
+    containing the case-sensitive substring `needle`, once per matching line.
+    Reject an empty needle with `nullopt`, and return `nullopt` on I/O failure.
+    A successful search with no matches returns an empty vector.
+  answer:
+    functionSignature: std::optional<std::vector<std::size_t>> containing_line_numbers(const std::filesystem::path&
+      path, std::string_view needle)
+    expectedBehavior:
+    - Several occurrences on one line contribute one line number.
+    - No matches return an empty vector.
+    - Empty needle is invalid rather than matching every line.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+    #include <optional>
+    #include <string>
+    #include <string_view>
+    #include <vector>
+
+    std::optional<std::vector<std::size_t>>
+    containing_line_numbers(const std::filesystem::path& path,
+                            std::string_view needle) {
+        if (needle.empty()) return std::nullopt;
+        std::ifstream input(path);
+        if (!input) return std::nullopt;
+        std::vector<std::size_t> matches;
+        std::size_t number = 0;
+        std::string line;
+        while (std::getline(input, line)) {
+            ++number;
+            if (line.find(needle) != std::string::npos) {
+                matches.push_back(number);
+            }
+        }
+        if (input.bad()) return std::nullopt;
+        return matches;
+    }
+  explanation: |
+    The line number increments only after `getline` succeeds, aligning the
+    first extracted line with number one. One `find` decision per line
+    naturally records the line once regardless of its occurrence count.
+  solutionOutline: Reject the empty search, scan successful lines with a one-based counter, record lines containing
+    the substring, and distinguish no matches from I/O failure.
+  commonTrap: Returning zero-based indices even though file-search tools conventionally display line numbers beginning
+    at one.
+  verification:
+    method: repeated-match-and-no-match-fixtures
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-file-search-reporter-directed-project
+- id: cpp-fsf-file-012
+  topicId: cpp-working-with-files
+  skills:
+  - encrypt-files-with-caesar-shift
+  - preserve-nonletters
+  archetype: streamed-caesar-encryption
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires normalizing arbitrary shifts, wrapping both letter cases, and preserving every nonletter
+    byte.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `bool caesar_encrypt_file(const std::filesystem::path& source,
+    const std::filesystem::path& destination, int shift)`. Shift ASCII
+    letters forward modulo 26, preserving case and every nonletter byte.
+    Normalize any positive or negative shift. Stream from a binary source to
+    a different binary destination and return false on any I/O failure.
+    This is an instructional cipher, not secure encryption.
+  answer:
+    functionSignature: bool caesar_encrypt_file(const std::filesystem::path& source, const std::filesystem::path&
+      destination, int shift)
+    expectedBehavior:
+    - With shift 3, `Az-z!` becomes `Dc-c!`.
+    - Shift 26 leaves content unchanged.
+    - Negative shifts wrap correctly.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+
+    bool caesar_encrypt_file(const std::filesystem::path& source,
+                             const std::filesystem::path& destination,
+                             int shift) {
+        std::ifstream input(source, std::ios::binary);
+        if (!input) return false;
+        std::ofstream output(destination,
+                             std::ios::binary | std::ios::trunc);
+        if (!output) return false;
+        const int amount = ((shift % 26) + 26) % 26;
+        char ch;
+        while (input.get(ch)) {
+            if (ch >= 'a' && ch <= 'z') {
+                ch = static_cast<char>('a' + (ch - 'a' + amount) % 26);
+            } else if (ch >= 'A' && ch <= 'Z') {
+                ch = static_cast<char>('A' + (ch - 'A' + amount) % 26);
+            }
+            output.put(ch);
+            if (!output) return false;
+        }
+        output.flush();
+        return !input.bad() && static_cast<bool>(output);
+    }
+  explanation: |
+    Double modulo normalization maps every integer shift into `0..25`.
+    Offsetting from the appropriate ASCII base applies wraparound separately
+    to lowercase and uppercase letters while other bytes pass through.
+  solutionOutline: Normalize the shift, transform each ASCII letter relative to its case-specific base, copy nonletters
+    unchanged, and verify both streams.
+  commonTrap: Applying the shift to every byte, which corrupts whitespace, punctuation, and line endings.
+  verification:
+    method: wraparound-and-round-trip-fixtures
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-test
+- id: cpp-fsf-file-013
+  topicId: cpp-working-with-files
+  skills:
+  - decrypt-caesar-files
+  - invert-modular-transformations
+  archetype: streamed-caesar-decryption
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires deriving the inverse modular shift rather than duplicating the encryption direction.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `bool caesar_decrypt_file(const std::filesystem::path& source,
+    const std::filesystem::path& destination, int encryption_shift)`.
+    Reverse the ASCII-letter Caesar transformation performed with
+    `encryption_shift`, preserving case and nonletters. Normalize arbitrary
+    shifts, use different source and destination paths, and report I/O
+    failure with false.
+  answer:
+    functionSignature: bool caesar_decrypt_file(const std::filesystem::path& source, const std::filesystem::path&
+      destination, int encryption_shift)
+    expectedBehavior:
+    - With encryption shift 3, `Dc-c!` becomes `Az-z!`.
+    - Decrypting encrypted content with the same shift restores all bytes.
+    - Case remains unchanged.
+  sampleSolution: |
+    #include <filesystem>
+    #include <fstream>
+
+    bool caesar_decrypt_file(const std::filesystem::path& source,
+                             const std::filesystem::path& destination,
+                             int encryption_shift) {
+        std::ifstream input(source, std::ios::binary);
+        if (!input) return false;
+        std::ofstream output(destination,
+                             std::ios::binary | std::ios::trunc);
+        if (!output) return false;
+        const int amount =
+            ((-encryption_shift % 26) + 26) % 26;
+        char ch;
+        while (input.get(ch)) {
+            if (ch >= 'a' && ch <= 'z') {
+                ch = static_cast<char>('a' + (ch - 'a' + amount) % 26);
+            } else if (ch >= 'A' && ch <= 'Z') {
+                ch = static_cast<char>('A' + (ch - 'A' + amount) % 26);
+            }
+            output.put(ch);
+            if (!output) return false;
+        }
+        output.flush();
+        return !input.bad() && static_cast<bool>(output);
+    }
+  explanation: |
+    Decryption is encryption by the additive inverse of the original shift
+    modulo 26. Normalizing that inverse before the loop avoids negative
+    remainder mistakes at `A` and `a`.
+  solutionOutline: Convert the encryption shift to its modular inverse, apply the same case-preserving letter transform,
+    and copy all other bytes exactly.
+  commonTrap: Subtracting and using `% 26` directly in C++, where negative remainders can leave a character before
+    `A` or `a`.
+  verification:
+    method: encrypt-decrypt-byte-round-trip
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-test
+- id: cpp-fsf-file-014
+  topicId: cpp-working-with-files
+  skills:
+  - parse-simple-csv-files
+  - format-aligned-tables
+  archetype: csv-to-fixed-width-table
+  difficulty: hard
+  reasoningDepth: 4
+  difficultyEvidence: Requires retaining empty fields, computing column widths across rows, and separating parsing
+    limitations from table formatting.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::optional<std::string> simple_csv_table(const
+    std::filesystem::path& path)`. The file uses a deliberately limited CSV
+    dialect: commas always delimit fields, quotes have no special meaning,
+    and every row has the same number of fields. Preserve empty fields.
+    Return a left-aligned table with two spaces between columns and no spaces
+    after the final column. Pad each nonfinal field to that column's maximum
+    width and end every row with `\n`. Return `nullopt` on I/O failure or
+    inconsistent column counts.
+  answer:
+    functionSignature: std::optional<std::string> simple_csv_table(const std::filesystem::path& path)
+    expectedBehavior:
+    - Empty fields between adjacent commas are retained.
+    - Column widths include header and data rows.
+    - Quoted commas are outside this intentionally simple dialect.
+  sampleSolution: |
+    #include <algorithm>
+    #include <filesystem>
+    #include <fstream>
+    #include <iomanip>
+    #include <optional>
+    #include <sstream>
+    #include <string>
+    #include <vector>
+
+    std::optional<std::string> simple_csv_table(
+        const std::filesystem::path& path) {
+        std::ifstream input(path);
+        if (!input) return std::nullopt;
+        std::vector<std::vector<std::string>> rows;
+        std::string line;
+        std::size_t columns = 0;
+        while (std::getline(input, line)) {
+            std::vector<std::string> row;
+            std::size_t start = 0;
+            while (true) {
+                const std::size_t comma = line.find(',', start);
+                row.push_back(line.substr(
+                    start, comma == std::string::npos
+                               ? std::string::npos : comma - start));
+                if (comma == std::string::npos) break;
+                start = comma + 1;
+            }
+            if (rows.empty()) columns = row.size();
+            if (row.size() != columns) return std::nullopt;
+            rows.push_back(std::move(row));
+        }
+        if (input.bad()) return std::nullopt;
+        if (rows.empty()) return std::string{};
+
+        std::vector<std::size_t> widths(columns);
+        for (const auto& row : rows) {
+            for (std::size_t c = 0; c < columns; ++c) {
+                widths[c] = std::max(widths[c], row[c].size());
+            }
+        }
+        std::ostringstream output;
+        output << std::left;
+        for (const auto& row : rows) {
+            for (std::size_t c = 0; c < columns; ++c) {
+                if (c + 1 == columns) {
+                    output << row[c];
+                } else {
+                    output << std::setw(
+                        static_cast<int>(widths[c] + 2)) << row[c];
+                }
+            }
+            output << '\n';
+        }
+        return output.str();
+    }
+  explanation: |
+    Parsing and presentation are separate passes because widths depend on all
+    rows. The manual comma scan preserves leading, trailing, and adjacent
+    empty fields, while the prompt explicitly avoids pretending that this is
+    a complete RFC-style CSV parser.
+  solutionOutline: Parse every simple row including empty fields, validate a rectangular table, compute maximum
+    widths, and render left-aligned padded columns.
+  commonTrap: Using `std::getline(stream, field, ',')` without handling a trailing comma, which can lose the final
+    empty field.
+  verification:
+    method: empty-field-and-ragged-row-fixtures
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-test
+- id: cpp-fsf-file-015
+  topicId: cpp-working-with-files
+  skills:
+  - average-valid-file-numbers
+  - handle-invalid-tokens
+  archetype: tolerant-numeric-file-aggregation
+  difficulty: intermediate
+  reasoningDepth: 3
+  difficultyEvidence: Requires validating complete numeric tokens, excluding invalid data, and representing the
+    no-data case.
+  assessmentUses:
+  - test
+  questionType: code
+  prompt: |
+    Implement `std::optional<double> average_file_numbers(const
+    std::filesystem::path& path)`. Read whitespace-separated tokens. Include
+    a token only when `std::stod` consumes the entire token and produces a
+    finite value; ignore other tokens. Return `nullopt` if the file cannot be
+    read or contains no valid finite numbers. Otherwise return the arithmetic
+    mean.
+  answer:
+    functionSignature: std::optional<double> average_file_numbers(const std::filesystem::path& path)
+    expectedBehavior:
+    - '`10 20 bad 30` produces 20.'
+    - '`12x` is invalid rather than being accepted as 12.'
+    - A file with no valid finite numbers returns nullopt.
+  sampleSolution: |
+    #include <cmath>
+    #include <filesystem>
+    #include <fstream>
+    #include <optional>
+    #include <stdexcept>
+    #include <string>
+
+    std::optional<double> average_file_numbers(
+        const std::filesystem::path& path) {
+        std::ifstream input(path);
+        if (!input) return std::nullopt;
+        long double sum = 0.0L;
+        std::size_t count = 0;
+        std::string token;
+        while (input >> token) {
+            try {
+                std::size_t used = 0;
+                const double value = std::stod(token, &used);
+                if (used == token.size() && std::isfinite(value)) {
+                    sum += value;
+                    ++count;
+                }
+            } catch (const std::invalid_argument&) {
+            } catch (const std::out_of_range&) {
+            }
+        }
+        if (input.bad() || count == 0) return std::nullopt;
+        return static_cast<double>(sum / count);
+    }
+  explanation: |
+    Extracting strings first lets the function reject partially numeric
+    tokens that direct numeric extraction would leave in a failed stream.
+    The consumed-length and finiteness checks define valid data, while
+    `optional` distinguishes no usable values from a legitimate average of
+    zero.
+  solutionOutline: Tokenize by whitespace, parse and fully validate each finite number, accumulate valid values,
+    and return no result when I/O fails or the count is zero.
+  commonTrap: Dividing by the total token count, which includes ignored invalid entries and produces the wrong mean.
+  verification:
+    method: valid-invalid-token-fixtures
+    result: verified
+  reviewStatus: verified
+  primaryAssessmentId: cpp-working-with-files-test

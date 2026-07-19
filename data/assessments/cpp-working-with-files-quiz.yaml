@@ -1,157 +1,339 @@
 schemaVersion: 1
 id: cpp-working-with-files-quiz
-title: Cpp Working With Files - Quiz
-description: A 10-question quiz to test your understanding.
+title: C++ Working with Files Quiz
+description: A topic-specific 15-question quiz sourced from the reviewed C++ problem bank.
 assessmentType: quiz
 categoryId: c++
 topicId: cpp-working-with-files
 skills:
-- Apply Working with Files
-- cpp
-- c-plus-plus
-- cpp-working-with-files
+- avoid-formatted-file-reading
+- count-file-words
+- define-output-newlines
+- distinguish-empty-files
+- interpret-stream-state
+- preserve-duplicate-lines
+- preserve-state-across-lines
+- read-complete-file-content
+- reason-about-string-order
+- select-binary-mode
+- sort-file-lines
+- stream-large-files
+- track-word-state
+- understand-getline
+- use-cctype-safely
 difficulty: 2
+modeDefault: practice
+randomizeQuestions: false
 navigation:
   learningGoal: practice
   activityType: focusedPractice
   tags:
   - c++
   - cpp-working-with-files
-  - cpp
   - quiz
-  - c-plus-plus
-  - practice
-  - focusedpractice
-  - working
-  - files
-attemptQuestionCount: 10
+  - problem-bank
+  - focusedPractice
+attemptQuestionCount: 15
 questions:
-- id: cpp-working-with-files-q-mc-1
+- sourceFamilyId: cpp-fsf-file-002
+  skills:
+  - read-complete-file-content
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
+  prompt: |-
+    Which operation preserves whitespace while reading every file byte?
   choices:
   - id: a
-    text: Option A
+    text: Construct a string from `istreambuf_iterator<char>`
   - id: b
-    text: Option B
+    text: Use one `operator>>` extraction
   - id: c
-    text: Option C
+    text: Call `getline` once
   - id: d
-    text: Option D
+    text: Check `eof()` before opening
   answer:
     choiceId: a
-  explanation: Option A is correct.
-- id: cpp-working-with-files-q-mc-2
+  explanation: |-
+    Stream-buffer iterators copy raw stream characters without formatted whitespace skipping.
+  id: q001
+- sourceFamilyId: cpp-fsf-file-002
+  skills:
+  - distinguish-empty-files
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
+  prompt: |-
+    How should a successful read of an empty file differ from an open failure?
   choices:
   - id: a
-    text: Option A
+    text: Both return an empty string
   - id: b
-    text: Option B
+    text: Empty success returns an engaged empty string; failure returns `nullopt`
   - id: c
-    text: Option C
+    text: Both return `nullopt`
   - id: d
-    text: Option D
+    text: Failure returns one newline
   answer:
-    choiceId: a
-  explanation: Option A is correct.
-- id: cpp-working-with-files-q-mc-3
+    choiceId: b
+  explanation: |-
+    `optional` separates absence caused by failure from valid empty content.
+  id: q002
+- sourceFamilyId: cpp-fsf-file-002
+  skills:
+  - interpret-stream-state
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
+  prompt: |-
+    After reading a complete file to its natural end, which state indicates a genuine low-level read failure?
   choices:
   - id: a
-    text: Option A
+    text: '`eof()`'
   - id: b
-    text: Option B
+    text: '`bad()`'
   - id: c
-    text: Option C
+    text: '`is_open()`'
   - id: d
-    text: Option D
+    text: '`tellg() == 0`'
   answer:
-    choiceId: a
-  explanation: Option A is correct.
-- id: cpp-working-with-files-q-mc-4
+    choiceId: b
+  explanation: |-
+    EOF is expected; `bad()` signals a serious I/O error.
+  id: q003
+- sourceFamilyId: cpp-fsf-file-002
+  skills:
+  - select-binary-mode
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
+  prompt: |-
+    Why open a whole-file byte reader with `std::ios::binary`?
   choices:
   - id: a
-    text: Option A
+    text: To prevent platform text translation
   - id: b
-    text: Option B
+    text: To encrypt the file
   - id: c
-    text: Option C
+    text: To sort its lines
   - id: d
-    text: Option D
+    text: To ignore null bytes
   answer:
     choiceId: a
-  explanation: Option A is correct.
-- id: cpp-working-with-files-q-mc-5
-  type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
+  explanation: |-
+    Binary mode preserves the stored byte sequence, including line endings.
+  id: q004
+- sourceFamilyId: cpp-fsf-file-002
+  skills:
+  - avoid-formatted-file-reading
+  type: selectAll
+  prompt: |-
+    Which approaches can preserve embedded whitespace across the whole file? Select all that apply.
   choices:
   - id: a
-    text: Option A
+    text: Stream-buffer iterators
   - id: b
-    text: Option B
+    text: Repeated `read` into a byte buffer
   - id: c
-    text: Option C
+    text: A single formatted `operator>>`
   - id: d
-    text: Option D
+    text: Reading only `input.peek()`
+  answer:
+    choiceIds:
+    - a
+    - b
+  explanation: |-
+    Raw iterators and unformatted reads preserve whitespace; formatted token extraction does not.
+  id: q005
+- sourceFamilyId: cpp-fsf-file-004
+  skills:
+  - count-file-words
+  type: multipleChoice
+  prompt: |-
+    For maximal alphanumeric runs, how many words are in `don't stop`?
+  choices:
+  - id: a
+    text: '2'
+  - id: b
+    text: '3'
+  - id: c
+    text: '4'
+  - id: d
+    text: '1'
+  answer:
+    choiceId: b
+  explanation: |-
+    The apostrophe delimits `don` and `t`, followed by `stop`.
+  id: q006
+- sourceFamilyId: cpp-fsf-file-004
+  skills:
+  - track-word-state
+  type: multipleChoice
+  prompt: |-
+    What event increments a streamed word counter?
+  choices:
+  - id: a
+    text: Every alphanumeric byte
+  - id: b
+    text: Transition from delimiter to alphanumeric
+  - id: c
+    text: Every newline only
+  - id: d
+    text: Transition from alphanumeric to alphanumeric
+  answer:
+    choiceId: b
+  explanation: |-
+    A maximal run begins exactly at a delimiter-to-word transition.
+  id: q007
+- sourceFamilyId: cpp-fsf-file-004
+  skills:
+  - use-cctype-safely
+  type: multipleChoice
+  prompt: |-
+    What value should be passed to `std::isalnum` for a stored `char ch`?
+  choices:
+  - id: a
+    text: '`static_cast<unsigned char>(ch)`'
+  - id: b
+    text: '`-ch`'
+  - id: c
+    text: '`ch + 256` unconditionally'
+  - id: d
+    text: '`&ch`'
   answer:
     choiceId: a
-  explanation: Option A is correct.
-- id: cpp-working-with-files-q-code-1
-  type: code
-  prompt: Write a C++ function that completes the required task.
-  language: cpp
-  functionName: main
-  starterCode: "int main() {\n  // Implement here\n  return 0;\n}"
-  validationMode: unitTests
-  tests:
-  - input: '1'
-    expected: '1'
-    isHidden: false
-  explanation: Compiling with g++ and running successfully is required.
-- id: cpp-working-with-files-q-code-2
-  type: code
-  prompt: Write a C++ function that completes the required task.
-  language: cpp
-  functionName: main
-  starterCode: "int main() {\n  // Implement here\n  return 0;\n}"
-  validationMode: unitTests
-  tests:
-  - input: '1'
-    expected: '1'
-    isHidden: false
-  explanation: Compiling with g++ and running successfully is required.
-- id: cpp-working-with-files-q-code-3
-  type: code
-  prompt: Write a C++ function that completes the required task.
-  language: cpp
-  functionName: main
-  starterCode: "int main() {\n  // Implement here\n  return 0;\n}"
-  validationMode: unitTests
-  tests:
-  - input: '1'
-    expected: '1'
-    isHidden: false
-  explanation: Compiling with g++ and running successfully is required.
-- id: cpp-working-with-files-q-fr-1
-  type: freeResponse
-  prompt: Explain which Data Structure or Algorithm fits this scenario best.
+  explanation: |-
+    The cctype contract requires EOF or an unsigned-char-representable value.
+  id: q008
+- sourceFamilyId: cpp-fsf-file-004
+  skills:
+  - stream-large-files
+  type: multipleChoice
+  prompt: |-
+    Why count words as bytes are read instead of loading the full file?
+  choices:
+  - id: a
+    text: It bounds auxiliary memory
+  - id: b
+    text: It changes punctuation into spaces
+  - id: c
+    text: It guarantees Unicode support
+  - id: d
+    text: It prevents EOF
   answer:
-    gradingMode: selfCheck
-    rubric:
-    - Identifies the correct DSA
-    - Explains the Big-O time complexity tradeoff
-  explanation: Self-check based on rubric.
-- id: cpp-working-with-files-q-fr-2
-  type: freeResponse
-  prompt: Explain which Data Structure or Algorithm fits this scenario best.
+    choiceId: a
+  explanation: |-
+    Only the current boundary state and count are required.
+  id: q009
+- sourceFamilyId: cpp-fsf-file-004
+  skills:
+  - preserve-state-across-lines
+  type: multipleChoice
+  prompt: |-
+    If a word definition treats only alphanumeric bytes as word characters, what does a newline do?
+  choices:
+  - id: a
+    text: Continues the word
+  - id: b
+    text: Ends the current word
+  - id: c
+    text: Adds two words
+  - id: d
+    text: Causes an I/O error
   answer:
-    gradingMode: selfCheck
-    rubric:
-    - Identifies the correct DSA
-    - Explains the Big-O time complexity tradeoff
-  explanation: Self-check based on rubric.
+    choiceId: b
+  explanation: |-
+    A newline is a delimiter under the stated predicate.
+  id: q010
+- sourceFamilyId: cpp-fsf-file-008
+  skills:
+  - sort-file-lines
+  type: multipleChoice
+  prompt: |-
+    Which container is appropriate when all lines must be sorted with `std::sort`?
+  choices:
+  - id: a
+    text: '`std::vector<std::string>`'
+  - id: b
+    text: '`std::ofstream` alone'
+  - id: c
+    text: '`std::optional<char>`'
+  - id: d
+    text: A single `char`
+  answer:
+    choiceId: a
+  explanation: |-
+    Sorting needs random access to the materialized line values.
+  id: q011
+- sourceFamilyId: cpp-fsf-file-008
+  skills:
+  - understand-getline
+  type: multipleChoice
+  prompt: |-
+    What happens to line delimiters when lines are read with `std::getline`?
+  choices:
+  - id: a
+    text: They become part of each string
+  - id: b
+    text: They are extracted but not stored in the string
+  - id: c
+    text: They are duplicated
+  - id: d
+    text: They are sorted
+  answer:
+    choiceId: b
+  explanation: |-
+    A rewrite must define how delimiters are restored because `getline` removes them.
+  id: q012
+- sourceFamilyId: cpp-fsf-file-008
+  skills:
+  - preserve-duplicate-lines
+  type: multipleChoice
+  prompt: |-
+    Should sorting discard duplicate or empty lines?
+  choices:
+  - id: a
+    text: Yes, sorting implies uniqueness
+  - id: b
+    text: No, ordinary sorting reorders but preserves elements
+  - id: c
+    text: Only duplicates are preserved
+  - id: d
+    text: Only empty lines are preserved
+  answer:
+    choiceId: b
+  explanation: |-
+    Unless deduplication is explicitly requested, every input line remains an output line.
+  id: q013
+- sourceFamilyId: cpp-fsf-file-008
+  skills:
+  - reason-about-string-order
+  type: multipleChoice
+  prompt: |-
+    Under ordinary case-sensitive `std::string` ordering, which generally sorts first in ASCII?
+  choices:
+  - id: a
+    text: Lowercase `a`
+  - id: b
+    text: Uppercase `A`
+  - id: c
+    text: They are always equal
+  - id: d
+    text: The longer string regardless of prefix
+  answer:
+    choiceId: b
+  explanation: |-
+    Uppercase ASCII letters have lower byte values than lowercase letters.
+  id: q014
+- sourceFamilyId: cpp-fsf-file-008
+  skills:
+  - define-output-newlines
+  type: multipleChoice
+  prompt: |-
+    Why must a sorted-line exercise state its output newline policy?
+  choices:
+  - id: a
+    text: '`getline` discarded the original delimiters'
+  - id: b
+    text: Sorting cannot compare strings
+  - id: c
+    text: Newlines are numbers
+  - id: d
+    text: Binary mode adds commas
+  answer:
+    choiceId: a
+  explanation: |-
+    The program must deliberately choose whether and how to reconstruct line endings.
+  id: q015

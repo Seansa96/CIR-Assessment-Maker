@@ -5,235 +5,333 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: series-fundamentals
 skills:
-- Compute and interpret partial sums
-- Recognize geometric and telescoping series
-- Apply the divergence test as a necessary condition
+- Prove convergence or divergence through partial-sum structure
+- Distinguish ordinary, Cesaro, and Abel summability
+- Analyze grouping, rearrangement, subseries, and Cauchy products
 navigation:
   learningGoal: practice
   activityType: mixedPractice
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - series-fundamentals
+  - olympiad
+  - summability
 modeDefault: practice
 randomizeQuestions: true
-attemptQuestionCount: 10
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - construct-series-from-partial-sums
+  prompt: |
+    Suppose $S_n=n/(n+1)$ for every n. Which description of the associated
+    series is correct?
+  choices:
+  - id: a
+    text: |-
+      $a_1=1/2$, $a_n=1/[n(n+1)]$ for $n\ge2$, and the sum is $1$
+  - id: b
+    text: $a_n=n/(n+1)$ and the sum is $1$
+  - id: c
+    text: $a_n=1/(n+1)$ and the series diverges
+  - id: d
+    text: $a_n=-1/[n(n+1)]$ and the sum is $0$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The first term equals S one, later terms are adjacent differences, and the partial-sum
+    limit is one.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - prove-harmonic-divergence-by-cauchy-blocks
+  prompt: |
+    Which estimate directly violates the Cauchy criterion for
+    $\sum1/n$?
+  choices:
+  - id: a
+    text: |-
+      $\sum_{k=n+1}^{2n}1/k\ge1/2$
+  - id: b
+    text: |-
+      $1/n\to0$
+  - id: c
+    text: |-
+      $\sum_{k=n+1}^{2n}1/k\le1$
+  - id: d
+    text: $1/(n+1)<1/n$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The block contains n terms, each at least $1/(2n)$, so arbitrarily late tails fail to become
+    small.
 - id: q003
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - distinguish-summability-from-convergence
+  prompt: |
+    The partial sums of $1-1+1-1+\cdots$ alternate between $1$ and $0$.
+    What do their arithmetic means approach?
+  choices:
+  - id: a
+    text: $1/2$
+  - id: b
+    text: $0$
+  - id: c
+    text: $1$
+  - id: d
+    text: They are unbounded.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Half of a long initial list of partial sums are zero and half are one, so the Cesàro means
+    approach one half even though ordinary convergence fails.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - diagnose-invalid-infinite-grouping
+  prompt: |
+    Why may $1-1+1-1+\cdots$ not be assigned an ordinary sum by grouping
+    it as $(1-1)+(1-1)+\cdots$?
+  choices:
+  - id: a
+    text: The original partial sums do not converge, so grouping preservation does not apply.
+  - id: b
+    text: Finite addition is not associative.
+  - id: c
+    text: Negative terms cannot be grouped.
+  - id: d
+    text: Every grouped series diverges.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The grouping theorem begins with a convergent original series; without that hypothesis,
+    selecting block-boundary partial sums can hide oscillation.
 - id: q005
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - analyze-conditionally-convergent-rearrangements
+  prompt: |
+    What feature makes a conditionally convergent real series susceptible to
+    sum-changing rearrangements?
+  choices:
+  - id: a
+    text: Its positive mass and negative absolute mass are both infinite.
+  - id: b
+    text: Its terms fail to approach zero.
+  - id: c
+    text: It has only finitely many negative terms.
+  - id: d
+    text: Its partial sums are unbounded.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Infinite mass of both signs lets a rearrangement alternately overshoot and undershoot a
+    chosen target with shrinking terms.
 - id: q006
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - apply-tonelli-to-nonnegative-series
+  prompt: |
+    For $a_{m,n}\ge0$, why may
+    $\sum_{m=0}^{\infty}\sum_{n=0}^{\infty}a_{m,n}$ be reordered even when
+    finiteness is not known first?
+  choices:
+  - id: a
+    text: |-
+      Tonelli's theorem gives the same value in $[0,\infty]$.
+  - id: b
+    text: Every double series is finite.
+  - id: c
+    text: The terms eventually vanish.
+  - id: d
+    text: Only diagonal order is valid.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Nonnegativity makes all finite subsums monotone and removes cancellation-dependent order
+    effects.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - analyze-binary-series-representations
+  prompt: |
+    Which equality explains why some real numbers have two binary
+    expansions?
+  choices:
+  - id: a
+    text: |-
+      $0.1000\ldots_2=0.0111\ldots_2$
+  - id: b
+    text: |-
+      $0.1000\ldots_2=0.0100\ldots_2$
+  - id: c
+    text: |-
+      $0.1111\ldots_2=0$
+  - id: d
+    text: |-
+      $0.0101\ldots_2=1$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The trailing-one tail sums to $\sum_{n=2}^{\infty}2^{-n}=1/2$, matching the single first binary place.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - connect-series-differences-and-total-variation
+  prompt: |
+    If $b_n\to L$, then $\sum(b_{n+1}-b_n)$ converges. What additional
+    condition is equivalent to its absolute convergence?
+  choices:
+  - id: a
+    text: |-
+      $\sum|b_{n+1}-b_n|<\infty$
+  - id: b
+    text: $b_n$ is bounded
+  - id: c
+    text: $L=0$
+  - id: d
+    text: $b_n$ has positive terms
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Absolute convergence of the increment series is exactly finite total variation of the sequence.
 - id: q009
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-summation-by-parts
+  prompt: |
+    With $A_k=\sum_{j=1}^{k}a_j$, which expression is the finite summation
+    by parts formula for $\sum_{k=1}^{n}a_kb_k$?
+  choices:
+  - id: a
+    text: |-
+      $A_nb_n+\sum_{k=1}^{n-1}A_k(b_k-b_{k+1})$
+  - id: b
+    text: $A_nb_n$ only
+  - id: c
+    text: |-
+      $\sum A_kb_k$
+  - id: d
+    text: $A_n/b_n$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Substitute $a_k=A_k-A_{k-1}$ and shift one resulting finite sum.
 - id: q010
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - reason-about-cauchy-products
+  prompt: |
+    If $\sum_{n=0}^{\infty}a_n=A$ and $\sum_{n=0}^{\infty}b_n=B$
+    converge absolutely, what is the sum of
+    $c_n=\sum_{k=0}^{n}a_kb_{n-k}$?
+  choices:
+  - id: a
+    text: |-
+      $\sum c_n=AB$
+  - id: b
+    text: |-
+      $\sum c_n=A+B$
+  - id: c
+    text: |-
+      $\sum c_n=0$
+  - id: d
+    text: The convolution necessarily diverges.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Absolute convergence justifies regrouping the double product sum by diagonals.
 - id: q011
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - compare-ordinary-and-abel-sums
+  prompt: |
+    For $0\le r<1$, $\sum_{n=0}^{\infty}(-r)^n=1/(1+r)$. What is its
+    Abel limit as $r\to1^-$?
+  choices:
+  - id: a
+    text: $1/2$
+  - id: b
+    text: $0$
+  - id: c
+    text: $1$
+  - id: d
+    text: No finite limit
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The geometric-function value tends to one half, defining an Abel sum for the divergent
+    boundary series.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - use-subseries-properties
+  prompt: |
+    If $\sum|a_n|<\infty$ and $n_1<n_2<\cdots$, what can be said about
+    $\sum a_{n_k}$?
+  choices:
+  - id: a
+    text: It converges absolutely.
+  - id: b
+    text: It has the same sum as the original series.
+  - id: c
+    text: It diverges unless the selection is finite.
+  - id: d
+    text: It is conditional.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The selected absolute partial sums are bounded by the full nonnegative absolute sum.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - construct-conditionally-convergent-examples
+  prompt: |
+    Which is a conditionally convergent series whose term magnitudes are
+    exactly $1/\sqrt n$?
+  choices:
+  - id: a
+    text: |-
+      $\sum(-1)^n/\sqrt n$
+  - id: b
+    text: |-
+      $\sum1/\sqrt n$
+  - id: c
+    text: |-
+      $\sum1/n^2$
+  - id: d
+    text: |-
+      $\sum(-1)^n/n^2$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Alternating signs give convergence, while the absolute p-series with exponent one half
+    diverges.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - analyze-series-under-term-duplication
+  prompt: |
+    A convergent series $\sum a_n=S$ is transformed into
+    $a_1+a_1+a_2+a_2+\cdots$. What is the new sum?
+  choices:
+  - id: a
+    text: $2S$
+  - id: b
+    text: $S$
+  - id: c
+    text: $S/2$
+  - id: d
+    text: It necessarily diverges.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Every even transformed partial sum is twice an original partial sum, and the intervening
+    discrepancy is one term tending to zero.
 - id: q015
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - test-converses-of-absolute-convergence
+  prompt: |
+    Does $\sum a_n^2<\infty$ imply $\sum|a_n|<\infty$?
+  choices:
+  - id: a
+    text: No; $a_n=1/n$ is a counterexample.
+  - id: b
+    text: Yes, by the triangle inequality.
+  - id: c
+    text: Yes, because squares are larger.
+  - id: d
+    text: No, but only if $a_n$ fails to approach zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q027
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Reciprocal squares sum, while the absolute reciprocal series is harmonic and diverges.
+attemptQuestionCount: 15

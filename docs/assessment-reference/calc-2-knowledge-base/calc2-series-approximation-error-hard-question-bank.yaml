@@ -1,0 +1,279 @@
+schemaVersion: 1
+bankId: calc2-series-approximation-error-hard
+categoryId: calculus-2
+topicIds: [series-approximation-error]
+minimumItemCount: 15
+items:
+  - id: calc2-error-hard-001
+    topicId: series-approximation-error
+    skills: [bound-alternating-series-remainders]
+    archetype: alternating-harmonic-truncation
+    difficulty: hard
+    reasoningDepth: 4
+    difficultyEvidence: Requires identifying the first omitted term rather than the last included term.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      The first ten terms of
+      $\displaystyle\sum_{n=1}^{\infty}(-1)^{n+1}/n$ approximate
+      $\log 2$. Which error bound is guaranteed by the alternating-series
+      estimate?
+    choices: [{id: a, text: '$|R_{10}|\le 1/11$'}, {id: b, text: '$|R_{10}|\le 1/10$'}, {id: c, text: '$|R_{10}|\le 1/100$'}, {id: d, text: '$R_{10}=1/11$'}]
+    answer: {choiceId: a}
+    solutionOutline: The absolute error is no larger than the magnitude of the eleventh term, the first omitted term.
+    commonTrap: Using the magnitude of the tenth, last-included term or claiming equality.
+    verification: {method: alternating-first-omitted-term, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-002
+    topicId: series-approximation-error
+    skills: [compute-lagrange-remainder-bounds]
+    archetype: exponential-third-degree-bound
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires maximizing the fourth derivative on the interval from the center to the evaluation point.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Use the degree-three Maclaurin polynomial for $e^x$ at $x=0.2$.
+      Which is a valid Lagrange error bound?
+    choices: [{id: a, text: '$e^{0.2}(0.2)^4/4!$'}, {id: b, text: '$(0.2)^3/3!$'}, {id: c, text: '$e^{-0.2}(0.2)^4/4!$'}, {id: d, text: '$(0.2)^4/3!$'}]
+    answer: {choiceId: a}
+    solutionOutline: The fourth derivative is $e^t$, whose maximum on zero through 0.2 is $e^{0.2}$, and the remainder divides by $4!$.
+    commonTrap: Evaluating the derivative maximum at the smaller endpoint.
+    verification: {method: lagrange-exponential-maximum, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-003
+    topicId: series-approximation-error
+    skills: [compute-exact-geometric-remainders]
+    archetype: finite-geometric-tail
+    difficulty: hard
+    reasoningDepth: 4
+    difficultyEvidence: Requires distinguishing the partial-sum index from the first omitted exponent.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      For $|x|<1$, let $S_N=\sum_{n=0}^{N}x^n$. What is the exact
+      remainder $1/(1-x)-S_N$?
+    choices: [{id: a, text: '$x^{N+1}/(1-x)$'}, {id: b, text: '$x^N/(1-x)$'}, {id: c, text: '$x^{N+1}$'}, {id: d, text: '$1/(1-x^{N+1})$'}]
+    answer: {choiceId: a}
+    solutionOutline: The omitted tail begins at exponent N plus one and is itself geometric.
+    commonTrap: Starting the remainder at the last included exponent.
+    verification: {method: exact-geometric-tail-sum, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-004
+    topicId: series-approximation-error
+    skills: [apply-integral-test-remainder-bounds]
+    archetype: reciprocal-square-tail-bracket
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires using both sides of the integral-test remainder inequality with correct endpoints.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Let $R_N=\sum_{n=N+1}^{\infty}1/n^2$. Which bracket is valid?
+    choices: [{id: a, text: '$1/(N+1)\le R_N\le1/N$'}, {id: b, text: '$1/N\le R_N\le1/(N+1)$'}, {id: c, text: '$1/(N+1)^2\le R_N\le1/N^2$'}, {id: d, text: '$R_N=1/N$'}]
+    answer: {choiceId: a}
+    solutionOutline: Integrating $x^{-2}$ from N plus one and from N gives the lower and upper bounds respectively.
+    commonTrap: Integrating from the same endpoint for both bounds.
+    verification: {method: integral-remainder-two-sided-bound, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-005
+    topicId: series-approximation-error
+    skills: [bound-arctangent-series-errors]
+    archetype: arctangent-three-term-approximation
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires matching the third included nonzero term to the next odd exponent.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Approximate $\arctan(1/2)$ with
+      $x-x^3/3+x^5/5$ at $x=1/2$. What alternating-series error bound
+      results?
+    choices: [{id: a, text: '$1/896$'}, {id: b, text: '$1/384$'}, {id: c, text: '$1/128$'}, {id: d, text: '$1/7$'}]
+    answer: {choiceId: a}
+    solutionOutline: The first omitted magnitude is $(1/2)^7/7=1/(128\cdot7)=1/896$.
+    commonTrap: Omitting the odd denominator seven from the next term.
+    verification: {method: arctangent-first-omitted-term, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-006
+    topicId: series-approximation-error
+    skills: [use-alternating-taylor-error-bounds]
+    archetype: cosine-fourth-degree-error
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires exploiting the sparse alternating cosine series rather than a weaker generic degree bound.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Using $1-x^2/2!+x^4/4!$ to approximate $\cos(0.3)$, which bound
+      follows from the alternating-series estimate?
+    choices: [{id: a, text: '$(0.3)^6/6!$'}, {id: b, text: '$(0.3)^5/5!$'}, {id: c, text: '$(0.3)^4/4!$'}, {id: d, text: '$(0.3)^6/5!$'}]
+    answer: {choiceId: a}
+    solutionOutline: At this input the cosine terms decrease, and the first omitted nonzero term has degree six.
+    commonTrap: Treating degree five as the next term even though every odd cosine coefficient vanishes.
+    verification: {method: cosine-alternating-next-nonzero-term, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-007
+    topicId: series-approximation-error
+    skills: [choose-truncation-counts-for-tolerances]
+    archetype: alternating-harmonic-target-error
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires solving a strict first-omitted-term inequality with an integer index.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      How many terms of the alternating harmonic series guarantee absolute
+      error less than $0.001$?
+    choices: [{id: a, text: '$1000$'}, {id: b, text: '$999$'}, {id: c, text: '$1001$'}, {id: d, text: '$100$'}]
+    answer: {choiceId: a}
+    solutionOutline: With N terms the error is at most $1/(N+1)$; the strict inequality $1/(N+1)<1/1000$ first holds at N equals 1000.
+    commonTrap: Choosing 999, which yields only a non-strict bound of one-thousandth.
+    verification: {method: strict-alternating-tolerance-index, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-008
+    topicId: series-approximation-error
+    skills: [bound-binomial-series-truncations]
+    archetype: square-root-second-degree-tail
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires computing the next generalized-binomial term after substitution.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Approximate $\sqrt{1.1}$ by $1+x/2-x^2/8$ with $x=0.1$.
+      What is the magnitude of the first omitted term?
+    choices: [{id: a, text: '$1/16000$'}, {id: b, text: '$1/8000$'}, {id: c, text: '$1/1600$'}, {id: d, text: '$1/16$'}]
+    answer: {choiceId: a}
+    solutionOutline: The cubic coefficient is $1/16$, so its magnitude at one tenth is $(1/16)(1/1000)=1/16000$.
+    commonTrap: Reporting the coefficient one-sixteenth without evaluating the power of x.
+    verification: {method: generalized-binomial-next-term, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-009
+    topicId: series-approximation-error
+    skills: [distinguish-absolute-and-relative-error]
+    archetype: relative-error-conversion
+    difficulty: hard
+    reasoningDepth: 4
+    difficultyEvidence: Requires normalizing an absolute error by the magnitude of the exact quantity.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      An approximation to a nonzero value L has absolute error at most
+      $2\times10^{-5}$, and $|L|\ge0.4$. What relative error is guaranteed?
+    choices: [{id: a, text: 'At most $5\times10^{-5}$'}, {id: b, text: 'At most $8\times10^{-6}$'}, {id: c, text: 'Exactly $5\times10^{-5}$'}, {id: d, text: 'At most $0.4$'}]
+    answer: {choiceId: a}
+    solutionOutline: Divide the absolute bound by the smallest allowed magnitude, giving $2\times10^{-5}/0.4=5\times10^{-5}$.
+    commonTrap: Multiplying by the lower magnitude bound instead of dividing.
+    verification: {method: relative-error-upper-bound, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-010
+    topicId: series-approximation-error
+    skills: [propagate-product-approximation-errors]
+    archetype: two-factor-error-bound
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires retaining the cross-error term in a product perturbation.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Suppose $|A-\tilde A|\le\epsilon$, $|B-\tilde B|\le\delta$,
+      $|\tilde A|\le M$, and $|\tilde B|\le N$. Which bound follows for
+      $|AB-\tilde A\tilde B|$?
+    choices: [{id: a, text: '$M\delta+N\epsilon+\epsilon\delta$'}, {id: b, text: '$\epsilon+\delta$'}, {id: c, text: '$MN\epsilon\delta$'}, {id: d, text: '$M\epsilon+N\delta$'}]
+    answer: {choiceId: a}
+    solutionOutline: Write $A=\tilde A+e$ and $B=\tilde B+d$; the difference is $\tilde A d+\tilde B e+ed$.
+    commonTrap: Dropping the cross term even though both factors are approximate.
+    verification: {method: product-perturbation-triangle-inequality, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-011
+    topicId: series-approximation-error
+    skills: [bound-shifted-logarithm-remainders]
+    archetype: logarithm-centered-at-one-lagrange
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires maximizing a rational third derivative on a shifted interval.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Approximate $\log(1.2)$ with the degree-two Taylor polynomial for
+      $\log x$ centered at one. Which Lagrange bound is valid?
+    choices: [{id: a, text: '$1/375$'}, {id: b, text: '$1/750$'}, {id: c, text: '$1/125$'}, {id: d, text: '$1/75$'}]
+    answer: {choiceId: a}
+    solutionOutline: The third derivative is $2/x^3$, bounded by two on the interval, so the error is at most $2(0.2)^3/3!=1/375$.
+    commonTrap: Evaluating the derivative maximum at 1.2 rather than at the smaller endpoint one.
+    verification: {method: shifted-log-lagrange-bound, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-012
+    topicId: series-approximation-error
+    skills: [find-geometric-truncation-indices]
+    archetype: geometric-decimal-tolerance
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires solving an exponential inequality and checking the neighboring integer.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      The sum $\sum_{n=0}^{\infty}(0.2)^n$ is truncated after exponent N.
+      What is the smallest N making the exact tail less than $10^{-4}$?
+    choices: [{id: a, text: '$5$'}, {id: b, text: '$4$'}, {id: c, text: '$6$'}, {id: d, text: '$3$'}]
+    answer: {choiceId: a}
+    solutionOutline: The tail is $0.2^{N+1}/0.8$; it equals $0.0004$ at N equals four and $0.00008$ at N equals five.
+    commonTrap: Comparing only the first omitted term and forgetting the remaining geometric factor.
+    verification: {method: exact-geometric-tail-neighbor-check, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-013
+    topicId: series-approximation-error
+    skills: [bound-sine-polynomial-errors]
+    archetype: sine-seventh-degree-alternating-bound
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires finding the next nonzero term of a sparse alternating expansion.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      The degree-seven Maclaurin polynomial approximates $\sin(0.5)$.
+      Which alternating-series error bound applies?
+    choices: [{id: a, text: '$(0.5)^9/9!$'}, {id: b, text: '$(0.5)^8/8!$'}, {id: c, text: '$(0.5)^7/7!$'}, {id: d, text: '$(0.5)^9/8!$'}]
+    answer: {choiceId: a}
+    solutionOutline: The included terms end at degree seven, so the first omitted sine term has degree nine.
+    commonTrap: Using degree eight even though sine has no even-power terms.
+    verification: {method: sine-next-nonzero-remainder, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-014
+    topicId: series-approximation-error
+    skills: [check-error-estimate-hypotheses]
+    archetype: alternating-estimate-conditions
+    difficulty: hard
+    reasoningDepth: 5
+    difficultyEvidence: Requires distinguishing convergence from eligibility for a specific remainder theorem.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      Which conditions justify the first-omitted-term error estimate for
+      $\sum(-1)^n b_n$?
+    choices: [{id: a, text: '$b_n\ge0$, eventually nonincreasing, and $b_n\to0$'}, {id: b, text: '$b_n$ is bounded'}, {id: c, text: '$\sum b_n$ converges absolutely'}, {id: d, text: '$b_n$ alternates in sign'}]
+    answer: {choiceId: a}
+    solutionOutline: The alternating remainder theorem needs nonnegative magnitudes decreasing to zero; absolute convergence is sufficient in some cases but not the theorem's defining hypothesis.
+    commonTrap: Checking only that visible plus and minus signs alternate.
+    verification: {method: alternating-remainder-hypothesis-check, result: verified}
+    reviewStatus: verified
+  - id: calc2-error-hard-015
+    topicId: series-approximation-error
+    skills: [interpret-error-bound-direction]
+    archetype: upper-bound-versus-actual-error
+    difficulty: hard
+    reasoningDepth: 4
+    difficultyEvidence: Requires interpreting what a rigorous inequality does and does not establish.
+    assessmentUses: [hard-test]
+    questionType: multipleChoice
+    prompt: |
+      A theorem proves $|R_N|\le10^{-6}$. Which conclusion is logically
+      valid?
+    choices: [{id: a, text: 'The actual error could be smaller or zero.'}, {id: b, text: 'The actual error equals $10^{-6}$.'}, {id: c, text: 'The approximation has exactly six correct decimal places.'}, {id: d, text: 'The remainder must be positive.'}]
+    answer: {choiceId: a}
+    solutionOutline: An upper bound limits magnitude but determines neither equality, sign, nor an exact digit count without further information.
+    commonTrap: Reading a worst-case guarantee as an exact error measurement.
+    verification: {method: inequality-semantics-check, result: verified}
+    reviewStatus: verified

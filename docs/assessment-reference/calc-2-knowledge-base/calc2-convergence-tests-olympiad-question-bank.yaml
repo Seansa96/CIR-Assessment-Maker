@@ -1,0 +1,531 @@
+schemaVersion: 1
+bankId: calc2-convergence-tests-olympiad
+categoryId: calculus-2
+topicIds: [convergence-tests]
+minimumItemCount: 30
+items:
+  - id: calc2-tests-oly-001
+    topicId: convergence-tests
+    skills: [classify-iterated-log-series]
+    archetype: second-logarithm-p-threshold
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires two logarithmic substitutions or condensation followed by the exact p threshold.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For which p does
+      $\sum_{n=3}^{\infty}1/[n\ln n(\ln\ln n)^p]$ converge?
+    choices: [{id: a, text: '$p>1$'}, {id: b, text: '$p\ge1$'}, {id: c, text: '$p>0$'}, {id: d, text: 'Every real p'}]
+    answer: {choiceId: a}
+    solutionOutline: Successive substitutions u equals ln x and v equals ln u reduce the integral to $\int v^{-p}\,dv$.
+    commonTrap: Treating the first logarithm as though it alone decides the threshold.
+    verification: {method: iterated-log-integral-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-002
+    topicId: convergence-tests
+    skills: [apply-condensation-to-slow-decay]
+    archetype: stretched-log-exponential
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires evaluating condensed terms with a square root of a logarithm.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=2}^{\infty}\exp[-\sqrt{\ln n}]$.
+    choices: [{id: a, text: 'Divergent'}, {id: b, text: 'Convergent'}, {id: c, text: 'Conditionally convergent'}, {id: d, text: 'Geometric'}]
+    answer: {choiceId: a}
+    solutionOutline: Condensation produces $2^k\exp[-\sqrt{k\ln2}]$, whose terms grow rather than approach zero.
+    commonTrap: Assuming any expression containing a negative exponential is summable.
+    verification: {method: condensation-condensed-term-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-003
+    topicId: convergence-tests
+    skills: [apply-integral-tests-to-stretched-exponentials]
+    archetype: exponential-of-square-root
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires a square-root substitution in an improper integral.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      How does $\sum_{n=1}^{\infty}e^{-\sqrt n}$ behave?
+    choices: [{id: a, text: 'It converges.'}, {id: b, text: 'It diverges because the decay is not geometric in n.'}, {id: c, text: 'It is conditional.'}, {id: d, text: 'Its terms approach one.'}]
+    answer: {choiceId: a}
+    solutionOutline: With u equal to square root x, $\int_1^\infty e^{-\sqrt x}dx=\int_1^\infty2ue^{-u}du$, which is finite.
+    commonTrap: Treating slower-than-geometric decay as automatically nonsummable.
+    verification: {method: stretched-exponential-integral-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-004
+    topicId: convergence-tests
+    skills: [simplify-variable-exponent-series]
+    archetype: disguised-harmonic-constant
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires rewriting a variable exponent exactly using exponentials and logarithms.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=2}^{\infty}n^{-1-1/\ln n}$.
+    choices: [{id: a, text: 'Divergent'}, {id: b, text: 'Convergent'}, {id: c, text: 'Conditional'}, {id: d, text: 'The term test is inconclusive and no comparison exists.'}]
+    answer: {choiceId: a}
+    solutionOutline: $n^{-1/\ln n}=e^{-1}$ exactly, so the series is a constant multiple of the harmonic series.
+    commonTrap: Assuming every exponent strictly greater than one gives a convergent p-series when the exponent varies toward one.
+    verification: {method: exact-log-exponent-simplification, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-005
+    topicId: convergence-tests
+    skills: [analyze-variable-p-series]
+    archetype: square-root-log-exponent-correction
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires transforming the series and evaluating a nonstandard integral.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=3}^{\infty}n^{-1-1/\sqrt{\ln n}}$.
+    choices: [{id: a, text: 'Convergent'}, {id: b, text: 'Divergent'}, {id: c, text: 'Conditionally convergent'}, {id: d, text: 'Geometric'}]
+    answer: {choiceId: a}
+    solutionOutline: The term is $e^{-\sqrt{\ln n}}/n$; setting t equal to square root ln x makes the integral $\int2te^{-t}dt$, which is finite.
+    commonTrap: Comparing only the limiting exponent one with the harmonic boundary.
+    verification: {method: logarithmic-square-root-integral-substitution, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-006
+    topicId: convergence-tests
+    skills: [apply-root-tests-to-n-dependent-bases]
+    archetype: near-one-base-large-exponent
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires taking an nth root and using the defining limit of e.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      How does $\sum_{n=1}^{\infty}(1+1/n)^{-n^2}$ converge?
+    choices: [{id: a, text: 'Absolutely, because the root limit is $e^{-1}$.'}, {id: b, text: 'It diverges because the base approaches one.'}, {id: c, text: 'Conditionally'}, {id: d, text: 'The root limit is one.'}]
+    answer: {choiceId: a}
+    solutionOutline: The nth root is $(1+1/n)^{-n}\to e^{-1}<1$.
+    commonTrap: Taking the base limit before accounting for the growing exponent.
+    verification: {method: root-test-standard-e-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-007
+    topicId: convergence-tests
+    skills: [apply-term-tests-to-n-dependent-powers]
+    archetype: nonvanishing-binomial-power
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires computing a nonzero exponential limit.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      What happens to $\sum_{n=2}^{\infty}(1-1/n)^n$?
+    choices: [{id: a, text: 'It diverges because the terms approach $e^{-1}$.'}, {id: b, text: 'It converges geometrically.'}, {id: c, text: 'It converges to $e^{-1}$.'}, {id: d, text: 'It is conditional.'}]
+    answer: {choiceId: a}
+    solutionOutline: The familiar binomial-exponential limit is nonzero, so the necessary term condition fails.
+    commonTrap: Interpreting a finite term limit as the sum.
+    verification: {method: exponential-limit-term-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-008
+    topicId: convergence-tests
+    skills: [analyze-canceling-radical-terms]
+    archetype: rationalized-harmonic-tail
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires rationalizing a small difference and retaining its leading order.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=1}^{\infty}(\sqrt{n^2+1}-n)$.
+    choices: [{id: a, text: 'Divergent by limit comparison with $1/n$'}, {id: b, text: 'Convergent by comparison with $1/n^2$'}, {id: c, text: 'Conditional'}, {id: d, text: 'Divergent by the term test'}]
+    answer: {choiceId: a}
+    solutionOutline: Rationalization gives $1/[\sqrt{n^2+1}+n]\sim1/(2n)$.
+    commonTrap: Subtracting the leading n terms and concluding the difference is zero-order enough to sum.
+    verification: {method: conjugate-and-harmonic-limit-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-009
+    topicId: convergence-tests
+    skills: [analyze-leading-term-cancellation]
+    archetype: logarithmic-expansion-remainder
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires retaining the first noncanceling term in a logarithmic expansion.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=1}^{\infty}[n\ln(1+1/n)-1]$.
+    choices: [{id: a, text: 'It diverges to $-\infty$ with harmonic-order terms.'}, {id: b, text: 'It converges absolutely.'}, {id: c, text: 'It converges conditionally.'}, {id: d, text: 'Its terms do not approach zero.'}]
+    answer: {choiceId: a}
+    solutionOutline: Expansion gives $n\ln(1+1/n)-1=-1/(2n)+O(1/n^2)$.
+    commonTrap: Using only the fact that the terms approach zero and declaring convergence.
+    verification: {method: logarithmic-asymptotic-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-010
+    topicId: convergence-tests
+    skills: [detect-second-order-convergence]
+    archetype: log-minus-reciprocal-cancellation
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires expanding two close expressions through second order.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      How does
+      $\sum_{n=1}^{\infty}[\ln(1+1/n)-1/(n+1)]$ behave?
+    choices: [{id: a, text: 'It converges.'}, {id: b, text: 'It diverges harmonically.'}, {id: c, text: 'It is conditional.'}, {id: d, text: 'Its terms approach a nonzero limit.'}]
+    answer: {choiceId: a}
+    solutionOutline: Both quantities have leading term $1/n$, and their difference is $1/(2n^2)+O(1/n^3)$.
+    commonTrap: Comparing each positive component separately with the harmonic series and ignoring cancellation.
+    verification: {method: second-order-expansion-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-011
+    topicId: convergence-tests
+    skills: [apply-abels-test]
+    archetype: convergent-series-times-monotone-factor
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires identifying the bounded monotone multiplier hypothesis.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Suppose $\sum a_n$ converges and $(b_n)$ is monotone and bounded. Which
+      theorem guarantees convergence of $\sum a_nb_n$?
+    choices: [{id: a, text: "Abel's test"}, {id: b, text: 'The term test'}, {id: c, text: 'The p-series test'}, {id: d, text: 'Cauchy condensation'}]
+    answer: {choiceId: a}
+    solutionOutline: A bounded monotone sequence has a finite limit, and Abel's test controls the product series using partial summation.
+    commonTrap: Assuming convergence of each factor as a sequence is enough without the monotonicity structure.
+    verification: {method: abel-test-hypotheses, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-012
+    topicId: convergence-tests
+    skills: [apply-dirichlets-test-to-periodic-weights]
+    archetype: mean-zero-periodic-coefficients
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires recognizing bounded partial sums of a periodic coefficient sequence.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Let $c_n$ repeat $2,-1,-1$. Why does $\sum c_n/\sqrt n$ converge?
+    choices: [{id: a, text: 'The partial sums of $c_n$ are bounded and $1/\sqrt n\downarrow0$.'}, {id: b, text: 'It converges absolutely by the p-series test.'}, {id: c, text: '$c_n\to0$.'}, {id: d, text: 'It is geometric.'}]
+    answer: {choiceId: a}
+    solutionOutline: Each coefficient period sums to zero, supplying the bounded-partial-sum condition in Dirichlet's test.
+    commonTrap: Applying the ordinary alternating-series test to a three-term sign pattern.
+    verification: {method: periodic-dirichlet-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-013
+    topicId: convergence-tests
+    skills: [interpret-raabe-test-boundaries]
+    archetype: logarithmic-series-raabe-limit
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires understanding a refined ratio test and its inconclusive boundary.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $a_n=1/[n(\ln n)^2]$, the Raabe expression
+      $n(a_n/a_{n+1}-1)$ tends to $1$. What does Raabe's test alone conclude?
+    choices: [{id: a, text: 'Nothing; the boundary value is inconclusive.'}, {id: b, text: 'Convergence'}, {id: c, text: 'Divergence'}, {id: d, text: 'Conditional convergence'}]
+    answer: {choiceId: a}
+    solutionOutline: Raabe decides convergence above one and divergence below one; this convergent logarithmic series lies exactly at its inconclusive boundary.
+    commonTrap: Including equality in the convergence side of Raabe's strict threshold.
+    verification: {method: raabe-boundary-and-known-example, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-014
+    topicId: convergence-tests
+    skills: [compare-superpolynomial-decay]
+    archetype: logarithm-squared-exponential
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires rewriting the term and comparing it with arbitrary powers.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=2}^{\infty}e^{-(\ln n)^2}$.
+    choices: [{id: a, text: 'Convergent'}, {id: b, text: 'Divergent'}, {id: c, text: 'Conditional'}, {id: d, text: 'Geometric with constant ratio'}]
+    answer: {choiceId: a}
+    solutionOutline: The term equals $n^{-\ln n}$ and is eventually smaller than $1/n^2$.
+    commonTrap: Assuming a nonconstant ratio prevents comparison with a p-series.
+    verification: {method: eventual-superpolynomial-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-015
+    topicId: convergence-tests
+    skills: [use-equivalent-term-comparisons]
+    archetype: sine-of-reciprocal-power
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires a small-angle equivalence and p-series classification.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For real p, when does $\sum_{n=1}^{\infty}\sin(1/n^p)$ converge?
+    choices: [{id: a, text: '$p>1$'}, {id: b, text: '$p>0$'}, {id: c, text: '$p\ge1$'}, {id: d, text: 'Every real p'}]
+    answer: {choiceId: a}
+    solutionOutline: For positive p, $\sin(1/n^p)\sim1/n^p$; at nonpositive p the terms do not approach zero in general, and the p-series threshold is greater than one.
+    commonTrap: Using only the small-angle requirement p greater than zero and omitting summability.
+    verification: {method: small-angle-p-series-equivalence, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-016
+    topicId: convergence-tests
+    skills: [use-central-binomial-asymptotics]
+    archetype: normalized-central-binomial
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires recognizing square-root decay hidden inside binomial coefficients.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\displaystyle\sum_{n=1}^{\infty}\binom{2n}{n}/4^n$.
+    choices: [{id: a, text: 'Divergent'}, {id: b, text: 'Convergent'}, {id: c, text: 'Conditionally convergent'}, {id: d, text: 'Geometric'}]
+    answer: {choiceId: a}
+    solutionOutline: The normalized central binomial coefficient is asymptotic to $1/\sqrt{\pi n}$, a divergent p-series scale.
+    commonTrap: Assuming division by $4^n$ creates geometric decay without accounting for the matching exponential growth of the binomial coefficient.
+    verification: {method: stirling-central-binomial-asymptotic, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-017
+    topicId: convergence-tests
+    skills: [combine-binomial-asymptotics-with-powers]
+    archetype: normalized-central-binomial-over-n
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires adding an algebraic factor to a known asymptotic.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      How does $\displaystyle\sum_{n=1}^{\infty}\binom{2n}{n}/(4^nn)$
+      behave?
+    choices: [{id: a, text: 'It converges.'}, {id: b, text: 'It diverges like $1/\sqrt n$.'}, {id: c, text: 'It is conditional.'}, {id: d, text: 'Its terms approach a nonzero limit.'}]
+    answer: {choiceId: a}
+    solutionOutline: The terms are asymptotic to a constant times $1/n^{3/2}$.
+    commonTrap: Reusing the divergence classification before noticing the extra factor one over n.
+    verification: {method: central-binomial-p-series-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-018
+    topicId: convergence-tests
+    skills: [classify-alternating-binomial-series]
+    archetype: alternating-square-root-decay
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires proving signed convergence and absolute divergence from a binomial asymptotic.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\displaystyle\sum_{n=1}^{\infty}(-1)^n\binom{2n}{n}/4^n$.
+    choices: [{id: a, text: 'Conditionally convergent'}, {id: b, text: 'Absolutely convergent'}, {id: c, text: 'Divergent'}, {id: d, text: 'Geometric'}]
+    answer: {choiceId: a}
+    solutionOutline: The positive magnitudes decrease to zero and behave like $1/\sqrt{\pi n}$, whose sum diverges.
+    commonTrap: Assuming a binomial coefficient prevents the alternating-series theorem from applying.
+    verification: {method: alternating-test-and-central-binomial-asymptotic, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-019
+    topicId: convergence-tests
+    skills: [classify-third-iterated-log-series]
+    archetype: triple-log-p-threshold
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires three substitutions or repeated condensation.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For sufficiently large n, when does
+      $$\sum\frac1{n\ln n\,\ln\ln n\,(\ln\ln\ln n)^p}$$
+      converge?
+    choices: [{id: a, text: '$p>1$'}, {id: b, text: '$p\ge1$'}, {id: c, text: '$p>0$'}, {id: d, text: 'For every p'}]
+    answer: {choiceId: a}
+    solutionOutline: Three logarithmic substitutions reduce the integral to the p-series integral $\int u^{-p}du$.
+    commonTrap: Counting logarithmic factors rather than examining the exponent on the final iterated logarithm.
+    verification: {method: triple-log-integral-substitution, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-020
+    topicId: convergence-tests
+    skills: [classify-log-stretched-exponentials]
+    archetype: exponential-log-power-regimes
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires separating three parameter regimes by comparison with powers of n.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For $\alpha>0$, when does
+      $\sum_{n=2}^{\infty}\exp[-(\ln n)^\alpha]$ converge?
+    choices: [{id: a, text: 'Exactly when $\alpha>1$'}, {id: b, text: 'When $\alpha\ge1$'}, {id: c, text: 'For every $\alpha>0$'}, {id: d, text: 'For no $\alpha$'}]
+    answer: {choiceId: a}
+    solutionOutline: Above one the decay eventually beats $1/n^2$; at one the terms equal $1/n$, and below one they decay more slowly than $1/n$.
+    commonTrap: Including alpha equals one because the expression looks exponential.
+    verification: {method: comparison-of-logarithmic-powers, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-021
+    topicId: convergence-tests
+    skills: [apply-stirling-to-term-tests]
+    archetype: stirling-critical-normalization
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires retaining the square-root factor in Stirling's formula.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\displaystyle\sum_{n=1}^{\infty}\frac{n^ne^{-n}}{n!}$.
+    choices: [{id: a, text: 'Divergent'}, {id: b, text: 'Convergent'}, {id: c, text: 'Conditionally convergent'}, {id: d, text: 'Geometric'}]
+    answer: {choiceId: a}
+    solutionOutline: Stirling gives $n!\sim\sqrt{2\pi n}(n/e)^n$, so the term is asymptotic to $1/\sqrt{2\pi n}$.
+    commonTrap: Cancelling the exponential factors and overlooking the remaining square-root scale.
+    verification: {method: stirling-limit-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-022
+    topicId: convergence-tests
+    skills: [apply-stirling-before-term-tests]
+    archetype: nth-root-factorial-ratio
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires evaluating a factorial nth root accurately enough to check the term condition.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      What happens to
+      $\sum_{n=1}^{\infty}(n!)^{1/n}/n$?
+    choices: [{id: a, text: 'It diverges because the terms approach $1/e$.'}, {id: b, text: 'It converges by the root test.'}, {id: c, text: 'It is conditional.'}, {id: d, text: 'Its terms approach zero.'}]
+    answer: {choiceId: a}
+    solutionOutline: Stirling implies $(n!)^{1/n}\sim n/e$, leaving a nonzero term limit.
+    commonTrap: Assuming division by n forces a zero limit before estimating the factorial root.
+    verification: {method: stirling-nth-root-term-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-023
+    topicId: convergence-tests
+    skills: [apply-ratio-tests-after-power-unwrapping]
+    archetype: factorial-over-self-power
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires recognizing that a complicated nth power simplifies exactly.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Classify
+      $\sum_{n=1}^{\infty}[(n!)^{1/n}/n]^n$.
+    choices: [{id: a, text: 'Convergent'}, {id: b, text: 'Divergent by the term test'}, {id: c, text: 'Conditionally convergent'}, {id: d, text: 'Harmonic'}]
+    answer: {choiceId: a}
+    solutionOutline: The nth power is exactly $n!/n^n$, whose consecutive ratio tends to $e^{-1}$.
+    commonTrap: Using the inner base limit one over e as though it were the term limit without applying the outer power.
+    verification: {method: exact-power-simplification-and-ratio-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-024
+    topicId: convergence-tests
+    skills: [derive-parameter-thresholds-from-local-expansions]
+    archetype: cosine-defect-power
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires a second-order small-angle expansion followed by a p-series threshold.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For which p does
+      $\sum_{n=1}^{\infty}[1-\cos(1/n)]^p$ converge?
+    choices: [{id: a, text: '$p>1/2$'}, {id: b, text: '$p\ge1/2$'}, {id: c, text: '$p>1$'}, {id: d, text: '$p>0$'}]
+    answer: {choiceId: a}
+    solutionOutline: The bracket is asymptotic to $1/(2n^2)$, so its pth power has p-series exponent $2p$.
+    commonTrap: Treating one minus cosine x as first-order in x.
+    verification: {method: cosine-quadratic-asymptotic-threshold, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-025
+    topicId: convergence-tests
+    skills: [derive-arctangent-power-thresholds]
+    archetype: first-order-inverse-trig-power
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires applying a local equivalence before a parameterized p test.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For positive p, when does
+      $\sum_{n=1}^{\infty}[\arctan(1/n)]^p$ converge?
+    choices: [{id: a, text: '$p>1$'}, {id: b, text: '$p\ge1$'}, {id: c, text: '$p>1/2$'}, {id: d, text: 'Every positive p'}]
+    answer: {choiceId: a}
+    solutionOutline: Arctangent x is asymptotic to x at zero, so the terms behave like $1/n^p$.
+    commonTrap: Importing the cosine-defect threshold one half into a first-order function.
+    verification: {method: arctangent-small-angle-p-threshold, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-026
+    topicId: convergence-tests
+    skills: [detect-exponential-series-cancellation]
+    archetype: second-order-exponential-remainder
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires subtracting two leading expansion terms before comparison.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=1}^{\infty}[e^{1/n}-1-1/n]$.
+    choices: [{id: a, text: 'Convergent'}, {id: b, text: 'Divergent harmonically'}, {id: c, text: 'Conditionally convergent'}, {id: d, text: 'Divergent by the term test'}]
+    answer: {choiceId: a}
+    solutionOutline: The exponential expansion leaves $1/(2n^2)+O(1/n^3)$ after the constant and linear terms are removed.
+    commonTrap: Comparing e to the one-over-n input rather than expanding around zero.
+    verification: {method: exponential-second-order-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-027
+    topicId: convergence-tests
+    skills: [identify-harmonic-leading-terms]
+    archetype: unsubtracted-exponential-increment
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires retaining the first-order term in a local expansion.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      What happens to $\sum_{n=1}^{\infty}(e^{1/n}-1)$?
+    choices: [{id: a, text: 'It diverges by limit comparison with $1/n$.'}, {id: b, text: 'It converges by comparison with $1/n^2$.'}, {id: c, text: 'It is conditional.'}, {id: d, text: 'Its terms approach a nonzero limit.'}]
+    answer: {choiceId: a}
+    solutionOutline: $(e^{1/n}-1)/(1/n)\to1$, so the positive series is harmonic-order.
+    commonTrap: Confusing term convergence to zero with series convergence.
+    verification: {method: exponential-derivative-limit-comparison, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-028
+    topicId: convergence-tests
+    skills: [apply-complex-dirichlet-series-reasoning]
+    archetype: unit-circle-frequency
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires bounded geometric partial sums away from resonance.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For real theta not a multiple of $2\pi$, why does
+      $\sum_{n=1}^{\infty}e^{in\theta}/n$ converge?
+    choices: [{id: a, text: 'The coefficient partial sums are bounded and $1/n\downarrow0$.'}, {id: b, text: 'It converges absolutely.'}, {id: c, text: '$e^{in\theta}\to0$.'}, {id: d, text: 'Its ratio has magnitude below one.'}]
+    answer: {choiceId: a}
+    solutionOutline: Finite geometric sums of $e^{in\theta}$ are uniformly bounded away from the resonant denominator zero, so Dirichlet applies.
+    commonTrap: Assuming unit-modulus coefficients must themselves approach zero.
+    verification: {method: geometric-partial-sum-dirichlet, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-029
+    topicId: convergence-tests
+    skills: [use-bounded-variation-dirichlet-forms]
+    archetype: summation-by-parts-hypotheses
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires identifying the discrete bounded-variation condition that controls weighted sums.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Suppose partial sums of $a_n$ are bounded, $b_n\to0$, and
+      $\sum|b_{n+1}-b_n|<\infty$. What follows?
+    choices: [{id: a, text: '$\sum a_nb_n$ converges.'}, {id: b, text: '$\sum a_nb_n$ converges absolutely.'}, {id: c, text: '$\sum a_n$ converges absolutely.'}, {id: d, text: 'Nothing can be concluded.'}]
+    answer: {choiceId: a}
+    solutionOutline: Summation by parts bounds tails using the bounded coefficient partial sums and the finite total variation of b.
+    commonTrap: Upgrading ordinary convergence to absolute convergence without absolute control on a_n.
+    verification: {method: summation-by-parts-bounded-variation, result: verified}
+    reviewStatus: verified
+  - id: calc2-tests-oly-030
+    topicId: convergence-tests
+    skills: [construct-counterexamples-to-test-converses]
+    archetype: zero-term-limit-insufficiency
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires choosing examples that isolate necessity from sufficiency.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Which pair best proves that $a_n\to0$ does not determine convergence of
+      $\sum a_n$?
+    choices: [{id: a, text: '$a_n=1/n$ and $a_n=1/n^2$'}, {id: b, text: '$a_n=1$ and $a_n=2$'}, {id: c, text: '$a_n=2^{-n}$ and $a_n=3^{-n}$'}, {id: d, text: '$a_n=0$ and $a_n=0$'}]
+    answer: {choiceId: a}
+    solutionOutline: Both sequences tend to zero, while the harmonic series diverges and the reciprocal-square series converges.
+    commonTrap: Choosing two examples with the same convergence outcome.
+    verification: {method: contrasting-necessary-condition-examples, result: verified}
+    reviewStatus: verified

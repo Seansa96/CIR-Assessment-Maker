@@ -25,6 +25,7 @@ public static class Program
         var sourceInspector = new AssessmentSourceInspector();
         var taxonomyValidator = new AssessmentTaxonomyValidator();
         var catalogTaxonomyValidator = new CatalogTaxonomyValidator();
+        var questionBankAudit = new QuestionBankAudit();
 
         var categories = await categoryRepository.ListAsync();
         var areas = await areaRepository.ListAsync();
@@ -44,6 +45,24 @@ public static class Program
 
         var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var auditByCategory = categories.ToDictionary(category => category.Id, _ => new CategoryAudit(), StringComparer.OrdinalIgnoreCase);
+
+        var repositoryRoot = Directory.GetParent(Path.GetFullPath(dataRoot))?.FullName;
+        var assessmentReferenceRoot = repositoryRoot is null
+            ? null
+            : Path.Combine(repositoryRoot, "docs", "assessment-reference");
+        if (assessmentReferenceRoot is not null && Directory.Exists(assessmentReferenceRoot))
+        {
+            var bankResult = questionBankAudit.AuditRegistry(assessmentReferenceRoot);
+            foreach (var warning in bankResult.Warnings)
+            {
+                Console.WriteLine($"[WARN] [{warning.Code}] {warning.Path}: {warning.Message}");
+            }
+            foreach (var error in bankResult.Errors)
+            {
+                Console.WriteLine($"[ERROR] [{error.Code}] {error.Path}: {error.Message}");
+                errors++;
+            }
+        }
 
         foreach (var dir in new[] { files.AssessmentsPath, files.SamplesPath })
         {

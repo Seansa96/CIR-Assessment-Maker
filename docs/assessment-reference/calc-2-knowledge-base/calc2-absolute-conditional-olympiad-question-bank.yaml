@@ -1,0 +1,701 @@
+schemaVersion: 1
+bankId: calc2-absolute-conditional-olympiad
+categoryId: calculus-2
+topicIds:
+  - absolute-conditional-convergence
+minimumItemCount: 30
+items:
+  - id: calc2-ac-oly-001
+    topicId: absolute-conditional-convergence
+    skills: [pair-nonstandard-signed-series, classify-conditional-convergence]
+    archetype: adjacent-pair-cancellation
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires pairing a sign-dependent denominator, proving pair convergence, and separately proving absolute divergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Classify
+      $$\sum_{n=2}^{\infty}\frac{(-1)^n}{n+(-1)^n}.$$
+    choices:
+      - { id: a, text: 'Absolutely convergent' }
+      - { id: b, text: 'Conditionally convergent' }
+      - { id: c, text: 'Divergent because the denominator alternates' }
+      - { id: d, text: 'Divergent by comparison with the harmonic series' }
+    answer: { choiceId: b }
+    solutionOutline: Pair $n=2k$ with $n=2k+1$ to obtain $-1/[2k(2k+1)]$, a convergent pair series; the individual magnitudes remain comparable to $1/n$.
+    commonTrap: Applying harmonic comparison to the signed terms without accounting for cancellation in consecutive pairs.
+    verification: { method: exact-pairing-and-two-sided-comparison, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-002
+    topicId: absolute-conditional-convergence
+    skills: [analyze-block-signed-series, detect-divergence]
+    archetype: dyadic-block-signs
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires passing from term behavior to block-boundary partial sums and estimating harmonic blocks.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For $2^k\le n<2^{k+1}$, set $a_n=(-1)^k/n$. Which statement about
+      $\sum_{n=1}^{\infty}a_n$ is correct?
+    choices:
+      - { id: a, text: 'It converges absolutely because $a_n\to0$.' }
+      - { id: b, text: 'It converges conditionally by the alternating-series test.' }
+      - { id: c, text: 'It diverges because successive signed block sums do not approach zero.' }
+      - { id: d, text: 'It telescopes at powers of two.' }
+    answer: { choiceId: c }
+    solutionOutline: Each unsigned dyadic block sum approaches $\ln2$, so boundary partial sums receive alternating jumps whose magnitudes do not vanish; termwise convergence to zero is insufficient.
+    commonTrap: Treating alternating blocks as alternating terms with decreasing block magnitudes.
+    verification: { method: integral-bounds-on-harmonic-blocks, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-003
+    topicId: absolute-conditional-convergence
+    skills: [exploit-periodic-sign-patterns, classify-conditional-convergence]
+    archetype: sparse-periodic-series
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires extracting nonzero residue classes, pairing them, and checking the absolute subseries.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Determine the strongest classification of
+      $$\sum_{n=1}^{\infty}\frac{\sin(n\pi/2)}{n}.$$
+    choices:
+      - { id: a, text: 'Absolutely convergent' }
+      - { id: b, text: 'Conditionally convergent' }
+      - { id: c, text: 'Divergent because sine is periodic' }
+      - { id: d, text: 'Divergent because half the terms are zero' }
+    answer: { choiceId: b }
+    solutionOutline: Nonzero terms pair as $1/(4k+1)-1/(4k+3)$, whose positive differences are summable, while absolute values give the divergent reciprocal series over odd integers.
+    commonTrap: Concluding that periodic coefficients prevent convergence without examining cancellation over a full period.
+    verification: { method: residue-class-pairing-and-odd-harmonic-comparison, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-004
+    topicId: absolute-conditional-convergence
+    skills: [combine-series-with-different-convergence-types]
+    archetype: hidden-conditional-plus-absolute
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires decomposing one summand into conditional and absolute components and ruling out absolute convergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Classify
+      $$\sum_{n=1}^{\infty}\left(\frac{(-1)^{n-1}}n+\frac1{n^2}\right).$$
+    choices:
+      - { id: a, text: 'Absolutely convergent because one component is absolute' }
+      - { id: b, text: 'Conditionally convergent' }
+      - { id: c, text: 'Divergent because the positive correction prevents cancellation' }
+      - { id: d, text: 'Telescoping' }
+    answer: { choiceId: b }
+    solutionOutline: The two component series converge, but absolute convergence would force the alternating harmonic component to be absolute after subtracting the $\sum1/n^2$ series, a contradiction.
+    commonTrap: Assuming that adding an absolutely convergent series upgrades conditional convergence.
+    verification: { method: linearity-and-triangle-inequality-contradiction, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-005
+    topicId: absolute-conditional-convergence
+    skills: [evaluate-structured-rearrangements]
+    archetype: two-positive-one-negative-rearrangement
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires expressing block partial sums through harmonic numbers and evaluating their asymptotic difference.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Rearrange the alternating harmonic series by taking two unused positive
+      terms followed by one unused negative term:
+      $$1+\frac13-\frac12+\frac15+\frac17-\frac14+\cdots.$$
+      What is its sum?
+    choices:
+      - { id: a, text: '$\ln2$' }
+      - { id: b, text: '$\frac32\ln2$' }
+      - { id: c, text: '$2\ln2$' }
+      - { id: d, text: 'It diverges to $+\infty$' }
+    answer: { choiceId: b }
+    solutionOutline: After $N$ blocks the sum is $H_{4N}-\frac12H_{2N}-\frac12H_N$; using $H_m=\ln m+\gamma+o(1)$ gives $\ln4-\frac12\ln2=\frac32\ln2$.
+    commonTrap: Believing a rearrangement of a conditionally convergent series must retain its original sum.
+    verification: { method: harmonic-number-asymptotics, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-006
+    topicId: absolute-conditional-convergence
+    skills: [classify-log-power-parameter-families]
+    archetype: two-parameter-phase-diagram
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires combining zero-limit, monotonicity, and generalized logarithmic p-series thresholds across boundary cases.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For real $p,q$, consider
+      $$\sum_{n=2}^{\infty}\frac{(-1)^n}{n^p(\ln n)^q}.$$
+      Which region gives conditional convergence?
+    choices:
+      - { id: a, text: '$0<p<1$ for any $q$; or $p=1,q\le1$; or $p=0,q>0$' }
+      - { id: b, text: '$p>1$ for any $q$; or $p=1,q>1$' }
+      - { id: c, text: '$p<0$ for every $q$' }
+      - { id: d, text: '$p=0,q\le0$ only' }
+    answer: { choiceId: a }
+    solutionOutline: Signed convergence needs magnitudes decreasing to zero, while absolute convergence occurs for $p>1$ or for $p=1,q>1$; subtracting the latter region yields the stated cases.
+    commonTrap: Forgetting the $p=0,q>0$ case, where logarithmic decay still makes the alternating magnitudes tend to zero.
+    verification: { method: parameter-boundary-case-analysis, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-007
+    topicId: absolute-conditional-convergence
+    skills: [apply-the-term-test-after-rationalization]
+    archetype: deceptive-radical-term
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires rationalizing a difference whose original components both diverge.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      What can be concluded about
+      $$\sum_{n=1}^{\infty}(-1)^n\left(\sqrt{n^2+n}-n\right)?$$
+    choices:
+      - { id: a, text: 'It converges conditionally.' }
+      - { id: b, text: 'It converges absolutely.' }
+      - { id: c, text: 'It diverges because the term magnitude approaches $1/2$.' }
+      - { id: d, text: 'It telescopes after rationalization.' }
+    answer: { choiceId: c }
+    solutionOutline: Rationalization gives $n/(\sqrt{n^2+n}+n)\to1/2$, so the signed terms fail to approach zero.
+    commonTrap: Seeing alternating signs and skipping the term-limit check.
+    verification: { method: conjugate-rationalization-and-limit, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-008
+    topicId: absolute-conditional-convergence
+    skills: [analyze-paired-definitions]
+    archetype: custom-even-odd-terms
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires proving convergence from paired partial sums and then showing absolute divergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Define $a_{2k-1}=1/k$ and $a_{2k}=-1/k+1/k^2$. How is
+      $\sum_{n=1}^{\infty}a_n$ classified?
+    choices:
+      - { id: a, text: 'Absolutely convergent' }
+      - { id: b, text: 'Conditionally convergent' }
+      - { id: c, text: 'Divergent because $\sum1/k$ diverges' }
+      - { id: d, text: 'Divergent because odd partial sums are positive' }
+    answer: { choiceId: b }
+    solutionOutline: Each adjacent pair sums to $1/k^2$, so even partial sums converge and odd ones differ by $1/(k+1)\to0$; absolute pair magnitudes behave like $2/k$.
+    commonTrap: Examining only the divergent odd-term subseries without considering its cancellation against the even terms.
+    verification: { method: paired-partial-sum-and-absolute-lower-bound, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-009
+    topicId: absolute-conditional-convergence
+    skills: [reason-about-positive-negative-parts]
+    archetype: characterization-of-conditional-convergence
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires using positive and negative parts to characterize conditional rather than absolute convergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      If a real series $\sum a_n$ converges conditionally, what must happen to
+      $\sum a_n^+$ and $\sum a_n^-$, where
+      $a_n^+=\max(a_n,0)$ and $a_n^-=\max(-a_n,0)$?
+    choices:
+      - { id: a, text: 'Both converge.' }
+      - { id: b, text: 'Both diverge to $+\infty$.' }
+      - { id: c, text: 'Exactly one converges.' }
+      - { id: d, text: 'Both oscillate.' }
+    answer: { choiceId: b }
+    solutionOutline: If either nonnegative part had finite sum, convergence of their difference would force the other finite; that would imply absolute convergence, contradicting the hypothesis.
+    commonTrap: Imagining that one infinite positive mass can be balanced by a finite negative mass while retaining a finite signed limit.
+    verification: { method: positive-negative-part-contradiction, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-010
+    topicId: absolute-conditional-convergence
+    skills: [construct-convergence-counterexamples]
+    archetype: nonclosure-under-addition
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires constructing two conditional series whose sum has a stronger convergence type.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Let $a_n=(-1)^{n-1}/n$. Which choice of $b_n$ makes both
+      $\sum a_n$ and $\sum b_n$ conditionally convergent while
+      $\sum(a_n+b_n)$ converges absolutely?
+    choices:
+      - { id: a, text: '$b_n=-a_n+1/n^2$' }
+      - { id: b, text: '$b_n=a_n$' }
+      - { id: c, text: '$b_n=1/n$' }
+      - { id: d, text: '$b_n=-a_n+1/n$' }
+    answer: { choiceId: a }
+    solutionOutline: The perturbation $1/n^2$ is absolute, so $b_n$ remains conditional, while $a_n+b_n=1/n^2$ is absolutely summable.
+    commonTrap: Assuming conditional convergence is preserved under addition of two conditional series.
+    verification: { method: explicit-series-decomposition, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-011
+    topicId: absolute-conditional-convergence
+    skills: [analyze-bounded-displacement-rearrangements]
+    archetype: controlled-permutation
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires comparing partial sums under a permutation that can move terms only a bounded distance.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Suppose $\sum a_n$ converges and a permutation $\pi$ satisfies
+      $|\pi(n)-n|\le M$ for one fixed $M$. What must be true of
+      $\sum a_{\pi(n)}$?
+    choices:
+      - { id: a, text: 'It converges to the original sum, even if convergence is conditional.' }
+      - { id: b, text: 'It can be rearranged to any real value.' }
+      - { id: c, text: 'It becomes absolutely convergent.' }
+      - { id: d, text: 'It necessarily diverges.' }
+    answer: { choiceId: a }
+    solutionOutline: The first $N$ permuted terms differ from the first $N$ original terms only by finitely many terms with indices in a bounded-width window near $N$, and those terms tend to zero.
+    commonTrap: Applying the unrestricted rearrangement theorem without noticing the strong bounded-displacement constraint.
+    verification: { method: boundary-window-partial-sum-estimate, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-012
+    topicId: absolute-conditional-convergence
+    skills: [characterize-absolute-convergence-by-subseries]
+    archetype: theorem-equivalence
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires connecting convergence of all subseries to finiteness of both sign parts.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For a convergent real series $\sum a_n$, which additional statement is
+      equivalent to absolute convergence?
+    choices:
+      - { id: a, text: 'Every subseries $\sum a_{n_k}$ converges.' }
+      - { id: b, text: 'At least one infinite subseries converges.' }
+      - { id: c, text: 'The even-indexed subseries converges.' }
+      - { id: d, text: 'The terms are bounded.' }
+    answer: { choiceId: a }
+    solutionOutline: If every subseries converges, the subseries of positive terms and of negative magnitudes are both finite; their sum is $\sum|a_n|$.
+    commonTrap: Treating convergence of a single selected subseries as control of all absolute mass.
+    verification: { method: sign-subseries-equivalence-proof, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-013
+    topicId: absolute-conditional-convergence
+    skills: [distinguish-grouping-from-rearrangement]
+    archetype: variable-finite-block-grouping
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires recognizing grouped partial sums as a subsequence even when block lengths vary.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      A conditionally convergent series is divided, without changing order, into
+      consecutive finite blocks of lengths $1,2,3,\ldots$. The terms inside
+      each block are added first. What happens?
+    choices:
+      - { id: a, text: 'The grouped series converges to the same sum.' }
+      - { id: b, text: 'The grouped series can converge to any prescribed value.' }
+      - { id: c, text: 'The grouped series becomes absolutely convergent.' }
+      - { id: d, text: 'Growing block lengths force divergence.' }
+    answer: { choiceId: a }
+    solutionOutline: Each grouped partial sum is an original partial sum at the end of a finite block, hence a subsequence of a sequence already converging to the original sum.
+    commonTrap: Confusing variable-size grouping with a permutation of term order.
+    verification: { method: partial-sum-subsequence-proof, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-014
+    topicId: absolute-conditional-convergence
+    skills: [evaluate-alternating-error-thresholds]
+    archetype: logarithmic-remainder-bound
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires applying a nonlinear next-term bound and checking adjacent integers near a transcendental threshold.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For $\sum_{n=2}^{\infty}(-1)^n/[n\ln n]$, what is the least $N$ for
+      which the alternating-series theorem guarantees $|R_N|<10^{-3}$?
+    choices:
+      - { id: a, text: '$N=189$' }
+      - { id: b, text: '$N=190$' }
+      - { id: c, text: '$N=191$' }
+      - { id: d, text: '$N=1000$' }
+    answer: { choiceId: b }
+    solutionOutline: The condition is $(N+1)\ln(N+1)>1000$; $190\ln190<1000$ but $191\ln191>1000$, so the least $N$ is $190$.
+    commonTrap: Solving $N\ln N>1000$ and forgetting that the remainder uses the first omitted index $N+1$.
+    verification: { method: next-term-bound-with-adjacent-integer-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-015
+    topicId: absolute-conditional-convergence
+    skills: [reason-about-cauchy-products]
+    archetype: theorem-hypothesis
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires identifying why ordinary convergence of both factors is insufficient for the standard Cauchy-product conclusion.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Two series $\sum a_n=A$ and $\sum b_n=B$ both converge conditionally.
+      Which claim about their Cauchy product is justified from these facts alone?
+    choices:
+      - { id: a, text: 'It must converge to $AB$.' }
+      - { id: b, text: 'It must converge, but perhaps not to $AB$.' }
+      - { id: c, text: 'It must diverge.' }
+      - { id: d, text: 'No conclusion is guaranteed without stronger hypotheses.' }
+    answer: { choiceId: d }
+    solutionOutline: The standard product theorem guarantees $AB$ when at least one factor is absolutely convergent; two merely conditional factors can produce a divergent product.
+    commonTrap: Extending the finite distributive law to infinite sums without the convergence condition needed to justify reordering double sums.
+    verification: { method: cauchy-product-theorem-hypothesis-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-016
+    topicId: absolute-conditional-convergence
+    skills: [use-absolute-convergence, bound-products]
+    archetype: bounded-multiplier
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires turning boundedness into a comparison for an absolute-value series.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Suppose $\sum |a_n|<\infty$ and $|b_n|\le 7$ for every $n$. Which
+      conclusion must hold?
+    choices:
+      - {id: a, text: '$\sum a_nb_n$ converges absolutely.'}
+      - {id: b, text: '$\sum a_nb_n$ is only conditionally convergent.'}
+      - {id: c, text: '$\sum b_n$ converges.'}
+      - {id: d, text: '$a_nb_n=0$ eventually.'}
+    answer: {choiceId: a}
+    solutionOutline: The inequality $|a_nb_n|\le7|a_n|$ gives convergence by direct comparison.
+    commonTrap: Assuming boundedness of $b_n$ is meant to prove that $\sum b_n$ converges.
+    verification: {method: absolute-value-comparison, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-017
+    topicId: absolute-conditional-convergence
+    skills: [classify-parameterized-signed-series]
+    archetype: alternating-p-family
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires applying both the alternating and p-series thresholds.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=1}^{\infty}(-1)^{n-1}/n^{2/3}$.
+    choices:
+      - {id: a, text: 'Absolutely convergent'}
+      - {id: b, text: 'Conditionally convergent'}
+      - {id: c, text: 'Divergent because $2/3<1$'}
+      - {id: d, text: 'Divergent by the term test'}
+    answer: {choiceId: b}
+    solutionOutline: The magnitudes decrease to zero, but their p-series has exponent below one and diverges.
+    commonTrap: Using absolute-series divergence to conclude that the signed series also diverges.
+    verification: {method: alternating-and-p-series-tests, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-018
+    topicId: absolute-conditional-convergence
+    skills: [use-dirichlet-cancellation, classify-periodic-coefficients]
+    archetype: mean-zero-periodic-weight
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires recognizing bounded partial sums in a periodic coefficient pattern.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Let $c_n$ repeat the pattern $1,1,-2$. How does
+      $\sum_{n=1}^{\infty}c_n/n$ behave?
+    choices:
+      - {id: a, text: 'It converges conditionally.'}
+      - {id: b, text: 'It converges absolutely.'}
+      - {id: c, text: 'It diverges because $c_n$ has no limit.'}
+      - {id: d, text: 'It is geometric.'}
+    answer: {choiceId: a}
+    solutionOutline: One-period coefficient sums are zero, so their partial sums are bounded and Dirichlet gives convergence; absolute values retain a positive-density harmonic subseries.
+    commonTrap: Checking whether the coefficients converge instead of whether their partial sums stay bounded.
+    verification: {method: dirichlet-and-residue-class-comparison, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-019
+    topicId: absolute-conditional-convergence
+    skills: [distinguish-grouping-from-rearrangement]
+    archetype: consecutive-grouping
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires identifying the order-preservation condition in grouping theorems.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      A convergent series is grouped into finite consecutive blocks without
+      changing term order. What happens to its sum?
+    choices:
+      - {id: a, text: 'The grouped series converges to the same sum.'}
+      - {id: b, text: 'The result is guaranteed only for positive terms.'}
+      - {id: c, text: 'Its sum may become any real number.'}
+      - {id: d, text: 'The grouped series must be absolutely convergent.'}
+    answer: {choiceId: a}
+    solutionOutline: Block-boundary partial sums form a subsequence of the original convergent partial sums and therefore have the same limit.
+    commonTrap: Confusing order-preserving grouping with a permutation of terms.
+    verification: {method: partial-sum-subsequence-argument, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-020
+    topicId: absolute-conditional-convergence
+    skills: [analyze-positive-and-negative-parts]
+    archetype: jordan-decomposition
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires relating conditional convergence to separate positive and negative mass.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum a_n$ converges conditionally, what must be true of the sums of
+      its positive terms and the absolute values of its negative terms?
+    choices:
+      - {id: a, text: 'Both diverge to $+\infty$.'}
+      - {id: b, text: 'Both converge.'}
+      - {id: c, text: 'Exactly one converges.'}
+      - {id: d, text: 'Both are eventually zero.'}
+    answer: {choiceId: a}
+    solutionOutline: If either nonnegative part were finite, convergence of the signed sum would force the other part finite, yielding absolute convergence.
+    commonTrap: Assuming cancellation means each sign contributes a finite total.
+    verification: {method: positive-negative-part-decomposition, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-021
+    topicId: absolute-conditional-convergence
+    skills: [reason-about-subseries]
+    archetype: arbitrary-subseries
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires transferring an absolute bound to an arbitrary index subset.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum a_n$ converges absolutely and $n_1<n_2<\cdots$, which statement
+      about $\sum_k a_{n_k}$ is guaranteed?
+    choices:
+      - {id: a, text: 'It converges absolutely.'}
+      - {id: b, text: 'It has the same sum as $\sum a_n$.'}
+      - {id: c, text: 'It is conditionally convergent.'}
+      - {id: d, text: 'It diverges unless only finitely many terms are selected.'}
+    answer: {choiceId: a}
+    solutionOutline: The selected absolute partial sums are bounded above by the full nonnegative absolute sum.
+    commonTrap: Confusing preservation of convergence with preservation of the numerical sum.
+    verification: {method: nonnegative-subseries-bound, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-022
+    topicId: absolute-conditional-convergence
+    skills: [apply-dirichlets-test, prove-failure-of-absolute-convergence]
+    archetype: trigonometric-weight
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires bounded trigonometric partial sums and a separate absolute-divergence argument.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      What is the strongest classification of $\sum_{n=1}^{\infty}\sin(n)/n$?
+    choices:
+      - {id: a, text: 'Conditionally convergent'}
+      - {id: b, text: 'Absolutely convergent'}
+      - {id: c, text: 'Divergent because $\sin n$ has no limit'}
+      - {id: d, text: 'Telescoping'}
+    answer: {choiceId: a}
+    solutionOutline: The partial sums of $\sin n$ are bounded and $1/n$ decreases to zero, while $|\sin n|/n$ diverges by its positive average over integer angles.
+    commonTrap: Applying the term test to the coefficient $\sin n$ instead of the full term $\sin(n)/n$.
+    verification: {method: dirichlet-plus-block-lower-bound, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-023
+    topicId: absolute-conditional-convergence
+    skills: [apply-riemann-rearrangement-theorem]
+    archetype: attainable-rearranged-limits
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires recalling the full conclusion and its conditional-convergence hypothesis.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Which target can a rearrangement of a conditionally convergent real
+      series be constructed to approach?
+    choices:
+      - {id: a, text: 'Any prescribed real number'}
+      - {id: b, text: 'Only the original sum'}
+      - {id: c, text: 'Only zero'}
+      - {id: d, text: 'No finite target'}
+    answer: {choiceId: a}
+    solutionOutline: The Riemann rearrangement theorem permits a permutation converging to any chosen real value.
+    commonTrap: Applying the order invariance of absolutely convergent series to a conditional one.
+    verification: {method: riemann-rearrangement-theorem, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-024
+    topicId: absolute-conditional-convergence
+    skills: [analyze-sign-removal]
+    archetype: multiplier-destroys-cancellation
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires tracking how a bounded sign multiplier changes a conditional series.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Let $a_n=(-1)^{n-1}/n$ and $b_n=(-1)^{n-1}$. What happens to
+      $\sum a_nb_n$?
+    choices:
+      - {id: a, text: 'It diverges as the harmonic series.'}
+      - {id: b, text: 'It converges absolutely.'}
+      - {id: c, text: 'It retains the sum $\ln2$.'}
+      - {id: d, text: 'Every term is zero.'}
+    answer: {choiceId: a}
+    solutionOutline: The two sign factors multiply to one, leaving $\sum1/n$.
+    commonTrap: Believing multiplication by every bounded sequence preserves conditional convergence.
+    verification: {method: exact-product-simplification, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-025
+    topicId: absolute-conditional-convergence
+    skills: [classify-logarithmic-alternating-series]
+    archetype: eventual-monotonicity
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires checking eventual decrease rather than assuming it from the formula.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Classify $\sum_{n=2}^{\infty}(-1)^n\frac{\ln n}{n}$.
+    choices:
+      - {id: a, text: 'Conditionally convergent'}
+      - {id: b, text: 'Absolutely convergent'}
+      - {id: c, text: 'Divergent by the term test'}
+      - {id: d, text: 'Geometric'}
+    answer: {choiceId: a}
+    solutionOutline: The function $\ln x/x$ decreases for $x>e$ and tends to zero, whereas its positive series diverges by the integral test.
+    commonTrap: Rejecting the alternating-series test because the magnitudes increase for the first few indices.
+    verification: {method: derivative-and-integral-tests, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-026
+    topicId: absolute-conditional-convergence
+    skills: [test-inferences-about-squares]
+    archetype: insufficient-information
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires constructing examples with opposite outcomes.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Given only that $\sum a_n$ converges conditionally, what can be concluded
+      about $\sum a_n^2$?
+    choices:
+      - {id: a, text: 'Nothing definitive; it may converge or diverge.'}
+      - {id: b, text: 'It always converges.'}
+      - {id: c, text: 'It always diverges.'}
+      - {id: d, text: 'It converges conditionally.'}
+    answer: {choiceId: a}
+    solutionOutline: Alternating $1/n$ has summable squares, while alternating $1/\sqrt n$ converges conditionally and has harmonic, divergent squares.
+    commonTrap: Treating every conditionally convergent term sequence as though it were $O(1/n)$.
+    verification: {method: counterexample-pair, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-027
+    topicId: absolute-conditional-convergence
+    skills: [distinguish-finite-and-infinite-permutations]
+    archetype: finite-term-permutation
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires isolating a finite prefix from the unchanged tail.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      A convergent series has only its first $100$ terms permuted. What is
+      guaranteed?
+    choices:
+      - {id: a, text: 'It still converges to the same sum.'}
+      - {id: b, text: 'Its sum can become arbitrary.'}
+      - {id: c, text: 'It becomes absolutely convergent.'}
+      - {id: d, text: 'It must diverge.'}
+    answer: {choiceId: a}
+    solutionOutline: A finite sum is invariant under permutation, and the infinite tail is unchanged.
+    commonTrap: Invoking rearrangement pathology when only finitely many positions move.
+    verification: {method: finite-prefix-tail-decomposition, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-028
+    topicId: absolute-conditional-convergence
+    skills: [analyze-perturbed-denominators, use-asymptotic-pairing]
+    archetype: hidden-harmonic-drift
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires pairing terms and retaining the second-order denominator effect.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Pair consecutive terms of
+      $$\sum_{n=2}^{\infty}\frac{(-1)^n}{\sqrt n+(-1)^n}.$$
+      What behavior does the paired series reveal?
+    choices:
+      - {id: a, text: 'Divergence caused by a negative harmonic-order drift'}
+      - {id: b, text: 'Absolute convergence by comparison with $1/n$'}
+      - {id: c, text: 'Conditional convergence by the ordinary alternating-series test'}
+      - {id: d, text: 'Exact telescoping to zero'}
+    answer: {choiceId: a}
+    solutionOutline: Rationalizing or expanding each denominator shows the leading square-root terms nearly cancel but the correction in every pair is negative and comparable to $1/k$.
+    commonTrap: Looking only at the leading $1/\sqrt n$ magnitudes and overlooking the sign-dependent denominator correction.
+    verification: {method: rationalization-and-pair-asymptotics, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-029
+    topicId: absolute-conditional-convergence
+    skills: [use-absolute-convergence-under-addition]
+    archetype: conditional-plus-absolute
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires proving that an absolutely convergent perturbation cannot remove conditionality.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum a_n$ converges conditionally and $\sum b_n$ converges
+      absolutely, how does $\sum(a_n+b_n)$ converge?
+    choices:
+      - {id: a, text: 'Conditionally'}
+      - {id: b, text: 'Absolutely'}
+      - {id: c, text: 'It must diverge.'}
+      - {id: d, text: 'Its behavior is arbitrary.'}
+    answer: {choiceId: a}
+    solutionOutline: The sum converges by linearity; if it were absolute, subtracting the absolutely convergent $b$ series would make the $a$ series absolute, a contradiction.
+    commonTrap: Assuming an absolutely convergent correction dominates convergence classification.
+    verification: {method: vector-space-and-contradiction-argument, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-ac-oly-030
+    topicId: absolute-conditional-convergence
+    skills: [evaluate-rearrangement-claims]
+    archetype: unconditional-convergence-characterization
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires connecting convergence under every permutation to absolute convergence over the real numbers.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      A real series converges to the same finite sum under every permutation of
+      its terms. Which stronger fact follows?
+    choices:
+      - {id: a, text: 'The series converges absolutely.'}
+      - {id: b, text: 'The terms are eventually positive.'}
+      - {id: c, text: 'The series is geometric.'}
+      - {id: d, text: 'The original sum is zero.'}
+    answer: {choiceId: a}
+    solutionOutline: For real scalar series, unconditional convergence is equivalent to absolute convergence; otherwise Riemann rearrangement gives a permutation with a different outcome.
+    commonTrap: Treating permutation invariance as a property that conditional series might possess accidentally.
+    verification: {method: contrapositive-riemann-rearrangement, result: verified}
+    reviewStatus: verified

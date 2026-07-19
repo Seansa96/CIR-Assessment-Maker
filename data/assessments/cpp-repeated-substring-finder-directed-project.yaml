@@ -1,0 +1,167 @@
+schemaVersion: 1
+id: cpp-repeated-substring-finder-directed-project
+title: C++ Repeated Substring Finder
+description: Implement repeated substring search with an explicit overlap policy and useful failure result.
+assessmentType: directedProject
+categoryId: c++
+topicId: cpp-strings-formatting
+skills:
+- find-second-substring-occurrence
+- define-overlap-policy
+- complete-cpp-repeated-substring-finder-directed-project
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - c++
+  - cpp-strings-formatting
+  - directed-project
+  - implementation
+  - repeated-substring-search
+directedProject:
+  summary: Implement repeated substring search with an explicit overlap policy and useful failure result.
+  estimatedTimeMinutes: 45
+  outcomes:
+  - Implement the repeated-substring-search family from a precise contract.
+  - Explain the invariant and complexity of the implementation.
+  - Adapt the base solution to changed requirements without breaking edge cases.
+  environment:
+    name: Local C++20 console project
+    platform:
+    - windows
+    - linux
+    - macos
+    toolVersion: C++20
+    requiredAccounts: []
+    prerequisites:
+    - Functions
+    - loops
+    - standard library containers
+    installLinks: []
+  resources: []
+  phases:
+  - id: phase-1-contract-and-approach
+    title: Understand the contract and approach
+    required: true
+    goal: Translate the problem into an invariant before coding.
+    steps:
+    - id: step-1-problem-contract
+      title: Read the canonical problem
+      instruction: |
+        Source family: `cpp-fsf-string-041`
+
+        Implement `std::ptrdiff_t second_occurrence(std::string_view text,
+        std::string_view needle)`. Return the zero-based position of the second
+        occurrence, allowing overlaps. Return `-1` when `needle` is empty or
+        occurs fewer than twice. Examples: `("the qu qu", "qu")` returns `7`,
+        `("theququ", "qu")` returns `5`, and `("aaa", "aa")` returns `1`.
+      expectedObservation: Requires starting the second search at the correct index and explicitly allowing
+        overlaps.
+      checklist:
+      - id: contract-input-output
+        text: I can state the exact input, output, and edge-case policy.
+      - id: contract-complexity
+        text: I identified which operations determine the time and space cost.
+      resources: []
+    - id: step-2-approach
+      title: Plan the implementation
+      instruction: |
+        Use this approach before opening the sample solution:
+
+        1. Reject an empty needle so its infinitely many conceptual matches do not make the contract ambiguous.
+        2. Find the first start, then begin the next search one byte later to permit overlap.
+        3. Keep `npos` internal and convert absence to the public signed result.
+        4. Separate match position from match length when deciding where another search begins.
+
+        Write a short trace for one nontrivial input.
+      expectedObservation: Reject an empty needle, find the first start, then search again from the following
+        position and translate failure to minus one.
+      checklist:
+      - id: approach-invariant
+        text: My trace preserves the stated invariant at every step.
+      resources: []
+  - id: phase-2-reference-and-build
+    title: Study the example and build your version
+    required: true
+    goal: Connect the approach to complete, compilable C++.
+    steps:
+    - id: step-3-example-solution
+      title: Trace the example solution
+      instruction: |
+        Beginning the second search one byte after the first start permits
+        overlapping matches. Beginning at `first + needle.size()` would impose a
+        non-overlap rule and fail the `aaa` case.
+
+        ```cpp
+        #include <cstddef>
+        #include <string_view>
+
+        std::ptrdiff_t second_occurrence(std::string_view text,
+                                         std::string_view needle) {
+            if (needle.empty()) return -1;
+            const std::size_t first = text.find(needle);
+            if (first == std::string_view::npos) return -1;
+            const std::size_t second = text.find(needle, first + 1);
+            if (second == std::string_view::npos) return -1;
+            return static_cast<std::ptrdiff_t>(second);
+        }
+        ```
+
+        Trace this solution against every representative case before writing your own version. The sample is a reference, not starter code.
+      expectedObservation: Reject an empty needle, find the first start, then search again from the following
+        position and translate failure to minus one.
+      checklist:
+      - id: solution-explained
+        text: I can explain every branch, loop, and edge-case decision.
+      - id: trap-avoided
+        text: 'I can explain why this trap is wrong: Returning `std::string_view::npos` through a signed
+          API without explicitly converting the absent result to `-1`.'
+      resources: []
+    - id: step-4-build
+      title: Implement independently
+      instruction: |
+        Create `main.cpp` and implement the canonical contract without copying the reference. Add the representative cases from the bank plus at least three edge cases.
+      files:
+      - path: main.cpp
+        purpose: Learner implementation and tests
+        suggestedContent: |
+          // Implement the required function here.
+          // Keep main() small and use it only for your own test cases.
+
+          int main() {
+              return 0;
+          }
+        readOnly: false
+      checklist:
+      - id: build-compiles
+        text: The program compiles with C++20 warnings enabled.
+      - id: build-tests
+        text: Representative and edge cases pass.
+      troubleshooting:
+      - problem: Output differs only at an edge case.
+        suggestion: Returning `std::string_view::npos` through a signed API without explicitly converting
+          the absent result to `-1`.
+      resources: []
+  - id: phase-3-variants
+    title: Implement changed-condition variants
+    required: true
+    goal: Generalize the family instead of memorizing one solution.
+    steps:
+    - id: step-5-variants
+      title: Complete the family variants
+      instruction: |
+        Extend the program with these variants:
+
+        1. Return the nth occurrence and validate that n is positive.
+        2. Return every overlapping occurrence in a vector.
+        3. Add a non-overlapping mode that advances by `needle.size()` and compare the two policies on `aaaa`.
+
+        Keep each behavior in a separately testable function.
+      checklist:
+      - id: variants-distinct
+        text: Each variant changes behavior or constraints, not only sample data.
+      - id: variants-regression
+        text: The original canonical tests still pass.
+      notesPrompt: Which part of the original invariant survived every variant, and which part had to
+        change?
+      resources: []

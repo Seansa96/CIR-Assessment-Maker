@@ -819,6 +819,47 @@ public sealed class FileAssessmentRepositoryTests
         Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
     }
 
+    [Fact]
+    public async Task Repository_loads_and_validates_cpp_files_strings_formatting_expansion()
+    {
+        string[] assessmentIds =
+        [
+            "cpp-word-capitalization-directed-project",
+            "cpp-conditional-digit-rewriter-directed-project",
+            "cpp-selective-character-reversal-directed-project",
+            "cpp-length-based-word-transformer-directed-project",
+            "cpp-repeated-substring-finder-directed-project",
+            "cpp-text-file-writer-directed-project",
+            "cpp-line-counter-directed-project",
+            "cpp-binary-file-copier-directed-project",
+            "cpp-append-only-journal-directed-project",
+            "cpp-file-search-reporter-directed-project",
+            "cpp-text-quality-analyzer-guided-project",
+            "cpp-delimiter-toolkit-guided-project",
+            "cpp-document-bundle-builder-guided-project",
+            "cpp-log-archive-chunker-guided-project",
+            "cpp-strings-formatting-worked-example",
+            "cpp-working-with-files-worked-example",
+            "cpp-strings-formatting-quiz",
+            "cpp-strings-formatting-test",
+            "cpp-working-with-files-quiz",
+            "cpp-working-with-files-test"
+        ];
+
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = FindRepositoryDataRoot() },
+            new AssessmentValidator());
+
+        foreach (var assessmentId in assessmentIds)
+        {
+            var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+            Assert.True(
+                validation.IsValid,
+                $"{assessmentId}: {string.Join("; ", validation.Issues.Select(issue => issue.Message))}");
+        }
+    }
+
     [Theory]
     [InlineData("calc2-sequence-fundamentals-convergence-easy-quiz")]
     [InlineData("calc2-sequence-fundamentals-convergence-hard-quiz")]

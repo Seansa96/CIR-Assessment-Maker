@@ -5,350 +5,343 @@ assessmentType: test
 categoryId: calculus-2
 topicId: series-approximation-error
 skills:
-- Estimate remainders for alternating and Taylor series
-- Choose a truncation that meets an error tolerance
-- Distinguish truncation bounds from exact error
+- Improve approximations through extrapolation and symmetric cancellation
+- Propagate errors through reciprocal, composite, and iterative calculations
+- Distinguish pointwise convergence from computable uniform guarantees
 navigation:
   learningGoal: evaluate
   activityType: formalTest
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - series-approximation-error
+  - olympiad
+  - error-propagation
 modeDefault: evaluate
 randomizeQuestions: true
-attemptQuestionCount: 15
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-richardson-extrapolation
+  prompt: |
+    Suppose $A(h)=L+Ch^2+O(h^4)$. Which combination improves the
+    approximation to fourth-order error?
+  choices:
+  - id: a
+    text: $[4A(h/2)-A(h)]/3$
+  - id: b
+    text: $[A(h/2)+A(h)]/2$
+  - id: c
+    text: $2A(h/2)-A(h)$
+  - id: d
+    text: $[A(h)-4A(h/2)]/3$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: At half-step the leading error is $Ch^2/4$; multiplying by four and subtracting the full-step
+    value cancels it, while division by three restores L.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - bound-central-difference-errors
+  prompt: |
+    If $|f'''(t)|\le M$ near x, what bound holds for the central
+    difference approximation
+    $[f(x+h)-f(x-h)]/(2h)$ to $f'(x)$?
+  choices:
+  - id: a
+    text: $Mh^2/6$
+  - id: b
+    text: $Mh/2$
+  - id: c
+    text: $Mh^2/2$
+  - id: d
+    text: $M/(6h)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The even Taylor terms cancel, and the two cubic remainders together contribute at most
+    $Mh^3/3$, followed by division by $2h$.
 - id: q003
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - sharpen-integral-tail-estimates
+  prompt: |
+    For $R_N=\sum_{n=N+1}^{\infty}1/n^2$, the integral test gives
+    $1/(N+1)\le R_N\le1/N$. If R is approximated by the midpoint of
+    these bounds, what error is guaranteed?
+  choices:
+  - id: a
+    text: $1/[2N(N+1)]$
+  - id: b
+    text: $1/[N(N+1)]$
+  - id: c
+    text: $1/(2N)$
+  - id: d
+    text: $1/[2(N+1)]$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Half the bracket width is $\frac12(1/N-1/(N+1))=1/[2N(N+1)]$.
 - id: q004
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - find-large-geometric-truncation-counts
+  prompt: |
+    Truncate $\sum_{n=0}^{\infty}(0.9)^n$ after exponent N. What is
+    the smallest N making the exact remainder less than $0.01$?
+  choices:
+  - id: a
+    text: $65$
+  - id: b
+    text: $64$
+  - id: c
+    text: $66$
+  - id: d
+    text: $43$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The tail is $10(0.9)^{N+1}$, so $(0.9)^{N+1}<0.001$; the first successful exponent is N
+    plus one equals sixty-six.
 - id: q005
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - compute-exponential-lagrange-bounds
+  prompt: |
+    Which Lagrange bound applies when the degree-eight Maclaurin
+    polynomial approximates e?
+  choices:
+  - id: a
+    text: $e/9!$
+  - id: b
+    text: $1/9!$
+  - id: c
+    text: $e/8!$
+  - id: d
+    text: $1/8!$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The ninth derivative is exponential and has maximum e on zero through one, while the displacement
+    is one.
 - id: q006
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - bound-generalized-binomial-tails
+  prompt: |
+    Approximate $\sqrt{1.25}$ through the cubic term of
+    $(1+x)^{1/2}$ at $x=1/4$. What is the magnitude of the first
+    omitted term?
+  choices:
+  - id: a
+    text: $5/32768$
+  - id: b
+    text: $5/8192$
+  - id: c
+    text: $1/2048$
+  - id: d
+    text: $5/128$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The fourth coefficient is minus $5/128$ and $(1/4)^4=1/256$, giving magnitude $5/32768$.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - propagate-reciprocal-errors
+  prompt: |
+    If $|A-\tilde A|\le\epsilon<|\tilde A|$, which bound is guaranteed
+    for $|1/A-1/\tilde A|$?
+  choices:
+  - id: a
+    text: |-
+      $\epsilon/[|\tilde A|(|\tilde A|-\epsilon)]$
+  - id: b
+    text: |-
+      $\epsilon/|\tilde A|$
+  - id: c
+    text: |-
+      $\epsilon/|\tilde A|^2$ exactly
+  - id: d
+    text: |-
+      $1/\epsilon$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The difference equals $|A-\tilde A|/(|A||\tilde A|)$ and $|A|\ge|\tilde A|-\epsilon$.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - derive-exact-logarithm-remainders
+  prompt: |
+    Let $P_N(x)=\sum_{n=1}^{N}(-1)^{n+1}x^n/n$. For $x\ge0$, which
+    exact remainder identity holds?
+  choices:
+  - id: a
+    text: |-
+      $\log(1+x)-P_N(x)=(-1)^N\int_0^x t^N/(1+t)\,dt$
+  - id: b
+    text: |-
+      $\log(1+x)-P_N(x)=x^{N+1}/(N+1)$
+  - id: c
+    text: |-
+      $\log(1+x)-P_N(x)=\int_0^x t^{N+1}\,dt$
+  - id: d
+    text: |-
+      $\log(1+x)-P_N(x)=(-1)^{N+1}x^N$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Integrate the finite geometric decomposition of $1/(1+t)$; its leftover term is $(-1)^Nt^N/(1+t)$.
 - id: q009
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - majorize-positive-exponential-tails
+  prompt: |
+    For $x>0$ and $x<N+2$, which upper bound holds for the tail of
+    $e^x$ after degree N?
+  choices:
+  - id: a
+    text: |-
+      $\dfrac{x^{N+1}}{(N+1)!}\dfrac{1}{1-x/(N+2)}$
+  - id: b
+    text: $x^{N+1}/(N+1)!$
+  - id: c
+    text: $e^x/N!$
+  - id: d
+    text: $x^N/(1-x)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Starting with the first omitted term, every successive ratio is at most $x/(N+2)$, so a
+    geometric majorant applies.
 - id: q010
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - interpret-relative-error-near-zero
+  prompt: |
+    Why does an absolute error bound $|\tilde L-L|\le\epsilon$ alone
+    give no finite uniform relative-error bound when L may approach zero?
+  choices:
+  - id: a
+    text: |-
+      The ratio $\epsilon/|L|$ can become arbitrarily large.
+  - id: b
+    text: Absolute error is always larger than relative error.
+  - id: c
+    text: Relative error ignores the exact value.
+  - id: d
+    text: Taylor series cannot approximate small values.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Relative error divides by the exact magnitude, so no fixed numerator bound controls the
+    ratio without a positive lower bound on $|L|$.
 - id: q011
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - compare-pointwise-and-uniform-convergence
+  prompt: |
+    Which statement proves that partial sums $S_N$ approximate f
+    uniformly on a set E?
+  choices:
+  - id: a
+    text: |-
+      For every $\epsilon>0$, one N works for every $x\in E$.
+  - id: b
+    text: For each x, some N depending on x works.
+  - id: c
+    text: The terms approach zero at one point.
+  - id: d
+    text: Every partial sum is bounded at its center.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Uniformity requires selecting the truncation index before the point, so the same tail bound
+    covers the entire set.
 - id: q012
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - bound-errors-in-composed-functions
+  prompt: |
+    Suppose $|u-\tilde u|\le\epsilon$ and $|g'(t)|\le M$ between u and
+    $\tilde u$. What error is guaranteed when approximating $g(u)$ by
+    $g(\tilde u)$?
+  choices:
+  - id: a
+    text: |-
+      $M\epsilon$
+  - id: b
+    text: |-
+      $\epsilon/M$
+  - id: c
+    text: |-
+      $M+\epsilon$
+  - id: d
+    text: |-
+      $M\epsilon^2$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The mean value theorem writes the output difference as a derivative at an intermediate
+    point times the input difference.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - use-convexity-to-bound-series-values
+  prompt: |
+    Since $e^x$ is convex, which bracket is valid for $0\le x\le1$?
+  choices:
+  - id: a
+    text: |-
+      $1+x\le e^x\le1+(e-1)x$
+  - id: b
+    text: |-
+      $1+(e-1)x\le e^x\le1+x$
+  - id: c
+    text: |-
+      $e^x\le1+x$
+  - id: d
+    text: |-
+      $e^x\ge1+ex$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: A convex function lies above its tangent at zero and below the chord joining its endpoint
+    values on the interval.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - construct-a-posteriori-error-estimates
+  prompt: |
+    Iterates satisfy $|x_{n+1}-x_n|\le q|x_n-x_{n-1}|$ with
+    $0<q<1$ and converge to L. Which a-posteriori bound holds?
+  choices:
+  - id: a
+    text: |-
+      $|L-x_n|\le |x_n-x_{n-1}|q/(1-q)$
+  - id: b
+    text: |-
+      $|L-x_n|\le |x_n-x_{n-1}|$ always
+  - id: c
+    text: |-
+      $|L-x_n|\le q^n$
+  - id: d
+    text: $|L-x_n|=|x_{n+1}-x_n|$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Future increments are bounded by the last known increment times $q,q^2,\ldots$, whose sum is $q/(1-q)$.
 - id: q015
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - separate-convergence-from-error-rates
+  prompt: |
+    Knowing only that $S_N\to S$ is insufficient to choose N for a
+    requested tolerance. What additional object would make the choice
+    rigorous?
+  choices:
+  - id: a
+    text: |-
+      An explicit bound $|S-S_N|\le E_N$ with $E_N\to0$
+  - id: b
+    text: A graph of the first three partial sums
+  - id: c
+    text: The fact that individual terms tend to zero
+  - id: d
+    text: A different notation for the limit
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q019
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q020
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q025
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q026
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q027
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q031
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q032
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q033
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q034
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q035
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q036
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q037
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q038
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q039
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q040
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q041
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q042
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q043
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q044
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q045
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: A quantitative tail bound converts a tolerance into a verifiable inequality for N; bare
+    convergence supplies no rate.
+attemptQuestionCount: 15

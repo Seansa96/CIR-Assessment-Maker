@@ -1,0 +1,167 @@
+schemaVersion: 1
+id: cpp-conditional-digit-rewriter-directed-project
+title: C++ Conditional Digit Rewriter
+description: Construct output from adjacent input pairs and generalize the odd-digit separator rule.
+assessmentType: directedProject
+categoryId: c++
+topicId: cpp-strings-formatting
+skills:
+- insert-delimiters-conditionally
+- classify-digit-parity
+- complete-cpp-conditional-digit-rewriter-directed-project
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - c++
+  - cpp-strings-formatting
+  - directed-project
+  - implementation
+  - adjacent-digit-rewrite
+directedProject:
+  summary: Construct output from adjacent input pairs and generalize the odd-digit separator rule.
+  estimatedTimeMinutes: 45
+  outcomes:
+  - Implement the adjacent-digit-rewrite family from a precise contract.
+  - Explain the invariant and complexity of the implementation.
+  - Adapt the base solution to changed requirements without breaking edge cases.
+  environment:
+    name: Local C++20 console project
+    platform:
+    - windows
+    - linux
+    - macos
+    toolVersion: C++20
+    requiredAccounts: []
+    prerequisites:
+    - Functions
+    - loops
+    - standard library containers
+    installLinks: []
+  resources: []
+  phases:
+  - id: phase-1-contract-and-approach
+    title: Understand the contract and approach
+    required: true
+    goal: Translate the problem into an invariant before coding.
+    steps:
+    - id: step-1-problem-contract
+      title: Read the canonical problem
+      instruction: |
+        Source family: `cpp-fsf-string-012`
+
+        Implement `std::string dash_between_odd_digits(std::string_view digits)`.
+        The input contains decimal digits only. Insert `-` between adjacent odd
+        digits and nowhere else. Example: `1345789` becomes `1-345-789`.
+      expectedObservation: Requires checking adjacent original digits before appending a separator.
+      checklist:
+      - id: contract-input-output
+        text: I can state the exact input, output, and edge-case policy.
+      - id: contract-complexity
+        text: I identified which operations determine the time and space cost.
+      resources: []
+    - id: step-2-approach
+      title: Plan the implementation
+      instruction: |
+        Use this approach before opening the sample solution:
+
+        1. Build a new result instead of inserting into the input while iterating.
+        2. For each current digit after the first, inspect the previous original digit.
+        3. Append the separator before the current digit only when both satisfy the predicate.
+        4. Reserve enough output capacity to avoid unnecessary reallocations.
+
+        Write a short trace for one nontrivial input.
+      expectedObservation: Walk the original digits once, append a dash before an odd digit whose predecessor
+        is also odd, then append the digit.
+      checklist:
+      - id: approach-invariant
+        text: My trace preserves the stated invariant at every step.
+      resources: []
+  - id: phase-2-reference-and-build
+    title: Study the example and build your version
+    required: true
+    goal: Connect the approach to complete, compilable C++.
+    steps:
+    - id: step-3-example-solution
+      title: Trace the example solution
+      instruction: |
+        Each separator belongs immediately before the current digit when both it
+        and the previous input digit are odd. Building a new string avoids
+        invalidating indices through repeated middle insertions.
+
+        ```cpp
+        #include <string>
+        #include <string_view>
+
+        std::string dash_between_odd_digits(std::string_view digits) {
+            std::string result;
+            result.reserve(digits.size() * 2);
+            for (std::size_t i = 0; i < digits.size(); ++i) {
+                if (i > 0 && ((digits[i - 1] - '0') % 2 != 0) &&
+                    ((digits[i] - '0') % 2 != 0)) {
+                    result.push_back('-');
+                }
+                result.push_back(digits[i]);
+            }
+            return result;
+        }
+        ```
+
+        Trace this solution against every representative case before writing your own version. The sample is a reference, not starter code.
+      expectedObservation: Walk the original digits once, append a dash before an odd digit whose predecessor
+        is also odd, then append the digit.
+      checklist:
+      - id: solution-explained
+        text: I can explain every branch, loop, and edge-case decision.
+      - id: trap-avoided
+        text: 'I can explain why this trap is wrong: Testing the previously appended output character,
+          which may be a dash rather than the preceding input digit.'
+      resources: []
+    - id: step-4-build
+      title: Implement independently
+      instruction: |
+        Create `main.cpp` and implement the canonical contract without copying the reference. Add the representative cases from the bank plus at least three edge cases.
+      files:
+      - path: main.cpp
+        purpose: Learner implementation and tests
+        suggestedContent: |
+          // Implement the required function here.
+          // Keep main() small and use it only for your own test cases.
+
+          int main() {
+              return 0;
+          }
+        readOnly: false
+      checklist:
+      - id: build-compiles
+        text: The program compiles with C++20 warnings enabled.
+      - id: build-tests
+        text: Representative and edge cases pass.
+      troubleshooting:
+      - problem: Output differs only at an edge case.
+        suggestion: Testing the previously appended output character, which may be a dash rather than
+          the preceding input digit.
+      resources: []
+  - id: phase-3-variants
+    title: Implement changed-condition variants
+    required: true
+    goal: Generalize the family instead of memorizing one solution.
+    steps:
+    - id: step-5-variants
+      title: Complete the family variants
+      instruction: |
+        Extend the program with these variants:
+
+        1. Accept the separator as a parameter and support `:` or a multi-character separator.
+        2. Replace the odd predicate with a configurable rule for equal parity or repeated digits.
+        3. Reject nondigit input explicitly and test single-character, all-even, and all-odd strings.
+
+        Keep each behavior in a separately testable function.
+      checklist:
+      - id: variants-distinct
+        text: Each variant changes behavior or constraints, not only sample data.
+      - id: variants-regression
+        text: The original canonical tests still pass.
+      notesPrompt: Which part of the original invariant survived every variant, and which part had to
+        change?
+      resources: []

@@ -5,236 +5,323 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: absolute-conditional-convergence
 skills:
-- Classify absolute, conditional, and divergent series
-- Apply absolute-convergence implications to signed series
-- Check convergence-test hypotheses before drawing conclusions
+- Classify subtle signed series using cancellation and absolute values
+- Distinguish grouping, subseries, and rearrangement behavior
+- Apply structural theorems only when their hypotheses hold
 navigation:
   learningGoal: practice
   activityType: mixedPractice
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - absolute-conditional-convergence
+  - olympiad
+  - signed-series
 modeDefault: practice
 randomizeQuestions: true
-attemptQuestionCount: 10
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - use-absolute-convergence
+  - bound-products
+  prompt: |
+    Suppose $\sum |a_n|<\infty$ and $|b_n|\le 7$ for every $n$. Which
+    conclusion must hold?
+  choices:
+  - id: a
+    text: |-
+      $\sum a_nb_n$ converges absolutely.
+  - id: b
+    text: |-
+      $\sum a_nb_n$ is only conditionally convergent.
+  - id: c
+    text: |-
+      $\sum b_n$ converges.
+  - id: d
+    text: $a_nb_n=0$ eventually.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The inequality $|a_nb_n|\le7|a_n|$ gives convergence by direct comparison.
 - id: q002
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - classify-parameterized-signed-series
+  prompt: |
+    Classify $\sum_{n=1}^{\infty}(-1)^{n-1}/n^{2/3}$.
+  choices:
+  - id: a
+    text: Absolutely convergent
+  - id: b
+    text: Conditionally convergent
+  - id: c
+    text: Divergent because $2/3<1$
+  - id: d
+    text: Divergent by the term test
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: b
+  explanation: The magnitudes decrease to zero, but their p-series has exponent below one and diverges.
 - id: q003
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - use-dirichlet-cancellation
+  - classify-periodic-coefficients
+  prompt: |
+    Let $c_n$ repeat the pattern $1,1,-2$. How does
+    $\sum_{n=1}^{\infty}c_n/n$ behave?
+  choices:
+  - id: a
+    text: It converges conditionally.
+  - id: b
+    text: It converges absolutely.
+  - id: c
+    text: It diverges because $c_n$ has no limit.
+  - id: d
+    text: It is geometric.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: One-period coefficient sums are zero, so their partial sums are bounded and Dirichlet gives
+    convergence; absolute values retain a positive-density harmonic subseries.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - distinguish-grouping-from-rearrangement
+  prompt: |
+    A convergent series is grouped into finite consecutive blocks without
+    changing term order. What happens to its sum?
+  choices:
+  - id: a
+    text: The grouped series converges to the same sum.
+  - id: b
+    text: The result is guaranteed only for positive terms.
+  - id: c
+    text: Its sum may become any real number.
+  - id: d
+    text: The grouped series must be absolutely convergent.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Block-boundary partial sums form a subsequence of the original convergent partial sums
+    and therefore have the same limit.
 - id: q005
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - analyze-positive-and-negative-parts
+  prompt: |
+    If $\sum a_n$ converges conditionally, what must be true of the sums of
+    its positive terms and the absolute values of its negative terms?
+  choices:
+  - id: a
+    text: |-
+      Both diverge to $+\infty$.
+  - id: b
+    text: Both converge.
+  - id: c
+    text: Exactly one converges.
+  - id: d
+    text: Both are eventually zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: If either nonnegative part were finite, convergence of the signed sum would force the other
+    part finite, yielding absolute convergence.
 - id: q006
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - reason-about-subseries
+  prompt: |
+    If $\sum a_n$ converges absolutely and $n_1<n_2<\cdots$, which statement
+    about $\sum_k a_{n_k}$ is guaranteed?
+  choices:
+  - id: a
+    text: It converges absolutely.
+  - id: b
+    text: |-
+      It has the same sum as $\sum a_n$.
+  - id: c
+    text: It is conditionally convergent.
+  - id: d
+    text: It diverges unless only finitely many terms are selected.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The selected absolute partial sums are bounded above by the full nonnegative absolute sum.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - apply-dirichlets-test
+  - prove-failure-of-absolute-convergence
+  prompt: |
+    What is the strongest classification of $\sum_{n=1}^{\infty}\sin(n)/n$?
+  choices:
+  - id: a
+    text: Conditionally convergent
+  - id: b
+    text: Absolutely convergent
+  - id: c
+    text: |-
+      Divergent because $\sin n$ has no limit
+  - id: d
+    text: Telescoping
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The partial sums of $\sin n$ are bounded and $1/n$ decreases to zero, while $|\sin n|/n$ diverges by its positive average over integer angles.
 - id: q008
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-riemann-rearrangement-theorem
+  prompt: |
+    Which target can a rearrangement of a conditionally convergent real
+    series be constructed to approach?
+  choices:
+  - id: a
+    text: Any prescribed real number
+  - id: b
+    text: Only the original sum
+  - id: c
+    text: Only zero
+  - id: d
+    text: No finite target
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The Riemann rearrangement theorem permits a permutation converging to any chosen real value.
 - id: q009
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - analyze-sign-removal
+  prompt: |
+    Let $a_n=(-1)^{n-1}/n$ and $b_n=(-1)^{n-1}$. What happens to
+    $\sum a_nb_n$?
+  choices:
+  - id: a
+    text: It diverges as the harmonic series.
+  - id: b
+    text: It converges absolutely.
+  - id: c
+    text: |-
+      It retains the sum $\ln2$.
+  - id: d
+    text: Every term is zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The two sign factors multiply to one, leaving $\sum1/n$.
 - id: q010
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - classify-logarithmic-alternating-series
+  prompt: |
+    Classify $\sum_{n=2}^{\infty}(-1)^n\frac{\ln n}{n}$.
+  choices:
+  - id: a
+    text: Conditionally convergent
+  - id: b
+    text: Absolutely convergent
+  - id: c
+    text: Divergent by the term test
+  - id: d
+    text: Geometric
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The function $\ln x/x$ decreases for $x>e$ and tends to zero, whereas its positive series diverges by the integral test.
 - id: q011
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - test-inferences-about-squares
+  prompt: |
+    Given only that $\sum a_n$ converges conditionally, what can be concluded
+    about $\sum a_n^2$?
+  choices:
+  - id: a
+    text: Nothing definitive; it may converge or diverge.
+  - id: b
+    text: It always converges.
+  - id: c
+    text: It always diverges.
+  - id: d
+    text: It converges conditionally.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Alternating $1/n$ has summable squares, while alternating $1/\sqrt n$ converges conditionally and has harmonic, divergent squares.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - distinguish-finite-and-infinite-permutations
+  prompt: |
+    A convergent series has only its first $100$ terms permuted. What is
+    guaranteed?
+  choices:
+  - id: a
+    text: It still converges to the same sum.
+  - id: b
+    text: Its sum can become arbitrary.
+  - id: c
+    text: It becomes absolutely convergent.
+  - id: d
+    text: It must diverge.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: A finite sum is invariant under permutation, and the infinite tail is unchanged.
 - id: q013
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - analyze-perturbed-denominators
+  - use-asymptotic-pairing
+  prompt: |
+    Pair consecutive terms of
+    $$\sum_{n=2}^{\infty}\frac{(-1)^n}{\sqrt n+(-1)^n}.$$
+    What behavior does the paired series reveal?
+  choices:
+  - id: a
+    text: Divergence caused by a negative harmonic-order drift
+  - id: b
+    text: Absolute convergence by comparison with $1/n$
+  - id: c
+    text: Conditional convergence by the ordinary alternating-series test
+  - id: d
+    text: Exact telescoping to zero
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Rationalizing or expanding each denominator shows the leading square-root terms nearly
+    cancel but the correction in every pair is negative and comparable to $1/k$.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - use-absolute-convergence-under-addition
+  prompt: |
+    If $\sum a_n$ converges conditionally and $\sum b_n$ converges
+    absolutely, how does $\sum(a_n+b_n)$ converge?
+  choices:
+  - id: a
+    text: Conditionally
+  - id: b
+    text: Absolutely
+  - id: c
+    text: It must diverge.
+  - id: d
+    text: Its behavior is arbitrary.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The sum converges by linearity; if it were absolute, subtracting the absolutely convergent
+    $b$ series would make the $a$ series absolute, a contradiction.
 - id: q015
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - evaluate-rearrangement-claims
+  prompt: |
+    A real series converges to the same finite sum under every permutation of
+    its terms. Which stronger fact follows?
+  choices:
+  - id: a
+    text: The series converges absolutely.
+  - id: b
+    text: The terms are eventually positive.
+  - id: c
+    text: The series is geometric.
+  - id: d
+    text: The original sum is zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q023
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q024
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q027
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: For real scalar series, unconditional convergence is equivalent to absolute convergence;
+    otherwise Riemann rearrangement gives a permutation with a different outcome.
+attemptQuestionCount: 15

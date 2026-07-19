@@ -1,353 +1,326 @@
 schemaVersion: 1
 id: calc2-power-series-hard-test
-title: Power Series and Representations Hard Test
+title: Power Series Hard Test
 assessmentType: test
 categoryId: calculus-2
 topicId: power-series
 skills:
-- Determine a power series radius and interval of convergence
-- Differentiate and integrate power series within convergence bounds
-- Represent functions using geometric-series transformations
+- Determine radii from factorial and binomial coefficient growth
+- Analyze endpoints, parity, composition, and coefficient convolution
+- Derive power-series recurrences and generating-function identities
 navigation:
   learningGoal: evaluate
   activityType: formalTest
   tags:
-  - calc2
-  - hard
   - calculus-2
   - power-series
+  - hard
+  - coefficient-analysis
 modeDefault: evaluate
 randomizeQuestions: true
-attemptQuestionCount: 15
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - find-radii-from-stirling-asymptotics
+  prompt: |
+    What is the radius of convergence of
+    $\sum_{n=1}^{\infty}(n^n/n!)x^n$?
+  choices:
+  - id: a
+    text: $1/e$
+  - id: b
+    text: $e$
+  - id: c
+    text: $1$
+  - id: d
+    text: |-
+      $\infty$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Stirling gives $(n^n/n!)^{1/n}\to e$, so the Cauchy–Hadamard radius is its reciprocal.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - find-radii-from-central-binomial-growth
+  prompt: |
+    Find the radius of
+    $\sum_{n=1}^{\infty}[(n!)^2/(2n)!]x^n$.
+  choices:
+  - id: a
+    text: $4$
+  - id: b
+    text: $1/4$
+  - id: c
+    text: $2$
+  - id: d
+    text: |-
+      $\infty$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The coefficient is the reciprocal central binomial coefficient and has nth-root limit one
+    fourth.
 - id: q003
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - test-shifted-power-series-endpoints
+  prompt: |
+    Determine the interval of convergence of
+    $\sum_{n=1}^{\infty}(x+2)^n/(n3^n)$.
+  choices:
+  - id: a
+    text: $[-5,1)$
+  - id: b
+    text: $(-5,1)$
+  - id: c
+    text: $[-5,1]$
+  - id: d
+    text: $(-5,1]$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The radius is three; x equals negative five gives the alternating harmonic series, while
+    x equals one gives the harmonic series.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - derive-binomial-generating-functions
+  prompt: |
+    What is the coefficient of $x^n$ in $1/(1-x)^3$?
+  choices:
+  - id: a
+    text: $(n+1)(n+2)/2$
+  - id: b
+    text: $n+1$
+  - id: c
+    text: $n^2$
+  - id: d
+    text: $3^n$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The negative-binomial expansion gives $\binom{n+2}{2}$, or differentiate the geometric series twice with the correct scale.
 - id: q005
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - compute-cauchy-product-coefficients
+  prompt: |
+    Squaring $\sum_{n=0}^{\infty}x^n$ inside $|x|<1$, what is the
+    coefficient of $x^m$?
+  choices:
+  - id: a
+    text: $m+1$
+  - id: b
+    text: $m$
+  - id: c
+    text: $2^m$
+  - id: d
+    text: $1$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The convolution pairs $(k,m-k)$ range from k equals zero through m, giving m plus one contributions.
 - id: q006
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - extract-even-and-odd-power-series
+  prompt: |
+    If $f(x)=\sum c_nx^n$, which expression retains only its even-power
+    terms?
+  choices:
+  - id: a
+    text: $[f(x)+f(-x)]/2$
+  - id: b
+    text: $[f(x)-f(-x)]/2$
+  - id: c
+    text: $f(x^2)/2$
+  - id: d
+    text: $f(x)+f(x)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Substitution of negative x preserves even powers and reverses odd powers, so averaging
+    cancels the odd part.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - derive-coefficient-recurrences-from-odes
+  prompt: |
+    Let $y=\sum_{n=0}^{\infty}c_nx^n$ satisfy $y'=y$ and $y(0)=2$.
+    Which recurrence is correct?
+  choices:
+  - id: a
+    text: $c_0=2$ and $c_{n+1}=c_n/(n+1)$
+  - id: b
+    text: $c_0=0$ and $c_{n+1}=(n+1)c_n$
+  - id: c
+    text: $c_n=2$ for every n
+  - id: d
+    text: $c_{n+1}=-c_n$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Matching the x-to-the-n coefficient in $y'=\sum(n+1)c_{n+1}x^n$ with y gives the recurrence.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - compose-power-series
+  prompt: |
+    From $1/(1-u)=\sum u^n$, which series represents $1/(1-x^2)$?
+  choices:
+  - id: a
+    text: |-
+      $\sum_{n=0}^{\infty}x^{2n}$ for $|x|<1$
+  - id: b
+    text: |-
+      $\sum x^n$ for $|x|<2$
+  - id: c
+    text: |-
+      $\sum(-1)^nx^{2n}$
+  - id: d
+    text: |-
+      $\sum x^{n+2}$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Substitute u equals x squared; the condition $|u|<1$ becomes $|x|<1$.
 - id: q009
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - use-power-series-uniqueness
+  prompt: |
+    Two power series centered at a agree for every x in an open interval
+    around a. What follows?
+  choices:
+  - id: a
+    text: Their corresponding coefficients are equal.
+  - id: b
+    text: Only their constant coefficients agree.
+  - id: c
+    text: Their radii must be infinite.
+  - id: d
+    text: Their coefficients may differ arbitrarily.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Repeated derivatives at the center recover each coefficient uniquely.
 - id: q010
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - connect-singularities-and-radii
+  prompt: |
+    What is the radius of the Taylor series of $1/(1+x^2)$ centered at
+    zero?
+  choices:
+  - id: a
+    text: $1$
+  - id: b
+    text: |-
+      $\infty$
+  - id: c
+    text: $2$
+  - id: d
+    text: $1/2$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    The geometric representation $\sum(-1)^nx^{2n}$ requires $|x|<1$; equivalently the complex singularities are at plus or minus i.
 - id: q011
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - track-radii-under-integration
+  prompt: |
+    If $\sum c_n(x-a)^n$ has radius R, what radius does its termwise
+    antiderivative have?
+  choices:
+  - id: a
+    text: $R$
+  - id: b
+    text: $R+1$
+  - id: c
+    text: $R/2$
+  - id: d
+    text: |-
+      $\infty$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Dividing coefficients by n plus one changes only subexponential growth, so the radius is
+    unchanged.
 - id: q012
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - analyze-sums-of-power-series
+  prompt: |
+    Power series f and g share a center and have radii $2$ and $5$. What is
+    guaranteed about the radius of $f+g$?
+  choices:
+  - id: a
+    text: It is at least $2$.
+  - id: b
+    text: It is exactly $2$.
+  - id: c
+    text: It is exactly $7$.
+  - id: d
+    text: It is zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Both converge in the smaller disk, while coefficient cancellation can make the sum's radius
+    larger.
 - id: q013
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - differentiate-known-power-series
+  prompt: |
+    Inside $|x|<1$, what function equals
+    $\sum_{n=1}^{\infty}(-1)^{n-1}x^{n-1}$?
+  choices:
+  - id: a
+    text: $1/(1+x)$
+  - id: b
+    text: $1/(1-x)$
+  - id: c
+    text: |-
+      $\ln(1+x)$
+  - id: d
+    text: |-
+      $-\ln(1-x)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    This is the geometric series with ratio negative x, and it is also the derivative of $\ln(1+x)$.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - evaluate-power-series-at-interior-points
+  prompt: |
+    Evaluate $\sum_{n=0}^{\infty}(n+1)/2^n$.
+  choices:
+  - id: a
+    text: $4$
+  - id: b
+    text: $2$
+  - id: c
+    text: $3$
+  - id: d
+    text: $6$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Use $\sum(n+1)x^n=1/(1-x)^2$ at x equals one half.
 - id: q015
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - interpret-endpoint-underdetermination
+  prompt: |
+    Why does a radius alone not determine endpoint behavior?
+  choices:
+  - id: a
+    text: |-
+      $\sum x^n/n$ and $\sum x^n/n^2$ both have radius $1$ but differ at endpoints.
+  - id: b
+    text: Every radius is approximate.
+  - id: c
+    text: Endpoints are always excluded.
+  - id: d
+    text: Power series have no endpoints.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q021
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q022
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q023
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q024
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q025
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q026
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q027
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q031
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q032
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q033
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q034
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q035
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q036
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q037
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q038
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q039
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q040
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q041
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q042
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q043
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q044
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q045
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: At x equals one the first is harmonic and diverges, while the second converges absolutely,
+    despite identical radii.
+attemptQuestionCount: 15

@@ -5,348 +5,333 @@ assessmentType: test
 categoryId: calculus-2
 topicId: sequence-fundamentals
 skills:
-- Analyze sequence limits from formulas and recurrence relations
-- Use monotonicity and boundedness to reason about convergence
-- Distinguish sequence behavior from series behavior
+- Prove convergence of nonlinear recurrence sequences
+- Evaluate scaled, oscillatory, product, and finite-sum limits
+- Apply subsequence, cluster-point, and contraction arguments
 navigation:
   learningGoal: evaluate
   activityType: formalTest
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - sequence-fundamentals
+  - olympiad
+  - proof-reasoning
 modeDefault: evaluate
 randomizeQuestions: true
-attemptQuestionCount: 15
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - prove-recursive-sequence-convergence
+  - identify-fixed-points
+  prompt: |
+    Let $a_1=2$ and
+    $$a_{n+1}=\frac12\left(a_n+\frac3{a_n}\right).$$
+    Which conclusion is correct?
+  choices:
+  - id: a
+    text: |-
+      $a_n\downarrow\sqrt3$
+  - id: b
+    text: |-
+      $a_n\uparrow2$
+  - id: c
+    text: |-
+      $a_n\to-\sqrt3$
+  - id: d
+    text: The sequence oscillates without a limit.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    AM-GM keeps $a_n\ge\sqrt3$, and $a_{n+1}-a_n=(3-a_n^2)/(2a_n)\le0$; the positive fixed point is $\sqrt3$.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - rationalize-sequence-limits
+  prompt: |
+    Evaluate
+    $$\lim_{n\to\infty}n\left(\sqrt{n^2+n}-n\right).$$
+  choices:
+  - id: a
+    text: $0$
+  - id: b
+    text: $1/2$
+  - id: c
+    text: |-
+      $+\infty$
+  - id: d
+    text: $1$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: c
+  explanation: |-
+    Rationalization gives $n^2/(\sqrt{n^2+n}+n)$, which is asymptotic to $n/2$ and therefore diverges to $+\infty$.
 - id: q003
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - evaluate-second-order-limits
+  prompt: |
+    Find
+    $$\lim_{n\to\infty}n^2\left(1-\cos\frac1n\right).$$
+  choices:
+  - id: a
+    text: $0$
+  - id: b
+    text: $1/2$
+  - id: c
+    text: $1$
+  - id: d
+    text: The limit does not exist.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: b
+  explanation: |-
+    With $x=1/n$, the expression is $(1-\cos x)/x^2$, whose limit is $1/2$ by the half-angle identity or Taylor expansion.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - recognize-riemann-sum-sequences
+  prompt: |
+    Determine
+    $$\lim_{n\to\infty}\sum_{k=1}^{n}\frac1{n+k}.$$
+  choices:
+  - id: a
+    text: $0$
+  - id: b
+    text: $1/2$
+  - id: c
+    text: |-
+      $\ln2$
+  - id: d
+    text: $1$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: c
+  explanation: |-
+    Rewrite the sum as $(1/n)\sum_{k=1}^{n}1/(1+k/n)$, a right-endpoint Riemann sum for $\int_0^1 dx/(1+x)=\ln2$.
 - id: q005
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - bound-harmonic-differences
+  prompt: |
+    What is
+    $$\lim_{n\to\infty}\left(H_{2n}-H_n\right),\qquad
+    H_m=\sum_{k=1}^{m}\frac1k?$$
+  choices:
+  - id: a
+    text: $0$
+  - id: b
+    text: |-
+      $\ln2$
+  - id: c
+    text: $1$
+  - id: d
+    text: |-
+      $+\infty$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: b
+  explanation: |-
+    The difference is $\sum_{k=n+1}^{2n}1/k$, which is squeezed by adjacent integrals whose common limiting value is $\int_1^2 dx/x=\ln2$.
 - id: q006
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - use-logarithms-for-indeterminate-powers
+  prompt: |
+    Evaluate $\lim_{n\to\infty}n^{1/n}$.
+  choices:
+  - id: a
+    text: $0$
+  - id: b
+    text: $1$
+  - id: c
+    text: $e$
+  - id: d
+    text: |-
+      $+\infty$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: b
+  explanation: |-
+    Taking logarithms gives $\ln(n^{1/n})=(\ln n)/n\to0$, so continuity of the exponential yields the limit $e^0=1$.
 - id: q007
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - solve-nonlinear-recurrences-by-error-transforms
+  prompt: |
+    Let $0<a_1<1$ and $a_{n+1}=a_n(2-a_n)$. What is the limit?
+  choices:
+  - id: a
+    text: $0$
+  - id: b
+    text: $1$
+  - id: c
+    text: $2$
+  - id: d
+    text: It depends on $a_1$.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: b
+  explanation: |-
+    Setting $e_n=1-a_n$ gives $e_{n+1}=e_n^2$ with $0<e_1<1$, so $e_n\to0$ and $a_n\to1$.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - apply-subsequence-criteria
+  prompt: |
+    Suppose $a_{2n}\to L$ and $a_{2n+1}\to L$. What follows?
+  choices:
+  - id: a
+    text: |-
+      $a_n\to L$
+  - id: b
+    text: $a_n$ may still have a third subsequential limit
+  - id: c
+    text: $a_n$ must alternate between two values
+  - id: d
+    text: Only boundedness follows
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Beyond the larger of the two parity thresholds, every index is either even or odd and therefore
+    its term lies within the requested tolerance of $L$.
 - id: q009
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - construct-counterexamples-to-convergence-claims
+  prompt: |
+    Which sequence is bounded and divergent while still satisfying
+    $a_{n+1}-a_n\to0$?
+  choices:
+  - id: a
+    text: |-
+      $a_n=\sin(\sqrt n)$
+  - id: b
+    text: $a_n=(-1)^n$
+  - id: c
+    text: $a_n=1/n$
+  - id: d
+    text: $a_n=n$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Sine keeps the sequence bounded, $\sqrt{n+1}-\sqrt n\to0$ makes consecutive sine differences vanish, and the slowly growing phase visits values near different sine levels.
 - id: q010
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - evaluate-exponential-limits
+  prompt: |
+    For fixed real $x$, find
+    $$\lim_{n\to\infty}\left(1+\frac{x}{n}\right)^n.$$
+  choices:
+  - id: a
+    text: $1+x$
+  - id: b
+    text: $e^x$
+  - id: c
+    text: $x^e$
+  - id: d
+    text: $1$ for every $x$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: b
+  explanation: |-
+    The logarithm is $n\ln(1+x/n)=x[\ln(1+u)/u]$ with $u=x/n\to0$, so it tends to $x$.
 - id: q011
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - analyze-two-cycle-recurrences
+  prompt: |
+    Let $a_1=1$ and $a_{n+1}=1+1/a_n$. Which number is the limit?
+  choices:
+  - id: a
+    text: $1$
+  - id: b
+    text: |-
+      $\frac{1+\sqrt5}{2}$
+  - id: c
+    text: $2$
+  - id: d
+    text: No limit exists because the sequence alternates.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: b
+  explanation: The odd and even subsequences are monotone in opposite directions and bounded toward the
+    same positive fixed point of $L=1+1/L$, namely the golden ratio.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - analyze-product-sequences
+  prompt: |
+    Evaluate
+    $$\lim_{n\to\infty}\left[\prod_{k=1}^{n}\left(1+\frac1k\right)\right]^{1/n}.$$
+  choices:
+  - id: a
+    text: $1$
+  - id: b
+    text: $e$
+  - id: c
+    text: $2$
+  - id: d
+    text: |-
+      $+\infty$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The product telescopes to $n+1$, and $(n+1)^{1/n}\to1$ by taking logarithms.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - use-ratio-bounds-for-sequences
+  prompt: |
+    Let $a_n>0$ and suppose
+    $\lim_{n\to\infty}a_{n+1}/a_n=L<1$. What must follow?
+  choices:
+  - id: a
+    text: |-
+      $a_n\to0$
+  - id: b
+    text: |-
+      $a_n\to L$
+  - id: c
+    text: $a_n$ eventually equals zero
+  - id: d
+    text: $a_n$ diverges because all terms are positive
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Choose $r$ with $L<r<1$; eventually $a_{n+1}\le r a_n$, so iteration bounds the tail by a constant times $r^n$.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-bolzano-weierstrass-and-uniqueness
+  prompt: |
+    A bounded real sequence has exactly one subsequential limit, $L$. What
+    can be concluded?
+  choices:
+  - id: a
+    text: The full sequence converges to $L$.
+  - id: b
+    text: The sequence may diverge while having no other subsequential limit.
+  - id: c
+    text: The sequence must be monotone.
+  - id: d
+    text: |-
+      Only $\limsup a_n=L$ is known.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: If the sequence failed to converge to $L$, infinitely many terms would stay outside some
+    neighborhood; boundedness would give that subsequence a convergent subsubsequence with a different
+    limit.
 - id: q015
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - distinguish-limsup-from-limit
+  prompt: |
+    For $a_n=(-1)^n+n/(n+1)$, what are $\liminf a_n$ and $\limsup a_n$?
+  choices:
+  - id: a
+    text: $0$ and $2$, respectively
+  - id: b
+    text: $-1$ and $1$, respectively
+  - id: c
+    text: $1$ and $1$, respectively
+  - id: d
+    text: |-
+      $-\infty$ and $+\infty$, respectively
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q018
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q027
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q031
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q032
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q033
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q034
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q035
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q036
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q037
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q038
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q039
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q040
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q041
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q042
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q043
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q044
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q045
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Along odd indices the terms approach $-1+1=0$, while along even indices they approach $1+1=2$;
+    these exhaust the parity behavior.
+attemptQuestionCount: 15

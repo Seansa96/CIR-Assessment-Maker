@@ -5,237 +5,324 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: infinite-series-review
 skills:
-- Relate sequences of partial sums to series convergence
-- Select and justify convergence tests
-- Classify convergence and estimate series error
+- Apply condensation, Dirichlet, Abel, and rearrangement principles
+- Analyze logarithmic thresholds, infinite products, and power-series boundaries
+- Justify uniform convergence and Cauchy products
 navigation:
   learningGoal: practice
   activityType: mixedPractice
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - infinite-series-review
+  - olympiad
+  - advanced-convergence
 modeDefault: practice
 randomizeQuestions: true
-attemptQuestionCount: 10
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - compute-radii-with-limsup
+  prompt: |
+    A power series $\sum a_nx^n$ has $a_n=2^n$ for even n and
+    $a_n=3^n$ for odd n. What is its radius of convergence?
+  choices:
+  - id: a
+    text: $1/3$
+  - id: b
+    text: $1/2$
+  - id: c
+    text: |-
+      $1/\sqrt6$
+  - id: d
+    text: $1$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The limsup of $|a_n|^{1/n}$ is three, so Cauchy-Hadamard gives reciprocal radius one-third.
 - id: q002
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-cauchy-condensation
+  prompt: |
+    Why does $\displaystyle\sum_{n=2}^{\infty}1/(n\log n)$ diverge?
+  choices:
+  - id: a
+    text: Condensation produces terms comparable to $1/k$.
+  - id: b
+    text: Its terms do not approach zero.
+  - id: c
+    text: It is a p-series with exponent two.
+  - id: d
+    text: The ratio-test limit exceeds one.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    The condensed term $2^k/[2^k\log(2^k)]$ equals $1/(k\log2)$, a constant multiple of the harmonic series.
 - id: q003
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - classify-iterated-logarithm-series
+  prompt: |
+    For sufficiently large n, when does
+    $\displaystyle\sum\frac{1}{n\log n(\log\log n)^p}$ converge?
+  choices:
+  - id: a
+    text: Exactly when $p>1$
+  - id: b
+    text: |-
+      Exactly when $p\ge1$
+  - id: c
+    text: For every positive p
+  - id: d
+    text: For no p
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Successive substitutions $u=\log x$ and $v=\log u$ reduce the integral test to $\int v^{-p}\,dv$.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - apply-dirichlet-tests
+  prompt: |
+    How does $\displaystyle\sum_{n=1}^{\infty}\sin(n)/n$ converge?
+  choices:
+  - id: a
+    text: Conditionally by Dirichlet’s test
+  - id: b
+    text: Absolutely by comparison with $1/n^2$
+  - id: c
+    text: It diverges because $1/n$ diverges
+  - id: d
+    text: Geometrically
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Partial sums of $\sin n$ are bounded and $1/n$ decreases to zero; the absolute series still has harmonic-scale mass.
 - id: q005
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - apply-dirichlet-tests
+  prompt: |
+    For which real $\theta$ does
+    $\displaystyle\sum_{n=1}^{\infty}\cos(n\theta)/n$ fail the usual
+    Dirichlet conclusion because the cosine partial sums are not bounded?
+  choices:
+  - id: a
+    text: |-
+      $\theta\in2\pi\mathbb Z$
+  - id: b
+    text: |-
+      $\theta\in\pi\mathbb Z$
+  - id: c
+    text: Every irrational multiple of pi
+  - id: d
+    text: No real theta
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: When theta is a multiple of two pi every cosine equals one; otherwise the finite geometric
+    formula bounds the exponential partial sums.
 - id: q006
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - understand-conditional-rearrangements
+  prompt: |
+    A real series converges conditionally. Which phenomenon is possible?
+  choices:
+  - id: a
+    text: A rearrangement can converge to a prescribed real value.
+  - id: b
+    text: Every rearrangement has the original sum.
+  - id: c
+    text: The absolute-value series also converges.
+  - id: d
+    text: Only finitely many terms are negative.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The positive and negative subseries separately diverge, allowing rearrangements that alternately
+    overshoot and undershoot a chosen target.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - justify-cauchy-products
+  prompt: |
+    If $\sum a_n=A$ and $\sum b_n=B$ both converge absolutely, what
+    can be asserted about $c_n=\sum_{k=0}^{n}a_kb_{n-k}$?
+  choices:
+  - id: a
+    text: |-
+      $\sum c_n$ converges absolutely to $AB$
+  - id: b
+    text: $c_n=a_nb_n$
+  - id: c
+    text: |-
+      $\sum c_n$ must diverge
+  - id: d
+    text: |-
+      $\sum c_n=A+B$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Absolute convergence permits regrouping the doubly indexed product sum by total degree.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - apply-abel-boundary-theorems
+  prompt: |
+    If $\sum a_n$ converges to S, what does Abel’s theorem imply about
+    $f(r)=\sum a_nr^n$ as $r\to1^-$?
+  choices:
+  - id: a
+    text: |-
+      $f(r)\to S$
+  - id: b
+    text: |-
+      $f(r)\to0$
+  - id: c
+    text: $f(r)$ must be constant
+  - id: d
+    text: The limit exists only under absolute convergence
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Abel’s theorem transfers convergence of the boundary coefficient sum to the radial limit
+    from inside the interval of convergence.
 - id: q009
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - establish-uniform-power-series-convergence
+  prompt: |
+    A power series has radius R. On which sets is uniform convergence
+    automatically guaranteed?
+  choices:
+  - id: a
+    text: |-
+      Every closed interval $|x|\le r<R$
+  - id: b
+    text: |-
+      The entire closed interval $|x|\le R$ including both endpoints
+  - id: c
+    text: Every set containing points with $|x|>R$
+  - id: d
+    text: Only the center point
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Inside the radius, choose a slightly larger interior radius and use its convergent absolute
+    series as a Weierstrass majorant.
 - id: q010
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - compute-radii-from-polynomial-exponential-growth
+  prompt: |
+    What is the radius of $\displaystyle\sum_{n=1}^{\infty}n^2 4^n x^n$?
+  choices:
+  - id: a
+    text: $1/4$
+  - id: b
+    text: $4$
+  - id: c
+    text: $1/2$
+  - id: d
+    text: $0$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The nth root of the coefficient tends to four because $(n^2)^{1/n}$ tends to one.
 - id: q011
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - test-logarithmic-power-series-endpoints
+  prompt: |
+    What is the interval of convergence of
+    $\displaystyle\sum_{n=2}^{\infty}\frac{(x-1)^n}{n\log n}$?
+  choices:
+  - id: a
+    text: $[0,2)$
+  - id: b
+    text: $(0,2]$
+  - id: c
+    text: $[0,2]$
+  - id: d
+    text: $(0,2)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The radius is one; at x equals two the positive logarithmic harmonic series diverges, while
+    at x equals zero the alternating version converges.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - recognize-logarithmic-telescoping
+  prompt: |
+    What happens to
+    $\displaystyle\sum_{n=1}^{\infty}\log(1+1/n)$?
+  choices:
+  - id: a
+    text: |-
+      It diverges because the Nth partial sum is $\log(N+1)$.
+  - id: b
+    text: |-
+      It converges to $\log2$.
+  - id: c
+    text: It converges absolutely by comparison with $1/n^2$.
+  - id: d
+    text: Its terms do not approach zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Each term is $\log(n+1)-\log n$, so the partial sums telescope even though the individual terms tend to zero.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - classify-infinite-products
+  prompt: |
+    What can be concluded about
+    $\displaystyle\prod_{n=1}^{\infty}(1+1/n^2)$?
+  choices:
+  - id: a
+    text: It converges to a finite positive value.
+  - id: b
+    text: It converges to zero.
+  - id: c
+    text: It diverges because every factor exceeds one.
+  - id: d
+    text: It alternates.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The logarithms are asymptotic to $1/n^2$, so their sum converges and the product has a
+    finite nonzero limit.
 - id: q014
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - apply-integral-tests-with-log-substitution
+  prompt: |
+    Classify $\displaystyle\sum_{n=2}^{\infty}1/[n(\log n)^2]$.
+  choices:
+  - id: a
+    text: It converges by the integral test.
+  - id: b
+    text: It diverges by condensation to the harmonic series.
+  - id: c
+    text: It converges conditionally.
+  - id: d
+    text: The terms do not approach zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    With u equal to log x, the comparison integral becomes $\int u^{-2}\,du$, which converges at infinity.
 - id: q015
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - compare-conditional-and-square-summability
+  prompt: |
+    Let $a_n=(-1)^{n+1}/n$. How does $\sum a_n^2$ behave?
+  choices:
+  - id: a
+    text: |-
+      It converges absolutely as $\sum1/n^2$.
+  - id: b
+    text: It converges conditionally.
+  - id: c
+    text: |-
+      It diverges because $\sum a_n$ is only conditional.
+  - id: d
+    text: It telescopes.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q018
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q021
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q022
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q027
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Squaring removes the signs and changes the decay from harmonic to reciprocal-square.
+attemptQuestionCount: 15

@@ -1,0 +1,610 @@
+schemaVersion: 1
+bankId: calc2-geometric-telescoping-olympiad
+categoryId: calculus-2
+topicIds:
+  - geometric-telescoping-series
+minimumItemCount: 30
+items:
+  - id: calc2-gt-oly-001
+    topicId: geometric-telescoping-series
+    skills: [derive-gap-telescoping-sums]
+    archetype: harmonic-boundary-sum
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires a parameter-gap partial fraction decomposition and retention of five lower boundary terms.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\sum_{n=1}^{\infty}\frac5{n(n+5)}.$$
+    choices:
+      - { id: a, text: '$1$' }
+      - { id: b, text: '$H_5=137/60$' }
+      - { id: c, text: '$5H_5$' }
+      - { id: d, text: '$\pi^2/6$' }
+    answer: { choiceId: b }
+    solutionOutline: Since $5/[n(n+5)]=1/n-1/(n+5)$, the finite sum leaves the first five reciprocal terms, whose sum is $H_5=137/60$.
+    commonTrap: Assuming every telescoping sum leaves only one lower boundary term.
+    verification: { method: finite-gap-expansion, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-002
+    topicId: geometric-telescoping-series
+    skills: [use-partial-fractions, track-starting-indices]
+    archetype: symmetric-linear-factors
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires decomposing a quadratic denominator and tracking two uncanceled initial terms.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Find
+      $$\sum_{n=2}^{\infty}\frac1{n^2-1}.$$
+    choices:
+      - { id: a, text: '$1/2$' }
+      - { id: b, text: '$2/3$' }
+      - { id: c, text: '$3/4$' }
+      - { id: d, text: '$1$' }
+    answer: { choiceId: c }
+    solutionOutline: Write $1/(n^2-1)=\frac12[1/(n-1)-1/(n+1)]$; the finite sum leaves $\frac12(1+1/2)=3/4$.
+    commonTrap: Beginning the decomposition at $n=1$, where the original summand is undefined.
+    verification: { method: partial-fraction-boundary-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-003
+    topicId: geometric-telescoping-series
+    skills: [telescope-higher-order-rational-terms]
+    archetype: adjacent-quadratic-blocks
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires discovering a difference of two reciprocal quadratic products.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\sum_{n=1}^{\infty}\frac1{n(n+1)(n+2)}.$$
+    choices:
+      - { id: a, text: '$1/6$' }
+      - { id: b, text: '$1/4$' }
+      - { id: c, text: '$1/2$' }
+      - { id: d, text: '$1$' }
+    answer: { choiceId: b }
+    solutionOutline: The summand equals $\frac12[1/(n(n+1))-1/((n+1)(n+2))]$, so only half of the first $1/(1\cdot2)$ term remains.
+    commonTrap: Omitting the factor $1/2$ introduced by the difference identity.
+    verification: { method: algebraic-identity-and-finite-telescope, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-004
+    topicId: geometric-telescoping-series
+    skills: [rationalize-radical-telescopes]
+    archetype: radical-reciprocal-difference
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires simplifying a quotient of radical differences into a reciprocal telescope.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Determine
+      $$\sum_{n=1}^{\infty}
+      \frac{\sqrt{n+1}-\sqrt n}{\sqrt{n(n+1)}}.$$
+    choices:
+      - { id: a, text: '$1$' }
+      - { id: b, text: '$1/2$' }
+      - { id: c, text: '$\sqrt2-1$' }
+      - { id: d, text: 'The series diverges.' }
+    answer: { choiceId: a }
+    solutionOutline: Splitting the quotient gives $1/\sqrt n-1/\sqrt{n+1}$, whose $N$th partial sum is $1-1/\sqrt{N+1}$.
+    commonTrap: Comparing the unsimplified positive summand to $1/\sqrt n$ and missing its cancellation.
+    verification: { method: exact-radical-simplification, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-005
+    topicId: geometric-telescoping-series
+    skills: [analyze-logarithmic-telescopes]
+    archetype: divergent-telescope
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires recognizing that telescoping produces a partial-sum formula but not necessarily a finite limit.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      What is the behavior of
+      $$\sum_{n=1}^{\infty}\ln\left(1+\frac1n\right)?$$
+    choices:
+      - { id: a, text: 'It converges to $\ln2$.' }
+      - { id: b, text: 'It converges to $1$.' }
+      - { id: c, text: 'It diverges to $+\infty$.' }
+      - { id: d, text: 'It oscillates.' }
+    answer: { choiceId: c }
+    solutionOutline: Each term is $\ln(n+1)-\ln n$, so $S_N=\ln(N+1)$, which grows without bound.
+    commonTrap: Treating the word telescoping as a guarantee of convergence.
+    verification: { method: logarithm-law-partial-sum, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-006
+    topicId: geometric-telescoping-series
+    skills: [evaluate-telescoping-products]
+    archetype: factored-infinite-product
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires factoring each finite-product term into two independently telescoping ratios.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate the infinite product
+      $$\prod_{n=2}^{\infty}\left(1-\frac1{n^2}\right).$$
+    choices:
+      - { id: a, text: '$0$' }
+      - { id: b, text: '$1/2$' }
+      - { id: c, text: '$2/3$' }
+      - { id: d, text: '$1$' }
+    answer: { choiceId: b }
+    solutionOutline: The finite product factors as $\prod(n-1)/n\cdot\prod(n+1)/n=(1/N)((N+1)/2)$, which tends to $1/2$.
+    commonTrap: Writing an indeterminate symbolic factor such as “infinity over infinity” instead of evaluating the finite product.
+    verification: { method: finite-product-factorization, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-007
+    topicId: geometric-telescoping-series
+    skills: [discover-product-telescopes]
+    archetype: completed-square-product
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires completing a square in each factor and tracking two product boundaries.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Find
+      $$\prod_{n=1}^{\infty}\left(1+\frac1{n(n+2)}\right).$$
+    choices:
+      - { id: a, text: '$1$' }
+      - { id: b, text: '$2$' }
+      - { id: c, text: '$e$' }
+      - { id: d, text: 'The product diverges to $+\infty$.' }
+    answer: { choiceId: b }
+    solutionOutline: Each factor is $(n+1)^2/[n(n+2)]$; the finite product becomes $(N+1)\cdot2/(N+2)$ and tends to $2$.
+    commonTrap: Concluding divergence because every factor exceeds one without measuring how rapidly the excess tends to zero.
+    verification: { method: exact-finite-product-evaluation, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-008
+    topicId: geometric-telescoping-series
+    skills: [differentiate-geometric-series]
+    archetype: weighted-geometric-sum
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires differentiating a power-series identity and substituting within its convergence interval.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\sum_{n=1}^{\infty}\frac{n(n+1)}{3^n}.$$
+    choices:
+      - { id: a, text: '$3/2$' }
+      - { id: b, text: '$2$' }
+      - { id: c, text: '$9/4$' }
+      - { id: d, text: '$3$' }
+    answer: { choiceId: c }
+    solutionOutline: From $\sum_{n\ge1}n(n+1)x^n=2x/(1-x)^3$, substitution $x=1/3$ gives $(2/3)/(2/3)^3=9/4$.
+    commonTrap: Using only the first derivative formula for $\sum nx^n$ and losing the second factor $n+1$.
+    verification: { method: twice-differentiated-geometric-identity, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-009
+    topicId: geometric-telescoping-series
+    skills: [telescope-inverse-trigonometric-differences]
+    archetype: arctangent-addition-identity
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires recognizing a summand as the tangent of a consecutive arctangent difference and checking the branch.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\sum_{n=1}^{\infty}
+      \arctan\left(\frac1{n^2+n+1}\right).$$
+    choices:
+      - { id: a, text: '$\pi/6$' }
+      - { id: b, text: '$\pi/4$' }
+      - { id: c, text: '$\pi/2$' }
+      - { id: d, text: 'The series diverges.' }
+    answer: { choiceId: b }
+    solutionOutline: The tangent subtraction formula gives each term as $\arctan(n+1)-\arctan n$; the partial sums approach $\pi/2-\pi/4$.
+    commonTrap: Replacing the arctangent of a difference quotient with the difference of arctangents without verifying the identity.
+    verification: { method: tangent-subtraction-and-branch-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-010
+    topicId: geometric-telescoping-series
+    skills: [analyze-parameterized-geometric-series]
+    archetype: convergence-domain-and-sum
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires finding both the parameter domain and the corresponding closed-form sum.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For which $x$ does
+      $$\sum_{n=1}^{\infty}(3x-1)^n$$
+      converge, and what is its sum there?
+    choices:
+      - { id: a, text: '$0<x<2/3$, with sum $(3x-1)/(2-3x)$' }
+      - { id: b, text: '$0\le x\le2/3$, with sum $1/(2-3x)$' }
+      - { id: c, text: '$x<2/3$, with sum $3x-1$' }
+      - { id: d, text: 'All real $x$, with sum $1/(1-3x)$' }
+    answer: { choiceId: a }
+    solutionOutline: The ratio condition $|3x-1|<1$ gives $0<x<2/3$, and a geometric series beginning at power one sums to $r/(1-r)$.
+    commonTrap: Including endpoints where the terms fail to approach zero or using the power-zero sum formula.
+    verification: { method: geometric-ratio-inequality-and-index-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-011
+    topicId: geometric-telescoping-series
+    skills: [convert-repeating-decimals-to-series]
+    archetype: repeating-block-geometric
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires identifying the first block value and the power-of-ten block ratio.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Express $0.\overline{123}$ as a reduced fraction.
+    choices:
+      - { id: a, text: '$41/333$' }
+      - { id: b, text: '$123/1000$' }
+      - { id: c, text: '$123/9990$' }
+      - { id: d, text: '$1/123$' }
+    answer: { choiceId: a }
+    solutionOutline: The blocks form $123/1000+123/1000^2+\cdots$, whose sum is $123/999=41/333$.
+    commonTrap: Treating the first finite decimal block as the entire repeating value.
+    verification: { method: geometric-block-sum-and-reduction, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-012
+    topicId: geometric-telescoping-series
+    skills: [telescope-residue-class-series]
+    archetype: arithmetic-progression-boundaries
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires seeing consecutive cancellation within one residue class rather than among adjacent integers.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\sum_{n=1}^{\infty}\left(\frac1{3n-2}-\frac1{3n+1}\right).$$
+    choices:
+      - { id: a, text: '$1/3$' }
+      - { id: b, text: '$1/2$' }
+      - { id: c, text: '$1$' }
+      - { id: d, text: 'The series diverges.' }
+    answer: { choiceId: c }
+    solutionOutline: The negative denominator $3n+1$ equals the next positive denominator $3(n+1)-2$, so the finite sum is $1-1/(3N+1)$.
+    commonTrap: Comparing each positive component to a divergent harmonic subseries before combining the prescribed difference.
+    verification: { method: shifted-index-finite-sum, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-013
+    topicId: geometric-telescoping-series
+    skills: [telescope-fibonacci-identities]
+    archetype: recurrence-generated-cancellation
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires using the Fibonacci recurrence to manufacture a reciprocal difference.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Let $F_1=F_2=1$ and $F_{n+2}=F_{n+1}+F_n$. Evaluate
+      $$\sum_{n=1}^{\infty}\frac1{F_nF_{n+2}}.$$
+    choices:
+      - { id: a, text: '$1$' }
+      - { id: b, text: '$2$' }
+      - { id: c, text: '$\sqrt5$' }
+      - { id: d, text: 'The series diverges.' }
+    answer: { choiceId: a }
+    solutionOutline: The recurrence shows $1/(F_nF_{n+2})=1/(F_nF_{n+1})-1/(F_{n+1}F_{n+2})$, leaving $1/(F_1F_2)=1$.
+    commonTrap: Reaching for Binet's formula when the recurrence itself supplies exact cancellation.
+    verification: { method: fibonacci-recurrence-identity, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-014
+    topicId: geometric-telescoping-series
+    skills: [distinguish-term-simplification-from-convergence]
+    archetype: divergent-radical-telescope
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires rationalizing a reciprocal radical sum and then evaluating the boundary growth.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      What is the behavior of
+      $$\sum_{n=1}^{\infty}\frac1{\sqrt n+\sqrt{n+1}}?$$
+    choices:
+      - { id: a, text: 'It converges to $1$.' }
+      - { id: b, text: 'It converges to $\sqrt2-1$.' }
+      - { id: c, text: 'It diverges to $+\infty$.' }
+      - { id: d, text: 'It oscillates.' }
+    answer: { choiceId: c }
+    solutionOutline: Rationalization turns the summand into $\sqrt{n+1}-\sqrt n$, so $S_N=\sqrt{N+1}-1\to+\infty$.
+    commonTrap: Assuming cancellation automatically leaves a vanishing upper boundary.
+    verification: { method: conjugate-and-partial-sum-limit, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-015
+    topicId: geometric-telescoping-series
+    skills: [derive-tails-from-geometric-series]
+    archetype: exact-tail-inversion
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires forming an exact geometric remainder and solving a discrete threshold.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $\sum_{n=0}^{\infty}(2/3)^n$, what is the least $N$ such that
+      the tail after terms $n=0,\ldots,N$ is less than $1/100$?
+    choices:
+      - { id: a, text: '$N=12$' }
+      - { id: b, text: '$N=13$' }
+      - { id: c, text: '$N=14$' }
+      - { id: d, text: '$N=15$' }
+    answer: { choiceId: c }
+    solutionOutline: The exact tail is $3(2/3)^{N+1}$; it is above $0.01$ at $N=13$ and below $0.01$ at $N=14$.
+    commonTrap: Using only the first omitted term and forgetting the remaining geometric factor $1/(1-r)$.
+    verification: { method: exact-tail-formula-and-adjacent-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-gt-oly-016
+    topicId: geometric-telescoping-series
+    skills: [decompose-rational-telescoping-series]
+    archetype: symmetric-linear-factors
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires partial fractions and careful tracking of four surviving boundary terms.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate $\displaystyle\sum_{n=3}^{\infty}\frac1{n^2-4}$.
+    choices: [{id: a, text: '$25/48$'}, {id: b, text: '$1/4$'}, {id: c, text: '$5/12$'}, {id: d, text: 'Diverges'}]
+    answer: {choiceId: a}
+    solutionOutline: Write the summand as $\tfrac14[1/(n-2)-1/(n+2)]$; the four initial reciprocal terms survive and sum to $25/12$ before multiplication by one fourth.
+    commonTrap: Keeping only the first surviving term when the index shift is four.
+    verification: {method: partial-fractions-and-finite-boundaries, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-017
+    topicId: geometric-telescoping-series
+    skills: [interpret-repeating-decimals-as-series]
+    archetype: positional-geometric-series
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires translating decimal place value into an infinite geometric sum.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Which exact value is represented by $0.999\ldots$?
+    choices: [{id: a, text: '$1$'}, {id: b, text: '$0.9$'}, {id: c, text: '$9/11$'}, {id: d, text: 'A number infinitesimally below $1$'}]
+    answer: {choiceId: a}
+    solutionOutline: The place values form $0.9\sum_{k=0}^{\infty}(0.1)^k=0.9/(1-0.1)=1$.
+    commonTrap: Treating an infinite decimal tail as a nonzero infinitesimal in the real numbers.
+    verification: {method: geometric-place-value-sum, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-018
+    topicId: geometric-telescoping-series
+    skills: [normalize-geometric-series]
+    archetype: shifted-exponential-index
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires extracting a constant and respecting the starting index.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Find $\displaystyle\sum_{n=1}^{\infty}\frac{4^{n+1}}{5^n}$.
+    choices: [{id: a, text: '$16$'}, {id: b, text: '$20$'}, {id: c, text: '$4$'}, {id: d, text: 'Diverges'}]
+    answer: {choiceId: a}
+    solutionOutline: The series is $4\sum_{n=1}^{\infty}(4/5)^n=4[(4/5)/(1/5)]=16$.
+    commonTrap: Using first term one in the geometric formula despite the sum beginning at n equals one.
+    verification: {method: indexed-geometric-sum, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-019
+    topicId: geometric-telescoping-series
+    skills: [analyze-telescoping-divergence]
+    archetype: logarithmic-boundary-growth
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires telescoping finite partial sums and testing the surviving boundary.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      What happens to $\displaystyle\sum_{n=1}^{\infty}\ln(1+1/n)$?
+    choices: [{id: a, text: 'It diverges to $+\infty$.'}, {id: b, text: 'It converges to $\ln2$.'}, {id: c, text: 'It converges to $1$.'}, {id: d, text: 'It oscillates.'}]
+    answer: {choiceId: a}
+    solutionOutline: Each term is $\ln(n+1)-\ln n$, so the Nth partial sum is $\ln(N+1)$.
+    commonTrap: Assuming that every telescoping expression converges without checking the final boundary term.
+    verification: {method: exact-partial-sum-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-020
+    topicId: geometric-telescoping-series
+    skills: [discover-factorial-telescoping]
+    archetype: factorial-difference
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires rewriting the numerator to expose consecutive factorial reciprocals.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate $\displaystyle\sum_{n=1}^{\infty}\frac{n}{(n+1)!}$.
+    choices: [{id: a, text: '$1$'}, {id: b, text: '$e-1$'}, {id: c, text: '$1/2$'}, {id: d, text: '$e$'}]
+    answer: {choiceId: a}
+    solutionOutline: Since $n/(n+1)!=1/n!-1/(n+1)!$, the finite sum leaves $1-1/(N+1)!$.
+    commonTrap: Replacing the expression with the exponential series without accounting for the factor n.
+    verification: {method: factorial-reciprocal-difference, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-021
+    topicId: geometric-telescoping-series
+    skills: [telescope-arithmetic-progressions]
+    archetype: odd-denominator-shift
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires partial fractions with a step size of two.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Compute $\displaystyle\sum_{n=1}^{\infty}\frac1{(2n-1)(2n+1)}$.
+    choices: [{id: a, text: '$1/2$'}, {id: b, text: '$1$'}, {id: c, text: '$1/4$'}, {id: d, text: 'Diverges'}]
+    answer: {choiceId: a}
+    solutionOutline: The summand is one half of $1/(2n-1)-1/(2n+1)$, leaving one half in the limit.
+    commonTrap: Omitting the one-half coefficient introduced by the denominator gap.
+    verification: {method: step-two-partial-fractions, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-022
+    topicId: geometric-telescoping-series
+    skills: [split-combined-geometric-series]
+    archetype: difference-of-two-ratios
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires recognizing and subtracting two independently convergent geometric sums.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Find $\displaystyle\sum_{n=1}^{\infty}\frac{3^n-2^n}{6^n}$.
+    choices: [{id: a, text: '$1/2$'}, {id: b, text: '$3/2$'}, {id: c, text: '$1/6$'}, {id: d, text: 'Diverges'}]
+    answer: {choiceId: a}
+    solutionOutline: Split into $\sum(1/2)^n-\sum(1/3)^n=1-1/2$.
+    commonTrap: Combining the numerator bases before dividing by the denominator base.
+    verification: {method: linearity-of-convergent-geometric-series, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-023
+    topicId: geometric-telescoping-series
+    skills: [factor-and-telescope-rational-series]
+    archetype: consecutive-linear-factors
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires factoring a quadratic and finding the correct partial-fraction signs.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate $\displaystyle\sum_{n=1}^{\infty}\frac1{n^2+3n+2}$.
+    choices: [{id: a, text: '$1/2$'}, {id: b, text: '$1$'}, {id: c, text: '$3/2$'}, {id: d, text: 'Diverges'}]
+    answer: {choiceId: a}
+    solutionOutline: Factoring as $(n+1)(n+2)$ yields $1/(n+1)-1/(n+2)$.
+    commonTrap: Starting the survivor at one rather than at one half after the shifted index.
+    verification: {method: factorization-and-telescoping, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-024
+    topicId: geometric-telescoping-series
+    skills: [evaluate-telescoping-products]
+    archetype: double-factor-product
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires evaluating a finite product before passing to its limit.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Determine $\displaystyle\prod_{n=2}^{\infty}(1-1/n^2)$.
+    choices: [{id: a, text: '$1/2$'}, {id: b, text: '$0$'}, {id: c, text: '$1$'}, {id: d, text: '$2$'}]
+    answer: {choiceId: a}
+    solutionOutline: The Nth product factors into $\prod(n-1)/n$ and $\prod(n+1)/n$, giving $(N+1)/(2N)$.
+    commonTrap: Declaring the product zero simply because every factor is below one.
+    verification: {method: exact-finite-product, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-025
+    topicId: geometric-telescoping-series
+    skills: [recognize-difference-of-squares-terms]
+    archetype: squared-reciprocal-boundary
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires verifying an exact numerator identity.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate $\displaystyle\sum_{n=1}^{\infty}\frac{2n+1}{n^2(n+1)^2}$.
+    choices: [{id: a, text: '$1$'}, {id: b, text: '$1/2$'}, {id: c, text: '$2$'}, {id: d, text: '$\pi^2/6$'}]
+    answer: {choiceId: a}
+    solutionOutline: The summand equals $1/n^2-1/(n+1)^2$, leaving the initial value one.
+    commonTrap: Comparing with the Basel series instead of checking for an exact difference.
+    verification: {method: algebraic-difference-check, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-026
+    topicId: geometric-telescoping-series
+    skills: [convert-log-sums-to-products]
+    archetype: logarithm-of-telescoping-product
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires justifying finite logarithm combination and then evaluating the product limit.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Find $\displaystyle\sum_{n=2}^{\infty}\ln(1-1/n^2)$.
+    choices: [{id: a, text: '$-\ln2$'}, {id: b, text: '$\ln2$'}, {id: c, text: '$-1/2$'}, {id: d, text: 'Diverges to $-\infty$'}]
+    answer: {choiceId: a}
+    solutionOutline: The Nth sum is the logarithm of the corresponding product, which tends to $\ln(1/2)$.
+    commonTrap: Moving the logarithm across an infinite operation without first using finite partial sums.
+    verification: {method: finite-log-product-and-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-027
+    topicId: geometric-telescoping-series
+    skills: [differentiate-geometric-series]
+    archetype: weighted-geometric-sum
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires deriving or recalling the weighted geometric identity with its convergence condition.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate $\displaystyle\sum_{n=1}^{\infty}\frac{n}{2^n}$.
+    choices: [{id: a, text: '$2$'}, {id: b, text: '$1$'}, {id: c, text: '$4$'}, {id: d, text: 'Diverges'}]
+    answer: {choiceId: a}
+    solutionOutline: Differentiating $\sum x^n=1/(1-x)$ gives $\sum nx^n=x/(1-x)^2$; at $x=1/2$ this is two.
+    commonTrap: Applying the unweighted geometric formula and ignoring the factor n.
+    verification: {method: differentiated-geometric-series, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-028
+    topicId: geometric-telescoping-series
+    skills: [discover-inverse-trigonometric-telescoping]
+    archetype: arctangent-difference
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires reversing the tangent subtraction identity and evaluating a limiting angle.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\sum_{n=1}^{\infty}\arctan\left(\frac1{n^2+n+1}\right).$$
+    choices: [{id: a, text: '$\pi/4$'}, {id: b, text: '$\pi/2$'}, {id: c, text: '$1$'}, {id: d, text: '$\pi/6$'}]
+    answer: {choiceId: a}
+    solutionOutline: The summand is $\arctan(n+1)-\arctan n$ because the tangent of that difference is $1/(n^2+n+1)$; the boundary tends to $\pi/2-\pi/4$.
+    commonTrap: Treating arctangent as linear and summing its arguments.
+    verification: {method: tangent-subtraction-and-boundary-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-029
+    topicId: geometric-telescoping-series
+    skills: [telescope-three-factor-rational-series]
+    archetype: adjacent-pair-difference
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires finding a scaled difference of adjacent two-factor reciprocals.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Compute $\displaystyle\sum_{n=1}^{\infty}\frac1{n(n+1)(n+2)}$.
+    choices: [{id: a, text: '$1/4$'}, {id: b, text: '$1/2$'}, {id: c, text: '$1$'}, {id: d, text: '$1/6$'}]
+    answer: {choiceId: a}
+    solutionOutline: The summand is one half of $1/[n(n+1)]-1/[(n+1)(n+2)]$, leaving one half of one half.
+    commonTrap: Missing the scale factor two in the difference of adjacent fractions.
+    verification: {method: scaled-adjacent-fraction-difference, result: verified}
+    reviewStatus: verified
+  - id: calc2-gt-oly-030
+    topicId: geometric-telescoping-series
+    skills: [evaluate-arithmetic-geometric-series]
+    archetype: shifted-weighted-geometric
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires combining weighted and unweighted geometric identities.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Find $\displaystyle\sum_{n=0}^{\infty}\frac{n+1}{3^n}$.
+    choices: [{id: a, text: '$9/4$'}, {id: b, text: '$3/2$'}, {id: c, text: '$3$'}, {id: d, text: '$2$'}]
+    answer: {choiceId: a}
+    solutionOutline: With $r=1/3$, the sum $\sum(n+1)r^n$ equals $1/(1-r)^2=9/4$.
+    commonTrap: Using $r/(1-r)^2$ and forgetting the added unweighted geometric series.
+    verification: {method: weighted-plus-geometric-identity, result: verified}
+    reviewStatus: verified

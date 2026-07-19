@@ -1,0 +1,156 @@
+schemaVersion: 1
+id: cpp-log-archive-chunker-guided-project
+title: C++ Log Archive Chunker Guided Project
+description: Split line-oriented logs into numbered parts with a reconstruction manifest.
+assessmentType: guidedProject
+categoryId: c++
+topicId: cpp-working-with-files
+skills:
+  - split-files-by-line-count
+  - generate-sequential-file-paths
+  - write-chunk-manifests
+  - verify-file-reconstruction
+navigation:
+  learningGoal: evaluate
+  activityType: guidedProject
+  tags:
+    - c++
+    - cpp-working-with-files
+    - guided-project
+    - log-files
+    - chunking
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  projectKind: console
+  runnerMode: unitTests
+  instructions: |
+    Expand bank family `cpp-fsf-file-010` into a log archive chunker.
+
+    Implement `split_log(source, output_directory, lines_per_part)`. Reject a
+    zero limit. Create `part-001.log`, `part-002.log`, and so on only when a
+    line is available. Normalize every output line to end with `\n`.
+
+    Also create `manifest.txt` with one line per part:
+
+    `filename|line-count`
+
+    Return the created part paths in order, an empty vector plus an empty
+    manifest for an empty source, or `nullopt` on failure.
+  files:
+    - path: LogChunker.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <cstddef>
+        #include <filesystem>
+        #include <optional>
+        #include <vector>
+
+        std::optional<std::vector<std::filesystem::path>> split_log(
+            const std::filesystem::path& source,
+            const std::filesystem::path& output_directory,
+            std::size_t lines_per_part);
+    - path: LogChunker.cpp
+      readOnly: false
+      content: |
+        #include "LogChunker.h"
+        #include <fstream>
+        #include <iomanip>
+        #include <sstream>
+
+        // Open parts on demand. Close and record each full part before opening
+        // the next, then record the partial final part.
+  fixtures: []
+  scenarios: []
+  diagnostics: []
+  requiredChecks:
+    - id: creates-numbered-parts
+      title: Creates correctly sized numbered parts
+      description: Splits five lines into groups of two, two, and one.
+      expectedOutputContains: [PARTS_OK]
+      testCode: |
+        #include "LogChunker.h"
+        #include <filesystem>
+        #include <fstream>
+        #include <iostream>
+        int main() {
+            namespace fs = std::filesystem;
+            fs::create_directories("work/out");
+            std::ofstream("work/log.txt") << "a\nb\nc\nd\ne";
+            const auto result = split_log("work/log.txt", "work/out", 2);
+            if (result && result->size() == 3 &&
+                (*result)[0].filename() == "part-001.log" &&
+                (*result)[2].filename() == "part-003.log") {
+                std::cout << "PARTS_OK";
+            }
+        }
+    - id: writes-manifest
+      title: Writes part line counts
+      description: Validates the reconstruction manifest.
+      expectedOutputContains: [CHUNK_MANIFEST_OK]
+      testCode: |
+        #include "LogChunker.h"
+        #include <filesystem>
+        #include <fstream>
+        #include <iostream>
+        #include <iterator>
+        #include <string>
+        int main() {
+            std::filesystem::create_directories("work/out");
+            std::ofstream("work/log.txt") << "a\nb\nc\nd\ne";
+            if (!split_log("work/log.txt", "work/out", 2)) return 0;
+            std::ifstream in("work/out/manifest.txt");
+            std::string text((std::istreambuf_iterator<char>(in)), {});
+            if (text.find("part-001.log|2") != std::string::npos &&
+                text.find("part-003.log|1") != std::string::npos) {
+                std::cout << "CHUNK_MANIFEST_OK";
+            }
+        }
+    - id: handles-empty-and-invalid
+      title: Handles empty input and a zero limit
+      description: Prevents phantom parts and rejects an impossible chunk size.
+      expectedOutputContains: [EDGE_OK]
+      testCode: |
+        #include "LogChunker.h"
+        #include <filesystem>
+        #include <fstream>
+        #include <iostream>
+        int main() {
+            std::filesystem::create_directories("work/out");
+            std::ofstream("work/empty.txt");
+            const auto empty = split_log("work/empty.txt", "work/out", 3);
+            const auto invalid = split_log("work/empty.txt", "work/out", 0);
+            if (empty && empty->empty() && !invalid &&
+                !std::filesystem::exists("work/out/part-001.log")) {
+                std::cout << "EDGE_OK";
+            }
+        }
+  bonusChecks:
+    - id: reconstructs-normalized-content
+      title: Reconstructs normalized source content
+      description: Confirms concatenated part files retain line order.
+      expectedOutputContains: [REBUILD_OK]
+      testCode: |
+        #include "LogChunker.h"
+        #include <filesystem>
+        #include <fstream>
+        #include <iostream>
+        #include <iterator>
+        #include <string>
+        int main() {
+            std::filesystem::create_directories("work/out");
+            std::ofstream("work/log.txt") << "first\nsecond\nthird";
+            const auto parts = split_log("work/log.txt", "work/out", 2);
+            std::string rebuilt;
+            if (parts) {
+                for (const auto& path : *parts) {
+                    std::ifstream in(path);
+                    rebuilt.append(std::istreambuf_iterator<char>(in), {});
+                }
+            }
+            if (rebuilt == "first\nsecond\nthird\n") {
+                std::cout << "REBUILD_OK";
+            }
+        }

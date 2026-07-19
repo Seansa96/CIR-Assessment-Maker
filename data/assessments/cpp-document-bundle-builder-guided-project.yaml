@@ -1,0 +1,130 @@
+schemaVersion: 1
+id: cpp-document-bundle-builder-guided-project
+title: C++ Document Bundle Builder Guided Project
+description: Merge ordered source files and produce a verifiable manifest.
+assessmentType: guidedProject
+categoryId: c++
+topicId: cpp-working-with-files
+skills:
+  - merge-binary-files-in-order
+  - create-file-manifests
+  - detect-stream-failures
+  - preserve-exact-file-bytes
+navigation:
+  learningGoal: evaluate
+  activityType: guidedProject
+  tags:
+    - c++
+    - cpp-working-with-files
+    - guided-project
+    - binary-files
+    - manifest
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  projectKind: console
+  runnerMode: unitTests
+  instructions: |
+    Expand bank family `cpp-fsf-file-009` into a document bundle builder.
+
+    Implement `build_bundle(sources, destination, manifest)`. Concatenate all
+    source bytes in vector order without inserting separators. After a
+    successful bundle, create a UTF-8 manifest containing one line per source:
+
+    `index|filename|byte-count`
+
+    Indices begin at 1. Return false if an input, bundle, manifest write, or
+    flush fails. Source and destination paths are distinct. Do not create the
+    manifest unless the bundle transfer succeeds.
+  files:
+    - path: BundleBuilder.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <filesystem>
+        #include <vector>
+
+        bool build_bundle(
+            const std::vector<std::filesystem::path>& sources,
+            const std::filesystem::path& destination,
+            const std::filesystem::path& manifest);
+    - path: BundleBuilder.cpp
+      readOnly: false
+      content: |
+        #include "BundleBuilder.h"
+        #include <fstream>
+
+        // Open one source at a time in binary mode. Track its byte count while
+        // copying, then write the manifest only after the bundle is healthy.
+  fixtures: []
+  scenarios: []
+  diagnostics: []
+  requiredChecks:
+    - id: preserves-order-and-bytes
+      title: Preserves source order and exact bytes
+      description: Builds a three-part bundle including an empty source.
+      expectedOutputContains: [BUNDLE_OK]
+      testCode: |
+        #include "BundleBuilder.h"
+        #include <filesystem>
+        #include <fstream>
+        #include <iostream>
+        #include <iterator>
+        #include <string>
+        int main() {
+            namespace fs = std::filesystem;
+            fs::create_directories("work");
+            std::ofstream("work/a.txt", std::ios::binary) << "AB";
+            std::ofstream("work/b.txt", std::ios::binary);
+            std::ofstream("work/c.txt", std::ios::binary) << "\nC";
+            if (!build_bundle({"work/a.txt", "work/b.txt", "work/c.txt"},
+                              "work/bundle.bin", "work/manifest.txt")) return 0;
+            std::ifstream in("work/bundle.bin", std::ios::binary);
+            std::string bytes((std::istreambuf_iterator<char>(in)), {});
+            if (bytes == "AB\nC") std::cout << "BUNDLE_OK";
+        }
+    - id: writes-manifest
+      title: Writes the ordered manifest
+      description: Verifies indices, names, and byte counts.
+      expectedOutputContains: [MANIFEST_OK]
+      testCode: |
+        #include "BundleBuilder.h"
+        #include <filesystem>
+        #include <fstream>
+        #include <iostream>
+        #include <iterator>
+        #include <string>
+        int main() {
+            std::filesystem::create_directories("work");
+            std::ofstream("work/one.txt", std::ios::binary) << "123";
+            std::ofstream("work/two.txt", std::ios::binary) << "xy";
+            if (!build_bundle({"work/one.txt", "work/two.txt"},
+                              "work/out.bin", "work/list.txt")) return 0;
+            std::ifstream in("work/list.txt");
+            std::string text((std::istreambuf_iterator<char>(in)), {});
+            if (text.find("1|one.txt|3") != std::string::npos &&
+                text.find("2|two.txt|2") != std::string::npos) {
+                std::cout << "MANIFEST_OK";
+            }
+        }
+    - id: reports-missing-source
+      title: Reports a missing source
+      description: Confirms failure rather than silently skipping an input.
+      expectedOutputContains: [FAILURE_OK]
+      testCode: |
+        #include "BundleBuilder.h"
+        #include <filesystem>
+        #include <iostream>
+        int main() {
+            std::filesystem::create_directories("work");
+            std::filesystem::remove("work/missing.txt");
+            std::filesystem::remove("work/list.txt");
+            const bool ok = build_bundle({"work/missing.txt"},
+                                         "work/out.bin", "work/list.txt");
+            if (!ok && !std::filesystem::exists("work/list.txt")) {
+                std::cout << "FAILURE_OK";
+            }
+        }
+  bonusChecks: []
+

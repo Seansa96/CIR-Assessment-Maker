@@ -1,0 +1,350 @@
+schemaVersion: 1
+bankId: calc2-series-approximation-error-easy
+categoryId: calculus-2
+topicIds:
+  - series-approximation-error
+minimumItemCount: 15
+items:
+  - id: calc2-error-easy-001
+    topicId: series-approximation-error
+    skills: [interpret-series-remainders]
+    archetype: remainder-definition
+    difficulty: foundation
+    reasoningDepth: 1
+    difficultyEvidence: Requires distinguishing the remainder from the partial sum.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If a convergent series has sum $S$ and $N$th partial sum $S_N$, what is
+      the remainder $R_N$?
+    choices:
+      - { id: a, text: '$S-S_N$' }
+      - { id: b, text: '$S_N-S$ only' }
+      - { id: c, text: '$S+S_N$' }
+      - { id: d, text: '$S_N/N$' }
+    answer: { choiceId: a }
+    solutionOutline: The remainder is the omitted tail, so adding it to $S_N$ must recover $S$.
+    commonTrap: Reversing the signed difference while still calling it $R_N$.
+    verification: { method: remainder-definition, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-002
+    topicId: series-approximation-error
+    skills: [apply-alternating-remainder-bounds]
+    archetype: first-omitted-term
+    difficulty: foundation
+    reasoningDepth: 1
+    difficultyEvidence: Requires selecting the first omitted magnitude.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For a valid alternating series $\sum(-1)^{n-1}b_n$, what bound holds
+      after $N$ terms?
+    choices:
+      - { id: a, text: '$|R_N|\le b_{N+1}$' }
+      - { id: b, text: '$|R_N|=b_N$' }
+      - { id: c, text: '$|R_N|\le S_N$' }
+      - { id: d, text: '$|R_N|\le b_1$ only' }
+    answer: { choiceId: a }
+    solutionOutline: The true sum lies between consecutive partial sums, whose difference is the first omitted magnitude.
+    commonTrap: Replacing the theorem's upper bound with equality.
+    verification: { method: alternating-remainder-theorem, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-003
+    topicId: series-approximation-error
+    skills: [solve-alternating-error-inequalities]
+    archetype: strict-harmonic-tolerance
+    difficulty: foundation
+    reasoningDepth: 2
+    difficultyEvidence: Requires preserving a strict inequality and converting the first omitted index.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For the alternating harmonic series, what is the least $N$ for which the
+      next-term theorem guarantees $|R_N|<0.01$?
+    choices:
+      - { id: a, text: '$99$' }
+      - { id: b, text: '$100$' }
+      - { id: c, text: '$101$' }
+      - { id: d, text: '$10000$' }
+    answer: { choiceId: b }
+    solutionOutline: Solve $1/(N+1)<1/100$, giving $N+1>100$ and least integer $N=100$.
+    commonTrap: Choosing $N=99$, whose theorem bound equals rather than falls below the tolerance.
+    verification: { method: adjacent-integer-bound-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-004
+    topicId: series-approximation-error
+    skills: [solve-power-remainder-inequalities]
+    archetype: cubic-next-term-bound
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires bracketing a cube root and translating from omitted index to truncation index.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $\sum(-1)^{n-1}/n^3$, what is the least $N$ whose alternating bound
+      guarantees $|R_N|<10^{-4}$?
+    choices:
+      - { id: a, text: '$20$' }
+      - { id: b, text: '$21$' }
+      - { id: c, text: '$22$' }
+      - { id: d, text: '$100$' }
+    answer: { choiceId: b }
+    solutionOutline: The condition $(N+1)^3>10000$ first holds at $N+1=22$, because $21^3<10000<22^3$.
+    commonTrap: Reporting the first omitted index $22$ as the number of included terms.
+    verification: { method: cube-boundary-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-005
+    topicId: series-approximation-error
+    skills: [determine-alternating-error-signs]
+    archetype: over-under-estimate
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires tracking the sign of the first omitted term.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $S=1-\frac12+\frac13-\cdots$, is $S_5$ above or below $S$?
+    choices:
+      - { id: a, text: 'Above, because the first omitted term is negative' }
+      - { id: b, text: 'Below, because the first omitted term is negative' }
+      - { id: c, text: 'Equal to $S$' }
+      - { id: d, text: 'The side cannot be determined' }
+    answer: { choiceId: a }
+    solutionOutline: The sixth term is negative, so $R_5=S-S_5<0$ and the partial sum lies above the limit.
+    commonTrap: Treating a negative correction as evidence that the current approximation is below the target.
+    verification: { method: first-omitted-sign, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-006
+    topicId: series-approximation-error
+    skills: [state-integral-test-tail-bounds]
+    archetype: two-sided-integral-bound
+    difficulty: foundation
+    reasoningDepth: 1
+    difficultyEvidence: Requires ordering the two improper-integral estimates correctly.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $a_n=f(n)$ for positive decreasing $f$, which remainder inequality is
+      correct?
+    choices:
+      - { id: a, text: '$\int_{N+1}^{\infty}f(x)\,dx\le R_N\le\int_N^{\infty}f(x)\,dx$' }
+      - { id: b, text: '$\int_N^{\infty}f(x)\,dx\le R_N\le\int_{N+1}^{\infty}f(x)\,dx$' }
+      - { id: c, text: '$R_N=f(N)$ exactly' }
+      - { id: d, text: '$R_N=0$ for decreasing $f$' }
+    answer: { choiceId: a }
+    solutionOutline: Left- and right-endpoint rectangle comparisons place the positive tail between the integrals beginning at $N+1$ and $N$.
+    commonTrap: Reversing the bounds even though the earlier-starting integral is larger.
+    verification: { method: integral-remainder-theorem, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-007
+    topicId: series-approximation-error
+    skills: [apply-integral-tail-bounds]
+    archetype: p-series-tail-threshold
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires evaluating an improper integral and solving a strict upper-bound inequality.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $\sum1/n^2$, what least $N$ makes the integral upper bound guarantee
+      $R_N<0.05$?
+    choices:
+      - { id: a, text: '$19$' }
+      - { id: b, text: '$20$' }
+      - { id: c, text: '$21$' }
+      - { id: d, text: '$400$' }
+    answer: { choiceId: c }
+    solutionOutline: The upper bound is $\int_N^\infty x^{-2}dx=1/N$; strict inequality $1/N<1/20$ requires $N>20$.
+    commonTrap: Choosing $N=20$, where the upper bound is exactly $0.05$.
+    verification: { method: improper-integral-and-integer-threshold, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-008
+    topicId: series-approximation-error
+    skills: [interpret-error-bounds]
+    archetype: sufficiency-versus-actual-error
+    difficulty: foundation
+    reasoningDepth: 1
+    difficultyEvidence: Requires interpreting what failure of a sufficient estimate means.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      An error theorem gives $|R_N|\le0.02$, but the target is $0.01$. What can
+      be concluded?
+    choices:
+      - { id: a, text: 'This bound does not certify the target; the actual error may still be smaller.' }
+      - { id: b, text: 'The actual error must exceed $0.01$.' }
+      - { id: c, text: 'The series diverges.' }
+      - { id: d, text: 'The actual error equals $0.02$.' }
+    answer: { choiceId: a }
+    solutionOutline: An upper bound larger than the target is inconclusive about the unknown error rather than proof of failure.
+    commonTrap: Treating a conservative bound as the exact remainder.
+    verification: { method: bound-logic, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-009
+    topicId: series-approximation-error
+    skills: [state-lagrange-remainders]
+    archetype: taylor-error-formula
+    difficulty: foundation
+    reasoningDepth: 1
+    difficultyEvidence: Requires identifying the derivative order and factorial in Lagrange's formula.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $|f^{(n+1)}(t)|\le M$ between $a$ and $x$, which bound applies to the
+      degree-$n$ Taylor error?
+    choices:
+      - { id: a, text: '$|R_n(x)|\le M|x-a|^{n+1}/(n+1)!$' }
+      - { id: b, text: '$|R_n(x)|\le M|x-a|^n/n$' }
+      - { id: c, text: '$|R_n(x)|=M$' }
+      - { id: d, text: '$|R_n(x)|\le|f(x)|/n!$' }
+    answer: { choiceId: a }
+    solutionOutline: The remainder uses the first omitted derivative order $n+1$ with its matching factorial and displacement power.
+    commonTrap: Using the last included derivative order $n$.
+    verification: { method: lagrange-remainder-formula, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-010
+    topicId: series-approximation-error
+    skills: [choose-derivative-bounds]
+    archetype: maximum-on-interval
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires maximizing the derivative on the segment from center to evaluation point.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      To bound the Maclaurin remainder for $e^x$ at $x=0.4$, which valid simple
+      choice of $M$ works on $[0,0.4]$?
+    choices:
+      - { id: a, text: '$e^{0.4}$' }
+      - { id: b, text: '$0$' }
+      - { id: c, text: '$1/2$' }
+      - { id: d, text: '$e^{-0.4}$' }
+    answer: { choiceId: a }
+    solutionOutline: Every derivative is $e^t$, an increasing function, so its maximum on the interval occurs at $t=0.4$.
+    commonTrap: Using the center value one even though derivatives are larger to the right.
+    verification: { method: derivative-maximum, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-011
+    topicId: series-approximation-error
+    skills: [use-alternating-taylor-errors]
+    archetype: cosine-next-term
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires identifying the first omitted nonzero term in an even-power expansion.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      When $\cos x$ is approximated by $1-x^2/2!+x^4/4!$ at small positive
+      $x$, what is the alternating next-term error bound?
+    choices:
+      - { id: a, text: '$x^6/6!$' }
+      - { id: b, text: '$x^5/5!$' }
+      - { id: c, text: '$x^4/4!$' }
+      - { id: d, text: '$x^2/2!$' }
+    answer: { choiceId: a }
+    solutionOutline: Cosine has only even powers, so after degree four the first omitted nonzero term has degree six.
+    commonTrap: Advancing to degree five even though that Maclaurin coefficient is zero.
+    verification: { method: cosine-series-pattern, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-012
+    topicId: series-approximation-error
+    skills: [connect-error-to-decimal-accuracy]
+    archetype: rounding-guarantee
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires relating an absolute-error threshold to reliable decimal rounding.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Which absolute-error guarantee is sufficient to round an approximation
+      correctly to three decimal places?
+    choices:
+      - { id: a, text: 'Error below $0.0005$' }
+      - { id: b, text: 'Error below $0.005$' }
+      - { id: c, text: 'Error below $0.05$' }
+      - { id: d, text: 'Error below $0.5$' }
+    answer: { choiceId: a }
+    solutionOutline: The half-unit in the third-decimal place is $0.0005$, so a smaller error cannot cross a rounding boundary absent an exact tie.
+    commonTrap: Using half of one hundredth rather than half of one thousandth.
+    verification: { method: place-value-analysis, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-013
+    topicId: series-approximation-error
+    skills: [compute-geometric-tails]
+    archetype: exact-geometric-remainder
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires recognizing that the omitted tail is itself a shifted geometric series.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $\sum_{n=0}^{\infty}(1/3)^n$, what is the exact tail after terms
+      $n=0,1,\ldots,N$?
+    choices:
+      - { id: a, text: '$\frac32(1/3)^{N+1}$' }
+      - { id: b, text: '$(1/3)^N$' }
+      - { id: c, text: '$1/(N+1)$' }
+      - { id: d, text: '$3^{N+1}$' }
+    answer: { choiceId: a }
+    solutionOutline: The first omitted term is $(1/3)^{N+1}$ and the remaining ratio is $1/3$, so divide by $1-1/3=2/3$.
+    commonTrap: Using only the first omitted term and forgetting all later geometric terms.
+    verification: { method: shifted-geometric-sum, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-014
+    topicId: series-approximation-error
+    skills: [select-remainder-methods]
+    archetype: method-selection
+    difficulty: intermediate
+    reasoningDepth: 2
+    difficultyEvidence: Requires matching error theorems to available series structure.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Which method is most direct for bounding the tail of a positive decreasing
+      series whose terms are $f(n)$ and whose antiderivative is simple?
+    choices:
+      - { id: a, text: 'Integral-test remainder bounds' }
+      - { id: b, text: 'Alternating next-term bound' }
+      - { id: c, text: 'Geometric exact tail regardless of term form' }
+      - { id: d, text: 'The divergence test' }
+    answer: { choiceId: a }
+    solutionOutline: Positivity, decrease, and an integrable model are precisely the structure used by the integral tail estimate.
+    commonTrap: Applying the alternating bound to a series with no alternating signs.
+    verification: { method: theorem-hypothesis-match, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-error-easy-015
+    topicId: series-approximation-error
+    skills: [distinguish-absolute-relative-error]
+    archetype: error-metric
+    difficulty: foundation
+    reasoningDepth: 1
+    difficultyEvidence: Requires identifying the denominator in relative error.
+    assessmentUses: [easy-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If the true value is nonzero, how is relative error computed from an
+      approximation $A$ to $S$?
+    choices:
+      - { id: a, text: '$|S-A|/|S|$' }
+      - { id: b, text: '$|S-A|$' }
+      - { id: c, text: '$|S+A|/|A|$' }
+      - { id: d, text: '$S/A$ without absolute values' }
+    answer: { choiceId: a }
+    solutionOutline: Relative error scales the absolute discrepancy by the magnitude of the true value.
+    commonTrap: Reporting absolute error when the question asks for scale-normalized error.
+    verification: { method: relative-error-definition, result: verified }
+    reviewStatus: verified

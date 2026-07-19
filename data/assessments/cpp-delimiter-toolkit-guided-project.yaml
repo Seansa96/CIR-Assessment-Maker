@@ -1,0 +1,127 @@
+schemaVersion: 1
+id: cpp-delimiter-toolkit-guided-project
+title: C++ Delimiter Toolkit Guided Project
+description: Generate balanced parentheses and validate nested delimiter expressions.
+assessmentType: guidedProject
+categoryId: c++
+topicId: cpp-strings-formatting
+skills:
+  - generate-balanced-parentheses
+  - validate-nested-delimiters
+  - maintain-backtracking-prefix-invariants
+  - report-delimiter-errors
+navigation:
+  learningGoal: evaluate
+  activityType: guidedProject
+  tags:
+    - c++
+    - cpp-strings-formatting
+    - guided-project
+    - backtracking
+    - delimiters
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  projectKind: console
+  runnerMode: unitTests
+  instructions: |
+    Build a delimiter toolkit from bank family `cpp-fsf-string-017`.
+
+    Implement:
+
+    - `balanced_parentheses(int pairs)` in lexicographic order;
+    - `is_balanced(std::string_view text)` for `()`, `[]`, and `{}`;
+    - `first_delimiter_error(std::string_view text)`, returning the zero-based
+      index of the first unmatched or mismatched closing delimiter, the input
+      length when opening delimiters remain at the end, or `nullopt` for a
+      valid expression.
+
+    Nondelimiter characters are ignored by validation. Generation rejects
+    negative pair counts with an empty vector and returns `{""}` for zero.
+  files:
+    - path: DelimiterToolkit.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <cstddef>
+        #include <optional>
+        #include <string>
+        #include <string_view>
+        #include <vector>
+
+        std::vector<std::string> balanced_parentheses(int pairs);
+        bool is_balanced(std::string_view text);
+        std::optional<std::size_t> first_delimiter_error(
+            std::string_view text);
+    - path: DelimiterToolkit.cpp
+      readOnly: false
+      content: |
+        #include "DelimiterToolkit.h"
+        #include <utility>
+
+        // Use backtracking for generation and a stack carrying both the
+        // opening delimiter and its position for validation.
+  fixtures: []
+  scenarios: []
+  diagnostics: []
+  requiredChecks:
+    - id: generates-parentheses
+      title: Generates canonical balanced strings
+      description: Checks zero, two, and three pairs with deterministic ordering.
+      expectedOutputContains: [GENERATE_OK]
+      testCode: |
+        #include "DelimiterToolkit.h"
+        #include <iostream>
+        #include <vector>
+        int main() {
+            if (balanced_parentheses(0) == std::vector<std::string>{""} &&
+                balanced_parentheses(2) ==
+                    std::vector<std::string>{"(())", "()()"} &&
+                balanced_parentheses(3).size() == 5) {
+                std::cout << "GENERATE_OK";
+            }
+        }
+    - id: validates-mixed-delimiters
+      title: Validates mixed delimiter types
+      description: Rejects crossing and premature closing while ignoring ordinary text.
+      expectedOutputContains: [VALIDATE_OK]
+      testCode: |
+        #include "DelimiterToolkit.h"
+        #include <iostream>
+        int main() {
+            if (is_balanced("call(a[0], {x})") &&
+                !is_balanced("([)]") &&
+                !is_balanced("text]")) {
+                std::cout << "VALIDATE_OK";
+            }
+        }
+    - id: reports-errors
+      title: Reports the first useful error position
+      description: Checks mismatched closes and unclosed opening delimiters.
+      expectedOutputContains: [ERROR_OK]
+      testCode: |
+        #include "DelimiterToolkit.h"
+        #include <iostream>
+        int main() {
+            const auto crossing = first_delimiter_error("([)]");
+            const auto open = first_delimiter_error("abc(");
+            const auto valid = first_delimiter_error("{}");
+            if (crossing && *crossing == 2 &&
+                open && *open == 4 && !valid) {
+                std::cout << "ERROR_OK";
+            }
+        }
+  bonusChecks:
+    - id: rejects-negative-generation
+      title: Rejects a negative pair count
+      description: Confirms the invalid generation contract.
+      expectedOutputContains: [NEGATIVE_OK]
+      testCode: |
+        #include "DelimiterToolkit.h"
+        #include <iostream>
+        int main() {
+            if (balanced_parentheses(-1).empty()) {
+                std::cout << "NEGATIVE_OK";
+            }
+        }

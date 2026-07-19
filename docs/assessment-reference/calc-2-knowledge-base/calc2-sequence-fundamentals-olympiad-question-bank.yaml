@@ -1,0 +1,683 @@
+schemaVersion: 1
+bankId: calc2-sequence-fundamentals-olympiad
+categoryId: calculus-2
+topicIds:
+  - sequence-fundamentals
+minimumItemCount: 30
+items:
+  - id: calc2-seq-oly-001
+    topicId: sequence-fundamentals
+    skills: [prove-recursive-sequence-convergence, identify-fixed-points]
+    archetype: newton-iteration
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires proving an invariant lower bound and monotone decrease before solving the fixed-point equation.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Let $a_1=2$ and
+      $$a_{n+1}=\frac12\left(a_n+\frac3{a_n}\right).$$
+      Which conclusion is correct?
+    choices:
+      - { id: a, text: '$a_n\downarrow\sqrt3$' }
+      - { id: b, text: '$a_n\uparrow2$' }
+      - { id: c, text: '$a_n\to-\sqrt3$' }
+      - { id: d, text: 'The sequence oscillates without a limit.' }
+    answer: { choiceId: a }
+    solutionOutline: AM-GM keeps $a_n\ge\sqrt3$, and $a_{n+1}-a_n=(3-a_n^2)/(2a_n)\le0$; the positive fixed point is $\sqrt3$.
+    commonTrap: Solving the fixed-point equation without proving that the recurrence converges.
+    verification: { method: invariant-monotonicity-fixed-point-proof, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-002
+    topicId: sequence-fundamentals
+    skills: [rationalize-sequence-limits]
+    archetype: infinity-minus-infinity
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires rationalizing a scaled difference before taking its limit.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\lim_{n\to\infty}n\left(\sqrt{n^2+n}-n\right).$$
+    choices:
+      - { id: a, text: '$0$' }
+      - { id: b, text: '$1/2$' }
+      - { id: c, text: '$+\infty$' }
+      - { id: d, text: '$1$' }
+    answer: { choiceId: c }
+    solutionOutline: Rationalization gives $n^2/(\sqrt{n^2+n}+n)$, which is asymptotic to $n/2$ and therefore diverges to $+\infty$.
+    commonTrap: Recalling the unscaled limit $\sqrt{n^2+n}-n\to1/2$ and ignoring the extra factor $n$.
+    verification: { method: conjugate-and-dominant-order-check, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-003
+    topicId: sequence-fundamentals
+    skills: [evaluate-second-order-limits]
+    archetype: trigonometric-scaling
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires converting a second-order cosine difference to a standard small-angle limit.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Find
+      $$\lim_{n\to\infty}n^2\left(1-\cos\frac1n\right).$$
+    choices:
+      - { id: a, text: '$0$' }
+      - { id: b, text: '$1/2$' }
+      - { id: c, text: '$1$' }
+      - { id: d, text: 'The limit does not exist.' }
+    answer: { choiceId: b }
+    solutionOutline: With $x=1/n$, the expression is $(1-\cos x)/x^2$, whose limit is $1/2$ by the half-angle identity or Taylor expansion.
+    commonTrap: Applying $\sin x/x\to1$ as though $1-\cos x$ were first order in $x$.
+    verification: { method: half-angle-standard-limit, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-004
+    topicId: sequence-fundamentals
+    skills: [recognize-riemann-sum-sequences]
+    archetype: moving-denominator-sum
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires rewriting a sequence of finite sums as a Riemann sum on a fixed interval.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Determine
+      $$\lim_{n\to\infty}\sum_{k=1}^{n}\frac1{n+k}.$$
+    choices:
+      - { id: a, text: '$0$' }
+      - { id: b, text: '$1/2$' }
+      - { id: c, text: '$\ln2$' }
+      - { id: d, text: '$1$' }
+    answer: { choiceId: c }
+    solutionOutline: Rewrite the sum as $(1/n)\sum_{k=1}^{n}1/(1+k/n)$, a right-endpoint Riemann sum for $\int_0^1 dx/(1+x)=\ln2$.
+    commonTrap: Sending each summand to zero while ignoring that the number of summands also grows.
+    verification: { method: riemann-sum-identification, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-005
+    topicId: sequence-fundamentals
+    skills: [bound-harmonic-differences]
+    archetype: integral-squeeze
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires interpreting a moving harmonic block using integral bounds.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      What is
+      $$\lim_{n\to\infty}\left(H_{2n}-H_n\right),\qquad
+      H_m=\sum_{k=1}^{m}\frac1k?$$
+    choices:
+      - { id: a, text: '$0$' }
+      - { id: b, text: '$\ln2$' }
+      - { id: c, text: '$1$' }
+      - { id: d, text: '$+\infty$' }
+    answer: { choiceId: b }
+    solutionOutline: The difference is $\sum_{k=n+1}^{2n}1/k$, which is squeezed by adjacent integrals whose common limiting value is $\int_1^2 dx/x=\ln2$.
+    commonTrap: Subtracting two divergent limits directly instead of analyzing their finite difference.
+    verification: { method: monotone-integral-bounds, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-006
+    topicId: sequence-fundamentals
+    skills: [use-logarithms-for-indeterminate-powers]
+    archetype: nth-root-limit
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires logarithmic transformation of an indeterminate power.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate $\lim_{n\to\infty}n^{1/n}$.
+    choices:
+      - { id: a, text: '$0$' }
+      - { id: b, text: '$1$' }
+      - { id: c, text: '$e$' }
+      - { id: d, text: '$+\infty$' }
+    answer: { choiceId: b }
+    solutionOutline: Taking logarithms gives $\ln(n^{1/n})=(\ln n)/n\to0$, so continuity of the exponential yields the limit $e^0=1$.
+    commonTrap: Treating the growing base alone as decisive while ignoring the vanishing exponent.
+    verification: { method: logarithmic-limit-transform, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-007
+    topicId: sequence-fundamentals
+    skills: [solve-nonlinear-recurrences-by-error-transforms]
+    archetype: squared-error-recurrence
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires discovering a transformed recurrence whose error squares at every step.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Let $0<a_1<1$ and $a_{n+1}=a_n(2-a_n)$. What is the limit?
+    choices:
+      - { id: a, text: '$0$' }
+      - { id: b, text: '$1$' }
+      - { id: c, text: '$2$' }
+      - { id: d, text: 'It depends on $a_1$.' }
+    answer: { choiceId: b }
+    solutionOutline: Setting $e_n=1-a_n$ gives $e_{n+1}=e_n^2$ with $0<e_1<1$, so $e_n\to0$ and $a_n\to1$.
+    commonTrap: Listing both fixed points $0$ and $1$ without using the initial interval to determine the orbit.
+    verification: { method: exact-error-recurrence, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-008
+    topicId: sequence-fundamentals
+    skills: [apply-subsequence-criteria]
+    archetype: parity-subsequences
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires proving a whole-sequence conclusion from exhaustive residue-class subsequences.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Suppose $a_{2n}\to L$ and $a_{2n+1}\to L$. What follows?
+    choices:
+      - { id: a, text: '$a_n\to L$' }
+      - { id: b, text: '$a_n$ may still have a third subsequential limit' }
+      - { id: c, text: '$a_n$ must alternate between two values' }
+      - { id: d, text: 'Only boundedness follows' }
+    answer: { choiceId: a }
+    solutionOutline: Beyond the larger of the two parity thresholds, every index is either even or odd and therefore its term lies within the requested tolerance of $L$.
+    commonTrap: Invoking the warning that one convergent subsequence is insufficient even though these two subsequences exhaust all indices.
+    verification: { method: epsilon-parity-proof, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-009
+    topicId: sequence-fundamentals
+    skills: [construct-counterexamples-to-convergence-claims]
+    archetype: vanishing-increments-counterexample
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires selecting a bounded divergent sequence whose consecutive differences nevertheless vanish.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Which sequence is bounded and divergent while still satisfying
+      $a_{n+1}-a_n\to0$?
+    choices:
+      - { id: a, text: '$a_n=\sin(\sqrt n)$' }
+      - { id: b, text: '$a_n=(-1)^n$' }
+      - { id: c, text: '$a_n=1/n$' }
+      - { id: d, text: '$a_n=n$' }
+    answer: { choiceId: a }
+    solutionOutline: Sine keeps the sequence bounded, $\sqrt{n+1}-\sqrt n\to0$ makes consecutive sine differences vanish, and the slowly growing phase visits values near different sine levels.
+    commonTrap: Believing small consecutive changes force the total long-term motion to settle.
+    verification: { method: lipschitz-bound-and-subsequence-phase-analysis, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-010
+    topicId: sequence-fundamentals
+    skills: [evaluate-exponential-limits]
+    archetype: generalized-e-limit
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires transforming a variable-base power through logarithms and a standard limit.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For fixed real $x$, find
+      $$\lim_{n\to\infty}\left(1+\frac{x}{n}\right)^n.$$
+    choices:
+      - { id: a, text: '$1+x$' }
+      - { id: b, text: '$e^x$' }
+      - { id: c, text: '$x^e$' }
+      - { id: d, text: '$1$ for every $x$' }
+    answer: { choiceId: b }
+    solutionOutline: The logarithm is $n\ln(1+x/n)=x[\ln(1+u)/u]$ with $u=x/n\to0$, so it tends to $x$.
+    commonTrap: Taking the limit of the base first and concluding the indeterminate form $1^\infty$ equals $1$.
+    verification: { method: logarithm-and-standard-limit, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-011
+    topicId: sequence-fundamentals
+    skills: [analyze-two-cycle-recurrences]
+    archetype: fractional-linear-recurrence
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires controlling an alternating recurrence through its two-step map rather than assuming monotonicity.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Let $a_1=1$ and $a_{n+1}=1+1/a_n$. Which number is the limit?
+    choices:
+      - { id: a, text: '$1$' }
+      - { id: b, text: '$\frac{1+\sqrt5}{2}$' }
+      - { id: c, text: '$2$' }
+      - { id: d, text: 'No limit exists because the sequence alternates.' }
+    answer: { choiceId: b }
+    solutionOutline: The odd and even subsequences are monotone in opposite directions and bounded toward the same positive fixed point of $L=1+1/L$, namely the golden ratio.
+    commonTrap: Solving the fixed-point equation without addressing the visible odd-even oscillation.
+    verification: { method: two-step-map-and-parity-bounds, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-012
+    topicId: sequence-fundamentals
+    skills: [analyze-product-sequences]
+    archetype: telescoping-product-root
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires telescoping a finite product before evaluating a changing root.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\lim_{n\to\infty}\left[\prod_{k=1}^{n}\left(1+\frac1k\right)\right]^{1/n}.$$
+    choices:
+      - { id: a, text: '$1$' }
+      - { id: b, text: '$e$' }
+      - { id: c, text: '$2$' }
+      - { id: d, text: '$+\infty$' }
+    answer: { choiceId: a }
+    solutionOutline: The product telescopes to $n+1$, and $(n+1)^{1/n}\to1$ by taking logarithms.
+    commonTrap: Treating the factors as though they had a fixed common ratio or fixed geometric mean above one.
+    verification: { method: finite-product-cancellation-and-log-limit, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-013
+    topicId: sequence-fundamentals
+    skills: [use-ratio-bounds-for-sequences]
+    archetype: eventual-contraction
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires converting a limit of ratios into a uniform geometric tail bound.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Let $a_n>0$ and suppose
+      $\lim_{n\to\infty}a_{n+1}/a_n=L<1$. What must follow?
+    choices:
+      - { id: a, text: '$a_n\to0$' }
+      - { id: b, text: '$a_n\to L$' }
+      - { id: c, text: '$a_n$ eventually equals zero' }
+      - { id: d, text: '$a_n$ diverges because all terms are positive' }
+    answer: { choiceId: a }
+    solutionOutline: Choose $r$ with $L<r<1$; eventually $a_{n+1}\le r a_n$, so iteration bounds the tail by a constant times $r^n$.
+    commonTrap: Confusing the limit of consecutive ratios with the limit of the terms.
+    verification: { method: epsilon-ratio-to-geometric-bound, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-014
+    topicId: sequence-fundamentals
+    skills: [apply-bolzano-weierstrass-and-uniqueness]
+    archetype: unique-cluster-point
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires combining boundedness, subsequence existence, and uniqueness of subsequential limits.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      A bounded real sequence has exactly one subsequential limit, $L$. What
+      can be concluded?
+    choices:
+      - { id: a, text: 'The full sequence converges to $L$.' }
+      - { id: b, text: 'The sequence may diverge while having no other subsequential limit.' }
+      - { id: c, text: 'The sequence must be monotone.' }
+      - { id: d, text: 'Only $\limsup a_n=L$ is known.' }
+    answer: { choiceId: a }
+    solutionOutline: If the sequence failed to converge to $L$, infinitely many terms would stay outside some neighborhood; boundedness would give that subsequence a convergent subsubsequence with a different limit.
+    commonTrap: Recalling that one convergent subsequence usually proves little while overlooking the uniqueness hypothesis and boundedness.
+    verification: { method: contradiction-with-bolzano-weierstrass, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-015
+    topicId: sequence-fundamentals
+    skills: [distinguish-limsup-from-limit]
+    archetype: oscillatory-perturbation
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires finding parity subsequential limits after a vanishing rational perturbation.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For $a_n=(-1)^n+n/(n+1)$, what are $\liminf a_n$ and $\limsup a_n$?
+    choices:
+      - { id: a, text: '$0$ and $2$, respectively' }
+      - { id: b, text: '$-1$ and $1$, respectively' }
+      - { id: c, text: '$1$ and $1$, respectively' }
+      - { id: d, text: '$-\infty$ and $+\infty$, respectively' }
+    answer: { choiceId: a }
+    solutionOutline: Along odd indices the terms approach $-1+1=0$, while along even indices they approach $1+1=2$; these exhaust the parity behavior.
+    commonTrap: Dropping the oscillatory term and reporting the limit of $n/(n+1)$ for the whole sequence.
+    verification: { method: even-odd-subsequence-limits, result: verified }
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-016
+    topicId: sequence-fundamentals
+    skills: [prove-recursive-sequence-convergence, identify-fixed-points]
+    archetype: nested-radical-recurrence
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires proving an invariant interval and monotonicity before selecting a fixed point.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Let $a_1=0$ and $a_{n+1}=\sqrt{2+a_n}$. Which statement is correct?
+    choices:
+      - {id: a, text: '$a_n$ increases to $2$.'}
+      - {id: b, text: '$a_n$ decreases to $-1$.'}
+      - {id: c, text: '$a_n$ increases without bound.'}
+      - {id: d, text: '$a_n$ alternates between $0$ and $\sqrt2$.'}
+    answer: {choiceId: a}
+    solutionOutline: Induction gives $0\le a_n\le2$, and $\sqrt{2+x}\ge x$ on this interval; the nonnegative fixed point solves $L^2-L-2=0$.
+    commonTrap: Solving the fixed-point equation and accepting the negative root, which is impossible for this recurrence.
+    verification: {method: invariant-monotone-fixed-point-proof, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-017
+    topicId: sequence-fundamentals
+    skills: [evaluate-exponential-scale-limits]
+    archetype: growing-exponent-binomial
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires taking logarithms and identifying the dominant scale.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Determine $\lim_{n\to\infty}(1+1/n)^{n^2}$.
+    choices:
+      - {id: a, text: '$+\infty$'}
+      - {id: b, text: '$e$'}
+      - {id: c, text: '$1$'}
+      - {id: d, text: '$e^2$'}
+    answer: {choiceId: a}
+    solutionOutline: Its logarithm is $n^2\ln(1+1/n)=n-\tfrac12+o(1)$, which tends to infinity.
+    commonTrap: Recognizing the familiar base but overlooking that the exponent is $n^2$, not $n$.
+    verification: {method: logarithmic-asymptotic-expansion, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-018
+    topicId: sequence-fundamentals
+    skills: [evaluate-second-order-exponential-limits]
+    archetype: refined-e-limit
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires retaining the next logarithmic term and transferring it through the exponential.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\lim_{n\to\infty}n\left[\left(1+\frac1n\right)^n-e\right].$$
+    choices:
+      - {id: a, text: '$-e/2$'}
+      - {id: b, text: '$e/2$'}
+      - {id: c, text: '$0$'}
+      - {id: d, text: '$-\infty$'}
+    answer: {choiceId: a}
+    solutionOutline: Since $n\ln(1+1/n)=1-1/(2n)+O(n^{-2})$, exponentiation gives $e[1-1/(2n)+O(n^{-2})]$.
+    commonTrap: Using only the leading limit $e$ and discarding the first-order error that the outside factor magnifies.
+    verification: {method: logarithm-and-exponential-expansion, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-019
+    topicId: sequence-fundamentals
+    skills: [evaluate-telescoping-products]
+    archetype: factored-product
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires factoring each term and tracking both telescoping factors.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Find
+      $$\lim_{n\to\infty}\prod_{k=2}^{n}\left(1-\frac1{k^2}\right).$$
+    choices:
+      - {id: a, text: '$1/2$'}
+      - {id: b, text: '$0$'}
+      - {id: c, text: '$1$'}
+      - {id: d, text: '$2$'}
+    answer: {choiceId: a}
+    solutionOutline: Factoring gives products of $(k-1)/k$ and $(k+1)/k$, whose finite product is $(n+1)/(2n)$.
+    commonTrap: Assuming that an infinite product of factors below one must have limit zero.
+    verification: {method: exact-finite-product-telescoping, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-020
+    topicId: sequence-fundamentals
+    skills: [recognize-riemann-sum-sequences]
+    archetype: triangular-sum-scaling
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires normalizing a growing finite sum at the correct power of n.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate $\displaystyle\lim_{n\to\infty}\frac1{n^2}\sum_{k=1}^{n}k$.
+    choices:
+      - {id: a, text: '$1/2$'}
+      - {id: b, text: '$1$'}
+      - {id: c, text: '$0$'}
+      - {id: d, text: '$+\infty$'}
+    answer: {choiceId: a}
+    solutionOutline: The exact sum is $n(n+1)/2$, and division by $n^2$ leaves $(n+1)/(2n)$.
+    commonTrap: Treating the summand limit as though the number of summands were fixed.
+    verification: {method: exact-sum-and-normalization, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-021
+    topicId: sequence-fundamentals
+    skills: [prove-contraction-recurrence-convergence]
+    archetype: reciprocal-contraction
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires an invariant interval, contraction estimate, and admissible fixed point.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Let $a_1=1$ and $a_{n+1}=1/(2+a_n)$. What is $\lim a_n$?
+    choices:
+      - {id: a, text: '$\sqrt2-1$'}
+      - {id: b, text: '$-\sqrt2-1$'}
+      - {id: c, text: '$1/2$'}
+      - {id: d, text: 'The limit does not exist.'}
+    answer: {choiceId: a}
+    solutionOutline: The map sends $[0,1]$ into itself and has derivative magnitude at most $1/4$ there, so iterates converge to the positive solution of $L=1/(2+L)$.
+    commonTrap: Picking a fixed point without establishing that the oscillating iterates actually converge.
+    verification: {method: invariant-interval-contraction, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-022
+    topicId: sequence-fundamentals
+    skills: [combine-exhaustive-subsequence-limits]
+    archetype: parity-reconstruction
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires turning convergence of two exhaustive subsequences into an epsilon proof for the whole sequence.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $a_{2n}\to L$ and $a_{2n+1}\to L$, what follows?
+    choices:
+      - {id: a, text: '$a_n\to L$.'}
+      - {id: b, text: 'Only $\limsup a_n=L$ is known.'}
+      - {id: c, text: '$a_n$ must be monotone.'}
+      - {id: d, text: 'The full sequence can still have a third cluster point.'}
+    answer: {choiceId: a}
+    solutionOutline: Beyond the larger of the two parity thresholds, every index is either an even or odd index whose term lies within the chosen epsilon neighborhood.
+    commonTrap: Recalling that one convergent subsequence does not control a sequence and missing that these two cover every index.
+    verification: {method: parity-epsilon-proof, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-023
+    topicId: sequence-fundamentals
+    skills: [test-false-convergence-criteria]
+    archetype: vanishing-increments-counterexample
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires producing a counterexample to a plausible local-to-global inference.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      A bounded sequence satisfies $a_{n+1}-a_n\to0$. Must it converge?
+    choices:
+      - {id: a, text: 'No; $a_n=\sin(\sqrt n)$ is a counterexample.'}
+      - {id: b, text: 'Yes, because adjacent terms become equal.'}
+      - {id: c, text: 'Yes, by monotone convergence.'}
+      - {id: d, text: 'No, but only unbounded counterexamples exist.'}
+    answer: {choiceId: a}
+    solutionOutline: The sine sequence remains bounded and its phase increments tend to zero, yet it continues to visit values near both one and negative one.
+    commonTrap: Confusing small successive changes with the Cauchy condition, which controls all sufficiently late pairs.
+    verification: {method: oscillatory-counterexample, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-024
+    topicId: sequence-fundamentals
+    skills: [compute-limsup-and-liminf]
+    archetype: finite-period-sequence
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires identifying all values in a periodic orbit rather than seeking a nonexistent ordinary limit.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $a_n=\cos(n\pi/3)$, what are $\liminf a_n$ and $\limsup a_n$?
+    choices:
+      - {id: a, text: '$-1$ and $1$'}
+      - {id: b, text: '$-1/2$ and $1/2$'}
+      - {id: c, text: '$0$ and $1$'}
+      - {id: d, text: 'Both are $0$.'}
+    answer: {choiceId: a}
+    solutionOutline: The six-period cycle contains both $-1$ and $1$, and no value lies outside that range.
+    commonTrap: Averaging a periodic sequence and reporting its average as both extremal limits.
+    verification: {method: periodic-orbit-enumeration, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-025
+    topicId: sequence-fundamentals
+    skills: [apply-stolz-cesaro]
+    archetype: harmonic-logarithmic-ratio
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires comparing successive differences of two divergent sequences.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Let $H_n=\sum_{k=1}^{n}1/k$. Find
+      $\displaystyle\lim_{n\to\infty}H_n/\ln n$.
+    choices:
+      - {id: a, text: '$1$'}
+      - {id: b, text: '$0$'}
+      - {id: c, text: '$e$'}
+      - {id: d, text: '$+\infty$'}
+    answer: {choiceId: a}
+    solutionOutline: Stolz–Cesàro gives the difference quotient $(1/(n+1))/\ln(1+1/n)$, which tends to one.
+    commonTrap: Treating both numerator and denominator as divergent without comparing their rates.
+    verification: {method: stolz-cesaro-standard-limit, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-026
+    topicId: sequence-fundamentals
+    skills: [solve-recursive-sequences-exactly]
+    archetype: reciprocal-linearization
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires discovering a transformation that converts a nonlinear recurrence to an arithmetic one.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $a_1=1$ and $a_{n+1}=a_n/(1+a_n)$, which formula is correct?
+    choices:
+      - {id: a, text: '$a_n=1/n$'}
+      - {id: b, text: '$a_n=2^{-n}$'}
+      - {id: c, text: '$a_n=1/(n+1)$'}
+      - {id: d, text: '$a_n=1$'}
+    answer: {choiceId: a}
+    solutionOutline: Taking reciprocals yields $1/a_{n+1}=1/a_n+1$, so $1/a_n=n$.
+    commonTrap: Guessing geometric decay from the shrinking terms without transforming the recurrence.
+    verification: {method: reciprocal-recurrence-solution, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-027
+    topicId: sequence-fundamentals
+    skills: [evaluate-second-order-radical-limits]
+    archetype: subtract-leading-asymptotics
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires removing two leading terms and retaining a quadratic correction.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Evaluate
+      $$\lim_{n\to\infty}n^2\left(\sqrt{1+\frac1n}-1-\frac1{2n}\right).$$
+    choices:
+      - {id: a, text: '$-1/8$'}
+      - {id: b, text: '$1/8$'}
+      - {id: c, text: '$0$'}
+      - {id: d, text: '$-1/2$'}
+    answer: {choiceId: a}
+    solutionOutline: The expansion $\sqrt{1+x}=1+x/2-x^2/8+O(x^3)$ leaves $-1/(8n^2)+O(n^{-3})$.
+    commonTrap: Stopping after the linear approximation, which is precisely cancelled in the expression.
+    verification: {method: binomial-expansion-with-remainder, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-028
+    topicId: sequence-fundamentals
+    skills: [apply-cesaro-convergence]
+    archetype: averages-of-convergent-sequence
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires controlling the finite prefix separately from an epsilon-small tail.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $a_n\to L$, what is the limit of
+      $c_n=(a_1+\cdots+a_n)/n$?
+    choices:
+      - {id: a, text: '$L$'}
+      - {id: b, text: '$0$ for every sequence'}
+      - {id: c, text: '$a_1$'}
+      - {id: d, text: 'It need not exist.'}
+    answer: {choiceId: a}
+    solutionOutline: Split the average error into a fixed finite prefix divided by $n$ and a tail whose individual errors are all below epsilon.
+    commonTrap: Assuming an average preserves only constant sequences rather than all convergent sequences.
+    verification: {method: cesaro-epsilon-proof, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-029
+    topicId: sequence-fundamentals
+    skills: [evaluate-exponential-standard-limits]
+    archetype: nth-root-perturbation
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires transforming an exponential perturbation to the standard exponential derivative limit.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Find $\displaystyle\lim_{n\to\infty}n(2^{1/n}-1)$.
+    choices:
+      - {id: a, text: '$\ln2$'}
+      - {id: b, text: '$2$'}
+      - {id: c, text: '$1$'}
+      - {id: d, text: '$0$'}
+    answer: {choiceId: a}
+    solutionOutline: Write $2^{1/n}=e^{(\ln2)/n}$ and apply $(e^x-1)/x\to1$.
+    commonTrap: Replacing $2^{1/n}$ by its limit one before accounting for the multiplying factor $n$.
+    verification: {method: exponential-derivative-limit, result: verified}
+    reviewStatus: verified
+
+  - id: calc2-seq-oly-030
+    topicId: sequence-fundamentals
+    skills: [evaluate-integral-defined-sequences]
+    archetype: boundary-concentration-integral
+    difficulty: olympiad
+    reasoningDepth: 3
+    difficultyEvidence: Requires evaluating an n-dependent integral before taking its scaled limit.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Determine $\displaystyle\lim_{n\to\infty}n\int_0^1x^n\,dx$.
+    choices:
+      - {id: a, text: '$1$'}
+      - {id: b, text: '$0$'}
+      - {id: c, text: '$1/2$'}
+      - {id: d, text: '$+\infty$'}
+    answer: {choiceId: a}
+    solutionOutline: The integral equals $1/(n+1)$, so the sequence is $n/(n+1)$.
+    commonTrap: Using pointwise convergence of $x^n$ to zero and overlooking the outside factor.
+    verification: {method: exact-integral-evaluation, result: verified}
+    reviewStatus: verified

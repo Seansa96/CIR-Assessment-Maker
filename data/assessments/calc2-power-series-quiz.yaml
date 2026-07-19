@@ -5,140 +5,321 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: power-series
 skills:
-- Apply Power Series and Representations
-- power-series
+- Determine centers, radii, intervals, and endpoint behavior
+- Differentiate and integrate power series representations
+- Recover coefficients and combine convergence information
 navigation:
   learningGoal: practice
   activityType: focusedPractice
   tags:
   - calculus-2
   - power-series
+  - focused-practice
+  - intervals-of-convergence
 modeDefault: practice
 randomizeQuestions: true
 questions:
 - id: q001
-  type: numericResponse
+  type: multipleChoice
   skills:
-  - power-series
-  prompt: 'Find the Radius of Convergence $R$ for the power series $\sum_{n=1}^\infty
-    \frac{x^n}{n!}$.
-
-    *(Enter 9999 if the radius is infinity)*
-
-    '
+  - find-radii-with-factorial-growth
+  prompt: |
+    What is the radius of convergence of $\sum_{n=0}^{\infty}n!x^n$?
+  choices:
+  - id: a
+    text: $0$
+  - id: b
+    text: $1$
+  - id: c
+    text: |-
+      $\infty$
+  - id: d
+    text: $e$
   answer:
-    value: 9999
-    tolerance: 0.1
-  explanation: '$L = \lim \left| \frac{x^{n+1}}{(n+1)!} \cdot \frac{n!}{x^n} \right|
-    = \lim \left| \frac{x}{n+1} \right| = 0$.
-
-    Since $L = 0$ for ANY value of $x$, it is always less than 1. Thus, the series
-    converges for all real numbers. $R = \infty$.
-
-    '
+    choiceId: a
+  explanation: The consecutive absolute ratio is $(n+1)|x|$, which exceeds one eventually for every nonzero
+    x.
 - id: q002
-  type: numericResponse
+  type: multipleChoice
   skills:
-  - power-series
-  prompt: 'Find the Radius of Convergence $R$ for the power series $\sum_{n=1}^\infty
-    n! x^n$.
-
-    *(Enter 9999 if the radius is infinity)*
-
-    '
+  - recognize-entire-power-series
+  prompt: |
+    What is the radius of $\sum_{n=0}^{\infty}x^n/n!$?
+  choices:
+  - id: a
+    text: |-
+      $\infty$
+  - id: b
+    text: $1$
+  - id: c
+    text: $0$
+  - id: d
+    text: $e$
   answer:
-    value: 0
-    tolerance: 0.01
-  explanation: '$L = \lim \left| \frac{(n+1)! x^{n+1}}{n! x^n} \right| = \lim |(n+1)x|
-    = \infty$ (unless $x=0$).
-
-    Since it only converges when $x=0$, the radius is 0.
-
-    '
+    choiceId: a
+  explanation: |-
+    The ratio is $|x|/(n+1)\to0$ for every fixed x.
 - id: q003
   type: multipleChoice
   skills:
-  - power-series
-  prompt: 'Find the interval of convergence for $\sum_{n=1}^\infty \frac{(x-2)^n}{3^n
-    \sqrt{n}}$.
-
-    '
+  - test-power-series-endpoints
+  prompt: |
+    Find the interval of convergence of
+    $\sum_{n=1}^{\infty}(x-2)^n/[3^n\sqrt n]$.
   choices:
   - id: a
-    text: $[-1, 5)$
+    text: $[-1,5)$
   - id: b
-    text: $(-1, 5)$
+    text: $(-1,5)$
   - id: c
-    text: $[-1, 5]$
+    text: $[-1,5]$
   - id: d
-    text: $(-1, 5]$
+    text: $(-1,5]$
   answer:
     choiceId: a
-  explanation: 'Ratio Test: $\lim \left| \frac{(x-2)^{n+1}}{3^{n+1}\sqrt{n+1}} \cdot
-    \frac{3^n\sqrt{n}}{(x-2)^n} \right| = \left| \frac{x-2}{3} \right|$.
-
-    Require $|x-2| < 3 \implies -3 < x-2 < 3 \implies -1 < x < 5$.
-
-    Test $x=5$: $\sum \frac{3^n}{3^n\sqrt{n}} = \sum \frac{1}{\sqrt{n}}$ (p-series
-    $p=1/2$, diverges).
-
-    Test $x=-1$: $\sum \frac{(-3)^n}{3^n\sqrt{n}} = \sum \frac{(-1)^n}{\sqrt{n}}$
-    (AST, converges).
-
-    Interval is $[-1, 5)$.
-
-    '
+  explanation: The radius is three; x equals negative one gives a convergent alternating p-series, while
+    x equals five gives the divergent positive p-series with exponent one half.
 - id: q004
   type: multipleChoice
   skills:
-  - power-series
-  prompt: 'Write the function $f(x) = \frac{x^2}{1+x}$ as a power series.
-
-    '
+  - derive-geometric-function-series
+  prompt: |
+    Which series represents $x^2/(1+x)$ for $|x|<1$?
   choices:
   - id: a
-    text: $\sum_{n=0}^\infty (-1)^n x^{n+2}$
+    text: |-
+      $\sum_{n=0}^{\infty}(-1)^nx^{n+2}$
   - id: b
-    text: $\sum_{n=0}^\infty x^{n+2}$
+    text: |-
+      $\sum_{n=0}^{\infty}x^{2n}$
   - id: c
-    text: $\sum_{n=0}^\infty (-1)^n x^{2n}$
+    text: |-
+      $\sum_{n=0}^{\infty}(-1)^nx^{2n}$
   - id: d
-    text: $\sum_{n=0}^\infty (-1)^n x^{n+1}$
+    text: |-
+      $\sum_{n=0}^{\infty}x^{n+2}$
   answer:
     choiceId: a
-  explanation: '$f(x) = x^2 \cdot \frac{1}{1 - (-x)}$.
-
-    The fraction is a geometric series with $a=1, r=-x$: $\sum (-x)^n = \sum (-1)^n
-    x^n$.
-
-    Multiply by $x^2$: $x^2 \sum (-1)^n x^n = \sum (-1)^n x^{n+2}$.
-
-    '
+  explanation: |-
+    Use $1/(1+x)=\sum(-x)^n$ and multiply every term by $x^2$.
 - id: q005
   type: multipleChoice
   skills:
-  - power-series
-  prompt: 'If $\frac{1}{1-x} = \sum_{n=0}^\infty x^n$ for $|x| < 1$, what is the power
-    series for $\ln(1-x)$?
-
-    *(Hint: Integrate both sides).*
-
-    '
+  - integrate-power-series
+  prompt: |
+    Which power series equals $\ln(1-x)$ for $|x|<1$?
   choices:
   - id: a
-    text: $-\sum_{n=0}^\infty \frac{x^{n+1}}{n+1}$
+    text: |-
+      $-\sum_{n=1}^{\infty}x^n/n$
   - id: b
-    text: $\sum_{n=0}^\infty \frac{x^{n+1}}{n+1}$
+    text: |-
+      $\sum_{n=1}^{\infty}x^n/n$
   - id: c
-    text: $-\sum_{n=0}^\infty n x^{n-1}$
+    text: |-
+      $\sum_{n=0}^{\infty}nx^{n-1}$
   - id: d
-    text: $\sum_{n=0}^\infty (-1)^n \frac{x^{n+1}}{n+1}$
+    text: |-
+      $-\sum_{n=0}^{\infty}x^n$
   answer:
     choiceId: a
-  explanation: '$\int \frac{1}{1-x} dx = -\ln(1-x)$.
-
-    Integrate the right side: $\int (\sum x^n) dx = \sum \frac{x^{n+1}}{n+1}$.
-
-    So $-\ln(1-x) = \sum \frac{x^{n+1}}{n+1} \implies \ln(1-x) = -\sum \frac{x^{n+1}}{n+1}$.
-
-    '
+  explanation: |-
+    Integrate $1/(1-x)=\sum x^n$ and use the negative derivative of ln one minus x.
+- id: q006
+  type: multipleChoice
+  skills:
+  - differentiate-power-series
+  prompt: |
+    For $|x|<1$, what is $\sum_{n=1}^{\infty}nx^{n-1}$?
+  choices:
+  - id: a
+    text: $1/(1-x)^2$
+  - id: b
+    text: $x/(1-x)^2$
+  - id: c
+    text: $1/(1+x)$
+  - id: d
+    text: |-
+      $-\ln(1-x)$
+  answer:
+    choiceId: a
+  explanation: |-
+    Differentiate $\sum_{n=0}^{\infty}x^n=1/(1-x)$ term by term.
+- id: q007
+  type: multipleChoice
+  skills:
+  - derive-arctangent-series
+  prompt: |
+    Which series represents $\arctan x$ for $|x|\le1$ where the endpoint
+    series converges?
+  choices:
+  - id: a
+    text: |-
+      $\sum_{n=0}^{\infty}(-1)^nx^{2n+1}/(2n+1)$
+  - id: b
+    text: |-
+      $\sum_{n=0}^{\infty}x^{n+1}/(n+1)$
+  - id: c
+    text: |-
+      $\sum_{n=0}^{\infty}(-1)^nx^{n}$
+  - id: d
+    text: |-
+      $\sum_{n=0}^{\infty}x^{2n}/(2n)$
+  answer:
+    choiceId: a
+  explanation: |-
+    Expand $1/(1+x^2)$ as $\sum(-1)^nx^{2n}$ and integrate from zero to x.
+- id: q008
+  type: multipleChoice
+  skills:
+  - recover-power-series-coefficients
+  prompt: |
+    If $f(x)=\sum_{n=0}^{\infty}c_n(x-a)^n$ near a, what is $c_3$?
+  choices:
+  - id: a
+    text: $f^{(3)}(a)/3!$
+  - id: b
+    text: $f^{(3)}(a)$
+  - id: c
+    text: $f(a)/3$
+  - id: d
+    text: $3!f(a)$
+  answer:
+    choiceId: a
+  explanation: Three differentiations make the cubic coefficient equal to $3!c_3$ at the center.
+- id: q009
+  type: multipleChoice
+  skills:
+  - classify-endpoint-series
+  prompt: |
+    At $x=-1$, how does $\sum_{n=1}^{\infty}x^n/n$ converge?
+  choices:
+  - id: a
+    text: Conditionally
+  - id: b
+    text: Absolutely
+  - id: c
+    text: It diverges by the term test.
+  - id: d
+    text: Geometrically
+  answer:
+    choiceId: a
+  explanation: Substitution gives the alternating harmonic series, while its absolute series is harmonic.
+- id: q010
+  type: multipleChoice
+  skills:
+  - track-radii-under-differentiation
+  prompt: |
+    A power series has radius $R>0$. What radius does its differentiated
+    series have?
+  choices:
+  - id: a
+    text: $R$
+  - id: b
+    text: $R/2$
+  - id: c
+    text: $2R$
+  - id: d
+    text: |-
+      $\infty$
+  answer:
+    choiceId: a
+  explanation: Multiplying coefficients by n does not change their exponential growth rate, so the radius
+    is unchanged.
+- id: q011
+  type: multipleChoice
+  skills:
+  - convert-radius-to-open-intervals
+  prompt: |
+    A power series centered at $-3$ has radius $5$. On what open interval
+    does it certainly converge?
+  choices:
+  - id: a
+    text: $(-8,2)$
+  - id: b
+    text: $(-5,5)$
+  - id: c
+    text: $(-2,8)$
+  - id: d
+    text: $[-8,2]$
+  answer:
+    choiceId: a
+  explanation: The condition $|x+3|<5$ gives negative eight less than x less than two.
+- id: q012
+  type: multipleChoice
+  skills:
+  - evaluate-power-series-at-points
+  prompt: |
+    Evaluate $\sum_{n=0}^{\infty}(1/4)^n$.
+  choices:
+  - id: a
+    text: $4/3$
+  - id: b
+    text: $3/4$
+  - id: c
+    text: $4$
+  - id: d
+    text: Diverges
+  answer:
+    choiceId: a
+  explanation: The ratio magnitude is below one and the geometric sum is $1/(1-1/4)=4/3$.
+- id: q013
+  type: multipleChoice
+  skills:
+  - combine-power-series-radii
+  prompt: |
+    Two power series centered at the same point have radii $2$ and $7$.
+    What radius is guaranteed for their sum?
+  choices:
+  - id: a
+    text: At least $2$
+  - id: b
+    text: Exactly $9$
+  - id: c
+    text: Exactly $7$
+  - id: d
+    text: Zero
+  answer:
+    choiceId: a
+  explanation: Both series converge throughout the smaller disk; cancellation could make the actual radius
+    larger, so only at least two is guaranteed.
+- id: q014
+  type: multipleChoice
+  skills:
+  - use-power-series-uniqueness
+  prompt: |
+    If $\sum c_nx^n=0$ for every x in an open interval around zero, what
+    follows?
+  choices:
+  - id: a
+    text: Every $c_n=0$.
+  - id: b
+    text: Only $c_0=0$.
+  - id: c
+    text: The coefficients may be arbitrary.
+  - id: d
+    text: Only even coefficients vanish.
+  answer:
+    choiceId: a
+  explanation: Repeated differentiation at zero isolates $n!c_n$, proving every coefficient vanishes.
+- id: q015
+  type: multipleChoice
+  skills:
+  - interpret-radius-information
+  prompt: |
+    Knowing only that a power series has radius $R$ determines what about
+    points with $|x-a|=R$?
+  choices:
+  - id: a
+    text: Nothing definitive; endpoints must be tested.
+  - id: b
+    text: Both endpoints converge.
+  - id: c
+    text: Both endpoints diverge.
+  - id: d
+    text: Exactly one endpoint converges.
+  answer:
+    choiceId: a
+  explanation: The root or ratio criterion is at its boundary there, and different coefficient patterns
+    produce every endpoint possibility.
+attemptQuestionCount: 15

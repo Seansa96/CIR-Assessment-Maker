@@ -5,235 +5,321 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: series-approximation-error
 skills:
-- Estimate remainders for alternating and Taylor series
-- Choose a truncation that meets an error tolerance
-- Distinguish truncation bounds from exact error
+- Apply alternating and integral remainder bounds
+- Use Taylor and geometric error estimates
+- Interpret strict tolerances and approximation guarantees
 navigation:
   learningGoal: practice
   activityType: mixedPractice
   tags:
-  - calc2
-  - easy
   - calculus-2
   - series-approximation-error
+  - easy
+  - remainder-bounds
 modeDefault: practice
 randomizeQuestions: true
-attemptQuestionCount: 10
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - interpret-series-remainders
+  prompt: |
+    If a convergent series has sum $S$ and $N$th partial sum $S_N$, what is
+    the remainder $R_N$?
+  choices:
+  - id: a
+    text: $S-S_N$
+  - id: b
+    text: $S_N-S$ only
+  - id: c
+    text: $S+S_N$
+  - id: d
+    text: $S_N/N$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The remainder is the omitted tail, so adding it to $S_N$ must recover $S$.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - apply-alternating-remainder-bounds
+  prompt: |
+    For a valid alternating series $\sum(-1)^{n-1}b_n$, what bound holds
+    after $N$ terms?
+  choices:
+  - id: a
+    text: |-
+      $|R_N|\le b_{N+1}$
+  - id: b
+    text: $|R_N|=b_N$
+  - id: c
+    text: |-
+      $|R_N|\le S_N$
+  - id: d
+    text: |-
+      $|R_N|\le b_1$ only
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The true sum lies between consecutive partial sums, whose difference is the first omitted
+    magnitude.
 - id: q003
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - solve-alternating-error-inequalities
+  prompt: |
+    For the alternating harmonic series, what is the least $N$ for which the
+    next-term theorem guarantees $|R_N|<0.01$?
+  choices:
+  - id: a
+    text: $99$
+  - id: b
+    text: $100$
+  - id: c
+    text: $101$
+  - id: d
+    text: $10000$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: b
+  explanation: Solve $1/(N+1)<1/100$, giving $N+1>100$ and least integer $N=100$.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - solve-power-remainder-inequalities
+  prompt: |
+    For $\sum(-1)^{n-1}/n^3$, what is the least $N$ whose alternating bound
+    guarantees $|R_N|<10^{-4}$?
+  choices:
+  - id: a
+    text: $20$
+  - id: b
+    text: $21$
+  - id: c
+    text: $22$
+  - id: d
+    text: $100$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: b
+  explanation: The condition $(N+1)^3>10000$ first holds at $N+1=22$, because $21^3<10000<22^3$.
 - id: q005
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - determine-alternating-error-signs
+  prompt: |
+    For $S=1-\frac12+\frac13-\cdots$, is $S_5$ above or below $S$?
+  choices:
+  - id: a
+    text: Above, because the first omitted term is negative
+  - id: b
+    text: Below, because the first omitted term is negative
+  - id: c
+    text: Equal to $S$
+  - id: d
+    text: The side cannot be determined
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The sixth term is negative, so $R_5=S-S_5<0$ and the partial sum lies above the limit.
 - id: q006
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - state-integral-test-tail-bounds
+  prompt: |
+    If $a_n=f(n)$ for positive decreasing $f$, which remainder inequality is
+    correct?
+  choices:
+  - id: a
+    text: |-
+      $\int_{N+1}^{\infty}f(x)\,dx\le R_N\le\int_N^{\infty}f(x)\,dx$
+  - id: b
+    text: |-
+      $\int_N^{\infty}f(x)\,dx\le R_N\le\int_{N+1}^{\infty}f(x)\,dx$
+  - id: c
+    text: $R_N=f(N)$ exactly
+  - id: d
+    text: $R_N=0$ for decreasing $f$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Left- and right-endpoint rectangle comparisons place the positive tail between the integrals
+    beginning at $N+1$ and $N$.
 - id: q007
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-integral-tail-bounds
+  prompt: |
+    For $\sum1/n^2$, what least $N$ makes the integral upper bound guarantee
+    $R_N<0.05$?
+  choices:
+  - id: a
+    text: $19$
+  - id: b
+    text: $20$
+  - id: c
+    text: $21$
+  - id: d
+    text: $400$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: c
+  explanation: |-
+    The upper bound is $\int_N^\infty x^{-2}dx=1/N$; strict inequality $1/N<1/20$ requires $N>20$.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - interpret-error-bounds
+  prompt: |
+    An error theorem gives $|R_N|\le0.02$, but the target is $0.01$. What can
+    be concluded?
+  choices:
+  - id: a
+    text: This bound does not certify the target; the actual error may still be smaller.
+  - id: b
+    text: The actual error must exceed $0.01$.
+  - id: c
+    text: The series diverges.
+  - id: d
+    text: The actual error equals $0.02$.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: An upper bound larger than the target is inconclusive about the unknown error rather than
+    proof of failure.
 - id: q009
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - state-lagrange-remainders
+  prompt: |
+    If $|f^{(n+1)}(t)|\le M$ between $a$ and $x$, which bound applies to the
+    degree-$n$ Taylor error?
+  choices:
+  - id: a
+    text: |-
+      $|R_n(x)|\le M|x-a|^{n+1}/(n+1)!$
+  - id: b
+    text: |-
+      $|R_n(x)|\le M|x-a|^n/n$
+  - id: c
+    text: $|R_n(x)|=M$
+  - id: d
+    text: |-
+      $|R_n(x)|\le|f(x)|/n!$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The remainder uses the first omitted derivative order $n+1$ with its matching factorial
+    and displacement power.
 - id: q010
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - choose-derivative-bounds
+  prompt: |
+    To bound the Maclaurin remainder for $e^x$ at $x=0.4$, which valid simple
+    choice of $M$ works on $[0,0.4]$?
+  choices:
+  - id: a
+    text: $e^{0.4}$
+  - id: b
+    text: $0$
+  - id: c
+    text: $1/2$
+  - id: d
+    text: $e^{-0.4}$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Every derivative is $e^t$, an increasing function, so its maximum on the interval occurs
+    at $t=0.4$.
 - id: q011
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - use-alternating-taylor-errors
+  prompt: |
+    When $\cos x$ is approximated by $1-x^2/2!+x^4/4!$ at small positive
+    $x$, what is the alternating next-term error bound?
+  choices:
+  - id: a
+    text: $x^6/6!$
+  - id: b
+    text: $x^5/5!$
+  - id: c
+    text: $x^4/4!$
+  - id: d
+    text: $x^2/2!$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Cosine has only even powers, so after degree four the first omitted nonzero term has degree
+    six.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - connect-error-to-decimal-accuracy
+  prompt: |
+    Which absolute-error guarantee is sufficient to round an approximation
+    correctly to three decimal places?
+  choices:
+  - id: a
+    text: Error below $0.0005$
+  - id: b
+    text: Error below $0.005$
+  - id: c
+    text: Error below $0.05$
+  - id: d
+    text: Error below $0.5$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The half-unit in the third-decimal place is $0.0005$, so a smaller error cannot cross a
+    rounding boundary absent an exact tie.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - compute-geometric-tails
+  prompt: |
+    For $\sum_{n=0}^{\infty}(1/3)^n$, what is the exact tail after terms
+    $n=0,1,\ldots,N$?
+  choices:
+  - id: a
+    text: |-
+      $\frac32(1/3)^{N+1}$
+  - id: b
+    text: $(1/3)^N$
+  - id: c
+    text: $1/(N+1)$
+  - id: d
+    text: $3^{N+1}$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The first omitted term is $(1/3)^{N+1}$ and the remaining ratio is $1/3$, so divide by
+    $1-1/3=2/3$.
 - id: q014
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - select-remainder-methods
+  prompt: |
+    Which method is most direct for bounding the tail of a positive decreasing
+    series whose terms are $f(n)$ and whose antiderivative is simple?
+  choices:
+  - id: a
+    text: Integral-test remainder bounds
+  - id: b
+    text: Alternating next-term bound
+  - id: c
+    text: Geometric exact tail regardless of term form
+  - id: d
+    text: The divergence test
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Positivity, decrease, and an integrable model are precisely the structure used by the integral
+    tail estimate.
 - id: q015
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - distinguish-absolute-relative-error
+  prompt: |
+    If the true value is nonzero, how is relative error computed from an
+    approximation $A$ to $S$?
+  choices:
+  - id: a
+    text: $|S-A|/|S|$
+  - id: b
+    text: $|S-A|$
+  - id: c
+    text: $|S+A|/|A|$
+  - id: d
+    text: $S/A$ without absolute values
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q016
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q017
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q018
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q023
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q024
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q025
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q026
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q027
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Relative error scales the absolute discrepancy by the magnitude of the true value.
+attemptQuestionCount: 15

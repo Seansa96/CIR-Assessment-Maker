@@ -1,48 +1,212 @@
 schemaVersion: 1
 id: cpp-strings-formatting-worked-example
-title: Cpp Strings Formatting - Worked Example
-description: A guided walkthrough of a complex C++ implementation.
+title: Longest Palindromic Substring Worked Examples
+description: Three detailed center-expansion problems from direct recognition to implementation transfer.
 assessmentType: workedExample
 categoryId: c++
 topicId: cpp-strings-formatting
 skills:
-- Apply Strings and Formatting
-- cpp
-- c-plus-plus
-- cpp-strings-formatting
+  - identify-palindrome-centers
+  - expand-palindromic-intervals
+  - compare-odd-and-even-palindromes
+  - analyze-center-expansion-complexity
 difficulty: 3
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - c++
-  - cpp-strings-formatting
-  - cpp
-  - worked-example
-  - c-plus-plus
-  - workedexample
-  - learn
-  - guidedworkedexample
-  - strings
-  - formatting
-  - worked
-  - example
+    - c++
+    - cpp-strings-formatting
+    - worked-example
+    - palindrome
+    - two-pointers
 workedExamples:
-- id: example-1
-  title: Implementation Walkthrough
-  problem: We need to build a system that utilizes these concepts safely.
-  steps:
-  - id: step-1
-    title: Define the core data structure
-    instruction: First, define the core data structure.
-    type: code
-    prompt: Define the class.
-    language: cpp
-    functionName: main
-    starterCode: int main() { return 0; }
-    validationMode: unitTests
-    tests:
-    - input: test
-      expected: test
-      isHidden: false
-    explanation: The class defines the data model.
+  - id: palindrome-odd-center
+    title: Recognize and Expand an Odd Center
+    problem: |
+      For `adcdcdy`, determine the longest contiguous palindromic substring
+      and explain why its length is 5.
+    steps:
+      - id: palindrome-odd-step-1
+        title: Separate substring from rearrangement
+        instruction: |
+          A substring must occupy consecutive indices. List the indices and
+          identify candidate centers rather than counting character frequencies.
+        type: multipleChoice
+        prompt: Which candidate is a contiguous palindrome in `adcdcdy`?
+        choices:
+          - { id: a, text: "`acdca`" }
+          - { id: b, text: "`dcdcd`" }
+          - { id: c, text: "`adccd`" }
+          - { id: d, text: "`cdcdy`" }
+        answer: { choiceId: b }
+        explanation: Indices 1 through 5 spell `dcdcd`, which reads identically in both directions.
+      - id: palindrome-odd-step-2
+        title: Choose the center
+        instruction: |
+          An odd palindrome has one central character. For `dcdcd`, the middle
+          `d` at index 3 is paired symmetrically with indices 2/4 and 1/5.
+        type: multipleChoice
+        prompt: Which original index is the center of `dcdcd`?
+        choices:
+          - { id: a, text: "1" }
+          - { id: b, text: "2" }
+          - { id: c, text: "3" }
+          - { id: d, text: "4" }
+        answer: { choiceId: c }
+        explanation: The interval 1..5 has midpoint 3.
+      - id: palindrome-odd-step-3
+        title: Trace outward comparisons
+        instruction: |
+          Compare `(3,3)`, then `(2,4)`, then `(1,5)`. All pairs match.
+          Expanding to `(0,6)` compares `a` with `y`, so expansion stops.
+        type: multipleChoice
+        prompt: What invariant is true after each successful expansion?
+        choices:
+          - { id: a, text: "Every character seen so far has the same value." }
+          - { id: b, text: "The current closed interval is a palindrome." }
+          - { id: c, text: "No longer palindrome exists anywhere." }
+          - { id: d, text: "The interval begins at index zero." }
+        answer: { choiceId: b }
+        explanation: Matching new endpoints preserves the palindromic interval invariant.
+      - id: palindrome-odd-step-4
+        title: Verify the conclusion
+        instruction: |
+          The successful interval length is `5 - 1 + 1 = 5`. The next
+          comparison fails, so this center cannot produce a longer palindrome.
+        type: multipleChoice
+        prompt: What result should the function return for `adcdcdy`?
+        choices:
+          - { id: a, text: "3" }
+          - { id: b, text: "4" }
+          - { id: c, text: "5" }
+          - { id: d, text: "7" }
+        answer: { choiceId: c }
+        explanation: The longest located interval is `dcdcd`, of length five.
+
+  - id: palindrome-even-center
+    title: Handle an Even Center and Competing Runs
+    problem: |
+      For `abddddeeff`, determine why the longest palindromic substring has
+      length 4 even though several characters repeat elsewhere.
+    steps:
+      - id: palindrome-even-step-1
+        title: Locate gap centers
+        instruction: |
+          Even palindromes are centered between indices. The four consecutive
+          `d` characters create a center between the middle two `d` values.
+        type: multipleChoice
+        prompt: Which initial comparison detects that even center?
+        choices:
+          - { id: a, text: "Compare indices 2 and 2." }
+          - { id: b, text: "Compare indices 3 and 4." }
+          - { id: c, text: "Compare indices 1 and 5." }
+          - { id: d, text: "Compare the first and last indices." }
+        answer: { choiceId: b }
+        explanation: An even center starts with adjacent indices; the middle `d` pair is at 3 and 4.
+      - id: palindrome-even-step-2
+        title: Expand over the run
+        instruction: |
+          From `(3,4)`, expand to `(2,5)`. Both pairs are `d`. The next
+          endpoints `(1,6)` are `b` and `e`, so the interval stops at length 4.
+        type: multipleChoice
+        prompt: Which substring is established by the successful comparisons?
+        choices:
+          - { id: a, text: "`dddd`" }
+          - { id: b, text: "`ddddee`" }
+          - { id: c, text: "`bdde`" }
+          - { id: d, text: "`deed`" }
+        answer: { choiceId: a }
+        explanation: Indices 2 through 5 contain four consecutive `d` characters.
+      - id: palindrome-even-step-3
+        title: Reject the frequency shortcut
+        instruction: |
+          The two `e` and two `f` characters could help construct another
+          palindrome after rearrangement, but rearrangement is forbidden.
+        type: multipleChoice
+        prompt: Why is a character-frequency table insufficient here?
+        choices:
+          - { id: a, text: "It cannot store characters." }
+          - { id: b, text: "It loses the positions required by a substring." }
+          - { id: c, text: "It uses quadratic space." }
+          - { id: d, text: "It treats uppercase letters incorrectly." }
+        answer: { choiceId: b }
+        explanation: Contiguity depends on order and indices, which counts discard.
+      - id: palindrome-even-step-4
+        title: Verify all center types
+        instruction: |
+          A correct implementation tries `(center, center)` and
+          `(center, center + 1)` for every center. This covers every odd and
+          even palindrome.
+        type: multipleChoice
+        prompt: What is the final maximum length?
+        choices:
+          - { id: a, text: "2" }
+          - { id: b, text: "3" }
+          - { id: c, text: "4" }
+          - { id: d, text: "6" }
+        answer: { choiceId: c }
+        explanation: "`dddd` is contiguous and no center expands beyond four characters."
+
+  - id: palindrome-implementation-transfer
+    title: Implement Safe Center Expansion
+    problem: |
+      Design `longest_palindromic_substring_length` so it handles empty input,
+      odd and even centers, and unsigned indices safely.
+    steps:
+      - id: palindrome-code-step-1
+        title: Define the helper contract
+        instruction: |
+          The helper receives inclusive `left` and `right` indices and expands
+          only while both are valid and the endpoint characters match.
+        type: multipleChoice
+        prompt: Which calls cover the two center types at index `c`?
+        choices:
+          - { id: a, text: "`expand(c, c)` and `expand(c, c + 1)`" }
+          - { id: b, text: "`expand(0, c)` and `expand(c, size)`" }
+          - { id: c, text: "`expand(c - 1, c - 1)` only" }
+          - { id: d, text: "`expand(c, size - 1)` only" }
+        answer: { choiceId: a }
+        explanation: One call has a character center and the other has a gap center.
+      - id: palindrome-code-step-2
+        title: Guard unsigned decrement
+        instruction: |
+          After recording a matching interval beginning at index zero, stop
+          before decrementing `left`; otherwise `size_t` wraps to a huge value.
+        type: multipleChoice
+        prompt: Which guard prevents that underflow?
+        choices:
+          - { id: a, text: "`if (left == 0) break;`" }
+          - { id: b, text: "`if (right == 0) continue;`" }
+          - { id: c, text: "`if (left < size) --right;`" }
+          - { id: d, text: "`if (text.empty()) ++left;`" }
+        answer: { choiceId: a }
+        explanation: Zero is the last valid unsigned value before decrement would wrap.
+      - id: palindrome-code-step-3
+        title: Compute and update length
+        instruction: |
+          For inclusive endpoints, length is `right - left + 1`. Update the
+          maximum after each successful comparison, including the first one.
+        type: multipleChoice
+        prompt: Why must the update occur inside the matching loop?
+        choices:
+          - { id: a, text: "Every successful radius is a valid candidate." }
+          - { id: b, text: "It makes sorting linear." }
+          - { id: c, text: "It avoids comparing characters." }
+          - { id: d, text: "Only the first center matters." }
+        answer: { choiceId: a }
+        explanation: Expansion may stop at the next radius, so the last successful interval must already be recorded.
+      - id: palindrome-code-step-4
+        title: Analyze complexity
+        instruction: |
+          There are `O(n)` centers and one center can expand `O(n)` positions.
+          The method uses only indices and the maximum length.
+        type: multipleChoice
+        prompt: What are the worst-case costs?
+        choices:
+          - { id: a, text: "`O(n)` time and `O(n)` space" }
+          - { id: b, text: "`O(n log n)` time and constant space" }
+          - { id: c, text: "`O(n^2)` time and constant auxiliary space" }
+          - { id: d, text: "`O(2^n)` time and `O(n)` space" }
+        answer: { choiceId: c }
+        explanation: Repeated expansion yields quadratic comparisons but requires no table.

@@ -1,0 +1,173 @@
+schemaVersion: 1
+id: cpp-text-file-writer-directed-project
+title: C++ Reliable Text File Writer
+description: Create a text file with a precise newline contract and report late write failures.
+assessmentType: directedProject
+categoryId: c++
+topicId: cpp-working-with-files
+skills:
+- create-text-files
+- detect-output-stream-failures
+- complete-cpp-text-file-writer-directed-project
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - c++
+  - cpp-working-with-files
+  - directed-project
+  - implementation
+  - create-and-write-text-file
+directedProject:
+  summary: Create a text file with a precise newline contract and report late write failures.
+  estimatedTimeMinutes: 45
+  outcomes:
+  - Implement the create-and-write-text-file family from a precise contract.
+  - Explain the invariant and complexity of the implementation.
+  - Adapt the base solution to changed requirements without breaking edge cases.
+  environment:
+    name: Local C++20 console project
+    platform:
+    - windows
+    - linux
+    - macos
+    toolVersion: C++20
+    requiredAccounts: []
+    prerequisites:
+    - Functions
+    - loops
+    - standard library containers
+    installLinks: []
+  resources: []
+  phases:
+  - id: phase-1-contract-and-approach
+    title: Understand the contract and approach
+    required: true
+    goal: Translate the problem into an invariant before coding.
+    steps:
+    - id: step-1-problem-contract
+      title: Read the canonical problem
+      instruction: |
+        Source family: `cpp-fsf-file-001`
+
+        Implement `bool write_text_lines(const std::filesystem::path& path,
+        const std::vector<std::string>& lines)`. Create or truncate `path` and
+        write the supplied lines in order, placing `\n` between adjacent lines
+        but not after the final line. Return false if the file cannot be opened
+        or any write or flush fails.
+      expectedObservation: Requires opening an output stream, defining newline behavior, and checking
+        both open and write failures.
+      checklist:
+      - id: contract-input-output
+        text: I can state the exact input, output, and edge-case policy.
+      - id: contract-complexity
+        text: I identified which operations determine the time and space cost.
+      resources: []
+    - id: step-2-approach
+      title: Plan the implementation
+      instruction: |
+        Use this approach before opening the sample solution:
+
+        1. Open an output stream in truncating mode and check it immediately.
+        2. Write separators between adjacent lines rather than after every line.
+        3. Check the stream after writes, then flush and check again.
+        4. Keep user interaction outside the file-writing function so the function is testable.
+
+        Write a short trace for one nontrivial input.
+      expectedObservation: Open in truncating output mode, emit separators between lines, verify each
+        write, flush, and return the final stream state.
+      checklist:
+      - id: approach-invariant
+        text: My trace preserves the stated invariant at every step.
+      resources: []
+  - id: phase-2-reference-and-build
+    title: Study the example and build your version
+    required: true
+    goal: Connect the approach to complete, compilable C++.
+    steps:
+    - id: step-3-example-solution
+      title: Trace the example solution
+      instruction: |
+        Constructing `std::ofstream` without `app` truncates an existing file.
+        Separators are written before every line except the first, which avoids a
+        special trailing newline. Checking after writes and after `flush`
+        captures errors that occur later than `open`.
+
+        ```cpp
+        #include <filesystem>
+        #include <fstream>
+        #include <string>
+        #include <vector>
+
+        bool write_text_lines(const std::filesystem::path& path,
+                              const std::vector<std::string>& lines) {
+            std::ofstream output(path);
+            if (!output) return false;
+            for (std::size_t i = 0; i < lines.size(); ++i) {
+                if (i != 0) output.put('\n');
+                output << lines[i];
+                if (!output) return false;
+            }
+            output.flush();
+            return static_cast<bool>(output);
+        }
+        ```
+
+        Trace this solution against every representative case before writing your own version. The sample is a reference, not starter code.
+      expectedObservation: Open in truncating output mode, emit separators between lines, verify each
+        write, flush, and return the final stream state.
+      checklist:
+      - id: solution-explained
+        text: I can explain every branch, loop, and edge-case decision.
+      - id: trap-avoided
+        text: 'I can explain why this trap is wrong: Checking only `is_open()`, even though a later disk
+          or flush failure can still make the operation unsuccessful.'
+      resources: []
+    - id: step-4-build
+      title: Implement independently
+      instruction: |
+        Create `main.cpp` and implement the canonical contract without copying the reference. Add the representative cases from the bank plus at least three edge cases.
+      files:
+      - path: main.cpp
+        purpose: Learner implementation and tests
+        suggestedContent: |
+          // Implement the required function here.
+          // Keep main() small and use it only for your own test cases.
+
+          int main() {
+              return 0;
+          }
+        readOnly: false
+      checklist:
+      - id: build-compiles
+        text: The program compiles with C++20 warnings enabled.
+      - id: build-tests
+        text: Representative and edge cases pass.
+      troubleshooting:
+      - problem: Output differs only at an edge case.
+        suggestion: Checking only `is_open()`, even though a later disk or flush failure can still make
+          the operation unsuccessful.
+      resources: []
+  - id: phase-3-variants
+    title: Implement changed-condition variants
+    required: true
+    goal: Generalize the family instead of memorizing one solution.
+    steps:
+    - id: step-5-variants
+      title: Complete the family variants
+      instruction: |
+        Extend the program with these variants:
+
+        1. Read multiple console lines until a sentinel and pass the collected vector to the writer.
+        2. Write a formatted report with a heading, aligned fields, and the same error contract.
+        3. Add a mode that refuses to overwrite an existing path by checking `std::filesystem::exists`.
+
+        Keep each behavior in a separately testable function.
+      checklist:
+      - id: variants-distinct
+        text: Each variant changes behavior or constraints, not only sample data.
+      - id: variants-regression
+        text: The original canonical tests still pass.
+      notesPrompt: Which part of the original invariant survived every variant, and which part had to
+        change?
+      resources: []

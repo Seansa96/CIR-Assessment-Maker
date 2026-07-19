@@ -5,53 +5,223 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: taylor-maclaurin
 skills:
-- Construct Taylor and Maclaurin polynomials
-- Use standard series to build new expansions
-- Estimate approximation error with a remainder bound
+  - Build Taylor coefficients from derivatives
+  - Derive shifted logarithmic series and test endpoints
+  - Approximate functions with Taylor polynomials and error bounds
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - calc2
-  - practice
-  - calculus-2
-  - taylor-maclaurin
+    - calculus-2
+    - taylor-maclaurin
+    - taylor-polynomials
+    - series-representations
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: we-taylor-maclaurin-1
-  title: Example 1 for Taylor and Maclaurin Series
-  problem: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  steps:
-  - id: step-taylor-maclaurin-1-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-taylor-maclaurin-2
-  title: Example 2 for Taylor and Maclaurin Series
-  problem: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  steps:
-  - id: step-taylor-maclaurin-2-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-taylor-maclaurin-3
-  title: Example 3 for Taylor and Maclaurin Series
-  problem: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  steps:
-  - id: step-taylor-maclaurin-3-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
+  - id: we-taylor-maclaurin-1
+    title: Construct the Maclaurin series for $e^{2x}$
+    problem: |
+      Derive the Maclaurin series for $f(x)=e^{2x}$ directly from the Taylor
+      coefficient formula and state its radius of convergence.
+    steps:
+      - id: step-taylor-maclaurin-1-1
+        title: Compute the derivative pattern
+        instruction: |
+          Repeated differentiation gives
+          $$f^{(n)}(x)=2^n e^{2x}.$$
+          Evaluating at the center $0$ gives $f^{(n)}(0)=2^n$.
+        type: multipleChoice
+        prompt: What is $f^{(3)}(0)$?
+        choices:
+          - { id: a, text: '$6$' }
+          - { id: b, text: '$8$' }
+          - { id: c, text: '$e^6$' }
+          - { id: d, text: '$0$' }
+        answer: { choiceId: b }
+        explanation: Each derivative contributes another factor of two, and $e^0=1$.
+      - id: step-taylor-maclaurin-1-2
+        title: Insert the coefficients
+        instruction: |
+          The Maclaurin formula is
+          $$f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}x^n
+          =\sum_{n=0}^{\infty}\frac{2^n x^n}{n!}.$$
+        type: multipleChoice
+        prompt: Which are the first four terms?
+        choices:
+          - { id: a, text: '$1+2x+2x^2+\frac43x^3$' }
+          - { id: b, text: '$1+x+x^2+x^3$' }
+          - { id: c, text: '$2+4x+8x^2+16x^3$' }
+          - { id: d, text: '$1-2x+2x^2-\frac43x^3$' }
+        answer: { choiceId: a }
+        explanation: The coefficients are $2^n/n!$, giving $4/2!=2$ and $8/3!=4/3$.
+      - id: step-taylor-maclaurin-1-3
+        title: Determine the radius
+        instruction: |
+          For the absolute terms, the consecutive ratio is
+          $$\frac{|2x|}{n+1}\longrightarrow0$$
+          for every fixed real $x$.
+        type: multipleChoice
+        prompt: What is the radius of convergence?
+        choices:
+          - { id: a, text: '$0$' }
+          - { id: b, text: '$1/2$' }
+          - { id: c, text: '$2$' }
+          - { id: d, text: '$\infty$' }
+        answer: { choiceId: d }
+        explanation: The ratio limit is below one for every finite $x$.
+      - id: step-taylor-maclaurin-1-4
+        title: Connect to a known series
+        instruction: |
+          Substituting $2x$ into
+          $e^u=\sum u^n/n!$ produces the same representation, providing an
+          independent check of the derivative calculation.
+        type: multipleChoice
+        prompt: Which substitution recovers the result?
+        choices:
+          - { id: a, text: '$u=2x$' }
+          - { id: b, text: '$u=x/2$' }
+          - { id: c, text: '$u=x^2$' }
+          - { id: d, text: '$u=-2x$' }
+        answer: { choiceId: a }
+        explanation: Replacing $u$ by $2x$ gives $(2x)^n/n!=2^nx^n/n!$.
+
+  - id: we-taylor-maclaurin-2
+    title: Derive a Taylor series for $\ln x$ about $x=1$
+    problem: |
+      Find the Taylor series for $\ln x$ centered at $1$ and determine its
+      exact real interval of convergence.
+    steps:
+      - id: step-taylor-maclaurin-2-1
+        title: Shift to a known geometric derivative
+        instruction: |
+          Put $u=x-1$, so $\ln x=\ln(1+u)$. Since
+          $$\frac{d}{du}\ln(1+u)=\frac1{1+u}
+          =\sum_{n=0}^{\infty}(-1)^n u^n$$
+          for $|u|<1$, integration can recover the logarithm.
+        type: multipleChoice
+        prompt: What center in $x$ corresponds to $u=0$?
+        choices:
+          - { id: a, text: '$x=0$' }
+          - { id: b, text: '$x=1$' }
+          - { id: c, text: '$x=-1$' }
+          - { id: d, text: '$x=e$' }
+        answer: { choiceId: b }
+        explanation: The substitution $u=x-1$ measures displacement from the center $1$.
+      - id: step-taylor-maclaurin-2-2
+        title: Integrate term by term
+        instruction: |
+          Integrating from $0$ to $u$ gives
+          $$\ln(1+u)=\sum_{n=1}^{\infty}
+          \frac{(-1)^{n-1}u^n}{n}.$$
+          Therefore
+          $$\ln x=\sum_{n=1}^{\infty}
+          \frac{(-1)^{n-1}(x-1)^n}{n}.$$
+        type: multipleChoice
+        prompt: Why is there no integration constant?
+        choices:
+          - { id: a, text: 'Both sides equal zero at $u=0$.' }
+          - { id: b, text: 'Power series never have constants.' }
+          - { id: c, text: 'The derivative at zero is zero.' }
+          - { id: d, text: '$\ln1=1$.' }
+        answer: { choiceId: a }
+        explanation: Definite integration from the center fixes the constant using $\ln1=0$.
+      - id: step-taylor-maclaurin-2-3
+        title: Find the open interval
+        instruction: |
+          The inherited radius condition $|u|<1$ becomes
+          $|x-1|<1$, or $0<x<2$, before checking endpoints.
+        type: multipleChoice
+        prompt: What is the radius about $x=1$?
+        choices:
+          - { id: a, text: '$1$' }
+          - { id: b, text: '$2$' }
+          - { id: c, text: '$e$' }
+          - { id: d, text: '$\infty$' }
+        answer: { choiceId: a }
+        explanation: The singularity at $x=0$ lies one unit from the center.
+      - id: step-taylor-maclaurin-2-4
+        title: Test the endpoints independently
+        instruction: |
+          At $x=2$, the series is the alternating harmonic series and converges
+          to $\ln2$. At $x=0$, it becomes $-\sum1/n$ and diverges. The final
+          interval is
+          $$(0,2].$$
+        type: multipleChoice
+        prompt: Why is the interval asymmetric?
+        choices:
+          - { id: a, text: 'The two endpoint substitutions produce different numerical series.' }
+          - { id: b, text: 'Radii of convergence are asymmetric.' }
+          - { id: c, text: 'The center is not included.' }
+          - { id: d, text: 'Logarithms converge only at positive integers.' }
+        answer: { choiceId: a }
+        explanation: The radius locates candidates; endpoint convergence is a separate series question.
+
+  - id: we-taylor-maclaurin-3
+    title: Approximate cosine with a certified error
+    problem: |
+      Use the degree-four Maclaurin polynomial to approximate $\cos(0.3)$ and
+      give a rigorous upper bound for the error.
+    steps:
+      - id: step-taylor-maclaurin-3-1
+        title: Write the polynomial
+        instruction: |
+          The cosine Maclaurin series is
+          $$\cos x=1-\frac{x^2}{2!}+\frac{x^4}{4!}-\cdots.$$
+          Thus $T_4(x)=1-x^2/2+x^4/24$.
+        type: multipleChoice
+        prompt: Why are there no odd powers?
+        choices:
+          - { id: a, text: 'Odd derivatives of cosine vanish at zero.' }
+          - { id: b, text: 'Odd powers always diverge.' }
+          - { id: c, text: 'Cosine is an odd function.' }
+          - { id: d, text: 'The factorial removes them.' }
+        answer: { choiceId: a }
+        explanation: Cosine is even, and the derivative cycle gives zero odd-order coefficients at the origin.
+      - id: step-taylor-maclaurin-3-2
+        title: Evaluate the approximation
+        instruction: |
+          Substitution gives
+          $$T_4(0.3)=1-\frac{0.3^2}{2}+\frac{0.3^4}{24}
+          =0.9553375.$$
+        type: multipleChoice
+        prompt: What is $0.3^4/24$?
+        choices:
+          - { id: a, text: '$0.0003375$' }
+          - { id: b, text: '$0.003375$' }
+          - { id: c, text: '$0.03375$' }
+          - { id: d, text: '$0.3375$' }
+        answer: { choiceId: a }
+        explanation: $0.3^4=0.0081$, and dividing by $24$ gives $0.0003375$.
+      - id: step-taylor-maclaurin-3-3
+        title: Use the next alternating term
+        instruction: |
+          At $x=0.3$, the cosine terms decrease in magnitude, so the alternating
+          remainder is at most
+          $$\frac{0.3^6}{6!}=1.0125\times10^{-6}.$$
+        type: multipleChoice
+        prompt: Which term supplies this bound?
+        choices:
+          - { id: a, text: 'The first omitted term, $-x^6/6!$' }
+          - { id: b, text: 'The last included term, $x^4/4!$' }
+          - { id: c, text: 'The linear term' }
+          - { id: d, text: 'The constant term' }
+        answer: { choiceId: a }
+        explanation: A decreasing alternating expansion has truncation error no larger than its first omitted magnitude.
+      - id: step-taylor-maclaurin-3-4
+        title: State the certified result
+        instruction: |
+          Therefore
+          $$|\cos(0.3)-0.9553375|
+          \le1.0125\times10^{-6}.$$
+          Because the first omitted term is negative, this polynomial is also
+          a slight overestimate.
+        type: multipleChoice
+        prompt: Which interval is guaranteed to contain $\cos(0.3)$?
+        choices:
+          - { id: a, text: '$[0.9553364875,\ 0.9553375]$' }
+          - { id: b, text: '$[0.9553375,\ 0.9553385125]$' }
+          - { id: c, text: '$[0.95,\ 0.96]$ only' }
+          - { id: d, text: '$[0,\ 1]$ only' }
+        answer: { choiceId: a }
+        explanation: A negative next correction places the true value below the polynomial by at most the stated magnitude.

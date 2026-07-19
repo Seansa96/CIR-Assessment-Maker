@@ -1,48 +1,188 @@
 schemaVersion: 1
 id: cpp-working-with-files-worked-example
-title: Cpp Working With Files - Worked Example
-description: A guided walkthrough of a complex C++ implementation.
+title: Safe Whole-Word File Replacement Worked Examples
+description: Three detailed examples covering boundaries, variable-length output, and reliable file rewriting.
 assessmentType: workedExample
 categoryId: c++
 topicId: cpp-working-with-files
 skills:
-- Apply Working with Files
-- cpp
-- c-plus-plus
-- cpp-working-with-files
+  - distinguish-words-from-substrings
+  - replace-variable-length-text
+  - preserve-source-files
+  - detect-file-stream-failures
 difficulty: 3
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - c++
-  - cpp-working-with-files
-  - cpp
-  - worked-example
-  - c-plus-plus
-  - workedexample
-  - learn
-  - guidedworkedexample
-  - working
-  - files
-  - worked
-  - example
+    - c++
+    - cpp-working-with-files
+    - worked-example
+    - whole-word-replacement
+    - file-safety
 workedExamples:
-- id: example-1
-  title: Implementation Walkthrough
-  problem: We need to build a system that utilizes these concepts safely.
-  steps:
-  - id: step-1
-    title: Define the core data structure
-    instruction: First, define the core data structure.
-    type: code
-    prompt: Define the class.
-    language: cpp
-    functionName: main
-    starterCode: int main() { return 0; }
-    validationMode: unitTests
-    tests:
-    - input: test
-      expected: test
-      isHidden: false
-    explanation: The class defines the data model.
+  - id: replacement-boundaries
+    title: Reject Partial Word Matches
+    problem: |
+      Replace the whole word `cat` with `dog` in
+      `cat catalog cat, bobcat cat_2`, where ASCII letters, digits, and
+      underscore are word characters.
+    steps:
+      - id: replacement-boundary-step-1
+        title: Locate textual matches
+        instruction: Find every byte position at which the three characters `cat` occur.
+        type: multipleChoice
+        prompt: Is every textual match eligible for replacement?
+        choices:
+          - { id: a, text: "Yes, because `find` returned it." }
+          - { id: b, text: "No; both neighboring boundaries must also be valid." }
+          - { id: c, text: "Only matches at the end are eligible." }
+          - { id: d, text: "Only uppercase matches are eligible." }
+        answer: { choiceId: b }
+        explanation: Substring equality does not establish that the match is a complete word.
+      - id: replacement-boundary-step-2
+        title: Test the left boundary
+        instruction: |
+          The left boundary is valid at index zero or when the preceding byte
+          is not a letter, digit, or underscore.
+        type: multipleChoice
+        prompt: Why is the match inside `bobcat` rejected?
+        choices:
+          - { id: a, text: "Its preceding `b` is a word character." }
+          - { id: b, text: "It is followed by a space." }
+          - { id: c, text: "The replacement is longer." }
+          - { id: d, text: "The file is in binary mode." }
+        answer: { choiceId: a }
+        explanation: The match begins inside a larger word.
+      - id: replacement-boundary-step-3
+        title: Test the right boundary
+        instruction: The byte after the match must be absent or a nonword character.
+        type: multipleChoice
+        prompt: Why are matches in `catalog` and `cat_2` rejected?
+        choices:
+          - { id: a, text: "Their following bytes are word characters." }
+          - { id: b, text: "They begin too early." }
+          - { id: c, text: "Commas cannot delimit words." }
+          - { id: d, text: "Underscores are whitespace." }
+        answer: { choiceId: a }
+        explanation: "`a` and `_` continue their containing words."
+      - id: replacement-boundary-step-4
+        title: Verify output
+        instruction: Replace only the first and third standalone occurrences.
+        type: multipleChoice
+        prompt: What is the result?
+        choices:
+          - { id: a, text: "`dog dogalog dog, bobdog dog_2`" }
+          - { id: b, text: "`dog catalog dog, bobcat cat_2`" }
+          - { id: c, text: "`cat catalog cat, bobcat dog_2`" }
+          - { id: d, text: "`dog catalog dog, bobcat dog_2`" }
+        answer: { choiceId: b }
+        explanation: The final `cat_2` is one word because underscore is a word character.
+
+  - id: replacement-variable-length
+    title: Build Variable-Length Output
+    problem: Replace whole-word `error` with `warning-message` without invalidating scan indices.
+    steps:
+      - id: replacement-length-step-1
+        title: Choose an output strategy
+        instruction: Repeated insertion into the scanned source shifts every later index.
+        type: multipleChoice
+        prompt: Which strategy keeps the scan stable?
+        choices:
+          - { id: a, text: "Build a separate result while scanning the source." }
+          - { id: b, text: "Insert at the beginning for every match." }
+          - { id: c, text: "Restart from index zero after every byte." }
+          - { id: d, text: "Require equal replacement lengths." }
+        answer: { choiceId: a }
+        explanation: Source indices remain unchanged while output length can grow independently.
+      - id: replacement-length-step-2
+        title: Copy unmatched bytes
+        instruction: When no eligible match begins at `i`, append `text[i]` and advance by one.
+        type: multipleChoice
+        prompt: How far should the scan advance after an accepted match?
+        choices:
+          - { id: a, text: "One byte" }
+          - { id: b, text: "The replacement length" }
+          - { id: c, text: "The target length" }
+          - { id: d, text: "To end of file" }
+        answer: { choiceId: c }
+        explanation: Those source bytes have been consumed, regardless of output length.
+      - id: replacement-length-step-3
+        title: Reserve capacity
+        instruction: Reserving the source size is a useful lower estimate even if replacements may grow.
+        type: multipleChoice
+        prompt: What correctness property does `reserve` change?
+        choices:
+          - { id: a, text: "None; it is a performance choice." }
+          - { id: b, text: "It changes word boundaries." }
+          - { id: c, text: "It forces binary mode." }
+          - { id: d, text: "It rejects empty files." }
+        answer: { choiceId: a }
+        explanation: Capacity affects allocation frequency, not string contents.
+      - id: replacement-length-step-4
+        title: Verify edge cases
+        instruction: Reject an empty target because it conceptually matches at every boundary.
+        type: multipleChoice
+        prompt: Which additional case must be tested?
+        choices:
+          - { id: a, text: "A match ending at the last byte" }
+          - { id: b, text: "Only files larger than memory" }
+          - { id: c, text: "Only equal-length replacements" }
+          - { id: d, text: "Only uppercase targets" }
+        answer: { choiceId: a }
+        explanation: The right-boundary check must avoid indexing one past the string.
+
+  - id: replacement-file-safety
+    title: Separate Transformation from File Safety
+    problem: Read a source, transform it, and write a distinct destination without claiming success too early.
+    steps:
+      - id: replacement-file-step-1
+        title: Read and distinguish failure
+        instruction: A readable empty file is successful; a missing file is not.
+        type: multipleChoice
+        prompt: Which return representation distinguishes these outcomes?
+        choices:
+          - { id: a, text: "Always return an empty string." }
+          - { id: b, text: "Use `std::optional<std::string>` or a status result." }
+          - { id: c, text: "Return the file size only." }
+          - { id: d, text: "Test `eof()` before opening." }
+        answer: { choiceId: b }
+        explanation: Absence can represent failure while an engaged empty string represents valid content.
+      - id: replacement-file-step-2
+        title: Preserve the source
+        instruction: Write to a separate destination so an output failure cannot destroy the input.
+        type: multipleChoice
+        prompt: Why should source and destination differ in this version?
+        choices:
+          - { id: a, text: "Opening a destination truncates it before transformation completes." }
+          - { id: b, text: "C++ cannot open two streams." }
+          - { id: c, text: "Binary files cannot contain words." }
+          - { id: d, text: "It makes replacement case-insensitive." }
+        answer: { choiceId: a }
+        explanation: Truncating the source too early loses the only complete copy.
+      - id: replacement-file-step-3
+        title: Check late failures
+        instruction: Writing may fail after a successful open, especially during flush.
+        type: multipleChoice
+        prompt: When is success safe to report?
+        choices:
+          - { id: a, text: "Immediately after constructing `ofstream`" }
+          - { id: b, text: "After writing, flushing, and checking the final stream state" }
+          - { id: c, text: "Before reading the source" }
+          - { id: d, text: "Whenever the output path exists" }
+        answer: { choiceId: b }
+        explanation: Open success alone does not prove all bytes reached the destination.
+      - id: replacement-file-step-4
+        title: Select the production strategy
+        instruction: |
+          For in-place replacement, write a temporary file in the same
+          directory, close it successfully, then rename it over the original.
+        type: multipleChoice
+        prompt: What does the temporary-file strategy primarily protect?
+        choices:
+          - { id: a, text: "The original data if transformation or writing fails" }
+          - { id: b, text: "The case of ASCII letters" }
+          - { id: c, text: "The speed of `std::find`" }
+          - { id: d, text: "The number of word matches" }
+        answer: { choiceId: a }
+        explanation: Replacement occurs only after a complete new file is ready.

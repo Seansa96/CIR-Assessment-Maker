@@ -5,53 +5,282 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: sequences-series
 skills:
-- Distinguish sequence convergence from series convergence
-- Analyze partial sums and common series models
-- Connect term behavior to necessary convergence conditions
+  - Distinguish sequence convergence from series convergence
+  - Derive and interpret partial sums
+  - Prove recurrence-sequence convergence
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - calc2
-  - practice
-  - calculus-2
-  - sequences-series
+    - calculus-2
+    - sequences-series
+    - partial-sums
+    - convergence
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: we-sequences-series-1
-  title: Example 1 for Sequences and Series Overview
-  problem: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  steps:
-  - id: step-sequences-series-1-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-sequences-series-2
-  title: Example 2 for Sequences and Series Overview
-  problem: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  steps:
-  - id: step-sequences-series-2-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-sequences-series-3
-  title: Example 3 for Sequences and Series Overview
-  problem: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  steps:
-  - id: step-sequences-series-3-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
+  - id: we-sequences-series-1
+    title: A convergent sequence can produce a divergent series
+    problem: |
+      Compare the convergence of the sequence $a_n=1/n$ with the convergence of
+      the series $\sum_{n=1}^{\infty}1/n$. Explain why the two answers differ.
+    steps:
+      - id: step-sequences-series-1-1
+        title: Analyze the sequence
+        instruction: |
+          For the sequence, only the individual term matters:
+          $\lim_{n\to\infty}1/n=0$. Thus $(a_n)$ converges to $0$.
+        type: multipleChoice
+        prompt: What object is being evaluated by $\lim_{n\to\infty}a_n$?
+        choices:
+          - id: a
+            text: The sequence of terms
+          - id: b
+            text: The sequence of partial sums
+          - id: c
+            text: The sum of the first infinitely many terms
+          - id: d
+            text: The remainder after $n$ terms
+        answer:
+          choiceId: a
+        explanation: A term limit determines sequence convergence and is only a necessary condition for series convergence.
+      - id: step-sequences-series-1-2
+        title: Write the series partial sums
+        instruction: |
+          The harmonic series is governed by
+          $$S_N=1+\frac12+\frac13+\cdots+\frac1N.$$
+          Its convergence asks whether the new sequence $(S_N)$ has a finite limit.
+        type: multipleChoice
+        prompt: Which limit would define the sum of the harmonic series if it existed?
+        choices:
+          - id: a
+            text: '$\lim_{N\to\infty}S_N$'
+          - id: b
+            text: '$\lim_{n\to\infty}1/n$'
+          - id: c
+            text: '$\lim_{N\to\infty}(S_N-S_{N-1})/N$'
+          - id: d
+            text: '$S_1$'
+        answer:
+          choiceId: a
+        explanation: An infinite series is defined as a limit of finite partial sums.
+      - id: step-sequences-series-1-3
+        title: Show the partial sums are unbounded
+        instruction: |
+          Group terms after the first:
+          $$S_{2^m}=1+\frac12+
+          \left(\frac13+\frac14\right)+\cdots+
+          \left(\frac1{2^{m-1}+1}+\cdots+\frac1{2^m}\right).$$
+          The $j$th displayed block has $2^{j-1}$ terms, each at least $1/2^j$,
+          so every block contributes at least $1/2$. Hence
+          $S_{2^m}\ge1+m/2$, which grows without bound.
+        type: multipleChoice
+        prompt: Why is each block from $2^{j-1}+1$ through $2^j$ at least $1/2$?
+        choices:
+          - id: a
+            text: It has $2^{j-1}$ terms, each at least $1/2^j$.
+          - id: b
+            text: Every term in the block equals $1/2$.
+          - id: c
+            text: Its terms alternate signs.
+          - id: d
+            text: Its largest term is greater than $1/2$.
+        answer:
+          choiceId: a
+        explanation: Multiplying the count by the lower bound gives $2^{j-1}/2^j=1/2$.
+      - id: step-sequences-series-1-4
+        title: Separate necessary from sufficient
+        instruction: |
+          Therefore $a_n\to0$, but $\sum a_n$ diverges. The condition
+          $a_n\to0$ is necessary for series convergence, not sufficient.
+        type: multipleChoice
+        prompt: Which implication is valid for every series?
+        choices:
+          - id: a
+            text: 'If $\sum a_n$ converges, then $a_n\to0$.'
+          - id: b
+            text: 'If $a_n\to0$, then $\sum a_n$ converges.'
+          - id: c
+            text: 'If $(a_n)$ converges, then $\sum a_n$ converges.'
+          - id: d
+            text: 'If $a_n>0$, then $\sum a_n$ converges.'
+        answer:
+          choiceId: a
+        explanation: The harmonic series is the standard counterexample to the converse.
+
+  - id: we-sequences-series-2
+    title: Derive a telescoping partial-sum formula
+    problem: |
+      For
+      $$\sum_{n=1}^{\infty}\frac1{n(n+1)},$$
+      find a formula for $S_N$, determine the infinite sum, and express the remainder $R_N$.
+    steps:
+      - id: step-sequences-series-2-1
+        title: Decompose the term
+        instruction: |
+          Partial fractions give
+          $$\frac1{n(n+1)}=\frac1n-\frac1{n+1}.$$
+          This form reveals cancellation between consecutive terms.
+        type: multipleChoice
+        prompt: Which identity is correct?
+        choices:
+          - id: a
+            text: '$1/[n(n+1)]=1/n-1/(n+1)$'
+          - id: b
+            text: '$1/[n(n+1)]=1/n+1/(n+1)$'
+          - id: c
+            text: '$1/[n(n+1)]=n-(n+1)$'
+          - id: d
+            text: '$1/[n(n+1)]=1/n^2-1/(n+1)^2$'
+        answer:
+          choiceId: a
+        explanation: Combining the right side produces $[(n+1)-n]/[n(n+1)]$.
+      - id: step-sequences-series-2-2
+        title: Expand the finite sum
+        instruction: |
+          Keep $N$ finite while canceling:
+          $$S_N=\left(1-\frac12\right)+\left(\frac12-\frac13\right)+\cdots+
+          \left(\frac1N-\frac1{N+1}\right)=1-\frac1{N+1}.$$
+        type: multipleChoice
+        prompt: Which terms survive the cancellation?
+        choices:
+          - id: a
+            text: '$1$ and $-1/(N+1)$'
+          - id: b
+            text: '$1/N$ and $1/(N+1)$'
+          - id: c
+            text: Only $1/N$
+          - id: d
+            text: No terms
+        answer:
+          choiceId: a
+        explanation: Every intermediate reciprocal appears once positively and once negatively.
+      - id: step-sequences-series-2-3
+        title: Take the partial-sum limit
+        instruction: |
+          Since $1/(N+1)\to0$,
+          $$\sum_{n=1}^{\infty}\frac1{n(n+1)}
+          =\lim_{N\to\infty}S_N=1.$$
+        type: multipleChoice
+        prompt: What proves convergence here?
+        choices:
+          - id: a
+            text: The partial sums approach the finite limit $1$.
+          - id: b
+            text: The individual terms approach $0$.
+          - id: c
+            text: Every term is positive.
+          - id: d
+            text: The first term equals $1/2$.
+        answer:
+          choiceId: a
+        explanation: The exact partial-sum formula supplies the limit required by the definition of a convergent series.
+      - id: step-sequences-series-2-4
+        title: Identify the tail exactly
+        instruction: |
+          The remainder after $N$ terms is
+          $$R_N=S-S_N=1-\left(1-\frac1{N+1}\right)=\frac1{N+1}.$$
+          In this example the truncation error is known exactly, not merely bounded.
+        type: multipleChoice
+        prompt: What is the error after summing the first $99$ terms?
+        choices:
+          - id: a
+            text: '$1/100$'
+          - id: b
+            text: '$1/99$'
+          - id: c
+            text: '$99/100$'
+          - id: d
+            text: '$0$'
+        answer:
+          choiceId: a
+        explanation: Substitute $N=99$ into $R_N=1/(N+1)$.
+
+  - id: we-sequences-series-3
+    title: Prove convergence of a recursive sequence
+    problem: |
+      Let $a_1=1$ and $a_{n+1}=\sqrt{2+a_n}$. Prove that $(a_n)$ converges
+      and find its limit. Do not assume convergence merely to solve the fixed-point equation.
+    steps:
+      - id: step-sequences-series-3-1
+        title: Guess a useful upper bound
+        instruction: |
+          The positive fixed point of $L=\sqrt{2+L}$ is $L=2$, suggesting the
+          bound $a_n<2$. This equation proposes a candidate; it does not prove
+          that the sequence reaches or approaches it.
+        type: multipleChoice
+        prompt: What logical role does the equation $L=\sqrt{2+L}$ play at this stage?
+        choices:
+          - id: a
+            text: It suggests a candidate limit and useful bound.
+          - id: b
+            text: It proves the sequence converges.
+          - id: c
+            text: It proves every term equals $2$.
+          - id: d
+            text: It shows the sequence is decreasing.
+        answer:
+          choiceId: a
+        explanation: Passing a limit through the recurrence is justified only after convergence has been established.
+      - id: step-sequences-series-3-2
+        title: Prove boundedness by induction
+        instruction: |
+          The base case satisfies $a_1=1<2$. If $a_n<2$, then
+          $a_{n+1}=\sqrt{2+a_n}<\sqrt4=2$. Thus $a_n<2$ for all $n$.
+        type: multipleChoice
+        prompt: Which induction hypothesis is used to establish the next bound?
+        choices:
+          - id: a
+            text: '$a_n<2$'
+          - id: b
+            text: '$a_n>2$'
+          - id: c
+            text: '$a_n=a_{n+1}$'
+          - id: d
+            text: '$a_n<0$'
+        answer:
+          choiceId: a
+        explanation: Adding $2$ and applying the increasing square-root function preserves the upper bound.
+      - id: step-sequences-series-3-3
+        title: Prove monotonicity
+        instruction: |
+          Because $1\le a_n<2$, compare $a_{n+1}$ and $a_n$ by squaring:
+          $$a_{n+1}\ge a_n
+          \iff 2+a_n\ge a_n^2
+          \iff (2-a_n)(a_n+1)\ge0.$$
+          Both factors are nonnegative, so the sequence is increasing.
+        type: multipleChoice
+        prompt: Why is squaring the inequality safe here?
+        choices:
+          - id: a
+            text: Both quantities being compared are nonnegative.
+          - id: b
+            text: Squaring preserves every real inequality.
+          - id: c
+            text: The sequence alternates signs.
+          - id: d
+            text: The upper bound is irrelevant.
+        answer:
+          choiceId: a
+        explanation: Squaring is order-preserving on nonnegative numbers.
+      - id: step-sequences-series-3-4
+        title: Invoke convergence and solve for the limit
+        instruction: |
+          An increasing sequence bounded above converges. Now let $a_n\to L$.
+          Continuity of the square root gives $L=\sqrt{2+L}$, so
+          $L^2-L-2=0$ and $L\in\{2,-1\}$. Since every term is positive,
+          the limit is $L=2$.
+        type: multipleChoice
+        prompt: Which fact excludes the algebraic root $L=-1$?
+        choices:
+          - id: a
+            text: Every $a_n$ is positive.
+          - id: b
+            text: The recurrence has a square root.
+          - id: c
+            text: The sequence is bounded above.
+          - id: d
+            text: The first term is not $2$.
+        answer:
+          choiceId: a
+        explanation: A limit of positive terms cannot be $-1$ here; the established bounds actually give $1\le L\le2$.

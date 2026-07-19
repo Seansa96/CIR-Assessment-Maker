@@ -5,239 +5,310 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: convergence-tests
 skills:
-- Select an appropriate convergence test from series structure
-- Apply comparison, ratio, root, and integral tests
-- State what a convergence test does and does not prove
+- Analyze iterated logarithms and variable exponents
+- Detect convergence after subtle asymptotic cancellation
+- Apply condensation, Abel, Dirichlet, Raabe, and limsup reasoning
 navigation:
   learningGoal: practice
   activityType: mixedPractice
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - convergence-tests
+  - olympiad
+  - refined-tests
 modeDefault: practice
 randomizeQuestions: true
-attemptQuestionCount: 10
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - classify-iterated-log-series
+  prompt: |
+    For which p does
+    $\sum_{n=3}^{\infty}1/[n\ln n(\ln\ln n)^p]$ converge?
+  choices:
+  - id: a
+    text: $p>1$
+  - id: b
+    text: |-
+      $p\ge1$
+  - id: c
+    text: $p>0$
+  - id: d
+    text: Every real p
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Successive substitutions u equals ln x and v equals ln u reduce the integral to $\int v^{-p}\,dv$.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - apply-condensation-to-slow-decay
+  prompt: |
+    Classify $\sum_{n=2}^{\infty}\exp[-\sqrt{\ln n}]$.
+  choices:
+  - id: a
+    text: Divergent
+  - id: b
+    text: Convergent
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Geometric
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Condensation produces $2^k\exp[-\sqrt{k\ln2}]$, whose terms grow rather than approach zero.
 - id: q003
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-integral-tests-to-stretched-exponentials
+  prompt: |
+    How does $\sum_{n=1}^{\infty}e^{-\sqrt n}$ behave?
+  choices:
+  - id: a
+    text: It converges.
+  - id: b
+    text: It diverges because the decay is not geometric in n.
+  - id: c
+    text: It is conditional.
+  - id: d
+    text: Its terms approach one.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    With u equal to square root x, $\int_1^\infty e^{-\sqrt x}dx=\int_1^\infty2ue^{-u}du$, which is finite.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - simplify-variable-exponent-series
+  prompt: |
+    Classify $\sum_{n=2}^{\infty}n^{-1-1/\ln n}$.
+  choices:
+  - id: a
+    text: Divergent
+  - id: b
+    text: Convergent
+  - id: c
+    text: Conditional
+  - id: d
+    text: The term test is inconclusive and no comparison exists.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    $n^{-1/\ln n}=e^{-1}$ exactly, so the series is a constant multiple of the harmonic series.
 - id: q005
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - analyze-variable-p-series
+  prompt: |
+    Classify $\sum_{n=3}^{\infty}n^{-1-1/\sqrt{\ln n}}$.
+  choices:
+  - id: a
+    text: Convergent
+  - id: b
+    text: Divergent
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Geometric
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    The term is $e^{-\sqrt{\ln n}}/n$; setting t equal to square root ln x makes the integral $\int2te^{-t}dt$, which is finite.
 - id: q006
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-root-tests-to-n-dependent-bases
+  prompt: |
+    How does $\sum_{n=1}^{\infty}(1+1/n)^{-n^2}$ converge?
+  choices:
+  - id: a
+    text: Absolutely, because the root limit is $e^{-1}$.
+  - id: b
+    text: It diverges because the base approaches one.
+  - id: c
+    text: Conditionally
+  - id: d
+    text: The root limit is one.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    The nth root is $(1+1/n)^{-n}\to e^{-1}<1$.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - apply-term-tests-to-n-dependent-powers
+  prompt: |
+    What happens to $\sum_{n=2}^{\infty}(1-1/n)^n$?
+  choices:
+  - id: a
+    text: It diverges because the terms approach $e^{-1}$.
+  - id: b
+    text: It converges geometrically.
+  - id: c
+    text: It converges to $e^{-1}$.
+  - id: d
+    text: It is conditional.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The familiar binomial-exponential limit is nonzero, so the necessary term condition fails.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - analyze-canceling-radical-terms
+  prompt: |
+    Classify $\sum_{n=1}^{\infty}(\sqrt{n^2+1}-n)$.
+  choices:
+  - id: a
+    text: Divergent by limit comparison with $1/n$
+  - id: b
+    text: Convergent by comparison with $1/n^2$
+  - id: c
+    text: Conditional
+  - id: d
+    text: Divergent by the term test
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Rationalization gives $1/[\sqrt{n^2+1}+n]\sim1/(2n)$.
 - id: q009
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - analyze-leading-term-cancellation
+  prompt: |
+    Classify $\sum_{n=1}^{\infty}[n\ln(1+1/n)-1]$.
+  choices:
+  - id: a
+    text: |-
+      It diverges to $-\infty$ with harmonic-order terms.
+  - id: b
+    text: It converges absolutely.
+  - id: c
+    text: It converges conditionally.
+  - id: d
+    text: Its terms do not approach zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Expansion gives $n\ln(1+1/n)-1=-1/(2n)+O(1/n^2)$.
 - id: q010
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - detect-second-order-convergence
+  prompt: |
+    How does
+    $\sum_{n=1}^{\infty}[\ln(1+1/n)-1/(n+1)]$ behave?
+  choices:
+  - id: a
+    text: It converges.
+  - id: b
+    text: It diverges harmonically.
+  - id: c
+    text: It is conditional.
+  - id: d
+    text: Its terms approach a nonzero limit.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Both quantities have leading term $1/n$, and their difference is $1/(2n^2)+O(1/n^3)$.
 - id: q011
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - apply-abels-test
+  prompt: |
+    Suppose $\sum a_n$ converges and $(b_n)$ is monotone and bounded. Which
+    theorem guarantees convergence of $\sum a_nb_n$?
+  choices:
+  - id: a
+    text: Abel's test
+  - id: b
+    text: The term test
+  - id: c
+    text: The p-series test
+  - id: d
+    text: Cauchy condensation
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: A bounded monotone sequence has a finite limit, and Abel's test controls the product series
+    using partial summation.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - apply-dirichlets-test-to-periodic-weights
+  prompt: |
+    Let $c_n$ repeat $2,-1,-1$. Why does $\sum c_n/\sqrt n$ converge?
+  choices:
+  - id: a
+    text: |-
+      The partial sums of $c_n$ are bounded and $1/\sqrt n\downarrow0$.
+  - id: b
+    text: It converges absolutely by the p-series test.
+  - id: c
+    text: |-
+      $c_n\to0$.
+  - id: d
+    text: It is geometric.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Each coefficient period sums to zero, supplying the bounded-partial-sum condition in Dirichlet's
+    test.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - interpret-raabe-test-boundaries
+  prompt: |
+    For $a_n=1/[n(\ln n)^2]$, the Raabe expression
+    $n(a_n/a_{n+1}-1)$ tends to $1$. What does Raabe's test alone conclude?
+  choices:
+  - id: a
+    text: Nothing; the boundary value is inconclusive.
+  - id: b
+    text: Convergence
+  - id: c
+    text: Divergence
+  - id: d
+    text: Conditional convergence
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Raabe decides convergence above one and divergence below one; this convergent logarithmic
+    series lies exactly at its inconclusive boundary.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - compare-superpolynomial-decay
+  prompt: |
+    Classify $\sum_{n=2}^{\infty}e^{-(\ln n)^2}$.
+  choices:
+  - id: a
+    text: Convergent
+  - id: b
+    text: Divergent
+  - id: c
+    text: Conditional
+  - id: d
+    text: Geometric with constant ratio
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    The term equals $n^{-\ln n}$ and is eventually smaller than $1/n^2$.
 - id: q015
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - use-equivalent-term-comparisons
+  prompt: |
+    For real p, when does $\sum_{n=1}^{\infty}\sin(1/n^p)$ converge?
+  choices:
+  - id: a
+    text: $p>1$
+  - id: b
+    text: $p>0$
+  - id: c
+    text: |-
+      $p\ge1$
+  - id: d
+    text: Every real p
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q027
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q030
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    For positive p, $\sin(1/n^p)\sim1/n^p$; at nonpositive p the terms do not approach zero in general, and the p-series threshold is greater than one.
+attemptQuestionCount: 15

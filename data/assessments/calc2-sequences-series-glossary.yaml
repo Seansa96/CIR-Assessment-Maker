@@ -5,113 +5,312 @@ assessmentType: glossary
 categoryId: calculus-2
 topicId: sequences-series
 skills:
-- Distinguish sequence convergence from series convergence
-- Analyze partial sums and common series models
-- Connect term behavior to necessary convergence conditions
+  - Distinguish sequence convergence from series convergence
+  - Interpret partial sums and remainders
+  - Apply necessary convergence conditions
 navigation:
   learningGoal: learn
   activityType: glossary
   tags:
-  - calc2
-  - glossary
-  - calculus-2
-  - sequences-series
+    - calculus-2
+    - sequences-series
+    - terminology
+    - convergence
+modeDefault: practice
+randomizeQuestions: true
 glossary:
-  introduction: Introduction to this glossary
+  introduction: |
+    These terms separate three objects that are often blurred together: a sequence of
+    terms, the sequence of partial sums, and the infinite series defined by the limit of
+    those partial sums. Each drill asks you to recognize a term from its mathematical role.
   sections:
-  - id: main
-    title: Glossary Terms
-    entries:
-    - id: term-sequence
-      term: Sequence
-      recallDrills:
-      - id: recall-sequence
-        prompt: Define or explain the concept of Sequence.
-        answer:
-          gradingMode: selfCheck
-          expected: An ordered list of numbers, often defined by a mathematical rule.
-      definition: A definition for this term.
-      drills:
-      - id: drill-term-sequence
-        prompt: What is Sequence?
-        answer:
-          expected: A definition for this term.
-        type: flashcard
-    - id: term-series
-      term: Series
-      recallDrills:
-      - id: recall-series
-        prompt: Define or explain the concept of Series.
-        answer:
-          gradingMode: selfCheck
-          expected: The sum of the terms of a sequence.
-      definition: A definition for this term.
-      drills:
-      - id: drill-term-series
-        prompt: What is Series?
-        answer:
-          expected: A definition for this term.
-        type: flashcard
-    - id: term-convergence
-      term: Convergence
-      recallDrills:
-      - id: recall-convergence
-        prompt: Define or explain the concept of Convergence.
-        answer:
-          gradingMode: selfCheck
-          expected: The property of a series whose partial sums approach a finite
-            limit.
-      definition: A definition for this term.
-      drills:
-      - id: drill-term-convergence
-        prompt: What is Convergence?
-        answer:
-          expected: A definition for this term.
-        type: flashcard
-    - id: term-divergence
-      term: Divergence
-      recallDrills:
-      - id: recall-divergence
-        prompt: Define or explain the concept of Divergence.
-        answer:
-          gradingMode: selfCheck
-          expected: The property of a series whose partial sums do not approach a
-            finite limit.
-      definition: A definition for this term.
-      drills:
-      - id: drill-term-divergence
-        prompt: What is Divergence?
-        answer:
-          expected: A definition for this term.
-        type: flashcard
-    - id: term-taylor-series
-      term: Taylor Series
-      recallDrills:
-      - id: recall-taylor-series
-        prompt: Define or explain the concept of Taylor Series.
-        answer:
-          gradingMode: selfCheck
-          expected: A representation of a function as an infinite sum of terms calculated
-            from the values of its derivatives at a single point.
-      definition: A definition for this term.
-      drills:
-      - id: drill-term-taylor-series
-        prompt: What is Taylor Series?
-        answer:
-          expected: A definition for this term.
-        type: flashcard
-    - id: term-maclaurin-series
-      term: Maclaurin Series
-      recallDrills:
-      - id: recall-maclaurin-series
-        prompt: Define or explain the concept of Maclaurin Series.
-        answer:
-          gradingMode: selfCheck
-          expected: A special case of a Taylor Series centered at x=0.
-      definition: A definition for this term.
-      drills:
-      - id: drill-term-maclaurin-series
-        prompt: What is Maclaurin Series?
-        answer:
-          expected: A definition for this term.
-        type: flashcard
+    - id: sequence-language
+      title: Sequences and limits
+      required: true
+      content: |
+        A sequence is a function on positive integers. Its convergence concerns the values
+        $a_n$ themselves; it says nothing by itself about whether $\sum a_n$ converges.
+      entries:
+        - id: term-sequence
+          term: Sequence
+          definition: An ordered collection $(a_n)$, formally a function whose domain is usually the positive integers and whose value at $n$ is the term $a_n$.
+          notation: '$(a_n)_{n=1}^{\infty}$'
+          examples:
+            - 'For $a_n=1/n$, the first terms are $1,1/2,1/3,\ldots$.'
+          aliases:
+            - infinite sequence
+          media: []
+          tags:
+            - sequence
+            - indexed-family
+          drills:
+            - id: drill-term-sequence
+              type: typed
+              prompt: What term means a function that assigns a value $a_n$ to each positive integer $n$?
+              answer:
+                expected: sequence
+                aliases:
+                  - infinite sequence
+              explanation: The index gives order; no addition of the terms is implied.
+              tags:
+                - sequence
+        - id: term-sequence-limit
+          term: Limit of a sequence
+          definition: The number $L$ such that every prescribed tolerance $\varepsilon>0$ eventually satisfies $|a_n-L|<\varepsilon$.
+          notation: '$\lim_{n\to\infty}a_n=L$'
+          examples:
+            - '$\lim_{n\to\infty}1/n=0$.'
+          aliases:
+            - sequential limit
+          media: []
+          tags:
+            - sequence-limit
+            - epsilon-definition
+          drills:
+            - id: drill-sequence-limit
+              type: typed
+              prompt: Name the concept defined by “$a_n$ eventually lies within every positive tolerance of $L$.”
+              answer:
+                expected: limit of a sequence
+                aliases:
+                  - sequential limit
+                  - sequence limit
+              explanation: “Eventually” permits finitely many early terms to lie outside the tolerance.
+              tags:
+                - sequence-limit
+        - id: term-sequence-convergence
+          term: Convergent sequence
+          definition: A sequence with a finite limit. The limit may be zero, nonzero, positive, or negative.
+          notation: '$a_n\to L$'
+          examples:
+            - '$a_n=(2n+1)/(n+3)$ converges to $2$.'
+          aliases: []
+          media: []
+          tags:
+            - sequence-convergence
+          drills:
+            - id: drill-sequence-convergence
+              type: typed
+              prompt: What is a sequence called when $\lim_{n\to\infty}a_n$ exists as a finite real number?
+              answer:
+                expected: convergent sequence
+                aliases:
+                  - convergent
+              explanation: Sequence convergence concerns the terms $a_n$, not a sum of those terms.
+              tags:
+                - sequence-convergence
+        - id: term-divergent-sequence
+          term: Divergent sequence
+          definition: A sequence that has no finite limit, including sequences that oscillate or grow without bound.
+          notation: '$a_n\nrightarrow L$'
+          examples:
+            - '$(-1)^n$ oscillates and $n^2$ grows without bound; both diverge as sequences.'
+          aliases: []
+          media: []
+          tags:
+            - sequence-divergence
+          drills:
+            - id: drill-divergent-sequence
+              type: typed
+              prompt: Name the classification shared by $a_n=(-1)^n$ and $b_n=n$ as sequences.
+              answer:
+                expected: divergent sequence
+                aliases:
+                  - divergent
+              explanation: Neither sequence approaches a finite number, though they fail in different ways.
+              tags:
+                - sequence-divergence
+        - id: term-monotone-sequence
+          term: Monotone sequence
+          definition: A sequence that is entirely nondecreasing or entirely nonincreasing on the stated index range.
+          notation: '$a_{n+1}\ge a_n$ or $a_{n+1}\le a_n$'
+          examples:
+            - '$1/n$ is decreasing for $n\ge1$.'
+          aliases:
+            - monotonic sequence
+          media: []
+          tags:
+            - monotonicity
+          drills:
+            - id: drill-monotone-sequence
+              type: typed
+              prompt: What term describes a sequence satisfying $a_{n+1}\le a_n$ for every relevant $n$?
+              answer:
+                expected: monotone sequence
+                aliases:
+                  - monotonic sequence
+                  - decreasing sequence
+                  - nonincreasing sequence
+              explanation: Nonincreasing is one of the two monotone directions.
+              tags:
+                - monotonicity
+        - id: term-bounded-sequence
+          term: Bounded sequence
+          definition: A sequence whose terms all lie between fixed finite lower and upper bounds.
+          notation: '$m\le a_n\le M$'
+          examples:
+            - '$(-1)^n$ is bounded but does not converge.'
+          aliases: []
+          media: []
+          tags:
+            - boundedness
+          drills:
+            - id: drill-bounded-sequence
+              type: typed
+              prompt: What property does $(-1)^n$ have because every term lies in $[-1,1]$, even though it diverges?
+              answer:
+                expected: bounded
+                aliases:
+                  - bounded sequence
+              explanation: Boundedness alone does not force convergence without an additional condition such as monotonicity.
+              tags:
+                - boundedness
+
+    - id: series-language
+      title: Infinite sums and partial sums
+      required: true
+      content: |
+        An infinite series is defined through a sequence of finite partial sums. Convergence
+        means those partial sums approach a finite number; it never means “adding an infinite
+        last term.”
+      entries:
+        - id: term-series
+          term: Infinite series
+          definition: The formal sum $\sum_{n=1}^{\infty}a_n$, whose mathematical value—when it exists—is defined as the limit of its partial sums.
+          notation: '$\sum_{n=1}^{\infty}a_n$'
+          examples:
+            - '$\sum_{n=1}^{\infty}2^{-n}=1$.'
+          aliases:
+            - series
+          media: []
+          tags:
+            - infinite-series
+          drills:
+            - id: drill-term-series
+              type: typed
+              prompt: Name the object represented by $\sum_{n=1}^{\infty}a_n$ and defined using partial sums.
+              answer:
+                expected: infinite series
+                aliases:
+                  - series
+              explanation: A series is an infinite-sum object, not merely the underlying sequence $(a_n)$.
+              tags:
+                - infinite-series
+        - id: term-partial-sum
+          term: Partial sum
+          definition: The finite sum $S_N=\sum_{n=1}^{N}a_n$ of the first $N$ terms of a series.
+          notation: '$S_N=a_1+\cdots+a_N$'
+          examples:
+            - 'For $\sum 2^{-n}$, $S_3=1/2+1/4+1/8=7/8$.'
+          aliases:
+            - nth partial sum
+          media: []
+          tags:
+            - partial-sum
+          drills:
+            - id: drill-partial-sum
+              type: typed
+              prompt: What is $S_N=\sum_{n=1}^{N}a_n$ called?
+              answer:
+                expected: partial sum
+                aliases:
+                  - nth partial sum
+              explanation: It is a finite sum and therefore always exists when its terms are defined.
+              tags:
+                - partial-sum
+        - id: term-convergence
+          term: Convergent series
+          definition: A series for which the partial-sum sequence $(S_N)$ approaches a finite limit $S$.
+          notation: '$\sum_{n=1}^{\infty}a_n=S$'
+          examples:
+            - 'The geometric series $\sum_{n=0}^{\infty}r^n$ converges when $|r|<1$.'
+          aliases:
+            - series convergence
+          media: []
+          tags:
+            - series-convergence
+          drills:
+            - id: drill-term-convergence
+              type: typed
+              prompt: What classification applies when $\lim_{N\to\infty}S_N$ exists and is finite?
+              answer:
+                expected: convergent series
+                aliases:
+                  - series convergence
+                  - convergent
+              explanation: It is the partial sums, not merely the terms, whose limit defines series convergence.
+              tags:
+                - series-convergence
+        - id: term-divergence
+          term: Divergent series
+          definition: A series whose partial sums fail to approach a finite limit, whether through oscillation, unbounded growth, or another failure.
+          notation: ''
+          examples:
+            - 'The harmonic-series partial sums grow without bound.'
+          aliases:
+            - series divergence
+          media: []
+          tags:
+            - series-divergence
+          drills:
+            - id: drill-term-divergence
+              type: typed
+              prompt: What is a series called when its partial sums do not approach any finite number?
+              answer:
+                expected: divergent series
+                aliases:
+                  - series divergence
+                  - divergent
+              explanation: Different behaviors of the partial sums can all lead to divergence.
+              tags:
+                - series-divergence
+        - id: term-nth-term-test
+          term: Divergence test
+          definition: The necessary-condition test stating that $\sum a_n$ diverges if $\lim a_n$ is nonzero or does not exist; a zero term limit gives no conclusion.
+          notation: '$\lim_{n\to\infty}a_n\ne0\Rightarrow\sum a_n\text{ diverges}$'
+          examples:
+            - '$\sum n/(n+1)$ diverges because its terms approach $1$.'
+          aliases:
+            - nth-term test
+            - test for divergence
+          media: []
+          tags:
+            - divergence-test
+            - necessary-condition
+          drills:
+            - id: drill-nth-term-test
+              type: typed
+              prompt: Name the test that immediately rejects a series when its terms fail to approach zero.
+              answer:
+                expected: divergence test
+                aliases:
+                  - nth-term test
+                  - test for divergence
+              explanation: The converse is false; terms approaching zero do not by themselves prove convergence.
+              tags:
+                - divergence-test
+        - id: term-remainder
+          term: Remainder (tail)
+          definition: The difference $R_N=S-S_N=\sum_{n=N+1}^{\infty}a_n$ between a convergent series sum and its $N$th partial sum.
+          notation: '$R_N=S-S_N$'
+          examples:
+            - 'For a geometric series, $R_N$ is itself a shifted geometric series.'
+          aliases:
+            - tail
+            - truncation error
+          media: []
+          tags:
+            - remainder
+            - error-bound
+          drills:
+            - id: drill-remainder
+              type: typed
+              prompt: What term names $S-S_N$, the portion of a convergent series omitted after $N$ terms?
+              answer:
+                expected: remainder
+                aliases:
+                  - tail
+                  - truncation error
+              explanation: Error estimates bound this omitted tail without requiring the exact sum.
+              tags:
+                - remainder

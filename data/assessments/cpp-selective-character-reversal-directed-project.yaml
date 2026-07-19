@@ -1,0 +1,175 @@
+schemaVersion: 1
+id: cpp-selective-character-reversal-directed-project
+title: C++ Selective Character Reversal
+description: Use a two-pointer invariant to reverse selected characters without moving anything else.
+assessmentType: directedProject
+categoryId: c++
+topicId: cpp-strings-formatting
+skills:
+- reverse-selected-characters
+- apply-two-pointer-invariant
+- complete-cpp-selective-character-reversal-directed-project
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - c++
+  - cpp-strings-formatting
+  - directed-project
+  - implementation
+  - predicate-filtered-reversal
+directedProject:
+  summary: Use a two-pointer invariant to reverse selected characters without moving anything else.
+  estimatedTimeMinutes: 45
+  outcomes:
+  - Implement the predicate-filtered-reversal family from a precise contract.
+  - Explain the invariant and complexity of the implementation.
+  - Adapt the base solution to changed requirements without breaking edge cases.
+  environment:
+    name: Local C++20 console project
+    platform:
+    - windows
+    - linux
+    - macos
+    toolVersion: C++20
+    requiredAccounts: []
+    prerequisites:
+    - Functions
+    - loops
+    - standard library containers
+    installLinks: []
+  resources: []
+  phases:
+  - id: phase-1-contract-and-approach
+    title: Understand the contract and approach
+    required: true
+    goal: Translate the problem into an invariant before coding.
+    steps:
+    - id: step-1-problem-contract
+      title: Read the canonical problem
+      instruction: |
+        Source family: `cpp-fsf-string-019`
+
+        Implement `std::string reverse_vowels(std::string text)`. Reverse the
+        order of ASCII vowels `a e i o u`, case-insensitively, while every
+        consonant, digit, space, and punctuation mark remains at its original
+        index. Examples: `Hello` becomes `Holle` and `USA` becomes `ASU`.
+      expectedObservation: Requires moving two pointers over non-target characters while swapping only
+        vowel positions.
+      checklist:
+      - id: contract-input-output
+        text: I can state the exact input, output, and edge-case policy.
+      - id: contract-complexity
+        text: I identified which operations determine the time and space cost.
+      resources: []
+    - id: step-2-approach
+      title: Plan the implementation
+      instruction: |
+        Use this approach before opening the sample solution:
+
+        1. Define one predicate that decides whether a position participates.
+        2. Move the left pointer forward and the right pointer backward until both select characters.
+        3. Swap only selected endpoints; everything outside the pointers is then final.
+        4. Use a one-past-the-end right index so empty strings do not underflow.
+
+        Write a short trace for one nontrivial input.
+      expectedObservation: Advance inward to the next vowel on each side, swap those vowels, and repeat
+        without moving any nonvowel.
+      checklist:
+      - id: approach-invariant
+        text: My trace preserves the stated invariant at every step.
+      resources: []
+  - id: phase-2-reference-and-build
+    title: Study the example and build your version
+    required: true
+    goal: Connect the approach to complete, compilable C++.
+    steps:
+    - id: step-3-example-solution
+      title: Trace the example solution
+      instruction: |
+        `right` is kept one past the candidate index, which makes empty input
+        safe. Characters outside `[left, right)` are final; only two discovered
+        vowel positions are swapped.
+
+        ```cpp
+        #include <cctype>
+        #include <string>
+        #include <string_view>
+
+        std::string reverse_vowels(std::string text) {
+            auto vowel = [](char ch) {
+                const char lower = static_cast<char>(
+                    std::tolower(static_cast<unsigned char>(ch)));
+                return std::string_view{"aeiou"}.find(lower) !=
+                       std::string_view::npos;
+            };
+            std::size_t left = 0;
+            std::size_t right = text.size();
+            while (left < right) {
+                while (left < right && !vowel(text[left])) ++left;
+                while (left < right && !vowel(text[right - 1])) --right;
+                if (left < right) {
+                    std::swap(text[left++], text[--right]);
+                }
+            }
+            return text;
+        }
+        ```
+
+        Trace this solution against every representative case before writing your own version. The sample is a reference, not starter code.
+      expectedObservation: Advance inward to the next vowel on each side, swap those vowels, and repeat
+        without moving any nonvowel.
+      checklist:
+      - id: solution-explained
+        text: I can explain every branch, loop, and edge-case decision.
+      - id: trap-avoided
+        text: 'I can explain why this trap is wrong: Reversing the whole string and filtering afterward,
+          which changes consonant positions.'
+      resources: []
+    - id: step-4-build
+      title: Implement independently
+      instruction: |
+        Create `main.cpp` and implement the canonical contract without copying the reference. Add the representative cases from the bank plus at least three edge cases.
+      files:
+      - path: main.cpp
+        purpose: Learner implementation and tests
+        suggestedContent: |
+          // Implement the required function here.
+          // Keep main() small and use it only for your own test cases.
+
+          int main() {
+              return 0;
+          }
+        readOnly: false
+      checklist:
+      - id: build-compiles
+        text: The program compiles with C++20 warnings enabled.
+      - id: build-tests
+        text: Representative and edge cases pass.
+      troubleshooting:
+      - problem: Output differs only at an edge case.
+        suggestion: Reversing the whole string and filtering afterward, which changes consonant positions.
+      resources: []
+  - id: phase-3-variants
+    title: Implement changed-condition variants
+    required: true
+    goal: Generalize the family instead of memorizing one solution.
+    steps:
+    - id: step-5-variants
+      title: Complete the family variants
+      instruction: |
+        Extend the program with these variants:
+
+        1. Reverse decimal digits while letters and punctuation remain fixed.
+        2. Accept a caller-provided set of characters to reverse.
+        3. Test no matches, one match, mixed case vowels, and selection at both endpoints.
+
+        Keep each behavior in a separately testable function.
+      checklist:
+      - id: variants-distinct
+        text: Each variant changes behavior or constraints, not only sample data.
+      - id: variants-regression
+        text: The original canonical tests still pass.
+      notesPrompt: Which part of the original invariant survived every variant, and which part had to
+        change?
+      resources: []

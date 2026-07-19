@@ -1,0 +1,137 @@
+schemaVersion: 1
+id: cpp-text-quality-analyzer-guided-project
+title: C++ Text Quality Analyzer Guided Project
+description: Build a reusable analyzer for word repetition and text-quality statistics.
+assessmentType: guidedProject
+categoryId: c++
+topicId: cpp-strings-formatting
+skills:
+  - tokenize-ascii-words
+  - score-repeated-letters
+  - apply-deterministic-tie-rules
+  - format-text-analysis-reports
+navigation:
+  learningGoal: evaluate
+  activityType: guidedProject
+  tags:
+    - c++
+    - cpp-strings-formatting
+    - guided-project
+    - tokenization
+    - frequency-analysis
+modeDefault: practice
+randomizeQuestions: false
+guidedProject:
+  language: cpp
+  projectKind: console
+  runnerMode: unitTests
+  instructions: |
+    Build a small text-quality library based on bank family
+    `cpp-fsf-string-011`.
+
+    A word is a maximal ASCII-letter run. Repetition score is the number of
+    distinct case-insensitive letters occurring at least twice in that word.
+
+    Implement:
+
+    - `int repetition_score(std::string_view word)`
+    - `std::string word_with_most_repetition(std::string_view text)`
+    - `TextReport analyze_text(std::string_view text)`
+
+    `TextReport` must contain `word_count`, `repeated_word_count`,
+    `highest_score`, and `highest_scoring_word`. Preserve the first word when
+    scores tie. Empty or repetition-free text has an empty winning word and a
+    highest score of zero.
+  files:
+    - path: TextQuality.h
+      readOnly: false
+      content: |
+        #pragma once
+        #include <cstddef>
+        #include <string>
+        #include <string_view>
+
+        struct TextReport {
+            std::size_t word_count{};
+            std::size_t repeated_word_count{};
+            int highest_score{};
+            std::string highest_scoring_word;
+        };
+
+        int repetition_score(std::string_view word);
+        std::string word_with_most_repetition(std::string_view text);
+        TextReport analyze_text(std::string_view text);
+    - path: TextQuality.cpp
+      readOnly: false
+      content: |
+        #include "TextQuality.h"
+        #include <array>
+        #include <cctype>
+
+        // Implement all three functions. Cast through unsigned char before
+        // calling cctype functions.
+  fixtures: []
+  scenarios: []
+  diagnostics: []
+  requiredChecks:
+    - id: score-words
+      title: Scores repeated letters
+      description: Verifies distinct repeated-letter scoring and case folding.
+      expectedOutputContains: [SCORE_OK]
+      testCode: |
+        #include "TextQuality.h"
+        #include <iostream>
+        int main() {
+            if (repetition_score("separate") == 2 &&
+                repetition_score("Letter") == 2 &&
+                repetition_score("abc") == 0) {
+                std::cout << "SCORE_OK";
+            }
+        }
+    - id: chooses-first-maximum
+      title: Chooses the first highest-scoring word
+      description: Verifies tokenization, scoring, and deterministic ties.
+      expectedOutputContains: [WINNER_OK]
+      testCode: |
+        #include "TextQuality.h"
+        #include <iostream>
+        int main() {
+            const auto winner = word_with_most_repetition(
+                "Print a welcome text in a separate line.");
+            if (winner == "separate" &&
+                word_with_most_repetition("letter better") == "letter" &&
+                word_with_most_repetition("no repeats") == "") {
+                std::cout << "WINNER_OK";
+            }
+        }
+    - id: builds-report
+      title: Builds a complete text report
+      description: Checks counts and winner information in one traversal contract.
+      expectedOutputContains: [REPORT_OK]
+      testCode: |
+        #include "TextQuality.h"
+        #include <iostream>
+        int main() {
+            const auto report = analyze_text("Apple tree, separate letter.");
+            if (report.word_count == 4 &&
+                report.repeated_word_count == 4 &&
+                report.highest_score == 2 &&
+                report.highest_scoring_word == "separate") {
+                std::cout << "REPORT_OK";
+            }
+        }
+  bonusChecks:
+    - id: handles-boundaries
+      title: Handles punctuation and empty input
+      description: Exercises leading delimiters and a text with no words.
+      expectedOutputContains: [BOUNDARY_OK]
+      testCode: |
+        #include "TextQuality.h"
+        #include <iostream>
+        int main() {
+            const auto empty = analyze_text("123 --");
+            if (empty.word_count == 0 && empty.highest_scoring_word.empty() &&
+                word_with_most_repetition("...book!") == "book") {
+                std::cout << "BOUNDARY_OK";
+            }
+        }

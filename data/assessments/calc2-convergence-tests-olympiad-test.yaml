@@ -5,351 +5,323 @@ assessmentType: test
 categoryId: calculus-2
 topicId: convergence-tests
 skills:
-- Select an appropriate convergence test from series structure
-- Apply comparison, ratio, root, and integral tests
-- State what a convergence test does and does not prove
+- Apply Stirling and central-binomial asymptotics
+- Derive convergence thresholds from iterated logs and local expansions
+- Use complex Dirichlet and bounded-variation summation by parts
 navigation:
   learningGoal: evaluate
   activityType: formalTest
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - convergence-tests
+  - olympiad
+  - asymptotic-theorems
 modeDefault: evaluate
 randomizeQuestions: true
-attemptQuestionCount: 15
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - use-central-binomial-asymptotics
+  prompt: |
+    Classify $\displaystyle\sum_{n=1}^{\infty}\binom{2n}{n}/4^n$.
+  choices:
+  - id: a
+    text: Divergent
+  - id: b
+    text: Convergent
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Geometric
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The normalized central binomial coefficient is asymptotic to $1/\sqrt{\pi n}$, a divergent p-series scale.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - combine-binomial-asymptotics-with-powers
+  prompt: |
+    How does $\displaystyle\sum_{n=1}^{\infty}\binom{2n}{n}/(4^nn)$
+    behave?
+  choices:
+  - id: a
+    text: It converges.
+  - id: b
+    text: |-
+      It diverges like $1/\sqrt n$.
+  - id: c
+    text: It is conditional.
+  - id: d
+    text: Its terms approach a nonzero limit.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The terms are asymptotic to a constant times $1/n^{3/2}$.
 - id: q003
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - classify-alternating-binomial-series
+  prompt: |
+    Classify $\displaystyle\sum_{n=1}^{\infty}(-1)^n\binom{2n}{n}/4^n$.
+  choices:
+  - id: a
+    text: Conditionally convergent
+  - id: b
+    text: Absolutely convergent
+  - id: c
+    text: Divergent
+  - id: d
+    text: Geometric
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The positive magnitudes decrease to zero and behave like $1/\sqrt{\pi n}$, whose sum diverges.
 - id: q004
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - classify-third-iterated-log-series
+  prompt: |
+    For sufficiently large n, when does
+    $$\sum\frac1{n\ln n\,\ln\ln n\,(\ln\ln\ln n)^p}$$
+    converge?
+  choices:
+  - id: a
+    text: $p>1$
+  - id: b
+    text: |-
+      $p\ge1$
+  - id: c
+    text: $p>0$
+  - id: d
+    text: For every p
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Three logarithmic substitutions reduce the integral to the p-series integral $\int u^{-p}du$.
 - id: q005
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - classify-log-stretched-exponentials
+  prompt: |
+    For $\alpha>0$, when does
+    $\sum_{n=2}^{\infty}\exp[-(\ln n)^\alpha]$ converge?
+  choices:
+  - id: a
+    text: |-
+      Exactly when $\alpha>1$
+  - id: b
+    text: |-
+      When $\alpha\ge1$
+  - id: c
+    text: |-
+      For every $\alpha>0$
+  - id: d
+    text: |-
+      For no $\alpha$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Above one the decay eventually beats $1/n^2$; at one the terms equal $1/n$, and below one
+    they decay more slowly than $1/n$.
 - id: q006
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-stirling-to-term-tests
+  prompt: |
+    Classify $\displaystyle\sum_{n=1}^{\infty}\frac{n^ne^{-n}}{n!}$.
+  choices:
+  - id: a
+    text: Divergent
+  - id: b
+    text: Convergent
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Geometric
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Stirling gives $n!\sim\sqrt{2\pi n}(n/e)^n$, so the term is asymptotic to $1/\sqrt{2\pi n}$.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - apply-stirling-before-term-tests
+  prompt: |
+    What happens to
+    $\sum_{n=1}^{\infty}(n!)^{1/n}/n$?
+  choices:
+  - id: a
+    text: It diverges because the terms approach $1/e$.
+  - id: b
+    text: It converges by the root test.
+  - id: c
+    text: It is conditional.
+  - id: d
+    text: Its terms approach zero.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Stirling implies $(n!)^{1/n}\sim n/e$, leaving a nonzero term limit.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - apply-ratio-tests-after-power-unwrapping
+  prompt: |
+    Classify
+    $\sum_{n=1}^{\infty}[(n!)^{1/n}/n]^n$.
+  choices:
+  - id: a
+    text: Convergent
+  - id: b
+    text: Divergent by the term test
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Harmonic
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The nth power is exactly $n!/n^n$, whose consecutive ratio tends to $e^{-1}$.
 - id: q009
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - derive-parameter-thresholds-from-local-expansions
+  prompt: |
+    For which p does
+    $\sum_{n=1}^{\infty}[1-\cos(1/n)]^p$ converge?
+  choices:
+  - id: a
+    text: $p>1/2$
+  - id: b
+    text: |-
+      $p\ge1/2$
+  - id: c
+    text: $p>1$
+  - id: d
+    text: $p>0$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The bracket is asymptotic to $1/(2n^2)$, so its pth power has p-series exponent $2p$.
 - id: q010
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - derive-arctangent-power-thresholds
+  prompt: |
+    For positive p, when does
+    $\sum_{n=1}^{\infty}[\arctan(1/n)]^p$ converge?
+  choices:
+  - id: a
+    text: $p>1$
+  - id: b
+    text: |-
+      $p\ge1$
+  - id: c
+    text: $p>1/2$
+  - id: d
+    text: Every positive p
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Arctangent x is asymptotic to x at zero, so the terms behave like $1/n^p$.
 - id: q011
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - detect-exponential-series-cancellation
+  prompt: |
+    Classify $\sum_{n=1}^{\infty}[e^{1/n}-1-1/n]$.
+  choices:
+  - id: a
+    text: Convergent
+  - id: b
+    text: Divergent harmonically
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Divergent by the term test
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The exponential expansion leaves $1/(2n^2)+O(1/n^3)$ after the constant and linear terms
+    are removed.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - identify-harmonic-leading-terms
+  prompt: |
+    What happens to $\sum_{n=1}^{\infty}(e^{1/n}-1)$?
+  choices:
+  - id: a
+    text: It diverges by limit comparison with $1/n$.
+  - id: b
+    text: It converges by comparison with $1/n^2$.
+  - id: c
+    text: It is conditional.
+  - id: d
+    text: Its terms approach a nonzero limit.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    $(e^{1/n}-1)/(1/n)\to1$, so the positive series is harmonic-order.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - apply-complex-dirichlet-series-reasoning
+  prompt: |
+    For real theta not a multiple of $2\pi$, why does
+    $\sum_{n=1}^{\infty}e^{in\theta}/n$ converge?
+  choices:
+  - id: a
+    text: |-
+      The coefficient partial sums are bounded and $1/n\downarrow0$.
+  - id: b
+    text: It converges absolutely.
+  - id: c
+    text: |-
+      $e^{in\theta}\to0$.
+  - id: d
+    text: Its ratio has magnitude below one.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    Finite geometric sums of $e^{in\theta}$ are uniformly bounded away from the resonant denominator zero, so Dirichlet applies.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - use-bounded-variation-dirichlet-forms
+  prompt: |
+    Suppose partial sums of $a_n$ are bounded, $b_n\to0$, and
+    $\sum|b_{n+1}-b_n|<\infty$. What follows?
+  choices:
+  - id: a
+    text: |-
+      $\sum a_nb_n$ converges.
+  - id: b
+    text: |-
+      $\sum a_nb_n$ converges absolutely.
+  - id: c
+    text: |-
+      $\sum a_n$ converges absolutely.
+  - id: d
+    text: Nothing can be concluded.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Summation by parts bounds tails using the bounded coefficient partial sums and the finite
+    total variation of b.
 - id: q015
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - construct-counterexamples-to-test-converses
+  prompt: |
+    Which pair best proves that $a_n\to0$ does not determine convergence of
+    $\sum a_n$?
+  choices:
+  - id: a
+    text: $a_n=1/n$ and $a_n=1/n^2$
+  - id: b
+    text: $a_n=1$ and $a_n=2$
+  - id: c
+    text: $a_n=2^{-n}$ and $a_n=3^{-n}$
+  - id: d
+    text: $a_n=0$ and $a_n=0$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q016
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q027
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q028
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q031
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q032
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q033
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q034
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q035
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q036
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q037
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q038
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q039
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q040
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q041
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q042
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q043
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q044
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q045
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Both sequences tend to zero, while the harmonic series diverges and the reciprocal-square
+    series converges.
+attemptQuestionCount: 15

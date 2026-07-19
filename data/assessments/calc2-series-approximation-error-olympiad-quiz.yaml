@@ -5,234 +5,339 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: series-approximation-error
 skills:
-- Estimate remainders for alternating and Taylor series
-- Choose a truncation that meets an error tolerance
-- Distinguish truncation bounds from exact error
+- Derive sharp one-sided, two-sided, and uniform series error bounds
+- Build geometric majorants and choose effective Taylor centers
+- Verify the hypotheses behind remainder estimates
 navigation:
   learningGoal: practice
   activityType: mixedPractice
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - series-approximation-error
+  - olympiad
+  - sharp-bounds
 modeDefault: practice
 randomizeQuestions: true
-attemptQuestionCount: 10
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - sharpen-alternating-series-bounds
+  prompt: |
+    For an alternating series satisfying the Leibniz hypotheses, the
+    sum S lies between consecutive partial sums $S_N$ and $S_{N+1}$.
+    What error is guaranteed by their midpoint M?
+  choices:
+  - id: a
+    text: |-
+      $|S-M|\le b_{N+1}/2$
+  - id: b
+    text: |-
+      $|S-M|\le b_{N+1}$
+  - id: c
+    text: $|S-M|=b_{N+1}/2$
+  - id: d
+    text: |-
+      $|S-M|\le b_N/2$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The enclosing interval has width $|S_{N+1}-S_N|=b_{N+1}$, so its midpoint is at most half
+    that width from any point inside.
 - id: q002
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - determine-alternating-remainder-signs
+  prompt: |
+    An alternating series meets the Leibniz hypotheses, and the first
+    omitted term after $S_N$ is negative. Which statement follows?
+  choices:
+  - id: a
+    text: $S<S_N$
+  - id: b
+    text: $S>S_N$
+  - id: c
+    text: $S=S_N$
+  - id: d
+    text: Only the magnitude, not the direction, is known
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The remainder has the sign of the first omitted term, so $S-S_N$ is negative.
 - id: q003
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - bound-tails-from-term-ratios
+  prompt: |
+    Positive tail terms satisfy $a_{n+1}/a_n\le r<1$ for every
+    $n\ge N+1$. Which bound holds for $R_N=\sum_{n=N+1}^{\infty}a_n$?
+  choices:
+  - id: a
+    text: |-
+      $R_N\le a_{N+1}/(1-r)$
+  - id: b
+    text: |-
+      $R_N\le ra_{N+1}$
+  - id: c
+    text: |-
+      $R_N\le a_N/(1+r)$
+  - id: d
+    text: $R_N=a_{N+1}$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Each later term is bounded by $a_{N+1}r^k$, so summing the majorant gives the geometric
+    factor.
 - id: q004
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - analyze-signed-geometric-remainders
+  prompt: |
+    For $-1<x<0$, what is the absolute error after truncating
+    $\sum_{n=0}^{\infty}x^n$ at exponent N?
+  choices:
+  - id: a
+    text: $|x|^{N+1}/|1-x|$
+  - id: b
+    text: $|x|^{N+1}/(1-|x|)$
+  - id: c
+    text: $|x|^N$
+  - id: d
+    text: $|x|^{N+1}$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The exact signed tail is $x^{N+1}/(1-x)$; taking its magnitude retains $|1-x|$.
 - id: q005
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - derive-p-series-tail-brackets
+  prompt: |
+    If $R_N=\sum_{n=N+1}^{\infty}1/n^3$, which bounds follow from the
+    integral remainder theorem?
+  choices:
+  - id: a
+    text: |-
+      $1/[2(N+1)^2]\le R_N\le1/(2N^2)$
+  - id: b
+    text: |-
+      $1/(N+1)^3\le R_N\le1/N^3$
+  - id: c
+    text: |-
+      $1/(2N^2)\le R_N\le1/[2(N+1)^2]$
+  - id: d
+    text: $R_N=1/(2N^2)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Integrating $x^{-3}$ from N plus one gives the lower bound and from N gives the upper bound.
 - id: q006
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - bound-sparse-alternating-taylor-series
+  prompt: |
+    Approximate $\sin(0.4)$ by $0.4-(0.4)^3/3!$. Which bound follows
+    from the alternating sine series?
+  choices:
+  - id: a
+    text: $(0.4)^5/5!$
+  - id: b
+    text: $(0.4)^4/4!$
+  - id: c
+    text: $(0.4)^3/3!$
+  - id: d
+    text: $(0.4)^5/4!$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The first omitted nonzero sine term has degree five and the term magnitudes decrease at
+    this input.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - bound-negative-exponential-truncations
+  prompt: |
+    The degree-N Maclaurin polynomial approximates $e^{-1}$. What error
+    bound follows directly from the alternating-series theorem?
+  choices:
+  - id: a
+    text: |-
+      $|R_N|\le1/(N+1)!$
+  - id: b
+    text: |-
+      $|R_N|\le e/(N+1)!$
+  - id: c
+    text: |-
+      $|R_N|\le1/N!$ only
+  - id: d
+    text: $|R_N|=1/(N+1)!$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The terms $1/n!$ decrease to zero, so the first omitted factorial term controls the absolute
+    error.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - bound-logarithm-series-errors
+  prompt: |
+    For $0<x\le1$, truncate
+    $\log(1+x)=\sum_{n=1}^{\infty}(-1)^{n+1}x^n/n$ after degree N.
+    Which error bound applies?
+  choices:
+  - id: a
+    text: $x^{N+1}/(N+1)$
+  - id: b
+    text: $x^N/N$
+  - id: c
+    text: $x^{N+1}/N$
+  - id: d
+    text: $1/(1-x)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The term magnitudes decrease for this input range, and the first omitted term has index
+    N plus one.
 - id: q009
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - assess-slow-boundary-convergence
+  prompt: |
+    Using N terms of
+    $\pi/4=1-1/3+1/5-\cdots$, what error bound is guaranteed?
+  choices:
+  - id: a
+    text: $1/(2N+1)$
+  - id: b
+    text: $1/(2N-1)$
+  - id: c
+    text: $1/N!$
+  - id: d
+    text: $1/(N+1)^2$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: N terms run from index zero through N minus one, so the first omitted odd denominator is
+    $2N+1$.
 - id: q010
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - optimize-lagrange-derivative-bounds
+  prompt: |
+    For the degree-N Maclaurin approximation to $e^{-1/2}$, which
+    Lagrange bound is valid using the sharp maximum of $e^t$ on
+    $[-1/2,0]$?
+  choices:
+  - id: a
+    text: $(1/2)^{N+1}/(N+1)!$
+  - id: b
+    text: $e^{-1/2}(1/2)^{N+1}/(N+1)!$
+  - id: c
+    text: $e^{1/2}/(N+1)!$
+  - id: d
+    text: $(1/2)^N/N!$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The derivative maximum is one at t equals zero, leaving only the displacement power and
+    factorial.
 - id: q011
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - derive-uniform-taylor-bounds
+  prompt: |
+    Which uniform bound holds for the degree-N Maclaurin remainder of
+    $e^x$ for every $|x|\le a$?
+  choices:
+  - id: a
+    text: $e^a a^{N+1}/(N+1)!$
+  - id: b
+    text: $e^{-a}a^{N+1}/(N+1)!$
+  - id: c
+    text: $a^N/N!$
+  - id: d
+    text: $e^a/(N+1)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Every intermediate point lies in the symmetric interval, where all relevant exponential
+    derivatives are at most $e^a$.
 - id: q012
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - combine-independent-error-bounds
+  prompt: |
+    If $|A-\tilde A|\le\epsilon$ and
+    $|B-\tilde B|\le\delta$, what bound is guaranteed for the error in
+    approximating $A-B$ by $\tilde A-\tilde B$?
+  choices:
+  - id: a
+    text: |-
+      $\epsilon+\delta$
+  - id: b
+    text: |-
+      $|\epsilon-\delta|$
+  - id: c
+    text: |-
+      $\epsilon\delta$
+  - id: d
+    text: |-
+      $\max(\epsilon,\delta)/2$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The error is $(A-\tilde A)-(B-\tilde B)$, whose magnitude is at most the sum of the two bounds.
 - id: q013
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
+  type: multipleChoice
+  skills:
+  - choose-effective-taylor-centers
+  prompt: |
+    Two degree-N Taylor bounds for the same target point use the same
+    derivative maximum M. Center a is twice as far from the target as
+    center b. How do their Lagrange bounds compare?
+  choices:
+  - id: a
+    text: The bound from a is $2^{N+1}$ times the bound from b.
+  - id: b
+    text: The bound from a is twice the bound from b.
+  - id: c
+    text: The bounds are equal.
+  - id: d
+    text: The bound from a is $2^N$ times the bound from b.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The displacement appears to power N plus one, while M and the factorial are identical.
 - id: q014
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - bound-geometric-series-uniformly
+  prompt: |
+    On $|x|\le\rho<1$, which uniform bound holds for the remainder after
+    exponent N in $\sum_{n=0}^{\infty}x^n$?
+  choices:
+  - id: a
+    text: |-
+      $\rho^{N+1}/(1-\rho)$
+  - id: b
+    text: |-
+      $\rho^N$
+  - id: c
+    text: |-
+      $1/(1-\rho^{N+1})$
+  - id: d
+    text: |-
+      $\rho^{N+1}/(1+\rho)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Bound the exact magnitude $|x|^{N+1}/|1-x|$ using $|x|\le\rho$ and $|1-x|\ge1-\rho$.
 - id: q015
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - test-validity-of-remainder-theorems
+  prompt: |
+    To use a Lagrange remainder bound from center a to target x, which
+    information is essential?
+  choices:
+  - id: a
+    text: A bound on $|f^{(N+1)}|$ throughout the interval between a and x
+  - id: b
+    text: Only the value of $f^{(N+1)}(a)$
+  - id: c
+    text: Only the signs of the Taylor coefficients
+  - id: d
+    text: Absolute convergence of an unrelated series
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q019
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q020
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q027
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Taylor's theorem evaluates the derivative at an unknown intermediate point, so a valid
+    guarantee must cover the full interval.
+attemptQuestionCount: 15

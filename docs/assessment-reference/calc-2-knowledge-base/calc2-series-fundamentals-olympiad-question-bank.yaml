@@ -1,0 +1,546 @@
+schemaVersion: 1
+bankId: calc2-series-fundamentals-olympiad
+categoryId: calculus-2
+topicIds: [series-fundamentals]
+minimumItemCount: 30
+items:
+  - id: calc2-series-oly-001
+    topicId: series-fundamentals
+    skills: [construct-series-from-partial-sums]
+    archetype: rational-partial-sum
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires recovering the exact term identity and the infinite sum from one partial-sum formula.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Suppose $S_n=n/(n+1)$ for every n. Which description of the associated
+      series is correct?
+    choices: [{id: a, text: '$a_1=1/2$, $a_n=1/[n(n+1)]$ for $n\ge2$, and the sum is $1$'}, {id: b, text: '$a_n=n/(n+1)$ and the sum is $1$'}, {id: c, text: '$a_n=1/(n+1)$ and the series diverges'}, {id: d, text: '$a_n=-1/[n(n+1)]$ and the sum is $0$'}]
+    answer: {choiceId: a}
+    solutionOutline: The first term equals S one, later terms are adjacent differences, and the partial-sum limit is one.
+    commonTrap: Applying $S_n-S_{n-1}$ at n equals one without defining S zero.
+    verification: {method: partial-sum-difference-and-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-002
+    topicId: series-fundamentals
+    skills: [prove-harmonic-divergence-by-cauchy-blocks]
+    archetype: doubling-tail-lower-bound
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires finding late tails whose size stays uniformly positive.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Which estimate directly violates the Cauchy criterion for
+      $\sum1/n$?
+    choices: [{id: a, text: '$\sum_{k=n+1}^{2n}1/k\ge1/2$'}, {id: b, text: '$1/n\to0$'}, {id: c, text: '$\sum_{k=n+1}^{2n}1/k\le1$'}, {id: d, text: '$1/(n+1)<1/n$'}]
+    answer: {choiceId: a}
+    solutionOutline: The block contains n terms, each at least $1/(2n)$, so arbitrarily late tails fail to become small.
+    commonTrap: Using the zero-term limit, which is necessary but cannot establish divergence here.
+    verification: {method: cauchy-block-lower-bound, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-003
+    topicId: series-fundamentals
+    skills: [distinguish-summability-from-convergence]
+    archetype: grandi-cesaro-sum
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires averaging oscillating partial sums and naming the weaker summability method.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      The partial sums of $1-1+1-1+\cdots$ alternate between $1$ and $0$.
+      What do their arithmetic means approach?
+    choices: [{id: a, text: '$1/2$'}, {id: b, text: '$0$'}, {id: c, text: '$1$'}, {id: d, text: 'They are unbounded.'}]
+    answer: {choiceId: a}
+    solutionOutline: Half of a long initial list of partial sums are zero and half are one, so the Cesàro means approach one half even though ordinary convergence fails.
+    commonTrap: Calling the value one half an ordinary sum.
+    verification: {method: explicit-cesaro-mean-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-004
+    topicId: series-fundamentals
+    skills: [diagnose-invalid-infinite-grouping]
+    archetype: divergent-series-parenthesization
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires identifying the missing convergence hypothesis behind conflicting groupings.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Why may $1-1+1-1+\cdots$ not be assigned an ordinary sum by grouping
+      it as $(1-1)+(1-1)+\cdots$?
+    choices: [{id: a, text: 'The original partial sums do not converge, so grouping preservation does not apply.'}, {id: b, text: 'Finite addition is not associative.'}, {id: c, text: 'Negative terms cannot be grouped.'}, {id: d, text: 'Every grouped series diverges.'}]
+    answer: {choiceId: a}
+    solutionOutline: The grouping theorem begins with a convergent original series; without that hypothesis, selecting block-boundary partial sums can hide oscillation.
+    commonTrap: Blaming associativity rather than an unjustified limiting operation.
+    verification: {method: grouping-theorem-hypothesis, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-005
+    topicId: series-fundamentals
+    skills: [analyze-conditionally-convergent-rearrangements]
+    archetype: positive-negative-mass
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires connecting conditional convergence with unbounded positive and negative subseries.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      What feature makes a conditionally convergent real series susceptible to
+      sum-changing rearrangements?
+    choices: [{id: a, text: 'Its positive mass and negative absolute mass are both infinite.'}, {id: b, text: 'Its terms fail to approach zero.'}, {id: c, text: 'It has only finitely many negative terms.'}, {id: d, text: 'Its partial sums are unbounded.'}]
+    answer: {choiceId: a}
+    solutionOutline: Infinite mass of both signs lets a rearrangement alternately overshoot and undershoot a chosen target with shrinking terms.
+    commonTrap: Assuming conditional convergence means the original partial sums are unbounded.
+    verification: {method: riemann-rearrangement-mechanism, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-006
+    topicId: series-fundamentals
+    skills: [apply-tonelli-to-nonnegative-series]
+    archetype: triangular-double-sum
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires reindexing a nonnegative double series by diagonals.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $a_{m,n}\ge0$, why may
+      $\sum_{m=0}^{\infty}\sum_{n=0}^{\infty}a_{m,n}$ be reordered even when
+      finiteness is not known first?
+    choices: [{id: a, text: 'Tonelli''s theorem gives the same value in $[0,\infty]$.'}, {id: b, text: 'Every double series is finite.'}, {id: c, text: 'The terms eventually vanish.'}, {id: d, text: 'Only diagonal order is valid.'}]
+    answer: {choiceId: a}
+    solutionOutline: Nonnegativity makes all finite subsums monotone and removes cancellation-dependent order effects.
+    commonTrap: Applying a signed-series rearrangement rule that requires absolute convergence.
+    verification: {method: tonelli-nonnegative-series, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-007
+    topicId: series-fundamentals
+    skills: [analyze-binary-series-representations]
+    archetype: nonunique-dyadic-expansion
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires recognizing the endpoint ambiguity of positional infinite series.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Which equality explains why some real numbers have two binary
+      expansions?
+    choices: [{id: a, text: '$0.1000\ldots_2=0.0111\ldots_2$'}, {id: b, text: '$0.1000\ldots_2=0.0100\ldots_2$'}, {id: c, text: '$0.1111\ldots_2=0$'}, {id: d, text: '$0.0101\ldots_2=1$'}]
+    answer: {choiceId: a}
+    solutionOutline: The trailing-one tail sums to $\sum_{n=2}^{\infty}2^{-n}=1/2$, matching the single first binary place.
+    commonTrap: Treating infinite positional tails like finite digit strings.
+    verification: {method: dyadic-geometric-tail, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-008
+    topicId: series-fundamentals
+    skills: [connect-series-differences-and-total-variation]
+    archetype: telescoping-versus-absolute-telescoping
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires distinguishing convergence of increments from finite total variation.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $b_n\to L$, then $\sum(b_{n+1}-b_n)$ converges. What additional
+      condition is equivalent to its absolute convergence?
+    choices: [{id: a, text: '$\sum|b_{n+1}-b_n|<\infty$'}, {id: b, text: '$b_n$ is bounded'}, {id: c, text: '$L=0$'}, {id: d, text: '$b_n$ has positive terms'}]
+    answer: {choiceId: a}
+    solutionOutline: Absolute convergence of the increment series is exactly finite total variation of the sequence.
+    commonTrap: Assuming every convergent sequence has finite total variation.
+    verification: {method: definition-of-total-variation, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-009
+    topicId: series-fundamentals
+    skills: [apply-summation-by-parts]
+    archetype: discrete-integration-by-parts
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires identifying the partial-sum transformation behind convergence tests.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      With $A_k=\sum_{j=1}^{k}a_j$, which expression is the finite summation
+      by parts formula for $\sum_{k=1}^{n}a_kb_k$?
+    choices: [{id: a, text: '$A_nb_n+\sum_{k=1}^{n-1}A_k(b_k-b_{k+1})$'}, {id: b, text: '$A_nb_n$ only'}, {id: c, text: '$\sum A_kb_k$'}, {id: d, text: '$A_n/b_n$'}]
+    answer: {choiceId: a}
+    solutionOutline: Substitute $a_k=A_k-A_{k-1}$ and shift one resulting finite sum.
+    commonTrap: Forgetting the boundary term A_n b_n.
+    verification: {method: finite-index-shift-derivation, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-010
+    topicId: series-fundamentals
+    skills: [reason-about-cauchy-products]
+    archetype: convolution-of-absolutely-convergent-series
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires controlling a coefficient convolution and identifying its sum.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum_{n=0}^{\infty}a_n=A$ and $\sum_{n=0}^{\infty}b_n=B$
+      converge absolutely, what is the sum of
+      $c_n=\sum_{k=0}^{n}a_kb_{n-k}$?
+    choices: [{id: a, text: '$\sum c_n=AB$'}, {id: b, text: '$\sum c_n=A+B$'}, {id: c, text: '$\sum c_n=0$'}, {id: d, text: 'The convolution necessarily diverges.'}]
+    answer: {choiceId: a}
+    solutionOutline: Absolute convergence justifies regrouping the double product sum by diagonals.
+    commonTrap: Applying the finite distributive law without checking a convergence hypothesis.
+    verification: {method: cauchy-product-theorem, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-011
+    topicId: series-fundamentals
+    skills: [compare-ordinary-and-abel-sums]
+    archetype: boundary-value-summability
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires taking a function limit without confusing it with ordinary series convergence.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      For $0\le r<1$, $\sum_{n=0}^{\infty}(-r)^n=1/(1+r)$. What is its
+      Abel limit as $r\to1^-$?
+    choices: [{id: a, text: '$1/2$'}, {id: b, text: '$0$'}, {id: c, text: '$1$'}, {id: d, text: 'No finite limit'}]
+    answer: {choiceId: a}
+    solutionOutline: The geometric-function value tends to one half, defining an Abel sum for the divergent boundary series.
+    commonTrap: Calling the Abel value the ordinary sum of Grandi's series.
+    verification: {method: geometric-abel-boundary-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-012
+    topicId: series-fundamentals
+    skills: [use-subseries-properties]
+    archetype: absolute-subseries
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires transferring absolute convergence to an arbitrary selected index set.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum|a_n|<\infty$ and $n_1<n_2<\cdots$, what can be said about
+      $\sum a_{n_k}$?
+    choices: [{id: a, text: 'It converges absolutely.'}, {id: b, text: 'It has the same sum as the original series.'}, {id: c, text: 'It diverges unless the selection is finite.'}, {id: d, text: 'It is conditional.'}]
+    answer: {choiceId: a}
+    solutionOutline: The selected absolute partial sums are bounded by the full nonnegative absolute sum.
+    commonTrap: Confusing preservation of convergence with preservation of value.
+    verification: {method: nonnegative-subseries-bound, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-013
+    topicId: series-fundamentals
+    skills: [construct-conditionally-convergent-examples]
+    archetype: prescribed-magnitude-signs
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires satisfying signed convergence while forcing absolute divergence.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Which is a conditionally convergent series whose term magnitudes are
+      exactly $1/\sqrt n$?
+    choices: [{id: a, text: '$\sum(-1)^n/\sqrt n$'}, {id: b, text: '$\sum1/\sqrt n$'}, {id: c, text: '$\sum1/n^2$'}, {id: d, text: '$\sum(-1)^n/n^2$'}]
+    answer: {choiceId: a}
+    solutionOutline: Alternating signs give convergence, while the absolute p-series with exponent one half diverges.
+    commonTrap: Selecting an absolutely convergent alternating p-series.
+    verification: {method: alternating-versus-absolute-p-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-014
+    topicId: series-fundamentals
+    skills: [analyze-series-under-term-duplication]
+    archetype: repeat-each-term-twice
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires mapping new partial sums to old partial sums and determining the changed total.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      A convergent series $\sum a_n=S$ is transformed into
+      $a_1+a_1+a_2+a_2+\cdots$. What is the new sum?
+    choices: [{id: a, text: '$2S$'}, {id: b, text: '$S$'}, {id: c, text: '$S/2$'}, {id: d, text: 'It necessarily diverges.'}]
+    answer: {choiceId: a}
+    solutionOutline: Every even transformed partial sum is twice an original partial sum, and the intervening discrepancy is one term tending to zero.
+    commonTrap: Treating duplication as a mere regrouping that preserves the original value.
+    verification: {method: transformed-partial-sum-limit, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-015
+    topicId: series-fundamentals
+    skills: [test-converses-of-absolute-convergence]
+    archetype: square-summable-not-summable
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires constructing a counterexample to a nonlinear implication.
+    assessmentUses: [olympiad-quiz]
+    questionType: multipleChoice
+    prompt: |
+      Does $\sum a_n^2<\infty$ imply $\sum|a_n|<\infty$?
+    choices: [{id: a, text: 'No; $a_n=1/n$ is a counterexample.'}, {id: b, text: 'Yes, by the triangle inequality.'}, {id: c, text: 'Yes, because squares are larger.'}, {id: d, text: 'No, but only if $a_n$ fails to approach zero.'}]
+    answer: {choiceId: a}
+    solutionOutline: Reciprocal squares sum, while the absolute reciprocal series is harmonic and diverges.
+    commonTrap: Assuming square summability is stronger than absolute summability for small terms.
+    verification: {method: l2-not-l1-counterexample, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-016
+    topicId: series-fundamentals
+    skills: [characterize-absolute-convergence-by-subseries]
+    archetype: every-subseries-converges
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires connecting arbitrary subseries behavior with positive and negative parts.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      A real series has the property that every subseries converges. What
+      stronger conclusion follows?
+    choices: [{id: a, text: 'The original series converges absolutely.'}, {id: b, text: 'The original sum is zero.'}, {id: c, text: 'The terms are eventually zero.'}, {id: d, text: 'The series is geometric.'}]
+    answer: {choiceId: a}
+    solutionOutline: Selecting all positive terms and all negative terms gives finite masses of both signs, whose sum is the absolute series.
+    commonTrap: Assuming convergence of every subseries merely restates convergence of the original order.
+    verification: {method: positive-negative-subseries-characterization, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-017
+    topicId: series-fundamentals
+    skills: [characterize-unconditional-convergence]
+    archetype: permutation-invariance
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires using the real-series equivalence between unconditional and absolute convergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      A real series converges to the same value under every permutation of
+      its terms. Which statement is necessary?
+    choices: [{id: a, text: 'It converges absolutely.'}, {id: b, text: 'It has nonnegative terms.'}, {id: c, text: 'Its sum is one.'}, {id: d, text: 'Only finitely many terms are nonzero.'}]
+    answer: {choiceId: a}
+    solutionOutline: If it were only conditional, the Riemann rearrangement theorem would produce a permutation with a different outcome.
+    commonTrap: Believing a particular conditional series might accidentally resist every rearrangement.
+    verification: {method: contrapositive-riemann-rearrangement, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-018
+    topicId: series-fundamentals
+    skills: [apply-riemann-rearrangement]
+    archetype: prescribed-target-rearrangement
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires identifying the exact scope of the rearrangement theorem.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For a conditionally convergent real series, which target can be achieved
+      by a suitable rearrangement?
+    choices: [{id: a, text: 'Any prescribed real number'}, {id: b, text: 'Only the original sum'}, {id: c, text: 'Only zero'}, {id: d, text: 'No finite value'}]
+    answer: {choiceId: a}
+    solutionOutline: Alternating enough unused positive and negative mass allows construction of partial sums that overshoot and undershoot any real target by shrinking amounts.
+    commonTrap: Applying the order invariance of absolute convergence to a conditional series.
+    verification: {method: riemann-rearrangement-theorem, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-019
+    topicId: series-fundamentals
+    skills: [check-fubini-hypotheses-for-series]
+    archetype: signed-double-series
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires identifying absolute summability as the safe signed reordering condition.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Which condition safely permits arbitrary reordering of a signed double
+      series $\sum_{m,n}a_{m,n}$?
+    choices: [{id: a, text: '$\sum_{m,n}|a_{m,n}|<\infty$'}, {id: b, text: '$a_{m,n}\to0$ as both indices grow'}, {id: c, text: 'Every row has finitely many terms'}, {id: d, text: 'All row sums exist conditionally'}]
+    answer: {choiceId: a}
+    solutionOutline: Absolute summability supplies Fubini's theorem for series and prevents cancellation-dependent order effects.
+    commonTrap: Assuming existence of iterated conditional sums makes them order-independent.
+    verification: {method: discrete-fubini-absolute-summability, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-020
+    topicId: series-fundamentals
+    skills: [apply-mertens-cauchy-product-theorem]
+    archetype: one-absolute-factor
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires using the weaker product theorem beyond two absolute factors.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Suppose $\sum a_n=A$ and $\sum b_n=B$ converge, and $\sum a_n$
+      converges absolutely. What does Mertens' theorem guarantee for their
+      Cauchy product?
+    choices: [{id: a, text: 'It converges to $AB$.'}, {id: b, text: 'It must diverge.'}, {id: c, text: 'It converges only when both sums are zero.'}, {id: d, text: 'It converges to $A+B$.'}]
+    answer: {choiceId: a}
+    solutionOutline: Absolute convergence of at least one factor is enough to control the convolution tails and justify multiplication.
+    commonTrap: Requiring both factors to be absolute even though Mertens gives a stronger result.
+    verification: {method: mertens-cauchy-product-theorem, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-021
+    topicId: series-fundamentals
+    skills: [recognize-cauchy-product-failure]
+    archetype: two-conditional-factors
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires understanding why ordinary convergence of both factors is insufficient.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      If two series converge conditionally, what is guaranteed about their
+      Cauchy product?
+    choices: [{id: a, text: 'Nothing definitive without additional hypotheses.'}, {id: b, text: 'It always converges to the product of the sums.'}, {id: c, text: 'It always diverges.'}, {id: d, text: 'It is always absolutely convergent.'}]
+    answer: {choiceId: a}
+    solutionOutline: Two conditional factors can have a divergent Cauchy product, so finite distributivity alone is not a theorem for the infinite convolution.
+    commonTrap: Extending polynomial multiplication without convergence control.
+    verification: {method: cauchy-product-hypothesis-analysis, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-022
+    topicId: series-fundamentals
+    skills: [apply-abel-boundary-theorem]
+    archetype: convergent-endpoint-power-series
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires transferring a convergent boundary sum to a one-sided function limit.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum_{n=0}^{\infty}a_n$ converges to S, what does Abel's theorem
+      state about $f(r)=\sum a_nr^n$?
+    choices: [{id: a, text: '$\lim_{r\to1^-}f(r)=S$'}, {id: b, text: '$f(r)=S$ for every r'}, {id: c, text: '$f(r)$ diverges for all r below one'}, {id: d, text: '$\lim_{r\to0^+}f(r)=S$'}]
+    answer: {choiceId: a}
+    solutionOutline: Abel's limit theorem preserves a convergent endpoint sum when approached radially from inside the power-series interval.
+    commonTrap: Claiming the power-series value is constant throughout the interval.
+    verification: {method: abel-limit-theorem, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-023
+    topicId: series-fundamentals
+    skills: [use-regularity-of-cesaro-summation]
+    archetype: convergent-sequence-means
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires proving that a generalized summability method extends ordinary convergence consistently.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      If ordinary partial sums $S_n\to S$, what do their Cesàro means
+      $\sigma_N=(S_1+\cdots+S_N)/N$ approach?
+    choices: [{id: a, text: '$S$'}, {id: b, text: '$0$'}, {id: c, text: '$S/2$'}, {id: d, text: 'They need not converge.'}]
+    answer: {choiceId: a}
+    solutionOutline: Split the average error into a fixed finite prefix divided by N and a uniformly small tail.
+    commonTrap: Treating the averaging denominator as though only one bounded numerator term were present.
+    verification: {method: cesaro-regularity-proof, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-024
+    topicId: series-fundamentals
+    skills: [apply-kroneckers-lemma]
+    archetype: weighted-series-to-averages
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires recognizing a consequence of summation by parts for weighted convergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum_{n=1}^{\infty}a_n/n$ converges, what does Kronecker's lemma
+      imply?
+    choices: [{id: a, text: '$(a_1+\cdots+a_N)/N\to0$'}, {id: b, text: '$a_n=0$ eventually'}, {id: c, text: '$\sum a_n$ converges absolutely'}, {id: d, text: '$a_n\to1$'}]
+    answer: {choiceId: a}
+    solutionOutline: Partial summation converts convergence of the weighted series into vanishing normalized partial sums of the numerators.
+    commonTrap: Upgrading a statement about averaged partial sums to convergence of the unweighted series.
+    verification: {method: kronecker-lemma, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-025
+    topicId: series-fundamentals
+    skills: [analyze-condensation-blocks]
+    archetype: decreasing-positive-dyadic-blocks
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires deriving the comparison constants behind condensation.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For decreasing positive $a_n$, what quantity is comparable to the sum
+      over the block $2^k\le n<2^{k+1}$?
+    choices: [{id: a, text: '$2^ka_{2^k}$ up to fixed neighboring bounds'}, {id: b, text: '$a_k$ exactly'}, {id: c, text: '$2^{-k}a_k$'}, {id: d, text: '$a_{2^k}^2$'}]
+    answer: {choiceId: a}
+    solutionOutline: The block contains $2^k$ terms, each trapped between its endpoint magnitudes, producing the condensed scale.
+    commonTrap: Sampling one term without multiplying by the block size.
+    verification: {method: dyadic-block-monotone-bounds, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-026
+    topicId: series-fundamentals
+    skills: [analyze-complex-geometric-boundaries]
+    archetype: unit-circle-geometric-partial-sums
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires distinguishing bounded partial sums from convergence on the unit circle.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      For $z\ne1$ with $|z|=1$, what happens to $\sum_{n=0}^{\infty}z^n$?
+    choices: [{id: a, text: 'It diverges because its terms do not approach zero.'}, {id: b, text: 'It converges to $1/(1-z)$.'}, {id: c, text: 'It converges absolutely.'}, {id: d, text: 'It converges to zero.'}]
+    answer: {choiceId: a}
+    solutionOutline: Although finite geometric partial sums may remain bounded, every term has magnitude one.
+    commonTrap: Applying the finite geometric formula's limiting version outside the open unit disk.
+    verification: {method: unit-modulus-term-test, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-027
+    topicId: series-fundamentals
+    skills: [use-cauchy-schwarz-on-series]
+    archetype: product-of-square-summable-sequences
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires applying an infinite-series inequality to prove absolute convergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum a_n^2<\infty$ and $\sum b_n^2<\infty$, what can be said about
+      $\sum a_nb_n$?
+    choices: [{id: a, text: 'It converges absolutely.'}, {id: b, text: 'It must diverge.'}, {id: c, text: 'It is only conditionally convergent.'}, {id: d, text: 'Its sum is zero.'}]
+    answer: {choiceId: a}
+    solutionOutline: Cauchy–Schwarz bounds $\sum|a_nb_n|$ by the product of the two finite square-sum norms.
+    commonTrap: Using the fact that square summability alone need not imply absolute summability for each sequence separately.
+    verification: {method: cauchy-schwarz-series-inequality, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-028
+    topicId: series-fundamentals
+    skills: [analyze-random-sign-invariance-of-absolute-series]
+    archetype: arbitrary-sign-multipliers
+    difficulty: olympiad
+    reasoningDepth: 4
+    difficultyEvidence: Requires proving uniform convergence under all sign choices from absolute convergence.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      If $\sum|a_n|<\infty$ and each $\varepsilon_n$ is either $-1$ or $1$,
+      what is guaranteed about $\sum\varepsilon_na_n$?
+    choices: [{id: a, text: 'It converges absolutely.'}, {id: b, text: 'It diverges for some sign choice.'}, {id: c, text: 'It always has the same sum as $\sum a_n$.'}, {id: d, text: 'It is conditional.'}]
+    answer: {choiceId: a}
+    solutionOutline: The new absolute terms equal the old ones exactly.
+    commonTrap: Confusing preservation of convergence with preservation of the numerical sum.
+    verification: {method: sign-invariant-absolute-values, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-029
+    topicId: series-fundamentals
+    skills: [construct-series-with-prescribed-sums]
+    archetype: telescoping-design
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires choosing a vanishing auxiliary sequence whose differences yield a target sum.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      Which construction gives a convergent series with sum L?
+    choices: [{id: a, text: 'Choose $b_1=L$, $b_n\to0$, and set $a_n=b_n-b_{n+1}$.'}, {id: b, text: 'Set $a_n=L$ for every n.'}, {id: c, text: 'Set $a_n=nL$.'}, {id: d, text: 'Choose any terms approaching L.'}]
+    answer: {choiceId: a}
+    solutionOutline: The Nth partial sum telescopes to $b_1-b_{N+1}$, which approaches L.
+    commonTrap: Assuming terms should approach the desired series sum rather than zero.
+    verification: {method: telescoping-series-construction, result: verified}
+    reviewStatus: verified
+  - id: calc2-series-oly-030
+    topicId: series-fundamentals
+    skills: [distinguish-pointwise-and-uniform-tail-control]
+    archetype: parameterized-series-remainder
+    difficulty: olympiad
+    reasoningDepth: 5
+    difficultyEvidence: Requires stating uniform Cauchy tail control for a family of series.
+    assessmentUses: [olympiad-test]
+    questionType: multipleChoice
+    prompt: |
+      What does uniform convergence of $\sum f_n(x)$ on a set E require in
+      Cauchy-tail form?
+    choices: [{id: a, text: 'All sufficiently late finite tails are small for every $x\in E$ using one common threshold.'}, {id: b, text: 'Each $f_n$ is constant.'}, {id: c, text: 'The same x must maximize every term.'}, {id: d, text: 'Every term sum is finite.'}]
+    answer: {choiceId: a}
+    solutionOutline: Uniformity means the index threshold depends only on epsilon, not on the point x.
+    commonTrap: Allowing a different convergence threshold for each x, which gives only pointwise convergence.
+    verification: {method: uniform-cauchy-criterion, result: verified}
+    reviewStatus: verified

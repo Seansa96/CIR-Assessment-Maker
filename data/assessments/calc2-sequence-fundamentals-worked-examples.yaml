@@ -5,53 +5,223 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: sequence-fundamentals
 skills:
-- Analyze sequence limits from formulas and recurrence relations
-- Use monotonicity and boundedness to reason about convergence
-- Distinguish sequence behavior from series behavior
+  - Evaluate sequence limits from explicit formulas
+  - Prove divergence using subsequences
+  - Establish recurrence convergence using bounds and monotonicity
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - calc2
-  - practice
-  - calculus-2
-  - sequence-fundamentals
+    - calculus-2
+    - sequence-fundamentals
+    - sequence-limits
+    - recurrence-relations
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: we-sequence-fundamentals-1
-  title: Example 1 for Sequence Fundamentals
-  problem: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  steps:
-  - id: step-sequence-fundamentals-1-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-sequence-fundamentals-2
-  title: Example 2 for Sequence Fundamentals
-  problem: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  steps:
-  - id: step-sequence-fundamentals-2-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-sequence-fundamentals-3
-  title: Example 3 for Sequence Fundamentals
-  problem: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  steps:
-  - id: step-sequence-fundamentals-3-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
+  - id: we-sequence-fundamentals-1
+    title: Evaluate a rational sequence limit
+    problem: |
+      Find
+      $$\lim_{n\to\infty}\frac{3n^2-2n+1}{n^2+4},$$
+      and explain why lower-degree terms do not determine the answer.
+    steps:
+      - id: step-sequence-fundamentals-1-1
+        title: Identify the dominant scale
+        instruction: |
+          Both numerator and denominator have degree two. Divide every term by
+          $n^2$, the largest power present, rather than keeping only the leading
+          terms without justification.
+        type: multipleChoice
+        prompt: What expression results after division by $n^2$?
+        choices:
+          - { id: a, text: '$(3-2/n+1/n^2)/(1+4/n^2)$' }
+          - { id: b, text: '$(3n-2+1/n)/(n+4/n)$' }
+          - { id: c, text: '$(3-2n+n^2)/(1+4n^2)$' }
+          - { id: d, text: '$3/4$' }
+        answer: { choiceId: a }
+        explanation: Dividing term-by-term makes every lower-order contribution an explicit vanishing fraction.
+      - id: step-sequence-fundamentals-1-2
+        title: Take component limits
+        instruction: |
+          As $n\to\infty$, $1/n\to0$ and $1/n^2\to0$. Therefore the numerator
+          approaches $3$ and the denominator approaches $1$.
+        type: multipleChoice
+        prompt: Which denominator fact permits the quotient limit law?
+        choices:
+          - { id: a, text: 'Its limit is $1$, which is nonzero.' }
+          - { id: b, text: 'It contains a positive term.' }
+          - { id: c, text: 'It has the same degree as the numerator.' }
+          - { id: d, text: 'It is larger than the numerator.' }
+        answer: { choiceId: a }
+        explanation: The quotient law requires a nonzero limiting denominator.
+      - id: step-sequence-fundamentals-1-3
+        title: Compute the quotient
+        instruction: |
+          Applying the limit laws gives
+          $$\frac{3-0+0}{1+0}=3.$$
+          The limit is the ratio of leading coefficients because the degrees match.
+        type: multipleChoice
+        prompt: What is the sequence limit?
+        choices:
+          - { id: a, text: '$0$' }
+          - { id: b, text: '$3/4$' }
+          - { id: c, text: '$3$' }
+          - { id: d, text: '$+\infty$' }
+        answer: { choiceId: c }
+        explanation: After normalization, all lower-degree terms vanish and the leading-coefficient ratio is $3/1$.
+      - id: step-sequence-fundamentals-1-4
+        title: Check the scale
+        instruction: |
+          For large $n$, the expression is close to $3n^2/n^2=3$. This
+          asymptotic check agrees with the exact limit-law calculation.
+        type: multipleChoice
+        prompt: If the denominator instead had degree three, what would the same dominant-power reasoning predict?
+        choices:
+          - { id: a, text: 'A limit of $0$' }
+          - { id: b, text: 'A limit of $3$' }
+          - { id: c, text: 'A limit of $+\infty$' }
+          - { id: d, text: 'Oscillation' }
+        answer: { choiceId: a }
+        explanation: A degree-two numerator divided by a degree-three denominator has size proportional to $1/n$.
+
+  - id: we-sequence-fundamentals-2
+    title: Prove divergence with parity subsequences
+    problem: |
+      Determine whether
+      $$a_n=(-1)^n+\frac1n$$
+      converges. If it diverges, identify two subsequential limits.
+    steps:
+      - id: step-sequence-fundamentals-2-1
+        title: Separate even indices
+        instruction: |
+          For $n=2k$,
+          $$a_{2k}=1+\frac1{2k}\longrightarrow1.$$
+          Thus the even-indexed subsequence converges to $1$.
+        type: multipleChoice
+        prompt: Why does $(-1)^{2k}$ equal $1$?
+        choices:
+          - { id: a, text: 'Every even power of $-1$ is positive.' }
+          - { id: b, text: '$2k$ approaches zero.' }
+          - { id: c, text: '$1/(2k)$ is positive.' }
+          - { id: d, text: 'The exponent is larger than one.' }
+        answer: { choiceId: a }
+        explanation: Parity controls the oscillatory component independently of the vanishing correction.
+      - id: step-sequence-fundamentals-2-2
+        title: Separate odd indices
+        instruction: |
+          For $n=2k+1$,
+          $$a_{2k+1}=-1+\frac1{2k+1}\longrightarrow-1.$$
+        type: multipleChoice
+        prompt: What is the odd subsequential limit?
+        choices:
+          - { id: a, text: '$-1$' }
+          - { id: b, text: '$0$' }
+          - { id: c, text: '$1$' }
+          - { id: d, text: '$+\infty$' }
+        answer: { choiceId: a }
+        explanation: The reciprocal correction vanishes, leaving the odd sign value $-1$.
+      - id: step-sequence-fundamentals-2-3
+        title: Use uniqueness of limits
+        instruction: |
+          Every subsequence of a convergent sequence must approach the same limit.
+          Here the even and odd subsequences approach different values, so the full
+          sequence diverges.
+        type: multipleChoice
+        prompt: Which contradiction rules out convergence?
+        choices:
+          - { id: a, text: 'A convergent sequence cannot have subsequential limits $1$ and $-1$.' }
+          - { id: b, text: 'A convergent sequence cannot contain negative terms.' }
+          - { id: c, text: 'Every divergent sequence is unbounded.' }
+          - { id: d, text: 'The reciprocal sequence diverges.' }
+        answer: { choiceId: a }
+        explanation: Uniqueness of the sequential limit applies to every subsequence.
+      - id: step-sequence-fundamentals-2-4
+        title: Distinguish boundedness from convergence
+        instruction: |
+          The sequence is bounded—for example, $-1<a_n\le2$—but it does not
+          converge. Boundedness guarantees convergent subsequences, not convergence
+          of the entire sequence.
+        type: multipleChoice
+        prompt: Which additional property, together with boundedness, would guarantee convergence?
+        choices:
+          - { id: a, text: 'Monotonicity' }
+          - { id: b, text: 'Alternating signs' }
+          - { id: c, text: 'Integer indices' }
+          - { id: d, text: 'A positive first term' }
+        answer: { choiceId: a }
+        explanation: The monotone convergence theorem requires both a one-directional order and an appropriate bound.
+
+  - id: we-sequence-fundamentals-3
+    title: Prove a nonlinear recurrence converges
+    problem: |
+      Let $a_1=1$ and $a_{n+1}=\sqrt{3+a_n}$. Prove that $(a_n)$ converges
+      and find its limit.
+    steps:
+      - id: step-sequence-fundamentals-3-1
+        title: Find the candidate fixed point
+        instruction: |
+          If a limit $L$ exists, continuity would give $L=\sqrt{3+L}$.
+          Solving $L^2-L-3=0$ gives
+          $$L=\frac{1\pm\sqrt{13}}2.$$
+          Since every term is positive, only
+          $\alpha=(1+\sqrt{13})/2$ can be the limit.
+        type: multipleChoice
+        prompt: What has this fixed-point calculation proved so far?
+        choices:
+          - { id: a, text: 'Only the possible positive limit, not convergence.' }
+          - { id: b, text: 'The sequence converges immediately.' }
+          - { id: c, text: 'Every term equals $\alpha$.' }
+          - { id: d, text: 'The sequence is decreasing.' }
+        answer: { choiceId: a }
+        explanation: A fixed point is a candidate until boundedness and monotonicity establish convergence.
+      - id: step-sequence-fundamentals-3-2
+        title: Prove the invariant upper bound
+        instruction: |
+          Because $a_1=1<\alpha$, assume $a_n<\alpha$. Then
+          $$a_{n+1}=\sqrt{3+a_n}<\sqrt{3+\alpha}=\alpha,$$
+          where the last equality uses $\alpha^2=3+\alpha$. Induction gives
+          $a_n<\alpha$ for all $n$.
+        type: multipleChoice
+        prompt: Which fact closes the induction?
+        choices:
+          - { id: a, text: '$\sqrt{3+\alpha}=\alpha$' }
+          - { id: b, text: '$\alpha<0$' }
+          - { id: c, text: '$a_{n+1}=a_n$' }
+          - { id: d, text: '$3+\alpha<0$' }
+        answer: { choiceId: a }
+        explanation: The candidate fixed point becomes a self-preserving boundary for the recurrence.
+      - id: step-sequence-fundamentals-3-3
+        title: Prove monotone increase
+        instruction: |
+          Since $a_n>0$, compare nonnegative quantities by squaring:
+          $$a_{n+1}\ge a_n
+          \iff 3+a_n\ge a_n^2
+          \iff (\alpha-a_n)(a_n-\beta)\ge0,$$
+          where $\beta=(1-\sqrt{13})/2<0$. The proved bounds
+          $\beta<a_n<\alpha$ make the product nonnegative.
+        type: multipleChoice
+        prompt: Why is the negative root $\beta$ useful even though it cannot be the limit?
+        choices:
+          - { id: a, text: 'It factors the inequality that proves monotonicity.' }
+          - { id: b, text: 'It is the first term.' }
+          - { id: c, text: 'It becomes an upper bound.' }
+          - { id: d, text: 'It makes the sequence alternate.' }
+        answer: { choiceId: a }
+        explanation: Both fixed points factor $3+x-x^2$, and the interval between them determines its sign.
+      - id: step-sequence-fundamentals-3-4
+        title: Invoke the theorem and identify the limit
+        instruction: |
+          The sequence is increasing and bounded above by $\alpha$, so it
+          converges. Passing to the limit in the recurrence is now justified,
+          and positivity selects
+          $$\lim_{n\to\infty}a_n=\frac{1+\sqrt{13}}2.$$
+        type: multipleChoice
+        prompt: Which theorem supplies existence of the limit?
+        choices:
+          - { id: a, text: 'The monotone convergence theorem for sequences' }
+          - { id: b, text: 'The divergence test for series' }
+          - { id: c, text: 'The ratio test' }
+          - { id: d, text: 'The geometric-series formula' }
+        answer: { choiceId: a }
+        explanation: Increasing plus bounded above is the exact hypothesis needed for monotone convergence.

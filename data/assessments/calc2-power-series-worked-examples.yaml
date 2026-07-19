@@ -1,57 +1,221 @@
 schemaVersion: 1
 id: calc2-power-series-worked-examples
-title: Power Series and Representations Worked Examples
+title: Power Series Worked Examples
 assessmentType: workedExample
 categoryId: calculus-2
 topicId: power-series
 skills:
-- Determine a power series radius and interval of convergence
-- Differentiate and integrate power series within convergence bounds
-- Represent functions using geometric-series transformations
+  - Find radii and intervals of convergence
+  - Differentiate geometric series within their convergence interval
+  - Construct power-series representations by substitution
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - calc2
-  - practice
-  - calculus-2
-  - power-series
+    - calculus-2
+    - power-series
+    - radius-of-convergence
+    - series-representations
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: we-power-series-1
-  title: Example 1 for Power Series and Representations
-  problem: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  steps:
-  - id: step-power-series-1-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-power-series-2
-  title: Example 2 for Power Series and Representations
-  problem: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  steps:
-  - id: step-power-series-2-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-power-series-3
-  title: Example 3 for Power Series and Representations
-  problem: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  steps:
-  - id: step-power-series-3-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
+  - id: we-power-series-1
+    title: Find an interval with asymmetric endpoints
+    problem: |
+      Find the radius and interval of convergence of
+      $$\sum_{n=1}^{\infty}\frac{(x-2)^n}{n3^n}.$$
+    steps:
+      - id: step-power-series-1-1
+        title: Apply the ratio test away from endpoints
+        instruction: |
+          For the absolute terms,
+          $$\left|\frac{a_{n+1}}{a_n}\right|
+          =\frac{|x-2|}{3}\frac{n}{n+1}
+          \longrightarrow\frac{|x-2|}{3}.$$
+        type: multipleChoice
+        prompt: What inequality gives absolute convergence?
+        choices:
+          - { id: a, text: '$|x-2|<3$' }
+          - { id: b, text: '$|x-2|\le3$' }
+          - { id: c, text: '$|x|<2$' }
+          - { id: d, text: '$|x-3|<2$' }
+        answer: { choiceId: a }
+        explanation: The ratio test requires a limit strictly below one and says nothing at equality.
+      - id: step-power-series-1-2
+        title: Read the radius and candidate interval
+        instruction: |
+          The inequality $|x-2|<3$ gives center $2$, radius $R=3$, and open
+          interval $(-1,5)$ before endpoint testing.
+        type: multipleChoice
+        prompt: Why are the endpoints not included yet?
+        choices:
+          - { id: a, text: 'The ratio-test limit equals $1$ there and is inconclusive.' }
+          - { id: b, text: 'Power series never include endpoints.' }
+          - { id: c, text: 'The center is an endpoint.' }
+          - { id: d, text: 'The terms are undefined there.' }
+        answer: { choiceId: a }
+        explanation: Endpoint behavior depends on the remaining numerical series after substitution.
+      - id: step-power-series-1-3
+        title: Test the right endpoint
+        instruction: |
+          At $x=5$, $(x-2)^n/3^n=1$, so the series becomes
+          $\sum1/n$, which diverges.
+        type: multipleChoice
+        prompt: Is $x=5$ included?
+        choices:
+          - { id: a, text: 'No, because the harmonic series diverges.' }
+          - { id: b, text: 'Yes, because $5$ is finite.' }
+          - { id: c, text: 'Yes, by the alternating-series test.' }
+          - { id: d, text: 'No, because the terms alternate.' }
+        answer: { choiceId: a }
+        explanation: Substitution removes the exponential factors and exposes the harmonic boundary.
+      - id: step-power-series-1-4
+        title: Test the left endpoint
+        instruction: |
+          At $x=-1$, the series becomes $\sum(-1)^n/n$, which converges by the
+          alternating-series test. Therefore the interval is
+          $$[-1,5).$$
+        type: multipleChoice
+        prompt: What is the convergence type at $x=-1$?
+        choices:
+          - { id: a, text: 'Conditional' }
+          - { id: b, text: 'Absolute' }
+          - { id: c, text: 'Divergent by the term test' }
+          - { id: d, text: 'Geometric' }
+        answer: { choiceId: a }
+        explanation: Its absolute-value series is harmonic, so endpoint convergence is not absolute.
+
+  - id: we-power-series-2
+    title: Differentiate the geometric series
+    problem: |
+      Derive a formula for
+      $$\sum_{n=1}^{\infty}n x^{n-1}$$
+      and use it to evaluate $\sum_{n=1}^{\infty}n/2^{n-1}$.
+    steps:
+      - id: step-power-series-2-1
+        title: Start from a known representation
+        instruction: |
+          For $|x|<1$,
+          $$\frac1{1-x}=\sum_{n=0}^{\infty}x^n.$$
+          Inside its radius, a power series may be differentiated term by term.
+        type: multipleChoice
+        prompt: What is the radius of this geometric power series?
+        choices:
+          - { id: a, text: '$1$' }
+          - { id: b, text: '$0$' }
+          - { id: c, text: '$2$' }
+          - { id: d, text: '$\infty$' }
+        answer: { choiceId: a }
+        explanation: Geometric convergence requires $|x|<1$.
+      - id: step-power-series-2-2
+        title: Differentiate both sides
+        instruction: |
+          Differentiation gives
+          $$\frac1{(1-x)^2}
+          =\sum_{n=1}^{\infty}n x^{n-1},\qquad |x|<1.$$
+        type: multipleChoice
+        prompt: Why does the differentiated sum begin at $n=1$?
+        choices:
+          - { id: a, text: 'The derivative of the $n=0$ constant term is zero.' }
+          - { id: b, text: 'The original series begins at $n=1$.' }
+          - { id: c, text: '$x^0$ is undefined.' }
+          - { id: d, text: 'Differentiation always shifts to one.' }
+        answer: { choiceId: a }
+        explanation: The constant term disappears under differentiation.
+      - id: step-power-series-2-3
+        title: Substitute the requested value
+        instruction: |
+          Since $x=1/2$ lies inside the convergence interval,
+          $$\sum_{n=1}^{\infty}\frac{n}{2^{n-1}}
+          =\frac1{(1-1/2)^2}=4.$$
+        type: multipleChoice
+        prompt: What permits direct substitution into the identity?
+        choices:
+          - { id: a, text: '$|1/2|<1$' }
+          - { id: b, text: '$1/2$ is an endpoint' }
+          - { id: c, text: 'Every differentiated series converges everywhere' }
+          - { id: d, text: 'All terms are integers' }
+        answer: { choiceId: a }
+        explanation: The derived identity is valid throughout the unchanged radius of convergence.
+      - id: step-power-series-2-4
+        title: Check the indexing
+        instruction: |
+          The requested denominator is $2^{n-1}$. If it were $2^n$, every term
+          would be half as large and the sum would be $2$.
+        type: multipleChoice
+        prompt: What is $\sum_{n=1}^{\infty}n/2^n$?
+        choices:
+          - { id: a, text: '$1$' }
+          - { id: b, text: '$2$' }
+          - { id: c, text: '$4$' }
+          - { id: d, text: '$8$' }
+        answer: { choiceId: b }
+        explanation: Factor $1/2$ from the already evaluated $2^{-(n-1)}$ series.
+
+  - id: we-power-series-3
+    title: Build a representation by substitution
+    problem: |
+      Find a power series centered at $0$ for
+      $$f(x)=\frac{x}{1+x^2},$$
+      and state its interval of convergence.
+    steps:
+      - id: step-power-series-3-1
+        title: Match the geometric denominator
+        instruction: |
+          Write
+          $$\frac1{1+x^2}=\frac1{1-(-x^2)}.$$
+          This has geometric variable $u=-x^2$.
+        type: multipleChoice
+        prompt: Which geometric substitution is correct?
+        choices:
+          - { id: a, text: '$u=-x^2$' }
+          - { id: b, text: '$u=x$' }
+          - { id: c, text: '$u=1+x^2$' }
+          - { id: d, text: '$u=-x$' }
+        answer: { choiceId: a }
+        explanation: The standard denominator is $1-u$, so $u$ must equal $-x^2$.
+      - id: step-power-series-3-2
+        title: Expand and restore the numerator
+        instruction: |
+          For $|-x^2|<1$,
+          $$\frac1{1+x^2}=\sum_{n=0}^{\infty}(-1)^n x^{2n}.$$
+          Multiplying by $x$ gives
+          $$f(x)=\sum_{n=0}^{\infty}(-1)^n x^{2n+1}.$$
+        type: multipleChoice
+        prompt: Which are the first four nonzero terms?
+        choices:
+          - { id: a, text: '$x-x^3+x^5-x^7$' }
+          - { id: b, text: '$1-x^2+x^4-x^6$' }
+          - { id: c, text: '$x+x^3+x^5+x^7$' }
+          - { id: d, text: '$x-x^2+x^3-x^4$' }
+        answer: { choiceId: a }
+        explanation: Only odd powers remain after multiplication by $x$, and signs alternate.
+      - id: step-power-series-3-3
+        title: Solve the interior condition
+        instruction: |
+          The geometric condition is $|x^2|<1$, equivalent to $|x|<1$.
+          Thus the candidate interval is $(-1,1)$.
+        type: multipleChoice
+        prompt: What is the radius of convergence?
+        choices:
+          - { id: a, text: '$1$' }
+          - { id: b, text: '$2$' }
+          - { id: c, text: '$1/2$' }
+          - { id: d, text: '$\infty$' }
+        answer: { choiceId: a }
+        explanation: The nearest complex singularities are also one unit from the center, consistent with the geometric condition.
+      - id: step-power-series-3-4
+        title: Test both real endpoints
+        instruction: |
+          At $x=1$, the terms are $(-1)^n$; at $x=-1$, they are
+          $-(-1)^n$. In both cases the terms fail to approach zero, so neither
+          endpoint is included.
+        type: multipleChoice
+        prompt: What is the final interval of convergence?
+        choices:
+          - { id: a, text: '$(-1,1)$' }
+          - { id: b, text: '$[-1,1]$' }
+          - { id: c, text: '$[-1,1)$' }
+          - { id: d, text: '$(-\infty,\infty)$' }
+        answer: { choiceId: a }
+        explanation: Endpoint substitution yields nonvanishing terms, so the divergence test excludes both.

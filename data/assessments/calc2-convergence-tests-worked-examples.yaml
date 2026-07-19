@@ -5,53 +5,217 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: convergence-tests
 skills:
-- Select an appropriate convergence test from series structure
-- Apply comparison, ratio, root, and integral tests
-- State what a convergence test does and does not prove
+  - Select a convergence test from summand structure
+  - Apply direct and limit comparison with correct directions
+  - Execute the ratio test on factorial and variable-power terms
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - calc2
-  - practice
-  - calculus-2
-  - convergence-tests
+    - calculus-2
+    - convergence-tests
+    - comparison-tests
+    - ratio-test
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: we-convergence-tests-1
-  title: Example 1 for Convergence Tests
-  problem: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  steps:
-  - id: step-convergence-tests-1-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-convergence-tests-2
-  title: Example 2 for Convergence Tests
-  problem: Determine the convergence of \sum \frac{n^{4}}{4^n}.
-  steps:
-  - id: step-convergence-tests-2-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-convergence-tests-3
-  title: Example 3 for Convergence Tests
-  problem: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  steps:
-  - id: step-convergence-tests-3-1
-    title: Analyze and set up
-    instruction: Use the Ratio Test....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
+  - id: we-convergence-tests-1
+    title: Prove convergence by direct comparison
+    problem: |
+      Determine whether
+      $$\sum_{n=1}^{\infty}\frac{3n+1}{n^3+2}$$
+      converges. Use an explicit inequality, not only dominant-term language.
+    steps:
+      - id: step-convergence-tests-1-1
+        title: Predict the benchmark
+        instruction: |
+          The numerator has order $n$ and the denominator has order $n^3$, so
+          the summand behaves like $3/n^2$. This suggests comparison with the
+          convergent $p$-series $\sum1/n^2$.
+        type: multipleChoice
+        prompt: Which benchmark has the matching dominant power?
+        choices:
+          - { id: a, text: '$1/n^2$' }
+          - { id: b, text: '$1/n$' }
+          - { id: c, text: '$1/n^3$' }
+          - { id: d, text: '$2^{-n}$' }
+        answer: { choiceId: a }
+        explanation: The degree difference is two, so the rational term has order $n^{-2}$.
+      - id: step-convergence-tests-1-2
+        title: Build a valid upper bound
+        instruction: |
+          For $n\ge1$, $3n+1\le4n$ and $n^3+2\ge n^3$. Therefore
+          $$0<\frac{3n+1}{n^3+2}\le\frac{4n}{n^3}=\frac4{n^2}.$$
+        type: multipleChoice
+        prompt: Why are the numerator and denominator bounds used in opposite-looking directions?
+        choices:
+          - { id: a, text: 'A larger numerator and smaller denominator create an upper bound for the fraction.' }
+          - { id: b, text: 'Both replacements make the fraction smaller.' }
+          - { id: c, text: 'The comparison test reverses every inequality.' }
+          - { id: d, text: 'Negative terms require reversal.' }
+        answer: { choiceId: a }
+        explanation: To dominate a positive quotient, enlarge its numerator and reduce its denominator.
+      - id: step-convergence-tests-1-3
+        title: Invoke the comparison theorem
+        instruction: |
+          Since $\sum4/n^2$ converges and the target terms are no larger, the
+          direct comparison test proves convergence.
+        type: multipleChoice
+        prompt: Which comparison direction proves convergence?
+        choices:
+          - { id: a, text: 'Target $\le$ known convergent series' }
+          - { id: b, text: 'Target $\le$ known divergent series' }
+          - { id: c, text: 'Target $\ge$ known convergent series' }
+          - { id: d, text: 'Any inequality with a known series' }
+        answer: { choiceId: a }
+        explanation: A convergent upper bound controls the total mass of the smaller positive series.
+      - id: step-convergence-tests-1-4
+        title: Check what was and was not proved
+        instruction: |
+          The argument establishes convergence but does not evaluate the exact
+          sum. Comparison tests usually answer behavior rather than value.
+        type: multipleChoice
+        prompt: What exact sum follows from the comparison?
+        choices:
+          - { id: a, text: 'No exact sum follows.' }
+          - { id: b, text: '$4\pi^2/6$' }
+          - { id: c, text: '$\pi^2/6$' }
+          - { id: d, text: '$4$' }
+        answer: { choiceId: a }
+        explanation: An inequality transfers convergence but is not an equality of series.
+
+  - id: we-convergence-tests-2
+    title: Detect harmonic divergence by limit comparison
+    problem: |
+      Determine the behavior of
+      $$\sum_{n=1}^{\infty}\frac{\sqrt{n^2+1}}{n^2+3n}.$$
+    steps:
+      - id: step-convergence-tests-2-1
+        title: Read the asymptotic scale
+        instruction: |
+          The numerator behaves like $n$ and the denominator like $n^2$, so
+          the summand has harmonic order $1/n$. Limit comparison avoids a
+          cumbersome two-sided direct inequality.
+        type: multipleChoice
+        prompt: Which comparison series should be tested?
+        choices:
+          - { id: a, text: '$\sum1/n$' }
+          - { id: b, text: '$\sum1/n^2$' }
+          - { id: c, text: '$\sum(1/2)^n$' }
+          - { id: d, text: '$\sum n$' }
+        answer: { choiceId: a }
+        explanation: Taking the square root changes $n^2+1$ to size $n$, leaving one net power of $n$ in the denominator.
+      - id: step-convergence-tests-2-2
+        title: Form the comparison ratio
+        instruction: |
+          With $b_n=1/n$,
+          $$\frac{a_n}{b_n}
+          =\frac{n\sqrt{n^2+1}}{n^2+3n}
+          =\frac{\sqrt{1+1/n^2}}{1+3/n}.$$
+        type: multipleChoice
+        prompt: What is the limit of $a_n/b_n$?
+        choices:
+          - { id: a, text: '$0$' }
+          - { id: b, text: '$1$' }
+          - { id: c, text: '$3$' }
+          - { id: d, text: '$+\infty$' }
+        answer: { choiceId: b }
+        explanation: Both vanishing fractions disappear, leaving $1/1$.
+      - id: step-convergence-tests-2-3
+        title: Transfer the behavior
+        instruction: |
+          The comparison limit is finite and positive, so the two positive-term
+          series have the same convergence behavior. The harmonic series
+          diverges, hence the target series diverges.
+        type: multipleChoice
+        prompt: Which property of the limit is essential in the standard theorem?
+        choices:
+          - { id: a, text: 'It is finite and strictly positive.' }
+          - { id: b, text: 'It is an integer.' }
+          - { id: c, text: 'It is less than one.' }
+          - { id: d, text: 'It equals the target sum.' }
+        answer: { choiceId: a }
+        explanation: A finite positive ratio means neither sequence is asymptotically negligible relative to the other.
+      - id: step-convergence-tests-2-4
+        title: Avoid the term-test trap
+        instruction: |
+          The individual summand still approaches zero. Therefore the divergence
+          test is inconclusive here; divergence comes from comparison with the
+          harmonic accumulation rate.
+        type: multipleChoice
+        prompt: What is $\lim a_n$?
+        choices:
+          - { id: a, text: '$0$' }
+          - { id: b, text: '$1$' }
+          - { id: c, text: '$3$' }
+          - { id: d, text: 'It does not exist.' }
+        answer: { choiceId: a }
+        explanation: Harmonic-size terms vanish individually while their series still diverges.
+
+  - id: we-convergence-tests-3
+    title: Use the ratio test on factorial and variable powers
+    problem: |
+      Determine whether
+      $$\sum_{n=1}^{\infty}\frac{n!}{n^n}$$
+      converges.
+    steps:
+      - id: step-convergence-tests-3-1
+        title: Select a structure-sensitive test
+        instruction: |
+          Factorials simplify under consecutive ratios, and the $n^n$ term also
+          has a useful next-index form. This makes the ratio test more direct
+          than comparison or integration.
+        type: multipleChoice
+        prompt: Which feature most strongly suggests the ratio test?
+        choices:
+          - { id: a, text: 'The factorial $n!$' }
+          - { id: b, text: 'All terms are positive' }
+          - { id: c, text: 'The series begins at $n=1$' }
+          - { id: d, text: 'The numerator is an integer' }
+        answer: { choiceId: a }
+        explanation: Consecutive factorials cancel to a single factor.
+      - id: step-convergence-tests-3-2
+        title: Simplify the consecutive ratio
+        instruction: |
+          For $a_n=n!/n^n$,
+          $$\frac{a_{n+1}}{a_n}
+          =\frac{(n+1)!}{(n+1)^{n+1}}\frac{n^n}{n!}
+          =\left(\frac{n}{n+1}\right)^n.$$
+        type: multipleChoice
+        prompt: Which cancellation produces the final expression?
+        choices:
+          - { id: a, text: '$(n+1)!/n!=n+1$, which cancels one denominator factor.' }
+          - { id: b, text: '$(n+1)!/n!=1$' }
+          - { id: c, text: '$n^n/(n+1)^n=1$' }
+          - { id: d, text: 'Every factorial cancels every power.' }
+        answer: { choiceId: a }
+        explanation: After removing one factor $n+1$, the remaining power ratio is $[n/(n+1)]^n$.
+      - id: step-convergence-tests-3-3
+        title: Evaluate the ratio limit
+        instruction: |
+          Rewrite
+          $$\left(\frac{n}{n+1}\right)^n
+          =\left(1+\frac1n\right)^{-n}\longrightarrow e^{-1}.$$
+        type: multipleChoice
+        prompt: How does $e^{-1}$ compare with the ratio-test threshold?
+        choices:
+          - { id: a, text: '$e^{-1}<1$' }
+          - { id: b, text: '$e^{-1}=1$' }
+          - { id: c, text: '$e^{-1}>1$' }
+          - { id: d, text: 'It is negative.' }
+        answer: { choiceId: a }
+        explanation: The limiting ratio is about $0.368$, strictly below one.
+      - id: step-convergence-tests-3-4
+        title: State the theorem conclusion
+        instruction: |
+          Because the absolute ratio limit is below one, the ratio test proves
+          that the positive series converges.
+        type: multipleChoice
+        prompt: Would the ratio test determine an exact value for the sum?
+        choices:
+          - { id: a, text: 'No; it establishes convergence only.' }
+          - { id: b, text: 'Yes; the sum must be $e^{-1}$.' }
+          - { id: c, text: 'Yes; the sum must be $1/(1-e^{-1})$.' }
+          - { id: d, text: 'No; the test actually proves divergence.' }
+        answer: { choiceId: a }
+        explanation: A limiting ratio is not a constant common ratio for the original series.

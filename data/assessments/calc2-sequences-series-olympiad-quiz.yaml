@@ -5,243 +5,321 @@ assessmentType: quiz
 categoryId: calculus-2
 topicId: sequences-series
 skills:
-- Distinguish sequence convergence from series convergence
-- Analyze partial sums and common series models
-- Connect term behavior to necessary convergence conditions
+- Connect partial sums, asymptotics, and exact series constructions
+- Apply condensation, summation by parts, limsup, and product theorems
+- Analyze sparse, block, parameterized, and rearranged series
 navigation:
   learningGoal: practice
   activityType: mixedPractice
   tags:
-  - calc2
-  - olympiad
   - calculus-2
   - sequences-series
+  - olympiad
+  - cumulative-analysis
 modeDefault: practice
 randomizeQuestions: true
-attemptQuestionCount: 10
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
+  type: multipleChoice
+  skills:
+  - analyze-renormalized-partial-sums
+  prompt: |
+    The sequence $a_n=H_n-\ln n$ converges to Euler's constant $\gamma$.
+    Which related series therefore converges to $\gamma$?
+  choices:
+  - id: a
+    text: |-
+      $1+\sum_{n=2}^{\infty}[1/n-\ln(1+1/(n-1))]$
+  - id: b
+    text: |-
+      $\sum_{n=1}^{\infty}1/n$
+  - id: c
+    text: |-
+      $\sum_{n=1}^{\infty}\ln(1+1/n)$
+  - id: d
+    text: |-
+      $\sum_{n=1}^{\infty}(H_n-\ln n)$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: |-
+    The Nth partial sum of the first expression is $H_N-\ln N$, since the logarithms telescope.
 - id: q002
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
+  type: multipleChoice
+  skills:
+  - evaluate-higher-order-telescoping-series
+  prompt: |
+    Evaluate $\displaystyle\sum_{n=1}^{\infty}\frac1{n(n+1)(n+2)}$.
+  choices:
+  - id: a
+    text: $1/4$
+  - id: b
+    text: $1/2$
+  - id: c
+    text: $1$
+  - id: d
+    text: $1/6$
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The summand is one half of $1/[n(n+1)]-1/[(n+1)(n+2)]$, leaving one fourth.
 - id: q003
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - apply-cauchy-condensation
+  prompt: |
+    What does Cauchy condensation show about
+    $\sum_{n=2}^{\infty}1/[n\ln n]$?
+  choices:
+  - id: a
+    text: It diverges because its condensed series is a constant multiple of the harmonic series.
+  - id: b
+    text: It converges geometrically.
+  - id: c
+    text: It converges because its terms approach zero.
+  - id: d
+    text: Condensation is inconclusive.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    At $n=2^k$, the condensed term is $2^k/[2^k\ln(2^k)]=1/(k\ln2)$.
 - id: q004
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - classify-radical-increment-series
+  prompt: |
+    Classify $\displaystyle\sum_{n=1}^{\infty}\frac{\sqrt{n+1}-\sqrt n}{n}$.
+  choices:
+  - id: a
+    text: Convergent
+  - id: b
+    text: Divergent like the harmonic series
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Divergent by the term test
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Rationalization makes the term $1/[n(\sqrt{n+1}+\sqrt n)]$, comparable to $1/(2n^{3/2})$.
 - id: q005
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - classify-two-parameter-series
+  prompt: |
+    For which real $p,q$ does
+    $\sum_{n=1}^{\infty}n^p/(n+1)^q$ converge?
+  choices:
+  - id: a
+    text: $q-p>1$
+  - id: b
+    text: |-
+      $q-p\ge1$
+  - id: c
+    text: $p+q>1$
+  - id: d
+    text: $p<q$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: The term is asymptotic to $n^{p-q}=1/n^{q-p}$, so the p-series exponent must exceed one.
 - id: q006
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
+  type: multipleChoice
+  skills:
+  - apply-the-limsup-root-test
+  prompt: |
+    If $\limsup_{n\to\infty}|a_n|^{1/n}=3/4$, what is guaranteed about
+    $\sum a_n$?
+  choices:
+  - id: a
+    text: It converges absolutely.
+  - id: b
+    text: It converges conditionally only.
+  - id: c
+    text: It diverges.
+  - id: d
+    text: Nothing can be concluded.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: A limsup root strictly below one gives an eventual geometric upper bound for the absolute
+    terms.
 - id: q007
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - reason-about-cauchy-products
+  prompt: |
+    Suppose $\sum a_n=A$ and $\sum b_n=B$ converge absolutely. For
+    $c_n=\sum_{k=0}^{n}a_kb_{n-k}$, what is $\sum c_n$?
+  choices:
+  - id: a
+    text: $AB$
+  - id: b
+    text: $A+B$
+  - id: c
+    text: $0$
+  - id: d
+    text: It need not converge.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: Absolute convergence justifies regrouping the double sum, and the Cauchy product theorem
+    gives the product of the sums.
 - id: q008
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
+  type: multipleChoice
+  skills:
+  - construct-series-from-prescribed-partial-sums
+  prompt: |
+    Let $S_n=2+(-1)^n/n$ and define $a_1=S_1$,
+    $a_n=S_n-S_{n-1}$. What is $\sum a_n$?
+  choices:
+  - id: a
+    text: $2$
+  - id: b
+    text: $0$
+  - id: c
+    text: $-1$
+  - id: d
+    text: Divergent
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: By construction, the Nth partial sum is exactly S_N, whose oscillatory correction tends
+    to zero.
 - id: q009
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - analyze-block-series
+  prompt: |
+    Define $a_n=2^{-k}$ whenever $2^k\le n<2^{k+1}$. What happens to
+    $\sum_{n=1}^{\infty}a_n$?
+  choices:
+  - id: a
+    text: It diverges because every dyadic block has sum $1$.
+  - id: b
+    text: |-
+      It converges because $a_n\to0$.
+  - id: c
+    text: It converges geometrically.
+  - id: d
+    text: It alternates.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The kth block contains $2^k$ terms, each equal to $2^{-k}$, so block-boundary partial sums
+    grow by one forever.
 - id: q010
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - use-summation-by-parts
+  prompt: |
+    If the partial sums $A_n=\sum_{k=1}^{n}a_k$ are bounded and
+    $b_n\downarrow0$, what can be concluded about $\sum a_nb_n$?
+  choices:
+  - id: a
+    text: It converges.
+  - id: b
+    text: It converges absolutely.
+  - id: c
+    text: It diverges.
+  - id: d
+    text: It has nonzero terms and therefore diverges.
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Summation by parts writes each tail using bounded A_n and the summable positive differences
+    $b_n-b_{n+1}$.
 - id: q011
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - identify-convergence-from-tail-asymptotics
+  prompt: |
+    Classify $\sum_{n=1}^{\infty}[1/n-\ln(1+1/n)]$.
+  choices:
+  - id: a
+    text: Convergent
+  - id: b
+    text: |-
+      Divergent like $\sum1/n$
+  - id: c
+    text: Conditionally convergent
+  - id: d
+    text: Divergent by the term test
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    The logarithm expansion gives $1/n-\ln(1+1/n)\sim1/(2n^2)$; its partial sums also equal $H_N-\ln(N+1)$.
 - id: q012
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - analyze-series-under-rearrangement
+  prompt: |
+    Which hypothesis guarantees that every permutation of $\sum a_n$
+    converges to the same sum?
+  choices:
+  - id: a
+    text: Absolute convergence
+  - id: b
+    text: |-
+      $a_n\to0$
+  - id: c
+    text: Bounded terms
+  - id: d
+    text: Conditional convergence
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Absolute convergence controls all omitted absolute mass and makes the sum invariant under
+    arbitrary reordering.
 - id: q013
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - test-convergence-of-sparse-series
+  prompt: |
+    Let $a_n=1/n$ when $n$ is a power of two and $a_n=0$ otherwise.
+    What is $\sum a_n$?
+  choices:
+  - id: a
+    text: $2$
+  - id: b
+    text: Divergent
+  - id: c
+    text: $1$
+  - id: d
+    text: |-
+      $\ln2$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: |-
+    Reindexing the nonzero terms gives $\sum_{k=0}^{\infty}2^{-k}=2$.
 - id: q014
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{4}}{4^n}.
+  type: multipleChoice
+  skills:
+  - interpret-series-of-sequence-differences
+  prompt: |
+    If $b_n\to L$, what is guaranteed about
+    $\sum_{n=1}^{\infty}(b_{n+1}-b_n)$?
+  choices:
+  - id: a
+    text: It converges to $L-b_1$.
+  - id: b
+    text: It converges absolutely.
+  - id: c
+    text: It diverges unless $L=0$.
+  - id: d
+    text: It sums to $L$.
   answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
+    choiceId: a
+  explanation: The finite sum telescopes to $b_{N+1}-b_1$; absolute convergence would additionally require
+    finite total variation and is not automatic.
 - id: q015
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
+  type: multipleChoice
+  skills:
+  - derive-geometric-series-from-functional-equations
+  prompt: |
+    Let $S=1+x+x^2+\cdots$ for $|x|<1$. Which equation determines S?
+  choices:
+  - id: a
+    text: $S=1+xS$
+  - id: b
+    text: $S=x+S$
+  - id: c
+    text: $S=1+x+S$
+  - id: d
+    text: $xS=1$
   answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q016
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q017
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q018
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q019
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q020
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q021
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{2}}{2^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q022
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q023
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{7}}{7^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q024
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q025
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{6}}{6^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q026
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
-- id: q027
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q028
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{3}}{3^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q029
-  type: freeResponse
-  prompt: Determine the convergence of \sum \frac{n^{5}}{5^n}.
-  answer:
-    gradingMode: selfCheck
-    checkModel: Converges
-  explanation: Use the Ratio Test.
-- id: q030
-  type: freeResponse
-  prompt: Prove the irrationality of e using the series expansion e = \sum 1/n!
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof by contradiction.
-  explanation: Assume e=p/q, multiply by q!, and show a contradiction with integer
-    bounds.
+    choiceId: a
+  explanation: Multiplying by x shifts every term one place, so subtracting xS from S leaves the initial
+    one.
+attemptQuestionCount: 15
