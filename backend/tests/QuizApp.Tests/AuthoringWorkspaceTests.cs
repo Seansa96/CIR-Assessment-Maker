@@ -35,7 +35,11 @@ public sealed class AuthoringWorkspaceTests : IDisposable
         var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
 
         var packet = await service.ExportPacketAsync("physics-1", "traveling-waves", ["wave-speed"], [source.Chunks[0].Id]);
-        await service.SaveBlueprintAsync(new QuestionBlueprint(1, "wave-speed-blueprint", "physics-1", "traveling-waves", "wave-speed", "numericResponse", [source.Chunks[0].Id], ["wave relation"], ["identify values", "solve relation"], ["scenario", "unknown"], "Using amplitude instead of wavelength.", "easy", 2, false, SourceReviewState.NeedsReview));
+        await service.SaveBlueprintAsync(new QuestionBlueprint(1, "wave-speed-blueprint", "physics-1", "traveling-waves", "wave-speed", "numericResponse", [source.Chunks[0].Id], ["wave relation"], ["identify values", "solve relation"], ["scenario", "unknown"], "Using amplitude instead of wavelength.", "easy", 2, false, SourceReviewState.NeedsReview)
+        {
+            DifficultyDimensions = [DifficultyDimension.RepresentationTransfer, DifficultyDimension.AuxiliaryTechnique],
+            DifficultyEvidence = "Reads the wave relationship and then applies the governing relation."
+        });
 
         Assert.Single(packet.Chunks);
         var saved = Path.Combine(root, "docs", "assessment-reference", "question-blueprints", "wave-speed-blueprint.json");
@@ -53,6 +57,31 @@ public sealed class AuthoringWorkspaceTests : IDisposable
     }
 
     [Fact]
+    public async Task Hard_packet_and_blueprint_require_dimension_and_transfer_metadata()
+    {
+        Directory.CreateDirectory(root);
+        var input = Path.Combine(root, "source.txt");
+        await File.WriteAllTextAsync(input, "A wave model uses a relationship between speed, wavelength, and frequency.");
+        var service = CreateService();
+        var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
+
+        var packet = await service.ExportPacketAsync("physics-1", "traveling-waves", ["wave-speed"], [source.Chunks[0].Id], targetDifficultyTier: AssessmentDifficultyTier.Hard);
+        var blueprint = new QuestionBlueprint(1, "hard-wave-blueprint", "physics-1", "traveling-waves", "wave-speed", "numericResponse", [source.Chunks[0].Id], ["wave relation"], ["interpret graph", "select relation", "solve"], ["representation", "unknown"], "Using amplitude instead of wavelength.", "hard", 3, false, SourceReviewState.NeedsReview)
+        {
+            DifficultyDimensions = [DifficultyDimension.RepresentationTransfer, DifficultyDimension.ModelOrDerivation, DifficultyDimension.AuxiliaryTechnique],
+            SubjectDifficultyTags = ["waveGraph", "methodBranch"],
+            DifficultyEvidence = "Interprets a representation, builds a wave model, and applies a relation.",
+            PrerequisiteObjectiveIds = ["algebraic-rearrangement"]
+        };
+
+        await service.SaveBlueprintAsync(blueprint);
+
+        Assert.Equal(AssessmentDifficultyTier.Hard, packet.TargetDifficultyTier);
+        Assert.Equal(3, packet.MinimumDifficultyDimensions);
+        Assert.True(packet.RequiresTransferObjective);
+    }
+
+    [Fact]
     public async Task Approved_draft_publishes_validated_blueprints()
     {
         Directory.CreateDirectory(root);
@@ -60,10 +89,27 @@ public sealed class AuthoringWorkspaceTests : IDisposable
         await File.WriteAllTextAsync(input, "Wave speed depends on frequency and wavelength.");
         var service = CreateService();
         var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
-        var payload = $$"""{"questionBlueprints":[{"schemaVersion":1,"id":"draft-wave-speed","categoryId":"physics-1","topicId":"traveling-waves","objectiveId":"wave-speed","questionType":"numericResponse","sourceChunkIds":["{{source.Chunks[0].Id}}"],"governingPrinciples":["wave relation"],"methodSteps":["identify values","solve relation"],"variationAxes":["scenario","unknown"],"commonTrap":"trap","difficulty":"easy","reasoningDepth":2,"requiresDiagram":false,"reviewState":"needsReview"}]}""";
+        var payload = $$"""{"questionBlueprints":[{"schemaVersion":1,"id":"draft-wave-speed","categoryId":"physics-1","topicId":"traveling-waves","objectiveId":"wave-speed","questionType":"numericResponse","sourceChunkIds":["{{source.Chunks[0].Id}}"],"governingPrinciples":["wave relation"],"methodSteps":["identify values","solve relation"],"variationAxes":["scenario","unknown"],"commonTrap":"trap","difficulty":"easy","reasoningDepth":2,"requiresDiagram":false,"difficultyDimensions":["representationTransfer","auxiliaryTechnique"],"difficultyEvidence":"Reads a representation and applies the governing relation.","reviewState":"needsReview"}]}""";
         var draft = await service.ImportDraftAsync("packet-test", payload);
         await service.SetDraftStateAsync(draft.Id, SourceReviewState.Approved);
         Assert.Equal(SourceReviewState.Approved, (await service.ListBlueprintsAsync("physics-1")).Single().ReviewState);
+    }
+
+    [Fact]
+    public async Task Outline_uses_body_chapter_and_includes_review_chunks()
+    {
+        Directory.CreateDirectory(root);
+        var input = Path.Combine(root, "openstax.txt");
+        await File.WriteAllTextAsync(input, "CHAPTER 5 Newton's Laws 193\n\n# PAGE 205\nINTRODUCTION CHAPTER 5 Newton's Laws\n\n5.1 Forces\n\nBody content.\n\n# PAGE 247\nChapter Review\n\nConceptual Questions\n\nProblems");
+        var service = CreateService();
+        var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
+        var outline = await service.GetOutlineAsync(source.Manifest.Id);
+        var chapter = Assert.Single(outline!.Root.Children);
+        Assert.Contains("Chapter 5", chapter.Title);
+        Assert.Contains(chapter.Children, child => child.Kind == "review");
+        var packet = await service.ExportPacketAsync("physics-1", "newtons-laws", ["forces"], [], [chapter.Id]);
+        Assert.Equal(source.Chunks.Count - 1, packet.Chunks.Count);
+        Assert.DoesNotContain(packet.Chunks, chunk => chunk.Text.StartsWith("CHAPTER 5 Newton's Laws 193", StringComparison.Ordinal));
     }
 
 

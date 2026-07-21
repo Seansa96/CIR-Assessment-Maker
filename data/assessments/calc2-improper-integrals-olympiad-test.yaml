@@ -4,407 +4,55 @@ title: Improper Integrals Olympiad Test
 assessmentType: test
 categoryId: calculus-2
 topicId: improper-integrals
-skills:
-- Rewrite improper integrals as limits
-- Determine convergence at infinite bounds and singularities
-- Split integrals at interior discontinuities
-navigation:
-  learningGoal: evaluate
-  activityType: formalTest
-  tags:
-  - calc2
-  - olympiad
-  - calculus-2
-  - improper-integrals
 modeDefault: evaluate
 randomizeQuestions: true
-attemptQuestionCount: 15
+attemptQuestionCount: 5
+skills: [advanced-improper-integrals, special-functions, asymptotic-proof, principal-value-analysis]
+navigation: { learningGoal: evaluate, activityType: formalTest, tags: [calculus-2, improper-integrals, olympiad-test, synthesis] }
+authoring: { visualRequirement: notApplicable, visualRationale: Learners must independently construct asymptotic and transformed-domain models from the analytic data, without a supplied visual scaffold., difficultyTier: olympiad }
 questions:
 - id: q001
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 3}{\left(x - 1\right) \left(x +
-    4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{4 \log{\left(x - 1 \right)}}{5} + \frac{\log{\left(x + 4 \right)}}{5}
-      + C
-  explanation: Use partial fraction decomposition.
+  prompt: 'For real p, classify $\int_0^\infty x^p/(1+x^2)dx$. Prove necessity and sufficiency of every condition.'
+  answer: { gradingMode: selfCheck, checkModel: 'Converges exactly for -1<p<1; compare to x^p near zero and x^(p-2) at infinity.' }
+  explanation: 'Split at one. On (0,1), the denominator is bounded above and below by positive constants, so the integrand has x to p behavior and requires p>-1. On (1,infinity), it has x to p minus two behavior and requires p<1. Direct comparison in both directions proves that the intersection is necessary and sufficient.'
+  difficultyDimensions: [casePartition, representationTransfer, parameterThreshold, estimationOrBounds, proofJustification]
+  subjectDifficultyTags: [twoEndpointAsymptotics]
+  difficultyEvidence: requires two local comparison proofs, two threshold inequalities, and a global intersection argument.
+  extensionObjectiveIds: [calc2-asymptotic-analysis]
 - id: q002
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 2}{\left(x - 1\right) \left(x +
-    3\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{3 \log{\left(x - 1 \right)}}{4} + \frac{\log{\left(x + 3 \right)}}{4}
-      + C
-  explanation: Use partial fraction decomposition.
+  prompt: 'Evaluate $\int_0^\infty x^{3/2}e^{-x}dx$ using the Gamma function, and justify convergence at both endpoints.'
+  answer: { gradingMode: selfCheck, checkModel: '$\Gamma(5/2)=3\sqrt\pi/4$.' }
+  explanation: 'Near zero, x to the three-halves is integrable; at infinity the exponential dominates every polynomial power. The integral is Gamma of five-halves. Apply the recurrence twice: Gamma(5/2)=3/2 Gamma(3/2)=3/4 Gamma(1/2)=3 square-root pi over 4.'
+  difficultyDimensions: [representationTransfer, auxiliaryTechnique, domainCondition, reverseReasoning, proofJustification]
+  subjectDifficultyTags: [gammaFunction, recurrence]
+  difficultyEvidence: checks two endpoints, identifies a special-function representation, maps the exponent, and repeatedly applies the recurrence.
+  extensionObjectiveIds: [calc2-gamma-function]
 - id: q003
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{2}{\left(x \right)} \cos{\left(x \right)}
-    \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{3}{\left(x \right)}}{3} + C
-  explanation: Use trigonometric identities to simplify and integrate.
+  prompt: 'Prove that $\int_0^\infty\sin x/x\,dx$ is not absolutely convergent. Then state why this fact alone does not decide ordinary convergence.'
+  answer: { gradingMode: selfCheck, checkModel: 'Absolute divergence follows by lower-bounding |sin x| on infinitely many intervals; ordinary convergence requires a separate oscillatory argument such as Dirichlet test.' }
+  explanation: 'On a fixed positive-length subinterval of each period, absolute sine is bounded below by a positive constant. Summing the resulting harmonic-size lower bounds proves divergence of the absolute integral. That removes absolute convergence only; conditional convergence is a separate question requiring cancellation control, for example through Dirichlet’s test.'
+  difficultyDimensions: [estimationOrBounds, proofJustification, globalLocalReasoning, representationTransfer, errorDiagnosis]
+  subjectDifficultyTags: [oscillation, dirichletTest]
+  difficultyEvidence: creates periodic lower bounds, transfers them to harmonic divergence, distinguishes absolute from ordinary convergence, and names the needed extension method.
+  extensionObjectiveIds: [calc2-dirichlet-test]
 - id: q004
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=10)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'Show that the Cauchy principal value of $\int_{-\infty}^{\infty}x/(1+x^2)dx$ is zero, but that the ordinary improper integral diverges.'
+  answer: { gradingMode: selfCheck, checkModel: 'Symmetric cutoffs integrate to zero by oddness; separate one-sided logarithmic tails diverge.' }
+  explanation: 'For every R, the integral from -R to R is zero because the integrand is odd, so the symmetric-cutoff limit is zero. Ordinary convergence instead splits at zero: the right tail has one-half ln(1+R squared), which diverges, and the left tail diverges oppositely. The definitions are different and cannot be interchanged.'
+  difficultyDimensions: [casePartition, representationTransfer, proofJustification, errorDiagnosis, globalLocalReasoning]
+  subjectDifficultyTags: [principalValue, parity]
+  difficultyEvidence: compares two limiting procedures, computes a tail divergence, and diagnoses invalid symmetry reasoning.
+  extensionObjectiveIds: [calc2-cauchy-principal-value]
 - id: q005
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=4)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q006
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{4 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 4}}{4 x} & \text{for}\: \left|{x^{2}}\right|
-      > 4 \\- \frac{\sqrt{4 - x^{2}}}{4 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 2\sin\theta.
-- id: q007
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 2}{\left(x - 1\right) \left(x +
-    4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{3 \log{\left(x - 1 \right)}}{5} + \frac{2 \log{\left(x + 4 \right)}}{5}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q008
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{16 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 16}}{16 x} & \text{for}\: \left|{x^{2}}\right|
-      > 16 \\- \frac{\sqrt{16 - x^{2}}}{16 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 4\sin\theta.
-- id: q009
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{2 x + 3}{\left(x - 1\right) \left(x
-    + 4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \log{\left(x^{2} + 3 x - 4 \right)} + C
-  explanation: Use partial fraction decomposition.
-- id: q010
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{1 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 1}}{x} & \text{for}\: \left|{x^{2}}\right|
-      > 1 \\- \frac{\sqrt{1 - x^{2}}}{x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 1\sin\theta.
-- id: q011
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int x e^{5 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(5 x - 1\right) e^{5 x}}{25} + C
-  explanation: Use integration by parts with u = 1x and dv = e^{5 x} dx.
-- id: q012
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{4 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 4}}{4 x} & \text{for}\: \left|{x^{2}}\right|
-      > 4 \\- \frac{\sqrt{4 - x^{2}}}{4 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 2\sin\theta.
-- id: q013
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=5)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q014
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{3 x + 2}{\left(x - 1\right) \left(x
-    + 1\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{5 \log{\left(x - 1 \right)}}{2} + \frac{\log{\left(x + 1 \right)}}{2}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q015
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{2}{\left(x \right)} \cos^{4}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{x}{16} - \frac{\sin{\left(x \right)} \cos^{5}{\left(x \right)}}{6}
-      + \frac{\sin{\left(x \right)} \cos^{3}{\left(x \right)}}{24} + \frac{\sin{\left(x
-      \right)} \cos{\left(x \right)}}{16} + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q016
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=4)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q017
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{3 x + 1}{\left(x - 1\right) \left(x
-    + 4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{4 \log{\left(x - 1 \right)}}{5} + \frac{11 \log{\left(x + 4
-      \right)}}{5} + C
-  explanation: Use partial fraction decomposition.
-- id: q018
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=1)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q019
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=2)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q020
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{3}{\left(x \right)} \cos^{4}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\cos^{7}{\left(x \right)}}{7} - \frac{\cos^{5}{\left(x \right)}}{5}
-      + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q021
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=10)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q022
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 4 x e^{3 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(12 x - 4\right) e^{3 x}}{9} + C
-  explanation: Use integration by parts with u = 4x and dv = e^{3 x} dx.
-- id: q023
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=5)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q024
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=3)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q025
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=3)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q026
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 5 x \sin{\left(2 x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- \frac{5 x \cos{\left(2 x \right)}}{2} + \frac{5 \sin{\left(2 x
-      \right)}}{4} + C'
-  explanation: Use integration by parts with u = 5x and dv = \sin{\left(2 x \right)}
-    dx.
-- id: q027
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 3}{\left(x - 1\right) \left(x +
-    4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{4 \log{\left(x - 1 \right)}}{5} + \frac{\log{\left(x + 4 \right)}}{5}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q028
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
-- id: q029
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 5 x e^{4 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(20 x - 5\right) e^{4 x}}{16} + C
-  explanation: Use integration by parts with u = 5x and dv = e^{4 x} dx.
-- id: q030
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{4}{\left(x \right)} \cos^{2}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{x}{16} + \frac{\sin^{5}{\left(x \right)} \cos{\left(x \right)}}{6}
-      - \frac{\sin^{3}{\left(x \right)} \cos{\left(x \right)}}{24} - \frac{\sin{\left(x
-      \right)} \cos{\left(x \right)}}{16} + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q031
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{4}}{1+x^{10}} \, dx = \frac{\pi}{10\sin(\pi/10)}
-    \) (Parameter a=5)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q032
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=10)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q033
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 5 x \sin{\left(5 x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- x \cos{\left(5 x \right)} + \frac{\sin{\left(5 x \right)}}{5} +
-      C'
-  explanation: Use integration by parts with u = 5x and dv = \sin{\left(5 x \right)}
-    dx.
-- id: q034
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=6)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q035
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{1 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 1}}{x} & \text{for}\: \left|{x^{2}}\right|
-      > 1 \\- \frac{\sqrt{1 - x^{2}}}{x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 1\sin\theta.
-- id: q036
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=1)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q037
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{16 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 16}}{16 x} & \text{for}\: \left|{x^{2}}\right|
-      > 16 \\- \frac{\sqrt{16 - x^{2}}}{16 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 4\sin\theta.
-- id: q038
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{5}{\left(x \right)} \cos^{5}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{10}{\left(x \right)}}{10} - \frac{\sin^{8}{\left(x \right)}}{4}
-      + \frac{\sin^{6}{\left(x \right)}}{6} + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q039
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{2 x + 1}{\left(x - 1\right) \left(x
-    + 4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{3 \log{\left(x - 1 \right)}}{5} + \frac{7 \log{\left(x + 4 \right)}}{5}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q040
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{3 x + 1}{\left(x - 1\right) \left(x
-    + 2\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{4 \log{\left(x - 1 \right)}}{3} + \frac{5 \log{\left(x + 2 \right)}}{3}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q041
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{2 x + 3}{\left(x - 1\right) \left(x
-    + 4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \log{\left(x^{2} + 3 x - 4 \right)} + C
-  explanation: Use partial fraction decomposition.
-- id: q042
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{4}}{1+x^{10}} \, dx = \frac{\pi}{10\sin(\pi/10)}
-    \) (Parameter a=5)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q043
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
-- id: q044
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 3 x e^{3 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(3 x - 1\right) e^{3 x}}{3} + C
-  explanation: Use integration by parts with u = 3x and dv = e^{3 x} dx.
-- id: q045
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=7)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'For p real, determine when $\int_0^1[\ln(1/x)]^pdx$ converges, then evaluate it for p=2.'
+  answer: { gradingMode: selfCheck, checkModel: 'Converges iff p>-1; for p=2 the value is 2.' }
+  explanation: 'Use u=ln(1/x), which turns the integral into $\int_0^\infty u^pe^{-u}du$. Near u=0 it requires p>-1, while exponential decay settles infinity. At p=2 it is Gamma(3), equal to 2 factorial, hence 2. This exposes a hidden Gamma structure behind the original endpoint logarithm.'
+  difficultyDimensions: [auxiliaryTechnique, representationTransfer, parameterThreshold, domainCondition, reverseReasoning]
+  subjectDifficultyTags: [logarithmicSubstitution, gammaFunction]
+  difficultyEvidence: reverses endpoint limits, identifies the special-function form, resolves a local threshold, and evaluates a parameter specialization.
+  extensionObjectiveIds: [calc2-gamma-function]

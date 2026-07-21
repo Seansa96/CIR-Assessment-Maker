@@ -36,6 +36,7 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
     private string CurriculumPath => Path.Combine(options.AssessmentReferencePath, "curriculum-manifests");
     private string ContentPath => Path.Combine(options.AssessmentReferencePath, "content-manifests");
     private string BlueprintPath => Path.Combine(options.AssessmentReferencePath, "question-blueprints");
+    private string OutlinePath(string sourceId) => Path.Combine(SourcePath(sourceId), "outline.json");
 
     public async Task<IReadOnlyList<SourceManifest>> ListSourcesAsync(CancellationToken cancellationToken = default)
     {
@@ -89,6 +90,7 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
             await WriteAsync(Path.Combine(destination, "manifest.json"), manifest, cancellationToken);
             await WriteAsync(Path.Combine(destination, "chunks.json"), chunks, cancellationToken);
             await IndexSourceAsync(manifest, cancellationToken);
+            await WriteAsync(OutlinePath(id), BuildOutline(id, chunks), cancellationToken);
             return new SourceDocument(manifest, chunks);
         }
         finally { gate.Release(); }
@@ -104,7 +106,19 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         await WriteAsync(Path.Combine(SourcePath(sourceId), "manifest.json"), manifest, cancellationToken);
         await WriteAsync(Path.Combine(SourcePath(sourceId), "chunks.json"), chunks, cancellationToken);
         await IndexSourceAsync(manifest, cancellationToken);
+        await WriteAsync(OutlinePath(sourceId), BuildOutline(sourceId, chunks), cancellationToken);
         return new SourceDocument(manifest, chunks);
+    }
+
+    public Task<SourceOutline?> GetOutlineAsync(string sourceId, CancellationToken cancellationToken = default)
+        => ReadAsync<SourceOutline>(OutlinePath(sourceId), cancellationToken);
+
+    public async Task<SourceOutline> RebuildOutlineAsync(string sourceId, CancellationToken cancellationToken = default)
+    {
+        var source = await GetSourceAsync(sourceId, cancellationToken) ?? throw new InvalidOperationException("Source was not found.");
+        var outline = BuildOutline(sourceId, source.Chunks);
+        await WriteAsync(OutlinePath(sourceId), outline, cancellationToken);
+        return outline;
     }
 
     public async Task<IReadOnlyList<SourceSearchResult>> SearchSourcesAsync(string query, int limit, CancellationToken cancellationToken = default)
@@ -143,6 +157,17 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
     {
         RequireStableId(blueprint.Id); ValidateSourceFree(blueprint.SourceChunkIds, blueprint.CategoryId, blueprint.TopicId, blueprint.ObjectiveId);
         if (blueprint.GoverningPrinciples.Count == 0 || blueprint.MethodSteps.Count < 2 || blueprint.VariationAxes.Count < 2) throw new InvalidOperationException("Blueprints need principles, at least two method steps, and two meaningful variation axes.");
+        var tier = ParseDifficultyTier(blueprint.Difficulty);
+        var minimum = AssessmentAuthoringContractAudit.MinimumDifficultyDimensions(tier);
+        if (minimum > 0)
+        {
+            if (blueprint.DifficultyDimensions.Count == 0 || blueprint.DifficultyDimensions.Any(dimension => dimension is DifficultyDimension.Unknown)) throw new InvalidOperationException("Blueprints for scored tiers need controlled difficulty dimensions.");
+            if (blueprint.DifficultyDimensions.Distinct().Count() != blueprint.DifficultyDimensions.Count) throw new InvalidOperationException("A difficulty dimension may be counted only once per blueprint.");
+            if (blueprint.DifficultyDimensions.Count < minimum) throw new InvalidOperationException($"{tier} blueprints need at least {minimum} distinct difficulty dimensions.");
+            if (string.IsNullOrWhiteSpace(blueprint.DifficultyEvidence)) throw new InvalidOperationException("Blueprints need difficulty evidence for every declared difficulty dimension.");
+            if (tier is AssessmentDifficultyTier.Hard && blueprint.PrerequisiteObjectiveIds.Count == 0 && blueprint.ExtensionObjectiveIds.Count == 0) throw new InvalidOperationException("Hard blueprints need a prerequisite or extension objective.");
+            if (tier is AssessmentDifficultyTier.Olympiad && blueprint.ExtensionObjectiveIds.Count == 0) throw new InvalidOperationException("Olympiad blueprints need an extension objective.");
+        }
         if (blueprint.RequiresDiagram && blueprint.QuestionType is not ("numericResponse" or "symbolicResponse" or "multipleChoice" or "selectAll")) throw new InvalidOperationException("Diagram-backed blueprints must use a supported graded question type.");
         await ValidateSourceReferencesAsync(blueprint.SourceChunkIds, cancellationToken);
         await WriteTrackedAsync(Path.Combine(BlueprintPath, $"{blueprint.Id}.json"), blueprint, cancellationToken);
@@ -150,18 +175,34 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
     public async Task<IReadOnlyList<QuestionBlueprint>> ListBlueprintsAsync(string? categoryId, CancellationToken cancellationToken = default)
         => (await ReadDirectoryAsync<QuestionBlueprint>(BlueprintPath, cancellationToken)).Where(item => string.IsNullOrWhiteSpace(categoryId) || item.CategoryId.Equals(categoryId, StringComparison.OrdinalIgnoreCase)).ToList();
 
-    public async Task<AuthoringPacket> ExportPacketAsync(string categoryId, string topicId, IReadOnlyList<string> objectiveIds, IReadOnlyList<string> chunkIds, CancellationToken cancellationToken = default)
+    public async Task<AuthoringPacket> ExportPacketAsync(string categoryId, string topicId, IReadOnlyList<string> objectiveIds, IReadOnlyList<string> chunkIds, IReadOnlyList<string>? outlineNodeIds = null, AssessmentDifficultyTier targetDifficultyTier = AssessmentDifficultyTier.Unspecified, CancellationToken cancellationToken = default)
     {
-        if (objectiveIds.Count == 0 || chunkIds.Count == 0) throw new InvalidOperationException("Select at least one objective and source chunk.");
+        if (objectiveIds.Count == 0 || (chunkIds.Count == 0 && (outlineNodeIds?.Count ?? 0) == 0)) throw new InvalidOperationException("Select at least one objective and source chunk or outline node.");
         var documents = new List<SourceDocument>();
         foreach (var source in await ListSourcesAsync(cancellationToken)) { var doc = await GetSourceAsync(source.Id, cancellationToken); if (doc is not null) documents.Add(doc); }
-        var chunks = documents.SelectMany(document => document.Chunks).Where(chunk => chunkIds.Contains(chunk.Id, StringComparer.OrdinalIgnoreCase)).ToList();
-        if (chunks.Count != chunkIds.Distinct(StringComparer.OrdinalIgnoreCase).Count()) throw new InvalidOperationException("One or more selected source chunks no longer exist.");
+        var selectedChunkIds = new HashSet<string>(chunkIds, StringComparer.OrdinalIgnoreCase);
+        foreach (var nodeId in outlineNodeIds ?? [])
+        {
+            var sourceId = nodeId.Split(':', 2)[0]; var outline = await GetOutlineAsync(sourceId, cancellationToken);
+            var node = outline is null ? null : FindNode(outline.Root, nodeId);
+            if (node is null) throw new InvalidOperationException($"Outline node was not found: {nodeId}.");
+            foreach (var id in node.ChunkIds) selectedChunkIds.Add(id);
+        }
+        var chunks = documents.SelectMany(document => document.Chunks).Where(chunk => selectedChunkIds.Contains(chunk.Id)).OrderBy(chunk => chunk.Id, StringComparer.OrdinalIgnoreCase).ToList();
+        if (chunks.Count != selectedChunkIds.Count) throw new InvalidOperationException("One or more selected source chunks no longer exist.");
         var sourceIds = chunks.Select(chunk => chunk.Id.Split(":", 2)[0]).Distinct(StringComparer.OrdinalIgnoreCase).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var sources = documents.Where(document => sourceIds.Contains(document.Manifest.Id)).Select(document => document.Manifest).ToList();
+        var category = (await new FileCategoryRepository(options).ListAsync(cancellationToken)).FirstOrDefault(item => item.Id.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
+        var profile = category?.AuthoringProfile is AuthoringProfile.Stem ? "stem" : "nonStem";
+        var requirements = profile == "stem"
+            ? new[] { "minimum seven active concept-lesson sections", "contextual original visual aids", "worked examples use symbolic/free response primarily", "easy and hard quizzes use ten attempt items; tests use twenty" }
+            : new[] { "minimum seven active concept-lesson sections", "code or interface evidence when relevant", "worked examples use free response/code primarily", "easy and hard quizzes use ten attempt items; tests use twenty" };
+        var minimumDifficultyDimensions = AssessmentAuthoringContractAudit.MinimumDifficultyDimensions(targetDifficultyTier);
+        var tierRequirements = minimumDifficultyDimensions == 0 ? Array.Empty<string>() : new[] { $"every scored item must declare at least {minimumDifficultyDimensions} distinct difficulty dimensions", targetDifficultyTier is AssessmentDifficultyTier.Hard ? "each item names a prerequisite or extension objective" : targetDifficultyTier is AssessmentDifficultyTier.Olympiad ? "each item names an extension objective" : "difficulty evidence must explain each dimension" };
         return new AuthoringPacket(1, $"packet-{Guid.NewGuid():N}", categoryId, topicId, objectiveIds, sources, chunks,
             ["original source-grounded prose", "visual brief for each lesson/worked example", "complete answer and solution data", "question blueprints rather than parameter substitutions"],
-            "Return JSON with contentManifests and questionBlueprints. Each artifact must cite sourceChunkIds and begin in needsReview state. Do not quote source text verbatim except short mathematical notation.");
+            "Return JSON with contentManifests and questionBlueprints. Each artifact must cite sourceChunkIds and begin in needsReview state. Do not quote source text verbatim except short mathematical notation.")
+        { AuthoringProfile = profile, ContractRequirements = requirements.Concat(tierRequirements).ToList(), TargetDifficultyTier = targetDifficultyTier, MinimumDifficultyDimensions = minimumDifficultyDimensions, RequiresTransferObjective = targetDifficultyTier is AssessmentDifficultyTier.Hard or AssessmentDifficultyTier.Olympiad, AllowedSubjectDifficultyTags = profile == "stem" ? ["methodBranch", "representation", "model", "constraint", "prerequisiteTransfer"] : Array.Empty<string>() };
     }
 
     public async Task<AuthoringDraft> ImportDraftAsync(string packetId, string payloadJson, CancellationToken cancellationToken = default)
@@ -270,6 +311,37 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         }
         return result;
     }
+    private static SourceOutline BuildOutline(string sourceId, IReadOnlyList<SourceChunk> chunks)
+    {
+        var chapterPattern = new Regex(@"(?:CHAP\s*TER|CHAPTER)\s+(?<number>\d+)\s+(?<title>[^\n]{3,100})", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        var sectionPattern = new Regex(@"^(?<number>\d+\.\d+)\s+(?<title>[^\n]{3,120})", RegexOptions.Multiline | RegexOptions.Compiled);
+        var pagePattern = new Regex(@"#\s*PAGE\s+(?<page>\d+)", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        var candidates = chunks.Select(chunk => new { Chunk = chunk, Match = chapterPattern.Match(chunk.Text), Page = PageOf(chunk, pagePattern) }).Where(item => item.Match.Success).ToList();
+        var bodyChapters = candidates.GroupBy(item => item.Match.Groups["number"].Value).Select(group => group.OrderBy(item => item.Chunk.Ordinal).Last()).OrderBy(item => item.Chunk.Ordinal).ToList();
+        var warnings = candidates.Count > bodyChapters.Count ? ["Duplicate chapter headings were found; later body occurrences were selected over table-of-contents entries."] : Array.Empty<string>();
+        var children = new List<SourceOutlineNode>();
+        for (var index = 0; index < bodyChapters.Count; index++)
+        {
+            var start = bodyChapters[index].Chunk.Ordinal; var end = index + 1 < bodyChapters.Count ? bodyChapters[index + 1].Chunk.Ordinal - 1 : chunks.Count;
+            var range = chunks.Where(item => item.Ordinal >= start && item.Ordinal <= end).ToList();
+            var chapterNumber = bodyChapters[index].Match.Groups["number"].Value;
+            var sections = sectionPattern.Matches(string.Join("\n", range.Select(item => item.Text))).Cast<Match>().ToList();
+            var nodeWarnings = new List<string>(); if (range.Count == 0) nodeWarnings.Add("No contiguous chunks were detected for this chapter.");
+            var reviewStart = range.FindIndex(item => Regex.IsMatch(item.Text, @"Chapter Review|Conceptual Questions|^Problems\b|Additional Problems|Challenge Problems", RegexOptions.IgnoreCase | RegexOptions.Multiline));
+            var nested = new List<SourceOutlineNode>();
+            foreach (var section in sections.Take(30)) nested.Add(new SourceOutlineNode($"{sourceId}:section-{section.Groups["number"].Value.Replace('.', '-')}", "section", $"{section.Groups["number"].Value} {section.Groups["title"].Value.Trim()}", PageOf(range.First(), pagePattern), PageOf(range.Last(), pagePattern), start, end, range.Select(item => item.Id).ToList(), [], 0.65m, ["Section range is inferred from heading text; inspect before narrow packet use."]));
+            if (reviewStart >= 0)
+            {
+                var review = range.Skip(reviewStart).ToList();
+                nested.Add(new SourceOutlineNode($"{sourceId}:chapter-{chapterNumber}:review", "review", "Chapter review and exercises", PageOf(review.First(), pagePattern), PageOf(review.Last(), pagePattern), review.First().Ordinal, review.Last().Ordinal, review.Select(item => item.Id).ToList(), [], 0.85m, []));
+            }
+            children.Add(new SourceOutlineNode($"{sourceId}:chapter-{chapterNumber}", "chapter", $"Chapter {chapterNumber}: {bodyChapters[index].Match.Groups["title"].Value.Trim()}", PageOf(range.First(), pagePattern), PageOf(range.Last(), pagePattern), start, end, range.Select(item => item.Id).ToList(), nested, nodeWarnings.Count == 0 ? 0.9m : 0.5m, nodeWarnings));
+        }
+        var root = new SourceOutlineNode($"{sourceId}:book", "book", "Source outline", PageOf(chunks.FirstOrDefault(), pagePattern), PageOf(chunks.LastOrDefault(), pagePattern), 1, chunks.Count, chunks.Select(item => item.Id).ToList(), children, children.Count > 0 ? 0.85m : 0.3m, children.Count > 0 ? warnings : ["No chapter headings were detected. Search and manual chunk selection remain available."]);
+        return new SourceOutline(1, sourceId, root, DateTimeOffset.UtcNow, warnings);
+    }
+    private static int PageOf(SourceChunk? chunk, Regex pagePattern) => chunk is null ? 0 : int.TryParse(pagePattern.Match(chunk.Text).Groups["page"].Value, out var page) ? page : 0;
+    private static SourceOutlineNode? FindNode(SourceOutlineNode node, string id) => node.Id.Equals(id, StringComparison.OrdinalIgnoreCase) ? node : node.Children.Select(child => FindNode(child, id)).FirstOrDefault(found => found is not null);
     private static IEnumerable<string> Split(string value, int maximum) { for (var index = 0; index < value.Length; index += maximum) yield return value[index..Math.Min(value.Length, index + maximum)]; }
     private async Task IndexSourceAsync(SourceManifest manifest, CancellationToken cancellationToken)
     {
@@ -289,6 +361,13 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
     }
     private static async Task<string> HashAsync(string path, CancellationToken cancellationToken) { await using var stream = File.OpenRead(path); return Convert.ToHexString(await SHA256.HashDataAsync(stream, cancellationToken)).ToLowerInvariant(); }
     private string SourcePath(string sourceId) { RequireStableId(sourceId); return Path.Combine(SourcesPath, sourceId); }
+    private static AssessmentDifficultyTier ParseDifficultyTier(string value) => value.Trim().ToLowerInvariant() switch
+    {
+        "easy" => AssessmentDifficultyTier.Easy,
+        "hard" => AssessmentDifficultyTier.Hard,
+        "olympiad" => AssessmentDifficultyTier.Olympiad,
+        _ => AssessmentDifficultyTier.Unspecified
+    };
     private static void RequireStableId(string id) { if (!Regex.IsMatch(id ?? string.Empty, "^[a-z0-9][a-z0-9-]*$")) throw new InvalidOperationException("IDs must be lowercase hyphenated values."); }
     private static void ValidateSourceFree(IReadOnlyList<string> sourceChunkIds, params string[] ids) { foreach (var id in ids) RequireStableId(id); if (sourceChunkIds.Count == 0 || sourceChunkIds.Any(id => !Regex.IsMatch(id, "^src-[a-z0-9-]+:chunk-[0-9]+$"))) throw new InvalidOperationException("Manifests must link source chunk IDs and must not embed source text."); }
     private async Task ValidateSourceReferencesAsync(IReadOnlyList<string> chunkIds, CancellationToken cancellationToken)

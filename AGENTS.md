@@ -23,6 +23,7 @@ Before substantial work:
    - `skills/assessment-question-pipeline/SKILL.md`
    - `skills/knowledge-base-authoring/SKILL.md` (for creating reference files and massive question banks)
    - a working assessment of the same type/topic
+4. For Source-to-Curriculum (S2C) imports, source-grounded generation, or agent handoff packets, read `skills/source-to-curriculum/SKILL.md` before drafting content. A missing/empty manifest or absent chunks is a hard stop: report extraction failure rather than generating ungrounded content.
 4. For cross-agent work or handoffs, read `docs/agent-coexistence.md`.
 
 Do not revert, overwrite, reformat, or delete changes you did not make.

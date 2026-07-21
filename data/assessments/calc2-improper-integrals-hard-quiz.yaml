@@ -1,86 +1,93 @@
 schemaVersion: 1
 id: calc2-improper-integrals-hard-quiz
-title: Advanced Improper Integrals Quiz
+title: Improper Integrals Hard Quiz
+assessmentType: quiz
 categoryId: calculus-2
 topicId: improper-integrals
-assessmentType: quiz
-navigation:
-  learningGoal: practice
-  activityType: focusedPractice
-  tags:
-  - calculus-2
-  - improper-integrals
-  - calculus 2
-  - integration
-  - improper integrals
-skills:
-- Apply Improper Integrals
-- calc2-improper-integrals
 modeDefault: practice
 randomizeQuestions: true
+attemptQuestionCount: 10
+skills: [parameterized-improper-integrals, limit-comparison, transformed-p-tests, proof-of-convergence]
+navigation: { learningGoal: practice, activityType: mixedPractice, tags: [calculus-2, improper-integrals, hard, transfer] }
+authoring: { visualRequirement: notApplicable, visualRationale: These items require symbolic model selection, asymptotic analysis, and proof rather than a supplied geometric setup., difficultyTier: hard }
 questions:
-- id: q-imp-hq-1
-  title: Doubly Infinite Bounds
-  prompt: |-
-    Evaluate $\int_{-\infty}^{\infty} x e^{-x^2} \, dx$.
-  type: multipleChoice
-  choices:
-  - id: c1
-    text: $0$
-  - id: c2
-    text: $\infty$
-  - id: c3
-    text: Diverges
-  answer:
-    choiceId: c1
-  explanation: |-
-    To evaluate an integral from $-\infty$ to $\infty$, you must split it into two integrals at any convenient point, like $0$: $\int_{-\infty}^{0} + \int_{0}^{\infty}$.
-    Let $u = -x^2$, $du = -2x \, dx$. The antiderivative is $-\frac{1}{2}e^{-x^2}$.
-    $\int_{0}^{\infty} x e^{-x^2} \, dx = \lim_{t \to \infty} [-\frac{1}{2}e^{-t^2} + \frac{1}{2}e^0] = 0 + \frac{1}{2} = \frac{1}{2}$.
-    $\int_{-\infty}^{0} x e^{-x^2} \, dx = \lim_{t \to -\infty} [-\frac{1}{2}e^0 + \frac{1}{2}e^{-t^2}] = -\frac{1}{2} + 0 = -\frac{1}{2}$.
-    Since BOTH halves converge, we can add them: $\frac{1}{2} - \frac{1}{2} = 0$. (Notice this matches the fact that the integrand is an odd function).
-  skills:
-  - calc2-improper-integrals
-
-- id: q-imp-hq-2
-  title: Interior Discontinuity
-  prompt: |-
-    Does $\int_{-1}^{8} x^{-1/3} \, dx$ converge or diverge? If it converges, what is the value?
-  type: multipleChoice
-  choices:
-  - id: c1
-    text: Converges to $\frac{9}{2}$
-  - id: c2
-    text: Converges to $\frac{27}{2}$
-  - id: c3
-    text: Diverges
-  answer:
-    choiceId: c1
-  explanation: |-
-    The function has an infinite discontinuity at $x=0$, which is inside the interval $[-1, 8]$. We must split the integral: $\int_{-1}^{0} x^{-1/3} \, dx + \int_{0}^{8} x^{-1/3} \, dx$.
-    The antiderivative is $\frac{3}{2}x^{2/3}$.
-    Right half: $\lim_{t \to 0^+} [\frac{3}{2}(8)^{2/3} - \frac{3}{2}t^{2/3}] = \frac{3}{2}(4) - 0 = 6$.
-    Left half: $\lim_{t \to 0^-} [\frac{3}{2}t^{2/3} - \frac{3}{2}(-1)^{2/3}] = 0 - \frac{3}{2}(1) = -\frac{3}{2}$.
-    Total: $6 - 1.5 = 4.5 = \frac{9}{2}$. Both halves converge, so the whole integral converges!
-  skills:
-  - calc2-improper-integrals
-
-- id: q-imp-hq-3
-  title: Comparison Test
-  prompt: |-
-    Does $\int_{1}^{\infty} \frac{\sin^2(x)}{x^2 + 1} \, dx$ converge or diverge?
-  type: multipleChoice
-  choices:
-  - id: c1
-    text: Converges
-  - id: c2
-    text: Diverges
-  answer:
-    choiceId: c1
-  explanation: |-
-    We can't easily integrate this, but we can use the Direct Comparison Test.
-    Notice that $0 \le \sin^2(x) \le 1$. So, $\frac{\sin^2(x)}{x^2 + 1} \le \frac{1}{x^2 + 1} < \frac{1}{x^2}$.
-    We know that $\int_{1}^{\infty} \frac{1}{x^2} \, dx$ converges by the p-test ($p=2 > 1$). 
-    Since our function is smaller than a converging function, it must also converge!
-  skills:
-  - calc2-improper-integrals
+- id: q001
+  type: freeResponse
+  prompt: 'For real p, classify $\int_1^\infty x^p/(1+x^3)\,dx$.'
+  answer: { gradingMode: selfCheck, checkModel: 'Converges for p<2 and diverges for p at least 2.' }
+  explanation: 'At infinity the integrand is asymptotic to x to the p minus three. The tail p-test requires p minus three to be less than negative one, giving p<2; at p=2 the integrand is harmonic-size.'
+  difficultyDimensions: [simplification, parameterThreshold, representationTransfer]
+  difficultyEvidence: Extracts asymptotic power behavior, solves an exponent inequality, and treats the boundary as a distinct p-test case.
+  prerequisiteObjectiveIds: [calc2-improper-classify-by-comparison, calc2-limit-comparison]
+- id: q002
+  type: freeResponse
+  prompt: 'Determine whether $\int_0^1\ln(1/x)/\sqrt{x}\,dx$ converges. Use a substitution that makes the endpoint behavior visible.'
+  answer: { gradingMode: selfCheck, checkModel: 'It converges; with x=u squared it becomes an integral proportional to u times ln(1/u), which is finite near zero.' }
+  explanation: 'Set x equal to u squared so dx equals 2u du and the square-root singularity cancels. The transformed integrand is -4u ln u, whose antiderivative has a finite zero-endpoint limit.'
+  difficultyDimensions: [auxiliaryTechnique, modelOrDerivation, domainCondition]
+  difficultyEvidence: Chooses a non-obvious substitution, derives the transformed differential, and checks the resulting endpoint limit.
+  prerequisiteObjectiveIds: [calc2-u-substitution, calc2-improper-split-and-evaluate]
+- id: q003
+  type: freeResponse
+  prompt: 'Classify $\int_2^\infty1/[x(\ln x)^p]dx$ for all real p.'
+  answer: { gradingMode: selfCheck, checkModel: 'Converges for p>1 and diverges for p at most 1.' }
+  explanation: 'With u equal to ln x, the tail becomes integral of u to the negative p. The transformed p-test has its usual infinite-tail threshold p>1, so the logarithmic factor controls the boundary.'
+  difficultyDimensions: [auxiliaryTechnique, parameterThreshold, representationTransfer]
+  difficultyEvidence: Transforms a logarithmic boundary form, transfers to a standard p-test, and partitions the parameter range at its threshold.
+  prerequisiteObjectiveIds: [calc2-u-substitution, calc2-improper-classify-by-comparison]
+- id: q004
+  type: freeResponse
+  prompt: 'Prove that $\int_1^\infty\sin x/x^2\,dx$ converges absolutely without trying to find its exact value.'
+  answer: { gradingMode: selfCheck, checkModel: 'Since absolute value of sin x is at most 1, absolute value of sin x divided by x squared is at most 1/x squared; comparison proves absolute convergence.' }
+  explanation: 'Take absolute values first. The bounded sine factor becomes irrelevant under the estimate, and the remaining x to the negative two tail is convergent, which proves the stronger absolute conclusion.'
+  difficultyDimensions: [representationTransfer, proofJustification, auxiliaryTechnique]
+  difficultyEvidence: Changes to an absolute-value problem, constructs a uniform bound, and invokes comparison to prove a stronger convergence mode.
+  prerequisiteObjectiveIds: [calc2-improper-classify-by-comparison]
+- id: q005
+  type: freeResponse
+  prompt: 'For which p does $\int_0^1x^p/(1-x)^{1/2}\,dx$ converge? Analyze both endpoint behaviors.'
+  answer: { gradingMode: selfCheck, checkModel: 'It converges for p>-1.' }
+  explanation: 'Near x equals one, the denominator creates an exponent one-half singularity, which is integrable. Near zero the integrand behaves like x to p, and the endpoint p-test requires p>-1.'
+  difficultyDimensions: [casePartition, parameterThreshold, representationTransfer]
+  difficultyEvidence: Separates two endpoint regimes, identifies different local benchmark powers, and solves the only restrictive exponent condition.
+  prerequisiteObjectiveIds: [calc2-improper-split-and-evaluate, calc2-improper-classify-by-comparison]
+- id: q006
+  type: freeResponse
+  prompt: 'Explain why $\int_{-1}^1 1/x\,dx$ diverges as an ordinary improper integral even though its symmetric principal value is zero.'
+  answer: { gradingMode: selfCheck, checkModel: 'The left and right one-sided integrals each diverge; ordinary convergence requires both finite independently. Symmetric cancellation defines only a principal value.' }
+  explanation: 'Split at zero. The logarithmic antiderivative tends to negative infinity on the left and positive infinity on the right, so neither component is finite; pairing the cutoffs changes the definition.'
+  difficultyDimensions: [casePartition, errorDiagnosis, proofJustification]
+  difficultyEvidence: Splits at an interior singularity, diagnoses a misleading cancellation argument, and contrasts two different limiting definitions.
+  prerequisiteObjectiveIds: [calc2-improper-split-and-evaluate]
+- id: q007
+  type: freeResponse
+  prompt: 'Use limit comparison to classify $\int_1^\infty(5x^3-2)/(x^5+x+1)\,dx$.'
+  answer: { gradingMode: selfCheck, checkModel: 'It converges; the integrand is asymptotic to 5/x squared.' }
+  explanation: 'Divide by the benchmark 1/x squared. The ratio equals x squared times the integrand and tends to 5, a positive finite constant, so it has the same convergent behavior as the p equals two tail.'
+  difficultyDimensions: [simplification, representationTransfer, proofJustification]
+  difficultyEvidence: Selects a leading-term benchmark, forms a limit-comparison ratio, and infers the convergence classification from its positive finite limit.
+  prerequisiteObjectiveIds: [calc2-limit-comparison]
+- id: q008
+  type: freeResponse
+  prompt: 'Determine whether $\int_0^\infty xe^{-x}\,dx$ converges and evaluate it.'
+  answer: { gradingMode: selfCheck, checkModel: 'It converges and equals 1.' }
+  explanation: 'There is no problem at zero; only the infinite tail is improper. Integration by parts gives $[-xe^{-x}-e^{-x}]_0^\infty$, and exponential decay forces the upper expression to zero.'
+  difficultyDimensions: [modelOrDerivation, auxiliaryTechnique, domainCondition]
+  difficultyEvidence: Identifies the only defective boundary, chains integration by parts with an exponential limit, and evaluates the finite endpoint separately.
+  prerequisiteObjectiveIds: [calc2-integration-by-parts, calc2-improper-identify-and-limit]
+- id: q009
+  type: freeResponse
+  prompt: 'Construct a positive function f on [1,infinity) that is smaller than 1/x eventually but whose improper integral still diverges.'
+  answer: { gradingMode: selfCheck, checkModel: 'For example f(x)=1/[x ln x] for x at least 2; its integral diverges after u=ln x.' }
+  explanation: 'The comparison direction matters: being smaller than a divergent benchmark proves nothing. The logarithmic example is strictly smaller than 1/x for large x, yet its transformed integral is the divergent 1/u tail.'
+  difficultyDimensions: [counterexampleOrConstruction, reverseReasoning, errorDiagnosis]
+  difficultyEvidence: Works backward from a failed inference, constructs a logarithmic counterexample, and proves its divergence by a second method.
+  extensionObjectiveIds: [calc2-logarithmic-integrals]
+- id: q010
+  type: freeResponse
+  prompt: 'Show that $\int_0^1[1/(x\sqrt{1-x})]dx$ diverges, even though the singularity at x=1 alone is integrable.'
+  answer: { gradingMode: selfCheck, checkModel: 'It diverges because near zero the integrand is at least 1/x, so comparison with the divergent endpoint harmonic form applies.' }
+  explanation: 'Split at a convenient interior point. On the left portion, square root of one minus x is at most one, so the integrand is at least 1/x; the zero-endpoint singularity decides divergence despite the mild other endpoint.'
+  difficultyDimensions: [casePartition, proofJustification, errorDiagnosis]
+  difficultyEvidence: Separates competing endpoint behaviors, constructs a local lower comparison, and rejects the inference that one integrable singularity decides the whole integral.
+  prerequisiteObjectiveIds: [calc2-improper-split-and-evaluate, calc2-improper-classify-by-comparison]

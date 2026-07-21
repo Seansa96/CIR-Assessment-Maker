@@ -1,0 +1,62 @@
+schemaVersion: 1
+id: cpp-strings-formatting-foundations-worked-example
+title: 'C++ Strings Worked Examples: Input and Presentation'
+assessmentType: workedExample
+categoryId: c++
+topicId: cpp-strings-formatting
+modeDefault: practice
+randomizeQuestions: false
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [c++, cpp-strings-formatting, getline, string-view, formatting] }
+authoring: { visualRequirement: notApplicable, visualRationale: The worked examples use direct console input/output and lifetime code traces; no separate spatial or interface visual is needed. }
+workedExamples:
+- id: cpp-strings-full-name
+  title: Read and Present a Full Name
+  problem: |
+    A program first reads an integer member ID with `std::cin >> id`, then must read and print a full name such as `Ada Lovelace`. Build the correct line-input step.
+  steps:
+  - id: cpp-strings-full-name-1
+    title: Diagnose the empty-line trap
+    instruction: Formatted extraction stops before the newline; the following `getline` sees that newline first.
+    type: multipleChoice
+    prompt: What can happen if `getline(std::cin, name)` follows `std::cin >> id` immediately?
+    choices: [{ id: a, text: It can read an empty line }, { id: b, text: It converts the ID to text }, { id: c, text: It appends the ID to name }, { id: d, text: It cannot compile because strings are immutable }]
+    answer: { choiceId: a }
+    explanation: The numeric extraction leaves the line-ending character in the stream, so `getline` consumes it and returns an empty string.
+  - id: cpp-strings-full-name-2
+    title: Consume the pending newline
+    instruction: Consume leading whitespace before the line read, or explicitly discard through the newline.
+    type: code
+    prompt: Write the line that reads the full name after numeric extraction using `std::getline` with whitespace consumption.
+    language: cpp
+    functionName: main
+    starterCode: 'std::string name;\n// read the complete name here'
+    tests: [{ input: '42\nAda Lovelace\n', expected: 'Ada Lovelace' }]
+    answer: {}
+    explanation: '`std::getline(std::cin >> std::ws, name);` consumes pending leading whitespace and then reads the full line, retaining the internal space.'
+  - id: cpp-strings-full-name-3
+    title: Keep presentation separate
+    instruction: Store the name as text and format the final status only when outputting it.
+    type: freeResponse
+    prompt: Explain why `std::cin >> name` is not interchangeable with `getline` for this requirement.
+    answer: { gradingMode: selfCheck, keyPoints: [Formatted extraction stops at whitespace, A full name contains internal whitespace, getline preserves the complete line] }
+    explanation: '`operator>>` reads one token, so it stores only `Ada`. `getline` reads the entire input line and therefore preserves `Ada Lovelace` as one string value.'
+- id: cpp-strings-safe-view
+  title: Pass Read-Only Text Without Owning It
+  problem: |
+    A helper only needs to inspect a label and return its character count. Choose a parameter representation that avoids an unnecessary copy while respecting lifetime.
+  steps:
+  - id: cpp-strings-view-1
+    title: Choose the read-only interface
+    instruction: The helper does not mutate or retain the label after its call.
+    type: multipleChoice
+    prompt: Which parameter type best states that contract?
+    choices: [{ id: a, text: '`std::string_view label`' }, { id: b, text: '`int label`' }, { id: c, text: '`std::string& label`' }, { id: d, text: '`char* label` without a contract' }]
+    answer: { choiceId: a }
+    explanation: '`std::string_view` expresses borrowed read-only character data and can accept a string or literal without a new owning copy.'
+  - id: cpp-strings-view-2
+    title: State the lifetime condition
+    instruction: A view is valid only while the storage it references is still valid.
+    type: freeResponse
+    prompt: What lifetime rule must a caller satisfy when a function receives `std::string_view`?
+    answer: { gradingMode: selfCheck, keyPoints: [Referenced characters remain alive, The view does not own a copy, Do not store/use it after the source storage ends] }
+    explanation: The view borrows its character range. It is safe during the call when the source string or literal is alive, but the helper must not retain a view into storage that will later disappear or reallocate.

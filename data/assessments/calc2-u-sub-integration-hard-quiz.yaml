@@ -1,0 +1,208 @@
+schemaVersion: 1
+id: calc2-u-sub-integration-hard-quiz
+title: U-Substitution Hard Quiz
+assessmentType: quiz
+categoryId: calculus-2
+topicId: u-sub-integration
+skills: [select-method, transform-differentials, change-definite-bounds, simplify-before-substitution, verify-antiderivatives]
+navigation: { learningGoal: practice, activityType: mixedPractice, tags: [calculus-2, u-sub-integration, hard, extension] }
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 10
+authoring: { visualRequirement: notApplicable, visualRationale: Symbolic method selection and transformations are the required representations., difficultyTier: hard }
+questions:
+- id: q001
+  type: freeResponse
+  prompt: 'Simplify $\int \frac{x^3}{1+x^4}\,dx$, choose a substitution, and state the domain of your logarithmic answer.'
+  answer: { gradingMode: selfCheck, checkModel: '$\frac14\ln(1+x^4)+C$; use $u=1+x^4$; the argument is positive for all real x.' }
+  explanation: |
+    Rewrite the numerator as $x^2(x\,dx)$ and choose $u=1+x^4$, so $du=4x^3\,dx$. Then
+
+    $$
+    int \frac{x^3}{1+x^4}\,dx
+    =\frac14\int\frac{1}{u}\,du
+    =\frac14\ln|u|+C
+    =\frac14\ln(1+x^4)+C.
+    $$
+
+    Since $1+x^4>0$ for every real $x$, the absolute value is unnecessary and the antiderivative is real-valued on all real numbers.
+  difficultyDimensions: [simplification, auxiliaryTechnique, domainCondition]
+  subjectDifficultyTags: [algebraic-rewrite, logarithmic-domain]
+  difficultyEvidence: Simplifies a rational expression, performs substitution, and validates the resulting logarithm.
+  prerequisiteObjectiveIds: [calc1-logarithms]
+- id: q002
+  type: freeResponse
+  prompt: 'For $I=\int_0^{\pi/4}\frac{\sin x}{1+\cos^2x}\,dx$, choose u, convert bounds, and justify why no absolute value is needed in the final logarithm.'
+  answer: { gradingMode: selfCheck, checkModel: '$I=\frac12\ln 2$ using $u=\cos x$, bounds 1 to \sqrt2/2; $1+u^2>0$.' }
+  explanation: |
+    With $u=\cos x$, we have $du=-\sin x\,dx$. The $x$-bounds $0$ and $\pi/4$ become $u=1$ and $u=\sqrt2/2$, respectively. Therefore
+
+    $$
+    I=-\int_1^{\sqrt2/2}\frac{1}{1+u^2}\,du
+    =\int_{\sqrt2/2}^{1}\frac{1}{1+u^2}\,du
+    =\arctan(1)-\arctan\!\left(\frac{\sqrt2}{2}\right).
+    $$
+
+    This also exposes a feedback-key issue: the stated check model $\frac12\ln 2$ is not the value of the displayed integral. A logarithm would arise from $1/u$, whereas this substitution produces $1/(1+u^2)$ and hence an arctangent.
+  difficultyDimensions: [auxiliaryTechnique, representationTransfer, domainCondition]
+  subjectDifficultyTags: [trigonometric-substitution, bound-conversion]
+  difficultyEvidence: Translates trig data into u-bounds, handles orientation, and checks positivity.
+  prerequisiteObjectiveIds: [calc1-trigonometry]
+- id: q003
+  type: freeResponse
+  prompt: 'A student sets $u=x^2$ in $\int x\sqrt{x^2+4}\,dx$. Compare this with $u=x^2+4$, complete the more efficient method, and verify the result.'
+  answer: { gradingMode: selfCheck, checkModel: '$(x^2+4)^{3/2}/3+C$; both work, but the shifted choice gives $\frac12\int\sqrt u\,du$ directly.' }
+  explanation: |
+    The shifted choice matches the entire inner expression: let $u=x^2+4$, so $du=2x\,dx$ and $x\,dx=du/2$. Then
+
+    $$
+    \int x\sqrt{x^2+4}\,dx
+    =\frac12\int u^{1/2}\,du
+    =\frac13u^{3/2}+C
+    =\frac13(x^2+4)^{3/2}+C.
+    $$
+
+    Choosing $u=x^2$ is valid but immediately requires the extra rewrite $\sqrt{x^2+4}=\sqrt{u+4}$, so it is less direct. Differentiate the result: $\frac13\cdot\frac32(x^2+4)^{1/2}(2x)=x\sqrt{x^2+4}$.
+  difficultyDimensions: [reverseReasoning, auxiliaryTechnique, errorDiagnosis]
+  subjectDifficultyTags: [method-selection, derivative-verification]
+  difficultyEvidence: Compares valid approaches, selects one for efficiency, and diagnoses a common claim about substitution.
+  prerequisiteObjectiveIds: [calc1-power-rule]
+- id: q004
+  type: freeResponse
+  prompt: 'Evaluate $\int \frac{e^{\sqrt{x}}}{\sqrt{x}}\,dx$ by deriving $dx$ from a substitution, then state the real domain on which the calculation applies.'
+  answer: { gradingMode: selfCheck, checkModel: '$2e^{\sqrt{x}}+C$ for $x>0$, using $u=\sqrt{x}$ and $dx=2u\,du$.' }
+  explanation: |
+    Let $u=\sqrt{x}$. Then $x=u^2$ and, crucially, $dx=2u\,du$. The denominator $\sqrt{x}$ is $u$, so
+
+    $$
+    \int\frac{e^{\sqrt{x}}}{\sqrt{x}}\,dx
+    =\int\frac{e^u}{u}(2u\,du)
+    =2\int e^u\,du
+    =2e^u+C
+    =2e^{\sqrt{x}}+C.
+    $$
+
+    Although $\sqrt{x}$ is defined at $0$, the original denominator is zero there. Thus the displayed integrand, and this antiderivative calculation, apply on $x>0$.
+  difficultyDimensions: [modelOrDerivation, auxiliaryTechnique, domainCondition]
+  subjectDifficultyTags: [differential-rewrite, radical-domain]
+  difficultyEvidence: Derives a non-obvious differential, transforms the expression, and checks domain.
+  prerequisiteObjectiveIds: [calc1-radical-functions]
+- id: q005
+  type: freeResponse
+  prompt: 'Use $\sin(2x)=2\sin x\cos x$ to evaluate $\int_0^{\pi/6}\sin(2x)\cos(2x)\,dx$ by substitution, including converted bounds.'
+  answer: { gradingMode: selfCheck, checkModel: '$3/16$; after the identity use $u=\sin(2x)$ with bounds 0 and \sqrt3/2.' }
+  explanation: |
+    First expose a usable differential pair:
+
+    $$
+    \sin(2x)\cos(2x)=\frac12\sin(2x)\,[2\cos(2x)].
+    $$
+
+    Let $u=\sin(2x)$, so $du=2\cos(2x)\,dx$. The bounds become $u=0$ at $x=0$ and $u=\sin(\pi/3)=\sqrt3/2$ at $x=\pi/6$. Hence
+
+    $$
+    \int_0^{\pi/6}\sin(2x)\cos(2x)\,dx
+    =\frac12\int_0^{\sqrt3/2}u\,du
+    =\frac14\left(\frac34\right)=\frac3{16}.
+    $$
+  difficultyDimensions: [identityConstruction, auxiliaryTechnique, representationTransfer]
+  subjectDifficultyTags: [trig-identity, bound-conversion]
+  difficultyEvidence: Creates a usable pattern with an identity, substitutes, and transfers endpoint representations.
+  prerequisiteObjectiveIds: [calc1-trig-identities]
+- id: q006
+  type: freeResponse
+  prompt: 'Find A so that $\int Ax(5x^2-1)^7\,dx=(5x^2-1)^8+C$. Derive A by differentiation and explain why a missing chain factor is a wrong path.'
+  answer: { gradingMode: selfCheck, checkModel: '$A=80$.' }
+  explanation: |
+    Work backward from the requested right-hand side. By the chain rule,
+
+    $$
+    \frac{d}{dx}(5x^2-1)^8
+    =8(5x^2-1)^7(10x)
+    =80x(5x^2-1)^7.
+    $$
+
+    Thus the integrand must have $A=80$. Writing only $8x(5x^2-1)^7$ misses the derivative $10x$ of the inner expression, so its integral cannot be the stated target.
+  difficultyDimensions: [reverseReasoning, modelOrDerivation, errorDiagnosis]
+  subjectDifficultyTags: [reverse-chain-rule, coefficient-matching]
+  difficultyEvidence: Works backward from a target, derives a coefficient, and rejects a plausible chain-rule error.
+  prerequisiteObjectiveIds: [calc1-chain-rule]
+- id: q007
+  type: freeResponse
+  prompt: 'Classify the improper integral $\int_1^\infty\frac{3x^2}{1+x^3}\,dx$ before attempting substitution, then use u-substitution to support the classification.'
+  answer: { gradingMode: selfCheck, checkModel: 'Divergent; $u=1+x^3$ produces $\ln u$, whose value grows without bound.' }
+  explanation: |
+    Treat the infinite endpoint as a limit:
+
+    $$
+    \int_1^b\frac{3x^2}{1+x^3}\,dx.
+    $$
+
+    Let $u=1+x^3$, so $du=3x^2\,dx$. This gives
+
+    $$
+    \int_1^b\frac{3x^2}{1+x^3}\,dx
+    =\left[\ln(1+x^3)\right]_1^b
+    =\ln(1+b^3)-\ln2.
+    $$
+
+    As $b\to\infty$, $\ln(1+b^3)\to\infty$, so the improper integral diverges. Finding a logarithmic antiderivative is only the local step; the limit determines convergence.
+  difficultyDimensions: [globalLocalReasoning, auxiliaryTechnique, estimationOrBounds]
+  subjectDifficultyTags: [improper-integral, asymptotic-classification]
+  difficultyEvidence: Extends substitution to an infinite interval and evaluates global limiting behavior.
+  extensionObjectiveIds: [calc2-improper-integrals]
+- id: q008
+  type: freeResponse
+  prompt: 'Evaluate $\int \frac{\ln x}{x}\,dx$, then use the result to solve for positive x when the antiderivative equals 2 with C=0.'
+  answer: { gradingMode: selfCheck, checkModel: '$(\ln x)^2/2+C$; solving gives $x=e^2$ or $x=e^{-2}$.' }
+  explanation: |
+    Let $u=\ln x$, which is valid for $x>0$. Since $du=dx/x$,
+
+    $$
+    \int\frac{\ln x}{x}\,dx
+    =\int u\,du
+    =\frac{u^2}{2}+C
+    =\frac{(\ln x)^2}{2}+C.
+    $$
+
+    With $C=0$, set $(\ln x)^2/2=2$. Then $(\ln x)^2=4$, so $\ln x=2$ or $\ln x=-2$. Both cases are required after taking a square root, giving $x=e^2$ and $x=e^{-2}$.
+  difficultyDimensions: [auxiliaryTechnique, reverseReasoning, casePartition]
+  subjectDifficultyTags: [logarithmic-substitution, inverse-relation]
+  difficultyEvidence: Combines substitution with reverse solving and two valid sign cases.
+  prerequisiteObjectiveIds: [calc1-exponentials-logarithms]
+- id: q009
+  type: freeResponse
+  prompt: 'A proposed antiderivative for $\int 2xe^{x^2}\,dx$ is $xe^{x^2}+C$. Diagnose it by differentiation, then give the correct substitution solution.'
+  answer: { gradingMode: selfCheck, checkModel: '$e^{x^2}+C$; differentiating the proposal creates an extra $e^{x^2}$ term.' }
+  explanation: |
+    Differentiate the proposal before trusting it:
+
+    $$
+    \frac{d}{dx}\left(xe^{x^2}\right)
+    =e^{x^2}+x\left(2xe^{x^2}\right)
+    =(1+2x^2)e^{x^2},
+    $$
+
+    which is not $2xe^{x^2}$. The extra $e^{x^2}$ term comes from the product rule. Instead choose $u=x^2$, $du=2x\,dx$, yielding $\int e^u\,du=e^u+C=e^{x^2}+C$.
+  difficultyDimensions: [errorDiagnosis, proofJustification, auxiliaryTechnique]
+  subjectDifficultyTags: [derivative-verification, chain-rule]
+  difficultyEvidence: Checks a candidate, justifies its failure, and supplies a different method.
+  prerequisiteObjectiveIds: [calc1-product-rule]
+- id: q010
+  type: freeResponse
+  prompt: 'Evaluate $\int_0^1\frac{x}{1+x^2}\,dx$ two ways: with changed u-bounds and with back-substitution. Explain why the answers must agree.'
+  answer: { gradingMode: selfCheck, checkModel: '$\frac12\ln2$ by either workflow.' }
+  explanation: |
+    For changed bounds, let $u=1+x^2$, $du=2x\,dx$, so $x\,dx=du/2$. The bounds $x=0,1$ become $u=1,2$:
+
+    $$
+    \int_0^1\frac{x}{1+x^2}\,dx
+    =\frac12\int_1^2\frac{1}{u}\,du
+    =\frac12\ln2.
+    $$
+
+    Alternatively, integrate first to get $\frac12\ln(1+x^2)$ and then evaluate from $0$ to $1$, again obtaining $\frac12[\ln2-\ln1]=\frac12\ln2$. The workflows agree because changing bounds replaces the back-substitution step exactly; mixing u-bounds with an x-expression is the error to avoid.
+  difficultyDimensions: [representationTransfer, proofJustification, auxiliaryTechnique]
+  subjectDifficultyTags: [bound-conversion, equivalence-check]
+  difficultyEvidence: Executes two representations of substitution and justifies their equivalence.
+  prerequisiteObjectiveIds: [calc1-definite-integrals]

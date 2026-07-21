@@ -1,0 +1,62 @@
+schemaVersion: 1
+id: cpp-basics-hard-quiz
+title: C++ Basics Hard Quiz
+assessmentType: quiz
+categoryId: c++
+topicId: c++-basics
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 10
+navigation: { learningGoal: practice, activityType: mixedPractice, tags: [c++, c++-basics, build-diagnostics, output] }
+authoring: { visualRequirement: notApplicable, visualRationale: The quiz requires learners to construct and diagnose text-based build/output scenarios independently., difficultyTier: hard }
+questions:
+- id: q001
+  type: freeResponse
+  prompt: A call to `announce()` compiles but the build fails with an unresolved external/symbol. Explain the most likely missing program relationship and one repair.
+  answer: { gradingMode: selfCheck, keyPoints: [Declaration may be visible, Matching definition is missing from linked build, Add/compile the definition or correct its signature] }
+  explanation: Compilation can proceed from a declaration, but linking needs one matching definition. Add the implementation's object/source file to the build or provide a definition whose signature matches the declaration.
+- id: q002
+  type: freeResponse
+  prompt: A program prints `score=7done` when the required output is `score=7` and then `done` on the next line. Give one corrected output statement sequence and explain the defect.
+  answer: { gradingMode: selfCheck, keyPoints: [Explicit newline after score, done follows after line break, Stream insertion does not insert whitespace automatically] }
+  explanation: Insert `\n` after the score, for example `std::cout << "score=" << score << '\\n' << "done\\n";`. The original chained insertions append text exactly without an implicit line break.
+- id: q003
+  type: freeResponse
+  prompt: Contrast a syntax error caused by a missing semicolon with a link failure caused by a missing function definition.
+  answer: { gradingMode: selfCheck, keyPoints: [Syntax error during compilation/parsing, Link failure after translation, Missing definition/combined program] }
+  explanation: A missing semicolon violates source syntax and is reported while compiling. A missing definition can leave individually translated calls valid but prevents the linker from assembling the executable.
+- id: q004
+  type: freeResponse
+  prompt: A compiler rejects `<print>` on an older toolchain. Give a portable output fallback and identify what the diagnostic says about the environment.
+  answer: { gradingMode: selfCheck, keyPoints: [Use iostream/cout, Header/facility unsupported by selected toolchain or standard mode, Not proof that C++ cannot output text] }
+  explanation: Use `#include <iostream>` and `std::cout`. The error concerns feature availability in the selected compiler/language mode, not the existence of console output in C++.
+- id: q005
+  type: freeResponse
+  prompt: Explain why `std::cout << "A" << "B";` and `std::cout << "AB";` have the same observable output, but `std::cout << "A\\n" << "B";` does not.
+  answer: { gradingMode: selfCheck, keyPoints: [Both first forms append A and B, Newline is an explicit character/control sequence, Third form separates lines] }
+  explanation: The first two produce the character sequence `AB`. The third inserts a newline after `A`, so `B` begins on the next output line.
+- id: q006
+  type: freeResponse
+  prompt: A source file includes `<iostream>` but writes `cout << "ok";` without qualification. Explain two valid ways to make the name available and the safer choice for shared code.
+  answer: { gradingMode: selfCheck, keyPoints: [Use std::cout, Or using declaration/directive, Prefer explicit qualification in shared code] }
+  explanation: Write `std::cout`, or introduce the name with a using declaration/directive. Explicit qualification is clearer and avoids importing many names into shared scope.
+- id: q007
+  type: freeResponse
+  prompt: A file contains two definitions of `int main()`. Explain why this is not a way to create two program modes and suggest one structural alternative.
+  answer: { gradingMode: selfCheck, keyPoints: [One entry point required, Duplicate main conflicts, Use one main that calls selected helper functions] }
+  explanation: A hosted executable has one entry point. Keep one `main` and dispatch to helper functions based on arguments, input, or a separate build target.
+- id: q008
+  type: freeResponse
+  prompt: A developer changes output and a compiler flag simultaneously, then receives an error. Explain why this debugging approach is brittle and give a better sequence.
+  answer: { gradingMode: selfCheck, keyPoints: [Multiple changes obscure cause, Make one small change, Build/read diagnostic/iterate] }
+  explanation: When several variables change, the diagnostic cannot identify which change caused it. Change one cause, rebuild, observe the exact result, and then proceed.
+- id: q009
+  type: freeResponse
+  prompt: Explain why a source file being saved successfully does not prove that a C++ program is runnable.
+  answer: { gradingMode: selfCheck, keyPoints: [Saving only stores text, Compilation and linking still required, Runtime behavior still needs checking] }
+  explanation: Saving creates or updates source text. The source must still compile, link with required definitions, and be run to verify its observable behavior.
+- id: q010
+  type: freeResponse
+  prompt: A program has no output even though it reaches `main`. Give two distinct source-level causes related to output statements and how to check them.
+  answer: { gradingMode: selfCheck, keyPoints: [No cout statement or branch never executes, Output lacks expected newline/flush or wrong destination, Trace execution and compare exact output] }
+  explanation: The statement may be absent or unreachable, or it may write different characters than expected. Inspect control flow and compare the exact stream insertions/output with the required result.

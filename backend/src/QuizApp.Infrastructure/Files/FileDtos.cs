@@ -6,6 +6,8 @@ public sealed class CategoryFileDto
     public string? Id { get; set; }
     public string? Title { get; set; }
     public string? Description { get; set; }
+    public string? AuthoringProfile { get; set; }
+    public bool? DirectedProjectEligible { get; set; }
     public List<SubCategoryFileDto>? Subcategories { get; set; }
 }
 
@@ -57,6 +59,23 @@ public sealed class AssessmentFileDto
     public SandboxFileDto? Sandbox { get; set; }
     public NavigationFileDto? Navigation { get; set; }
     public List<string>? Skills { get; set; }
+    public AssessmentAuthoringFileDto? Authoring { get; set; }
+}
+
+public sealed class AssessmentAuthoringFileDto
+{
+    public string? VisualRequirement { get; set; }
+    public string? VisualRationale { get; set; }
+    public string? DifficultyTier { get; set; }
+    public string? ExceptionReason { get; set; }
+    public PhysicsModelAuthoringFileDto? PhysicsModel { get; set; }
+}
+
+public sealed class PhysicsModelAuthoringFileDto
+{
+    public string? ModelId { get; set; }
+    public string? ModelRole { get; set; }
+    public List<string>? RequiredRepresentations { get; set; }
 }
 
 public sealed class SandboxFileDto
@@ -423,6 +442,11 @@ public sealed class QuestionFileDto
     public CircuitQuestionFileDto? CircuitQuestion { get; set; }
     public GraphingQuestionFileDto? GraphingQuestion { get; set; }
     public List<string>? Skills { get; set; }
+    public List<string>? DifficultyDimensions { get; set; }
+    public List<string>? SubjectDifficultyTags { get; set; }
+    public string? DifficultyEvidence { get; set; }
+    public List<string>? PrerequisiteObjectiveIds { get; set; }
+    public List<string>? ExtensionObjectiveIds { get; set; }
 }
 
 public sealed class ChoiceFileDto

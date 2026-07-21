@@ -1,157 +1,83 @@
 schemaVersion: 1
 id: cpp-variables-input-quiz
-title: Cpp Variables Input - Quiz
-description: A 10-question quiz to test your understanding.
+title: C++ Variables and Keyboard Input - Quiz
+description: Source-aligned practice with typed variables, streams, and input recovery.
 assessmentType: quiz
 categoryId: c++
 topicId: cpp-variables-input
-skills:
-- Apply Variables and Keyboard Input
-- cpp
-- c-plus-plus
-- cpp-variables-input
+skills: [cpp, c-plus-plus, cpp-variables-input, variables, streams, input-validation]
 difficulty: 2
 navigation:
   learningGoal: practice
   activityType: focusedPractice
-  tags:
-  - c++
-  - cpp-variables-input
-  - cpp
-  - quiz
-  - c-plus-plus
-  - practice
-  - focusedpractice
-  - variables
-  - input
+  tags: [c++, cpp, cpp-variables-input, quiz, variables, input, streams]
 attemptQuestionCount: 10
 questions:
 - id: cpp-variables-input-q-mc-1
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
-  choices:
-  - id: a
-    text: Option A
-  - id: b
-    text: Option B
-  - id: c
-    text: Option C
-  - id: d
-    text: Option D
-  answer:
-    choiceId: a
-  explanation: Option A is correct.
+  prompt: Which declaration initializes an integer counter to zero?
+  choices: [{ id: a, text: '`int counter{};`' }, { id: b, text: '`int = counter{};`' }, { id: c, text: '`counter int;`' }, { id: d, text: '`int counter;` is guaranteed zero' }]
+  answer: { choiceId: a }
+  explanation: Empty braces value-initialize the integer.
 - id: cpp-variables-input-q-mc-2
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
-  choices:
-  - id: a
-    text: Option A
-  - id: b
-    text: Option B
-  - id: c
-    text: Option C
-  - id: d
-    text: Option D
-  answer:
-    choiceId: a
-  explanation: Option A is correct.
+  prompt: What does `std::cin >> distance;` attempt to do when distance is a double?
+  choices: [{ id: a, text: Extract the next input value and convert it to double. }, { id: b, text: Print distance. }, { id: c, text: Make distance constant. }, { id: d, text: Link the program. }]
+  answer: { choiceId: a }
+  explanation: The extraction operator reads formatted input into the typed variable.
 - id: cpp-variables-input-q-mc-3
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
-  choices:
-  - id: a
-    text: Option A
-  - id: b
-    text: Option B
-  - id: c
-    text: Option C
-  - id: d
-    text: Option D
-  answer:
-    choiceId: a
-  explanation: Option A is correct.
+  prompt: After nonnumeric text fails to extract into a double, what does `if (std::cin)` evaluate to before recovery?
+  choices: [{ id: a, text: false }, { id: b, text: true }, { id: c, text: The entered word }, { id: d, text: A compilation error }]
+  answer: { choiceId: a }
+  explanation: Failed extraction sets the stream state so its boolean test is false.
 - id: cpp-variables-input-q-mc-4
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
-  choices:
-  - id: a
-    text: Option A
-  - id: b
-    text: Option B
-  - id: c
-    text: Option C
-  - id: d
-    text: Option D
-  answer:
-    choiceId: a
-  explanation: Option A is correct.
+  prompt: Why should a retry routine call `clear()` before another formatted extraction after bad input?
+  choices: [{ id: a, text: It resets the stream's failure flags. }, { id: b, text: It converts the previous word to a number. }, { id: c, text: It initializes every variable. }, { id: d, text: It adds a newline. }]
+  answer: { choiceId: a }
+  explanation: A stream remains failed until its error state is cleared.
 - id: cpp-variables-input-q-mc-5
   type: multipleChoice
-  prompt: Choose the best completion for this C++ function.
-  choices:
-  - id: a
-    text: Option A
-  - id: b
-    text: Option B
-  - id: c
-    text: Option C
-  - id: d
-    text: Option D
-  answer:
-    choiceId: a
-  explanation: Option A is correct.
+  prompt: A function parameter is `double value` rather than `double& value`. What happens when the function assigns to value?
+  choices: [{ id: a, text: It changes a local copy, not the caller's variable. }, { id: b, text: It always changes the caller's variable. }, { id: c, text: It makes the program link faster. }, { id: d, text: It makes value const. }]
+  answer: { choiceId: a }
+  explanation: Without &, the parameter is passed by value.
 - id: cpp-variables-input-q-code-1
   type: code
-  prompt: Write a C++ function that completes the required task.
+  prompt: Write a complete C++ program that reads one integer and prints twice that integer followed by a newline. The input will be a valid integer.
   language: cpp
   functionName: main
-  starterCode: "int main() {\n  // Implement here\n  return 0;\n}"
-  validationMode: unitTests
-  tests:
-  - input: '1'
-    expected: '1'
-    isHidden: false
-  explanation: Compiling with g++ and running successfully is required.
+  starterCode: "#include <iostream>\n\nint main() {\n  // read and print\n}\n"
+  tests: [{ input: "6\n", expected: "12\n" }, { input: "-4\n", expected: "-8\n" }]
+  explanation: Extract into an initialized int, then use std::cout to print the computed result.
 - id: cpp-variables-input-q-code-2
   type: code
-  prompt: Write a C++ function that completes the required task.
+  prompt: Write a complete C++ program that reads two doubles and prints their sum followed by a newline.
   language: cpp
   functionName: main
-  starterCode: "int main() {\n  // Implement here\n  return 0;\n}"
-  validationMode: unitTests
-  tests:
-  - input: '1'
-    expected: '1'
-    isHidden: false
-  explanation: Compiling with g++ and running successfully is required.
+  starterCode: "#include <iostream>\n\nint main() {\n  // read two values and print their sum\n}\n"
+  tests: [{ input: "1.5 2.25\n", expected: "3.75\n" }, { input: "-2 0.5\n", expected: "-1.5\n" }]
+  explanation: Both extractions must succeed before the sum is meaningful.
 - id: cpp-variables-input-q-code-3
   type: code
-  prompt: Write a C++ function that completes the required task.
+  prompt: Write a complete C++ program that reads one double. Print `valid` followed by a newline when extraction succeeds; otherwise print `invalid` followed by a newline.
   language: cpp
   functionName: main
-  starterCode: "int main() {\n  // Implement here\n  return 0;\n}"
-  validationMode: unitTests
-  tests:
-  - input: '1'
-    expected: '1'
-    isHidden: false
-  explanation: Compiling with g++ and running successfully is required.
+  starterCode: "#include <iostream>\n\nint main() {\n  // test the stream after extraction\n}\n"
+  tests: [{ input: "4.2\n", expected: "valid\n" }, { input: "oops\n", expected: "invalid\n" }]
+  explanation: Test the stream state after `std::cin >> value` and select the matching branch.
 - id: cpp-variables-input-q-fr-1
   type: freeResponse
-  prompt: Explain which Data Structure or Algorithm fits this scenario best.
+  prompt: Explain why a retry after entering `q` for a double can fail again even when the next line is `2`, and state the two recovery actions needed.
   answer:
     gradingMode: selfCheck
-    rubric:
-    - Identifies the correct DSA
-    - Explains the Big-O time complexity tradeoff
-  explanation: Self-check based on rubric.
+    keyPoints: [Identifies persistent failed stream state, Identifies clear to reset flags, Identifies ignore to remove leftover invalid input]
+  explanation: Self-check against the stream-state and leftover-input causes.
 - id: cpp-variables-input-q-fr-2
   type: freeResponse
-  prompt: Explain which Data Structure or Algorithm fits this scenario best.
+  prompt: A helper returns bool and receives `std::istream& in, double& value`. Explain one benefit of each reference and one benefit of checking the bool.
   answer:
     gradingMode: selfCheck
-    rubric:
-    - Identifies the correct DSA
-    - Explains the Big-O time complexity tradeoff
-  explanation: Self-check based on rubric.
+    keyPoints: [Stream reference preserves the caller's stream state, Value reference lets successful input update caller storage, Boolean forces an explicit success or failure decision]
+  explanation: Self-check against the helper's three-part contract.

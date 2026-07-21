@@ -1,0 +1,63 @@
+schemaVersion: 1
+id: cpp-strings-formatting-hard-quiz
+title: C++ Strings and Formatting Hard Quiz
+assessmentType: quiz
+categoryId: c++
+topicId: cpp-strings-formatting
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 10
+navigation: { learningGoal: practice, activityType: mixedPractice, tags: [c++, cpp-strings-formatting, string-view, getline, formatting] }
+authoring: { visualRequirement: notApplicable, visualRationale: The quiz asks learners to construct and diagnose text and stream scenarios independently; lesson and worked examples provide the input/output traces., difficultyTier: hard }
+questions:
+- id: q001
+  type: freeResponse
+  prompt: A program reads an integer with `>>` and then an optional comment with `getline`; the comment is always empty. Explain the cause and give one correct repair.
+  answer: { gradingMode: selfCheck, keyPoints: [Pending newline after formatted extraction, getline consumes it, Use std::ws or discard newline] }
+  explanation: '`operator>>` leaves the newline in the stream, so the immediate `getline` reads that empty remainder. Use `std::getline(std::cin >> std::ws, comment)` or explicitly ignore through the newline first.'
+- id: q002
+  type: freeResponse
+  prompt: Explain why storing a `std::string_view` to a local `std::string` and returning it can be unsafe.
+  answer: { gradingMode: selfCheck, keyPoints: [View is non-owning, Local string is destroyed on return, View dangles] }
+  explanation: A string view only borrows character storage. Once the local string is destroyed, the returned view refers to invalid memory; return an owning string or view storage with a longer lifetime.
+- id: q003
+  type: freeResponse
+  prompt: A function needs the first character of a string. State the precondition required before indexing and explain why.
+  answer: { gradingMode: selfCheck, keyPoints: [String not empty, Valid indices 0 through size minus one, Empty string has no index zero] }
+  explanation: Check `!text.empty()` before `text[0]`. Empty text has size zero, so index zero is outside its valid character range.
+- id: q004
+  type: freeResponse
+  prompt: Contrast `char initial{'A'};`, `std::string name{"Ada"};`, and the literal `"Ada"` in terms of stored data.
+  answer: { gradingMode: selfCheck, keyPoints: [char one character, string owning mutable sequence, literal fixed program text/character array] }
+  explanation: '`char` stores one character. `std::string` owns an editable sequence. A string literal is fixed program text, often used to initialize or compare against string values.'
+- id: q005
+  type: freeResponse
+  prompt: A calculation repeatedly converts a price to text, concatenates units, then converts it back to a number. Explain why this design is brittle and state the better boundary.
+  answer: { gradingMode: selfCheck, keyPoints: [Formatting loses numeric representation/rounding risk, Arithmetic should use numeric value, Format at output] }
+  explanation: Formatting is presentation, not computation; repeated conversion can add parsing and rounding problems. Keep the price numeric through calculations and produce formatted text only when outputting it.
+- id: q006
+  type: freeResponse
+  prompt: Explain why counting character frequencies cannot decide whether `racecar` occurs as a contiguous palindrome inside a longer string.
+  answer: { gradingMode: selfCheck, keyPoints: [Frequencies lose order/positions, Substring requires contiguity, Need index/center comparison] }
+  explanation: A frequency table knows how many characters exist but not their order. A substring palindrome requires matching characters at symmetric positions in one contiguous interval.
+- id: q007
+  type: freeResponse
+  prompt: A string algorithm calls `text[text.size()]`. Identify the bug and give the last valid index formula.
+  answer: { gradingMode: selfCheck, keyPoints: [One-past-end access, Last index size minus one, Require nonempty string] }
+  explanation: '`size()` is the number of characters, not an index of a character. For nonempty text the last valid position is `text.size() - 1`; accessing `size()` is out of range.'
+- id: q008
+  type: freeResponse
+  prompt: A caller passes a string literal to a helper that only reads text. Explain why `std::string_view` can be convenient and what it must not promise.
+  answer: { gradingMode: selfCheck, keyPoints: [Accepts literal/read-only characters without copy, Non-owning, Must not mutate or retain beyond storage lifetime] }
+  explanation: A view provides a lightweight read-only range over the literal's characters. It does not own or extend storage and should not be used to promise mutation or indefinite retention.
+- id: q009
+  type: freeResponse
+  prompt: A word counter must treat repeated spaces and leading spaces correctly. Describe the state transition that should increment the count.
+  answer: { gradingMode: selfCheck, keyPoints: [Whitespace to nonwhitespace transition, Track prior whitespace/in-word state, Avoid count per character] }
+  explanation: |
+    Increment when the scan enters a word: the current character is nonwhitespace and the previous state was whitespace/outside a word. This avoids counting empty gaps as words.
+- id: q010
+  type: freeResponse
+  prompt: Explain why a formatting specification belongs beside output code rather than inside a general string-search helper.
+  answer: { gradingMode: selfCheck, keyPoints: [Separation of concerns, Search returns data/result, Presentation handled by caller/output boundary] }
+  explanation: A search helper should report its typed result or relevant substring. Formatting is presentation policy and belongs at the output boundary, keeping the helper reusable and easier to test.

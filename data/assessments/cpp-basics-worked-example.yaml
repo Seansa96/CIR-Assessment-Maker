@@ -1,0 +1,72 @@
+schemaVersion: 1
+id: cpp-basics-worked-example
+title: 'C++ Basics Worked Examples: Build and Output'
+assessmentType: workedExample
+categoryId: c++
+topicId: c++-basics
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [c++, c++-basics, compilation, output]
+authoring:
+  visualRequirement: required
+  visualRationale: The examples use the same source-to-executable flow diagram to separate a build failure from an output mismatch.
+workedExamples:
+- id: cpp-basics-output-example
+  title: Produce an exact two-line status message
+  problem: |
+    Write a complete program that prints exactly:
+
+    ```text
+    Build
+    Run
+    ```
+
+    ![Source-to-executable flow](/assets/cpp/cpp-hello-world.svg)
+  steps:
+  - id: cpp-basics-output-step-1
+    title: Select the required library and entry point
+    instruction: Output uses `std::cout`, and execution must start in `main`.
+    type: freeResponse
+    prompt: Write the includes and the `main` header needed for a console-output program.
+    answer: { gradingMode: selfCheck, keyPoints: ['`#include <iostream>`', '`int main()`', 'A braced function body'] }
+    explanation: Include `<iostream>` and define `int main()`. The header makes the stream declaration available before the program reaches its output statements.
+  - id: cpp-basics-output-step-2
+    title: Construct exact output
+    instruction: Two separate lines require an explicit newline after each word.
+    type: code
+    prompt: Add the two `std::cout` statements that produce the required output.
+    language: cpp
+    functionName: main
+    starterCode: 'int main() {\n  // print Build and Run on separate lines\n}'
+    tests: [{ input: test, expected: "Build\nRun\n" }]
+    answer: {}
+    explanation: '`std::cout << "Build\n";` followed by `std::cout << "Run\n";` controls both the characters and the line break.'
+  - id: cpp-basics-output-step-3
+    title: Check the observable result
+    instruction: Compare the terminal output character-for-character with the required text.
+    type: freeResponse
+    prompt: Explain why `std::cout << "Build" << "Run\n";` fails this requirement even though it compiles.
+    answer: { gradingMode: selfCheck, keyPoints: [The output fragments are adjacent, No newline separates Build and Run, Compilation does not verify the intended output shape] }
+    explanation: Stream insertion appends values exactly as provided. The statement prints `BuildRun` followed by one newline, so it is a behavior error rather than a build error.
+- id: cpp-basics-diagnostic-example
+  title: Classify a Build Diagnostic
+  problem: |
+    A source file contains a valid call to a function declared in a header, but the build reports that its definition cannot be found. Decide which stage failed and what source-level relationship is missing.
+  steps:
+  - id: cpp-basics-diagnostic-step-1
+    title: Identify the stage
+    instruction: The compiler can translate a call when it has a declaration; combining the final program needs the definition.
+    type: freeResponse
+    prompt: Is this primarily a compile-time syntax error or a link-time failure? Explain briefly.
+    answer: { gradingMode: selfCheck, keyPoints: [Link-time failure, Declaration permits compilation of the call, Missing definition prevents final combination] }
+    explanation: This is a link-time failure. A declaration tells the compiler the function's contract, but the linker must still locate one matching definition to build the executable.
+  - id: cpp-basics-diagnostic-step-2
+    title: Repair the program relationship
+    instruction: A definition must exist and be compiled/linked with the file that calls it.
+    type: freeResponse
+    prompt: State two valid ways to repair the missing-definition situation.
+    answer: { gradingMode: selfCheck, keyPoints: [Provide a matching definition, Add the source or object file containing the definition to the build, Ensure the signature matches the declaration] }
+    explanation: Define the function with the declared signature and include its translation unit in the build, or correct the build configuration so the existing matching definition is linked.

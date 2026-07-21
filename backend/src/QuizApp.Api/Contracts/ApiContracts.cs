@@ -10,7 +10,9 @@ public sealed record ExportAuthoringPacketRequest(
     string CategoryId,
     string TopicId,
     IReadOnlyList<string>? ObjectiveIds,
-    IReadOnlyList<string>? ChunkIds);
+    IReadOnlyList<string>? ChunkIds,
+    IReadOnlyList<string>? OutlineNodeIds = null,
+    AssessmentDifficultyTier TargetDifficultyTier = AssessmentDifficultyTier.Unspecified);
 public sealed record ImportAuthoringDraftRequest(string PacketId, string PayloadJson);
 public sealed record UpdateAuthoringDraftStateRequest(string State);
 

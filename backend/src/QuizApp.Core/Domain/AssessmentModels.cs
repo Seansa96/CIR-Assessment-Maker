@@ -51,12 +51,89 @@ public enum RecallItemType
     Recognition
 }
 
+public enum AuthoringProfile
+{
+    Unknown,
+    Stem,
+    NonStem
+}
+
+public enum VisualRequirement
+{
+    Unspecified,
+    Required,
+    NotApplicable
+}
+
+public enum AssessmentDifficultyTier
+{
+    Unspecified,
+    Easy,
+    Hard,
+    Olympiad
+}
+
+public enum PhysicsAnalysisModel
+{
+    Unspecified,
+    ForceModel,
+    FreeBodyDiagram,
+    InclinedPlane,
+    ConnectedSystem,
+    StaticEquilibrium,
+    Friction,
+    UniformCircularMotion
+}
+
+public enum PhysicsModelRole
+{
+    Unspecified,
+    Foundation,
+    Application,
+    Synthesis
+}
+
+public enum PhysicsRepresentation
+{
+    SystemBoundary,
+    FreeBodyDiagram,
+    CoordinateAxes,
+    ForceComponents,
+    MotionConstraint,
+    InteractionPair,
+    RadialDirection
+}
+
+/// <summary>Distinct reasoning demands used to establish authored assessment difficulty.</summary>
+public enum DifficultyDimension
+{
+    Unknown,
+    Simplification,
+    IdentityConstruction,
+    AuxiliaryTechnique,
+    ModelOrDerivation,
+    DomainCondition,
+    CasePartition,
+    ParameterThreshold,
+    ReverseReasoning,
+    ProofJustification,
+    RepresentationTransfer,
+    ErrorDiagnosis,
+    EstimationOrBounds,
+    GlobalLocalReasoning,
+    CounterexampleOrConstruction
+}
+
 public sealed record Category(
     int SchemaVersion,
     string Id,
     string Title,
     IReadOnlyList<SubCategory> Subcategories,
-    string? Description = null);
+    string? Description = null)
+{
+    public AuthoringProfile AuthoringProfile { get; init; } = AuthoringProfile.Unknown;
+    public bool DirectedProjectEligible { get; init; }
+}
 
 public sealed record SubCategory(string Id, string Title, string? Description = null)
 {
@@ -133,6 +210,21 @@ public sealed record AssessmentDefinition(
     public SandboxDefinition? Sandbox { get; init; }
     public NavigationMetadata? Navigation { get; init; }
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+    public AssessmentAuthoringMetadata? Authoring { get; init; }
+}
+
+public sealed record AssessmentAuthoringMetadata(
+    VisualRequirement VisualRequirement = VisualRequirement.Unspecified,
+    string? VisualRationale = null,
+    AssessmentDifficultyTier DifficultyTier = AssessmentDifficultyTier.Unspecified,
+    string? ExceptionReason = null,
+    PhysicsModelAuthoringMetadata? PhysicsModel = null);
+
+public sealed record PhysicsModelAuthoringMetadata
+{
+    public PhysicsAnalysisModel ModelId { get; init; } = PhysicsAnalysisModel.Unspecified;
+    public PhysicsModelRole ModelRole { get; init; } = PhysicsModelRole.Unspecified;
+    public IReadOnlyList<PhysicsRepresentation> RequiredRepresentations { get; init; } = Array.Empty<PhysicsRepresentation>();
 }
 
 public sealed record SandboxDefinition(
@@ -480,6 +572,11 @@ public sealed record QuestionDefinition(
     public GraphingQuestionDefinition? GraphingQuestion { get; init; }
     public IReadOnlyList<MultipartPartDefinition> Parts { get; init; } = Array.Empty<MultipartPartDefinition>();
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<DifficultyDimension> DifficultyDimensions { get; init; } = Array.Empty<DifficultyDimension>();
+    public IReadOnlyList<string> SubjectDifficultyTags { get; init; } = Array.Empty<string>();
+    public string? DifficultyEvidence { get; init; }
+    public IReadOnlyList<string> PrerequisiteObjectiveIds { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> ExtensionObjectiveIds { get; init; } = Array.Empty<string>();
 }
 
 public sealed record MultipartPartDefinition(

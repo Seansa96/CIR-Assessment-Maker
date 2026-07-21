@@ -26,6 +26,7 @@ public static class Program
         var taxonomyValidator = new AssessmentTaxonomyValidator();
         var catalogTaxonomyValidator = new CatalogTaxonomyValidator();
         var questionBankAudit = new QuestionBankAudit();
+        var authoringContractAudit = new AssessmentAuthoringContractAudit();
 
         var categories = await categoryRepository.ListAsync();
         var areas = await areaRepository.ListAsync();
@@ -122,6 +123,11 @@ public static class Program
                     }
 
                     var domain = dto.ToDomain();
+                    var category = categories.FirstOrDefault(item => item.Id.Equals(domain.CategoryId, StringComparison.OrdinalIgnoreCase));
+                    foreach (var diagnostic in authoringContractAudit.Evaluate(category, domain, strict: false))
+                    {
+                        Console.WriteLine($"[WARN] [AUTHORING_{diagnostic.Code}] {path}: {diagnostic.Message}");
+                    }
                     if (auditByCategory.TryGetValue(domain.CategoryId, out var categoryAudit))
                     {
                         categoryAudit.Assessments++;

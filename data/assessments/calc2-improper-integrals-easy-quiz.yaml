@@ -4,271 +4,100 @@ title: Improper Integrals Easy Quiz
 assessmentType: quiz
 categoryId: calculus-2
 topicId: improper-integrals
-skills:
-- Rewrite improper integrals as limits
-- Determine convergence at infinite bounds and singularities
-- Split integrals at interior discontinuities
-navigation:
-  learningGoal: practice
-  activityType: mixedPractice
-  tags:
-  - calc2
-  - easy
-  - calculus-2
-  - improper-integrals
 modeDefault: practice
 randomizeQuestions: true
 attemptQuestionCount: 10
+skills: [define-improper-integrals, evaluate-tail-limits, split-singularities, basic-comparison]
+navigation: { learningGoal: practice, activityType: mixedPractice, tags: [calculus-2, improper-integrals, easy, setup-and-evaluation] }
+authoring: { visualRequirement: required, visualRationale: The limit map gives the setup representation for tail, endpoint, and interior cases., difficultyTier: easy }
 questions:
 - id: q001
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=9)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  type: multipleChoice
+  prompt: 'Which expression defines $\int_2^\infty f(x)\,dx$?'
+  choices: [{ id: a, text: '$\lim_{t\to\infty}\int_2^t f(x)\,dx$' }, { id: b, text: '$\int_2^\infty f(x)\,dx$ with infinity substituted' }, { id: c, text: '$\lim_{t\to2^+}\int_t^\infty f(x)\,dx$' }, { id: d, text: '$f(\infty)-f(2)$' }]
+  answer: { choiceId: a }
+  explanation: 'An infinite upper boundary is defined by truncating at a finite t and taking the limit as t grows. Infinity is not an ordinary endpoint to substitute.'
+  difficultyDimensions: [representationTransfer, domainCondition]
+  difficultyEvidence: Identifies an infinite boundary and selects the matching limit model.
+  prerequisiteObjectiveIds: [calc2-improper-identify-and-limit]
 - id: q002
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{16 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 16}}{16 x} & \text{for}\: \left|{x^{2}}\right|
-      > 16 \\- \frac{\sqrt{16 - x^{2}}}{16 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 4\sin\theta.
+  type: multipleChoice
+  prompt: 'Evaluate $\int_1^\infty 1/x^3\,dx$.'
+  choices: [{ id: a, text: '$1/2$' }, { id: b, text: '$1$' }, { id: c, text: 'Diverges' }, { id: d, text: '$0$' }]
+  answer: { choiceId: a }
+  explanation: 'Use $\lim_{t\to\infty}[-1/(2x^2)]_1^t$. The upper term tends to zero, leaving one-half; the p equals three tail therefore converges.'
+  difficultyDimensions: [modelOrDerivation, auxiliaryTechnique]
+  difficultyEvidence: Builds the truncated-tail limit and evaluates an antiderivative at a moving endpoint.
+  prerequisiteObjectiveIds: [calc2-improper-identify-and-limit]
 - id: q003
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{3}{\left(x \right)} \cos^{3}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- \frac{\sin^{6}{\left(x \right)}}{6} + \frac{\sin^{4}{\left(x \right)}}{4}
-      + C'
-  explanation: Use trigonometric identities to simplify and integrate.
+  type: multipleChoice
+  prompt: 'Evaluate $\int_{-\infty}^{-1}x^{-2}\,dx$.'
+  choices: [{ id: a, text: '$1$' }, { id: b, text: '$-1$' }, { id: c, text: 'Diverges because the bound is negative infinity' }, { id: d, text: '$0$' }]
+  answer: { choiceId: a }
+  explanation: 'Use a lower cutoff t and the antiderivative -1/x. The truncated value is $[-1/x]_t^{-1}=1+1/t$, which tends to 1 as t approaches negative infinity.'
+  difficultyDimensions: [modelOrDerivation, domainCondition]
+  difficultyEvidence: Uses the left-tail cutoff orientation and evaluates the resulting limit with a negative infinite bound.
+  prerequisiteObjectiveIds: [calc2-improper-identify-and-limit]
 - id: q004
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=1)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  type: multipleChoice
+  prompt: 'Which setup is correct for $\int_0^1\ln x\,dx$?'
+  choices: [{ id: a, text: '$\lim_{t\to0^+}\int_t^1\ln x\,dx$' }, { id: b, text: '$\lim_{t\to\infty}\int_0^t\ln x\,dx$' }, { id: c, text: '$\int_0^1\ln0\,dx$' }, { id: d, text: 'No limit is required because ln x is integrable' }]
+  answer: { choiceId: a }
+  explanation: 'Although ln x has a finite integral, it is undefined at zero. The definition still requires the lower cutoff to approach zero from the right.'
+  difficultyDimensions: [domainCondition, representationTransfer]
+  difficultyEvidence: Recognizes a finite-endpoint singularity and selects its one-sided limit definition.
+  prerequisiteObjectiveIds: [calc2-improper-identify-and-limit]
 - id: q005
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{2}{\left(x \right)} \cos{\left(x \right)}
-    \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{3}{\left(x \right)}}{3} + C
-  explanation: Use trigonometric identities to simplify and integrate.
+  type: multipleChoice
+  prompt: 'Does $\int_0^1\ln x\,dx$ converge, and if so to what value?'
+  choices: [{ id: a, text: 'It converges to $-1$.' }, { id: b, text: 'It diverges because ln 0 is undefined.' }, { id: c, text: 'It converges to 0.' }, { id: d, text: 'It diverges to negative infinity.' }]
+  answer: { choiceId: a }
+  explanation: 'Evaluate $\lim_{t\to0^+}[x\ln x-x]_t^1$. The lower expression tends to zero, so the result is -1; undefined integrand values do not automatically force divergence.'
+  difficultyDimensions: [auxiliaryTechnique, errorDiagnosis]
+  difficultyEvidence: Evaluates an endpoint limit and rejects the false rule that every undefined endpoint makes an integral diverge.
+  prerequisiteObjectiveIds: [calc2-improper-identify-and-limit]
 - id: q006
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=10)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  type: multipleChoice
+  prompt: 'For $\int_0^2 1/(x-1)^2\,dx$, what is the first required action?'
+  choices: [{ id: a, text: 'Split at x=1 into two one-sided limits.' }, { id: b, text: 'Integrate from 0 to 2 without changing anything.' }, { id: c, text: 'Use a symmetric principal value.' }, { id: d, text: 'Replace x=1 by zero.' }]
+  answer: { choiceId: a }
+  explanation: 'The denominator vanishes at an interior point. Ordinary improper integration requires independent left and right limits, and either divergent component makes the full integral diverge.'
+  difficultyDimensions: [modelOrDerivation, casePartition]
+  difficultyEvidence: Detects an interior singularity and partitions the integral into the two required cases.
+  prerequisiteObjectiveIds: [calc2-improper-split-and-evaluate]
 - id: q007
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=6)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  type: multipleChoice
+  prompt: 'Which integral diverges by comparison with $\int_1^\infty1/x\,dx$?'
+  choices: [{ id: a, text: '$\int_1^\infty 1/\sqrt{x^2+1}\,dx$' }, { id: b, text: '$\int_1^\infty1/(x^2+1)\,dx$' }, { id: c, text: '$\int_1^\infty e^{-x}\,dx$' }, { id: d, text: '$\int_1^\infty1/x^3\,dx$' }]
+  answer: { choiceId: a }
+  explanation: 'For x at least one, $\sqrt{x^2+1}\le\sqrt2x$, so the integrand is at least $1/(\sqrt2x)$. That divergent harmonic-size comparison proves divergence.'
+  difficultyDimensions: [simplification, proofJustification]
+  difficultyEvidence: Establishes a useful denominator bound and uses it in the divergent direct-comparison direction.
+  prerequisiteObjectiveIds: [calc2-improper-classify-by-comparison]
 - id: q008
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
+  type: multipleChoice
+  prompt: 'Which statement about $\int_{-\infty}^{\infty}f(x)\,dx$ is required for ordinary convergence?'
+  choices: [{ id: a, text: 'Both one-sided tails must converge separately.' }, { id: b, text: 'Only their symmetric sum must have a finite limit.' }, { id: c, text: 'f must be even.' }, { id: d, text: 'f must be positive.' }]
+  answer: { choiceId: a }
+  explanation: 'Choose any finite split point and test the left and right tails independently. A principal-value cancellation is not the same as convergence of the ordinary improper integral.'
+  difficultyDimensions: [casePartition, errorDiagnosis]
+  difficultyEvidence: Splits a two-tailed integral and distinguishes ordinary convergence from a principal-value shortcut.
+  prerequisiteObjectiveIds: [calc2-improper-split-and-evaluate]
 - id: q009
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{2 x + 3}{\left(x - 1\right) \left(x
-    + 4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \log{\left(x^{2} + 3 x - 4 \right)} + C
-  explanation: Use partial fraction decomposition.
+  type: multipleChoice
+  prompt: 'Use limit comparison to classify $\int_1^\infty(3x^2+1)/(x^4+5)\,dx$.'
+  choices: [{ id: a, text: 'Converges; its ratio to 3/x squared tends to 1.' }, { id: b, text: 'Diverges; every rational tail diverges.' }, { id: c, text: 'Diverges; the numerator has degree 2.' }, { id: d, text: 'Converges only as a principal value.' }]
+  answer: { choiceId: a }
+  explanation: 'The leading terms give $(3x^2)/(x^4)=3/x^2$. Their ratio tends to one, so the integrand has the same convergent behavior as a p equals two tail.'
+  difficultyDimensions: [simplification, representationTransfer]
+  difficultyEvidence: Extracts leading-term behavior and transfers it through a limit-comparison argument.
+  prerequisiteObjectiveIds: [calc2-improper-classify-by-comparison]
 - id: q010
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=4)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q011
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{4 x + 1}{\left(x - 1\right) \left(x
-    + 3\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{5 \log{\left(x - 1 \right)}}{4} + \frac{11 \log{\left(x + 3
-      \right)}}{4} + C
-  explanation: Use partial fraction decomposition.
-- id: q012
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 2}{\left(x - 1\right) \left(x +
-    4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{3 \log{\left(x - 1 \right)}}{5} + \frac{2 \log{\left(x + 4 \right)}}{5}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q013
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{3}{\left(x \right)} \cos^{4}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\cos^{7}{\left(x \right)}}{7} - \frac{\cos^{5}{\left(x \right)}}{5}
-      + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q014
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 5 x e^{4 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(20 x - 5\right) e^{4 x}}{16} + C
-  explanation: Use integration by parts with u = 5x and dv = e^{4 x} dx.
-- id: q015
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{3 x + 2}{\left(x - 1\right) \left(x
-    + 1\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{5 \log{\left(x - 1 \right)}}{2} + \frac{\log{\left(x + 1 \right)}}{2}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q016
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
-- id: q017
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int x e^{5 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(5 x - 1\right) e^{5 x}}{25} + C
-  explanation: Use integration by parts with u = 1x and dv = e^{5 x} dx.
-- id: q018
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 5 x \sin{\left(2 x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- \frac{5 x \cos{\left(2 x \right)}}{2} + \frac{5 \sin{\left(2 x
-      \right)}}{4} + C'
-  explanation: Use integration by parts with u = 5x and dv = \sin{\left(2 x \right)}
-    dx.
-- id: q019
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{2}{\left(x \right)} \cos^{5}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{7}{\left(x \right)}}{7} - \frac{2 \sin^{5}{\left(x \right)}}{5}
-      + \frac{\sin^{3}{\left(x \right)}}{3} + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q020
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{4 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 4}}{4 x} & \text{for}\: \left|{x^{2}}\right|
-      > 4 \\- \frac{\sqrt{4 - x^{2}}}{4 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 2\sin\theta.
-- id: q021
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int x \cos{\left(4 x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{x \sin{\left(4 x \right)}}{4} + \frac{\cos{\left(4 x \right)}}{16}
-      + C
-  explanation: Use integration by parts with u = 1x and dv = \cos{\left(4 x \right)}
-    dx.
-- id: q022
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 2}{\left(x - 1\right) \left(x +
-    3\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{3 \log{\left(x - 1 \right)}}{4} + \frac{\log{\left(x + 3 \right)}}{4}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q023
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
-- id: q024
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 2 x e^{2 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(2 x - 1\right) e^{2 x}}{2} + C
-  explanation: Use integration by parts with u = 2x and dv = e^{2 x} dx.
-- id: q025
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int x e^{5 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(5 x - 1\right) e^{5 x}}{25} + C
-  explanation: Use integration by parts with u = 1x and dv = e^{5 x} dx.
-- id: q026
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 5 x e^{4 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(20 x - 5\right) e^{4 x}}{16} + C
-  explanation: Use integration by parts with u = 5x and dv = e^{4 x} dx.
-- id: q027
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=1)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q028
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=9)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q029
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 4}{\left(x - 1\right) \left(x +
-    3\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{5 \log{\left(x - 1 \right)}}{4} - \frac{\log{\left(x + 3 \right)}}{4}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q030
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{1 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 1}}{x} & \text{for}\: \left|{x^{2}}\right|
-      > 1 \\- \frac{\sqrt{1 - x^{2}}}{x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 1\sin\theta.
+  type: multipleChoice
+  prompt: 'If one component of a split improper integral diverges, what is the classification of the original integral?'
+  choices: [{ id: a, text: 'It diverges.' }, { id: b, text: 'It converges if the other component is finite.' }, { id: c, text: 'It has principal-value convergence.' }, { id: d, text: 'It is automatically zero.' }]
+  answer: { choiceId: a }
+  explanation: 'The definition requires every component limit to be finite. There is no cancellation rule in the ordinary definition, so one divergent side decides the whole integral.'
+  difficultyDimensions: [proofJustification, errorDiagnosis]
+  difficultyEvidence: Applies the all-components requirement and rejects cancellation as a substitute for convergence.
+  prerequisiteObjectiveIds: [calc2-improper-split-and-evaluate]

@@ -1,0 +1,62 @@
+schemaVersion: 1
+id: cpp-types-variables-hard-quiz
+title: C++ Types, Variables, and I/O Hard Quiz
+assessmentType: quiz
+categoryId: c++
+topicId: c++-types-and-variables
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 10
+navigation: { learningGoal: practice, activityType: mixedPractice, tags: [c++, c++-types-and-variables, input-validation, stream-recovery] }
+authoring: { visualRequirement: notApplicable, visualRationale: These are code and failure-state transfer scenarios; the lesson and worked example provide the stream-flow representation., difficultyTier: hard }
+questions:
+- id: q001
+  type: freeResponse
+  prompt: A loop reads `double value` until valid input. Explain why calling only `std::cin.clear()` after `abc` causes a repeated failure, then give the second recovery operation needed.
+  answer: { gradingMode: selfCheck, keyPoints: [Bad token remains buffered, clear resets flags only, ignore discards through newline] }
+  explanation: '`clear()` resets the fail state but leaves `abc` in the buffer, so the next extraction sees it again. Follow it with `ignore(std::numeric_limits<std::streamsize>::max(), "\\n")` to discard the bad line.'
+- id: q002
+  type: freeResponse
+  prompt: Write a short condition that reads an `int count` and a `double price` and performs work only if both extractions succeed.
+  answer: { gradingMode: selfCheck, keyPoints: ['std::cin >> count >> price', Used as if condition, Work in success branch] }
+  explanation: Use `if (std::cin >> count >> price) { ... }`. Chained extraction stops at the first failure and the stream condition is true only when both reads succeed.
+- id: q003
+  type: freeResponse
+  prompt: Explain why `int total{};` is safer than `int total;` before an accumulation loop.
+  answer: { gradingMode: selfCheck, keyPoints: [Value initialization, Starts at zero, Avoids using indeterminate value] }
+  explanation: The braces value-initialize `total` to zero. An uninitialized local integer has no intended starting value, so adding to it makes the result unreliable.
+- id: q004
+  type: freeResponse
+  prompt: A program must preserve the text `Ada Lovelace` after it first reads an integer ID with `>>`. State the input operation and the newline-handling step required.
+  answer: { gradingMode: selfCheck, keyPoints: [getline for complete line, Consume pending newline/whitespace, cin extraction stops at whitespace] }
+  explanation: Use `std::getline(std::cin >> std::ws, name)` or discard the pending newline first. `operator>>` would keep only `Ada`, and the preceding ID read leaves a newline behind.
+- id: q005
+  type: freeResponse
+  prompt: Compare `const auto limit = 100;` with `auto limit = 100;`. State both the deduced type and the mutability difference.
+  answer: { gradingMode: selfCheck, keyPoints: [Both deduce int, First is const, Second may be assigned later] }
+  explanation: Both initializers deduce `int`. Adding `const` makes the first variable read-only after initialization, while the second can receive another `int` value.
+- id: q006
+  type: freeResponse
+  prompt: A user enters `12oops` for an integer. Explain why a successful extraction does not necessarily mean the entire input line was a valid integer and what a stricter program should inspect.
+  answer: { gradingMode: selfCheck, keyPoints: [Extraction can consume numeric prefix, Remaining characters stay in stream, Check/discard remainder or parse full line] }
+  explanation: Formatted extraction may read the leading `12` and leave `oops` buffered. A stricter input contract should inspect the remaining line or read the full line and validate it before conversion.
+- id: q007
+  type: freeResponse
+  prompt: Give a reason to use `double` rather than `int` for a monetary calculation before formatting the result, and state where formatting belongs.
+  answer: { gradingMode: selfCheck, keyPoints: [Fractional values, int truncates, Format at output boundary] }
+  explanation: A price can include a fractional component, which an `int` cannot represent. Keep it numeric while calculating and convert it to presentation text when writing output.
+- id: q008
+  type: freeResponse
+  prompt: Design two tests for a function that returns `bool` and writes a parsed `double` through a reference parameter.
+  answer: { gradingMode: selfCheck, keyPoints: [Valid input true/output updated, Invalid input false, Both outputs checked] }
+  explanation: Test a stream containing a number and expect `true` with the reference updated; test a stream containing an invalid token and expect `false`. This covers the helper's success and failure contract.
+- id: q009
+  type: freeResponse
+  prompt: Explain the difference between declaring `std::string name{};` and assigning `name = "Ada";` later.
+  answer: { gradingMode: selfCheck, keyPoints: [Declaration creates/initializes variable, Later assignment changes existing value, Empty string initial state] }
+  explanation: The declaration creates `name` as an empty string. The later assignment replaces its current contents with `Ada`; the operations happen at different points in the variable's lifetime.
+- id: q010
+  type: freeResponse
+  prompt: A program retries after bad input but prints the old numeric value on failure. Identify the control-flow mistake and a safe alternative.
+  answer: { gradingMode: selfCheck, keyPoints: [Uses value despite failed extraction, Guard output in success branch, Report error/recover otherwise] }
+  explanation: Failed extraction must not fall through to code that uses the prior value. Put calculation/output inside the successful extraction branch and recover/report the error on the other branch.

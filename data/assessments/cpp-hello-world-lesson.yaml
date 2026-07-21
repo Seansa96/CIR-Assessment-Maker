@@ -1,69 +1,147 @@
 schemaVersion: 1
 id: cpp-hello-world-lesson
-title: Cpp Hello World - Concept Lesson
-description: Interactive exploration of the concepts.
+title: C++ Hello, World! - Concept Lesson
+description: Build, run, and diagnose a first C++ program.
 assessmentType: conceptLesson
 categoryId: c++
 topicId: cpp-hello-world
-skills:
-- Apply Hello, World!
-- cpp
-- c-plus-plus
-- cpp-hello-world
+skills: [cpp, c-plus-plus, cpp-hello-world, compilation, console-output]
 difficulty: 2
 navigation:
   learningGoal: learn
   activityType: conceptLesson
-  tags:
-  - c++
-  - cpp-hello-world
-  - cpp
-  - lesson
-  - c-plus-plus
-  - conceptlesson
-  - learn
-  - hello
-  - world
-  - concept
+  tags: [c++, cpp, cpp-hello-world, lesson, compilation, output]
 mediaPath: assets/cpp/cpp-hello-world.svg
 lesson:
-  introduction: Welcome to the cpp-hello-world lesson. Here we will explore the underlying
-    concepts.
+  introduction: |
+    A C++ program is not run directly from the file you type. You write source code, a compiler checks and translates it, and a linker combines the resulting pieces into a program. This lesson uses a small greeting to make that pipeline concrete.
   sections:
-  - id: introduction
-    title: Introduction
-    content: 'Welcome to the cpp-hello-world lesson.
-
-
-      Here we will explore the underlying concepts.'
+  - id: source-to-program
+    title: 1. From source file to runnable program
+    required: true
+    content: |
+      Save C++ source in a file such as `hello.cpp`. A compiler reads its declarations and statements and produces object code. The linker then supplies library pieces and produces an executable. A compile error means the source violates a language rule; a link error often means a declared function or library facility could not be found.
+    media:
+    - type: image
+      src: assets/cpp/cpp-hello-world.svg
+      alt: Flow diagram showing hello.cpp flowing through compiler and linker to an executable, then console output.
+      caption: Build stages happen before the program can print anything.
     check:
       id: cpp-hello-world-check-1
       type: multipleChoice
-      prompt: What is the primary focus of this lesson?
+      prompt: Which stage combines object code and required library pieces into a runnable program?
       choices:
       - id: a
-        text: Learning the core concepts
+        text: The linker
       - id: b
-        text: Writing a full application
+        text: The text editor
       - id: c
-        text: Debugging assembly code
-      answer:
-        choiceId: a
-      explanation: This lesson introduces the theoretical and practical foundations.
-  - id: practical-application
-    title: Practical Application
-    content: Let's see how this works in C++ code.
+        text: std::cout
+      answer: { choiceId: a }
+      explanation: The compiler translates source; the linker combines the translated pieces and libraries.
+  - id: main-entry
+    title: 2. Start at main
+    required: true
+    content: |
+      Every hosted C++ program has one `main` function as its entry point. Its header gives a return type, its name, and parentheses for parameters. The braces delimit its body. `int main()` can finish without an explicit `return 0;`; normal completion reports success.
     check:
       id: cpp-hello-world-check-2
-      type: code
-      prompt: Write a short C++ snippet demonstrating this concept.
-      language: cpp
-      functionName: main
-      starterCode: "int main() {\n  // Your code here\n  return 0;\n}"
-      validationMode: unitTests
-      tests:
-      - input: test
-        expected: expected
-        isHidden: false
-      explanation: A complete implementation will compile and produce the correct
-        output.
+      type: multipleChoice
+      prompt: What is the role of the braces in `int main() { ... }`?
+      choices:
+      - id: a
+        text: They enclose the statements belonging to main.
+      - id: b
+        text: They import the standard library.
+      - id: c
+        text: They print a newline.
+      answer: { choiceId: a }
+      explanation: Braces form the function body and its block scope.
+  - id: header-and-namespace
+    title: 3. Make an output facility available
+    required: true
+    content: |
+      Library facilities must be declared before use. The broadly supported console-output approach includes `<iostream>` and writes through `std::cout`. The `std::` prefix says to look in the standard-library namespace. A newer toolchain may offer `<print>` and `std::println`, but a missing-header diagnostic is a compatibility signal, not a reason to remove the prefix.
+    check:
+      id: cpp-hello-world-check-3
+      type: multipleChoice
+      prompt: Why does `std::cout` include `std::`?
+      choices:
+      - id: a
+        text: cout is named in the standard-library namespace.
+      - id: b
+        text: It converts text to an integer.
+      - id: c
+        text: It terminates the program.
+      answer: { choiceId: a }
+      explanation: The scope-resolution operator qualifies the library name.
+  - id: statement-flow
+    title: 4. Read the greeting in execution order
+    required: true
+    content: |
+      In `std::cout << "Hello, world!\n";`, execution reaches `main`, sends characters into the standard output stream, then reaches the end of the function. The semicolon ends the statement. `\n` requests a new line; it is different from the two visible characters backslash and n in ordinary prose.
+    check:
+      id: cpp-hello-world-check-4
+      type: multipleChoice
+      prompt: What does the `\n` in an output string request?
+      choices:
+      - id: a
+        text: A new output line
+      - id: b
+        text: A new namespace
+      - id: c
+        text: A compiler warning
+      answer: { choiceId: a }
+      explanation: The newline escape sequence advances subsequent output to the next line.
+  - id: incremental-example
+    title: 5. Grow a tiny status program
+    required: true
+    content: |
+      Start with a compiling skeleton, then add one behavior at a time:
+
+      ```cpp
+      #include <iostream>
+
+      int main() {
+        std::cout << "Starting check...\n";
+        std::cout << "Ready\n";
+      }
+      ```
+
+      This is deliberately small: the header supplies the declaration, `main` is the entry point, and each output statement has a semicolon. Build after each small edit so an error is close to the change that caused it.
+  - id: warnings-and-standards
+    title: 6. Treat diagnostics as evidence
+    required: true
+    content: |
+      Ask for warnings and select the intended language version in your build settings. For GCC or Clang, a command such as `g++ -Wall -std=c++23 hello.cpp -o hello` makes both choices explicit. If a feature such as `<print>` is unavailable, inspect the compiler version and language-standard setting; use the compatible `iostream` route when appropriate.
+    check:
+      id: cpp-hello-world-check-5
+      type: multipleChoice
+      prompt: A compiler reports that `<print>` is unavailable. What is the best first diagnosis?
+      choices:
+      - id: a
+        text: The compiler or selected standard may not support that C++23 facility.
+      - id: b
+        text: main must return a string.
+      - id: c
+        text: Output streams cannot print text.
+      answer: { choiceId: a }
+      explanation: Library availability depends on the toolchain and selected language mode.
+  - id: common-failures
+    title: 7. Debug by classifying the failure
+    required: true
+    content: |
+      Missing `#include <iostream>` can make `std::cout` unknown. Omitting `std::` asks for a different name. Omitting a semicolon produces a syntax diagnostic near the next token. A program that builds but shows no intended text should be run from the location where the executable was produced. Read the first useful diagnostic, repair that cause, and build again.
+  - id: knowledge-check
+    title: 8. Explain the complete path
+    required: true
+    content: |
+      You can now trace a simple program from source file to visible text and distinguish syntax, library, build, and execution problems. The next chapter adds input, so output will become feedback to the person running the program.
+    check:
+      id: cpp-hello-world-check-6
+      type: freeResponse
+      prompt: In two or three sentences, explain why a C++ program using `std::cout` needs both a header and the `std::` qualifier.
+      answer:
+        gradingMode: selfCheck
+        keyPoints: [Identifies iostream as the declaration source, Identifies std as the standard-library namespace, Connects both to a compiler name lookup failure]
+      explanation: Compare your answer with the three key points.

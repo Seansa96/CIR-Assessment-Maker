@@ -1,0 +1,52 @@
+schemaVersion: 1
+id: cpp-functions-foundations-worked-example
+title: 'C++ Functions Worked Examples: Contracts and Tests'
+assessmentType: workedExample
+categoryId: c++
+topicId: c++-functions
+modeDefault: practice
+randomizeQuestions: false
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [c++, c++-functions, declarations, parameters, testing] }
+authoring: { visualRequirement: notApplicable, visualRationale: The worked examples use executable interface and call-flow code traces; no separate spatial or interface visual is needed. }
+workedExamples:
+- id: cpp-functions-return-contract
+  title: Define and Test a Return-Value Function
+  problem: Build `int square(int value)` and decide what a minimal test set should observe.
+  steps:
+  - id: cpp-functions-return-contract-1
+    title: State the interface
+    instruction: The caller supplies one integer and receives one integer result.
+    type: freeResponse
+    prompt: Write a declaration for `square` before `main`.
+    answer: { gradingMode: selfCheck, keyPoints: ['Return type `int`', 'Function name `square`', 'One `int` parameter', 'A trailing semicolon'] }
+    explanation: '`int square(int value);` states the return type, function name, and parameter type without duplicating the implementation.'
+  - id: cpp-functions-return-contract-2
+    title: Implement and check boundaries
+    instruction: The implementation multiplies the parameter by itself; test a positive, zero, and negative input.
+    type: code
+    prompt: Implement `int square(int value)`.
+    language: cpp
+    functionName: square
+    starterCode: 'int square(int value) {\n  return 0;\n}'
+    tests: [{ input: '3', expected: '9' }, { input: '0', expected: '0' }, { input: '-4', expected: '16' }]
+    answer: {}
+    explanation: '`return value * value;` uses only the local parameter and returns an `int`. The negative case confirms that multiplication, not a sign-based shortcut, defines the contract.'
+- id: cpp-functions-reference-contract
+  title: Report Success and Update an Output Reference
+  problem: A helper reads a number from a stream, returns whether it succeeded, and writes the result through a `double&` output parameter.
+  steps:
+  - id: cpp-functions-reference-contract-1
+    title: Choose parameter modes
+    instruction: The stream is consumed, the output value may change, and the caller needs a success/failure result.
+    type: multipleChoice
+    prompt: Which signature best represents the helper?
+    choices: [{ id: a, text: '`bool get_number(std::istream& input, double& value);`' }, { id: b, text: '`double get_number(int input);`' }, { id: c, text: '`void get_number(const double& value);`' }, { id: d, text: '`bool get_number(double value);`' }]
+    answer: { choiceId: a }
+    explanation: The stream and output need reference semantics, while `bool` communicates whether the extraction succeeded.
+  - id: cpp-functions-reference-contract-2
+    title: Test both observable outcomes
+    instruction: A good test checks one input that updates the caller and one that reports failure.
+    type: freeResponse
+    prompt: Name the two minimum test cases and the expected observable result for each.
+    answer: { gradingMode: selfCheck, keyPoints: [Valid numeric input returns true and updates output value, Invalid token returns false, Caller can distinguish outcomes] }
+    explanation: Use a valid stream such as `"1.5"` to expect `true` and `value == 1.5`, then an invalid stream such as `"oops"` to expect `false`. These tests cover both sides of the helper's contract.

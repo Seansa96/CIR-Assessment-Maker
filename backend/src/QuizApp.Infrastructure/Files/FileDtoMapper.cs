@@ -19,7 +19,11 @@ public static class FileDtoMapper
                     PrerequisiteIds = subcategory.PrerequisiteIds ?? new List<string>()
                 })
                 .ToList(),
-            dto.Description);
+            dto.Description)
+        {
+            AuthoringProfile = ParseAuthoringProfile(dto.AuthoringProfile),
+            DirectedProjectEligible = dto.DirectedProjectEligible ?? false
+        };
     }
 
     public static AppSettings ToDomain(this SettingsFileDto dto)
@@ -101,6 +105,21 @@ public static class FileDtoMapper
                 dto.Navigation.ActivityType,
                 dto.Navigation.Tags ?? new List<string>()),
             Skills = dto.Skills ?? new List<string>()
+            ,Authoring = dto.Authoring is null ? null : new AssessmentAuthoringMetadata(
+                ParseVisualRequirement(dto.Authoring.VisualRequirement),
+                dto.Authoring.VisualRationale,
+                ParseDifficultyTier(dto.Authoring.DifficultyTier),
+                dto.Authoring.ExceptionReason,
+                dto.Authoring.PhysicsModel is null ? null : new PhysicsModelAuthoringMetadata
+                {
+                    ModelId = ParsePhysicsAnalysisModel(dto.Authoring.PhysicsModel.ModelId),
+                    ModelRole = ParsePhysicsModelRole(dto.Authoring.PhysicsModel.ModelRole),
+                    RequiredRepresentations = (dto.Authoring.PhysicsModel.RequiredRepresentations ?? new List<string>())
+                        .Select(ParsePhysicsRepresentation)
+                        .Where(representation => representation is not null)
+                        .Select(representation => representation!.Value)
+                        .ToList()
+                })
         };
     }
 
@@ -149,6 +168,19 @@ public static class FileDtoMapper
                 Tags = assessment.Navigation.Tags.ToList()
             },
             Skills = assessment.Skills.ToList()
+            ,Authoring = assessment.Authoring is null ? null : new AssessmentAuthoringFileDto
+            {
+                VisualRequirement = ToWireValue(assessment.Authoring.VisualRequirement),
+                VisualRationale = assessment.Authoring.VisualRationale,
+                DifficultyTier = ToWireValue(assessment.Authoring.DifficultyTier),
+                ExceptionReason = assessment.Authoring.ExceptionReason,
+                PhysicsModel = assessment.Authoring.PhysicsModel is null ? null : new PhysicsModelAuthoringFileDto
+                {
+                    ModelId = ToWireValue(assessment.Authoring.PhysicsModel.ModelId),
+                    ModelRole = ToWireValue(assessment.Authoring.PhysicsModel.ModelRole),
+                    RequiredRepresentations = assessment.Authoring.PhysicsModel.RequiredRepresentations.Select(ToWireValue).ToList()
+                }
+            }
         };
     }
 
@@ -655,7 +687,12 @@ public static class FileDtoMapper
             CodeQuestion = ToCodeQuestion(dto),
             CircuitQuestion = ToDomain(dto.CircuitQuestion),
             GraphingQuestion = ToDomain(dto.GraphingQuestion),
-            Skills = dto.Skills ?? new List<string>()
+            Skills = dto.Skills ?? new List<string>(),
+            DifficultyDimensions = (dto.DifficultyDimensions ?? new List<string>()).Select(ParseDifficultyDimension).ToList(),
+            SubjectDifficultyTags = dto.SubjectDifficultyTags ?? new List<string>(),
+            DifficultyEvidence = dto.DifficultyEvidence,
+            PrerequisiteObjectiveIds = dto.PrerequisiteObjectiveIds ?? new List<string>(),
+            ExtensionObjectiveIds = dto.ExtensionObjectiveIds ?? new List<string>()
         };
     }
 
@@ -700,7 +737,12 @@ public static class FileDtoMapper
             }).ToList(),
             CircuitQuestion = ToDto(question.CircuitQuestion),
             GraphingQuestion = ToDto(question.GraphingQuestion),
-            Skills = question.Skills.ToList()
+            Skills = question.Skills.ToList(),
+            DifficultyDimensions = question.DifficultyDimensions.Select(ToWireValue).ToList(),
+            SubjectDifficultyTags = question.SubjectDifficultyTags.ToList(),
+            DifficultyEvidence = question.DifficultyEvidence,
+            PrerequisiteObjectiveIds = question.PrerequisiteObjectiveIds.ToList(),
+            ExtensionObjectiveIds = question.ExtensionObjectiveIds.ToList()
         };
     }
 
@@ -757,6 +799,79 @@ public static class FileDtoMapper
             _ => AssessmentType.Unknown
         };
     }
+
+    private static AuthoringProfile ParseAuthoringProfile(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "stem" => AuthoringProfile.Stem,
+        "nonstem" or "non-stem" => AuthoringProfile.NonStem,
+        _ => AuthoringProfile.Unknown
+    };
+
+    private static VisualRequirement ParseVisualRequirement(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "required" => VisualRequirement.Required,
+        "notapplicable" or "not-applicable" => VisualRequirement.NotApplicable,
+        _ => VisualRequirement.Unspecified
+    };
+
+    private static PhysicsAnalysisModel ParsePhysicsAnalysisModel(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "forcemodel" or "force-model" => PhysicsAnalysisModel.ForceModel,
+        "freebodydiagram" or "free-body-diagram" => PhysicsAnalysisModel.FreeBodyDiagram,
+        "inclinedplane" or "inclined-plane" => PhysicsAnalysisModel.InclinedPlane,
+        "connectedsystem" or "connected-system" => PhysicsAnalysisModel.ConnectedSystem,
+        "staticequilibrium" or "static-equilibrium" => PhysicsAnalysisModel.StaticEquilibrium,
+        "friction" => PhysicsAnalysisModel.Friction,
+        "uniformcircularmotion" or "uniform-circular-motion" => PhysicsAnalysisModel.UniformCircularMotion,
+        _ => PhysicsAnalysisModel.Unspecified
+    };
+
+    private static PhysicsModelRole ParsePhysicsModelRole(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "foundation" => PhysicsModelRole.Foundation,
+        "application" => PhysicsModelRole.Application,
+        "synthesis" => PhysicsModelRole.Synthesis,
+        _ => PhysicsModelRole.Unspecified
+    };
+
+    private static PhysicsRepresentation? ParsePhysicsRepresentation(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "systemboundary" or "system-boundary" => PhysicsRepresentation.SystemBoundary,
+        "freebodydiagram" or "free-body-diagram" => PhysicsRepresentation.FreeBodyDiagram,
+        "coordinateaxes" or "coordinate-axes" => PhysicsRepresentation.CoordinateAxes,
+        "forcecomponents" or "force-components" => PhysicsRepresentation.ForceComponents,
+        "motionconstraint" or "motion-constraint" => PhysicsRepresentation.MotionConstraint,
+        "interactionpair" or "interaction-pair" => PhysicsRepresentation.InteractionPair,
+        "radialdirection" or "radial-direction" => PhysicsRepresentation.RadialDirection,
+        _ => null
+    };
+
+    private static AssessmentDifficultyTier ParseDifficultyTier(string? value) => value?.Trim().ToLowerInvariant() switch
+    {
+        "easy" => AssessmentDifficultyTier.Easy,
+        "hard" => AssessmentDifficultyTier.Hard,
+        "olympiad" => AssessmentDifficultyTier.Olympiad,
+        _ => AssessmentDifficultyTier.Unspecified
+    };
+
+    private static DifficultyDimension ParseDifficultyDimension(string? value) => Normalize(value) switch
+    {
+        "simplification" => DifficultyDimension.Simplification,
+        "identitycreation" => DifficultyDimension.IdentityConstruction,
+        "auxiliarytechnique" => DifficultyDimension.AuxiliaryTechnique,
+        "modelorderivation" => DifficultyDimension.ModelOrDerivation,
+        "domaincondition" => DifficultyDimension.DomainCondition,
+        "casepartition" => DifficultyDimension.CasePartition,
+        "parameterthreshold" => DifficultyDimension.ParameterThreshold,
+        "reversereasoning" => DifficultyDimension.ReverseReasoning,
+        "proofjustification" => DifficultyDimension.ProofJustification,
+        "representationtransfer" => DifficultyDimension.RepresentationTransfer,
+        "errordiagnosis" => DifficultyDimension.ErrorDiagnosis,
+        "estimationorbounds" => DifficultyDimension.EstimationOrBounds,
+        "globallocalreasoning" => DifficultyDimension.GlobalLocalReasoning,
+        "counterexampleorconstruction" => DifficultyDimension.CounterexampleOrConstruction,
+        _ => DifficultyDimension.Unknown
+    };
 
     private static RecallItemType ParseRecallItemType(string? value)
     {
@@ -822,6 +937,79 @@ public static class FileDtoMapper
     {
         return mode is AssessmentMode.Scored ? "scored" : "practice";
     }
+
+    private static string ToWireValue(AuthoringProfile profile) => profile switch
+    {
+        AuthoringProfile.Stem => "stem",
+        AuthoringProfile.NonStem => "nonStem",
+        _ => "unknown"
+    };
+
+    private static string ToWireValue(VisualRequirement requirement) => requirement switch
+    {
+        VisualRequirement.Required => "required",
+        VisualRequirement.NotApplicable => "notApplicable",
+        _ => "unspecified"
+    };
+
+    private static string ToWireValue(AssessmentDifficultyTier tier) => tier switch
+    {
+        AssessmentDifficultyTier.Easy => "easy",
+        AssessmentDifficultyTier.Hard => "hard",
+        AssessmentDifficultyTier.Olympiad => "olympiad",
+        _ => "unspecified"
+    };
+
+    private static string ToWireValue(PhysicsAnalysisModel model) => model switch
+    {
+        PhysicsAnalysisModel.ForceModel => "forceModel",
+        PhysicsAnalysisModel.FreeBodyDiagram => "freeBodyDiagram",
+        PhysicsAnalysisModel.InclinedPlane => "inclinedPlane",
+        PhysicsAnalysisModel.ConnectedSystem => "connectedSystem",
+        PhysicsAnalysisModel.StaticEquilibrium => "staticEquilibrium",
+        PhysicsAnalysisModel.Friction => "friction",
+        PhysicsAnalysisModel.UniformCircularMotion => "uniformCircularMotion",
+        _ => "unspecified"
+    };
+
+    private static string ToWireValue(PhysicsModelRole role) => role switch
+    {
+        PhysicsModelRole.Foundation => "foundation",
+        PhysicsModelRole.Application => "application",
+        PhysicsModelRole.Synthesis => "synthesis",
+        _ => "unspecified"
+    };
+
+    private static string ToWireValue(PhysicsRepresentation representation) => representation switch
+    {
+        PhysicsRepresentation.SystemBoundary => "systemBoundary",
+        PhysicsRepresentation.FreeBodyDiagram => "freeBodyDiagram",
+        PhysicsRepresentation.CoordinateAxes => "coordinateAxes",
+        PhysicsRepresentation.ForceComponents => "forceComponents",
+        PhysicsRepresentation.MotionConstraint => "motionConstraint",
+        PhysicsRepresentation.InteractionPair => "interactionPair",
+        PhysicsRepresentation.RadialDirection => "radialDirection",
+        _ => "unknown"
+    };
+
+    private static string ToWireValue(DifficultyDimension dimension) => dimension switch
+    {
+        DifficultyDimension.Simplification => "simplification",
+        DifficultyDimension.IdentityConstruction => "identityConstruction",
+        DifficultyDimension.AuxiliaryTechnique => "auxiliaryTechnique",
+        DifficultyDimension.ModelOrDerivation => "modelOrDerivation",
+        DifficultyDimension.DomainCondition => "domainCondition",
+        DifficultyDimension.CasePartition => "casePartition",
+        DifficultyDimension.ParameterThreshold => "parameterThreshold",
+        DifficultyDimension.ReverseReasoning => "reverseReasoning",
+        DifficultyDimension.ProofJustification => "proofJustification",
+        DifficultyDimension.RepresentationTransfer => "representationTransfer",
+        DifficultyDimension.ErrorDiagnosis => "errorDiagnosis",
+        DifficultyDimension.EstimationOrBounds => "estimationOrBounds",
+        DifficultyDimension.GlobalLocalReasoning => "globalLocalReasoning",
+        DifficultyDimension.CounterexampleOrConstruction => "counterexampleOrConstruction",
+        _ => "unknown"
+    };
 
     private static string ToWireValue(AssessmentType assessmentType)
     {

@@ -4,54 +4,30 @@ title: Improper Integrals Worked Examples
 assessmentType: workedExample
 categoryId: calculus-2
 topicId: improper-integrals
-skills:
-- Rewrite improper integrals as limits
-- Determine convergence at infinite bounds and singularities
-- Split integrals at interior discontinuities
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-  - calc2
-  - practice
-  - calculus-2
-  - improper-integrals
 modeDefault: practice
 randomizeQuestions: false
+skills: [improper-integral-limits, split-improper-integrals, p-test, comparison-test]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [calculus-2, improper-integrals, worked-example] }
+authoring: { visualRequirement: required, visualRationale: The limit map supports correct setup for each defect type. }
 workedExamples:
-- id: we-improper-integrals-1
-  title: Example 1 for Improper Integrals
-  problem: 'Evaluate the integral: \(\int \frac{4 x + 1}{\left(x - 1\right) \left(x + 2\right)} \, dx\)'
+- id: tail-power
+  title: Evaluate a convergent infinite tail
+  problem: 'Evaluate $\int_1^\infty 3/x^2\,dx$ and state why the result is finite.'
   steps:
-  - id: step-improper-integrals-1-1
-    title: Analyze and set up
-    instruction: Use partial fraction decomposition....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-improper-integrals-2
-  title: Example 2 for Improper Integrals
-  problem: 'Evaluate the integral: \(\int \sin{\left(x \right)} \cos^{3}{\left(x \right)} \, dx\)'
+  - { id: tail-1, title: Diagnose, instruction: 'The upper interval endpoint is infinite, so introduce a finite cutoff.', type: freeResponse, prompt: 'Write the defining limit.', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Infinite-tail cutoff, caption: Replace infinity by a finite t before taking a limit. }], answer: { gradingMode: selfCheck, keyPoints: ['lim_{t to infinity}', 'integral from 1 to t'] }, explanation: 'The required setup is $\lim_{t\to\infty}\int_1^t3/x^2\,dx$.' }
+  - { id: tail-2, title: Integrate before limiting, instruction: 'Use the power rule on the truncated integral.', type: symbolicResponse, prompt: 'Give an antiderivative of $3/x^2$.', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Truncated tail area, caption: Work with the finite integral first. }], answer: { expectedLatex: '-3/x+C', equivalenceMode: derivative, variables: [x], tolerance: 0.000001 }, explanation: 'Since $3/x^2=3x^{-2}$, its antiderivative is $-3/x$.' }
+  - { id: tail-3, title: Evaluate the limit, instruction: 'Evaluate from 1 to t, then let t grow without bound.', type: numericResponse, prompt: 'What is the value of the improper integral?', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Tail limit approaching zero in the antiderivative, caption: The upper-bound contribution tends to zero. }], answer: { value: 3, tolerance: 0.0001 }, explanation: '$[-3/x]_1^t=3-3/t$, and $3/t\to0$, so the integral converges to 3.' }
+- id: endpoint-power
+  title: Reject a divergent endpoint singularity
+  problem: 'Determine whether $\int_0^1x^{-3/2}\,dx$ converges.'
   steps:
-  - id: step-improper-integrals-2-1
-    title: Analyze and set up
-    instruction: Use trigonometric identities to simplify and integrate....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
-- id: we-improper-integrals-3
-  title: Example 3 for Improper Integrals
-  problem: 'Evaluate the integral: \(\int x e^{x} \, dx\)'
+  - { id: endpoint-1, title: Set the one-sided limit, instruction: 'The singularity is at the left endpoint.', type: freeResponse, prompt: 'Write the required limit setup.', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Endpoint singularity approached from the right, caption: Move the lower cutoff toward zero from within the interval. }], answer: { gradingMode: selfCheck, keyPoints: ['lim_{t to 0+}', 'integral from t to 1'] }, explanation: 'Use $\lim_{t\to0^+}\int_t^1x^{-3/2}\,dx$; substituting zero directly is invalid.' }
+  - { id: endpoint-2, title: Predict with the p-test, instruction: 'Compare the exponent with the endpoint threshold.', type: multipleChoice, prompt: 'What does the endpoint p-test predict?', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Endpoint p-test branch, caption: Near zero, convergence requires p less than one. }], choices: [{ id: a, text: Divergence because p equals 3/2 is at least 1 }, { id: b, text: Convergence because p is greater than 1 }, { id: c, text: Convergence because the interval is finite }, { id: d, text: No conclusion is possible }], answer: { choiceId: a }, explanation: 'For $\int_0^1x^{-p}$, p must be less than one.' }
+  - { id: endpoint-3, title: Confirm by calculation, instruction: 'Integrate and inspect the lower-limit behavior.', type: freeResponse, prompt: 'Explain why the resulting limit diverges.', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Endpoint cutoff and growing antiderivative, caption: The lower cutoff produces an unbounded contribution. }], answer: { gradingMode: selfCheck, keyPoints: ['antiderivative -2/sqrt(x)', 'term 2/sqrt(t)', 'tending to infinity'] }, explanation: '$[-2/\sqrt{x}]_t^1=-2+2/\sqrt t$, which tends to infinity as $t\to0^+$.' }
+- id: interior-split
+  title: Split before deciding an interior singularity
+  problem: 'Determine whether $\int_0^2 1/(x-1)^2\,dx$ converges.'
   steps:
-  - id: step-improper-integrals-3-1
-    title: Analyze and set up
-    instruction: Use integration by parts with u = 1x and dv = e^{x} dx....
-    type: freeResponse
-    prompt: Did you understand this step?
-    choices: []
-    answer:
-      gradingMode: selfCheck
+  - { id: split-1, title: Locate and split, instruction: 'The integrand is undefined at x=1, inside the interval.', type: freeResponse, prompt: 'Write the two limits that must be tested.', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Interior asymptote split into left and right limits, caption: Each side must be finite. }], answer: { gradingMode: selfCheck, keyPoints: ['limit t to 1- integral 0 to t', 'limit t to 1+ integral t to 2'] }, explanation: 'The original integral exists only if both one-sided improper integrals converge.' }
+  - { id: split-2, title: Check one component, instruction: 'An antiderivative is $-1/(x-1)$.', type: freeResponse, prompt: 'What happens to the left-hand limit as t approaches 1 from below?', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Left side of interior asymptote, caption: The left component already decides divergence. }], answer: { gradingMode: selfCheck, keyPoints: ['diverges to infinity', 'not finite'] }, explanation: '$[-1/(x-1)]_0^t=-1/(t-1)-1$, which grows without bound as $t\to1^-$. One divergent component is enough.' }
+  - { id: split-3, title: Avoid principal-value confusion, instruction: 'Ordinary improper convergence is stricter than cancellation across an asymptote.', type: multipleChoice, prompt: 'Why can no cancellation rescue this integral?', media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Two independently divergent sides at an interior asymptote, caption: Ordinary convergence requires both pieces separately. }], choices: [{ id: a, text: Each one-sided integral must converge independently }, { id: b, text: Symmetric infinities always cancel }, { id: c, text: Finite intervals are automatically proper }, { id: d, text: Only the right side matters }], answer: { choiceId: a }, explanation: 'A principal value is a different object; the standard improper integral requires two finite limits.' }

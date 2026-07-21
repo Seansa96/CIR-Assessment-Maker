@@ -1,220 +1,255 @@
 schemaVersion: 1
 id: chem-molecular-shapes-concept-lesson
-title: Shapes of Molecules (VSEPR)
+title: 'Shapes of Molecules: A VSEPR Workflow'
 assessmentType: conceptLesson
 categoryId: chemistry
 topicId: chem-molecular-shapes
 skills:
-- Apply chemistry concepts
-- Apply Shapes of Molecules (VSEPR)
+  - Apply chemistry concepts
+  - Determine electron-domain and molecular geometry
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
-  - chemistry
-  - chem-molecular-shapes
-  - chem-lewis-dot-structures
+    - chemistry
+    - chem-molecular-shapes
+    - chem-lewis-dot-structures
 modeDefault: practice
 randomizeQuestions: false
 lesson:
   introduction: |
-    The **Valence Shell Electron Pair Repulsion (VSEPR) model** predicts the three-dimensional shape of a molecule from its Lewis structure. The core idea is simple: electron pairs — whether in bonds or as lone pairs — repel each other and arrange themselves as far apart as possible. From this one principle, we can predict the geometry of virtually every main-group molecule.
+    A Lewis structure tells you which atoms are connected. VSEPR turns that two-dimensional bookkeeping into a defensible three-dimensional prediction. The important habit is to make two names in order: first the arrangement of **all electron domains**, then the arrangement of **atoms only**.
   sections:
-    - id: sec-vsepr-basics
-      title: VSEPR Theory and Electron Domains
+    - id: domain-count
+      title: 'Step 1: Count electron domains at the center'
       required: true
       content: |
-        **Electron domain** (also called an electron group): any region of electron density around a central atom — a single bond, double bond, triple bond, or lone pair each counts as *one* electron domain.
+        An **electron domain** is one region of electron density around the central atom. Count one domain for each lone pair and one domain for each bond direction.
 
-        The key insight: **electron domains repel each other and maximize their separation.** This is why we can predict geometry purely by counting domains.
+        A single, double, or triple bond still counts as **one** domain. Its order changes electron density and can affect an angle, but it does not add extra directions around the central atom.
 
-        **AXₙEₘ notation:**
-        - A = central atom
-        - X = bonding partner (each counts as one domain)
-        - E = lone pair on central atom
-        - n = number of bonding domains; m = number of lone pair domains
-
-        The **electron-pair geometry** describes the arrangement of all electron domains (bonding + lone pairs). The **molecular geometry** describes the arrangement of *atoms only* (ignoring lone pairs). These two are the same only when $m = 0$.
-
-        **Lone pairs vs bonding pairs:** Lone pairs are held by only one nucleus (higher repulsion) and take up more angular space. This compresses bond angles below the ideal electron-pair geometry angle.
+        For example, the central carbon in $CO_2$ has two domains because its two C=O bonds point in two directions. The central sulfur in $SO_2$ has three domains: two S–O bond directions and one lone pair.
       media:
         - type: image
-          src: /media/chemistry/covalent-bonding/chem-vsepr-geometry-chart.png
-          alt: Reference chart of all major VSEPR molecular geometries showing AXnEm notation, shape names, and bond angles.
-          caption: "VSEPR geometry summary: electron-pair geometry determines the starting arrangement; lone pairs push bonding pairs closer, giving the observed molecular shape."
+          src: /media/chemistry/vsepr-domain-workflow.svg
+          alt: A VSEPR flow diagram showing that each bond direction and lone pair becomes one electron domain around the selected central atom.
+          caption: Start at the atom whose shape is being named; do not count lone pairs on terminal atoms.
       check:
-        id: chk-vsepr-1
-        type: multipleChoice
-        prompt: |
-          A central atom has 4 electron domains: 3 bonding pairs and 1 lone pair. Using AXₙEₘ notation, this is:
-        choices:
-          - id: a
-            text: AX4E0 — tetrahedral molecular geometry
-          - id: b
-            text: AX3E1 — trigonal pyramidal molecular geometry
-          - id: c
-            text: AX3E0 — trigonal planar molecular geometry
-          - id: d
-            text: AX2E2 — bent molecular geometry
+        id: chk-domain-count
+        type: numericResponse
+        prompt: 'Around the central carbon in $CO_2$, how many electron domains are present?'
         answer:
-          choiceId: b
-        explanation: |
-          3 bonding + 1 lone pair = AX₃E₁. The electron-pair geometry is tetrahedral (4 domains), but with one position occupied by a lone pair, the molecular geometry — defined by atom positions only — is **trigonal pyramidal**. Ammonia ($NH_3$) is the textbook example.
+          value: 2
+          tolerance: 0
+        explanation: Each C=O double bond is one domain, so the central carbon has two domains.
 
-    - id: sec-2-3-domains
-      title: Two and Three Electron Domains
+    - id: electron-domain-geometry
+      title: 'Step 2: Place every domain as far apart as possible'
       required: true
       content: |
-        **2 electron domains (AX₂E₀):**
-        - Electron-pair geometry: **linear**
-        - Molecular geometry: **linear**
-        - Bond angle: **180°**
-        - Example: $CO_2$ (2 double bonds count as 2 domains), $BeCl_2$
+        Electron domains repel one another. The least-crowded arrangements provide the starting geometry:
 
-        **3 electron domains:**
+        | Domains | Electron-domain geometry | Ideal directions |
+        |---|---|---|
+        | 2 | linear | 180° |
+        | 3 | trigonal planar | 120° |
+        | 4 | tetrahedral | 109.5° |
+        | 5 | trigonal bipyramidal | 90°, 120°, 180° |
+        | 6 | octahedral | 90°, 180° |
 
-        | Type | Geometry | Bond Angle | Example |
-        |---|---|---|---|
-        | AX₃E₀ | Trigonal planar | 120° | $BF_3$, $SO_3$ |
-        | AX₂E₁ | Bent | ~117° | $SO_2$ (lone pair on S compresses angle) |
-
-        Note: $SO_2$ has a lone pair on S plus two S—O bonds (one single, one double in Lewis terms, but equivalent in the resonance hybrid). The lone pair compresses the O—S—O angle to about 119°, slightly less than the ideal 120°.
+        This is the **electron-domain geometry**. It includes bonding domains and lone-pair domains. It is not yet necessarily the molecular geometry.
       check:
-        id: chk-vsepr-2
+        id: chk-electron-domain
         type: multipleChoice
-        prompt: |
-          What is the molecular geometry of $BF_3$?
+        prompt: 'A central atom has five total electron domains. What is its electron-domain geometry?'
         choices:
           - id: a
-            text: Trigonal pyramidal (3 bonds + 1 lone pair)
+            text: Tetrahedral
           - id: b
-            text: Trigonal planar (3 bonds + 0 lone pairs)
+            text: Trigonal bipyramidal
           - id: c
-            text: Bent (2 bonds + 1 lone pair)
+            text: Square planar
           - id: d
-            text: Linear (2 bonds + 0 lone pairs)
+            text: Octahedral
         answer:
           choiceId: b
-        explanation: |
-          Boron in $BF_3$ forms 3 bonds and has **no lone pairs** (it has an incomplete octet of only 6 electrons). With 3 bonding domains and 0 lone pairs (AX₃E₀), the electron-pair geometry and molecular geometry are both **trigonal planar**, with 120° F—B—F angles.
+        explanation: Five domains occupy a trigonal-bipyramidal electron-domain arrangement.
 
-    - id: sec-4-domains
-      title: Four Electron Domains
+    - id: molecular-geometry
+      title: 'Step 3: Name only the atom positions'
       required: true
       content: |
-        Four electron domains arrange in a **tetrahedral** electron-pair geometry. The molecular geometry depends on how many domains are lone pairs:
+        **Molecular geometry** ignores the positions occupied by lone pairs. This distinction prevents a common error: ammonia has a tetrahedral electron-domain geometry, but its three hydrogen atoms form a trigonal pyramidal molecular geometry.
 
-        | Type | Molecular Geometry | Bond Angle | Example |
-        |---|---|---|---|
-        | AX₄E₀ | Tetrahedral | 109.5° | $CH_4$, $CCl_4$ |
-        | AX₃E₁ | Trigonal pyramidal | ~107° | $NH_3$, $PCl_3$ |
-        | AX₂E₂ | Bent | ~104.5° | $H_2O$, $H_2S$ |
+        In AXE notation, $A$ is the center, $X$ counts bonded atoms, and $E$ counts lone pairs on the center. Thus $NH_3$ is AX$_3$E: four total domains, but only three atom positions.
 
-        The progressive decrease in bond angle (109.5° → 107° → 104.5°) reflects the increasing repulsion from lone pairs. Each additional lone pair compresses the bonding pairs slightly more.
-
-        **Water ($H_2O$):** O has 2 bonds + 2 lone pairs = AX₂E₂ → bent, 104.5°. This bent shape gives water its polar character and extraordinary hydrogen-bonding ability.
-
-        **Methane ($CH_4$):** C has 4 bonds + 0 lone pairs = AX₄E₀ → perfect tetrahedral, 109.5°.
+        The same subtraction produces other useful pairs: AX$_2$E is bent from a trigonal-planar starting arrangement, and AX$_2$E$_2$ is bent from a tetrahedral starting arrangement.
+      media:
+        - type: image
+          src: /media/chemistry/vsepr-four-domain-family.svg
+          alt: Comparison of methane, ammonia, and water showing the same four-domain starting arrangement and different molecular geometry after lone pairs are ignored.
+          caption: Lone pairs occupy positions in the electron-domain arrangement but do not appear in the molecular-geometry name.
       check:
-        id: chk-vsepr-3
+        id: chk-geometry-name
         type: multipleChoice
-        prompt: |
-          Predict the molecular geometry and approximate bond angle for $H_2S$.
+        prompt: 'Which pair correctly describes $NH_3$ around nitrogen?'
         choices:
           - id: a
-            text: Linear, 180°
+            text: Linear electron-domain geometry; trigonal planar molecular geometry
           - id: b
-            text: Trigonal pyramidal, ~107°
+            text: Tetrahedral electron-domain geometry; trigonal pyramidal molecular geometry
           - id: c
-            text: Bent, ~104.5°
+            text: Tetrahedral electron-domain geometry; tetrahedral molecular geometry
           - id: d
-            text: Tetrahedral, 109.5°
+            text: Trigonal planar electron-domain geometry; bent molecular geometry
+        answer:
+          choiceId: b
+        explanation: Nitrogen has three bonds and one lone pair. All four domains are tetrahedral, while the three atom positions are trigonal pyramidal.
+
+    - id: two-three-domain-cases
+      title: 'Step 4: Use the two- and three-domain families'
+      required: true
+      content: |
+        With two domains, AX$_2$ has a linear electron-domain and molecular geometry. $CO_2$ is a useful reminder that a double bond is still one domain, so O=C=O is linear with an ideal 180° angle.
+
+        With three domains, AX$_3$ is trigonal planar when all three positions hold atoms, as in $BF_3$. AX$_2$E is bent because one of the three positions is a lone pair, as in $SO_2$ or $O_3$.
+
+        Do not call $SO_2$ trigonal planar merely because its three domains are trigonal planar. Its **electron-domain** geometry is trigonal planar; its **molecular** geometry is bent.
+      check:
+        id: chk-three-domain
+        type: multipleChoice
+        prompt: 'The central oxygen in ozone has two bonding domains and one lone pair. What is its molecular geometry?'
+        choices:
+          - id: a
+            text: Linear
+          - id: b
+            text: Bent
+          - id: c
+            text: Trigonal planar
+          - id: d
+            text: Tetrahedral
+        answer:
+          choiceId: b
+        explanation: Three total domains make a trigonal-planar electron-domain geometry, but AX$_2$E has a bent molecular geometry.
+
+    - id: four-domain-cases
+      title: 'Step 5: Use the four-domain family and refine angles'
+      required: true
+      content: |
+        Four domains begin tetrahedrally. The familiar sequence is AX$_4$ tetrahedral, AX$_3$E trigonal pyramidal, and AX$_2$E$_2$ bent.
+
+        The ideal tetrahedral angle is 109.5°. Lone pairs occupy more angular space than bonding domains, so they push neighboring bonds closer together. That explains the qualitative pattern $CH_4$ (109.5°), $NH_3$ (about 107°), and $H_2O$ (about 104.5°).
+
+        Treat those values as model-based benchmarks, not universal values for every molecule with the same AXE label. For example, $H_2S$ is bent, but its experimental H–S–H angle is much closer to 92° than to water's angle.
+      media:
+        - type: image
+          src: /media/chemistry/vsepr-four-domain-family.svg
+          alt: Diagram comparing four-domain methane, ammonia, and water and showing progressive bond-angle compression from lone pairs.
+          caption: The lone-pair count predicts the direction of the angle change; it does not license one exact angle for every element.
+      check:
+        id: chk-four-domain
+        type: multipleChoice
+        prompt: 'Which central-atom description gives a bent molecular geometry from a four-domain arrangement?'
+        choices:
+          - id: a
+            text: AX$_4$
+          - id: b
+            text: AX$_3$E
+          - id: c
+            text: AX$_2$E$_2$
+          - id: d
+            text: AX$_2$
         answer:
           choiceId: c
-        explanation: |
-          S in $H_2S$ has 2 S—H bonds + 2 lone pairs = AX₂E₂ (same type as water). The electron-pair geometry is tetrahedral but the molecular geometry is **bent**, with a bond angle close to 104.5°. (The actual H—S—H angle, ~92°, is slightly less than water's because S is larger and its lone pairs are diffuser, but the VSEPR prediction of "bent" is correct.)
+        explanation: AX$_2$E$_2$ has four total domains but only two atom positions, giving a bent molecular geometry.
 
-    - id: sec-5-6-domains
-      title: Five and Six Electron Domains (Expanded Octets)
+    - id: five-six-domain-cases
+      title: 'Step 6: Handle five and six domains by position'
       required: true
       content: |
-        These geometries apply only to Period 3+ central atoms with expanded octets.
+        Five domains make a trigonal bipyramid with two **axial** and three **equatorial** positions. An axial position has three 90° interactions; an equatorial position has two. A lone pair therefore prefers an equatorial position because that creates fewer close interactions.
 
-        **Five electron domains (trigonal bipyramidal electron-pair geometry):**
+        That positional rule explains AX$_4$E seesaw ($SF_4$), AX$_3$E$_2$ T-shaped ($ClF_3$), and AX$_2$E$_3$ linear ($XeF_2$). For six domains, all octahedral positions are equivalent; two lone pairs take opposite positions, leaving AX$_4$E$_2$ square planar ($XeF_4$).
 
-        The five domains are *not* all equivalent — there are **axial** positions (90° from equatorial) and **equatorial** positions (120° from each other). Lone pairs always occupy equatorial positions (more space, less repulsion).
-
-        | Type | Molecular Geometry | Example |
-        |---|---|---|
-        | AX₅E₀ | Trigonal bipyramidal | $PCl_5$, $PF_5$ |
-        | AX₄E₁ | Seesaw | $SF_4$ |
-        | AX₃E₂ | T-shaped | $ClF_3$ |
-        | AX₂E₃ | Linear | $XeF_2$ |
-
-        **Six electron domains (octahedral electron-pair geometry):**
-
-        All six positions are equivalent. If two lone pairs exist, they go **opposite** each other (180° apart) to minimize repulsion.
-
-        | Type | Molecular Geometry | Example |
-        |---|---|---|
-        | AX₆E₀ | Octahedral | $SF_6$ |
-        | AX₅E₁ | Square pyramidal | $BrF_5$ |
-        | AX₄E₂ | Square planar | $XeF_4$ |
+        VSEPR is a geometric model. It can describe five- and six-domain main-group examples without relying on the outdated shortcut that expanded octets are caused by filling $d$ orbitals.
+      media:
+        - type: image
+          src: /media/chemistry/vsepr-five-six-domain-map.svg
+          alt: Diagram of axial and equatorial positions in a trigonal bipyramid and equivalent positions in an octahedron.
+          caption: In a trigonal bipyramid, put a lone pair equatorial before naming the remaining atom positions.
       check:
-        id: chk-vsepr-4
-        type: selectAll
-        prompt: |
-          Which of the following molecules have a **linear** molecular geometry? Select all that apply.
+        id: chk-five-domain
+        type: multipleChoice
+        prompt: 'Why does a lone pair in a trigonal-bipyramidal arrangement favor an equatorial site?'
         choices:
           - id: a
-            text: '$CO_2$ (AX₂E₀)'
+            text: It has no 90° interactions.
           - id: b
-            text: '$XeF_2$ (AX₂E₃)'
+            text: It has two 90° interactions instead of the axial site's three.
           - id: c
-            text: '$H_2O$ (AX₂E₂)'
+            text: It makes every bond angle 120°.
           - id: d
-            text: '$BeCl_2$ (AX₂E₀)'
+            text: It converts the electron-domain geometry to octahedral.
+        answer:
+          choiceId: b
+        explanation: Equatorial sites have fewer 90° interactions, so a more strongly repelling lone-pair domain is less crowded there.
+
+    - id: angle-reasoning
+      title: 'Step 7: Predict an angle with a stated level of precision'
+      required: true
+      content: |
+        To estimate an angle $A$–$B$–$C$, analyze the **middle atom** $B$. Count its domains, choose the ideal angle from the electron-domain geometry, and then ask whether lone pairs or multiple bonds should change it.
+
+        Lone pairs tend to compress adjacent bond angles. Multiple bonds count as one domain, but their higher electron density can also push neighboring domains away. Therefore a VSEPR answer is often best expressed as “near 120°,” “less than 109.5°,” or “near 90°,” unless measurements are supplied.
+
+        This approach distinguishes a defensible prediction from an invented exact value.
+      check:
+        id: chk-angle-reasoning
+        type: multipleChoice
+        prompt: 'For an H–O–C angle, which atom determines the VSEPR starting angle?'
+        choices:
+          - id: a
+            text: H, because it appears first
+          - id: b
+            text: O, because it is the middle atom
+          - id: c
+            text: C, because it usually forms more bonds
+          - id: d
+            text: All three atoms equally
+        answer:
+          choiceId: b
+        explanation: The middle atom is the vertex of the angle. Count domains around O, then refine the tetrahedral ideal for its lone pairs.
+
+    - id: multi-center-transfer
+      title: 'Step 8: Repeat the workflow at every local center'
+      required: true
+      content: |
+        Larger molecules can have several local geometries. Analyze one central atom at a time instead of assigning one shape to an entire formula.
+
+        In $CH_3COOH$, the methyl carbon has four bonding domains and is tetrahedral. The carbonyl carbon has three domains, because C=O is one domain, and is trigonal planar. The hydroxyl oxygen has two bonding domains plus two lone pairs, so it has tetrahedral electron-domain geometry and bent molecular geometry.
+
+        The transferable checklist is: identify the local center, draw or inspect its Lewis environment, count domains, name both geometries, then state only the angle precision the model supports.
+      media:
+        - type: image
+          src: /media/chemistry/vsepr-domain-workflow.svg
+          alt: VSEPR workflow diagram emphasizing that domain counting begins at one selected central atom.
+          caption: A multi-center molecule is several local VSEPR problems, not one global geometry label.
+      check:
+        id: chk-multicenter
+        type: selectAll
+        prompt: 'In $CH_3COOH$, which local geometry statements are correct? Select all that apply.'
+        choices:
+          - id: a
+            text: The methyl carbon is tetrahedral.
+          - id: b
+            text: The carbonyl carbon is trigonal planar.
+          - id: c
+            text: The hydroxyl oxygen has a bent molecular geometry.
+          - id: d
+            text: The whole molecule has one electron-domain geometry.
         answer:
           choiceIds:
             - a
             - b
-            - d
-        explanation: |
-          **Linear geometry** occurs when all electron domains point along a single axis: AX₂E₀ ($CO_2$, $BeCl_2$ — 2 bonding domains, no lone pairs) and AX₂E₃ ($XeF_2$ — lone pairs occupy equatorial positions, leaving 2 axial F atoms in a linear arrangement). Water (AX₂E₂) is **bent** because its lone pairs are not in opposing positions.
-
-    - id: sec-vsepr-summary
-      title: Applying VSEPR — The Workflow
-      required: true
-      content: |
-        A fast workflow for any VSEPR problem:
-
-        1. **Draw the Lewis structure** of the molecule or ion.
-        2. **Count electron domains** on the central atom (each bond — single, double, or triple — is 1 domain; each lone pair is 1 domain).
-        3. **Identify the AXₙEₘ type** and look up the electron-pair geometry.
-        4. **Determine molecular geometry** by considering only atom positions (ignore lone pairs in naming the shape).
-        5. **Estimate bond angles**, reducing from ideal if lone pairs are present.
-
-        **Practice problem — $ClF_3$:**
-        1. Lewis structure: Cl is central, 3 Cl—F bonds, 2 lone pairs on Cl.
-        2. Domains: 3 bonding + 2 lone pairs = 5 domains.
-        3. AX₃E₂; electron-pair geometry: trigonal bipyramidal.
-        4. Lone pairs occupy equatorial sites. Three F atoms fill: 2 equatorial + 1 axial (wait — actually 1 equatorial + 2 axial positions). Molecular geometry: **T-shaped**.
-        5. Bond angles: F(axial)—Cl—F(equatorial) ≈ 87° (compressed by lone pairs).
-      check:
-        id: chk-vsepr-5
-        type: multipleChoice
-        prompt: |
-          Predict the molecular geometry of $XeF_4$.
-        choices:
-          - id: a
-            text: Octahedral
-          - id: b
-            text: Square pyramidal
-          - id: c
-            text: Square planar
-          - id: d
-            text: Tetrahedral
-        answer:
-          choiceId: c
-        explanation: |
-          Xe in $XeF_4$: 4 Xe—F bonds + 2 lone pairs = 6 electron domains → AX₄E₂ → octahedral electron-pair geometry. The two lone pairs occupy opposite (180°) axial positions, leaving 4 F atoms in a square plane around Xe. Molecular geometry: **square planar**.
+            - c
+        explanation: Each local center has its own domain count and geometry; a multi-center molecule does not have one single VSEPR label.

@@ -9,6 +9,7 @@ using QuizApp.Infrastructure.Files;
 using QuizApp.Infrastructure.Retention;
 using QuizApp.Infrastructure.SymbolicMath;
 using QuizApp.Api.Hubs;
+using QuizApp.Api;
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -75,6 +76,8 @@ builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequi
 builder.Services.AddSingleton<IAssessmentReportRepository>(provider => provider.GetRequiredService<SqliteAssessmentReportRepository>());
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
 builder.Services.AddSingleton<IAuthoringWorkspaceService, FileAuthoringWorkspaceService>();
+builder.Services.AddSingleton<AuthoringImportJobQueue>();
+builder.Services.AddHostedService<AuthoringImportWorker>();
 builder.Services.AddSingleton<IGuidedProjectSessionRepository, FileGuidedProjectSessionRepository>();
 builder.Services.AddSingleton<SqliteNavigationCatalogService>();
 builder.Services.AddSingleton<INavigationCatalogService>(sp => sp.GetRequiredService<SqliteNavigationCatalogService>());
@@ -327,11 +330,23 @@ authoringApi.MapGet("/sources/{sourceId}", async (string sourceId, IAuthoringWor
     var source = await workspace.GetSourceAsync(sourceId, cancellationToken);
     return source is null ? Results.NotFound(ApiError("SOURCE_NOT_FOUND", "Source was not found.")) : Results.Ok(source);
 });
-authoringApi.MapPost("/sources", async (ImportAuthoringSourceRequest request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+authoringApi.MapGet("/sources/{sourceId}/outline", async (string sourceId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
 {
-    try { var source = await workspace.ImportSourceAsync(new SourceImportRequest(request.LocalPath, request.Title, request.LicenseNote), cancellationToken); return Results.Created($"/api/authoring/sources/{source.Manifest.Id}", source); }
+    var outline = await workspace.GetOutlineAsync(sourceId, cancellationToken);
+    return outline is null ? Results.NotFound(ApiError("OUTLINE_NOT_FOUND", "No outline has been built for this source.")) : Results.Ok(outline);
+});
+authoringApi.MapPost("/sources/{sourceId}/outline/rebuild", async (string sourceId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await workspace.RebuildOutlineAsync(sourceId, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("OUTLINE_REBUILD_FAILED", ex.Message)); }
+});
+authoringApi.MapPost("/sources", (ImportAuthoringSourceRequest request, AuthoringImportJobQueue imports) =>
+{
+    try { var job = imports.Enqueue(new SourceImportRequest(request.LocalPath, request.Title, request.LicenseNote)); return Results.Accepted($"/api/authoring/import-jobs/{job.Id}", job); }
     catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("SOURCE_IMPORT_FAILED", ex.Message)); }
 });
+authoringApi.MapGet("/import-jobs/{jobId}", (string jobId, AuthoringImportJobQueue imports) =>
+    imports.Get(jobId) is { } job ? Results.Ok(job) : Results.NotFound(ApiError("IMPORT_JOB_NOT_FOUND", "Import job was not found.")));
 authoringApi.MapPost("/sources/{sourceId}/retry", async (string sourceId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
 {
     try { return Results.Ok(await workspace.RetryExtractionAsync(sourceId, cancellationToken)); }
@@ -358,7 +373,7 @@ authoringApi.MapPut("/content/{manifestId}", async (string manifestId, ContentMa
 });
 authoringApi.MapPost("/packets", async (ExportAuthoringPacketRequest request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
 {
-    try { return Results.Ok(await workspace.ExportPacketAsync(request.CategoryId, request.TopicId, request.ObjectiveIds ?? [], request.ChunkIds ?? [], cancellationToken)); }
+    try { return Results.Ok(await workspace.ExportPacketAsync(request.CategoryId, request.TopicId, request.ObjectiveIds ?? [], request.ChunkIds ?? [], request.OutlineNodeIds, request.TargetDifficultyTier, cancellationToken)); }
     catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("PACKET_EXPORT_FAILED", ex.Message)); }
 });
 authoringApi.MapGet("/drafts", async (IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) => Results.Ok(await workspace.ListDraftsAsync(cancellationToken)));

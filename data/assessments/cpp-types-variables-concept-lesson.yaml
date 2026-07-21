@@ -12,6 +12,9 @@ skills:
 - cpp-types-variables
 modeDefault: practice
 randomizeQuestions: false
+authoring:
+  visualRequirement: notApplicable
+  visualRationale: The lesson's code traces directly show initialization, extraction, and recovery; no separate interface or spatial visual is needed.
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -203,3 +206,63 @@ lesson:
         Doe"`, use `getline(cin, name);`.
 
         '
+  - id: value-initialization
+    title: Initialize Values Deliberately
+    required: true
+    content: |
+      Prefer an initializer when you declare a variable. Braces make an initial value visible and safely value-initialize simple numeric variables:
+
+      ```cpp
+      int attempts{};       // starts at 0
+      double total{0.0};
+      std::string name{};   // starts empty
+      ```
+
+      Initialization is different from later assignment. The first establishes a valid starting state; the second replaces an existing value.
+    check:
+      id: value-initialization-check
+      type: multipleChoice
+      prompt: Which declaration explicitly starts `count` at zero?
+      choices: [{ id: a, text: '`int count{};`' }, { id: b, text: '`int count;`' }, { id: c, text: '`count int = 0;`' }, { id: d, text: '`int = count;`' }]
+      answer: { choiceId: a }
+      explanation: Empty braces value-initialize an `int` to zero; an uninitialized local `int` has no deliberately chosen starting value.
+  - id: formatted-extraction-failure
+    title: Check Formatted Input Before Using It
+    required: true
+    content: |
+      `std::cin >> number` attempts formatted extraction. Its result can be used as a condition: success leaves the stream usable, while an incompatible token sets a failure state. Do not calculate with `number` until the extraction is known to have succeeded.
+
+      ```cpp
+      double number{};
+      if (std::cin >> number) {
+          std::cout << number << '\n';
+      } else {
+          std::cout << "Input was not a number\n";
+      }
+      ```
+    check:
+      id: formatted-extraction-failure-check
+      type: multipleChoice
+      prompt: What should a program do before using a value read with `std::cin >> number`?
+      choices: [{ id: a, text: Check whether the extraction succeeded }, { id: b, text: Assume invalid text becomes zero }, { id: c, text: Convert every input to `char` }, { id: d, text: Remove the variable type }]
+      answer: { choiceId: a }
+      explanation: Formatted extraction can fail; checking the stream guards the later computation from stale or invalid input.
+  - id: stream-recovery
+    title: Recover Before Retrying
+    required: true
+    content: |
+      A failed stream remains failed until its error state is cleared, and the bad characters remain waiting in the input buffer. For an interactive retry, clear the state and discard the rest of the bad line before reading again:
+
+      ```cpp
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      ```
+
+      `clear` fixes the state; `ignore` consumes the offending input. Neither operation replaces the other.
+    check:
+      id: stream-recovery-check
+      type: multipleChoice
+      prompt: Why are both `clear()` and `ignore(...)` needed after invalid numeric input?
+      choices: [{ id: a, text: One resets stream state and the other removes the bad characters }, { id: b, text: Both print the error message }, { id: c, text: They convert text to a double }, { id: d, text: They make a variable const }]
+      answer: { choiceId: a }
+      explanation: Retrying after only `clear()` sees the same bad token again; retrying after only `ignore()` leaves the failure state set.

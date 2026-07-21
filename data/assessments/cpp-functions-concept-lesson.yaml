@@ -12,6 +12,9 @@ skills:
 - cpp-functions
 modeDefault: practice
 randomizeQuestions: false
+authoring:
+  visualRequirement: notApplicable
+  visualRationale: The lesson uses concrete C++ call and parameter code traces; no separate interface or spatial visual is needed.
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -162,3 +165,57 @@ lesson:
         must also have default values.
 
         '
+  - id: call-return-flow
+    title: Trace Arguments, Parameters, and a Return Value
+    required: true
+    content: |
+      At a call site, expressions are supplied as **arguments**. The function receives them through its **parameters**, performs its body, and may send one result back through `return`.
+
+      ```cpp
+      int square(int value) {
+          return value * value;
+      }
+
+      int result = square(4); // argument 4; parameter value; result 16
+      ```
+
+      The parameter name exists only inside that function's scope; it is not a second name for the caller's variable.
+    check:
+      id: call-return-flow-check
+      type: multipleChoice
+      prompt: In `int result = square(4);`, what is `4`?
+      choices: [{ id: a, text: An argument }, { id: b, text: The return type }, { id: c, text: A namespace }, { id: d, text: A header }]
+      answer: { choiceId: a }
+      explanation: The call supplies `4` as an argument; the function receives it through its parameter `value`.
+  - id: declarations-and-definitions
+    title: Separate a Function Contract from Its Body
+    required: true
+    content: |
+      A declaration gives code enough information to call a function; a definition supplies the body. Keeping a declaration in a header and the definition in a source file lets several files use the same contract without duplicating its implementation.
+
+      ```cpp
+      // score.h
+      int square(int value);
+
+      // score.cpp
+      int square(int value) { return value * value; }
+      ```
+    check:
+      id: declarations-and-definitions-check
+      type: multipleChoice
+      prompt: Which part actually contains the statements a function executes?
+      choices: [{ id: a, text: The definition }, { id: b, text: The declaration alone }, { id: c, text: The call argument }, { id: d, text: The namespace qualifier }]
+      answer: { choiceId: a }
+      explanation: A declaration states the function's signature; the definition includes the body that executes when called.
+  - id: test-function-contracts
+    title: Test the Contract at Its Boundary
+    required: true
+    content: |
+      A small function is easier to test than a large `main`. Choose representative normal input and at least one boundary or failure case. A function that reports success with `bool` and writes a parsed result through a reference gives the caller a clear contract to test.
+    check:
+      id: test-function-contracts-check
+      type: multipleChoice
+      prompt: Which pair is a useful first test set for `bool get_number(stream, double&)`?
+      choices: [{ id: a, text: One valid number and one invalid token }, { id: b, text: Two identical valid numbers only }, { id: c, text: A compiler version and a namespace }, { id: d, text: A header name and a return statement }]
+      answer: { choiceId: a }
+      explanation: The contract has two outcomes—success and failure—so both need an observable test before the helper is trusted.

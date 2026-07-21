@@ -1,406 +1,173 @@
 schemaVersion: 1
 id: calc2-u-sub-integration-hard-test
-title: U-Sub Integration Hard Test
+title: U-Substitution Hard Test
 assessmentType: test
 categoryId: calculus-2
 topicId: u-sub-integration
-skills:
-- Recognize composite-function derivative structure
-- Choose and carry out a substitution
-- Transform definite-integral bounds and verify antiderivatives
-navigation:
-  learningGoal: evaluate
-  activityType: formalTest
-  tags:
-  - calc2
-  - hard
-  - calculus-2
-  - u-sub-integration
+skills: [select-method, transform-differentials, change-definite-bounds, simplify-before-substitution, verify-antiderivatives]
+navigation: { learningGoal: evaluate, activityType: formalTest, tags: [calculus-2, u-sub-integration, hard, transfer] }
 modeDefault: evaluate
 randomizeQuestions: true
-attemptQuestionCount: 15
+attemptQuestionCount: 20
+authoring: { visualRequirement: notApplicable, visualRationale: The test evaluates symbolic model selection, transformations, domains, and proof-style verification., difficultyTier: hard }
 questions:
 - id: q001
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{3 x + 1}{\left(x - 1\right) \left(x
-    + 2\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{4 \log{\left(x - 1 \right)}}{3} + \frac{5 \log{\left(x + 2 \right)}}{3}
-      + C
-  explanation: Use partial fraction decomposition.
+  prompt: 'Simplify and evaluate $\int \frac{4x^3}{1+x^4}\,dx$; state the logarithm domain.'
+  answer: { gradingMode: selfCheck, checkModel: '$\ln(1+x^4)+C$; valid for all real x.' }
+  explanation: Simplification exposes du; positivity supplies the domain check.
+  difficultyDimensions: [simplification, auxiliaryTechnique, domainCondition]
+  difficultyEvidence: Simplifies, substitutes, and validates the logarithm.
+  prerequisiteObjectiveIds: [calc1-logarithms]
 - id: q002
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
+  prompt: 'Evaluate $\int_0^1\frac{2x}{(x^2+1)^2}\,dx$ with changed bounds and verify by differentiating an antiderivative.'
+  answer: { gradingMode: selfCheck, checkModel: '$1/2$.' }
+  explanation: Use $u=x^2+1$, bounds 1 to 2, then check $-1/(x^2+1)$.
+  difficultyDimensions: [auxiliaryTechnique, representationTransfer, proofJustification]
+  difficultyEvidence: Converts bounds, integrates in u, and verifies independently.
+  prerequisiteObjectiveIds: [calc1-definite-integrals]
 - id: q003
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
+  prompt: 'Evaluate $\int \frac{\cos(\sqrt{x})}{\sqrt{x}}\,dx$, deriving dx from your substitution and stating its real domain.'
+  answer: { gradingMode: selfCheck, checkModel: '$2\sin(\sqrt{x})+C$ for x>0.' }
+  explanation: Set $u=\sqrt x$; differential rewriting cancels the denominator.
+  difficultyDimensions: [modelOrDerivation, auxiliaryTechnique, domainCondition]
+  difficultyEvidence: Derives a differential, transforms the integrand, and checks the radical domain.
+  prerequisiteObjectiveIds: [calc1-radical-functions]
 - id: q004
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=6)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'Use an identity to evaluate $\int\tan x\sec^2x\,dx$, then explain why choosing $u=\cos x$ is less direct.'
+  answer: { gradingMode: selfCheck, checkModel: '$\tan^2x/2+C$; $u=\tan x$ matches sec^2x dx directly.' }
+  explanation: Rewrite the method choice in terms of the available differential.
+  difficultyDimensions: [identityConstruction, auxiliaryTechnique, errorDiagnosis]
+  difficultyEvidence: Recognizes an identity/form, selects a direct substitution, and evaluates an inferior choice.
+  prerequisiteObjectiveIds: [calc1-trigonometry]
 - id: q005
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
+  prompt: 'Find A and B so $\int(Ax+B)(x^2+x+1)^4dx=(x^2+x+1)^5+C$; derive the coefficients and justify uniqueness.'
+  answer: { gradingMode: selfCheck, checkModel: '$A=10$, $B=5$.' }
+  explanation: Differentiate the target and match coefficients; polynomial equality fixes both.
+  difficultyDimensions: [reverseReasoning, modelOrDerivation, proofJustification]
+  difficultyEvidence: Works backward, derives coefficients, and justifies their uniqueness.
+  prerequisiteObjectiveIds: [calc1-polynomial-algebra]
 - id: q006
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=3)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'Classify $\int_2^\infty\frac{x}{x^2+1}\,dx$ before evaluating it with u-substitution.'
+  answer: { gradingMode: selfCheck, checkModel: 'Divergent; it becomes one-half times ln(x^2+1), which is unbounded.' }
+  explanation: Use a limit after substitution rather than reporting an antiderivative alone.
+  difficultyDimensions: [globalLocalReasoning, auxiliaryTechnique, estimationOrBounds]
+  difficultyEvidence: Extends a local antiderivative into an infinite-interval convergence decision.
+  extensionObjectiveIds: [calc2-improper-integrals]
 - id: q007
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=10)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'Evaluate $\int_0^{\pi/4}\frac{\sin x}{2+\cos^2x}\,dx$ by converting bounds; explain the sign change.'
+  answer: { gradingMode: selfCheck, checkModel: '$\frac1{\sqrt2}(\arctan(1/\sqrt2)-\arctan(1/2))$.' }
+  explanation: $u=\cos x$ reverses the bounds and produces $-du/(2+u^2)$.
+  difficultyDimensions: [auxiliaryTechnique, representationTransfer, domainCondition]
+  difficultyEvidence: Handles a negative differential, transformed bounds, and inverse-trig domain form.
+  prerequisiteObjectiveIds: [calc1-inverse-trig]
 - id: q008
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin{\left(x \right)} \cos{\left(x \right)}
-    \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{2}{\left(x \right)}}{2} + C
-  explanation: Use trigonometric identities to simplify and integrate.
+  prompt: 'Solve $\int\frac{\ln x}{x}\,dx=\frac92$ for positive x after first deriving the antiderivative.'
+  answer: { gradingMode: selfCheck, checkModel: '$x=e^3$ or $x=e^{-3}$.' }
+  explanation: Substitution gives $(ln x)^2/2$; square roots require two cases.
+  difficultyDimensions: [auxiliaryTechnique, reverseReasoning, casePartition]
+  difficultyEvidence: Combines substitution, inverse solving, and both square-root branches.
+  prerequisiteObjectiveIds: [calc1-exponentials-logarithms]
 - id: q009
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{16 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 16}}{16 x} & \text{for}\: \left|{x^{2}}\right|
-      > 16 \\- \frac{\sqrt{16 - x^{2}}}{16 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 4\sin\theta.
+  prompt: 'Diagnose and repair: $\int\frac{6x}{3x^2+1}dx=\ln(3x^2+1)+C$.'
+  answer: { gradingMode: selfCheck, checkModel: '$\ln(3x^2+1)+C$ is correct; differentiate to verify.' }
+  explanation: 'The apparent issue is a false alarm: the numerator exactly equals du.'
+  difficultyDimensions: [errorDiagnosis, proofJustification, auxiliaryTechnique]
+  difficultyEvidence: Tests a claim by differentiation, distinguishes a valid result from a plausible objection, and identifies the substitution.
+  prerequisiteObjectiveIds: [calc1-chain-rule]
 - id: q010
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{1 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 1}}{x} & \text{for}\: \left|{x^{2}}\right|
-      > 1 \\- \frac{\sqrt{1 - x^{2}}}{x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 1\sin\theta.
+  prompt: 'Evaluate $\int\frac{x^2}{\sqrt{x^3+8}}dx$ and verify the coefficient by differentiation.'
+  answer: { gradingMode: selfCheck, checkModel: '$\frac23\sqrt{x^3+8}+C$.' }
+  explanation: The derivative of the inner cubic provides 3x^2.
+  difficultyDimensions: [auxiliaryTechnique, modelOrDerivation, proofJustification]
+  difficultyEvidence: Matches a scaled differential, transforms a radical, and verifies the result.
+  prerequisiteObjectiveIds: [calc1-power-rule]
 - id: q011
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{2}{\left(x \right)} \cos^{2}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{x}{8} - \frac{\sin{\left(2 x \right)} \cos{\left(2 x \right)}}{16}
-      + C
-  explanation: Use trigonometric identities to simplify and integrate.
+  prompt: 'Evaluate $\int\frac{x}{x^2-4}dx$ and state separately the real intervals on which an antiderivative is defined.'
+  answer: { gradingMode: selfCheck, checkModel: '$\frac12\ln|x^2-4|+C$, on (-infinity,-2), (-2,2), or (2,infinity).' }
+  explanation: The denominator changes sign and vanishes at two excluded points.
+  difficultyDimensions: [auxiliaryTechnique, domainCondition, casePartition]
+  difficultyEvidence: Applies substitution, analyzes singularities, and partitions the real domain.
+  prerequisiteObjectiveIds: [calc1-logarithms]
 - id: q012
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 3 x e^{3 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(3 x - 1\right) e^{3 x}}{3} + C
-  explanation: Use integration by parts with u = 3x and dv = e^{3 x} dx.
+  prompt: 'A student proposes using $\sin^2x=1-\cos^2x$ for $\int\sin^3x\cos xdx$. Evaluate the integral and explain why that transformation is unnecessary.'
+  answer: { gradingMode: selfCheck, checkModel: '$\sin^4x/4+C$; direct u=sin x is already simpler, so no identity is needed.' }
+  explanation: The requested identity is unnecessary; justify the simpler valid method.
+  difficultyDimensions: [identityConstruction, errorDiagnosis, auxiliaryTechnique]
+  difficultyEvidence: Evaluates a proposed transformation, rejects needless work, and selects a direct substitution.
+  prerequisiteObjectiveIds: [calc1-trig-identities]
 - id: q013
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{4}}{1+x^{10}} \, dx = \frac{\pi}{10\sin(\pi/10)}
-    \) (Parameter a=9)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'Evaluate $\int_0^1\frac{x}{\sqrt{1+x^2}}dx$ by two substitution workflows and explain why they agree.'
+  answer: { gradingMode: selfCheck, checkModel: '$\sqrt2-1$.' }
+  explanation: Changed bounds or back-substitution are equivalent when variable and endpoints match.
+  difficultyDimensions: [representationTransfer, proofJustification, auxiliaryTechnique]
+  difficultyEvidence: Uses two representations of one substitution and justifies their agreement.
+  prerequisiteObjectiveIds: [calc1-definite-integrals]
 - id: q014
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{9 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 9}}{9 x} & \text{for}\: \left|{x^{2}}\right|
-      > 9 \\- \frac{\sqrt{9 - x^{2}}}{9 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 3\sin\theta.
+  prompt: 'Determine p so $\int_1^\infty\frac{px}{1+x^2}dx$ converges, and justify the threshold.'
+  answer: { gradingMode: selfCheck, checkModel: 'Only p=0.' }
+  explanation: For nonzero p the transformed logarithm is unbounded; p=0 gives the zero integrand.
+  difficultyDimensions: [parameterThreshold, auxiliaryTechnique, globalLocalReasoning]
+  difficultyEvidence: Finds a parameter threshold through substitution and improper-limit reasoning.
+  extensionObjectiveIds: [calc2-improper-integrals]
 - id: q015
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int x e^{x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \left(x - 1\right) e^{x} + C
-  explanation: Use integration by parts with u = 1x and dv = e^{x} dx.
+  prompt: 'Evaluate $\int\frac{1}{x(\ln x)^2}dx$, derive the needed substitution, and state the domain.'
+  answer: { gradingMode: selfCheck, checkModel: '$-1/\ln x+C$, on x>0 with x not equal to 1.' }
+  explanation: $u=ln x$ gives $du=dx/x$ and the original integrand excludes x=1.
+  difficultyDimensions: [modelOrDerivation, auxiliaryTechnique, domainCondition]
+  difficultyEvidence: Derives the differential, transforms a nested reciprocal, and tracks exclusions.
+  prerequisiteObjectiveIds: [calc1-logarithms]
 - id: q016
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{2 x + 1}{\left(x - 1\right) \left(x
-    + 4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{3 \log{\left(x - 1 \right)}}{5} + \frac{7 \log{\left(x + 4 \right)}}{5}
-      + C
-  explanation: Use partial fraction decomposition.
+  prompt: 'A graph labels a positive function $g$ with $g(0)=1$ and $g(2)=5$. Evaluate $\int_0^2 g(x)g''(x)dx$ by modeling u and interpreting the endpoints.'
+  answer: { gradingMode: selfCheck, checkModel: '$12$.' }
+  explanation: Let u=g(x); then the integral is one-half times $u^2$ from 1 to 5.
+  difficultyDimensions: [representationTransfer, modelOrDerivation, auxiliaryTechnique]
+  difficultyEvidence: Transfers labeled endpoint data into a substitution model and evaluates transformed bounds.
+  prerequisiteObjectiveIds: [calc1-function-composition]
 - id: q017
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=2)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'Prove by differentiation that $\int\frac{f''(x)}{1+f(x)^2}dx=\arctan(f(x))+C$, then apply it to f(x)=x^3-x.'
+  answer: { gradingMode: selfCheck, checkModel: '$\arctan(x^3-x)+C$.' }
+  explanation: The chain rule proves the general pattern before the concrete application.
+  difficultyDimensions: [proofJustification, representationTransfer, auxiliaryTechnique]
+  difficultyEvidence: Derives a general substitution theorem, transfers it to a specific function, and verifies it.
+  prerequisiteObjectiveIds: [calc1-chain-rule]
 - id: q018
   type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{4 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 4}}{4 x} & \text{for}\: \left|{x^{2}}\right|
-      > 4 \\- \frac{\sqrt{4 - x^{2}}}{4 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 2\sin\theta.
+  prompt: 'Evaluate $\int\frac{x+1}{(x+1)^2+9}dx$ and explain why completing the square is not a needed auxiliary technique.'
+  answer: { gradingMode: selfCheck, checkModel: '$\frac12\ln((x+1)^2+9)+C$.' }
+  explanation: The shifted square is already visible and its derivative is present.
+  difficultyDimensions: [simplification, errorDiagnosis, auxiliaryTechnique]
+  difficultyEvidence: Identifies an already suitable form, rejects unnecessary preprocessing, and substitutes.
+  prerequisiteObjectiveIds: [calc1-polynomial-algebra]
 - id: q019
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=3)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
+  prompt: 'Evaluate $\int_{-1}^1\frac{x}{1+x^2}dx$ using symmetry and then confirm with substitution.'
+  answer: { gradingMode: selfCheck, checkModel: '$0$.' }
+  explanation: The integrand is odd; substitution provides an independent endpoint check.
+  difficultyDimensions: [representationTransfer, proofJustification, auxiliaryTechnique]
+  difficultyEvidence: Uses global symmetry, confirms it symbolically, and reconciles the two approaches.
+  prerequisiteObjectiveIds: [calc1-symmetry]
 - id: q020
   type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=3)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q021
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{16 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 16}}{16 x} & \text{for}\: \left|{x^{2}}\right|
-      > 16 \\- \frac{\sqrt{16 - x^{2}}}{16 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 4\sin\theta.
-- id: q022
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 5 x \sin{\left(2 x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- \frac{5 x \cos{\left(2 x \right)}}{2} + \frac{5 \sin{\left(2 x
-      \right)}}{4} + C'
-  explanation: Use integration by parts with u = 5x and dv = \sin{\left(2 x \right)}
-    dx.
-- id: q023
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=1)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q024
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{2}{\left(x \right)} \cos^{5}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{7}{\left(x \right)}}{7} - \frac{2 \sin^{5}{\left(x \right)}}{5}
-      + \frac{\sin^{3}{\left(x \right)}}{3} + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q025
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{1 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 1}}{x} & \text{for}\: \left|{x^{2}}\right|
-      > 1 \\- \frac{\sqrt{1 - x^{2}}}{x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 1\sin\theta.
-- id: q026
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int x \cos{\left(4 x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{x \sin{\left(4 x \right)}}{4} + \frac{\cos{\left(4 x \right)}}{16}
-      + C
-  explanation: Use integration by parts with u = 1x and dv = \cos{\left(4 x \right)}
-    dx.
-- id: q027
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=2)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q028
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{2 x + 3}{\left(x - 1\right) \left(x
-    + 4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \log{\left(x^{2} + 3 x - 4 \right)} + C
-  explanation: Use partial fraction decomposition.
-- id: q029
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{5}{\left(x \right)} \cos^{5}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{10}{\left(x \right)}}{10} - \frac{\sin^{8}{\left(x \right)}}{4}
-      + \frac{\sin^{6}{\left(x \right)}}{6} + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q030
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{2}{\left(x \right)} \cos{\left(x \right)}
-    \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\sin^{3}{\left(x \right)}}{3} + C
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q031
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 2}{\left(x - 1\right) \left(x +
-    3\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{3 \log{\left(x - 1 \right)}}{4} + \frac{\log{\left(x + 3 \right)}}{4}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q032
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=4)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q033
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 3 x \cos{\left(x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: 3 x \sin{\left(x \right)} + 3 \cos{\left(x \right)} + C
-  explanation: Use integration by parts with u = 3x and dv = \cos{\left(x \right)}
-    dx.
-- id: q034
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=10)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q035
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{3}}{1+x^{8}} \, dx = \frac{\pi}{8\sin(\pi/8)}
-    \) (Parameter a=1)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q036
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int x e^{5 x} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{\left(5 x - 1\right) e^{5 x}}{25} + C
-  explanation: Use integration by parts with u = 1x and dv = e^{5 x} dx.
-- id: q037
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=5)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q038
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{3 x + 1}{\left(x - 1\right) \left(x
-    + 2\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{4 \log{\left(x - 1 \right)}}{3} + \frac{5 \log{\left(x + 2 \right)}}{3}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q039
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{2}}{1+x^{6}} \, dx = \frac{\pi}{6\sin(\pi/6)}
-    \) (Parameter a=3)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q040
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{x + 3}{\left(x - 1\right) \left(x +
-    4\right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: \frac{4 \log{\left(x - 1 \right)}}{5} + \frac{\log{\left(x + 4 \right)}}{5}
-      + C
-  explanation: Use partial fraction decomposition.
-- id: q041
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int 2 x \sin{\left(2 x \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- x \cos{\left(2 x \right)} + \frac{\sin{\left(2 x \right)}}{2} +
-      C'
-  explanation: Use integration by parts with u = 2x and dv = \sin{\left(2 x \right)}
-    dx.
-- id: q042
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin{\left(x \right)} \cos^{3}{\left(x \right)}
-    \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- \frac{\cos^{4}{\left(x \right)}}{4} + C'
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q043
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \sin^{4}{\left(x \right)} \cos^{3}{\left(x
-    \right)} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '- \frac{\sin^{7}{\left(x \right)}}{7} + \frac{\sin^{5}{\left(x \right)}}{5}
-      + C'
-  explanation: Use trigonometric identities to simplify and integrate.
-- id: q044
-  type: freeResponse
-  prompt: Prove that \(\int_0^\infty \frac{x^{1}}{1+x^{4}} \, dx = \frac{\pi}{4\sin(\pi/4)}
-    \) (Parameter a=4)
-  answer:
-    gradingMode: selfCheck
-    checkModel: Proof requires contour integration or beta functions.
-  explanation: Substitute u = x^n and utilize the Gamma/Beta function properties or
-    complex analysis.
-- id: q045
-  type: freeResponse
-  prompt: 'Evaluate the integral: \(\int \frac{1}{x^{2} \sqrt{4 - x^{2}}} \, dx\)'
-  answer:
-    gradingMode: selfCheck
-    checkModel: '\begin{cases} - \frac{i \sqrt{x^{2} - 4}}{4 x} & \text{for}\: \left|{x^{2}}\right|
-      > 4 \\- \frac{\sqrt{4 - x^{2}}}{4 x} & \text{otherwise} \end{cases} + C'
-  explanation: Use trigonometric substitution x = 2\sin\theta.
+  prompt: 'Construct an antiderivative of the form $F(x)=H(x^2+1)$ for $2x(x^2+1)\cos((x^2+1)^2)$, determine H, and verify by differentiation.'
+  answer: { gradingMode: selfCheck, checkModel: '$F(x)=\frac12\sin((x^2+1)^2)+C$; H(u)=\frac12\sin(u^2)+C$.' }
+  explanation: The requested form guides a two-stage reverse construction and chain-rule check.
+  difficultyDimensions: [counterexampleOrConstruction, reverseReasoning, auxiliaryTechnique]
+  difficultyEvidence: Constructs an auxiliary function, reasons backward through nested composition, and applies substitution.
+  prerequisiteObjectiveIds: [calc1-chain-rule]

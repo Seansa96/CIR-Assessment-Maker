@@ -1,0 +1,102 @@
+schemaVersion: 1
+id: calc2-ratio-root-tests-worked-example
+title: Ratio and Root Tests Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: ratio-root-tests
+modeDefault: practice
+randomizeQuestions: false
+skills: [ratio-test, root-test, convergence-test-selection, absolute-convergence]
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [calculus-2, ratio-root-tests, convergence-tests, worked-example]
+workedExamples:
+- id: ratio-root-paired-example
+  title: Select and execute the shorter geometric-decay test
+  problem: |
+    Determine convergence for both series:
+
+    $$
+    \sum_{n=1}^{\infty}\frac{3^n}{n!}
+    \qquad\text{and}\qquad
+    \sum_{n=1}^{\infty}\left(\frac{2n+1}{3n+4}\right)^n.
+    $$
+  steps:
+  - id: rr-step-1
+    title: Scan each summand
+    instruction: Identify the structure that makes one of the two tests efficient.
+    prompt: Which pairing is best?
+    type: multipleChoice
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Decision map for selecting Ratio or Root Test, caption: Factorials suggest successive ratios; a whole nth power suggests an nth root. }]
+    choices:
+    - id: a
+      text: 'First: Ratio Test; second: Root Test.'
+    - id: b
+      text: 'First: Root Test; second: Ratio Test.'
+    - id: c
+      text: 'Both: p-series test.'
+    - id: d
+      text: 'Both: telescoping.'
+    answer: { choiceId: a }
+    explanation: The factorial cancels in an adjacent ratio; the outer nth power disappears under an nth root.
+  - id: rr-step-2
+    title: Define the Ratio Test term
+    instruction: For the first series, set $a_n=3^n/n!$ and write the required successive-term ratio before cancelling.
+    prompt: 'Write $|a_{n+1}/a_n|$ before simplification.'
+    type: freeResponse
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Ratio Test formula, caption: Substitute n+1 consistently before cancelling. }]
+    answer: { gradingMode: selfCheck, keyPoints: [Uses '(3^(n+1))/(n+1)!', Multiplies by 'n!/3^n', Includes absolute values or notes positivity] }
+    explanation: The correct ratio is $\frac{3^{n+1}}{(n+1)!}\cdot\frac{n!}{3^n}$.
+  - id: rr-step-3
+    title: Simplify and take the limit
+    instruction: Cancel the common factorial and exponential factors, then take the limit as $n$ grows.
+    prompt: What is $L$ for the first series?
+    type: numericResponse
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Ratio Test threshold map, caption: The simplified ratio is 3 divided by n plus 1. }]
+    answer: { value: 0, tolerance: 0.0001 }
+    explanation: $|a_{n+1}/a_n|=3/(n+1)$, so $L=0$.
+  - id: rr-step-4
+    title: State the first conclusion
+    instruction: Compare the limit to the threshold 1 and name the convergence type.
+    prompt: What does $L=0$ prove for the first series?
+    type: multipleChoice
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Shared Ratio and Root Test conclusions, caption: A limit below 1 proves absolute convergence. }]
+    choices: [{ id: a, text: It converges absolutely. }, { id: b, text: It diverges. }, { id: c, text: It is conditionally convergent. }, { id: d, text: The test is inconclusive. }]
+    answer: { choiceId: a }
+    explanation: Since $0<1$, the Ratio Test proves absolute convergence.
+  - id: rr-step-5
+    title: Define the Root Test term
+    instruction: For the second series, set $b_n=((2n+1)/(3n+4))^n$. Take the nth root of its absolute value.
+    prompt: What expression remains after taking the nth root?
+    type: freeResponse
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Root Test formula, caption: The nth root cancels the outer nth power. }]
+    answer: { gradingMode: selfCheck, keyPoints: [States '(2n+1)/(3n+4)', Notes it is positive for n at least 1] }
+    explanation: $\sqrt[n]{|b_n|}=\frac{2n+1}{3n+4}$ for $n\ge1$.
+  - id: rr-step-6
+    title: Evaluate the root limit
+    instruction: Divide the leading coefficients after taking the nth root.
+    prompt: What is $L$ for the second series?
+    type: numericResponse
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Root Test threshold map, caption: The nth root leaves a rational function whose limit is its leading-coefficient ratio. }]
+    answer: { value: 0.6666667, tolerance: 0.0001 }
+    explanation: $\lim(2n+1)/(3n+4)=2/3$.
+  - id: rr-step-7
+    title: State the second conclusion
+    instruction: Apply the shared threshold rule to $L=2/3$.
+    prompt: What does the Root Test prove for the second series?
+    type: multipleChoice
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Shared Ratio and Root Test conclusions, caption: The two tests have the same threshold conclusions. }]
+    choices: [{ id: a, text: It converges absolutely. }, { id: b, text: It diverges. }, { id: c, text: It only conditionally converges. }, { id: d, text: The Root Test is inconclusive. }]
+    answer: { choiceId: a }
+    explanation: $2/3<1$, so the Root Test proves absolute convergence.
+  - id: rr-step-8
+    title: Transfer the selection rule
+    instruction: Explain why the Root Test was shorter for the second series and state what $L=1$ would require.
+    prompt: Give both parts in one or two sentences.
+    type: freeResponse
+    media: [{ type: image, src: /assessments/calc2-infinite-series/ratio-root-test-map.svg, alt: Decision map showing Ratio and Root Test selection cues and the L equals 1 outcome, caption: A structural cue chooses the test; an L of 1 chooses the next method. }]
+    answer:
+      gradingMode: selfCheck
+      keyPoints: [Explains that the nth root removes the outer nth power, States that L equals 1 is inconclusive, Names another applicable test or structural analysis]
+    explanation: The Root Test directly exposes the base. At $L=1$, choose another test rather than relabeling the result.

@@ -3,7 +3,7 @@ id: physics-free-body-diagrams-concept-lesson
 title: Drawing Free-Body Diagrams
 assessmentType: conceptLesson
 categoryId: physics-1
-topicId: physics-newton-laws
+topicId: physics-free-body-diagrams
 skills:
 - Apply Newton's Laws and Force Models
 - physics-newton-laws
@@ -23,6 +23,13 @@ navigation:
   - physics-newton-laws
 modeDefault: study
 randomizeQuestions: false
+authoring:
+  visualRequirement: required
+  visualRationale: The topic is the visual translation from a physical setup into an isolated-object force diagram.
+  physicsModel:
+    modelId: freeBodyDiagram
+    modelRole: foundation
+    requiredRepresentations: [systemBoundary, freeBodyDiagram, coordinateAxes, interactionPair]
 sections:
 - id: intro-fbd
   title: What is a Free-Body Diagram?
@@ -75,25 +82,136 @@ sections:
 
     '
 lesson:
-  introduction: Drawing Free-Body Diagrams
+  introduction: An FBD is a controlled translation: choose one object, replace every interaction with a force on that object, then choose axes that expose the constraint. The diagram is the model; equations come after it.
   sections:
-  - id: sec-q001
-    title: When drawing a free-body diagram for a book resting on a table, which of
-      the following forces should NOT be included in the diagram *for the book*?
-    content: |
-      When drawing a free-body diagram for a book resting on a table, which of the following forces should NOT be included in the diagram *for the book*?
+  - id: choose-system
+    title: Choose a system before naming forces
+    content: A free-body diagram belongs to one chosen object or defined system. Circle that system first; only interactions crossing its boundary can become external-force arrows. This prevents mixing an object's action on a partner with the partner's action on the object.
+    media:
+    - type: image
+      src: /assessments/physics-dynamics/free-body-force-model.svg
+      alt: A block isolated from its surroundings with external force arrows drawn from its center.
+      caption: The boundary tells you which interactions belong on this diagram.
     check:
-      id: check-q001
+      id: choose-system-check
       type: multipleChoice
-      prompt: 'Select the correct statement:'
+      prompt: For an FBD of a book, which force is outside the selected system?
       choices:
       - id: a
-        text: The downward force of gravity on the book.
+        text: Earth's gravitational force on the book
       - id: b
-        text: The upward normal force of the table on the book.
+        text: The table's normal force on the book
       - id: c
-        text: The downward normal force of the book on the table.
+        text: The book's normal force on the table
       answer:
         choiceId: c
       explanation: |
-        An FBD for the book must only include forces acting *on* the book. The force of the book pushing down on the table is a force acting *on the table*, so it belongs in the table's FBD, not the book's.
+        The third-law partner acts on the table, so it cannot appear on the book's FBD.
+  - id: interactions-to-arrows
+    title: Convert interactions to forces
+    content: List interactions before drawing arrows: gravitational, contact normal, friction, tension, spring, or applied interaction. Each arrow is a force exerted by another object, never a property such as velocity, acceleration, or motion.
+    check:
+      id: interactions-to-arrows-check
+      type: multipleChoice
+      prompt: A crate slides right on a rough floor. Which item is not a force arrow on its FBD?
+      choices:
+      - id: a
+        text: Kinetic friction from the floor
+      - id: b
+        text: Normal force from the floor
+      - id: c
+        text: Velocity to the right
+      - id: d
+        text: Weight from Earth
+      answer: { choiceId: c }
+      explanation: Velocity describes motion. The other options name external interactions acting on the crate.
+  - id: force-pairs
+    title: Keep third-law pairs on separate diagrams
+    content: A force and its Newton-third-law partner are equal in magnitude and opposite in direction, but they act on different bodies. They therefore cannot cancel on one FBD. Label the agent when uncertain: force of A on B belongs only on B's diagram.
+    check:
+      id: force-pairs-check
+      type: multipleChoice
+      prompt: Which force pairs with the normal force of a table on a book?
+      choices:
+      - id: a
+        text: The book's weight
+      - id: b
+        text: The book's normal force on the table
+      - id: c
+        text: The table's friction force on the book
+      - id: d
+        text: The book's acceleration
+      answer: { choiceId: b }
+      explanation: The normal interaction pair is table on book and book on table; weight is a different interaction with Earth.
+  - id: choose-axes
+    title: Choose axes for the constraint
+    content: Axes are bookkeeping, not extra forces. On a level surface, horizontal and vertical axes often isolate acceleration and support. On an incline, align one axis with the surface so normal force and friction need no components.
+    check:
+      id: choose-axes-check
+      type: multipleChoice
+      prompt: For a block constrained to move along an incline, which axis choice usually minimizes components?
+      choices:
+      - id: a
+        text: One axis parallel to the surface and one perpendicular to it
+      - id: b
+        text: Both axes vertical
+      - id: c
+        text: One axis along the applied force only
+      - id: d
+        text: No axes until after solving
+      answer: { choiceId: a }
+      explanation: Surface-aligned axes put normal and friction entirely on axes and leave only weight to resolve.
+  - id: resolve-only-when-needed
+    title: Resolve forces, not the diagram's meaning
+    content: Draw each real force once. Then resolve it into components only relative to the axes you chose. A weight arrow remains vertically downward even when its components are parallel and perpendicular to an incline.
+    check:
+      id: resolve-only-when-needed-check
+      type: multipleChoice
+      prompt: Which statement is correct after choosing incline-aligned axes?
+      choices:
+      - id: a
+        text: Gravity itself points down the slope
+      - id: b
+        text: Gravity is vertical, while its components are along the chosen axes
+      - id: c
+        text: The normal force becomes a component of gravity
+      - id: d
+        text: Friction always equals the downhill component of weight
+      answer: { choiceId: b }
+      explanation: Components describe a chosen representation of the same weight force; they do not change its physical direction.
+  - id: diagram-correction
+    title: Correct a plausible but wrong diagram
+    content: Before equations, audit the diagram: one object, every external interaction once, no internal or partner forces, and axes consistent with the constraint. A correct diagram can still produce a negative result; that sign reports that the assumed direction was opposite the actual one.
+    check:
+      id: diagram-correction-check
+      type: multipleChoice
+      prompt: A hanging mass has arrows T upward, mg downward, and ma downward. Which correction is needed?
+      choices:
+      - id: a
+        text: Remove ma because acceleration is not a force
+      - id: b
+        text: Remove mg because gravity is internal
+      - id: c
+        text: Add a downward tension
+      - id: d
+        text: Replace both forces with velocity
+      answer: { choiceId: a }
+      explanation: Newton's law relates the net real-force arrows to acceleration; it does not add an ma force to the FBD.
+  - id: transition-to-equations
+    title: Write one equation per selected axis
+    content: Only after the FBD and axes survive the audit, write $\sum F_x=ma_x$ and $\sum F_y=ma_y$. A zero component of acceleration is a constraint equation, not a reason to erase forces.
+    check:
+      id: transition-to-equations-check
+      type: multipleChoice
+      prompt: A block moves horizontally at constant height. Which vertical equation is justified?
+      choices:
+      - id: a
+        text: $\sum F_y=0$ because $a_y=0$
+      - id: b
+        text: $N=0$ because it is not moving upward
+      - id: c
+        text: $mg=0$ because gravity is balanced
+      - id: d
+        text: No vertical equation can be written
+      answer: { choiceId: a }
+      explanation: The vertical forces can be nonzero and still sum to zero when the vertical acceleration is zero.

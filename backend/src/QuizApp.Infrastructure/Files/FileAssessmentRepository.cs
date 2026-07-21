@@ -27,6 +27,15 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
 
     public async Task<AssessmentDefinition?> GetByIdAsync(string assessmentId, CancellationToken cancellationToken = default)
     {
+        var path = Path.Combine(options.AssessmentsPath, $"{ToSafeFileName(assessmentId)}.yaml");
+        if (File.Exists(path))
+        {
+            var assessment = await LoadFileAsync(path, cancellationToken);
+            if (assessment != null && string.Equals(assessment.Id, assessmentId, StringComparison.OrdinalIgnoreCase))
+            {
+                return assessment;
+            }
+        }
         var assessments = await LoadAllAsync(cancellationToken);
         return assessments.FirstOrDefault(assessment => string.Equals(assessment.Id, assessmentId, StringComparison.OrdinalIgnoreCase));
     }
@@ -37,6 +46,19 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
         if (!validation.IsValid)
         {
             throw new InvalidOperationException($"Assessment '{assessment.Id}' is invalid: {string.Join("; ", validation.Issues.Select(issue => issue.Message))}");
+        }
+
+        var category = (await new FileCategoryRepository(options).ListAsync(cancellationToken))
+            .FirstOrDefault(item => item.Id.Equals(assessment.CategoryId, StringComparison.OrdinalIgnoreCase));
+        // Temporary/test repositories without a configured category catalog retain legacy behavior.
+        // Real catalog categories declare a profile and therefore opt into strict save-time enforcement.
+        var contract = (category?.AuthoringProfile is AuthoringProfile.Stem or AuthoringProfile.NonStem) || assessment.Authoring is not null
+            ? new AssessmentAuthoringContractAudit().Evaluate(category, assessment, strict: true)
+            : Array.Empty<AuthoringContractDiagnostic>();
+        var blocking = contract.Where(item => item.IsBlocking).ToList();
+        if (blocking.Count > 0)
+        {
+            throw new InvalidOperationException($"Assessment '{assessment.Id}' violates the authoring contract: {string.Join("; ", blocking.Select(item => item.Message))}");
         }
 
         var path = Path.Combine(options.AssessmentsPath, $"{ToSafeFileName(assessment.Id)}.yaml");

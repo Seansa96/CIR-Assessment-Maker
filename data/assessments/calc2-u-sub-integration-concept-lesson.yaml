@@ -1,43 +1,109 @@
 schemaVersion: 1
 id: calc2-u-sub-integration-concept-lesson
-title: U-Sub Integration Concept Lesson
+title: 'U-Substitution: Reversing the Chain Rule'
 assessmentType: conceptLesson
 categoryId: calculus-2
 topicId: u-sub-integration
-skills:
-- Recognize composite-function derivative structure
-- Choose and carry out a substitution
-- Transform definite-integral bounds and verify antiderivatives
+skills: [recognize-composite-structure, choose-substitution, transform-differentials, change-definite-bounds, verify-antiderivatives]
 navigation:
   learningGoal: learn
   activityType: conceptLesson
-  tags:
-  - calc2
-  - concepts
-  - calculus-2
-  - u-sub-integration
+  tags: [calculus-2, u-sub-integration, chain-rule, source-grounded]
+modeDefault: practice
+randomizeQuestions: false
+authoring:
+  visualRequirement: required
+  visualRationale: U-substitution is a spatially useful mapping from a nested x-expression to a simpler u-expression and back.
 lesson:
-  introduction: Introduction to this lesson
+  introduction: U-substitution reverses the chain rule. You will identify the inner expression, preserve its differential, and choose the correct endpoint workflow for indefinite and definite integrals.
   sections:
-  - id: sec-u-sub-integration-1
-    title: Introduction to U-Sub Integration
-    content: This lesson covers the foundational concepts of U-Sub Integration. Please
-      review the reference text before proceeding.
+  - id: recognize-chain-rule
+    title: Recognize a chain-rule pair
+    required: true
+    content: In $\int 2x\cos(x^2)\,dx$, the nested expression is $x^2$ and its derivative is $2x$. That pairing—not the mere presence of an x—is the evidence for substitution.
+    media:
+    - { type: image, src: /media/calculus/u-substitution-flow.svg, alt: A diagram mapping an x-integral with an inner expression and derivative to a u-integral, then back to x., caption: Match an inner expression with its complete differential. }
     check:
-      id: check-u-sub-integration-1
-      type: freeResponse
-      prompt: 'Evaluate the integral: \(\int x \cos{\left(3 x \right)} \, dx\)'
-      choices: []
-      answer:
-        gradingMode: selfCheck
-  - id: sec-u-sub-integration-2
-    title: Advanced U-Sub Integration
-    content: Understanding the deeper mechanics of U-Sub Integration is critical for
-      Olympiad level mastery.
+      id: check-recognize
+      type: multipleChoice
+      prompt: 'For $\int 6x e^{3x^2}\,dx$, which choice identifies the useful pair?'
+      choices: [{ id: a, text: '$u=3x^2$ and $du=6x\,dx$' }, { id: b, text: '$u=6x$ and $du=6\,dx$' }, { id: c, text: '$u=e^{3x^2}$ and $du=e^{3x^2}\,dx$' }]
+      answer: { choiceId: a }
+  - id: choose-inner
+    title: Choose the inner expression
+    required: true
+    content: A strong choice simplifies the entire integrand. For $x\sqrt{x^2+4}$, choosing $u=x^2+4$ turns both the radical and $x\,dx$ into u-language.
+    media: []
     check:
-      id: check-u-sub-integration-2
-      type: freeResponse
-      prompt: 'Evaluate the integral: \(\int 2 x e^{2 x} \, dx\)'
-      choices: []
-      answer:
-        gradingMode: selfCheck
+      id: check-inner
+      type: multipleChoice
+      prompt: 'Which substitution is most useful for $\int x\sqrt{x^2+4}\,dx$?'
+      choices: [{ id: a, text: '$u=x$' }, { id: b, text: '$u=x^2+4$' }, { id: c, text: '$u=\sqrt{x^2+4}$' }]
+      answer: { choiceId: b }
+  - id: preserve-differential
+    title: Preserve the whole differential
+    required: true
+    content: 'Write $du$ before replacing the integrand. If only a constant is missing, solve for the needed factor: when $u=5x-1$, $dx=du/5$.'
+    media: []
+    check:
+      id: check-differential
+      type: multipleChoice
+      prompt: 'If $u=4x^3+7$, which replacement is correct?'
+      choices: [{ id: a, text: '$du=12x^2\,dx$' }, { id: b, text: '$du=4x^2\,dx$' }, { id: c, text: '$dx=12x^2\,du$' }]
+      answer: { choiceId: a }
+  - id: remove-x
+    title: Remove every x before integrating
+    required: true
+    content: A completed substitution contains only u and du. If an x remains, either rewrite it using u or choose a different method; mixed variables hide errors.
+    media:
+    - { type: image, src: /media/calculus/u-substitution-flow.svg, alt: The middle stage of a substitution flow shows an integral entirely in u., caption: The transformed integral should have no leftover x. }
+    check:
+      id: check-remove-x
+      type: multipleChoice
+      prompt: 'After $u=x^2+1$, what does $\int x(x^2+1)^4\,dx$ become?'
+      choices: [{ id: a, text: '$\int u^4\,du$' }, { id: b, text: '$\frac12\int u^4\,du$' }, { id: c, text: '$\frac12\int xu^4\,du$' }]
+      answer: { choiceId: b }
+  - id: indefinite-return
+    title: Return to x for indefinite integrals
+    required: true
+    content: After integrating in u, substitute back and add $C$. Returning to x makes the result an antiderivative of the original x-integrand.
+    media: []
+    check:
+      id: check-return
+      type: multipleChoice
+      prompt: 'If $u=\sin x$ and the u-antiderivative is $u^3/3+C$, what is the final answer?'
+      choices: [{ id: a, text: '$\sin^3(x)/3+C$' }, { id: b, text: '$x^3/3+C$' }, { id: c, text: '$u^3/3+x$' }]
+      answer: { choiceId: a }
+  - id: definite-bounds
+    title: Change bounds for definite integrals
+    required: true
+    content: For a definite integral, convert both x-bounds to u-bounds and remain in u. This removes the final back-substitution step and keeps the evaluation consistent.
+    media: []
+    check:
+      id: check-bounds
+      type: multipleChoice
+      prompt: 'With $u=x^2+1$, what u-bounds replace $x=0$ and $x=2$?'
+      choices: [{ id: a, text: '$0$ to $2$' }, { id: b, text: '$1$ to $5$' }, { id: c, text: '$1$ to $4$' }]
+      answer: { choiceId: b }
+  - id: choose-method
+    title: Distinguish substitution from integration by parts
+    required: true
+    content: Not every product calls for u-substitution. In $\int xe^x\,dx$, neither factor supplies the derivative of a useful inner expression, so integration by parts is the better first move.
+    media: []
+    check:
+      id: check-method
+      type: multipleChoice
+      prompt: 'Why is $\int xe^x\,dx$ not an immediate u-substitution problem?'
+      choices: [{ id: a, text: 'There is no inner-function and derivative pair that removes the product.' }, { id: b, text: 'Exponential functions have no antiderivatives.' }, { id: c, text: 'A product cannot be integrated.' }]
+      answer: { choiceId: a }
+  - id: verify
+    title: Verify with the chain rule
+    required: true
+    content: Differentiate your final answer. The derivative must reproduce both the outer derivative and the inner derivative, which exposes missing constants immediately.
+    media: []
+    check:
+      id: check-verify
+      type: multipleChoice
+      prompt: 'Which derivative verifies $\int 2x\cos(x^2)\,dx=\sin(x^2)+C$?'
+      choices: [{ id: a, text: '$\cos(x^2)$' }, { id: b, text: '$2x\cos(x^2)$' }, { id: c, text: '$2\sin x$' }]
+      answer: { choiceId: b }

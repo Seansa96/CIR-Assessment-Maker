@@ -143,6 +143,9 @@ Quiz/test assessments may use `attemptQuestionCount` to sample a fixed-size atte
 | `numericResponse` | Numeric value within tolerance |
 | `symbolicResponse` | Backend-authoritative symbolic equivalence |
 | `code` | Piston execution through generated harness |
+| `circuit` | Circuit-diagram response validation |
+| `multipart` | Two or more independently validated parts (quiz/test only) |
+| `graphingResponse` | Graph-based response validation |
 
 ### Content Sources Of Truth
 

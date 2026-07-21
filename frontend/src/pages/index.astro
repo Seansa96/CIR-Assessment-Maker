@@ -188,6 +188,7 @@ const isDev = import.meta.env.DEV;
               <div class="field"><label for="authoring-chunk-search">Search this source</label><input id="authoring-chunk-search" type="search" placeholder="Search chunk text, locator, or ID" /></div>
               <p id="authoring-chunk-selection" class="muted" aria-live="polite">No chunks selected.</p>
             </div>
+            <div id="authoring-outline" class="authoring-list empty-state">Build or open an outline to select a chapter.</div>
             <div id="authoring-chunk-list" class="authoring-chunk-list"></div>
           </section>
           <section class="authoring-packet-panel">
@@ -196,6 +197,7 @@ const isDev = import.meta.env.DEV;
             <div class="authoring-import-grid">
               <div class="field"><label for="authoring-category">Category ID</label><input id="authoring-category" placeholder="physics-1" /></div>
               <div class="field"><label for="authoring-topic">Topic ID</label><input id="authoring-topic" placeholder="traveling-waves" /></div>
+              <div class="field"><label for="authoring-target-tier">Target difficulty tier</label><select id="authoring-target-tier"><option value="unspecified">General content</option><option value="easy">Easy</option><option value="hard">Hard</option><option value="olympiad">Olympiad</option></select></div>
               <div class="field wide"><label for="authoring-objectives">Objective IDs (comma-separated)</label><input id="authoring-objectives" placeholder="wave-speed,interpret-wave-graph" /></div>
               <div class="field wide"><label for="authoring-chunks">Source chunk IDs (comma-separated)</label><input id="authoring-chunks" placeholder="src-...:chunk-0001" /></div>
             </div>
@@ -1471,6 +1473,7 @@ const isDev = import.meta.env.DEV;
           assessmentId: string;
         };
         authoringSource: any | null;
+        authoringOutline: any | null;
         authoringSelectedChunkIds: Set<string>;
       } = {
         settings: null,
@@ -1515,6 +1518,7 @@ const isDev = import.meta.env.DEV;
           assessmentId: ""
         },
         authoringSource: null,
+        authoringOutline: null,
         authoringSelectedChunkIds: new Set()
       };
 
@@ -1551,6 +1555,7 @@ const isDev = import.meta.env.DEV;
       const authoringChunkSearch = document.querySelector<HTMLInputElement>("#authoring-chunk-search")!;
       const authoringChunkList = document.querySelector<HTMLDivElement>("#authoring-chunk-list")!;
       const authoringChunkSelection = document.querySelector<HTMLParagraphElement>("#authoring-chunk-selection")!;
+      const authoringOutline = document.querySelector<HTMLDivElement>("#authoring-outline")!;
 
       document.querySelectorAll<HTMLButtonElement>(".tab").forEach((tab) => {
         tab.addEventListener("click", () => {
@@ -3673,7 +3678,7 @@ const isDev = import.meta.env.DEV;
             <article class="authoring-card"><div><strong>${escapeHtml(source.title)}</strong><span class="authoring-state" data-state="${escapeHtml(source.extractionStatus)}">${escapeHtml(source.format)} · ${escapeHtml(source.extractionStatus)}</span></div>
             <p>${escapeHtml(source.originalFileName)} · ${source.chunkCount} chunks</p><p class="muted">${escapeHtml(source.licenseNote)}</p>
             ${source.warnings?.length ? `<details><summary>Extraction warnings</summary><p>${escapeHtml(source.warnings.join(" "))}</p></details>` : ""}
-            <div class="button-row"><button type="button" data-authoring-open-source="${escapeHtml(source.id)}">Browse chunks</button><button type="button" data-authoring-retry="${escapeHtml(source.id)}">Retry extraction</button></div></article>`).join("") : "No private sources have been imported.";
+            <div class="button-row"><button type="button" data-authoring-open-source="${escapeHtml(source.id)}">Browse chunks</button><button type="button" data-authoring-outline="${escapeHtml(source.id)}">Build/rebuild outline</button><button type="button" data-authoring-retry="${escapeHtml(source.id)}">Retry extraction</button></div></article>`).join("") : "No private sources have been imported.";
           authoringDrafts.classList.remove("empty-state");
           authoringDrafts.innerHTML = drafts.length ? drafts.map(draft => `
             <article class="authoring-card"><div><strong>${escapeHtml(draft.id)}</strong><span class="authoring-state" data-state="${escapeHtml(draft.reviewState)}">${escapeHtml(draft.reviewState)}</span></div>
@@ -3684,28 +3689,52 @@ const isDev = import.meta.env.DEV;
           authoringSummary.textContent = `${sources.length} private source${sources.length === 1 ? "" : "s"} · ${drafts.filter(draft => draft.reviewState === "needsReview").length} draft(s) need review · ${coverage.filter(row => !row.meetsContentRequirement || !row.meetsPracticeRequirement).length} curriculum coverage gap(s).`;
           document.querySelectorAll<HTMLButtonElement>("[data-authoring-retry]").forEach(button => button.addEventListener("click", () => void retryAuthoringSource(button.dataset.authoringRetry!)));
           document.querySelectorAll<HTMLButtonElement>("[data-authoring-open-source]").forEach(button => button.addEventListener("click", () => void openAuthoringSource(button.dataset.authoringOpenSource!)));
+          document.querySelectorAll<HTMLButtonElement>("[data-authoring-outline]").forEach(button => button.addEventListener("click", () => void rebuildAuthoringOutline(button.dataset.authoringOutline!)));
           document.querySelectorAll<HTMLButtonElement>("[data-authoring-draft]").forEach(button => button.addEventListener("click", () => void setAuthoringDraftState(button.dataset.authoringDraft!, button.dataset.authoringState!)));
         } catch (error) { authoringStatus.textContent = readableError(error); }
       }
 
       async function importAuthoringSource() {
         const form = new FormData(authoringImportForm);
+        const submit = authoringImportForm.querySelector<HTMLButtonElement>('button[type="submit"]');
         try {
-          const source = await api<any>("/authoring/sources", { method: "POST", body: JSON.stringify({ localPath: String(form.get("localPath") ?? ""), title: String(form.get("title") ?? ""), licenseNote: String(form.get("licenseNote") ?? "") }) });
-          authoringStatus.textContent = `Imported ${source.manifest.title}: ${source.manifest.chunkCount} searchable chunks.`; authoringImportForm.reset(); await loadAuthoringWorkspace();
+          submit?.setAttribute("disabled", "disabled");
+          authoringStatus.textContent = "Import queued. Copying, extracting, and indexing the source…";
+          const job = await api<any>("/authoring/sources", { method: "POST", body: JSON.stringify({ localPath: String(form.get("localPath") ?? ""), title: String(form.get("title") ?? ""), licenseNote: String(form.get("licenseNote") ?? "") }) });
+          await pollAuthoringImport(job.id); authoringImportForm.reset(); await loadAuthoringWorkspace();
         } catch (error) { authoringStatus.textContent = readableError(error); }
+        finally { submit?.removeAttribute("disabled"); }
+      }
+      async function pollAuthoringImport(jobId: string) {
+        while (true) {
+          const job = await api<any>(`/authoring/import-jobs/${encodeURIComponent(jobId)}`);
+          authoringStatus.textContent = job.state === "completed" ? `${job.stage}.` : `${job.stage}${job.progressPercent != null ? ` (${job.progressPercent}%)` : ""}…`;
+          if (job.state === "completed") return;
+          if (job.state === "failed") throw new Error(job.error || "Source import failed.");
+          await new Promise(resolve => window.setTimeout(resolve, 1000));
+        }
       }
       async function retryAuthoringSource(sourceId: string) { try { await api(`/authoring/sources/${encodeURIComponent(sourceId)}/retry`, { method: "POST" }); authoringStatus.textContent = "Extraction retried."; await loadAuthoringWorkspace(); } catch (error) { authoringStatus.textContent = readableError(error); } }
       async function openAuthoringSource(sourceId: string) {
         try {
           state.authoringSource = await api<any>(`/authoring/sources/${encodeURIComponent(sourceId)}`);
           state.authoringSelectedChunkIds.clear();
+          state.authoringOutline = await api<any>(`/authoring/sources/${encodeURIComponent(sourceId)}/outline`).catch(() => null);
           authoringChunkSearch.value = "";
           authoringSourceDetail.hidden = false;
           syncAuthoringChunkSelection();
           renderAuthoringChunks();
+          renderAuthoringOutline();
           authoringSourceDetail.scrollIntoView({ behavior: "smooth", block: "start" });
         } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
+      async function rebuildAuthoringOutline(sourceId: string) { try { authoringStatus.textContent = "Building source outline…"; state.authoringOutline = await api<any>(`/authoring/sources/${encodeURIComponent(sourceId)}/outline/rebuild`, { method: "POST" }); authoringStatus.textContent = "Source outline built."; if (state.authoringSource?.manifest.id === sourceId) renderAuthoringOutline(); } catch (error) { authoringStatus.textContent = readableError(error); } }
+      function renderAuthoringOutline() {
+        const outline = state.authoringOutline;
+        if (!outline) { authoringOutline.textContent = "No outline has been built for this source. Use Build/rebuild outline."; return; }
+        const render = (node: any) => `<li><button type="button" data-authoring-outline-node="${escapeHtml(node.id)}">${escapeHtml(node.title)}</button> <span class="muted">pp. ${node.startPage || "?"}–${node.endPage || "?"} · ${node.chunkIds.length} chunks${node.warnings?.length ? " · review suggested" : ""}</span>${node.children?.length ? `<ul>${node.children.map(render).join("")}</ul>` : ""}</li>`;
+        authoringOutline.classList.remove("empty-state"); authoringOutline.innerHTML = `<strong>Source outline</strong>${outline.warnings?.length ? `<p class="warning-text">${escapeHtml(outline.warnings.join(" "))}</p>` : ""}<ul>${outline.root.children.map(render).join("")}</ul>`;
+        document.querySelectorAll<HTMLButtonElement>("[data-authoring-outline-node]").forEach(button => button.addEventListener("click", () => { const find = (node: any): any => node.id === button.dataset.authoringOutlineNode ? node : (node.children || []).map(find).find(Boolean); const node = find(outline.root); state.authoringSelectedChunkIds.clear(); node.chunkIds.forEach((id: string) => state.authoringSelectedChunkIds.add(id)); syncAuthoringChunkSelection(); renderAuthoringChunks(); }));
       }
       function visibleAuthoringChunks() {
         const source = state.authoringSource;
@@ -3743,7 +3772,7 @@ const isDev = import.meta.env.DEV;
       function clearAuthoringChunkSelection() { state.authoringSelectedChunkIds.clear(); syncAuthoringChunkSelection(); renderAuthoringChunks(); }
       async function exportAuthoringPacket() {
         try {
-          const packet = await api<any>("/authoring/packets", { method: "POST", body: JSON.stringify({ categoryId: (document.querySelector<HTMLInputElement>("#authoring-category")?.value ?? "").trim(), topicId: (document.querySelector<HTMLInputElement>("#authoring-topic")?.value ?? "").trim(), objectiveIds: authoringValues("#authoring-objectives"), chunkIds: authoringValues("#authoring-chunks") }) });
+          const packet = await api<any>("/authoring/packets", { method: "POST", body: JSON.stringify({ categoryId: (document.querySelector<HTMLInputElement>("#authoring-category")?.value ?? "").trim(), topicId: (document.querySelector<HTMLInputElement>("#authoring-topic")?.value ?? "").trim(), targetDifficultyTier: (document.querySelector<HTMLSelectElement>("#authoring-target-tier")?.value ?? "unspecified"), objectiveIds: authoringValues("#authoring-objectives"), chunkIds: authoringValues("#authoring-chunks") }) });
           document.querySelector<HTMLTextAreaElement>("#authoring-packet-output")!.value = JSON.stringify(packet, null, 2); authoringStatus.textContent = "Packet created. Copy it into your authoring agent.";
         } catch (error) { authoringStatus.textContent = readableError(error); }
       }

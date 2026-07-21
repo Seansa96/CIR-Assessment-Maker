@@ -26,44 +26,83 @@ navigation:
   - formatting
   - concept
 mediaPath: assets/cpp/cpp-strings-formatting.svg
+authoring:
+  visualRequirement: notApplicable
+  visualRationale: The lesson uses direct code and input/output traces; no separate interface or spatial visual is needed.
 lesson:
-  introduction: Welcome to the cpp-strings-formatting lesson. Here we will explore
-    the underlying concepts.
+  introduction: C++ text has several representations. This lesson begins with an owning `std::string`, traces input and transformation safely, then separates text storage from its formatted presentation.
   sections:
-  - id: introduction
-    title: Introduction
-    content: 'Welcome to the cpp-strings-formatting lesson.
-
-
-      Here we will explore the underlying concepts.'
+  - id: string-and-char
+    title: Characters, literals, and std::string
+    content: A `char` holds one character, a string literal is fixed program text, and `std::string` owns a mutable sequence of characters. Prefer `std::string` for ordinary user text because it manages its storage.
     check:
       id: cpp-strings-formatting-check-1
       type: multipleChoice
-      prompt: What is the primary focus of this lesson?
+      prompt: Which type is the usual owning C++ text value for a user's name?
       choices:
-      - id: a
-        text: Learning the core concepts
-      - id: b
-        text: Writing a full application
-      - id: c
-        text: Debugging assembly code
+      - { id: a, text: '`std::string`' }
+      - { id: b, text: '`char`' }
+      - { id: c, text: '`int`' }
       answer:
         choiceId: a
-      explanation: This lesson introduces the theoretical and practical foundations.
-  - id: practical-application
-    title: Practical Application
-    content: Let's see how this works in C++ code.
+      explanation: '`std::string` owns a sequence of characters; `char` represents only one character.'
+  - id: construct-concatenate
+    title: Build a String from Parts
+    content: Concatenate compatible `std::string` values with `+` or append with `+=`. Keep the result in a named value so later code can inspect or format it.
     check:
       id: cpp-strings-formatting-check-2
-      type: code
-      prompt: Write a short C++ snippet demonstrating this concept.
-      language: cpp
-      functionName: main
-      starterCode: "int main() {\n  // Your code here\n  return 0;\n}"
-      validationMode: unitTests
-      tests:
-      - input: test
-        expected: expected
-        isHidden: false
-      explanation: A complete implementation will compile and produce the correct
-        output.
+      type: multipleChoice
+      prompt: If `first` is `"Ada"` and `last` is `"Lovelace"`, which expression creates `"Ada Lovelace"`?
+      choices: [{ id: a, text: '`first + " " + last`' }, { id: b, text: '`first - last`' }, { id: c, text: '`first / last`' }, { id: d, text: '`char(first, last)`' }]
+      answer: { choiceId: a }
+      explanation: The `+` operations concatenate the first name, a space literal, and the last name.
+  - id: index-and-size
+    title: Read Positions Only When They Exist
+    content: '`text.size()` reports the number of characters. Valid indices run from zero through `size() - 1`; access at `size()` is outside the stored text. Check emptiness before reading a first or last character.'
+    check:
+      id: cpp-strings-formatting-check-3
+      type: multipleChoice
+      prompt: For `std::string text{"cat"};`, what is the last valid index?
+      choices: [{ id: a, text: '2' }, { id: b, text: '3' }, { id: c, text: '1' }, { id: d, text: '`text.size()`' }]
+      answer: { choiceId: a }
+      explanation: The string has size three and uses zero-based indices 0, 1, and 2.
+  - id: token-or-line
+    title: Choose Token Input or Line Input
+    content: '`std::cin >> word` reads one whitespace-delimited token. `std::getline(std::cin, line)` reads through the next newline, including spaces between words. Choose based on the input contract rather than habit.'
+    check:
+      id: cpp-strings-formatting-check-4
+      type: multipleChoice
+      prompt: Which input operation preserves the spaces in `Ada Lovelace`?
+      choices: [{ id: a, text: '`std::getline(std::cin, name)`' }, { id: b, text: '`std::cin >> name`' }, { id: c, text: '`name.size()`' }, { id: d, text: '`std::cout << name`' }]
+      answer: { choiceId: a }
+      explanation: '`getline` reads the entire line; formatted extraction stops at the first whitespace.'
+  - id: newline-after-extraction
+    title: Handle the Pending Newline
+    content: After `std::cin >> number`, the newline remains in the stream. A following `getline` can therefore read an empty line unless the program consumes leading whitespace or discards the pending newline deliberately.
+    check:
+      id: cpp-strings-formatting-check-5
+      type: multipleChoice
+      prompt: Why can `getline` immediately after `std::cin >> number` return an empty string?
+      choices: [{ id: a, text: The extraction left the newline waiting in the stream }, { id: b, text: Strings cannot be empty }, { id: c, text: '`getline` only reads integers' }, { id: d, text: '`std::cin` deletes strings' }]
+      answer: { choiceId: a }
+      explanation: Formatted extraction consumes the number but not the line-ending character.
+  - id: string-view
+    title: Borrow Text with string_view
+    content: '`std::string_view` is a non-owning view of character data. It can avoid a copy when a function only reads text, but the original character storage must remain alive while the view is used.'
+    check:
+      id: cpp-strings-formatting-check-6
+      type: multipleChoice
+      prompt: What is the central lifetime rule for `std::string_view`?
+      choices: [{ id: a, text: Its referenced characters must remain alive }, { id: b, text: It always owns a copy }, { id: c, text: It can only view numbers }, { id: d, text: It automatically extends a temporary's lifetime }]
+      answer: { choiceId: a }
+      explanation: A view stores a reference-like range, not independent string storage.
+  - id: formatting
+    title: Format Values at the Output Boundary
+    content: Keep values in typed variables while computing, then format them for output. A formatting call controls presentation such as decimal places without turning every intermediate value into text.
+    check:
+      id: cpp-strings-formatting-check-7
+      type: multipleChoice
+      prompt: When should a numeric price usually become formatted text?
+      choices: [{ id: a, text: When presenting it to a user or file }, { id: b, text: Before every arithmetic operation }, { id: c, text: Before reading input }, { id: d, text: Never }]
+      answer: { choiceId: a }
+      explanation: Preserve numeric types for arithmetic and choose a string representation at the output boundary.

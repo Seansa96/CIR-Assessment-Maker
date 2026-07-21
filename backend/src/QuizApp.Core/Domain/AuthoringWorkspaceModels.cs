@@ -37,6 +37,21 @@ public sealed record SourceManifest(
 
 public sealed record SourceDocument(SourceManifest Manifest, IReadOnlyList<SourceChunk> Chunks);
 
+public sealed record SourceOutlineNode(
+    string Id,
+    string Kind,
+    string Title,
+    int StartPage,
+    int EndPage,
+    int StartOrdinal,
+    int EndOrdinal,
+    IReadOnlyList<string> ChunkIds,
+    IReadOnlyList<SourceOutlineNode> Children,
+    decimal Confidence,
+    IReadOnlyList<string> Warnings);
+
+public sealed record SourceOutline(int SchemaVersion, string SourceId, SourceOutlineNode Root, DateTimeOffset BuiltAt, IReadOnlyList<string> Warnings);
+
 public sealed record SourceSearchResult(
     string SourceId,
     string SourceTitle,
@@ -48,7 +63,10 @@ public sealed record CurriculumObjective(
     string Title,
     IReadOnlyList<string> PrerequisiteIds,
     IReadOnlyList<string> RequiredActivities,
-    IReadOnlyList<string> SourceIds);
+    IReadOnlyList<string> SourceIds)
+{
+    public IReadOnlyList<string> RequiredAuthoringConstraints { get; init; } = Array.Empty<string>();
+}
 
 public sealed record CurriculumManifest(
     int SchemaVersion,
@@ -74,7 +92,15 @@ public sealed record QuestionBlueprint(
     string Difficulty,
     int ReasoningDepth,
     bool RequiresDiagram,
-    SourceReviewState ReviewState);
+    SourceReviewState ReviewState)
+{
+    public IReadOnlyList<DifficultyDimension> DifficultyDimensions { get; init; } = Array.Empty<DifficultyDimension>();
+    public IReadOnlyList<string> SubjectDifficultyTags { get; init; } = Array.Empty<string>();
+    public string? DifficultyEvidence { get; init; }
+    public IReadOnlyList<string> PrerequisiteObjectiveIds { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> ExtensionObjectiveIds { get; init; } = Array.Empty<string>();
+    public string? VisualRationale { get; init; }
+}
 
 public sealed record ContentManifest(
     int SchemaVersion,
@@ -85,7 +111,11 @@ public sealed record ContentManifest(
     string ArtifactType,
     IReadOnlyList<string> SourceChunkIds,
     bool RequiresVisual,
-    SourceReviewState ReviewState);
+    SourceReviewState ReviewState)
+{
+    public string? AuthoringProfile { get; init; }
+    public string? VisualRationale { get; init; }
+}
 
 public sealed record AuthoringPacket(
     int SchemaVersion,
@@ -96,7 +126,15 @@ public sealed record AuthoringPacket(
     IReadOnlyList<SourceManifest> Sources,
     IReadOnlyList<SourceChunk> Chunks,
     IReadOnlyList<string> RequiredArtifacts,
-    string OutputContract);
+    string OutputContract)
+{
+    public string? AuthoringProfile { get; init; }
+    public IReadOnlyList<string> ContractRequirements { get; init; } = Array.Empty<string>();
+    public AssessmentDifficultyTier TargetDifficultyTier { get; init; } = AssessmentDifficultyTier.Unspecified;
+    public int MinimumDifficultyDimensions { get; init; }
+    public bool RequiresTransferObjective { get; init; }
+    public IReadOnlyList<string> AllowedSubjectDifficultyTags { get; init; } = Array.Empty<string>();
+}
 
 public sealed record AuthoringDraft(
     string Id,

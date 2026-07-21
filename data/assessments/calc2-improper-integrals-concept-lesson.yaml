@@ -1,43 +1,57 @@
 schemaVersion: 1
 id: calc2-improper-integrals-concept-lesson
-title: Improper Integrals Concept Lesson
+title: 'Improper Integrals: Limits, Singularities, and Convergence'
 assessmentType: conceptLesson
 categoryId: calculus-2
 topicId: improper-integrals
-skills:
-- Rewrite improper integrals as limits
-- Determine convergence at infinite bounds and singularities
-- Split integrals at interior discontinuities
-navigation:
-  learningGoal: learn
-  activityType: conceptLesson
-  tags:
-  - calc2
-  - concepts
-  - calculus-2
-  - improper-integrals
+modeDefault: practice
+randomizeQuestions: false
+skills: [improper-integral-limits, endpoint-singularities, p-test, comparison-test]
+navigation: { learningGoal: learn, activityType: conceptLesson, tags: [calculus-2, improper-integrals, limits, convergence] }
+authoring: { visualRequirement: required, visualRationale: "A limit-map diagram is needed to distinguish tails, endpoint singularities, and interior splits." }
 lesson:
-  introduction: Introduction to this lesson
+  introduction: 'An improper integral is not evaluated by inserting infinity or an undefined endpoint. Replace each defective boundary with its own limit, then decide whether every required limit is finite.'
   sections:
-  - id: sec-improper-integrals-1
-    title: Introduction to Improper Integrals
-    content: This lesson covers the foundational concepts of Improper Integrals. Please
-      review the reference text before proceeding.
-    check:
-      id: check-improper-integrals-1
-      type: freeResponse
-      prompt: 'Evaluate the integral: \(\int 2 x \sin{\left(5 x \right)} \, dx\)'
-      choices: []
-      answer:
-        gradingMode: selfCheck
-  - id: sec-improper-integrals-2
-    title: Advanced Improper Integrals
-    content: Understanding the deeper mechanics of Improper Integrals is critical
-      for Olympiad level mastery.
-    check:
-      id: check-improper-integrals-2
-      type: freeResponse
-      prompt: 'Evaluate the integral: \(\int x \cos{\left(3 x \right)} \, dx\)'
-      choices: []
-      answer:
-        gradingMode: selfCheck
+  - id: improper-trigger
+    title: 1. Detect what makes the integral improper
+    required: true
+    content: 'There are two triggers: an infinite interval, such as $[a,\infty)$, or an unbounded integrand at an endpoint or an interior point. A finite-looking interval does not make an integral proper if the integrand blows up inside it.'
+    media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Decision map separating infinite intervals, endpoint singularities, and interior singularities, caption: Locate the defective boundary before integrating. }]
+    check: { id: trigger-check, type: multipleChoice, prompt: 'Why is $\int_0^1x^{-3/2}\,dx$ improper?', choices: [{ id: a, text: The integrand is unbounded at 0. }, { id: b, text: The interval is infinite. }, { id: c, text: Every power function is improper. }, { id: d, text: The integral has no variable. }], answer: { choiceId: a }, explanation: 'The interval is finite, but $x^{-3/2}$ has an infinite endpoint discontinuity.' }
+  - id: tail-limit
+    title: 2. Replace an infinite tail with a limit
+    required: true
+    content: 'Define $\int_a^\infty f(x)\,dx=\lim_{t\to\infty}\int_a^t f(x)\,dx$. Convergence means that limit is finite; an antiderivative that grows without bound proves divergence.'
+    media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Truncated tail integral approaching an infinite upper bound, caption: Infinity is approached by a moving finite endpoint. }]
+    check: { id: tail-check, type: multipleChoice, prompt: 'Which setup defines $\int_1^\infty f(x)\,dx$?', choices: [{ id: a, text: '$\lim_{t\to\infty}\int_1^t f(x)\,dx$' }, { id: b, text: '$\int_1^\infty f(x)\,dx$ with infinity substituted' }, { id: c, text: '$\lim_{t\to1}\int_t^\infty f(x)\,dx$' }, { id: d, text: '$f(\infty)-f(1)$' }], answer: { choiceId: a }, explanation: 'The moving finite endpoint defines the infinite tail.' }
+  - id: endpoint-limit
+    title: 3. Approach a singular endpoint from inside
+    required: true
+    content: 'For a blow-up at the left endpoint, use $\int_a^b f(x)\,dx=\lim_{t\to a^+}\int_t^b f(x)\,dx$. The one-sided direction matters because the integrand may not be defined at $a$.'
+    media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Vertical asymptote at a left endpoint and an approaching cutoff, caption: Approach a singular endpoint only through the interval. }]
+    check: { id: endpoint-check, type: multipleChoice, prompt: 'For $\int_0^2f(x)\,dx$ with a vertical asymptote at 0, which limit is required?', choices: [{ id: a, text: '$\lim_{t\to0^+}\int_t^2f(x)\,dx$' }, { id: b, text: '$\lim_{t\to0^-}\int_t^2f(x)\,dx$' }, { id: c, text: '$\lim_{t\to\infty}\int_0^tf(x)\,dx$' }, { id: d, text: No limit is needed. }], answer: { choiceId: a }, explanation: 'The cutoff approaches 0 from points in the interval.' }
+  - id: split-interior
+    title: 4. Split an interior singularity
+    required: true
+    content: 'If $f$ is unbounded at $c$ inside $[a,b]$, define the integral only when both $\lim_{t\to c^-}\int_a^tf$ and $\lim_{t\to c^+}\int_t^bf$ converge. Cancellation across $c$ is not ordinary improper-integral convergence.'
+    media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Interior vertical asymptote dividing an interval into two independently tested parts, caption: Both one-sided limits must be finite. }]
+    check: { id: split-check, type: multipleChoice, prompt: 'What must be true for an integral with an interior asymptote to converge?', choices: [{ id: a, text: Both split limits converge. }, { id: b, text: Their infinities cancel. }, { id: c, text: Only the left limit converges. }, { id: d, text: The graph is symmetric. }], answer: { choiceId: a }, explanation: 'Ordinary convergence requires each independent one-sided integral to be finite.' }
+  - id: p-test
+    title: 5. Use the two p-test thresholds
+    required: true
+    content: 'For $\int_1^\infty x^{-p}\,dx$, convergence requires $p>1$. Near zero, $\int_0^1x^{-p}\,dx$ converges only when $p<1$. The same exponent therefore has opposite threshold directions in the two locations.'
+    media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Comparison of p-test thresholds at infinity and at zero, caption: The location of the defect determines the inequality. }]
+    check: { id: p-check, type: multipleChoice, prompt: 'Does $\int_0^1x^{-2}\,dx$ converge?', choices: [{ id: a, text: No; near zero it needs $p<1$. }, { id: b, text: Yes; $p>1$. }, { id: c, text: Yes; the interval is finite. }, { id: d, text: Only as a principal value. }], answer: { choiceId: a }, explanation: 'At an endpoint singularity, exponents at least one diverge.' }
+  - id: comparison
+    title: 6. Compare when exact evaluation is unhelpful
+    required: true
+    content: 'For nonnegative functions, compare to a known benchmark near the defective boundary. A smaller function than a convergent benchmark converges; a larger function than a divergent benchmark diverges. Limit comparison is often faster when the ratio tends to a positive finite constant.'
+    media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Two positive tail curves compared against a p-test benchmark, caption: Compare behavior where the integral is improper. }]
+    check: { id: comparison-check, type: multipleChoice, prompt: 'If $0\le f(x)\le x^{-2}$ for all sufficiently large $x$, what follows about $\int_A^\infty f(x)\,dx$?', choices: [{ id: a, text: It converges by comparison. }, { id: b, text: It diverges by comparison. }, { id: c, text: Comparison is impossible. }, { id: d, text: It has value 1. }], answer: { choiceId: a }, explanation: 'The $x^{-2}$ tail has finite area, and f is eventually no larger.' }
+  - id: workflow
+    title: 7. Use a defensible workflow
+    required: true
+    content: 'First mark every infinite boundary and singular point. Then split if necessary, write the correct limit definitions, choose evaluation or comparison, and classify every piece. State convergence only after every required limit is finite.'
+    media: [{ type: image, src: /media/calculus/improper-integral-limit-map.svg, alt: Four-step workflow from diagnosis through split limits and convergence classification, caption: Diagnose, define, solve, then classify every required limit. }]
+    check: { id: workflow-check, type: freeResponse, prompt: 'State the first two actions you should take when an integral has a vertical asymptote inside its interval.', answer: { gradingMode: selfCheck, keyPoints: [Locate the asymptote, Split into two one-sided improper integrals] }, explanation: 'A complete response identifies the interior defect and creates two independent one-sided limits.' }
+

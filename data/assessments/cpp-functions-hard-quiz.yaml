@@ -1,0 +1,62 @@
+schemaVersion: 1
+id: cpp-functions-hard-quiz
+title: C++ Functions Hard Quiz
+assessmentType: quiz
+categoryId: c++
+topicId: c++-functions
+modeDefault: practice
+randomizeQuestions: true
+attemptQuestionCount: 10
+navigation: { learningGoal: practice, activityType: mixedPractice, tags: [c++, c++-functions, contracts, testing, references] }
+authoring: { visualRequirement: notApplicable, visualRationale: The quiz requires construction and diagnosis of function interfaces; the learning path provides the caller-to-parameter representation., difficultyTier: hard }
+questions:
+- id: q001
+  type: freeResponse
+  prompt: A header declares `int score(double);` but a source file defines `double score(double)`. Explain the failure and repair.
+  answer: { gradingMode: selfCheck, keyPoints: [Return type mismatch, Declaration/definition must describe same function, Make signatures match] }
+  explanation: The declaration and definition must form one consistent contract. A different return type makes the definition a conflicting or different entity; change one signature so return type, name, and parameter types agree.
+- id: q002
+  type: freeResponse
+  prompt: Explain why `void normalize(std::string text)` cannot change the caller's string, and give the signature that can.
+  answer: { gradingMode: selfCheck, keyPoints: [Pass by value copies, Changes local copy only, Use std::string& for mutation] }
+  explanation: A value parameter is a separate local object. Use `void normalize(std::string& text)` when the function's contract intentionally modifies the caller's string.
+- id: q003
+  type: freeResponse
+  prompt: A read-only helper receives a large vector. Compare value, non-const reference, and const-reference parameter choices.
+  answer: { gradingMode: selfCheck, keyPoints: [Value copies, Non-const reference permits mutation, const reference avoids copy and mutation] }
+  explanation: Passing by value makes a copy; `T&` exposes mutation. `const T&` expresses read-only borrowing and avoids the unnecessary copy for a large object.
+- id: q004
+  type: freeResponse
+  prompt: A function has `void log(int level = 1, std::string message);`. Explain why the declaration is invalid and repair it.
+  answer: { gradingMode: selfCheck, keyPoints: [Required parameter after default invalid, Move default to final parameter or give message default] }
+  explanation: Once a parameter has a default, later parameters must also have defaults. Use `void log(std::string message, int level = 1);` or provide a default for `message` as well.
+- id: q005
+  type: freeResponse
+  prompt: A recursive `sum_up_to(n)` calls `sum_up_to(n - 1)` but has no base case. Describe the runtime risk and a valid base case.
+  answer: { gradingMode: selfCheck, keyPoints: [Unbounded recursion/call stack growth, Stack overflow, Base case n <= 1 returns n or zero] }
+  explanation: Each call adds a stack frame until a stopping condition is reached. Without one, the program eventually exhausts the call stack; for positive integers, `if (n <= 1) return n;` is a suitable base case.
+- id: q006
+  type: freeResponse
+  prompt: Two overloads are `void print(int);` and `void print(double);`. Explain why `print(5)` and `print(5.0)` choose different overloads.
+  answer: { gradingMode: selfCheck, keyPoints: [Literal types differ, Exact match preferred, int versus double overload] }
+  explanation: '`5` is an integer literal and exactly matches `int`; `5.0` is a floating literal and exactly matches `double`. Overload selection uses parameter types, not the caller''s intended use of a return value.'
+- id: q007
+  type: freeResponse
+  prompt: Design one normal and one boundary test for `int clamp(int value, int low, int high)`.
+  answer: { gradingMode: selfCheck, keyPoints: [Inside range returns value, Boundary/equality or out-of-range returns bound, Expected result specified] }
+  explanation: For example, `(5,0,10)` should return 5, while `(0,0,10)` should return 0 or `(-1,0,10)` should return 0. The tests verify both unchanged and constrained behavior.
+- id: q008
+  type: freeResponse
+  prompt: Explain why placing a definition in a header without safeguards can create a multiple-definition link error when several `.cpp` files include it.
+  answer: { gradingMode: selfCheck, keyPoints: [Each translation unit receives definition, Linker sees duplicates, Use source file or inline/template approach] }
+  explanation: Inclusion copies the definition into every translation unit. Ordinary non-inline function definitions should live in one source file; header-defined functions need an appropriate `inline`/template design.
+- id: q009
+  type: freeResponse
+  prompt: A helper returns `bool` and fills an output reference. Explain why a caller must check the bool before using the output.
+  answer: { gradingMode: selfCheck, keyPoints: [False indicates no valid parsed result, Output may be unchanged/invalid, Guard subsequent use] }
+  explanation: The boolean is the success signal in the function contract. Use the output only on the true branch; otherwise report/recover from the failure instead of assuming the reference holds new data.
+- id: q010
+  type: freeResponse
+  prompt: Give one reason a named function is preferable to a long lambda or copied code block in a beginner program.
+  answer: { gradingMode: selfCheck, keyPoints: [Reusable named contract, Easier testing/debugging, Reduces duplication] }
+  explanation: A named function gives one behavior a stable interface that can be called and tested independently. This reduces duplicated logic and makes diagnostics point to a focused unit.

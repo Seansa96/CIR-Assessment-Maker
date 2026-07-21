@@ -386,7 +386,7 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-rational-integration-quiz")]
     [InlineData("calc2-irreducible-quadratic-partial-fractions-worked-example")]
     [InlineData("calc2-irreducible-quadratic-partial-fractions-quiz")]
-    [InlineData("calc2-improper-integrals-worked-example")]
+    [InlineData("calc2-improper-integrals-worked-examples")]
     [InlineData("physics-tennis-ball-kinematics-free-response")]
     [InlineData("physics-relative-motion-basic-free-response")]
     [InlineData("physics-relative-motion-harder-free-response")]
@@ -558,7 +558,7 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("physics-two-vehicle-problems-quiz")]
     [InlineData("calc2-improper-integrals-types-recall")]
     [InlineData("calc2-improper-integrals-p-test-recognition-quiz")]
-    [InlineData("calc2-improper-integrals-convergence-quiz")]
+    [InlineData("calc2-improper-integrals-easy-quiz")]
     [InlineData("calc2-approximate-integration-worked-example")]
     [InlineData("physics-newtons-second-law-sprinter-worked-example")]
     [InlineData("physics-newtons-first-law-force-balance-worked-example")]
@@ -689,11 +689,6 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("os-virtualization-cloud-recall")]
     [InlineData("os-virtualization-cloud-quiz")]
     [InlineData("os-virtualization-cloud-test")]
-    [InlineData("os-multiprocessor-systems-concept-lesson")]
-    [InlineData("os-multiprocessor-systems-glossary")]
-    [InlineData("os-multiprocessor-systems-recall")]
-    [InlineData("os-multiprocessor-systems-quiz")]
-    [InlineData("os-multiprocessor-systems-test")]
     [InlineData("os-security-concept-lesson")]
     [InlineData("os-security-glossary")]
     [InlineData("os-security-recall")]
@@ -748,9 +743,6 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("os-virtualization-cloud-deep-concept-lesson")]
     [InlineData("os-virtualization-cloud-scenario-worked-example")]
     [InlineData("os-virtualization-cloud-hard-quiz")]
-    [InlineData("os-multiprocessor-systems-deep-concept-lesson")]
-    [InlineData("os-multiprocessor-systems-scenario-worked-example")]
-    [InlineData("os-multiprocessor-systems-hard-quiz")]
     [InlineData("os-security-deep-concept-lesson")]
     [InlineData("os-security-scenario-worked-example")]
     [InlineData("os-security-hard-quiz")]
@@ -784,7 +776,7 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc1-graph-and-riemann-worked-example")]
     [InlineData("calc2-monotone-bounded-sequence-worked-example")]
     [InlineData("calc2-advanced-series-comparison-worked-example")]
-    [InlineData("calc2-improper-integral-limit-comparison-worked-example")]
+    [InlineData("calc2-improper-integrals-hard-quiz")]
     [InlineData("calc2-taylor-remainder-decision-worked-example")]
     [InlineData("physics-moment-of-inertia-ke-quiz-easy")]
     [InlineData("physics-moment-of-inertia-ke-quiz-hard")]
@@ -806,6 +798,8 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("physics-rotational-work-power-quiz-hard")]
     [InlineData("physics-rotational-work-power-test-easy")]
     [InlineData("physics-rotational-work-power-test-hard")]
+    [InlineData("os-distributed-systems-networking-concept-lesson")]
+    [InlineData("os-distributed-systems-networking-quiz")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
@@ -841,7 +835,6 @@ public sealed class FileAssessmentRepositoryTests
             "cpp-strings-formatting-worked-example",
             "cpp-working-with-files-worked-example",
             "cpp-strings-formatting-quiz",
-            "cpp-strings-formatting-test",
             "cpp-working-with-files-quiz",
             "cpp-working-with-files-test"
         ];

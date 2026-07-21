@@ -1,0 +1,131 @@
+schemaVersion: 1
+id: calc2-ratio-root-tests-concept-lesson
+title: Ratio and Root Tests Concept Lesson
+description: Choose, execute, and interpret the Ratio and Root Tests for infinite series.
+assessmentType: conceptLesson
+categoryId: calculus-2
+topicId: ratio-root-tests
+modeDefault: practice
+randomizeQuestions: false
+skills: [ratio-test, root-test, convergence-test-selection, absolute-convergence]
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags: [calculus-2, ratio-root-tests, convergence-tests, infinite-series]
+lesson:
+  introduction: |
+    The Ratio and Root Tests both compare a series to geometric behavior. Their conclusions use the same threshold, but their algebraic strengths differ. Learn to choose the form the summand makes easy—not to apply either test by habit.
+  sections:
+  - id: goal-and-scope
+    title: 1. What these tests establish
+    required: true
+    content: |
+      For a series $sum a_n$, both tests use $|a_n|$. Therefore a successful $L<1$ result proves **absolute convergence**, which automatically proves convergence of the original signed series. Neither test finds the sum; each classifies convergence.
+    media:
+    - type: image
+      src: /assessments/calc2-infinite-series/ratio-root-test-map.svg
+      alt: Decision map comparing Ratio and Root Test forms and their shared threshold conclusions.
+      caption: Both tests compare the term structure to geometric decay.
+    check:
+      id: ratio-root-scope-check
+      type: multipleChoice
+      prompt: If either test gives $L<1$, what is the strongest conclusion?
+      choices: [{ id: a, text: The series converges absolutely. }, { id: b, text: The exact sum is 1. }, { id: c, text: The series only conditionally converges. }, { id: d, text: The test is inconclusive. }]
+      answer: { choiceId: a }
+      explanation: Applying the tests to absolute values establishes absolute convergence when $L<1$.
+  - id: ratio-form
+    title: 2. Form the successive ratio
+    required: true
+    content: |
+      The Ratio Test computes
+
+      $$
+      L=\lim_{n\to\infty}\left|\frac{a_{n+1}}{a_n}\right|.
+      $$
+
+      Write $a_{n+1}$ carefully before simplifying. Replacing $n$ by $n+1$ makes factorial cancellation and adjacent exponential powers visible.
+    media:
+    - type: image
+      src: /assessments/calc2-infinite-series/ratio-root-test-map.svg
+      alt: Ratio Test formula and its factorial and exponential structural cues.
+      caption: Consecutive terms are the evidence used by the Ratio Test.
+  - id: ratio-conclusions
+    title: 3. Interpret the ratio limit
+    required: true
+    content: |
+      The threshold is geometric: $L<1$ means absolute convergence; $L>1$ or $L=\infty$ means divergence; $L=1$ means no conclusion. The divergent cases include terms that cannot shrink fast enough to make a convergent series.
+    check:
+      id: ratio-boundary-check
+      type: multipleChoice
+      prompt: The Ratio Test gives $L=7/5$. What follows?
+      choices: [{ id: a, text: The series diverges. }, { id: b, text: The series converges absolutely. }, { id: c, text: The series is conditionally convergent. }, { id: d, text: Another test must be used because L is 1. }]
+      answer: { choiceId: a }
+      explanation: A limit greater than 1 gives divergence.
+  - id: ratio-patterns
+    title: 4. Recognize a Ratio Test candidate
+    required: true
+    content: |
+      Favor the Ratio Test for factorials, long products, or exponential powers whose adjacent terms simplify. For example, in $sum 3^n/n!$, the ratio becomes $3/(n+1)$ and tends to zero. Do not force the test on a p-series or a rational function of $n$; it commonly returns $L=1$ there.
+    media:
+    - type: image
+      src: /assessments/calc2-infinite-series/ratio-root-test-map.svg
+      alt: Ratio Test selection cue for factorial and exponential terms.
+      caption: Factorials cancel between adjacent terms.
+    check:
+      id: ratio-cue-check
+      type: multipleChoice
+      prompt: Which series most naturally suggests the Ratio Test?
+      choices: [{ id: a, text: '$\sum_{n=1}^{\infty}\frac{5^n}{n!}$' }, { id: b, text: '$\sum_{n=1}^{\infty}\frac1{n^3}$' }, { id: c, text: '$\sum_{n=1}^{\infty}(\frac1n-\frac1{n+1})$' }, { id: d, text: '$\sum_{n=1}^{\infty}\frac{(-1)^n}{n}$' }]
+      answer: { choiceId: a }
+      explanation: The factorial makes adjacent-term cancellation especially efficient.
+  - id: root-form
+    title: 5. Form the nth root
+    required: true
+    content: |
+      The Root Test computes
+
+      $$
+      L=\lim_{n\to\infty}\sqrt[n]{|a_n|}.
+      $$
+
+      It is designed for an entire expression raised to an $n$th power. Taking the nth root peels away that outer power before the limit is evaluated.
+    media:
+    - type: image
+      src: /assessments/calc2-infinite-series/ratio-root-test-map.svg
+      alt: Root Test formula and the cue that the entire summand is raised to the nth power.
+      caption: The nth root exposes the base of an nth-power summand.
+  - id: root-conclusions
+    title: 6. Use the same threshold correctly
+    required: true
+    content: |
+      The Root Test has exactly the same three conclusions: $L<1$ gives absolute convergence, $L>1$ gives divergence, and $L=1$ is inconclusive. Its different form is a tool-selection difference, not a different convergence rule.
+    check:
+      id: root-conclusion-check
+      type: multipleChoice
+      prompt: If $lim\sqrt[n]{|a_n|}=2/3$, what does the Root Test prove?
+      choices: [{ id: a, text: Absolute convergence }, { id: b, text: Divergence }, { id: c, text: Conditional convergence only }, { id: d, text: Inconclusive }]
+      answer: { choiceId: a }
+      explanation: $2/3<1$, so the series converges absolutely.
+  - id: root-patterns
+    title: 7. Recognize a Root Test candidate
+    required: true
+    content: |
+      For $sum ((2n+1)/(3n+4))^n$, the nth root leaves $(2n+1)/(3n+4)$, whose limit is $2/3$. That is much shorter than forming a successive ratio. The Root Test is also useful for powers such as $(n/(n+2))^{n^2}$ after rewriting the exponent’s effect carefully.
+    media:
+    - type: image
+      src: /assessments/calc2-infinite-series/ratio-root-test-map.svg
+      alt: Root Test selection cue for a complete expression raised to the nth power.
+      caption: Choose the root when it cancels the dominant outer exponent.
+  - id: inconclusive-and-transfer
+    title: 8. Treat L = 1 as information
+    required: true
+    content: |
+      When either test returns $L=1$, it has not proven convergence or divergence. Switching immediately to the other test usually does not help: the same boundary behavior often makes it inconclusive too. Return to structure—use a p-series, comparison, alternating, or integral test as appropriate. In power-series work, also test interval endpoints separately after a ratio/root calculation.
+    check:
+      id: shared-inconclusive-check
+      type: freeResponse
+      prompt: Explain why obtaining $L=1$ from the Ratio Test is not a proof of divergence or convergence, and name one sensible next move.
+      answer:
+        gradingMode: selfCheck
+        keyPoints: [States that L equals 1 is inconclusive, Does not claim a convergence classification, Names another structure-appropriate test]
+      explanation: Compare your response with the three key points.

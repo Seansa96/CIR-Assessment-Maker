@@ -1,0 +1,52 @@
+schemaVersion: 1
+id: cpp-types-variables-foundations-worked-example
+title: 'C++ Types and I/O Worked Examples: Safe Input'
+assessmentType: workedExample
+categoryId: c++
+topicId: c++-types-and-variables
+modeDefault: practice
+randomizeQuestions: false
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [c++, c++-types-and-variables, initialization, stream-recovery] }
+authoring: { visualRequirement: notApplicable, visualRationale: The worked examples use executable code and stream-state traces; no separate spatial or interface visual is needed. }
+workedExamples:
+- id: cpp-types-read-total
+  title: Read Two Measurements and Compute a Total
+  problem: Write a function that reads two `double` values and prints their sum only when both extractions succeed.
+  steps:
+  - id: cpp-types-read-total-1
+    title: Choose types and initial values
+    instruction: Measurements can include fractions, so use `double` values with deliberate initializers.
+    type: freeResponse
+    prompt: Declare two safely initialized variables appropriate for decimal measurements.
+    answer: { gradingMode: selfCheck, keyPoints: ['Two `double` declarations', 'Brace/value initialization', 'Distinct names for the two measurements'] }
+    explanation: '`double first{}; double second{};` makes both the chosen type and known initial state explicit before input is attempted.'
+  - id: cpp-types-read-total-2
+    title: Gate computation on extraction success
+    instruction: The addition is valid only after each formatted extraction succeeds.
+    type: code
+    prompt: Write an `if` condition that reads both values from `std::cin` and enters the success branch only when both reads succeed.
+    language: cpp
+    functionName: main
+    starterCode: 'double first{}; double second{};\nif (/* condition */) {\n  // print first + second\n}'
+    tests: [{ input: '1.5 2.25', expected: '3.75' }]
+    answer: {}
+    explanation: '`if (std::cin >> first >> second)` chains extractions and converts the resulting stream state to a condition. The sum is computed only on the success path.'
+- id: cpp-types-recover-input
+  title: Recover from an Invalid Number
+  problem: A user enters `oops` when the program expects a `double`. Prepare the stream so the next prompt can read new input instead of failing immediately again.
+  steps:
+  - id: cpp-types-recover-input-1
+    title: Separate state from buffered characters
+    instruction: A failed stream has both a fail state and offending input still buffered.
+    type: multipleChoice
+    prompt: Which pair repairs both parts of the problem?
+    choices: [{ id: a, text: '`std::cin.clear()` then `std::cin.ignore(...)`' }, { id: b, text: '`std::cin << 0`' }, { id: c, text: '`std::cout.clear()`' }, { id: d, text: '`double value = "oops"`' }]
+    answer: { choiceId: a }
+    explanation: '`clear()` resets the error flags; `ignore(...)` removes the bad token/line so a new extraction reaches fresh input.'
+  - id: cpp-types-recover-input-2
+    title: Explain the retry trap
+    instruction: Consider a loop that calls only `clear()` after failure.
+    type: freeResponse
+    prompt: Why can that loop fail repeatedly on the same user input?
+    answer: { gradingMode: selfCheck, keyPoints: [clear resets flags only, invalid text remains buffered, next extraction sees the same text] }
+    explanation: Clearing the state makes extraction legal again but does not consume `oops`. The next `>>` reads the same incompatible token and sets the failure state again.

@@ -1,69 +1,132 @@
 schemaVersion: 1
 id: cpp-variables-input-lesson
-title: Cpp Variables Input - Concept Lesson
-description: Interactive exploration of the concepts.
+title: C++ Variables and Keyboard Input - Concept Lesson
+description: Safely receive, validate, and use keyboard input in C++.
 assessmentType: conceptLesson
 categoryId: c++
 topicId: cpp-variables-input
-skills:
-- Apply Variables and Keyboard Input
-- cpp
-- c-plus-plus
-- cpp-variables-input
+skills: [cpp, c-plus-plus, cpp-variables-input, variables, streams, input-validation]
 difficulty: 2
 navigation:
   learningGoal: learn
   activityType: conceptLesson
-  tags:
-  - c++
-  - cpp-variables-input
-  - cpp
-  - lesson
-  - c-plus-plus
-  - conceptlesson
-  - learn
-  - variables
-  - input
-  - concept
+  tags: [c++, cpp, cpp-variables-input, lesson, variables, input, streams]
 mediaPath: assets/cpp/cpp-variables-input.svg
 lesson:
-  introduction: Welcome to the cpp-variables-input lesson. Here we will explore the
-    underlying concepts.
+  introduction: |
+    Keyboard input is data arriving through a stream, not a promise that the user typed the right kind of value. This lesson builds a small numeric-input routine that initializes storage, checks the stream state, and recovers after a bad entry.
   sections:
-  - id: introduction
-    title: Introduction
-    content: 'Welcome to the cpp-variables-input lesson.
-
-
-      Here we will explore the underlying concepts.'
+  - id: values-and-types
+    title: 1. Declare storage with a useful type
+    required: true
+    content: |
+      A variable has a type and a name. `int count{};` value-initializes an integer to zero, while `double temperature{};` prepares a fractional value. Prefer initialization: reading an uninitialized local variable is unsafe. Use `const` when a value should not be reassigned.
+    media:
+    - type: image
+      src: assets/cpp/cpp-variables-input.svg
+      alt: Diagram showing keyboard characters entering std::cin, being extracted into a double variable, then checked before output.
+      caption: Input travels through a stream; validation decides whether the variable is usable.
     check:
       id: cpp-variables-input-check-1
       type: multipleChoice
-      prompt: What is the primary focus of this lesson?
+      prompt: Which declaration safely initializes a double to zero?
       choices:
       - id: a
-        text: Learning the core concepts
+        text: double value{};
       - id: b
-        text: Writing a full application
+        text: double value;
       - id: c
-        text: Debugging assembly code
-      answer:
-        choiceId: a
-      explanation: This lesson introduces the theoretical and practical foundations.
-  - id: practical-application
-    title: Practical Application
-    content: Let's see how this works in C++ code.
+        text: value double = 0;
+      answer: { choiceId: a }
+      explanation: Empty braces value-initialize a fundamental value.
+  - id: extraction
+    title: 2. Extract from std::cin
+    required: true
+    content: |
+      `std::cin >> value;` attempts to convert the next input characters and store the result in `value`. `std::cin` is an input stream and `std::cout` is an output stream, both made available by `<iostream>`. Extraction is useful only when its result is checked.
+  - id: stream-state
+    title: 3. Let the stream report success
+    required: true
+    content: |
+      A stream can be used in a condition: `if (std::cin)`. After successful numeric extraction it is true. When text such as `blue` is extracted into a `double`, it becomes false. A helper can return that success as a `bool`, making the caller choose a success or failure branch.
     check:
       id: cpp-variables-input-check-2
-      type: code
-      prompt: Write a short C++ snippet demonstrating this concept.
-      language: cpp
-      functionName: main
-      starterCode: "int main() {\n  // Your code here\n  return 0;\n}"
-      validationMode: unitTests
-      tests:
-      - input: test
-        expected: expected
-        isHidden: false
-      explanation: A complete implementation will compile and produce the correct
-        output.
+      type: multipleChoice
+      prompt: What happens when `std::cin >> number` tries to read `blue` into a double?
+      choices:
+      - id: a
+        text: The stream enters a failed state.
+      - id: b
+        text: blue is converted to 0.0 automatically.
+      - id: c
+        text: The compiler changes number into a string.
+      answer: { choiceId: a }
+      explanation: Failed formatted extraction marks the stream as failed.
+  - id: helper-contract
+    title: 4. Separate reading from using
+    required: true
+    content: |
+      A focused helper can take an input stream by reference and write to a numeric variable by reference:
+
+      ```cpp
+      [[nodiscard]] bool read_number(std::istream& in, double& value) {
+        in >> value;
+        return static_cast<bool>(in);
+      }
+      ```
+
+      The `&` means the function works with the caller's stream and variable instead of copies. `[[nodiscard]]` encourages callers not to discard the success/failure result.
+  - id: recover-input
+    title: 5. Recover after a bad entry
+    required: true
+    content: |
+      A failed stream stays failed until it is repaired. First call `clear()` to reset the error flags. Then discard the remaining invalid characters through the newline, commonly with `ignore(std::numeric_limits<std::streamsize>::max(), '\n')` after including `<limits>`. Clearing without discarding leaves the same bad token waiting to fail again.
+    check:
+      id: cpp-variables-input-check-3
+      type: multipleChoice
+      prompt: Why pair `clear()` with `ignore(...)` after invalid numeric input?
+      choices:
+      - id: a
+        text: clear resets failure flags and ignore removes the bad characters.
+      - id: b
+        text: clear changes a double into an int.
+      - id: c
+        text: ignore compiles the next function.
+      answer: { choiceId: a }
+      explanation: Both state and leftover characters must be addressed before another attempt.
+  - id: flow-example
+    title: 6. Build an input loop in stages
+    required: true
+    content: |
+      Prompt, attempt extraction, test the result, then report either branch. Do not perform a calculation until the success branch has run. A reliable flow is: initialize `double price{}`, print a prompt, call the helper, and print `price * 2` only when the helper returns true.
+  - id: types-and-scope
+    title: 7. Use types and scope as guardrails
+    required: true
+    content: |
+      A function expecting `double&` cannot accept an `int` variable by reference; that compile-time error protects the contract. If you remove `&`, the function changes only a local copy. Variables declared inside a function or inner braces disappear at the end of that scope, so name and lifetime are both part of reading code correctly.
+    check:
+      id: cpp-variables-input-check-4
+      type: multipleChoice
+      prompt: A function changes a `double` parameter, but the caller's value does not change. Which declaration is the likely cause?
+      choices:
+      - id: a
+        text: The parameter was passed by value instead of as double&.
+      - id: b
+        text: The caller used std::cout.
+      - id: c
+        text: The variable was initialized.
+      answer: { choiceId: a }
+      explanation: Pass-by-value changes a copy; a reference aliases the caller's object.
+  - id: test-cases
+    title: 8. Test both paths
+    required: true
+    content: |
+      Test a valid numeric input and a nonnumeric input. For a helper, a string stream supplies repeatable input without a person at the keyboard. A good test checks both the returned boolean and the stored value on success. On failure, verify that the caller can report the problem and retry after recovery.
+    check:
+      id: cpp-variables-input-check-5
+      type: freeResponse
+      prompt: Describe two distinct test cases for a function that reads a double, and state what each case should verify.
+      answer:
+        gradingMode: selfCheck
+        keyPoints: [Includes a valid numeric input, Includes nonnumeric input, Checks the boolean result and stored value or recovery behavior]
+      explanation: Use the key points to self-check.

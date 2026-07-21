@@ -1,0 +1,85 @@
+schemaVersion: 1
+id: os-distributed-systems-networking-concept-lesson
+title: Distributed Systems and Networking
+assessmentType: conceptLesson
+categoryId: operating-systems
+topicId: os-distributed-systems-networking
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - operating-systems
+  - networking
+  - distributed-systems
+  - rpc
+  - middleware
+skills:
+- os-networking
+lesson:
+  introduction: This lesson introduces the fundamentals of distributed systems and
+    networking from an Operating Systems perspective. We will explore how independent
+    systems communicate and how the OS abstracts these boundaries.
+  sections:
+  - id: rpc-flow
+    title: Remote Procedure Calls (RPC)
+    required: true
+    content: RPC is a powerful abstraction that allows programs to call functions
+      located on other machines as if they were local. The complexity of packing (marshaling)
+      the parameters into a network message is handled by the **stub**.
+    media:
+    - type: image
+      src: /media/os/rpc-flow.svg
+      alt: Flowchart showing Client, Client Stub, Network, Server Stub, and Server.
+      caption: Information transfer flow in a Remote Procedure Call.
+    check:
+      id: rpc-check
+      type: multipleChoice
+      prompt: Based on the RPC flow diagram, what is the primary role of the Client
+        Stub?
+      choices:
+      - id: a
+        text: To execute the server function locally.
+      - id: b
+        text: To pack (marshal) the parameters into a message and send it over the
+          network.
+      - id: c
+        text: To manage the OS kernel's memory allocation.
+      - id: d
+        text: To act as the physical network router.
+      answer:
+        choiceId: b
+      explanation: The Client Stub intercepts the local call, marshals the arguments,
+        and handles the network transmission to the Server Stub.
+  - id: middleware
+    title: Middleware Abstractions
+    required: true
+    content: In a distributed system, different nodes might run different operating
+      systems (e.g., Linux vs Windows). **Middleware** is a software layer that sits
+      above the OS but below the application, providing a common set of services and
+      protocols so applications don't need to worry about OS differences.
+    media:
+    - type: image
+      src: /media/os/middleware-layers.svg
+      alt: Diagram showing Application layer, Middleware layer, and multiple differing
+        OS layers below.
+      caption: Middleware unifying heterogeneous operating systems.
+    check:
+      id: middleware-check
+      type: multipleChoice
+      prompt: Why is a middleware layer necessary in a distributed system?
+      choices:
+      - id: a
+        text: To replace the OS kernels on all machines.
+      - id: b
+        text: To provide a unified abstraction layer over different, heterogeneous
+          operating systems.
+      - id: c
+        text: To act as a physical network switch.
+      - id: d
+        text: To enforce single-threaded execution.
+      answer:
+        choiceId: b
+      explanation: Middleware hides the heterogeneity of the underlying platforms,
+        making them appear as a single unified system to the application.
