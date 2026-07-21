@@ -576,22 +576,20 @@ Best for:
 
 Code questions currently support Python and C++ through a Piston-compatible code runner.
 
-Important: code questions do not run inside this app by themselves. To use `type: code`, you need a separate containerized code-running service. The app is designed to call a local Piston-compatible API at:
+When a code-bearing Worked Example, quiz, or test starts, CIR manages a reusable local Piston Docker sidecar and prepares the needed Python/C++ runtime in the background. Code submission becomes available when its readiness indicator reports success. The local sidecar API is:
 
 ```txt
 http://localhost:2000/api/v2
 ```
 
-In practice, that means you should run Piston or another compatible service in Docker, then point the app's Code runner URL setting at that service. Without the runner, code questions can still be authored and loaded, but submissions will not execute successfully.
+Docker Desktop must be installed and running. If startup or provisioning fails, the assessment keeps the learner's code and displays a runner diagnostic instead of submitting an opaque server error.
 
 High-level setup:
 
 1. Install Docker Desktop.
 2. Start Docker Desktop and confirm containers can run.
-3. Run a Piston-compatible code runner container locally.
-4. Expose the runner on port `2000`.
-5. Confirm the API is available at `http://localhost:2000/api/v2`.
-6. In this app, open Settings and set Code runner URL to `http://localhost:2000/api/v2`.
+3. Start a code-bearing assessment; CIR starts or reconnects to its managed local runner.
+4. Wait for the code-runner readiness indicator before submitting code.
 
 For less technical users, use external setup guides rather than trying to memorize Docker commands:
 

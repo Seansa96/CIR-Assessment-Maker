@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Diagnostics;
 using QuizApp.Api.Contracts;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
@@ -45,6 +46,8 @@ builder.Services.AddSingleton<ICircuitQuestionScorer, CircuitQuestionScorer>();
 builder.Services.AddSingleton<IGraphingQuestionScorer, GraphingQuestionScorer>();
 builder.Services.AddSingleton<ISymbolicMathEngine, CortexSymbolicMathEngine>();
 builder.Services.AddHttpClient<ICodeRunnerClient, PistonCodeRunnerClient>();
+builder.Services.AddSingleton<ManagedCodeRunnerService>();
+builder.Services.AddSingleton<IManagedCodeRunnerService>(provider => provider.GetRequiredService<ManagedCodeRunnerService>());
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
 builder.Services.AddSingleton<GradeAnalyticsService>();
@@ -96,6 +99,12 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+var managedCodeRunner = app.Services.GetRequiredService<ManagedCodeRunnerService>();
+app.Lifetime.ApplicationStopping.Register(() =>
+{
+    try { managedCodeRunner.StopAsync(CancellationToken.None).GetAwaiter().GetResult(); }
+    catch { /* Shutdown must not be blocked by an optional local sidecar. */ }
+});
 
 await app.Services.GetRequiredService<LegacyRetentionMigrationService>().MigrateAsync();
 await app.Services.GetRequiredService<SqliteRetentionInitializer>().InitializeAsync();
@@ -138,6 +147,18 @@ var api = app.MapGroup("/api");
 
 if (app.Environment.IsDevelopment())
 {
+    api.MapGet("/dev/status", async (SqliteAssessmentCatalogImporter importer, IManagedCodeRunnerService runner, CancellationToken cancellationToken) =>
+    {
+        var runnerStatus = await runner.GetStatusAsync(cancellationToken);
+        return Results.Ok(new
+        {
+            backend = new { processId = Environment.ProcessId, uptimeSeconds = (long)(DateTimeOffset.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime()).TotalSeconds },
+            catalog = new { state = importer.CatalogState, lastSummary = importer.LastSummary },
+            diagnostics = new { errors = 0, warnings = 0 },
+            codeRunner = runnerStatus
+        });
+    });
+
     var reportApi = api.MapGroup("/dev/assessment-reports");
 
     reportApi.MapPost("", async (
@@ -320,6 +341,32 @@ api.MapPut("/settings", async (AppSettings settings, ISettingsRepository reposit
 api.MapGet("/categories", async (ICategoryRepository repository, CancellationToken cancellationToken) =>
 {
     return Results.Ok(await repository.ListAsync(cancellationToken));
+});
+
+api.MapGet("/code-runner/status", async (IManagedCodeRunnerService runner, CancellationToken cancellationToken) =>
+    Results.Ok(await runner.GetStatusAsync(cancellationToken)));
+
+api.MapPost("/attempts/{attemptId}/code-runner/prepare", async (
+    string attemptId,
+    AttemptService attemptService,
+    IAssessmentRepository assessmentRepository,
+    IManagedCodeRunnerService runner,
+    CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var attempt = await attemptService.GetAsync(attemptId, cancellationToken);
+        var assessment = await assessmentRepository.GetByIdAsync(attempt.AssessmentId, cancellationToken);
+        if (assessment is null) return Results.NotFound(ApiError("ASSESSMENT_NOT_FOUND", "Assessment was not found."));
+        var languages = GetCodeLanguages(assessment);
+        return Results.Ok(languages.Count == 0
+            ? new CodeRunnerStatus("notRequired", Array.Empty<string>(), "This attempt has no code questions.", DateTimeOffset.UtcNow)
+            : await runner.PrepareAsync(languages, cancellationToken));
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ApiError("CODE_RUNNER_PREPARE_FAILED", ex.Message));
+    }
 });
 
 var authoringApi = api.MapGroup("/authoring");
@@ -1062,4 +1109,16 @@ static TEnum? ParseEnum<TEnum>(string? value)
     return string.IsNullOrWhiteSpace(value) || !Enum.TryParse<TEnum>(value, true, out var parsed)
         ? null
         : parsed;
+}
+
+static IReadOnlyList<string> GetCodeLanguages(AssessmentDefinition assessment)
+{
+    IEnumerable<QuestionDefinition> questions = assessment.AssessmentType is AssessmentType.WorkedExample
+        ? assessment.WorkedExamples.SelectMany(example => example.Steps).Select(step => step.Question)
+        : assessment.Questions;
+
+    return questions.Where(question => question.Type is QuestionType.Code && question.CodeQuestion is not null)
+        .Select(question => question.CodeQuestion!.Language)
+        .Distinct(StringComparer.OrdinalIgnoreCase)
+        .ToList();
 }

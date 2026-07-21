@@ -613,6 +613,7 @@ public static class FileDtoMapper
             Media = dto.Media,
             Language = dto.Language,
             FunctionName = dto.FunctionName,
+            ExecutionMode = dto.ExecutionMode,
             StarterCode = dto.StarterCode,
             Tests = dto.Tests
         });
@@ -642,6 +643,7 @@ public static class FileDtoMapper
             Media = question.Media,
             Language = question.Language,
             FunctionName = question.FunctionName,
+            ExecutionMode = question.ExecutionMode,
             StarterCode = question.StarterCode,
             Tests = question.Tests
         };
@@ -729,6 +731,7 @@ public static class FileDtoMapper
             Media = question.Media.Select(ToDto).ToList(),
             Language = question.CodeQuestion?.Language,
             FunctionName = question.CodeQuestion?.FunctionName,
+            ExecutionMode = ToWireValue(question.CodeQuestion?.ExecutionMode ?? CodeExecutionMode.Unspecified),
             StarterCode = question.CodeQuestion?.StarterCode,
             Tests = question.CodeQuestion?.Tests.Select(test => new CodeQuestionTestFileDto
             {
@@ -759,7 +762,10 @@ public static class FileDtoMapper
             dto.StarterCode ?? string.Empty,
             (dto.Tests ?? new List<CodeQuestionTestFileDto>())
                 .Select(test => new CodeQuestionTest(test.Input ?? string.Empty, test.Expected ?? string.Empty))
-                .ToList());
+                .ToList())
+        {
+            ExecutionMode = ParseCodeExecutionMode(dto.ExecutionMode, dto.FunctionName)
+        };
     }
 
     private static MediaAsset ToDomain(MediaFileDto dto)
@@ -903,6 +909,17 @@ public static class FileDtoMapper
         };
     }
 
+    private static CodeExecutionMode ParseCodeExecutionMode(string? value, string? functionName)
+    {
+        return Normalize(value) switch
+        {
+            "function" => CodeExecutionMode.Function,
+            "program" => CodeExecutionMode.Program,
+            _ when string.Equals(functionName, "main", StringComparison.OrdinalIgnoreCase) => CodeExecutionMode.Program,
+            _ => CodeExecutionMode.Function
+        };
+    }
+
     private static AssessmentMode ParseMode(string? value, AssessmentMode fallback)
     {
         return Normalize(value) switch
@@ -937,6 +954,13 @@ public static class FileDtoMapper
     {
         return mode is AssessmentMode.Scored ? "scored" : "practice";
     }
+
+    private static string ToWireValue(CodeExecutionMode mode) => mode switch
+    {
+        CodeExecutionMode.Function => "function",
+        CodeExecutionMode.Program => "program",
+        _ => "unspecified"
+    };
 
     private static string ToWireValue(AuthoringProfile profile) => profile switch
     {

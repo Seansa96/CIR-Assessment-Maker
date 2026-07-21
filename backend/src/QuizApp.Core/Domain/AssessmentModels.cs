@@ -35,6 +35,13 @@ public enum QuestionType
     GraphingResponse
 }
 
+public enum CodeExecutionMode
+{
+    Unspecified,
+    Function,
+    Program
+}
+
 public enum QuestionOrderMode
 {
     Randomized,
@@ -630,7 +637,10 @@ public sealed record CodeQuestionDefinition(
     string Language,
     string FunctionName,
     string StarterCode,
-    IReadOnlyList<CodeQuestionTest> Tests);
+    IReadOnlyList<CodeQuestionTest> Tests)
+{
+    public CodeExecutionMode ExecutionMode { get; init; } = CodeExecutionMode.Unspecified;
+}
 
 public sealed record CodeQuestionTest(
     string Input,

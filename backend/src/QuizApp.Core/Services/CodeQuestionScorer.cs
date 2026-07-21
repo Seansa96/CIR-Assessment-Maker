@@ -24,7 +24,8 @@ public sealed record CodeRunnerExecuteRequest(
     string FileName,
     string Content,
     int CompileTimeoutMs,
-    int RunTimeoutMs)
+    int RunTimeoutMs,
+    string StandardInput = "")
 {
     public IReadOnlyList<CodeRunnerFile> Files { get; init; } = Array.Empty<CodeRunnerFile>();
 }
@@ -96,7 +97,17 @@ public sealed class CodeQuestionScorer : ICodeQuestionScorer
         {
             var test = codeQuestion.Tests[index];
             var request = BuildRequest(codeQuestion, submittedAnswer.CodeText, test, settings);
-            var runnerResult = await runnerClient.ExecuteAsync(request, settings, cancellationToken);
+            CodeRunnerExecutionResult runnerResult;
+            try
+            {
+                runnerResult = await runnerClient.ExecuteAsync(request, settings, cancellationToken);
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException or InvalidOperationException)
+            {
+                error ??= $"Code runner unavailable: {ex.Message}";
+                testResults.Add(new CodeTestResult(index + 1, test.Input, test.Expected.Trim(), null, false));
+                break;
+            }
 
             compileOutput ??= runnerResult.CompileOutput;
             runOutput = Combine(runOutput, runnerResult.Output);
@@ -125,7 +136,7 @@ public sealed class CodeQuestionScorer : ICodeQuestionScorer
             question.Id,
             testResults.Count == codeQuestion.Tests.Count && testResults.All(test => test.Passed),
             question.Explanation,
-            "All code tests pass")
+            error is null ? "All code tests pass" : error)
         {
             CodeFeedback = feedback
         };
@@ -137,26 +148,46 @@ public sealed class CodeQuestionScorer : ICodeQuestionScorer
         CodeQuestionTest test,
         AppSettings settings)
     {
+        var mode = ResolveExecutionMode(question);
         return question.Language.ToLowerInvariant() switch
         {
             "python" => new CodeRunnerExecuteRequest(
                 "python",
                 "main.py",
-                BuildPythonHarness(codeText, question.FunctionName, test.Input),
+                BuildPythonHarness(codeText, question.FunctionName, test.Input, mode),
                 settings.CodeRunnerCompileTimeoutMs,
-                settings.CodeRunnerRunTimeoutMs),
+                settings.CodeRunnerRunTimeoutMs,
+                mode is CodeExecutionMode.Program ? test.Input : string.Empty),
             "cpp" => new CodeRunnerExecuteRequest(
                 "cpp",
                 "main.cpp",
-                BuildCppHarness(codeText, question.FunctionName, test.Input),
+                BuildCppHarness(codeText, question.FunctionName, test.Input, mode),
                 settings.CodeRunnerCompileTimeoutMs,
-                settings.CodeRunnerRunTimeoutMs),
+                settings.CodeRunnerRunTimeoutMs,
+                mode is CodeExecutionMode.Program ? test.Input : string.Empty),
             _ => throw new InvalidOperationException($"Language '{question.Language}' is not supported for code questions.")
         };
     }
 
-    private static string BuildPythonHarness(string codeText, string functionName, string input)
+    private static CodeExecutionMode ResolveExecutionMode(CodeQuestionDefinition question)
     {
+        if (question.ExecutionMode is CodeExecutionMode.Function or CodeExecutionMode.Program)
+        {
+            return question.ExecutionMode;
+        }
+
+        return string.Equals(question.FunctionName, "main", StringComparison.OrdinalIgnoreCase)
+            ? CodeExecutionMode.Program
+            : CodeExecutionMode.Function;
+    }
+
+    private static string BuildPythonHarness(string codeText, string functionName, string input, CodeExecutionMode mode)
+    {
+        if (mode is CodeExecutionMode.Program)
+        {
+            return codeText;
+        }
+
         return string.Join("\n", new[]
         {
             codeText,
@@ -166,8 +197,13 @@ public sealed class CodeQuestionScorer : ICodeQuestionScorer
         });
     }
 
-    private static string BuildCppHarness(string codeText, string functionName, string input)
+    private static string BuildCppHarness(string codeText, string functionName, string input, CodeExecutionMode mode)
     {
+        if (mode is CodeExecutionMode.Program)
+        {
+            return codeText;
+        }
+
         return string.Join("\n", new[]
         {
             "#include <bits/stdc++.h>",

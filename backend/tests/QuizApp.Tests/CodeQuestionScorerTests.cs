@@ -83,6 +83,36 @@ public sealed class CodeQuestionScorerTests
         Assert.Contains("square(3)", captured.Content);
     }
 
+    [Fact]
+    public async Task ScoreAsync_program_mode_submits_complete_source_and_test_input()
+    {
+        CodeRunnerExecuteRequest? captured = null;
+        var runner = new FakeCodeRunnerClient(request =>
+        {
+            captured = request;
+            return CodeRunnerExecutionResult.Success("Build\nRun\n");
+        });
+        var scorer = new CodeQuestionScorer(runner);
+        var question = TestData.CodeQuestion("q001", "cpp") with
+        {
+            CodeQuestion = new CodeQuestionDefinition("cpp", "main", "#include <iostream>\nint main() {}", new[] { new CodeQuestionTest("Build", "Build\nRun") })
+            {
+                ExecutionMode = CodeExecutionMode.Program
+            }
+        };
+        var submitted = new SubmittedAnswer("q001", null, Array.Empty<string>(), null, null, null)
+        {
+            CodeText = "#include <iostream>\nint main() { std::cout << \"Build\\nRun\\n\"; }"
+        };
+
+        var result = await scorer.ScoreAsync(question, submitted, TestSettings());
+
+        Assert.True(result.IsCorrect);
+        Assert.NotNull(captured);
+        Assert.Equal("Build", captured.StandardInput);
+        Assert.Equal(submitted.CodeText, captured.Content);
+    }
+
     private static AppSettings TestSettings()
     {
         return new AppSettings(1, AssessmentMode.Practice, QuestionOrderMode.Randomized, 15, 25, null, null, false);

@@ -33,7 +33,7 @@ public sealed class PistonCodeRunnerClient : ICodeRunnerClient
             language = runtime.Language,
             version = runtime.Version,
             files,
-            stdin = "",
+            stdin = request.StandardInput,
             args = Array.Empty<string>(),
             compile_timeout = request.CompileTimeoutMs,
             run_timeout = request.RunTimeoutMs,

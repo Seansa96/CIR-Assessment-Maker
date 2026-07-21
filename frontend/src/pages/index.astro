@@ -756,19 +756,31 @@ const isDev = import.meta.env.DEV;
           circuitAnswer?: any;
           graphingAnswer?: any;
         };
-        language?: "python" | "cpp";
-        functionName?: string;
-        starterCode?: string;
-        tests?: CodeQuestionTest[];
+        codeQuestion?: CodeQuestionDefinition;
         explanation?: string | null;
         circuitQuestion?: CircuitQuestionDefinition;
         graphingQuestion?: GraphingQuestionDefinition;
         parts?: Question[];
       }
 
+      interface CodeQuestionDefinition {
+        language: "python" | "cpp";
+        functionName: string;
+        executionMode?: "function" | "program";
+        starterCode: string;
+        tests: CodeQuestionTest[];
+      }
+
       interface CodeQuestionTest {
         input: string;
         expected: string;
+      }
+
+      interface CodeRunnerStatus {
+        state: "notRequired" | "starting" | "provisioning" | "ready" | "unavailable" | "failed";
+        languages: string[];
+        message: string | null;
+        updatedAt: string;
       }
 
       interface GraphingQuestionDefinition {
@@ -794,10 +806,7 @@ const isDev = import.meta.env.DEV;
         choices?: ChoiceOption[];
         media?: MediaAsset[];
         answer?: Question["answer"];
-        language?: "python" | "cpp";
-        functionName?: string;
-        starterCode?: string;
-        tests?: CodeQuestionTest[];
+        codeQuestion?: CodeQuestionDefinition;
         explanation?: string | null;
       }
 
@@ -1525,6 +1534,8 @@ const isDev = import.meta.env.DEV;
       const apiStatus = document.querySelector<HTMLDivElement>("#api-status")!;
       let devStatusTimer: ReturnType<typeof setTimeout> | null = null;
       let lastBackendSeenAt: number | null = null;
+      let codeRunnerStatus: CodeRunnerStatus | null = null;
+      let codeSubmitError: string | null = null;
       const categorySelect = document.querySelector<HTMLSelectElement>("#category-select")!;
       const assessmentSelect = document.querySelector<HTMLSelectElement>("#assessment-select")!;
       const attemptContent = document.querySelector<HTMLDivElement>("#attempt-content")!;
@@ -2366,6 +2377,7 @@ const isDev = import.meta.env.DEV;
           updateActiveAttemptChip();
           updateModeControlLock();
           await renderCurrentQuestion();
+          void prepareCodeRunnerForAttempt();
           if (typeof loadRecommendations === "function") {
             await loadRecommendations();
           }
@@ -2387,6 +2399,34 @@ const isDev = import.meta.env.DEV;
         await startSelectedAssessment(assessmentId, "practice", dummyButton);
       };
 
+      function assessmentHasCode(): boolean {
+        return (state.assessment?.questions ?? []).some(question => question.type === "code")
+          || (state.assessment?.workedExamples ?? []).some(example => example.steps.some(step => (step.question?.type ?? step.type) === "code"));
+      }
+
+      async function prepareCodeRunnerForAttempt() {
+        if (!state.attempt || !assessmentHasCode()) {
+          codeRunnerStatus = null;
+          return;
+        }
+
+        codeRunnerStatus = { state: "starting", languages: [], message: "Preparing the local code runner.", updatedAt: new Date().toISOString() };
+        await renderCurrentQuestion();
+        try {
+          codeRunnerStatus = await api<CodeRunnerStatus>(`/attempts/${encodeURIComponent(state.attempt.id)}/code-runner/prepare`, { method: "POST" });
+        } catch (e) {
+          codeRunnerStatus = { state: "failed", languages: [], message: e instanceof Error ? e.message : "Could not prepare the local code runner.", updatedAt: new Date().toISOString() };
+        }
+        await renderCurrentQuestion();
+      }
+
+      function renderCodeRunnerStatus(question: Question): string {
+        if (question.type !== "code" || !codeRunnerStatus) return "";
+        const ready = codeRunnerStatus.state === "ready";
+        const message = escapeHtml(codeRunnerStatus.message ?? (ready ? "Code runner ready." : "Preparing code runner."));
+        return `<div class="feedback ${ready ? "correct" : "incorrect"} code-runner-status"><strong>${ready ? "Coding environment ready" : "Coding environment preparing"}</strong><br/>${message}${ready ? "" : ' <button type="button" id="refresh-code-runner">Retry</button>'}</div>`;
+      }
+
       async function submitCurrentAnswer() {
         if (!state.attempt || !state.assessment) return;
         const question = getCurrentQuestion();
@@ -2396,6 +2436,7 @@ const isDev = import.meta.env.DEV;
         if (submitButton) setBusy(submitButton, "Saving");
 
         try {
+          codeSubmitError = null;
           state.attempt = await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
             method: "POST",
             body: JSON.stringify(payload)
@@ -2414,6 +2455,10 @@ const isDev = import.meta.env.DEV;
             return;
           }
 
+          await renderCurrentQuestion();
+        } catch (e) {
+          console.error(e);
+          codeSubmitError = e instanceof Error ? e.message : "Code submission failed.";
           await renderCurrentQuestion();
         } finally {
           if (submitButton) clearBusy(submitButton, "Submit Answer");
@@ -2476,6 +2521,7 @@ const isDev = import.meta.env.DEV;
         syncModeControlToAttempt();
         updateModeControlLock();
         activateTab("load");
+        void prepareCodeRunnerForAttempt();
 
         if (session.attempt.status === "completed") {
           await renderResults(isAttemptCommitted(session.attempt.id));
@@ -4009,10 +4055,13 @@ const isDev = import.meta.env.DEV;
             choices: [],
             media: [],
             answer: { choiceId: null, choiceIds: [] },
-            language: "python",
-            functionName: "square",
-            starterCode: "def square(n):\n    return n * n",
-            tests: [{ input: "3", expected: "9" }],
+            codeQuestion: {
+              language: "python",
+              functionName: "square",
+              executionMode: "function",
+              starterCode: "def square(n):\n    return n * n",
+              tests: [{ input: "3", expected: "9" }]
+            },
             explanation: ""
           };
         }
@@ -4129,22 +4178,29 @@ const isDev = import.meta.env.DEV;
               <div class="field">
                 <label for="question-code-language-${index}">Language</label>
                 <select id="question-code-language-${index}" data-question-field="language">
-                  <option value="python" ${question.language === "python" ? "selected" : ""}>Python</option>
-                  <option value="cpp" ${question.language === "cpp" ? "selected" : ""}>C++</option>
+                  <option value="python" ${question.codeQuestion?.language === "python" ? "selected" : ""}>Python</option>
+                  <option value="cpp" ${question.codeQuestion?.language === "cpp" ? "selected" : ""}>C++</option>
                 </select>
               </div>
               <div class="field">
                 <label for="question-code-function-${index}">Function name</label>
-                <input id="question-code-function-${index}" data-question-field="functionName" value="${escapeHtml(question.functionName ?? "")}" />
+                <input id="question-code-function-${index}" data-question-field="functionName" value="${escapeHtml(question.codeQuestion?.functionName ?? "")}" />
+              </div>
+              <div class="field">
+                <label for="question-code-mode-${index}">Execution mode</label>
+                <select id="question-code-mode-${index}" data-question-field="executionMode">
+                  <option value="function" ${question.codeQuestion?.executionMode !== "program" ? "selected" : ""}>Callable function</option>
+                  <option value="program" ${question.codeQuestion?.executionMode === "program" ? "selected" : ""}>Complete program</option>
+                </select>
               </div>
             </div>
             <div class="field">
               <label for="question-code-starter-${index}">Starter code</label>
-              <textarea id="question-code-starter-${index}" data-question-field="starterCode" rows="6">${escapeHtml(question.starterCode ?? "")}</textarea>
+              <textarea id="question-code-starter-${index}" data-question-field="starterCode" rows="6">${escapeHtml(question.codeQuestion?.starterCode ?? "")}</textarea>
             </div>
             <div class="field">
               <label for="question-code-tests-${index}">Tests JSON</label>
-              <textarea id="question-code-tests-${index}" data-question-field="tests" rows="4">${escapeHtml(JSON.stringify(question.tests ?? [], null, 2))}</textarea>
+              <textarea id="question-code-tests-${index}" data-question-field="tests" rows="4">${escapeHtml(JSON.stringify(question.codeQuestion?.tests ?? [], null, 2))}</textarea>
             </div>
           `;
         }
@@ -4353,10 +4409,13 @@ const isDev = import.meta.env.DEV;
             prompt: editor.querySelector<HTMLTextAreaElement>("[data-question-field='prompt']")!.value.trim(),
             choices: type === "freeResponse" || type === "numericResponse" || type === "code" || type === "symbolicResponse" || type === "circuit" || type === "graphingResponse" ? [] : choices,
             answer: buildDraftAnswer(type, answerValue, editor, circuitAnswer, graphingAnswer),
-            language: type === "code" ? editor.querySelector<HTMLSelectElement>("[data-question-field='language']")?.value as "python" | "cpp" : undefined,
-            functionName: type === "code" ? editor.querySelector<HTMLInputElement>("[data-question-field='functionName']")?.value.trim() : undefined,
-            starterCode: type === "code" ? editor.querySelector<HTMLTextAreaElement>("[data-question-field='starterCode']")?.value : undefined,
-            tests: type === "code" ? parseCodeTests(editor.querySelector<HTMLTextAreaElement>("[data-question-field='tests']")?.value ?? "[]") : undefined,
+            codeQuestion: type === "code" ? {
+              language: editor.querySelector<HTMLSelectElement>("[data-question-field='language']")?.value as "python" | "cpp" ?? "python",
+              functionName: editor.querySelector<HTMLInputElement>("[data-question-field='functionName']")?.value.trim() ?? "",
+              executionMode: editor.querySelector<HTMLSelectElement>("[data-question-field='executionMode']")?.value as "function" | "program" ?? "function",
+              starterCode: editor.querySelector<HTMLTextAreaElement>("[data-question-field='starterCode']")?.value ?? "",
+              tests: parseCodeTests(editor.querySelector<HTMLTextAreaElement>("[data-question-field='tests']")?.value ?? "[]")
+            } : undefined,
             explanation: editor.querySelector<HTMLTextAreaElement>("[data-question-field='explanation']")!.value.trim(),
             circuitQuestion,
             graphingAnswer
@@ -4517,10 +4576,10 @@ const isDev = import.meta.env.DEV;
             errors.push(`Question ${index + 1} needs a non-negative tolerance.`);
           }
           if (question.type === "code") {
-            if (!question.language || !["python", "cpp"].includes(question.language)) errors.push(`Question ${index + 1} needs Python or C++.`);
-            if (!question.functionName) errors.push(`Question ${index + 1} needs a function name.`);
-            if (!question.starterCode) errors.push(`Question ${index + 1} needs starter code.`);
-            if (!question.tests || question.tests.length === 0) errors.push(`Question ${index + 1} needs at least one code test.`);
+            if (!question.codeQuestion?.language || !["python", "cpp"].includes(question.codeQuestion.language)) errors.push(`Question ${index + 1} needs Python or C++.`);
+            if (!question.codeQuestion?.functionName) errors.push(`Question ${index + 1} needs a function name.`);
+            if (!question.codeQuestion?.starterCode) errors.push(`Question ${index + 1} needs starter code.`);
+            if (!question.codeQuestion?.tests || question.codeQuestion.tests.length === 0) errors.push(`Question ${index + 1} needs at least one code test.`);
           }
           if (question.type === "symbolicResponse") {
             if (!question.answer?.expectedLatex) errors.push(`Question ${index + 1} needs expected LaTeX.`);
@@ -4655,6 +4714,7 @@ const isDev = import.meta.env.DEV;
         }
 
         const feedbackExplanation = results?.explanation ? await renderMarkdown(results.explanation) : "";
+        const codeSubmissionDisabled = question.type === "code" && codeRunnerStatus?.state !== "ready";
         const symbolicFeedbackHtml = await renderSymbolicFeedback(results?.symbolicFeedback);
         const selfCheckHtml = await renderFreeResponseSelfCheck(results, state.attempt.mode === "practice");
         const feedback = question.type === "freeResponse" || results?.isCorrect === null || results?.isCorrect === undefined
@@ -4681,7 +4741,7 @@ const isDev = import.meta.env.DEV;
             ${inputHtml}
             <div class="assessment-control-bar">
               <div class="button-row">
-                <button class="primary chunky" id="submit-answer" type="submit">Submit Answer</button>
+                <button class="primary chunky" id="submit-answer" type="submit" ${codeSubmissionDisabled ? "disabled" : ""}>${codeSubmissionDisabled ? "Preparing Runner" : "Submit Answer"}</button>
                 <button type="button" id="previous-question" ${state.currentIndex === 0 ? "disabled" : ""}>Previous</button>
                 <button type="button" id="next-question" ${state.currentIndex === state.attempt.questionOrder.length - 1 ? "disabled" : ""}>Next</button>
                 ${renderDevAssessmentTools(question.id)}
@@ -4694,6 +4754,7 @@ const isDev = import.meta.env.DEV;
             </div>
           </form>
           ${selfCheckHtml}
+          ${codeSubmitError ? `<div class="feedback incorrect"><strong>Submission failed</strong><br/>${escapeHtml(codeSubmitError)}</div>` : ""}
           ${feedback}
         `;
 
@@ -5143,6 +5204,7 @@ const isDev = import.meta.env.DEV;
         const instructionHtml = await renderMarkdown(step.instruction);
         const promptHtml = await renderMarkdown(question.prompt);
         const feedbackExplanation = result?.explanation ? await renderMarkdown(result.explanation) : "";
+        const codeSubmissionDisabled = question.type === "code" && codeRunnerStatus?.state !== "ready";
         const symbolicFeedbackHtml = await renderSymbolicFeedback(result?.symbolicFeedback);
         const selfCheckHtml = await renderFreeResponseSelfCheck(result, state.attempt.mode === "practice");
         const feedback = question.type === "freeResponse" || result?.isCorrect === null || result?.isCorrect === undefined
@@ -5192,7 +5254,7 @@ const isDev = import.meta.env.DEV;
                     <div class="button-row">
                       ${isReviewingPreviousStep ? `<button type="button" id="return-current-step">Return to Current Step</button>` : ""}
                       <button type="button" id="previous-worked-step" ${state.currentIndex === 0 ? "disabled" : ""}>Previous Step</button>
-                      <button class="primary chunky" id="submit-answer" type="submit" ${isReviewingPreviousStep || isLockedFutureStep ? "disabled" : ""}>${result?.isCorrect ? "Continue" : "Check Step"}</button>
+                      <button class="primary chunky" id="submit-answer" type="submit" ${isReviewingPreviousStep || isLockedFutureStep || codeSubmissionDisabled ? "disabled" : ""}>${result?.isCorrect ? "Continue" : codeSubmissionDisabled ? "Preparing Runner" : "Check Step"}</button>
                       ${IS_DEV && !result?.isCorrect && !isReviewingPreviousStep && !isLockedFutureStep ? `<button type="button" id="dev-override-step" class="danger-action" title="Force override this step as correct">Override (Dev)</button>` : ""}
                       ${renderDevAssessmentTools(step.id)}
                       <button type="button" id="pause-attempt">Save and Quit</button>
@@ -5214,6 +5276,8 @@ const isDev = import.meta.env.DEV;
           if (isReviewingPreviousStep || isLockedFutureStep) return;
           submitCurrentAnswer();
         });
+        document.querySelector<HTMLButtonElement>("#refresh-code-runner")?.addEventListener("click", () => void prepareCodeRunnerForAttempt());
+        document.querySelector<HTMLButtonElement>("#refresh-code-runner")?.addEventListener("click", () => void prepareCodeRunnerForAttempt());
         document.querySelector<HTMLButtonElement>("#previous-worked-step")!.addEventListener("click", () => {
           state.currentIndex = Math.max(0, state.currentIndex - 1);
           void renderCurrentWorkedExampleStep();
@@ -6210,13 +6274,15 @@ const isDev = import.meta.env.DEV;
         }
 
         if (question.type === "code") {
-          const codeValue = submittedAnswer?.codeText ?? question.starterCode ?? "";
+          const codeValue = submittedAnswer?.codeText ?? question.codeQuestion?.starterCode ?? "";
+          const programMode = question.codeQuestion?.executionMode === "program";
           return `
             <div class="field code-response-field">
-              <label for="${idPrefix}code-response">${escapeHtml((question.language ?? "code").toUpperCase())} response</label>
-              <div id="${idPrefix}code-response-editor" class="code-editor-shell" data-language="${escapeHtml(question.language ?? "python")}" data-code="${escapeHtml(codeValue)}"></div>
+              <label for="${idPrefix}code-response">${escapeHtml((question.codeQuestion?.language ?? "code").toUpperCase())} response</label>
+              <div id="${idPrefix}code-response-editor" class="code-editor-shell" data-language="${escapeHtml(question.codeQuestion?.language ?? "python")}" data-code="${escapeHtml(codeValue)}" data-input-id="${idPrefix}code-response"></div>
               <input id="${idPrefix}code-response" name="${idPrefix}codeText" type="hidden" value="${escapeHtml(codeValue)}" />
-              <p class="input-help">Submit the complete function definition. Tab indents inside the editor; the test runner calls the named function automatically.</p>
+              <p class="input-help">${programMode ? "Submit the complete program shown in the starter editor. Input test data is provided through standard input." : "Submit the complete function definition. Tab indents inside the editor; the test runner calls the named function automatically."}</p>
+              ${renderCodeRunnerStatus(question)}
             </div>
           `;
         }
@@ -7105,11 +7171,13 @@ const isDev = import.meta.env.DEV;
         currentCodeEditors.forEach(ed => ed.destroy());
         currentCodeEditors = [];
 
-        if (question.type === "multipart") {
-          question.parts?.forEach(p => setupCodeEditor(p));
-        }
+        const hasCode = (q: Question): boolean => {
+          if (q.type === "code") return true;
+          if (q.type === "multipart" && q.parts) return q.parts.some(hasCode);
+          return false;
+        };
 
-        if (question.type !== "code") return;
+        if (!hasCode(question)) return;
 
         const mounts = document.querySelectorAll<HTMLDivElement>(".code-editor-shell");
         mounts.forEach(mount => {
@@ -7124,7 +7192,7 @@ const isDev = import.meta.env.DEV;
           const editor = createCodeEditor({
             parent: mount,
             document: initialCode,
-            language: question.language ?? "python",
+            language: mount.dataset.language ?? "python",
             onChange: (content) => {
               hiddenInput.value = content;
             }
@@ -7269,10 +7337,7 @@ const isDev = import.meta.env.DEV;
           choices: question?.choices ?? step.choices ?? [],
           media: question?.media ?? step.media ?? [],
           answer: question?.answer ?? step.answer,
-          language: question?.language ?? step.language,
-          functionName: question?.functionName ?? step.functionName,
-          starterCode: question?.starterCode ?? step.starterCode,
-          tests: question?.tests ?? step.tests,
+          codeQuestion: question?.codeQuestion ?? step.codeQuestion,
           explanation: question?.explanation ?? step.explanation
         };
       }

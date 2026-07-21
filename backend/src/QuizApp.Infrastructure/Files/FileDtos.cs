@@ -422,6 +422,7 @@ public sealed class WorkedExampleStepFileDto
     public List<MediaFileDto>? Media { get; set; }
     public string? Language { get; set; }
     public string? FunctionName { get; set; }
+    public string? ExecutionMode { get; set; }
     public string? StarterCode { get; set; }
     public List<CodeQuestionTestFileDto>? Tests { get; set; }
 }
@@ -437,6 +438,7 @@ public sealed class QuestionFileDto
     public List<MediaFileDto>? Media { get; set; }
     public string? Language { get; set; }
     public string? FunctionName { get; set; }
+    public string? ExecutionMode { get; set; }
     public string? StarterCode { get; set; }
     public List<CodeQuestionTestFileDto>? Tests { get; set; }
     public CircuitQuestionFileDto? CircuitQuestion { get; set; }
