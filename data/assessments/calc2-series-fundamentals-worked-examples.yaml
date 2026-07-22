@@ -5,221 +5,381 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: series-fundamentals
 skills:
-  - Recover series terms from partial sums
-  - Use the Cauchy criterion to diagnose divergence
-  - Separate zero term limits from partial-sum convergence
+- Recover series terms from partial sums
+- Use the Cauchy criterion to diagnose divergence
+- Separate zero term limits from partial-sum convergence
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-    - calculus-2
-    - series-fundamentals
-    - partial-sums
-    - cauchy-criterion
+  - calculus-2
+  - series-fundamentals
+  - partial-sums
+  - cauchy-criterion
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we-series-fundamentals-1
-    title: Recover the terms and sum from a partial-sum formula
-    problem: |
-      A series has partial sums
-      $$S_N=\frac{2N+1}{N+1}.$$
-      Find its infinite sum and determine $a_1$ and a formula for $a_n$ when
-      $n\ge2$.
-    steps:
-      - id: step-series-fundamentals-1-1
-        title: Rewrite the partial sum
-        instruction: |
-          Algebraically,
-          $$S_N=2-\frac1{N+1}.$$
-          This form makes both the limit and consecutive differences transparent.
-        type: multipleChoice
-        prompt: What is $\lim_{N\to\infty}S_N$?
-        choices:
-          - { id: a, text: '$1$' }
-          - { id: b, text: '$2$' }
-          - { id: c, text: '$3$' }
-          - { id: d, text: '$+\infty$' }
-        answer: { choiceId: b }
-        explanation: The reciprocal correction vanishes, so the series converges to $2$.
-      - id: step-series-fundamentals-1-2
-        title: Treat the first term correctly
-        instruction: |
-          The first term is the first partial sum:
-          $$a_1=S_1=\frac32.$$
-          One cannot use $S_1-S_0$ unless $S_0=0$ has been defined.
-        type: multipleChoice
-        prompt: Why is $a_1$ handled separately?
-        choices:
-          - { id: a, text: 'The relation $a_n=S_n-S_{n-1}$ needs the preceding partial sum.' }
-          - { id: b, text: 'The first term never belongs to a series.' }
-          - { id: c, text: '$S_1$ is always zero.' }
-          - { id: d, text: 'Partial sums begin at infinity.' }
-        answer: { choiceId: a }
-        explanation: For the usual indexing, $S_0=0$ is a convention that must be supplied rather than inferred from a formula stated only for $N\ge1$.
-      - id: step-series-fundamentals-1-3
-        title: Difference consecutive partial sums
-        instruction: |
-          For $n\ge2$,
-          $$a_n=S_n-S_{n-1}
-          =\left(2-\frac1{n+1}\right)-\left(2-\frac1n\right)
-          =\frac1{n(n+1)}.$$
-        type: multipleChoice
-        prompt: Which operation recovers an individual term from partial sums?
-        choices:
-          - { id: a, text: '$S_n-S_{n-1}$' }
-          - { id: b, text: '$S_n+S_{n-1}$' }
-          - { id: c, text: '$S_n/n$' }
-          - { id: d, text: '$S_nS_{n-1}$' }
-        answer: { choiceId: a }
-        explanation: Adjacent partial sums contain the same earlier terms, so subtraction leaves only $a_n$.
-      - id: step-series-fundamentals-1-4
-        title: Verify the exceptional first term
-        instruction: |
-          Substituting $n=1$ into $1/[n(n+1)]$ would give $1/2$, not $3/2$.
-          Thus the correct description is $a_1=3/2$ and
-          $a_n=1/[n(n+1)]$ for $n\ge2$.
-        type: multipleChoice
-        prompt: What caused the exceptional first term?
-        choices:
-          - { id: a, text: 'The supplied formula for $S_N$ was not asserted at $N=0$.' }
-          - { id: b, text: 'The series changes its convergence type at $n=2$.' }
-          - { id: c, text: 'The quotient limit law fails.' }
-          - { id: d, text: 'The terms alternate signs.' }
-        answer: { choiceId: a }
-        explanation: Extending $S_N=2-1/(N+1)$ to $N=0$ would give $1$, conflicting with the required empty sum $S_0=0$.
+- id: we-series-fundamentals-1
+  title: Recover the terms and sum from a partial-sum formula
+  problem: |
+    A series has partial sums
+    $$S_N=\frac{2N+1}{N+1}.$$
+    Find its infinite sum and determine $a_1$ and a formula for $a_n$ when
+    $n\ge2$.
+  steps:
+  - id: step-series-fundamentals-1-1
+    title: Rewrite the partial sum
+    instruction: |
+      Algebraically,
+      $$S_N=2-\frac1{N+1}.$$
+      This form makes both the limit and consecutive differences transparent.
+    type: multipleChoice
+    prompt: |-
+      What is $\lim_{N\to\infty}S_N$?
+    choices:
+    - id: a
+      text: $1$
+    - id: b
+      text: $2$
+    - id: c
+      text: $3$
+    - id: d
+      text: |-
+        $+\infty$
+    answer:
+      choiceId: b
+    explanation: |-
+      Solution: The reciprocal correction vanishes, so the series converges to $2$. Therefore the answer is $2$.
 
-  - id: we-series-fundamentals-2
-    title: Prove harmonic divergence with the Cauchy criterion
-    problem: |
-      Use tails—not an integral—to prove that
-      $$\sum_{n=1}^{\infty}\frac1n$$
-      diverges.
-    steps:
-      - id: step-series-fundamentals-2-1
-        title: State the tail requirement
-        instruction: |
-          If a series converges, then for every $\varepsilon>0$, every
-          sufficiently late finite tail
-          $\sum_{k=m}^{n}a_k$ must have magnitude below $\varepsilon$.
-        type: multipleChoice
-        prompt: Which criterion is being used?
-        choices:
-          - { id: a, text: 'The Cauchy criterion for series' }
-          - { id: b, text: 'The ratio test' }
-          - { id: c, text: 'The root test' }
-          - { id: d, text: 'The alternating-series test' }
-        answer: { choiceId: a }
-        explanation: Convergent partial sums must become arbitrarily close to one another.
-      - id: step-series-fundamentals-2-2
-        title: Choose a persistent tail
-        instruction: |
-          Consider the tail from $N+1$ through $2N$. It contains $N$ terms,
-          and every denominator is at most $2N$, so every term is at least
-          $1/(2N)$.
-        type: multipleChoice
-        prompt: What lower bound follows?
-        choices:
-          - { id: a, text: '$\sum_{k=N+1}^{2N}1/k\ge1/2$' }
-          - { id: b, text: '$\sum_{k=N+1}^{2N}1/k\le1/(2N)$' }
-          - { id: c, text: '$\sum_{k=N+1}^{2N}1/k=0$' }
-          - { id: d, text: '$\sum_{k=N+1}^{2N}1/k\ge N$' }
-        answer: { choiceId: a }
-        explanation: Multiplying $N$ terms by the lower bound $1/(2N)$ gives $1/2$.
-      - id: step-series-fundamentals-2-3
-        title: Contradict tail smallness
-        instruction: |
-          No matter how large $N$ becomes, this late tail is at least $1/2$.
-          Taking $\varepsilon=1/4$, for example, shows that the Cauchy condition
-          can never hold.
-        type: multipleChoice
-        prompt: Why does a fixed lower bound disprove convergence?
-        choices:
-          - { id: a, text: 'Convergent-series tails must eventually be smaller than every positive tolerance.' }
-          - { id: b, text: 'Every convergent series has negative terms.' }
-          - { id: c, text: 'The first term is larger than $1/2$.' }
-          - { id: d, text: 'A series converges only when all tails equal zero.' }
-        answer: { choiceId: a }
-        explanation: A persistent tail size prevents the partial-sum sequence from being Cauchy.
-      - id: step-series-fundamentals-2-4
-        title: Reconcile with the term limit
-        instruction: |
-          Although $1/n\to0$, groups of increasingly many small positive terms
-          retain substantial mass. This is precisely why the zero term limit is
-          necessary but not sufficient.
-        type: multipleChoice
-        prompt: What does the divergence test say when $a_n\to0$?
-        choices:
-          - { id: a, text: 'It is inconclusive.' }
-          - { id: b, text: 'It proves convergence.' }
-          - { id: c, text: 'It proves divergence.' }
-          - { id: d, text: 'It gives the exact sum.' }
-        answer: { choiceId: a }
-        explanation: The Cauchy-tail argument supplies the information the term test cannot.
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-  - id: we-series-fundamentals-3
-    title: A telescoping formula can reveal divergence
-    problem: |
-      Determine the behavior of
-      $$\sum_{n=1}^{\infty}\left(\sqrt{n+1}-\sqrt n\right).$$
-    steps:
-      - id: step-series-fundamentals-3-1
-        title: Check the individual term
-        instruction: |
-          Rationalizing gives
-          $$\sqrt{n+1}-\sqrt n
-          =\frac1{\sqrt{n+1}+\sqrt n}\longrightarrow0.$$
-          The necessary term condition is satisfied.
-        type: multipleChoice
-        prompt: What conclusion follows from the zero term limit alone?
-        choices:
-          - { id: a, text: 'No convergence conclusion follows.' }
-          - { id: b, text: 'The series converges.' }
-          - { id: c, text: 'The series converges absolutely.' }
-          - { id: d, text: 'The series sums to zero.' }
-        answer: { choiceId: a }
-        explanation: A zero term limit only prevents immediate rejection by the divergence test.
-      - id: step-series-fundamentals-3-2
-        title: Form the finite partial sum
-        instruction: |
-          Before taking a limit, write
-          $$S_N=(\sqrt2-1)+(\sqrt3-\sqrt2)+\cdots+
-          (\sqrt{N+1}-\sqrt N).$$
-        type: multipleChoice
-        prompt: Which terms cancel?
-        choices:
-          - { id: a, text: 'Every radical from $\sqrt2$ through $\sqrt N$' }
-          - { id: b, text: 'Only the integer terms' }
-          - { id: c, text: 'The first and last radicals' }
-          - { id: d, text: 'No terms cancel' }
-        answer: { choiceId: a }
-        explanation: Each interior radical appears once positively and once negatively.
-      - id: step-series-fundamentals-3-3
-        title: Identify the boundary growth
-        instruction: |
-          Cancellation leaves
-          $$S_N=\sqrt{N+1}-1.$$
-          This boundary term grows without bound as $N\to\infty$.
-        type: multipleChoice
-        prompt: What is the series classification?
-        choices:
-          - { id: a, text: 'Divergent to $+\infty$' }
-          - { id: b, text: 'Convergent to $1$' }
-          - { id: c, text: 'Conditionally convergent' }
-          - { id: d, text: 'Oscillatory divergent' }
-        answer: { choiceId: a }
-        explanation: Series convergence is determined by the partial-sum limit, which is infinite here.
-      - id: step-series-fundamentals-3-4
-        title: State the general lesson
-        instruction: |
-          Telescoping is an algebraic simplification, not a convergence verdict.
-          The surviving boundary must still approach a finite number.
-        type: multipleChoice
-        prompt: Which final check is always required after telescoping?
-        choices:
-          - { id: a, text: 'Take the limit of the surviving partial-sum boundary terms.' }
-          - { id: b, text: 'Apply the ratio test to the canceled terms.' }
-          - { id: c, text: 'Assume the last term is zero.' }
-          - { id: d, text: 'Count the number of cancellations.' }
-        answer: { choiceId: a }
-        explanation: Cancellation produces a formula for $S_N$; only its limit decides convergence.
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $1$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $3$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $+\infty$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-1-2
+    title: Treat the first term correctly
+    instruction: |
+      The first term is the first partial sum:
+      $$a_1=S_1=\frac32.$$
+      One cannot use $S_1-S_0$ unless $S_0=0$ has been defined.
+    type: multipleChoice
+    prompt: Why is $a_1$ handled separately?
+    choices:
+    - id: a
+      text: The relation $a_n=S_n-S_{n-1}$ needs the preceding partial sum.
+    - id: b
+      text: The first term never belongs to a series.
+    - id: c
+      text: $S_1$ is always zero.
+    - id: d
+      text: Partial sums begin at infinity.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: For the usual indexing, $S_0=0$ is a convention that must be supplied rather than inferred from a formula stated only for $N\ge1$. Therefore the answer is The relation $a_n=S_n-S_{n-1}$ needs the preceding partial sum.. Therefore the answer is The relation $a_n=S_n-S_{n-1}$ needs the preceding partial sum.. Therefore the answer is The relation $a_n=S_n-S_{n-1}$ needs the preceding partial sum..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: The first term never belongs to a series. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $S_1$ is always zero. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Partial sums begin at infinity. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-1-3
+    title: Difference consecutive partial sums
+    instruction: |
+      For $n\ge2$,
+      $$a_n=S_n-S_{n-1}
+      =\left(2-\frac1{n+1}\right)-\left(2-\frac1n\right)
+      =\frac1{n(n+1)}.$$
+    type: multipleChoice
+    prompt: Which operation recovers an individual term from partial sums?
+    choices:
+    - id: a
+      text: $S_n-S_{n-1}$
+    - id: b
+      text: $S_n+S_{n-1}$
+    - id: c
+      text: $S_n/n$
+    - id: d
+      text: $S_nS_{n-1}$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Adjacent partial sums contain the same earlier terms, so subtraction leaves only $a_n$. Therefore the answer is $S_n-S_{n-1}$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $S_n+S_{n-1}$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $S_n/n$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $S_nS_{n-1}$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-1-4
+    title: Verify the exceptional first term
+    instruction: |
+      Substituting $n=1$ into $1/[n(n+1)]$ would give $1/2$, not $3/2$.
+      Thus the correct description is $a_1=3/2$ and
+      $a_n=1/[n(n+1)]$ for $n\ge2$.
+    type: multipleChoice
+    prompt: What caused the exceptional first term?
+    choices:
+    - id: a
+      text: The supplied formula for $S_N$ was not asserted at $N=0$.
+    - id: b
+      text: The series changes its convergence type at $n=2$.
+    - id: c
+      text: The quotient limit law fails.
+    - id: d
+      text: The terms alternate signs.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Extending $S_N=2-1/(N+1)$ to $N=0$ would give $1$, conflicting with the required empty sum $S_0=0$. Therefore the answer is The supplied formula for $S_N$ was not asserted at $N=0$.. Therefore the answer is The supplied formula for $S_N$ was not asserted at $N=0$.. Therefore the answer is The supplied formula for $S_N$ was not asserted at $N=0$..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: The series changes its convergence type at $n=2$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The quotient limit law fails. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The terms alternate signs. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+- id: we-series-fundamentals-2
+  title: Prove harmonic divergence with the Cauchy criterion
+  problem: |
+    Use tails—not an integral—to prove that
+    $$\sum_{n=1}^{\infty}\frac1n$$
+    diverges.
+  steps:
+  - id: step-series-fundamentals-2-1
+    title: State the tail requirement
+    instruction: |
+      If a series converges, then for every $\varepsilon>0$, every
+      sufficiently late finite tail
+      $\sum_{k=m}^{n}a_k$ must have magnitude below $\varepsilon$.
+    type: multipleChoice
+    prompt: Which criterion is being used?
+    choices:
+    - id: a
+      text: The Cauchy criterion for series
+    - id: b
+      text: The ratio test
+    - id: c
+      text: The root test
+    - id: d
+      text: The alternating-series test
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Convergent partial sums must become arbitrarily close to one another. Therefore the answer is The Cauchy criterion for series.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: The ratio test conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The root test conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The alternating-series test conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-2-2
+    title: Choose a persistent tail
+    instruction: 'Consider the tail from $N+1$ through $2N$. It contains $N$ terms,
+
+      and every denominator is at most $2N$, so every term is at least
+
+      $1/(2N)$.
+
+      '
+    type: multipleChoice
+    prompt: What lower bound follows?
+    choices:
+    - id: a
+      text: |-
+        $\sum_{k=N+1}^{2N}1/k\ge1/2$
+    - id: b
+      text: |-
+        $\sum_{k=N+1}^{2N}1/k\le1/(2N)$
+    - id: c
+      text: |-
+        $\sum_{k=N+1}^{2N}1/k=0$
+    - id: d
+      text: |-
+        $\sum_{k=N+1}^{2N}1/k\ge N$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Multiplying $N$ terms by the lower bound $1/(2N)$ gives $1/2$. Therefore the answer is $\sum_{k=N+1}^{2N}1/k\ge1/2$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $\sum_{k=N+1}^{2N}1/k\le1/(2N)$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $\sum_{k=N+1}^{2N}1/k=0$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $\sum_{k=N+1}^{2N}1/k\ge N$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-2-3
+    title: Contradict tail smallness
+    instruction: |
+      No matter how large $N$ becomes, this late tail is at least $1/2$.
+      Taking $\varepsilon=1/4$, for example, shows that the Cauchy condition
+      can never hold.
+    type: multipleChoice
+    prompt: Why does a fixed lower bound disprove convergence?
+    choices:
+    - id: a
+      text: Convergent-series tails must eventually be smaller than every positive tolerance.
+    - id: b
+      text: Every convergent series has negative terms.
+    - id: c
+      text: The first term is larger than $1/2$.
+    - id: d
+      text: A series converges only when all tails equal zero.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: A persistent tail size prevents the partial-sum sequence from being Cauchy. Therefore the answer is Convergent-series tails must eventually be smaller than every positive tolerance.. Therefore the answer is Convergent-series tails must eventually be smaller than every positive tolerance.. Therefore the answer is Convergent-series tails must eventually be smaller than every positive tolerance..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: Every convergent series has negative terms. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The first term is larger than $1/2$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; A series converges only when all tails equal zero. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-2-4
+    title: Reconcile with the term limit
+    instruction: |
+      Although $1/n\to0$, groups of increasingly many small positive terms
+      retain substantial mass. This is precisely why the zero term limit is
+      necessary but not sufficient.
+    type: multipleChoice
+    prompt: |-
+      What does the divergence test say when $a_n\to0$?
+    choices:
+    - id: a
+      text: It is inconclusive.
+    - id: b
+      text: It proves convergence.
+    - id: c
+      text: It proves divergence.
+    - id: d
+      text: It gives the exact sum.
+    answer:
+      choiceId: a
+    explanation: 'Solution: The Cauchy-tail argument supplies the information the term test cannot. Therefore the answer is It is inconclusive.. Therefore the answer is It is inconclusive.. Therefore the answer is It is inconclusive..
+
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+
+      Why the other choices fail: It proves convergence. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It proves divergence. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It gives the exact sum. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.'
+- id: we-series-fundamentals-3
+  title: A telescoping formula can reveal divergence
+  problem: |
+    Determine the behavior of
+    $$\sum_{n=1}^{\infty}\left(\sqrt{n+1}-\sqrt n\right).$$
+  steps:
+  - id: step-series-fundamentals-3-1
+    title: Check the individual term
+    instruction: |
+      Rationalizing gives
+      $$\sqrt{n+1}-\sqrt n
+      =\frac1{\sqrt{n+1}+\sqrt n}\longrightarrow0.$$
+      The necessary term condition is satisfied.
+    type: multipleChoice
+    prompt: What conclusion follows from the zero term limit alone?
+    choices:
+    - id: a
+      text: No convergence conclusion follows.
+    - id: b
+      text: The series converges.
+    - id: c
+      text: The series converges absolutely.
+    - id: d
+      text: The series sums to zero.
+    answer:
+      choiceId: a
+    explanation: 'Solution: A zero term limit only prevents immediate rejection by the divergence test. Therefore the answer is No convergence conclusion follows.. Therefore the answer is No convergence conclusion follows.. Therefore the answer is No convergence conclusion follows..
+
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+
+      Why the other choices fail: The series converges. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The series converges absolutely. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The series sums to zero. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.'
+  - id: step-series-fundamentals-3-2
+    title: Form the finite partial sum
+    instruction: |
+      Before taking a limit, write
+      $$S_N=(\sqrt2-1)+(\sqrt3-\sqrt2)+\cdots+
+      (\sqrt{N+1}-\sqrt N).$$
+    type: multipleChoice
+    prompt: Which terms cancel?
+    choices:
+    - id: a
+      text: |-
+        Every radical from $\sqrt2$ through $\sqrt N$
+    - id: b
+      text: Only the integer terms
+    - id: c
+      text: The first and last radicals
+    - id: d
+      text: No terms cancel
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Each interior radical appears once positively and once negatively. Therefore the answer is Every radical from $\sqrt2$ through $\sqrt N$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: Only the integer terms conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The first and last radicals conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; No terms cancel conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-3-3
+    title: Identify the boundary growth
+    instruction: |
+      Cancellation leaves
+      $$S_N=\sqrt{N+1}-1.$$
+      This boundary term grows without bound as $N\to\infty$.
+    type: multipleChoice
+    prompt: What is the series classification?
+    choices:
+    - id: a
+      text: |-
+        Divergent to $+\infty$
+    - id: b
+      text: Convergent to $1$
+    - id: c
+      text: Conditionally convergent
+    - id: d
+      text: Oscillatory divergent
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Series convergence is determined by the partial-sum limit, which is infinite here. Therefore the answer is Divergent to $+\infty$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: Convergent to $1$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Conditionally convergent conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Oscillatory divergent conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-series-fundamentals-3-4
+    title: State the general lesson
+    instruction: 'Telescoping is an algebraic simplification, not a convergence verdict.
+
+      The surviving boundary must still approach a finite number.
+
+      '
+    type: multipleChoice
+    prompt: Which final check is always required after telescoping?
+    choices:
+    - id: a
+      text: Take the limit of the surviving partial-sum boundary terms.
+    - id: b
+      text: Apply the ratio test to the canceled terms.
+    - id: c
+      text: Assume the last term is zero.
+    - id: d
+      text: Count the number of cancellations.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Cancellation produces a formula for $S_N$; only its limit decides convergence. Therefore the answer is Take the limit of the surviving partial-sum boundary terms.. Therefore the answer is Take the limit of the surviving partial-sum boundary terms.. Therefore the answer is Take the limit of the surviving partial-sum boundary terms..
+
+      Why it works: Rewrite the general term so consecutive partial-sum terms cancel. Write $S_N$ explicitly, cancel only terms that occur with opposite signs, and then take $N\to\infty$ to obtain the infinite-series result.
+
+      Common trap: Do not cancel nonadjacent terms by inspection without writing $S_N$; the surviving last term usually depends on $N$ and must be sent to its limit.
+
+      Why the other choices fail: Apply the ratio test to the canceled terms. conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel; Assume the last term is zero. conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel; Count the number of cancellations. conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel.

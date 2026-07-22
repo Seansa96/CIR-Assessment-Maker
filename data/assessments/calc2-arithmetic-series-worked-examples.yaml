@@ -5,210 +5,387 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: arithmetic-series
 skills:
-  - Compute finite arithmetic sums
-  - Recover arithmetic-sequence parameters from constraints
-  - Determine when an infinite arithmetic series can converge
+- Compute finite arithmetic sums
+- Recover arithmetic-sequence parameters from constraints
+- Determine when an infinite arithmetic series can converge
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-    - calculus-2
-    - arithmetic-series
-    - finite-sums
-    - divergence-test
+  - calculus-2
+  - arithmetic-series
+  - finite-sums
+  - divergence-test
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we-arithmetic-series-1
-    title: Sum a finite arithmetic progression
-    problem: |
-      Find the sum of the first $40$ terms of
-      $$5+8+11+14+\cdots.$$
-    steps:
-      - id: step-arithmetic-series-1-1
-        title: Identify the sequence parameters
-        instruction: |
-          The first term is $a_1=5$ and consecutive terms differ by
-          $d=3$. Arithmetic structure means this difference is constant.
-        type: multipleChoice
-        prompt: Which pair is correct?
-        choices:
-          - { id: a, text: '$a_1=5,\ d=3$' }
-          - { id: b, text: '$a_1=3,\ d=5$' }
-          - { id: c, text: '$a_1=5,\ d=8$' }
-          - { id: d, text: '$a_1=8,\ d=3$' }
-        answer: { choiceId: a }
-        explanation: Subtracting adjacent terms gives the common difference $8-5=3$.
-      - id: step-arithmetic-series-1-2
-        title: Find the final included term
-        instruction: |
-          The $n$th term is $a_n=a_1+(n-1)d$. Therefore
-          $$a_{40}=5+39(3)=122.$$
-        type: multipleChoice
-        prompt: Why is the multiplier $39$ rather than $40$?
-        choices:
-          - { id: a, text: 'There are $39$ increments from the first term to the fortieth.' }
-          - { id: b, text: 'The first term is not included.' }
-          - { id: c, text: 'The common difference begins at zero.' }
-          - { id: d, text: 'Arithmetic sequences use $n-2$.' }
-        answer: { choiceId: a }
-        explanation: Term one occurs before any common-difference step has been taken.
-      - id: step-arithmetic-series-1-3
-        title: Apply the finite-sum formula
-        instruction: |
-          Pairing the first and last terms gives
-          $$S_{40}=\frac{40}{2}(a_1+a_{40})
-          =20(5+122).$$
-        type: multipleChoice
-        prompt: What is the value of this product?
-        choices:
-          - { id: a, text: '$1270$' }
-          - { id: b, text: '$2540$' }
-          - { id: c, text: '$4880$' }
-          - { id: d, text: '$5080$' }
-        answer: { choiceId: b }
-        explanation: $20\cdot127=2540$.
-      - id: step-arithmetic-series-1-4
-        title: Verify by average value
-        instruction: |
-          The average of the evenly spaced endpoints is
-          $(5+122)/2=63.5$. Multiplying by $40$ terms again gives $2540$.
-        type: multipleChoice
-        prompt: Why does the endpoint average equal the mean of all terms?
-        choices:
-          - { id: a, text: 'Terms pair symmetrically to the same endpoint sum.' }
-          - { id: b, text: 'Every term equals the midpoint.' }
-          - { id: c, text: 'The common difference is positive.' }
-          - { id: d, text: 'There are an even number of terms.' }
-        answer: { choiceId: a }
-        explanation: First-plus-last, second-plus-next-to-last, and so on all equal $a_1+a_n$; the reasoning also works for odd counts.
+- id: we-arithmetic-series-1
+  title: Sum a finite arithmetic progression
+  problem: |
+    Find the sum of the first $40$ terms of
+    $$5+8+11+14+\cdots.$$
+  steps:
+  - id: step-arithmetic-series-1-1
+    title: Identify the sequence parameters
+    instruction: 'The first term is $a_1=5$ and consecutive terms differ by
 
-  - id: we-arithmetic-series-2
-    title: Recover the number of terms from a target sum
-    problem: |
-      How many terms of
-      $$7+11+15+\cdots$$
-      are needed for the sum to equal $525$?
-    steps:
-      - id: step-arithmetic-series-2-1
-        title: Write the relevant formulas
-        instruction: |
-          Here $a_1=7$ and $d=4$, so
-          $$a_n=7+4(n-1)=4n+3.$$
-        type: multipleChoice
-        prompt: Which expression is the last included term?
-        choices:
-          - { id: a, text: '$4n+3$' }
-          - { id: b, text: '$7n+4$' }
-          - { id: c, text: '$4n+7$' }
-          - { id: d, text: '$11n$' }
-        answer: { choiceId: a }
-        explanation: The first term accounts for the offset after $n-1$ differences of four.
-      - id: step-arithmetic-series-2-2
-        title: Translate the sum condition
-        instruction: |
-          Substitute the endpoint into the finite-sum formula:
-          $$525=\frac n2[7+(4n+3)]=\frac n2(4n+10).$$
-        type: multipleChoice
-        prompt: Which equation results after multiplying by $2$?
-        choices:
-          - { id: a, text: '$4n^2+10n=1050$' }
-          - { id: b, text: '$4n+10=1050$' }
-          - { id: c, text: '$2n^2+5=525$' }
-          - { id: d, text: '$4n^2+3n=525$' }
-        answer: { choiceId: a }
-        explanation: Distributing $n$ produces the quadratic term because the endpoint itself depends on $n$.
-      - id: step-arithmetic-series-2-3
-        title: Solve the integer equation
-        instruction: |
-          Rearranging and dividing by two gives
-          $$2n^2+5n-525=0=(2n+35)(n-15).$$
-        type: multipleChoice
-        prompt: Which root is admissible?
-        choices:
-          - { id: a, text: '$n=15$' }
-          - { id: b, text: '$n=-35/2$' }
-          - { id: c, text: 'Both roots' }
-          - { id: d, text: 'Neither root' }
-        answer: { choiceId: a }
-        explanation: A number of included terms must be a positive integer.
-      - id: step-arithmetic-series-2-4
-        title: Check the original target
-        instruction: |
-          For $n=15$, the last term is $4(15)+3=63$, and
-          $$S_{15}=\frac{15}{2}(7+63)=\frac{15}{2}(70)=525.$$
-          This matches the target $525$, so the positive integer root is valid.
-        type: multipleChoice
-        prompt: What is the correct final conclusion after this verification?
-        choices:
-          - { id: a, text: 'No positive integer number of terms has sum $525$.' }
-          - { id: b, text: '$15$ terms are required.' }
-          - { id: c, text: '$14$ terms are required.' }
-          - { id: d, text: 'The sequence is geometric.' }
-        answer: { choiceId: b }
-        explanation: Direct substitution confirms both the algebra and the admissible root.
+      $d=3$. Arithmetic structure means this difference is constant.
 
-  - id: we-arithmetic-series-3
-    title: Decide whether an infinite arithmetic series can converge
-    problem: |
-      For real $a$ and $d$, classify the infinite series
-      $$\sum_{n=1}^{\infty}[a+(n-1)d].$$
-      Determine exactly when it converges.
-    steps:
-      - id: step-arithmetic-series-3-1
-        title: Apply the necessary term condition
-        instruction: |
-          Every convergent series must have terms tending to zero. Here the term
-          sequence is $a_n=a+(n-1)d$.
-        type: multipleChoice
-        prompt: What happens when $d\ne0$?
-        choices:
-          - { id: a, text: '$a_n$ is unbounded in magnitude and cannot approach zero.' }
-          - { id: b, text: '$a_n$ always approaches zero.' }
-          - { id: c, text: 'The series becomes geometric.' }
-          - { id: d, text: 'The terms alternate with shrinking magnitude.' }
-        answer: { choiceId: a }
-        explanation: A nonzero constant difference makes the linear term grow toward one of the infinities.
-      - id: step-arithmetic-series-3-2
-        title: Handle zero common difference
-        instruction: |
-          If $d=0$, every term equals $a$. The necessary limit condition then
-          requires $a=0$.
-        type: multipleChoice
-        prompt: What if $d=0$ but $a=4$?
-        choices:
-          - { id: a, text: 'The series diverges because its terms approach $4$.' }
-          - { id: b, text: 'The series converges to $4$.' }
-          - { id: c, text: 'The series converges to $0$.' }
-          - { id: d, text: 'The result depends on the starting index.' }
-        answer: { choiceId: a }
-        explanation: A constant nonzero term violates the zero-term requirement.
-      - id: step-arithmetic-series-3-3
-        title: Identify the only convergent case
-        instruction: |
-          When $a=0$ and $d=0$, every term is zero, every partial sum is zero,
-          and the series converges to zero.
-        type: multipleChoice
-        prompt: For which parameters does the infinite arithmetic series converge?
-        choices:
-          - { id: a, text: '$a=0$ and $d=0$ only' }
-          - { id: b, text: '$|d|<1$' }
-          - { id: c, text: '$d<0$' }
-          - { id: d, text: 'Every $a$ when $d=0$' }
-        answer: { choiceId: a }
-        explanation: Unlike a geometric ratio, the size of a nonzero arithmetic difference never creates decay.
-      - id: step-arithmetic-series-3-4
-        title: Separate finite and infinite questions
-        instruction: |
-          Arithmetic-series formulas are primarily finite-sum tools. Extending
-          the number of terms to infinity does not create convergence unless the
-          sequence is identically zero.
-        type: multipleChoice
-        prompt: Why does a negative common difference not help?
-        choices:
-          - { id: a, text: 'Terms then tend to $-\infty$, not to zero.' }
-          - { id: b, text: 'Negative terms are forbidden in series.' }
-          - { id: c, text: 'It changes the series to a product.' }
-          - { id: d, text: 'It forces all partial sums to equal zero.' }
-        answer: { choiceId: a }
-        explanation: Direction of linear growth does not fix the required term limit.
+      '
+    type: multipleChoice
+    prompt: Which pair is correct?
+    choices:
+    - id: a
+      text: |-
+        $a_1=5,\ d=3$
+    - id: b
+      text: |-
+        $a_1=3,\ d=5$
+    - id: c
+      text: |-
+        $a_1=5,\ d=8$
+    - id: d
+      text: |-
+        $a_1=8,\ d=3$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Subtracting adjacent terms gives the common difference $8-5=3$. Therefore the answer is $a_1=5,\ d=3$.
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+      Why the other choices fail: $a_1=3,\ d=5$ conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; $a_1=5,\ d=8$ conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; $a_1=8,\ d=3$ conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.
+  - id: step-arithmetic-series-1-2
+    title: Find the final included term
+    instruction: 'The $n$th term is $a_n=a_1+(n-1)d$. Therefore
+
+      $$a_{40}=5+39(3)=122.$$
+
+      '
+    type: multipleChoice
+    prompt: Why is the multiplier $39$ rather than $40$?
+    choices:
+    - id: a
+      text: There are $39$ increments from the first term to the fortieth.
+    - id: b
+      text: The first term is not included.
+    - id: c
+      text: The common difference begins at zero.
+    - id: d
+      text: Arithmetic sequences use $n-2$.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Term one occurs before any common-difference step has been taken. Therefore the answer is There are $39$ increments from the first term to the fortieth.. Therefore the answer is There are $39$ increments from the first term to the fortieth.. Therefore the answer is There are $39$ increments from the first term to the fortieth..
+
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+
+      Why the other choices fail: The first term is not included. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; The common difference begins at zero. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; Arithmetic sequences use $n-2$. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.'
+  - id: step-arithmetic-series-1-3
+    title: Apply the finite-sum formula
+    instruction: |
+      Pairing the first and last terms gives
+      $$S_{40}=\frac{40}{2}(a_1+a_{40})
+      =20(5+122).$$
+    type: multipleChoice
+    prompt: What is the value of this product?
+    choices:
+    - id: a
+      text: $1270$
+    - id: b
+      text: $2540$
+    - id: c
+      text: $4880$
+    - id: d
+      text: $5080$
+    answer:
+      choiceId: b
+    explanation: |-
+      Solution: $20\cdot127=2540$. Therefore the answer is $2540$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $1270$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $4880$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $5080$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-arithmetic-series-1-4
+    title: Verify by average value
+    instruction: 'The average of the evenly spaced endpoints is
+
+      $(5+122)/2=63.5$. Multiplying by $40$ terms again gives $2540$.
+
+      '
+    type: multipleChoice
+    prompt: Why does the endpoint average equal the mean of all terms?
+    choices:
+    - id: a
+      text: Terms pair symmetrically to the same endpoint sum.
+    - id: b
+      text: Every term equals the midpoint.
+    - id: c
+      text: The common difference is positive.
+    - id: d
+      text: There are an even number of terms.
+    answer:
+      choiceId: a
+    explanation: 'Solution: First-plus-last, second-plus-next-to-last, and so on all equal $a_1+a_n$; the reasoning also works for odd counts. Therefore the answer is Terms pair symmetrically to the same endpoint sum.. Therefore the answer is Terms pair symmetrically to the same endpoint sum.. Therefore the answer is Terms pair symmetrically to the same endpoint sum..
+
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+
+      Why the other choices fail: Every term equals the midpoint. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; The common difference is positive. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; There are an even number of terms. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.'
+- id: we-arithmetic-series-2
+  title: Recover the number of terms from a target sum
+  problem: |
+    How many terms of
+    $$7+11+15+\cdots$$
+    are needed for the sum to equal $525$?
+  steps:
+  - id: step-arithmetic-series-2-1
+    title: Write the relevant formulas
+    instruction: 'Here $a_1=7$ and $d=4$, so
+
+      $$a_n=7+4(n-1)=4n+3.$$
+
+      '
+    type: multipleChoice
+    prompt: Which expression is the last included term?
+    choices:
+    - id: a
+      text: $4n+3$
+    - id: b
+      text: $7n+4$
+    - id: c
+      text: $4n+7$
+    - id: d
+      text: $11n$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The first term accounts for the offset after $n-1$ differences of four. Therefore the answer is $4n+3$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $7n+4$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $4n+7$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $11n$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-arithmetic-series-2-2
+    title: Translate the sum condition
+    instruction: |
+      Substitute the endpoint into the finite-sum formula:
+      $$525=\frac n2[7+(4n+3)]=\frac n2(4n+10).$$
+    type: multipleChoice
+    prompt: Which equation results after multiplying by $2$?
+    choices:
+    - id: a
+      text: $4n^2+10n=1050$
+    - id: b
+      text: $4n+10=1050$
+    - id: c
+      text: $2n^2+5=525$
+    - id: d
+      text: $4n^2+3n=525$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Distributing $n$ produces the quadratic term because the endpoint itself depends on $n$. Therefore the answer is $4n^2+10n=1050$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $4n+10=1050$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $2n^2+5=525$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $4n^2+3n=525$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-arithmetic-series-2-3
+    title: Solve the integer equation
+    instruction: 'Rearranging and dividing by two gives
+
+      $$2n^2+5n-525=0=(2n+35)(n-15).$$
+
+      '
+    type: multipleChoice
+    prompt: Which root is admissible?
+    choices:
+    - id: a
+      text: $n=15$
+    - id: b
+      text: $n=-35/2$
+    - id: c
+      text: Both roots
+    - id: d
+      text: Neither root
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: A number of included terms must be a positive integer. Therefore the answer is $n=15$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $n=-35/2$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Both roots conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Neither root conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-arithmetic-series-2-4
+    title: Check the original target
+    instruction: |
+      For $n=15$, the last term is $4(15)+3=63$, and
+      $$S_{15}=\frac{15}{2}(7+63)=\frac{15}{2}(70)=525.$$
+      This matches the target $525$, so the positive integer root is valid.
+    type: multipleChoice
+    prompt: What is the correct final conclusion after this verification?
+    choices:
+    - id: a
+      text: No positive integer number of terms has sum $525$.
+    - id: b
+      text: $15$ terms are required.
+    - id: c
+      text: $14$ terms are required.
+    - id: d
+      text: The sequence is geometric.
+    answer:
+      choiceId: b
+    explanation: |-
+      Solution: Direct substitution confirms both the algebra and the admissible root. Therefore the answer is $15$ terms are required.. Therefore the answer is $15$ terms are required.. Therefore the answer is $15$ terms are required..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: No positive integer number of terms has sum $525$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $14$ terms are required. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The sequence is geometric. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+- id: we-arithmetic-series-3
+  title: Decide whether an infinite arithmetic series can converge
+  problem: |
+    For real $a$ and $d$, classify the infinite series
+    $$\sum_{n=1}^{\infty}[a+(n-1)d].$$
+    Determine exactly when it converges.
+  steps:
+  - id: step-arithmetic-series-3-1
+    title: Apply the necessary term condition
+    instruction: 'Every convergent series must have terms tending to zero. Here the term
+
+      sequence is $a_n=a+(n-1)d$.
+
+      '
+    type: multipleChoice
+    prompt: |-
+      What happens when $d\ne0$?
+    choices:
+    - id: a
+      text: $a_n$ is unbounded in magnitude and cannot approach zero.
+    - id: b
+      text: $a_n$ always approaches zero.
+    - id: c
+      text: The series becomes geometric.
+    - id: d
+      text: The terms alternate with shrinking magnitude.
+    answer:
+      choiceId: a
+    explanation: 'Solution: A nonzero constant difference makes the linear term grow toward one of the infinities. Therefore the answer is $a_n$ is unbounded in magnitude and cannot approach zero.. Therefore the answer is $a_n$ is unbounded in magnitude and cannot approach zero.. Therefore the answer is $a_n$ is unbounded in magnitude and cannot approach zero..
+
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+
+      Why the other choices fail: $a_n$ always approaches zero. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The series becomes geometric. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The terms alternate with shrinking magnitude. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.'
+  - id: step-arithmetic-series-3-2
+    title: Handle zero common difference
+    instruction: 'If $d=0$, every term equals $a$. The necessary limit condition then
+
+      requires $a=0$.
+
+      '
+    type: multipleChoice
+    prompt: What if $d=0$ but $a=4$?
+    choices:
+    - id: a
+      text: The series diverges because its terms approach $4$.
+    - id: b
+      text: The series converges to $4$.
+    - id: c
+      text: The series converges to $0$.
+    - id: d
+      text: The result depends on the starting index.
+    answer:
+      choiceId: a
+    explanation: 'Solution: A constant nonzero term violates the zero-term requirement. Therefore the answer is The series diverges because its terms approach $4$.. Therefore the answer is The series diverges because its terms approach $4$.. Therefore the answer is The series diverges because its terms approach $4$..
+
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+
+      Why the other choices fail: The series converges to $4$. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; The series converges to $0$. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; The result depends on the starting index. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.'
+  - id: step-arithmetic-series-3-3
+    title: Identify the only convergent case
+    instruction: 'When $a=0$ and $d=0$, every term is zero, every partial sum is zero,
+
+      and the series converges to zero.
+
+      '
+    type: multipleChoice
+    prompt: For which parameters does the infinite arithmetic series converge?
+    choices:
+    - id: a
+      text: $a=0$ and $d=0$ only
+    - id: b
+      text: $|d|<1$
+    - id: c
+      text: $d<0$
+    - id: d
+      text: Every $a$ when $d=0$
+    answer:
+      choiceId: a
+    explanation: 'Solution: Unlike a geometric ratio, the size of a nonzero arithmetic difference never creates decay. Therefore the answer is $a=0$ and $d=0$ only.
+
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+
+      Why the other choices fail: $|d|<1$ conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; $d<0$ conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; Every $a$ when $d=0$ conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.'
+  - id: step-arithmetic-series-3-4
+    title: Separate finite and infinite questions
+    instruction: 'Arithmetic-series formulas are primarily finite-sum tools. Extending
+
+      the number of terms to infinity does not create convergence unless the
+
+      sequence is identically zero.
+
+      '
+    type: multipleChoice
+    prompt: Why does a negative common difference not help?
+    choices:
+    - id: a
+      text: |-
+        Terms then tend to $-\infty$, not to zero.
+    - id: b
+      text: Negative terms are forbidden in series.
+    - id: c
+      text: It changes the series to a product.
+    - id: d
+      text: It forces all partial sums to equal zero.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Direction of linear growth does not fix the required term limit. Therefore the answer is Terms then tend to $-\infty$, not to zero.. Therefore the answer is Terms then tend to $-\infty$, not to zero.. Therefore the answer is Terms then tend to $-\infty$, not to zero..
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+      Why the other choices fail: Negative terms are forbidden in series. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; It changes the series to a product. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; It forces all partial sums to equal zero. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.

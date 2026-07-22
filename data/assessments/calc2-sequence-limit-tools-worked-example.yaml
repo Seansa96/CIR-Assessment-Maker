@@ -17,282 +17,361 @@ navigation:
   - convergence
 skills:
 - Apply calculus-2 concepts
-- Apply Sequence Fundamentals
-  - sequence-fundamentals
-  - sequence-limits
-  - sequence-convergence
-  - limit-tools
+- Apply Sequence Fundamentals - sequence-fundamentals - sequence-limits - sequence-convergence - limit-tools
 workedExamples:
-  - id: sequence-limit-tool-tour
-    title: Choosing the Right Limit Tool for a Sequence
-    problem: |
-      ![Sequence term behavior examples](/media/calculus/infinite-series/sequence-limit-behaviors.svg)
+- id: sequence-limit-tool-tour
+  title: Choosing the Right Limit Tool for a Sequence
+  problem: '![Sequence term behavior examples](/media/calculus/infinite-series/sequence-limit-behaviors.svg)
 
-      Decide whether each sequence converges by choosing the limit tool that matches its structure. The goal is not to memorize one trick. The goal is to learn what the expression is asking you to notice.
-    steps:
-      - id: sequence-limit-tools-step-001
-        title: Start with dominant terms
-        instruction: |
-          Rational expressions are usually decided by the largest power of $n$.
 
-          $$
-          a_n=\frac{4n^3-7n}{2n^3+5}
-          $$
-        type: multipleChoice
-        prompt: What is the best conclusion?
-        choices:
-          - id: a
-            text: The sequence converges to $2$ by comparing dominant terms.
-          - id: b
-            text: The sequence diverges because both numerator and denominator grow.
-          - id: c
-            text: The sequence converges to $0$ by the Squeeze Theorem.
-          - id: d
-            text: The sequence diverges by oscillation.
-        answer:
-          choiceId: a
-        explanation: |
-          Divide by $n^3$. The lower-power terms vanish:
+    Decide whether each sequence converges by choosing the limit tool that matches its structure. The goal is not to memorize one trick. The goal is to learn what the expression is asking you to notice.
 
-          $$
-          \frac{4-7/n^2}{2+5/n^3}\to \frac42=2.
-          $$
+    '
+  steps:
+  - id: sequence-limit-tools-step-001
+    title: Start with dominant terms
+    instruction: |
+      Rational expressions are usually decided by the largest power of $n$.
 
-          Related topic: dominant-term limits for rational sequences.
-      - id: sequence-limit-tools-step-002
-        title: Use continuity after an inner limit
-        instruction: |
-          When a familiar function surrounds a simpler expression, first find the inner limit.
+      $$
+      a_n=\frac{4n^3-7n}{2n^3+5}
+      $$
+    type: multipleChoice
+    prompt: What is the best conclusion?
+    choices:
+    - id: a
+      text: The sequence converges to $2$ by comparing dominant terms.
+    - id: b
+      text: The sequence diverges because both numerator and denominator grow.
+    - id: c
+      text: The sequence converges to $0$ by the Squeeze Theorem.
+    - id: d
+      text: The sequence diverges by oscillation.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Divide by $n^3$. The lower-power terms vanish:
 
-          $$
-          a_n=\cos\left(\frac{3}{n}\right)
-          $$
-        type: multipleChoice
-        prompt: Which reasoning is correct?
-        choices:
-          - id: a
-            text: Since $\frac3n\to 0$ and cosine is continuous, $a_n\to 1$.
-          - id: b
-            text: Since cosine oscillates, the sequence diverges.
-          - id: c
-            text: Since $\frac3n\to 0$, the sequence must converge to $0$.
-          - id: d
-            text: Since $n$ grows, the sequence diverges to infinity.
-        answer:
-          choiceId: a
-        explanation: |
-          Continuous functions preserve limits. Here $\cos(3/n)\to \cos(0)=1$.
-      - id: sequence-limit-tools-step-003
-        title: Squeeze bounded oscillation
-        instruction: |
-          Oscillation does not automatically mean divergence. If the oscillating part is multiplied by something shrinking to $0$, squeeze it.
+      $$
+      \frac{4-7/n^2}{2+5/n^3}\to \frac42=2.
+      $$
 
-          $$
-          a_n=\frac{\sin(5n)}{\sqrt n}
-          $$
-        type: multipleChoice
-        prompt: What should you do?
-        choices:
-          - id: a
-            text: Squeeze between $-\frac1{\sqrt n}$ and $\frac1{\sqrt n}$, so it converges to $0$.
-          - id: b
-            text: Declare divergence because $\sin(5n)$ oscillates.
-          - id: c
-            text: Compare leading powers and get $5$.
-          - id: d
-            text: Use monotone bounded convergence.
-        answer:
-          choiceId: a
-        explanation: |
-          Because $-1\le \sin(5n)\le 1$,
+      Related topic: dominant-term limits for rational sequences. Therefore the answer is The sequence converges to $2$ by comparing dominant terms.. Therefore the answer is The sequence converges to $2$ by comparing dominant terms.. Therefore the answer is The sequence converges to $2$ by comparing dominant terms..
 
-          $$
-          -\frac1{\sqrt n}\le \frac{\sin(5n)}{\sqrt n}\le \frac1{\sqrt n}.
-          $$
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-          Both bounds go to $0$.
-      - id: sequence-limit-tools-step-004
-        title: Detect real oscillation with subsequences
-        instruction: |
-          Oscillation becomes divergence when different subsequences approach different values.
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
 
-          $$
-          a_n=(-1)^n\frac{n+2}{n}
-          $$
-        type: multipleChoice
-        prompt: What happens?
-        choices:
-          - id: a
-            text: It diverges because even and odd subsequences approach $1$ and $-1$.
-          - id: b
-            text: It converges to $0$ because of $(-1)^n$.
-          - id: c
-            text: It converges to $1$ because $\frac{n+2}{n}\to 1$.
-          - id: d
-            text: It diverges to infinity.
-        answer:
-          choiceId: a
-        explanation: |
-          The magnitude approaches $1$, not $0$. The sign alternates, so the sequence keeps jumping between values near $1$ and $-1$.
-      - id: sequence-limit-tools-step-005
-        title: Rationalize an infinity-minus-infinity form
-        instruction: |
-          Differences of large square-root expressions often need a conjugate.
+      Why the other choices fail: The sequence diverges because both numerator and denominator grow. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The sequence converges to $0$ by the Squeeze Theorem. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The sequence diverges by oscillation. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: sequence-limit-tools-step-002
+    title: Use continuity after an inner limit
+    instruction: |
+      When a familiar function surrounds a simpler expression, first find the inner limit.
 
-          $$
-          a_n=\sqrt{n^2+6n}-n
-          $$
-        type: multipleChoice
-        prompt: Which transformation reveals the limit?
-        choices:
-          - id: a
-            text: '$\sqrt{n^2+6n}-n=\frac{6n}{\sqrt{n^2+6n}+n}\to 3$'
-          - id: b
-            text: '$\sqrt{n^2+6n}-n\to 0$ because the $n^2$ terms cancel'
-          - id: c
-            text: '$\sqrt{n^2+6n}-n\to\infty$ because both pieces grow'
-          - id: d
-            text: '$\sqrt{n^2+6n}-n$ diverges by oscillation'
-        answer:
-          choiceId: a
-        explanation: |
-          The conjugate turns the expression into a ratio:
+      $$
+      a_n=\cos\left(\frac{3}{n}\right)
+      $$
+    type: multipleChoice
+    prompt: Which reasoning is correct?
+    choices:
+    - id: a
+      text: |-
+        Since $\frac3n\to 0$ and cosine is continuous, $a_n\to 1$.
+    - id: b
+      text: Since cosine oscillates, the sequence diverges.
+    - id: c
+      text: |-
+        Since $\frac3n\to 0$, the sequence must converge to $0$.
+    - id: d
+      text: Since $n$ grows, the sequence diverges to infinity.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Continuous functions preserve limits. Here $\cos(3/n)\to \cos(0)=1$. Therefore the answer is Since $\frac3n\to 0$ and cosine is continuous, $a_n\to 1$.. Therefore the answer is Since $\frac3n\to 0$ and cosine is continuous, $a_n\to 1$.. Therefore the answer is Since $\frac3n\to 0$ and cosine is continuous, $a_n\to 1$..
 
-          $$
-          \frac{6n}{\sqrt{n^2+6n}+n}
-          =
-          \frac{6}{\sqrt{1+6/n}+1}\to 3.
-          $$
-      - id: sequence-limit-tools-step-006
-        title: Recognize the exponential limit
-        instruction: |
-          Expressions like $\left(1+\frac{c}{n}\right)^n$ are neither polynomial nor geometric in the ordinary sense.
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
 
-          $$
-          a_n=\left(1+\frac{5}{n}\right)^n
-          $$
-        type: multipleChoice
-        prompt: What is the limit?
-        choices:
-          - id: a
-            text: '$e^5$'
-          - id: b
-            text: '$5$'
-          - id: c
-            text: '$0$'
-          - id: d
-            text: The sequence diverges.
-        answer:
-          choiceId: a
-        explanation: |
-          The standard limit is:
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
 
-          $$
-          \left(1+\frac{c}{n}\right)^n\to e^c.
-          $$
+      Why the other choices fail: Since cosine oscillates, the sequence diverges. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; Since $\frac3n\to 0$, the sequence must converge to $0$. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; Since $n$ grows, the sequence diverges to infinity. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: sequence-limit-tools-step-003
+    title: Squeeze bounded oscillation
+    instruction: |
+      Oscillation does not automatically mean divergence. If the oscillating part is multiplied by something shrinking to $0$, squeeze it.
 
-          Here $c=5$.
-      - id: sequence-limit-tools-step-007
-        title: Use logarithms for nth roots
-        instruction: |
-          Nth roots are often easier after taking a logarithm.
+      $$
+      a_n=\frac{\sin(5n)}{\sqrt n}
+      $$
+    type: multipleChoice
+    prompt: What should you do?
+    choices:
+    - id: a
+      text: |-
+        Squeeze between $-\frac1{\sqrt n}$ and $\frac1{\sqrt n}$, so it converges to $0$.
+    - id: b
+      text: |-
+        Declare divergence because $\sin(5n)$ oscillates.
+    - id: c
+      text: Compare leading powers and get $5$.
+    - id: d
+      text: Use monotone bounded convergence.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Because $-1\le \sin(5n)\le 1$,
 
-          $$
-          a_n=n^{1/n}
-          $$
-        type: multipleChoice
-        prompt: Which reasoning is correct?
-        choices:
-          - id: a
-            text: 'Take logs: $\ln(a_n)=\frac{\ln n}{n}\to 0$, so $a_n\to 1$.'
-          - id: b
-            text: Since $n$ grows, $n^{1/n}\to\infty$.
-          - id: c
-            text: Since the exponent goes to $0$, $n^{1/n}\to 0$.
-          - id: d
-            text: The sequence diverges by oscillation.
-        answer:
-          choiceId: a
-        explanation: |
-          The exponent tends to $0$, but the base tends to infinity, so this is not direct substitution. Logs make the competition visible.
-      - id: sequence-limit-tools-step-008
-        title: Compare growth rates
-        instruction: |
-          Some limits are best recognized by knowing the growth hierarchy:
+      $$
+      -\frac1{\sqrt n}\le \frac{\sin(5n)}{\sqrt n}\le \frac1{\sqrt n}.
+      $$
 
-          $$
-          \ln n \ll n^p \ll b^n \ll n!
-          $$
+      Both bounds go to $0$. Therefore the answer is Squeeze between $-\frac1{\sqrt n}$ and $\frac1{\sqrt n}$, so it converges to $0$.. Therefore the answer is Squeeze between $-\frac1{\sqrt n}$ and $\frac1{\sqrt n}$, so it converges to $0$.. Therefore the answer is Squeeze between $-\frac1{\sqrt n}$ and $\frac1{\sqrt n}$, so it converges to $0$..
 
-          for $p>0$ and $b>1$.
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
 
-          $$
-          a_n=\frac{n^4}{2^n}
-          $$
-        type: multipleChoice
-        prompt: What happens?
-        choices:
-          - id: a
-            text: It converges to $0$ because exponentials beat polynomials.
-          - id: b
-            text: It diverges because $n^4$ grows.
-          - id: c
-            text: It converges to $4$.
-          - id: d
-            text: It diverges by oscillation.
-        answer:
-          choiceId: a
-        explanation: |
-          The denominator grows exponentially while the numerator grows polynomially. The ratio goes to $0$.
-      - id: sequence-limit-tools-step-009
-        title: Use monotone bounded convergence
-        instruction: |
-          Some recursively defined sequences do not give their limit immediately. You first prove the sequence is trapped and moving one direction.
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
 
-          $$
-          a_1=1,\qquad a_{n+1}=\frac{a_n+8}{3}
-          $$
-        type: multipleChoice
-        prompt: If the sequence is shown increasing and bounded above, what limit does it approach?
-        choices:
-          - id: a
-            text: '$4$'
-          - id: b
-            text: '$8$'
-          - id: c
-            text: '$\frac83$'
-          - id: d
-            text: It must diverge.
-        answer:
-          choiceId: a
-        explanation: |
-          If $a_n\to L$, then
+      Why the other choices fail: Declare divergence because $\sin(5n)$ oscillates. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; Compare leading powers and get $5$. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; Use monotone bounded convergence. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.
+  - id: sequence-limit-tools-step-004
+    title: Detect real oscillation with subsequences
+    instruction: |
+      Oscillation becomes divergence when different subsequences approach different values.
 
-          $$
-          L=\frac{L+8}{3}.
-          $$
+      $$
+      a_n=(-1)^n\frac{n+2}{n}
+      $$
+    type: multipleChoice
+    prompt: What happens?
+    choices:
+    - id: a
+      text: It diverges because even and odd subsequences approach $1$ and $-1$.
+    - id: b
+      text: It converges to $0$ because of $(-1)^n$.
+    - id: c
+      text: |-
+        It converges to $1$ because $\frac{n+2}{n}\to 1$.
+    - id: d
+      text: It diverges to infinity.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The magnitude approaches $1$, not $0$. The sign alternates, so the sequence keeps jumping between values near $1$ and $-1$. Therefore the answer is It diverges because even and odd subsequences approach $1$ and $-1$.. Therefore the answer is It diverges because even and odd subsequences approach $1$ and $-1$.. Therefore the answer is It diverges because even and odd subsequences approach $1$ and $-1$..
 
-          Solving gives $3L=L+8$, so $L=4$. The monotone-bounded proof justifies that the limit exists.
-      - id: sequence-limit-tools-step-010
-        title: Interpret a long finite sum as a Riemann sum
-        instruction: |
-          A sequence can itself be a sum whose number of terms changes with $n$.
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
 
-          $$
-          a_n=\frac1n\sum_{k=1}^{n}\frac{1}{1+k/n}
-          $$
-        type: multipleChoice
-        prompt: What does this converge to?
-        choices:
-          - id: a
-            text: '$\int_0^1\frac{1}{1+x}\,dx=\ln 2$'
-          - id: b
-            text: '$0$, because each term has a factor $\frac1n$'
-          - id: c
-            text: '$1$, because there are $n$ terms'
-          - id: d
-            text: The sequence diverges.
-        answer:
-          choiceId: a
-        explanation: |
-          This is a right-endpoint Riemann sum for $f(x)=\frac1{1+x}$ on $[0,1]$. The limit is $\ln 2$.
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: It converges to $0$ because of $(-1)^n$. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It converges to $1$ because $\frac{n+2}{n}\to 1$. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It diverges to infinity. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: sequence-limit-tools-step-005
+    title: Rationalize an infinity-minus-infinity form
+    instruction: |
+      Differences of large square-root expressions often need a conjugate.
+
+      $$
+      a_n=\sqrt{n^2+6n}-n
+      $$
+    type: multipleChoice
+    prompt: Which transformation reveals the limit?
+    choices:
+    - id: a
+      text: |-
+        $\sqrt{n^2+6n}-n=\frac{6n}{\sqrt{n^2+6n}+n}\to 3$
+    - id: b
+      text: |-
+        $\sqrt{n^2+6n}-n\to 0$ because the $n^2$ terms cancel
+    - id: c
+      text: |-
+        $\sqrt{n^2+6n}-n\to\infty$ because both pieces grow
+    - id: d
+      text: |-
+        $\sqrt{n^2+6n}-n$ diverges by oscillation
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The conjugate turns the expression into a ratio:
+
+      $$
+      \frac{6n}{\sqrt{n^2+6n}+n}
+      =
+      \frac{6}{\sqrt{1+6/n}+1}\to 3.
+      $$ Therefore the answer is $\sqrt{n^2+6n}-n=\frac{6n}{\sqrt{n^2+6n}+n}\to 3$.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: $\sqrt{n^2+6n}-n\to 0$ because the $n^2$ terms cancel conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $\sqrt{n^2+6n}-n\to\infty$ because both pieces grow conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $\sqrt{n^2+6n}-n$ diverges by oscillation conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: sequence-limit-tools-step-006
+    title: Recognize the exponential limit
+    instruction: |
+      Expressions like $\left(1+\frac{c}{n}\right)^n$ are neither polynomial nor geometric in the ordinary sense.
+
+      $$
+      a_n=\left(1+\frac{5}{n}\right)^n
+      $$
+    type: multipleChoice
+    prompt: What is the limit?
+    choices:
+    - id: a
+      text: $e^5$
+    - id: b
+      text: $5$
+    - id: c
+      text: $0$
+    - id: d
+      text: The sequence diverges.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The standard limit is:
+
+      $$
+      \left(1+\frac{c}{n}\right)^n\to e^c.
+      $$
+
+      Here $c=5$. Therefore the answer is $e^5$.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: $5$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $0$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The sequence diverges. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: sequence-limit-tools-step-007
+    title: Use logarithms for nth roots
+    instruction: 'Nth roots are often easier after taking a logarithm.
+
+
+      $$
+
+      a_n=n^{1/n}
+
+      $$
+
+      '
+    type: multipleChoice
+    prompt: Which reasoning is correct?
+    choices:
+    - id: a
+      text: |-
+        Take logs: $\ln(a_n)=\frac{\ln n}{n}\to 0$, so $a_n\to 1$.
+    - id: b
+      text: |-
+        Since $n$ grows, $n^{1/n}\to\infty$.
+    - id: c
+      text: |-
+        Since the exponent goes to $0$, $n^{1/n}\to 0$.
+    - id: d
+      text: The sequence diverges by oscillation.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The exponent tends to $0$, but the base tends to infinity, so this is not direct substitution. Logs make the competition visible. Therefore the answer is Take logs: $\ln(a_n)=\frac{\ln n}{n}\to 0$, so $a_n\to 1$.. Therefore the answer is Take logs: $\ln(a_n)=\frac{\ln n}{n}\to 0$, so $a_n\to 1$.. Therefore the answer is Take logs: $\ln(a_n)=\frac{\ln n}{n}\to 0$, so $a_n\to 1$..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: Since $n$ grows, $n^{1/n}\to\infty$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Since the exponent goes to $0$, $n^{1/n}\to 0$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The sequence diverges by oscillation. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: sequence-limit-tools-step-008
+    title: Compare growth rates
+    instruction: |
+      Some limits are best recognized by knowing the growth hierarchy:
+
+      $$
+      \ln n \ll n^p \ll b^n \ll n!
+      $$
+
+      for $p>0$ and $b>1$.
+
+      $$
+      a_n=\frac{n^4}{2^n}
+      $$
+    type: multipleChoice
+    prompt: What happens?
+    choices:
+    - id: a
+      text: It converges to $0$ because exponentials beat polynomials.
+    - id: b
+      text: It diverges because $n^4$ grows.
+    - id: c
+      text: It converges to $4$.
+    - id: d
+      text: It diverges by oscillation.
+    answer:
+      choiceId: a
+    explanation: 'Solution: The denominator grows exponentially while the numerator grows polynomially. The ratio goes to $0$. Therefore the answer is It converges to $0$ because exponentials beat polynomials.. Therefore the answer is It converges to $0$ because exponentials beat polynomials.. Therefore the answer is It converges to $0$ because exponentials beat polynomials..
+
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+
+      Why the other choices fail: It diverges because $n^4$ grows. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It converges to $4$. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It diverges by oscillation. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.'
+  - id: sequence-limit-tools-step-009
+    title: Use monotone bounded convergence
+    instruction: |
+      Some recursively defined sequences do not give their limit immediately. You first prove the sequence is trapped and moving one direction.
+
+      $$
+      a_1=1,\qquad a_{n+1}=\frac{a_n+8}{3}
+      $$
+    type: multipleChoice
+    prompt: If the sequence is shown increasing and bounded above, what limit does it approach?
+    choices:
+    - id: a
+      text: $4$
+    - id: b
+      text: $8$
+    - id: c
+      text: |-
+        $\frac83$
+    - id: d
+      text: It must diverge.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: If $a_n\to L$, then
+
+      $$
+      L=\frac{L+8}{3}.
+      $$
+
+      Solving gives $3L=L+8$, so $L=4$. The monotone-bounded proof justifies that the limit exists. Therefore the answer is $4$.
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+      Why the other choices fail: $8$ conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; $\frac83$ conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; It must diverge. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.
+  - id: sequence-limit-tools-step-010
+    title: Interpret a long finite sum as a Riemann sum
+    instruction: |
+      A sequence can itself be a sum whose number of terms changes with $n$.
+
+      $$
+      a_n=\frac1n\sum_{k=1}^{n}\frac{1}{1+k/n}
+      $$
+    type: multipleChoice
+    prompt: What does this converge to?
+    choices:
+    - id: a
+      text: |-
+        $\int_0^1\frac{1}{1+x}\,dx=\ln 2$
+    - id: b
+      text: |-
+        $0$, because each term has a factor $\frac1n$
+    - id: c
+      text: $1$, because there are $n$ terms
+    - id: d
+      text: The sequence diverges.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: This is a right-endpoint Riemann sum for $f(x)=\frac1{1+x}$ on $[0,1]$. The limit is $\ln 2$. Therefore the answer is $\int_0^1\frac{1}{1+x}\,dx=\ln 2$.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: $0$, because each term has a factor $\frac1n$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $1$, because there are $n$ terms conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The sequence diverges. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.

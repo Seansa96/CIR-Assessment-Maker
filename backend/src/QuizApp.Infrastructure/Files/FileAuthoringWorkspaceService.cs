@@ -157,6 +157,8 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
     {
         RequireStableId(blueprint.Id); ValidateSourceFree(blueprint.SourceChunkIds, blueprint.CategoryId, blueprint.TopicId, blueprint.ObjectiveId);
         if (blueprint.GoverningPrinciples.Count == 0 || blueprint.MethodSteps.Count < 2 || blueprint.VariationAxes.Count < 2) throw new InvalidOperationException("Blueprints need principles, at least two method steps, and two meaningful variation axes.");
+        if (blueprint.ExplanationOutline.Count < 2) throw new InvalidOperationException("Blueprints need an explanation outline with Solution and Why it works components.");
+        if (blueprint.QuestionType is "multipleChoice" or "selectAll" && blueprint.DistractorRationale.Count == 0) throw new InvalidOperationException("Multiple-choice blueprints need distractor rationale.");
         var tier = ParseDifficultyTier(blueprint.Difficulty);
         var minimum = AssessmentAuthoringContractAudit.MinimumDifficultyDimensions(tier);
         if (minimum > 0)
@@ -167,6 +169,7 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
             if (string.IsNullOrWhiteSpace(blueprint.DifficultyEvidence)) throw new InvalidOperationException("Blueprints need difficulty evidence for every declared difficulty dimension.");
             if (tier is AssessmentDifficultyTier.Hard && blueprint.PrerequisiteObjectiveIds.Count == 0 && blueprint.ExtensionObjectiveIds.Count == 0) throw new InvalidOperationException("Hard blueprints need a prerequisite or extension objective.");
             if (tier is AssessmentDifficultyTier.Olympiad && blueprint.ExtensionObjectiveIds.Count == 0) throw new InvalidOperationException("Olympiad blueprints need an extension objective.");
+            if (tier is AssessmentDifficultyTier.Olympiad && (blueprint.OlympiadPrerequisites.Count == 0 || blueprint.FurtherStudy.Count == 0)) throw new InvalidOperationException("Olympiad blueprints need prerequisite and further-study guidance.");
         }
         if (blueprint.RequiresDiagram && blueprint.QuestionType is not ("numericResponse" or "symbolicResponse" or "multipleChoice" or "selectAll")) throw new InvalidOperationException("Diagram-backed blueprints must use a supported graded question type.");
         await ValidateSourceReferencesAsync(blueprint.SourceChunkIds, cancellationToken);
@@ -198,9 +201,9 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
             ? new[] { "minimum seven active concept-lesson sections", "contextual original visual aids", "worked examples use symbolic/free response primarily", "easy and hard quizzes use ten attempt items; tests use twenty" }
             : new[] { "minimum seven active concept-lesson sections", "code or interface evidence when relevant", "worked examples use free response/code primarily", "easy and hard quizzes use ten attempt items; tests use twenty" };
         var minimumDifficultyDimensions = AssessmentAuthoringContractAudit.MinimumDifficultyDimensions(targetDifficultyTier);
-        var tierRequirements = minimumDifficultyDimensions == 0 ? Array.Empty<string>() : new[] { $"every scored item must declare at least {minimumDifficultyDimensions} distinct difficulty dimensions", targetDifficultyTier is AssessmentDifficultyTier.Hard ? "each item names a prerequisite or extension objective" : targetDifficultyTier is AssessmentDifficultyTier.Olympiad ? "each item names an extension objective" : "difficulty evidence must explain each dimension" };
+        var tierRequirements = minimumDifficultyDimensions == 0 ? Array.Empty<string>() : new[] { $"every scored item must declare at least {minimumDifficultyDimensions} distinct difficulty dimensions", "every explanation includes Solution and Why it works", targetDifficultyTier is AssessmentDifficultyTier.Hard ? "each item names a prerequisite or extension objective" : targetDifficultyTier is AssessmentDifficultyTier.Olympiad ? "each item names an extension objective, prerequisites, and further-study guidance" : "difficulty evidence must explain each dimension" };
         return new AuthoringPacket(1, $"packet-{Guid.NewGuid():N}", categoryId, topicId, objectiveIds, sources, chunks,
-            ["original source-grounded prose", "visual brief for each lesson/worked example", "complete answer and solution data", "question blueprints rather than parameter substitutions"],
+            ["original source-grounded prose", "visual brief for each lesson/worked example", "complete answer and structured Solution/Why it works data", "multiple-choice distractor feedback", "question blueprints rather than parameter substitutions"],
             "Return JSON with contentManifests and questionBlueprints. Each artifact must cite sourceChunkIds and begin in needsReview state. Do not quote source text verbatim except short mathematical notation.")
         { AuthoringProfile = profile, ContractRequirements = requirements.Concat(tierRequirements).ToList(), TargetDifficultyTier = targetDifficultyTier, MinimumDifficultyDimensions = minimumDifficultyDimensions, RequiresTransferObjective = targetDifficultyTier is AssessmentDifficultyTier.Hard or AssessmentDifficultyTier.Olympiad, AllowedSubjectDifficultyTags = profile == "stem" ? ["methodBranch", "representation", "model", "constraint", "prerequisiteTransfer"] : Array.Empty<string>() };
     }

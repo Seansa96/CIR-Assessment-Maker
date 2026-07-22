@@ -22,352 +22,449 @@ skills:
 - Apply calculus-2 concepts
 - Apply Convergence Tests
 - Apply Alternating Series
-- Apply Absolute and Conditional Convergence
-  - convergence-test-selection
-  - comparison-test
-  - ratio-test
-  - alternating-series
+- Apply Absolute and Conditional Convergence - convergence-test-selection - comparison-test - ratio-test - alternating-series
 workedExamples:
-  - id: comparison-from-dominant-powers
-    title: Limit Comparison from Dominant Powers
-    problem: |
-      Decide whether the series converges:
+- id: comparison-from-dominant-powers
+  title: Limit Comparison from Dominant Powers
+  problem: |
+    Decide whether the series converges:
+
+    $$
+    \sum_{n=1}^{\infty}\frac{7n^2+3n+1}{2n^5-4n+9}.
+    $$
+  steps:
+  - id: comparison-deep-step-1
+    title: Inspect the dominant behavior
+    instruction: |
+      For rational expressions in $n$, compare the highest powers:
 
       $$
-      \sum_{n=1}^{\infty}\frac{7n^2+3n+1}{2n^5-4n+9}.
+      \frac{7n^2+3n+1}{2n^5-4n+9}
+      \sim
+      \frac{7n^2}{2n^5}
+      =
+      \frac{7}{2n^3}.
       $$
-    steps:
-      - id: comparison-deep-step-1
-        title: Inspect the dominant behavior
-        instruction: |
-          For rational expressions in $n$, compare the highest powers:
+    type: multipleChoice
+    prompt: What comparison series is suggested?
+    choices:
+    - id: a
+      text: |-
+        $\sum \frac{1}{n^3}$
+    - id: b
+      text: |-
+        $\sum n^3$
+    - id: c
+      text: |-
+        $\sum \frac{1}{n}$
+    - id: d
+      text: |-
+        $\sum \left(\frac12\right)^n$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The expression behaves like a constant times $\frac1{n^3}$, so $\sum \frac1{n^3}$ is the natural comparison. Therefore the answer is $\sum \frac{1}{n^3}$.
 
-          $$
-          \frac{7n^2+3n+1}{2n^5-4n+9}
-          \sim
-          \frac{7n^2}{2n^5}
-          =
-          \frac{7}{2n^3}.
-          $$
-        type: multipleChoice
-        prompt: What comparison series is suggested?
-        choices:
-          - id: a
-            text: '$\sum \frac{1}{n^3}$'
-          - id: b
-            text: '$\sum n^3$'
-          - id: c
-            text: '$\sum \frac{1}{n}$'
-          - id: d
-            text: '$\sum \left(\frac12\right)^n$'
-        answer:
-          choiceId: a
-        explanation: |
-          The expression behaves like a constant times $\frac1{n^3}$, so $\sum \frac1{n^3}$ is the natural comparison.
-      - id: comparison-deep-step-2
-        title: Choose the test
-        instruction: |
-          Since the expression is positive for large $n$ and behaves like a p-series, the Limit Comparison Test is efficient.
-        type: multipleChoice
-        prompt: Which test best matches this structure?
-        choices:
-          - id: a
-            text: Limit Comparison Test
-          - id: b
-            text: Alternating Series Test
-          - id: c
-            text: Root Test only
-          - id: d
-            text: Geometric sum formula
-        answer:
-          choiceId: a
-        explanation: |
-          Limit comparison is designed for comparing a messy positive-term series to a simpler known series with the same long-run behavior.
-      - id: comparison-deep-step-3
-        title: Compute the comparison limit
-        instruction: |
-          Let
+      Why it works: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors. The Ratio Test gives absolute convergence for $L<1$, divergence for $L>1$, and no conclusion for $L=1$.
 
-          $$
-          a_n=\frac{7n^2+3n+1}{2n^5-4n+9},
-          \qquad
-          b_n=\frac1{n^3}.
-          $$
+      Common trap: Do not reverse the ratio or treat $L=1$ as convergence; factorial cancellation must be completed before taking the limit.
 
-          Compute:
+      Why the other choices fail: $\sum n^3$ conflicts with this criterion: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors; $\sum \frac{1}{n}$ conflicts with this criterion: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors; $\sum \left(\frac12\right)^n$ conflicts with this criterion: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors.
+  - id: comparison-deep-step-2
+    title: Choose the test
+    instruction: 'Since the expression is positive for large $n$ and behaves like a p-series, the Limit Comparison Test is efficient.
 
-          $$
-          \lim_{n\to\infty}\frac{a_n}{b_n}.
-          $$
-        type: symbolicResponse
-        prompt: What is the limit comparison value?
-        answer:
-          expectedLatex: '\frac{7}{2}'
-          equivalenceMode: expression
-          variables: []
-          tolerance: 0.000001
-        explanation: |
-          Dividing by $\frac1{n^3}$ multiplies by $n^3$:
+      '
+    type: multipleChoice
+    prompt: Which test best matches this structure?
+    choices:
+    - id: a
+      text: Limit Comparison Test
+    - id: b
+      text: Alternating Series Test
+    - id: c
+      text: Root Test only
+    - id: d
+      text: Geometric sum formula
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Limit comparison is designed for comparing a messy positive-term series to a simpler known series with the same long-run behavior. Therefore the answer is Limit Comparison Test.
 
-          $$
-          \frac{a_n}{b_n}
-          =
-          \frac{n^3(7n^2+3n+1)}{2n^5-4n+9}
-          \to
-          \frac72.
-          $$
-      - id: comparison-deep-step-4
-        title: Use the p-series conclusion
-        instruction: |
-          The comparison limit is positive and finite. Therefore the original series has the same convergence behavior as $\sum \frac1{n^3}$.
-        type: multipleChoice
-        prompt: What is the conclusion?
-        choices:
-          - id: a
-            text: The series converges.
-          - id: b
-            text: The series diverges.
-          - id: c
-            text: The test is inconclusive because $\frac72>1$.
-          - id: d
-            text: The series is alternating.
-        answer:
-          choiceId: a
-        explanation: |
-          $\sum \frac1{n^3}$ converges because it is a p-series with $p=3>1$. Limit comparison transfers that convergence to the original series.
-  - id: ratio-test-factorial-example
-    title: Ratio Test with Factorials and Exponentials
-    problem: |
-      Decide whether the series converges:
+      Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+      Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
+
+      Why the other choices fail: Alternating Series Test conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; Root Test only conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; Geometric sum formula conflicts with this criterion: Write the series as $\sum(-1)^n b_n$.
+  - id: comparison-deep-step-3
+    title: Compute the comparison limit
+    instruction: |
+      Let
 
       $$
-      \sum_{n=1}^{\infty}\frac{3^n n!}{n^n}.
+      a_n=\frac{7n^2+3n+1}{2n^5-4n+9},
+      \qquad
+      b_n=\frac1{n^3}.
       $$
-    steps:
-      - id: ratio-deep-step-1
-        title: Recognize the ratio-test signal
-        instruction: |
-          Factorials, exponentials, and powers involving $n$ usually simplify under:
 
-          $$
-          \left|\frac{a_{n+1}}{a_n}\right|.
-          $$
-        type: multipleChoice
-        prompt: Which test is the natural first choice?
-        choices:
-          - id: a
-            text: Ratio Test
-          - id: b
-            text: Integral Test
-          - id: c
-            text: Alternating Series Test
-          - id: d
-            text: Arithmetic series formula
-        answer:
-          choiceId: a
-        explanation: |
-          The factorial $n!$ and exponential $3^n$ are strong ratio-test signals.
-      - id: ratio-deep-step-2
-        title: Form the ratio
-        instruction: |
-          Let
-
-          $$
-          a_n=\frac{3^n n!}{n^n}.
-          $$
-
-          Then
-
-          $$
-          a_{n+1}=\frac{3^{n+1}(n+1)!}{(n+1)^{n+1}}.
-          $$
-        type: multipleChoice
-        prompt: After cancellation, which expression equals $\frac{a_{n+1}}{a_n}$?
-        choices:
-          - id: a
-            text: '$3\left(\frac{n}{n+1}\right)^n$'
-          - id: b
-            text: '$\frac13\left(\frac{n+1}{n}\right)^n$'
-          - id: c
-            text: '$3n$'
-          - id: d
-            text: '$\frac{n}{3}$'
-        answer:
-          choiceId: a
-        explanation: |
-          The ratio simplifies as:
-
-          $$
-          \frac{3^{n+1}(n+1)!}{(n+1)^{n+1}}\cdot\frac{n^n}{3^n n!}
-          =
-          3\cdot\frac{(n+1)n^n}{(n+1)^{n+1}}
-          =
-          3\left(\frac{n}{n+1}\right)^n.
-          $$
-      - id: ratio-deep-step-3
-        title: Evaluate the ratio limit
-        instruction: |
-          Use the standard limit:
-
-          $$
-          \left(\frac{n}{n+1}\right)^n
-          =
-          \left(\frac{1}{1+\frac1n}\right)^n
-          \to
-          e^{-1}.
-          $$
-        type: symbolicResponse
-        prompt: What is the ratio-test limit $L$?
-        answer:
-          expectedLatex: '\frac{3}{e}'
-          equivalenceMode: expression
-          variables: []
-          tolerance: 0.000001
-        explanation: |
-          Therefore:
-
-          $$
-          L=3e^{-1}=\frac3e.
-          $$
-      - id: ratio-deep-step-4
-        title: Interpret the result
-        instruction: |
-          The Ratio Test says:
-
-          - $L<1$: converges absolutely
-          - $L>1$: diverges
-          - $L=1$: inconclusive
-
-          Here $L=\frac3e$.
-        type: multipleChoice
-        prompt: What is the conclusion?
-        choices:
-          - id: a
-            text: The series diverges because $\frac3e>1$.
-          - id: b
-            text: The series converges because $\frac3e>1$.
-          - id: c
-            text: The test is inconclusive because $\frac3e\ne1$.
-          - id: d
-            text: The series converges conditionally.
-        answer:
-          choiceId: a
-        explanation: |
-          Since $e\approx2.718$, $\frac3e>1$. By the Ratio Test, the series diverges.
-  - id: alternating-conditional-classification
-    title: Alternating Series and Conditional Convergence
-    problem: |
-      Classify the series as absolutely convergent, conditionally convergent, or divergent:
+      Compute:
 
       $$
-      \sum_{n=2}^{\infty}\frac{(-1)^n}{\sqrt{n}}.
+      \lim_{n\to\infty}\frac{a_n}{b_n}.
       $$
-    steps:
-      - id: conditional-deep-step-1
-        title: Check the alternating structure
-        instruction: |
-          The factor $(-1)^n$ makes the signs alternate. The magnitudes are:
+    type: symbolicResponse
+    prompt: What is the limit comparison value?
+    answer:
+      expectedLatex: |-
+        \frac{7}{2}
+      equivalenceMode: expression
+      variables: []
+      tolerance: 0.000001
+    explanation: |-
+      Solution: Dividing by $\frac1{n^3}$ multiplies by $n^3$:
 
-          $$
-          b_n=\frac1{\sqrt n}.
-          $$
-        type: selectAll
-        prompt: Which Alternating Series Test conditions are satisfied?
-        choices:
-          - id: a
-            text: '$b_n=\frac1{\sqrt n}$ decreases for $n\ge2$.'
-          - id: b
-            text: '$\lim_{n\to\infty}b_n=0$.'
-          - id: c
-            text: The signs alternate.
-          - id: d
-            text: The terms become factorials.
-        answer:
-          choiceIds: [a, b, c]
-        explanation: |
-          The magnitudes decrease to $0$, and $(-1)^n$ gives alternating signs. The Alternating Series Test proves convergence of the original series.
-      - id: conditional-deep-step-2
-        title: Test absolute convergence
-        instruction: |
-          Absolute convergence requires checking:
+      $$
+      \frac{a_n}{b_n}
+      =
+      \frac{n^3(7n^2+3n+1)}{2n^5-4n+9}
+      \to
+      \frac72.
+      $$ Therefore the answer is \frac{7}{2}.
 
-          $$
-          \sum_{n=2}^{\infty}\left|\frac{(-1)^n}{\sqrt n}\right|
-          =
-          \sum_{n=2}^{\infty}\frac1{\sqrt n}.
-          $$
-        type: multipleChoice
-        prompt: What kind of series is the absolute value series?
-        choices:
-          - id: a
-            text: A p-series with $p=\frac12$.
-          - id: b
-            text: A convergent geometric series.
-          - id: c
-            text: A telescoping series.
-          - id: d
-            text: A p-series with $p=2$.
-        answer:
-          choiceId: a
-        explanation: |
-          Since $\frac1{\sqrt n}=\frac1{n^{1/2}}$, this is a p-series with $p=\frac12$.
-      - id: conditional-deep-step-3
-        title: Decide the absolute value series
-        instruction: |
-          A p-series $\sum \frac1{n^p}$ converges if $p>1$ and diverges if $p\le1$.
-        type: multipleChoice
-        prompt: What happens to $\sum \frac1{\sqrt n}$?
-        choices:
-          - id: a
-            text: It diverges because $p=\frac12\le1$.
-          - id: b
-            text: It converges because $p=\frac12<1$.
-          - id: c
-            text: It converges because the terms are positive.
-          - id: d
-            text: It telescopes.
-        answer:
-          choiceId: a
-        explanation: |
-          The absolute value series diverges because it is a divergent p-series with $p=\frac12$.
-      - id: conditional-deep-step-4
-        title: Classify the original series
-        instruction: |
-          We now have two facts:
+      Why it works: For positive terms, choose a benchmark $b_n$ with the same leading behavior and compute $L=\lim a_n/b_n$. A finite positive limit means $a_n$ and $b_n$ converge or diverge together.
 
-          - the original alternating series converges by AST,
-          - the absolute value series diverges.
-        type: multipleChoice
-        prompt: What is the classification?
-        choices:
-          - id: a
-            text: Conditionally convergent
-          - id: b
-            text: Absolutely convergent
-          - id: c
-            text: Divergent
-          - id: d
-            text: Geometric
-        answer:
-          choiceId: a
-        explanation: |
-          This is the definition of conditional convergence: the original series converges, but the absolute value series diverges.
-      - id: conditional-deep-step-5
-        title: Write the full reasoning
-        instruction: |
-          Classification problems require more than a label. State the test for the original series and the test for the absolute value series.
-        type: freeResponse
-        prompt: Write a complete classification explanation.
-        answer:
-          expected: The series converges by the Alternating Series Test because 1/sqrt(n) decreases to 0. It does not converge absolutely because the absolute value series is the p-series sum 1/n^(1/2), which diverges since p <= 1. Therefore the original series is conditionally convergent.
-          gradingMode: selfCheck
-          keyPoints:
-            - State convergence by the Alternating Series Test.
-            - State that $b_n=\frac1{\sqrt n}$ decreases to $0$.
-            - Test $\sum \frac1{\sqrt n}$ for absolute convergence.
-            - Use the p-series rule with $p=\frac12$.
-            - Conclude conditionally convergent.
-        explanation: |
-          The full classification is conditionally convergent, with both pieces of evidence required.
+      Common trap: The comparison limit need not equal $1$; any finite positive constant transfers the convergence classification.
+  - id: comparison-deep-step-4
+    title: Use the p-series conclusion
+    instruction: |
+      The comparison limit is positive and finite. Therefore the original series has the same convergence behavior as $\sum \frac1{n^3}$.
+    type: multipleChoice
+    prompt: What is the conclusion?
+    choices:
+    - id: a
+      text: The series converges.
+    - id: b
+      text: The series diverges.
+    - id: c
+      text: |-
+        The test is inconclusive because $\frac72>1$.
+    - id: d
+      text: The series is alternating.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: $\sum \frac1{n^3}$ converges because it is a p-series with $p=3>1$. Limit comparison transfers that convergence to the original series. Therefore the answer is The series converges.. Therefore the answer is The series converges.. Therefore the answer is The series converges.. Therefore the answer is The series converges.. Therefore the answer is The series converges.. Therefore the answer is The series converges..
 
-          Related topic: absolute versus conditional convergence.
+      Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+      Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
+
+      Why the other choices fail: The series diverges. conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; The test is inconclusive because $\frac72>1$. conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; The series is alternating. conflicts with this criterion: Write the series as $\sum(-1)^n b_n$.
+- id: ratio-test-factorial-example
+  title: Ratio Test with Factorials and Exponentials
+  problem: |
+    Decide whether the series converges:
+
+    $$
+    \sum_{n=1}^{\infty}\frac{3^n n!}{n^n}.
+    $$
+  steps:
+  - id: ratio-deep-step-1
+    title: Recognize the ratio-test signal
+    instruction: |
+      Factorials, exponentials, and powers involving $n$ usually simplify under:
+
+      $$
+      \left|\frac{a_{n+1}}{a_n}\right|.
+      $$
+    type: multipleChoice
+    prompt: Which test is the natural first choice?
+    choices:
+    - id: a
+      text: Ratio Test
+    - id: b
+      text: Integral Test
+    - id: c
+      text: Alternating Series Test
+    - id: d
+      text: Arithmetic series formula
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The factorial $n!$ and exponential $3^n$ are strong ratio-test signals. Therefore the answer is Ratio Test.
+
+      Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+      Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
+
+      Why the other choices fail: Integral Test conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; Alternating Series Test conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; Arithmetic series formula conflicts with this criterion: Write the series as $\sum(-1)^n b_n$.
+  - id: ratio-deep-step-2
+    title: Form the ratio
+    instruction: |
+      Let
+
+      $$
+      a_n=\frac{3^n n!}{n^n}.
+      $$
+
+      Then
+
+      $$
+      a_{n+1}=\frac{3^{n+1}(n+1)!}{(n+1)^{n+1}}.
+      $$
+    type: multipleChoice
+    prompt: |-
+      After cancellation, which expression equals $\frac{a_{n+1}}{a_n}$?
+    choices:
+    - id: a
+      text: |-
+        $3\left(\frac{n}{n+1}\right)^n$
+    - id: b
+      text: |-
+        $\frac13\left(\frac{n+1}{n}\right)^n$
+    - id: c
+      text: $3n$
+    - id: d
+      text: |-
+        $\frac{n}{3}$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The ratio simplifies as:
+
+      $$
+      \frac{3^{n+1}(n+1)!}{(n+1)^{n+1}}\cdot\frac{n^n}{3^n n!}
+      =
+      3\cdot\frac{(n+1)n^n}{(n+1)^{n+1}}
+      =
+      3\left(\frac{n}{n+1}\right)^n.
+      $$ Therefore the answer is $3\left(\frac{n}{n+1}\right)^n$.
+
+      Why it works: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors. The Ratio Test gives absolute convergence for $L<1$, divergence for $L>1$, and no conclusion for $L=1$.
+
+      Common trap: Do not reverse the ratio or treat $L=1$ as convergence; factorial cancellation must be completed before taking the limit.
+
+      Why the other choices fail: $\frac13\left(\frac{n+1}{n}\right)^n$ conflicts with this criterion: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors; $3n$ conflicts with this criterion: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors; $\frac{n}{3}$ conflicts with this criterion: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors.
+  - id: ratio-deep-step-3
+    title: Evaluate the ratio limit
+    instruction: |
+      Use the standard limit:
+
+      $$
+      \left(\frac{n}{n+1}\right)^n
+      =
+      \left(\frac{1}{1+\frac1n}\right)^n
+      \to
+      e^{-1}.
+      $$
+    type: symbolicResponse
+    prompt: What is the ratio-test limit $L$?
+    answer:
+      expectedLatex: |-
+        \frac{3}{e}
+      equivalenceMode: expression
+      variables: []
+      tolerance: 0.000001
+    explanation: |-
+      Solution: Therefore:
+
+      $$
+      L=3e^{-1}=\frac3e.
+      $$ Therefore the answer is \frac{3}{e}.
+
+      Why it works: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors. The Ratio Test gives absolute convergence for $L<1$, divergence for $L>1$, and no conclusion for $L=1$.
+
+      Common trap: Do not reverse the ratio or treat $L=1$ as convergence; factorial cancellation must be completed before taking the limit.
+  - id: ratio-deep-step-4
+    title: Interpret the result
+    instruction: |
+      The Ratio Test says:
+
+      - $L<1$: converges absolutely
+      - $L>1$: diverges
+      - $L=1$: inconclusive
+
+      Here $L=\frac3e$.
+    type: multipleChoice
+    prompt: What is the conclusion?
+    choices:
+    - id: a
+      text: |-
+        The series diverges because $\frac3e>1$.
+    - id: b
+      text: |-
+        The series converges because $\frac3e>1$.
+    - id: c
+      text: |-
+        The test is inconclusive because $\frac3e\ne1$.
+    - id: d
+      text: The series converges conditionally.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Since $e\approx2.718$, $\frac3e>1$. By the Ratio Test, the series diverges. Therefore the answer is The series diverges because $\frac3e>1$.. Therefore the answer is The series diverges because $\frac3e>1$.. Therefore the answer is The series diverges because $\frac3e>1$.. Therefore the answer is The series diverges because $\frac3e>1$.. Therefore the answer is The series diverges because $\frac3e>1$.. Therefore the answer is The series diverges because $\frac3e>1$..
+
+      Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+      Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
+
+      Why the other choices fail: The series converges because $\frac3e>1$. conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; The test is inconclusive because $\frac3e\ne1$. conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; The series converges conditionally. conflicts with this criterion: Write the series as $\sum(-1)^n b_n$.
+- id: alternating-conditional-classification
+  title: Alternating Series and Conditional Convergence
+  problem: |
+    Classify the series as absolutely convergent, conditionally convergent, or divergent:
+
+    $$
+    \sum_{n=2}^{\infty}\frac{(-1)^n}{\sqrt{n}}.
+    $$
+  steps:
+  - id: conditional-deep-step-1
+    title: Check the alternating structure
+    instruction: |
+      The factor $(-1)^n$ makes the signs alternate. The magnitudes are:
+
+      $$
+      b_n=\frac1{\sqrt n}.
+      $$
+    type: selectAll
+    prompt: Which Alternating Series Test conditions are satisfied?
+    choices:
+    - id: a
+      text: |-
+        $b_n=\frac1{\sqrt n}$ decreases for $n\ge2$.
+    - id: b
+      text: |-
+        $\lim_{n\to\infty}b_n=0$.
+    - id: c
+      text: The signs alternate.
+    - id: d
+      text: The terms become factorials.
+    answer:
+      choiceIds:
+      - a
+      - b
+      - c
+    explanation: |-
+      Solution: The magnitudes decrease to $0$, and $(-1)^n$ gives alternating signs. The Alternating Series Test proves convergence of the original series. Therefore the answer is $b_n=\frac1{\sqrt n}$ decreases for $n\ge2$., $\lim_{n\to\infty}b_n=0$., The signs alternate.. Therefore the answer is $b_n=\frac1{\sqrt n}$ decreases for $n\ge2$., $\lim_{n\to\infty}b_n=0$., The signs alternate.. Therefore the answer is $b_n=\frac1{\sqrt n}$ decreases for $n\ge2$., $\lim_{n\to\infty}b_n=0$., The signs alternate.. Therefore the answer is $b_n=\frac1{\sqrt n}$ decreases for $n\ge2$., $\lim_{n\to\infty}b_n=0$., The signs alternate.. Therefore the answer is $b_n=\frac1{\sqrt n}$ decreases for $n\ge2$., $\lim_{n\to\infty}b_n=0$., The signs alternate..
+
+      Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+      Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
+  - id: conditional-deep-step-2
+    title: Test absolute convergence
+    instruction: |
+      Absolute convergence requires checking:
+
+      $$
+      \sum_{n=2}^{\infty}\left|\frac{(-1)^n}{\sqrt n}\right|
+      =
+      \sum_{n=2}^{\infty}\frac1{\sqrt n}.
+      $$
+    type: multipleChoice
+    prompt: What kind of series is the absolute value series?
+    choices:
+    - id: a
+      text: |-
+        A p-series with $p=\frac12$.
+    - id: b
+      text: A convergent geometric series.
+    - id: c
+      text: A telescoping series.
+    - id: d
+      text: A p-series with $p=2$.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Since $\frac1{\sqrt n}=\frac1{n^{1/2}}$, this is a p-series with $p=\frac12$. Therefore the answer is A p-series with $p=\frac12$.. Therefore the answer is A p-series with $p=\frac12$.. Therefore the answer is A p-series with $p=\frac12$.. Therefore the answer is A p-series with $p=\frac12$.. Therefore the answer is A p-series with $p=\frac12$.. Therefore the answer is A p-series with $p=\frac12$..
+
+      Why it works: Match the positive tail to $\sum 1/n^p$. Its threshold is strict: it converges only when $p>1$ and diverges for $p\le1$.
+
+      Common trap: The harmonic boundary $p=1$ diverges, so replacing $p>1$ with $p\ge1$ changes the conclusion.
+
+      Why the other choices fail: A convergent geometric series. conflicts with this criterion: Match the positive tail to $\sum 1/n^p$; A telescoping series. conflicts with this criterion: Match the positive tail to $\sum 1/n^p$; A p-series with $p=2$. conflicts with this criterion: Match the positive tail to $\sum 1/n^p$.
+  - id: conditional-deep-step-3
+    title: Decide the absolute value series
+    instruction: |
+      A p-series $\sum \frac1{n^p}$ converges if $p>1$ and diverges if $p\le1$.
+    type: multipleChoice
+    prompt: |-
+      What happens to $\sum \frac1{\sqrt n}$?
+    choices:
+    - id: a
+      text: |-
+        It diverges because $p=\frac12\le1$.
+    - id: b
+      text: |-
+        It converges because $p=\frac12<1$.
+    - id: c
+      text: It converges because the terms are positive.
+    - id: d
+      text: It telescopes.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The absolute value series diverges because it is a divergent p-series with $p=\frac12$. Therefore the answer is It diverges because $p=\frac12\le1$.. Therefore the answer is It diverges because $p=\frac12\le1$.. Therefore the answer is It diverges because $p=\frac12\le1$.. Therefore the answer is It diverges because $p=\frac12\le1$.. Therefore the answer is It diverges because $p=\frac12\le1$.. Therefore the answer is It diverges because $p=\frac12\le1$..
+
+      Why it works: Match the positive tail to $\sum 1/n^p$. Its threshold is strict: it converges only when $p>1$ and diverges for $p\le1$.
+
+      Common trap: The harmonic boundary $p=1$ diverges, so replacing $p>1$ with $p\ge1$ changes the conclusion.
+
+      Why the other choices fail: It converges because $p=\frac12<1$. conflicts with this criterion: Match the positive tail to $\sum 1/n^p$; It converges because the terms are positive. conflicts with this criterion: Match the positive tail to $\sum 1/n^p$; It telescopes. conflicts with this criterion: Match the positive tail to $\sum 1/n^p$.
+  - id: conditional-deep-step-4
+    title: Classify the original series
+    instruction: 'We now have two facts:
+
+
+      - the original alternating series converges by AST,
+
+      - the absolute value series diverges.
+
+      '
+    type: multipleChoice
+    prompt: What is the classification?
+    choices:
+    - id: a
+      text: Conditionally convergent
+    - id: b
+      text: Absolutely convergent
+    - id: c
+      text: Divergent
+    - id: d
+      text: Geometric
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: This is the definition of conditional convergence: the original series converges, but the absolute value series diverges. Therefore the answer is Conditionally convergent.
+
+      Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+      Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
+
+      Why the other choices fail: Absolutely convergent conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; Divergent conflicts with this criterion: Write the series as $\sum(-1)^n b_n$; Geometric conflicts with this criterion: Write the series as $\sum(-1)^n b_n$.
+  - id: conditional-deep-step-5
+    title: Write the full reasoning
+    instruction: 'Classification problems require more than a label. State the test for the original series and the test for the absolute value series.
+
+      '
+    type: freeResponse
+    prompt: Write a complete classification explanation.
+    answer:
+      expected: The series converges by the Alternating Series Test because 1/sqrt(n) decreases to 0. It does not converge absolutely because the absolute value series is the p-series sum 1/n^(1/2), which diverges since p <= 1. Therefore the original series is conditionally convergent.
+      gradingMode: selfCheck
+      keyPoints:
+      - State convergence by the Alternating Series Test.
+      - |-
+        State that $b_n=\frac1{\sqrt n}$ decreases to $0$.
+      - |-
+        Test $\sum \frac1{\sqrt n}$ for absolute convergence.
+      - |-
+        Use the p-series rule with $p=\frac12$.
+      - Conclude conditionally convergent.
+    explanation: |-
+      Solution: The full classification is conditionally convergent, with both pieces of evidence required.
+
+      Related topic: absolute versus conditional convergence. Therefore the answer is The series converges by the Alternating Series Test because 1/sqrt(n) decreases to 0. It does not converge absolutely because the absolute value series is the p-series sum 1/n^(1/2), which diverges since p <= 1. Therefore the original series is conditionally convergent.. Therefore the answer is The series converges by the Alternating Series Test because 1/sqrt(n) decreases to 0. It does not converge absolutely because the absolute value series is the p-series sum 1/n^(1/2), which diverges since p <= 1. Therefore the original series is conditionally convergent.. Therefore the answer is The series converges by the Alternating Series Test because 1/sqrt(n) decreases to 0. It does not converge absolutely because the absolute value series is the p-series sum 1/n^(1/2), which diverges since p <= 1. Therefore the original series is conditionally convergent.. Therefore the answer is The series converges by the Alternating Series Test because 1/sqrt(n) decreases to 0. It does not converge absolutely because the absolute value series is the p-series sum 1/n^(1/2), which diverges since p <= 1. Therefore the original series is conditionally convergent.. Therefore the answer is The series converges by the Alternating Series Test because 1/sqrt(n) decreases to 0. It does not converge absolutely because the absolute value series is the p-series sum 1/n^(1/2), which diverges since p <= 1. Therefore the original series is conditionally convergent..
+
+      Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+      Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.

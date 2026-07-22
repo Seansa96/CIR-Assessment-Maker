@@ -5,223 +5,393 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: sequence-fundamentals
 skills:
-  - Evaluate sequence limits from explicit formulas
-  - Prove divergence using subsequences
-  - Establish recurrence convergence using bounds and monotonicity
+- Evaluate sequence limits from explicit formulas
+- Prove divergence using subsequences
+- Establish recurrence convergence using bounds and monotonicity
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-    - calculus-2
-    - sequence-fundamentals
-    - sequence-limits
-    - recurrence-relations
+  - calculus-2
+  - sequence-fundamentals
+  - sequence-limits
+  - recurrence-relations
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we-sequence-fundamentals-1
-    title: Evaluate a rational sequence limit
-    problem: |
-      Find
-      $$\lim_{n\to\infty}\frac{3n^2-2n+1}{n^2+4},$$
-      and explain why lower-degree terms do not determine the answer.
-    steps:
-      - id: step-sequence-fundamentals-1-1
-        title: Identify the dominant scale
-        instruction: |
-          Both numerator and denominator have degree two. Divide every term by
-          $n^2$, the largest power present, rather than keeping only the leading
-          terms without justification.
-        type: multipleChoice
-        prompt: What expression results after division by $n^2$?
-        choices:
-          - { id: a, text: '$(3-2/n+1/n^2)/(1+4/n^2)$' }
-          - { id: b, text: '$(3n-2+1/n)/(n+4/n)$' }
-          - { id: c, text: '$(3-2n+n^2)/(1+4n^2)$' }
-          - { id: d, text: '$3/4$' }
-        answer: { choiceId: a }
-        explanation: Dividing term-by-term makes every lower-order contribution an explicit vanishing fraction.
-      - id: step-sequence-fundamentals-1-2
-        title: Take component limits
-        instruction: |
-          As $n\to\infty$, $1/n\to0$ and $1/n^2\to0$. Therefore the numerator
-          approaches $3$ and the denominator approaches $1$.
-        type: multipleChoice
-        prompt: Which denominator fact permits the quotient limit law?
-        choices:
-          - { id: a, text: 'Its limit is $1$, which is nonzero.' }
-          - { id: b, text: 'It contains a positive term.' }
-          - { id: c, text: 'It has the same degree as the numerator.' }
-          - { id: d, text: 'It is larger than the numerator.' }
-        answer: { choiceId: a }
-        explanation: The quotient law requires a nonzero limiting denominator.
-      - id: step-sequence-fundamentals-1-3
-        title: Compute the quotient
-        instruction: |
-          Applying the limit laws gives
-          $$\frac{3-0+0}{1+0}=3.$$
-          The limit is the ratio of leading coefficients because the degrees match.
-        type: multipleChoice
-        prompt: What is the sequence limit?
-        choices:
-          - { id: a, text: '$0$' }
-          - { id: b, text: '$3/4$' }
-          - { id: c, text: '$3$' }
-          - { id: d, text: '$+\infty$' }
-        answer: { choiceId: c }
-        explanation: After normalization, all lower-degree terms vanish and the leading-coefficient ratio is $3/1$.
-      - id: step-sequence-fundamentals-1-4
-        title: Check the scale
-        instruction: |
-          For large $n$, the expression is close to $3n^2/n^2=3$. This
-          asymptotic check agrees with the exact limit-law calculation.
-        type: multipleChoice
-        prompt: If the denominator instead had degree three, what would the same dominant-power reasoning predict?
-        choices:
-          - { id: a, text: 'A limit of $0$' }
-          - { id: b, text: 'A limit of $3$' }
-          - { id: c, text: 'A limit of $+\infty$' }
-          - { id: d, text: 'Oscillation' }
-        answer: { choiceId: a }
-        explanation: A degree-two numerator divided by a degree-three denominator has size proportional to $1/n$.
+- id: we-sequence-fundamentals-1
+  title: Evaluate a rational sequence limit
+  problem: |
+    Find
+    $$\lim_{n\to\infty}\frac{3n^2-2n+1}{n^2+4},$$
+    and explain why lower-degree terms do not determine the answer.
+  steps:
+  - id: step-sequence-fundamentals-1-1
+    title: Identify the dominant scale
+    instruction: 'Both numerator and denominator have degree two. Divide every term by
 
-  - id: we-sequence-fundamentals-2
-    title: Prove divergence with parity subsequences
-    problem: |
-      Determine whether
-      $$a_n=(-1)^n+\frac1n$$
-      converges. If it diverges, identify two subsequential limits.
-    steps:
-      - id: step-sequence-fundamentals-2-1
-        title: Separate even indices
-        instruction: |
-          For $n=2k$,
-          $$a_{2k}=1+\frac1{2k}\longrightarrow1.$$
-          Thus the even-indexed subsequence converges to $1$.
-        type: multipleChoice
-        prompt: Why does $(-1)^{2k}$ equal $1$?
-        choices:
-          - { id: a, text: 'Every even power of $-1$ is positive.' }
-          - { id: b, text: '$2k$ approaches zero.' }
-          - { id: c, text: '$1/(2k)$ is positive.' }
-          - { id: d, text: 'The exponent is larger than one.' }
-        answer: { choiceId: a }
-        explanation: Parity controls the oscillatory component independently of the vanishing correction.
-      - id: step-sequence-fundamentals-2-2
-        title: Separate odd indices
-        instruction: |
-          For $n=2k+1$,
-          $$a_{2k+1}=-1+\frac1{2k+1}\longrightarrow-1.$$
-        type: multipleChoice
-        prompt: What is the odd subsequential limit?
-        choices:
-          - { id: a, text: '$-1$' }
-          - { id: b, text: '$0$' }
-          - { id: c, text: '$1$' }
-          - { id: d, text: '$+\infty$' }
-        answer: { choiceId: a }
-        explanation: The reciprocal correction vanishes, leaving the odd sign value $-1$.
-      - id: step-sequence-fundamentals-2-3
-        title: Use uniqueness of limits
-        instruction: |
-          Every subsequence of a convergent sequence must approach the same limit.
-          Here the even and odd subsequences approach different values, so the full
-          sequence diverges.
-        type: multipleChoice
-        prompt: Which contradiction rules out convergence?
-        choices:
-          - { id: a, text: 'A convergent sequence cannot have subsequential limits $1$ and $-1$.' }
-          - { id: b, text: 'A convergent sequence cannot contain negative terms.' }
-          - { id: c, text: 'Every divergent sequence is unbounded.' }
-          - { id: d, text: 'The reciprocal sequence diverges.' }
-        answer: { choiceId: a }
-        explanation: Uniqueness of the sequential limit applies to every subsequence.
-      - id: step-sequence-fundamentals-2-4
-        title: Distinguish boundedness from convergence
-        instruction: |
-          The sequence is bounded—for example, $-1<a_n\le2$—but it does not
-          converge. Boundedness guarantees convergent subsequences, not convergence
-          of the entire sequence.
-        type: multipleChoice
-        prompt: Which additional property, together with boundedness, would guarantee convergence?
-        choices:
-          - { id: a, text: 'Monotonicity' }
-          - { id: b, text: 'Alternating signs' }
-          - { id: c, text: 'Integer indices' }
-          - { id: d, text: 'A positive first term' }
-        answer: { choiceId: a }
-        explanation: The monotone convergence theorem requires both a one-directional order and an appropriate bound.
+      $n^2$, the largest power present, rather than keeping only the leading
 
-  - id: we-sequence-fundamentals-3
-    title: Prove a nonlinear recurrence converges
-    problem: |
-      Let $a_1=1$ and $a_{n+1}=\sqrt{3+a_n}$. Prove that $(a_n)$ converges
-      and find its limit.
-    steps:
-      - id: step-sequence-fundamentals-3-1
-        title: Find the candidate fixed point
-        instruction: |
-          If a limit $L$ exists, continuity would give $L=\sqrt{3+L}$.
-          Solving $L^2-L-3=0$ gives
-          $$L=\frac{1\pm\sqrt{13}}2.$$
-          Since every term is positive, only
-          $\alpha=(1+\sqrt{13})/2$ can be the limit.
-        type: multipleChoice
-        prompt: What has this fixed-point calculation proved so far?
-        choices:
-          - { id: a, text: 'Only the possible positive limit, not convergence.' }
-          - { id: b, text: 'The sequence converges immediately.' }
-          - { id: c, text: 'Every term equals $\alpha$.' }
-          - { id: d, text: 'The sequence is decreasing.' }
-        answer: { choiceId: a }
-        explanation: A fixed point is a candidate until boundedness and monotonicity establish convergence.
-      - id: step-sequence-fundamentals-3-2
-        title: Prove the invariant upper bound
-        instruction: |
-          Because $a_1=1<\alpha$, assume $a_n<\alpha$. Then
-          $$a_{n+1}=\sqrt{3+a_n}<\sqrt{3+\alpha}=\alpha,$$
-          where the last equality uses $\alpha^2=3+\alpha$. Induction gives
-          $a_n<\alpha$ for all $n$.
-        type: multipleChoice
-        prompt: Which fact closes the induction?
-        choices:
-          - { id: a, text: '$\sqrt{3+\alpha}=\alpha$' }
-          - { id: b, text: '$\alpha<0$' }
-          - { id: c, text: '$a_{n+1}=a_n$' }
-          - { id: d, text: '$3+\alpha<0$' }
-        answer: { choiceId: a }
-        explanation: The candidate fixed point becomes a self-preserving boundary for the recurrence.
-      - id: step-sequence-fundamentals-3-3
-        title: Prove monotone increase
-        instruction: |
-          Since $a_n>0$, compare nonnegative quantities by squaring:
-          $$a_{n+1}\ge a_n
-          \iff 3+a_n\ge a_n^2
-          \iff (\alpha-a_n)(a_n-\beta)\ge0,$$
-          where $\beta=(1-\sqrt{13})/2<0$. The proved bounds
-          $\beta<a_n<\alpha$ make the product nonnegative.
-        type: multipleChoice
-        prompt: Why is the negative root $\beta$ useful even though it cannot be the limit?
-        choices:
-          - { id: a, text: 'It factors the inequality that proves monotonicity.' }
-          - { id: b, text: 'It is the first term.' }
-          - { id: c, text: 'It becomes an upper bound.' }
-          - { id: d, text: 'It makes the sequence alternate.' }
-        answer: { choiceId: a }
-        explanation: Both fixed points factor $3+x-x^2$, and the interval between them determines its sign.
-      - id: step-sequence-fundamentals-3-4
-        title: Invoke the theorem and identify the limit
-        instruction: |
-          The sequence is increasing and bounded above by $\alpha$, so it
-          converges. Passing to the limit in the recurrence is now justified,
-          and positivity selects
-          $$\lim_{n\to\infty}a_n=\frac{1+\sqrt{13}}2.$$
-        type: multipleChoice
-        prompt: Which theorem supplies existence of the limit?
-        choices:
-          - { id: a, text: 'The monotone convergence theorem for sequences' }
-          - { id: b, text: 'The divergence test for series' }
-          - { id: c, text: 'The ratio test' }
-          - { id: d, text: 'The geometric-series formula' }
-        answer: { choiceId: a }
-        explanation: Increasing plus bounded above is the exact hypothesis needed for monotone convergence.
+      terms without justification.
+
+      '
+    type: multipleChoice
+    prompt: What expression results after division by $n^2$?
+    choices:
+    - id: a
+      text: $(3-2/n+1/n^2)/(1+4/n^2)$
+    - id: b
+      text: $(3n-2+1/n)/(n+4/n)$
+    - id: c
+      text: $(3-2n+n^2)/(1+4n^2)$
+    - id: d
+      text: $3/4$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Dividing term-by-term makes every lower-order contribution an explicit vanishing fraction. Therefore the answer is $(3-2/n+1/n^2)/(1+4/n^2)$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $(3n-2+1/n)/(n+4/n)$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $(3-2n+n^2)/(1+4n^2)$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $3/4$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-sequence-fundamentals-1-2
+    title: Take component limits
+    instruction: |
+      As $n\to\infty$, $1/n\to0$ and $1/n^2\to0$. Therefore the numerator
+      approaches $3$ and the denominator approaches $1$.
+    type: multipleChoice
+    prompt: Which denominator fact permits the quotient limit law?
+    choices:
+    - id: a
+      text: Its limit is $1$, which is nonzero.
+    - id: b
+      text: It contains a positive term.
+    - id: c
+      text: It has the same degree as the numerator.
+    - id: d
+      text: It is larger than the numerator.
+    answer:
+      choiceId: a
+    explanation: 'Solution: The quotient law requires a nonzero limiting denominator. Therefore the answer is Its limit is $1$, which is nonzero.. Therefore the answer is Its limit is $1$, which is nonzero.. Therefore the answer is Its limit is $1$, which is nonzero..
+
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+
+      Why the other choices fail: It contains a positive term. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It has the same degree as the numerator. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It is larger than the numerator. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.'
+  - id: step-sequence-fundamentals-1-3
+    title: Compute the quotient
+    instruction: |
+      Applying the limit laws gives
+      $$\frac{3-0+0}{1+0}=3.$$
+      The limit is the ratio of leading coefficients because the degrees match.
+    type: multipleChoice
+    prompt: What is the sequence limit?
+    choices:
+    - id: a
+      text: $0$
+    - id: b
+      text: $3/4$
+    - id: c
+      text: $3$
+    - id: d
+      text: |-
+        $+\infty$
+    answer:
+      choiceId: c
+    explanation: |-
+      Solution: After normalization, all lower-degree terms vanish and the leading-coefficient ratio is $3/1$. Therefore the answer is $3$.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: $0$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $3/4$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $+\infty$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: step-sequence-fundamentals-1-4
+    title: Check the scale
+    instruction: 'For large $n$, the expression is close to $3n^2/n^2=3$. This
+
+      asymptotic check agrees with the exact limit-law calculation.
+
+      '
+    type: multipleChoice
+    prompt: If the denominator instead had degree three, what would the same dominant-power reasoning predict?
+    choices:
+    - id: a
+      text: A limit of $0$
+    - id: b
+      text: A limit of $3$
+    - id: c
+      text: |-
+        A limit of $+\infty$
+    - id: d
+      text: Oscillation
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: A degree-two numerator divided by a degree-three denominator has size proportional to $1/n$. Therefore the answer is A limit of $0$.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: A limit of $3$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; A limit of $+\infty$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; Oscillation conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+- id: we-sequence-fundamentals-2
+  title: Prove divergence with parity subsequences
+  problem: |
+    Determine whether
+    $$a_n=(-1)^n+\frac1n$$
+    converges. If it diverges, identify two subsequential limits.
+  steps:
+  - id: step-sequence-fundamentals-2-1
+    title: Separate even indices
+    instruction: |
+      For $n=2k$,
+      $$a_{2k}=1+\frac1{2k}\longrightarrow1.$$
+      Thus the even-indexed subsequence converges to $1$.
+    type: multipleChoice
+    prompt: Why does $(-1)^{2k}$ equal $1$?
+    choices:
+    - id: a
+      text: Every even power of $-1$ is positive.
+    - id: b
+      text: $2k$ approaches zero.
+    - id: c
+      text: $1/(2k)$ is positive.
+    - id: d
+      text: The exponent is larger than one.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Parity controls the oscillatory component independently of the vanishing correction. Therefore the answer is Every even power of $-1$ is positive.. Therefore the answer is Every even power of $-1$ is positive.. Therefore the answer is Every even power of $-1$ is positive..
+
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+
+      Why the other choices fail: $2k$ approaches zero. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $1/(2k)$ is positive. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The exponent is larger than one. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.'
+  - id: step-sequence-fundamentals-2-2
+    title: Separate odd indices
+    instruction: |
+      For $n=2k+1$,
+      $$a_{2k+1}=-1+\frac1{2k+1}\longrightarrow-1.$$
+    type: multipleChoice
+    prompt: What is the odd subsequential limit?
+    choices:
+    - id: a
+      text: $-1$
+    - id: b
+      text: $0$
+    - id: c
+      text: $1$
+    - id: d
+      text: |-
+        $+\infty$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The reciprocal correction vanishes, leaving the odd sign value $-1$. Therefore the answer is $-1$.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: $0$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $1$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $+\infty$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: step-sequence-fundamentals-2-3
+    title: Use uniqueness of limits
+    instruction: 'Every subsequence of a convergent sequence must approach the same limit.
+
+      Here the even and odd subsequences approach different values, so the full
+
+      sequence diverges.
+
+      '
+    type: multipleChoice
+    prompt: Which contradiction rules out convergence?
+    choices:
+    - id: a
+      text: A convergent sequence cannot have subsequential limits $1$ and $-1$.
+    - id: b
+      text: A convergent sequence cannot contain negative terms.
+    - id: c
+      text: Every divergent sequence is unbounded.
+    - id: d
+      text: The reciprocal sequence diverges.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Uniqueness of the sequential limit applies to every subsequence. Therefore the answer is A convergent sequence cannot have subsequential limits $1$ and $-1$.. Therefore the answer is A convergent sequence cannot have subsequential limits $1$ and $-1$.. Therefore the answer is A convergent sequence cannot have subsequential limits $1$ and $-1$..
+
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+
+      Why the other choices fail: A convergent sequence cannot contain negative terms. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; Every divergent sequence is unbounded. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The reciprocal sequence diverges. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.'
+  - id: step-sequence-fundamentals-2-4
+    title: Distinguish boundedness from convergence
+    instruction: |
+      The sequence is bounded—for example, $-1<a_n\le2$—but it does not
+      converge. Boundedness guarantees convergent subsequences, not convergence
+      of the entire sequence.
+    type: multipleChoice
+    prompt: Which additional property, together with boundedness, would guarantee convergence?
+    choices:
+    - id: a
+      text: Monotonicity
+    - id: b
+      text: Alternating signs
+    - id: c
+      text: Integer indices
+    - id: d
+      text: A positive first term
+    answer:
+      choiceId: a
+    explanation: 'Solution: The monotone convergence theorem requires both a one-directional order and an appropriate bound. Therefore the answer is Monotonicity.
+
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+
+      Why the other choices fail: Alternating signs conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; Integer indices conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; A positive first term conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.'
+- id: we-sequence-fundamentals-3
+  title: Prove a nonlinear recurrence converges
+  problem: |
+    Let $a_1=1$ and $a_{n+1}=\sqrt{3+a_n}$. Prove that $(a_n)$ converges
+    and find its limit.
+  steps:
+  - id: step-sequence-fundamentals-3-1
+    title: Find the candidate fixed point
+    instruction: |
+      If a limit $L$ exists, continuity would give $L=\sqrt{3+L}$.
+      Solving $L^2-L-3=0$ gives
+      $$L=\frac{1\pm\sqrt{13}}2.$$
+      Since every term is positive, only
+      $\alpha=(1+\sqrt{13})/2$ can be the limit.
+    type: multipleChoice
+    prompt: What has this fixed-point calculation proved so far?
+    choices:
+    - id: a
+      text: Only the possible positive limit, not convergence.
+    - id: b
+      text: The sequence converges immediately.
+    - id: c
+      text: |-
+        Every term equals $\alpha$.
+    - id: d
+      text: The sequence is decreasing.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: A fixed point is a candidate until boundedness and monotonicity establish convergence. Therefore the answer is Only the possible positive limit, not convergence.. Therefore the answer is Only the possible positive limit, not convergence.. Therefore the answer is Only the possible positive limit, not convergence..
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+      Why the other choices fail: The sequence converges immediately. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; Every term equals $\alpha$. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The sequence is decreasing. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.
+  - id: step-sequence-fundamentals-3-2
+    title: Prove the invariant upper bound
+    instruction: |
+      Because $a_1=1<\alpha$, assume $a_n<\alpha$. Then
+      $$a_{n+1}=\sqrt{3+a_n}<\sqrt{3+\alpha}=\alpha,$$
+      where the last equality uses $\alpha^2=3+\alpha$. Induction gives
+      $a_n<\alpha$ for all $n$.
+    type: multipleChoice
+    prompt: Which fact closes the induction?
+    choices:
+    - id: a
+      text: |-
+        $\sqrt{3+\alpha}=\alpha$
+    - id: b
+      text: |-
+        $\alpha<0$
+    - id: c
+      text: $a_{n+1}=a_n$
+    - id: d
+      text: |-
+        $3+\alpha<0$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The candidate fixed point becomes a self-preserving boundary for the recurrence. Therefore the answer is $\sqrt{3+\alpha}=\alpha$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $\alpha<0$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $a_{n+1}=a_n$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $3+\alpha<0$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: step-sequence-fundamentals-3-3
+    title: Prove monotone increase
+    instruction: |
+      Since $a_n>0$, compare nonnegative quantities by squaring:
+      $$a_{n+1}\ge a_n
+      \iff 3+a_n\ge a_n^2
+      \iff (\alpha-a_n)(a_n-\beta)\ge0,$$
+      where $\beta=(1-\sqrt{13})/2<0$. The proved bounds
+      $\beta<a_n<\alpha$ make the product nonnegative.
+    type: multipleChoice
+    prompt: |-
+      Why is the negative root $\beta$ useful even though it cannot be the limit?
+    choices:
+    - id: a
+      text: It factors the inequality that proves monotonicity.
+    - id: b
+      text: It is the first term.
+    - id: c
+      text: It becomes an upper bound.
+    - id: d
+      text: It makes the sequence alternate.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Both fixed points factor $3+x-x^2$, and the interval between them determines its sign. Therefore the answer is It factors the inequality that proves monotonicity.. Therefore the answer is It factors the inequality that proves monotonicity.. Therefore the answer is It factors the inequality that proves monotonicity..
+
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+
+      Why the other choices fail: It is the first term. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; It becomes an upper bound. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; It makes the sequence alternate. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.'
+  - id: step-sequence-fundamentals-3-4
+    title: Invoke the theorem and identify the limit
+    instruction: |
+      The sequence is increasing and bounded above by $\alpha$, so it
+      converges. Passing to the limit in the recurrence is now justified,
+      and positivity selects
+      $$\lim_{n\to\infty}a_n=\frac{1+\sqrt{13}}2.$$
+    type: multipleChoice
+    prompt: Which theorem supplies existence of the limit?
+    choices:
+    - id: a
+      text: The monotone convergence theorem for sequences
+    - id: b
+      text: The divergence test for series
+    - id: c
+      text: The ratio test
+    - id: d
+      text: The geometric-series formula
+    answer:
+      choiceId: a
+    explanation: 'Solution: Increasing plus bounded above is the exact hypothesis needed for monotone convergence. Therefore the answer is The monotone convergence theorem for sequences.
+
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+
+      Why the other choices fail: The divergence test for series conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The ratio test conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The geometric-series formula conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.'

@@ -20,284 +20,354 @@ navigation:
 skills:
 - Apply calculus-2 concepts
 - Apply Series Fundamentals
-- Apply Geometric and Telescoping Series
-  - partial-sums
-  - geometric-series
-  - telescoping-series
+- Apply Geometric and Telescoping Series - partial-sums - geometric-series - telescoping-series
 workedExamples:
-  - id: geometric-series-from-partial-sums
-    title: Geometric Series from Partial Sums
-    problem: |
-      ![Partial sums for geometric series with ratios that converge, oscillate, and diverge](/assessments/calc2-infinite-series/geometric-partial-sums.svg)
+- id: geometric-series-from-partial-sums
+  title: Geometric Series from Partial Sums
+  problem: |
+    ![Partial sums for geometric series with ratios that converge, oscillate, and diverge](/assessments/calc2-infinite-series/geometric-partial-sums.svg)
 
-      Determine whether the series converges, and if it does, find its sum:
+    Determine whether the series converges, and if it does, find its sum:
 
-      $$
-      12-8+\frac{16}{3}-\frac{32}{9}+\cdots
-      $$
-    steps:
-      - id: geometric-foundation-step-1
-        title: Identify the repeated multiplier
-        instruction: |
-          A geometric series is recognized by a constant ratio between consecutive terms.
+    $$
+    12-8+\frac{16}{3}-\frac{32}{9}+\cdots
+    $$
+  steps:
+  - id: geometric-foundation-step-1
+    title: Identify the repeated multiplier
+    instruction: |
+      A geometric series is recognized by a constant ratio between consecutive terms.
 
-          Compare the first two terms:
-
-          $$
-          \frac{-8}{12}=-\frac{2}{3}.
-          $$
-        type: multipleChoice
-        prompt: What is the common ratio $r$?
-        choices:
-          - id: a
-            text: '$-\frac{2}{3}$'
-          - id: b
-            text: '$\frac{2}{3}$'
-          - id: c
-            text: '$-\frac{3}{2}$'
-          - id: d
-            text: '$12$'
-        answer:
-          choiceId: a
-        explanation: |
-          Each term is multiplied by $-\frac{2}{3}$ to produce the next term:
-
-          $$
-          12\left(-\frac{2}{3}\right)=-8.
-          $$
-
-          Related topic: recognizing a geometric series by its common ratio.
-      - id: geometric-foundation-step-2
-        title: Decide convergence from the ratio
-        instruction: |
-          A geometric series converges exactly when:
-
-          $$
-          |r|<1.
-          $$
-
-          Here, $r=-\frac{2}{3}$.
-        type: multipleChoice
-        prompt: Does the series converge?
-        choices:
-          - id: a
-            text: Yes, because $\left|-\frac{2}{3}\right|<1$.
-          - id: b
-            text: No, because the signs alternate.
-          - id: c
-            text: No, because the first term is positive.
-          - id: d
-            text: Yes, because every alternating series converges.
-        answer:
-          choiceId: a
-        explanation: |
-          Alternation alone does not decide convergence. The geometric ratio test does: since $|r|=\frac23<1$, the geometric series converges.
-      - id: geometric-foundation-step-3
-        title: Choose the correct sum formula
-        instruction: |
-          For a convergent geometric series starting with first term $a$, the sum is:
-
-          $$
-          S=\frac{a}{1-r}.
-          $$
-        type: multipleChoice
-        prompt: Which setup is correct for this series?
-        choices:
-          - id: a
-            text: '$S=\frac{12}{1-\left(-\frac23\right)}$'
-          - id: b
-            text: '$S=\frac{-8}{1-12}$'
-          - id: c
-            text: '$S=\frac{12}{1-\frac32}$'
-          - id: d
-            text: '$S=12\left(-\frac23\right)$'
-        answer:
-          choiceId: a
-        explanation: |
-          The first term is $a=12$ and the ratio is $r=-\frac23$, so use $S=\frac{12}{1-(-2/3)}$.
-      - id: geometric-foundation-step-4
-        title: Evaluate the sum
-        instruction: |
-          Simplify:
-
-          $$
-          S=\frac{12}{1+\frac23}
-          =
-          \frac{12}{\frac53}.
-          $$
-        type: numericResponse
-        prompt: What is the sum?
-        answer:
-          value: 7.2
-          tolerance: 0.000001
-        explanation: |
-          Since $\frac{12}{5/3}=12\cdot\frac35=\frac{36}{5}=7.2$, the series sums to $\frac{36}{5}$.
-
-          Related topic: evaluating a convergent geometric series.
-      - id: geometric-foundation-step-5
-        title: State the complete conclusion
-        instruction: |
-          A complete answer should include both the convergence decision and the value of the sum.
-        type: freeResponse
-        prompt: State the full conclusion in words.
-        answer:
-          expected: The series converges because it is geometric with common ratio -2/3, whose absolute value is less than 1. Its sum is 36/5.
-          gradingMode: selfCheck
-          keyPoints:
-            - Identify the series as geometric.
-            - State that the common ratio is $-\frac{2}{3}$.
-            - Use $|r|<1$ to justify convergence.
-            - Give the sum $\frac{36}{5}$.
-        explanation: |
-          The clean final form is:
-
-          $$
-          12-8+\frac{16}{3}-\frac{32}{9}+\cdots=\frac{36}{5}.
-          $$
-
-          Related topic: full written conclusions for convergence and sum problems.
-  - id: telescoping-series-with-partial-fractions
-    title: Telescoping Series with Partial Fractions
-    problem: |
-      ![A telescoping sum showing adjacent terms canceling and only endpoints remaining](/assessments/calc2-infinite-series/telescoping-cancellation.svg)
-
-      Determine whether the series converges, and if it does, find its sum:
+      Compare the first two terms:
 
       $$
-      \sum_{n=1}^{\infty}\frac{4}{n(n+4)}.
+      \frac{-8}{12}=-\frac{2}{3}.
       $$
-    steps:
-      - id: telescoping-foundation-step-1
-        title: Recognize why partial fractions help
-        instruction: |
-          The denominator has two shifted linear factors, $n$ and $n+4$. That is a strong hint that partial fractions may create cancellation.
-        type: multipleChoice
-        prompt: What form should we try?
-        choices:
-          - id: a
-            text: '$\frac{4}{n(n+4)}=\frac{A}{n}+\frac{B}{n+4}$'
-          - id: b
-            text: '$\frac{4}{n(n+4)}=An+B$'
-          - id: c
-            text: '$\frac{4}{n(n+4)}=A^n$'
-          - id: d
-            text: '$\frac{4}{n(n+4)}=\frac{A}{n^2}$ only'
-        answer:
-          choiceId: a
-        explanation: |
-          Since the denominator factors as $n(n+4)$, the natural decomposition is $\frac{A}{n}+\frac{B}{n+4}$.
-      - id: telescoping-foundation-step-2
-        title: Solve the partial fractions
-        instruction: |
-          Set:
+    type: multipleChoice
+    prompt: What is the common ratio $r$?
+    choices:
+    - id: a
+      text: |-
+        $-\frac{2}{3}$
+    - id: b
+      text: |-
+        $\frac{2}{3}$
+    - id: c
+      text: |-
+        $-\frac{3}{2}$
+    - id: d
+      text: $12$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Each term is multiplied by $-\frac{2}{3}$ to produce the next term:
 
-          $$
-          \frac{4}{n(n+4)}=\frac{A}{n}+\frac{B}{n+4}.
-          $$
+      $$
+      12\left(-\frac{2}{3}\right)=-8.
+      $$
 
-          Multiply by $n(n+4)$:
+      Related topic: recognizing a geometric series by its common ratio. Therefore the answer is $-\frac{2}{3}$.
 
-          $$
-          4=A(n+4)+Bn.
-          $$
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-          Let $n=0$ to find $A$, and let $n=-4$ to find $B$.
-        type: selectAll
-        prompt: Which coefficient values are correct?
-        choices:
-          - id: a
-            text: '$A=1$'
-          - id: b
-            text: '$B=-1$'
-          - id: c
-            text: '$A=4$'
-          - id: d
-            text: '$B=1$'
-        answer:
-          choiceIds: [a, b]
-        explanation: |
-          From $n=0$, $4=4A$, so $A=1$. From $n=-4$, $4=-4B$, so $B=-1$.
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
 
-          Therefore:
+      Why the other choices fail: $\frac{2}{3}$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $-\frac{3}{2}$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $12$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: geometric-foundation-step-2
+    title: Decide convergence from the ratio
+    instruction: |
+      A geometric series converges exactly when:
 
-          $$
-          \frac{4}{n(n+4)}=\frac1n-\frac{1}{n+4}.
-          $$
-      - id: telescoping-foundation-step-3
-        title: Write enough terms to see cancellation
-        instruction: |
-          The partial sum is:
+      $$
+      |r|<1.
+      $$
 
-          $$
-          S_N=\sum_{n=1}^{N}\left(\frac1n-\frac{1}{n+4}\right).
-          $$
+      Here, $r=-\frac{2}{3}$.
+    type: multipleChoice
+    prompt: Does the series converge?
+    choices:
+    - id: a
+      text: |-
+        Yes, because $\left|-\frac{2}{3}\right|<1$.
+    - id: b
+      text: No, because the signs alternate.
+    - id: c
+      text: No, because the first term is positive.
+    - id: d
+      text: Yes, because every alternating series converges.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Alternation alone does not decide convergence. The geometric ratio test does: since $|r|=\frac23<1$, the geometric series converges. Therefore the answer is Yes, because $\left|-\frac{2}{3}\right|<1$.. Therefore the answer is Yes, because $\left|-\frac{2}{3}\right|<1$.. Therefore the answer is Yes, because $\left|-\frac{2}{3}\right|<1$..
 
-          Write the first few terms:
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-          $$
-          \left(1-\frac15\right)+\left(\frac12-\frac16\right)+\left(\frac13-\frac17\right)+\left(\frac14-\frac18\right)+\left(\frac15-\frac19\right)+\cdots.
-          $$
-        type: multipleChoice
-        prompt: Which terms survive after cancellation?
-        choices:
-          - id: a
-            text: The first four positive fractions and the last four negative tail fractions.
-          - id: b
-            text: Only $\frac15$.
-          - id: c
-            text: Every term survives.
-          - id: d
-            text: Only the negative fractions survive.
-        answer:
-          choiceId: a
-        explanation: |
-          Terms like $-\frac15$ cancel with $+\frac15$ later. The beginning boundary terms remain, and the final tail terms vanish in the infinite limit.
-      - id: telescoping-foundation-step-4
-        title: Take the infinite limit
-        instruction: |
-          The surviving beginning terms are:
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
 
-          $$
-          1+\frac12+\frac13+\frac14.
-          $$
+      Why the other choices fail: No, because the signs alternate. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; No, because the first term is positive. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Yes, because every alternating series converges. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: geometric-foundation-step-3
+    title: Choose the correct sum formula
+    instruction: |
+      For a convergent geometric series starting with first term $a$, the sum is:
 
-          The negative tail terms approach $0$ as $N\to\infty$.
-        type: symbolicResponse
-        prompt: Write the exact sum.
-        answer:
-          expectedLatex: '\frac{25}{12}'
-          equivalenceMode: expression
-          variables: []
-          tolerance: 0.000001
-        explanation: |
-          Add the surviving boundary terms:
+      $$
+      S=\frac{a}{1-r}.
+      $$
+    type: multipleChoice
+    prompt: Which setup is correct for this series?
+    choices:
+    - id: a
+      text: |-
+        $S=\frac{12}{1-\left(-\frac23\right)}$
+    - id: b
+      text: |-
+        $S=\frac{-8}{1-12}$
+    - id: c
+      text: |-
+        $S=\frac{12}{1-\frac32}$
+    - id: d
+      text: |-
+        $S=12\left(-\frac23\right)$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The first term is $a=12$ and the ratio is $r=-\frac23$, so use $S=\frac{12}{1-(-2/3)}$. Therefore the answer is $S=\frac{12}{1-\left(-\frac23\right)}$.
 
-          $$
-          1+\frac12+\frac13+\frac14
-          =
-          \frac{12+6+4+3}{12}
-          =
-          \frac{25}{12}.
-          $$
-      - id: telescoping-foundation-step-5
-        title: Explain why this converges
-        instruction: |
-          Telescoping convergence comes from the partial sums approaching a finite boundary-term limit.
-        type: freeResponse
-        prompt: Explain why the series converges and give its sum.
-        answer:
-          expected: The series converges because the partial fraction form telescopes. Interior terms cancel, the tail terms approach zero, and the surviving boundary terms sum to 25/12.
-          gradingMode: selfCheck
-          keyPoints:
-            - Decompose into $\frac1n-\frac{1}{n+4}$.
-            - Explain cancellation of interior terms.
-            - Explain that the tail terms vanish.
-            - State the sum $\frac{25}{12}$.
-        explanation: |
-          The exact cancellation pattern is the reason this series is solvable directly. The final answer is:
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-          $$
-          \sum_{n=1}^{\infty}\frac{4}{n(n+4)}=\frac{25}{12}.
-          $$
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
 
-          Related topic: telescoping series from partial fractions.
+      Why the other choices fail: $S=\frac{-8}{1-12}$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $S=\frac{12}{1-\frac32}$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $S=12\left(-\frac23\right)$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: geometric-foundation-step-4
+    title: Evaluate the sum
+    instruction: |
+      Simplify:
+
+      $$
+      S=\frac{12}{1+\frac23}
+      =
+      \frac{12}{\frac53}.
+      $$
+    type: numericResponse
+    prompt: What is the sum?
+    answer:
+      value: 7.2
+      tolerance: 0.000001
+    explanation: |-
+      Solution: Since $\frac{12}{5/3}=12\cdot\frac35=\frac{36}{5}=7.2$, the series sums to $\frac{36}{5}$.
+
+      Related topic: evaluating a convergent geometric series.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+  - id: geometric-foundation-step-5
+    title: State the complete conclusion
+    instruction: 'A complete answer should include both the convergence decision and the value of the sum.
+
+      '
+    type: freeResponse
+    prompt: State the full conclusion in words.
+    answer:
+      expected: The series converges because it is geometric with common ratio -2/3, whose absolute value is less than 1. Its sum is 36/5.
+      gradingMode: selfCheck
+      keyPoints:
+      - Identify the series as geometric.
+      - |-
+        State that the common ratio is $-\frac{2}{3}$.
+      - Use $|r|<1$ to justify convergence.
+      - |-
+        Give the sum $\frac{36}{5}$.
+    explanation: |-
+      Solution: The clean final form is:
+
+      $$
+      12-8+\frac{16}{3}-\frac{32}{9}+\cdots=\frac{36}{5}.
+      $$
+
+      Related topic: full written conclusions for convergence and sum problems. Therefore the answer is The series converges because it is geometric with common ratio -2/3, whose absolute value is less than 1. Its sum is 36/5.. Therefore the answer is The series converges because it is geometric with common ratio -2/3, whose absolute value is less than 1. Its sum is 36/5..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+- id: telescoping-series-with-partial-fractions
+  title: Telescoping Series with Partial Fractions
+  problem: |
+    ![A telescoping sum showing adjacent terms canceling and only endpoints remaining](/assessments/calc2-infinite-series/telescoping-cancellation.svg)
+
+    Determine whether the series converges, and if it does, find its sum:
+
+    $$
+    \sum_{n=1}^{\infty}\frac{4}{n(n+4)}.
+    $$
+  steps:
+  - id: telescoping-foundation-step-1
+    title: Recognize why partial fractions help
+    instruction: 'The denominator has two shifted linear factors, $n$ and $n+4$. That is a strong hint that partial fractions may create cancellation.
+
+      '
+    type: multipleChoice
+    prompt: What form should we try?
+    choices:
+    - id: a
+      text: |-
+        $\frac{4}{n(n+4)}=\frac{A}{n}+\frac{B}{n+4}$
+    - id: b
+      text: |-
+        $\frac{4}{n(n+4)}=An+B$
+    - id: c
+      text: |-
+        $\frac{4}{n(n+4)}=A^n$
+    - id: d
+      text: |-
+        $\frac{4}{n(n+4)}=\frac{A}{n^2}$ only
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Since the denominator factors as $n(n+4)$, the natural decomposition is $\frac{A}{n}+\frac{B}{n+4}$. Therefore the answer is $\frac{4}{n(n+4)}=\frac{A}{n}+\frac{B}{n+4}$.
+
+      Why it works: Rewrite the general term so consecutive partial-sum terms cancel. Write $S_N$ explicitly, cancel only terms that occur with opposite signs, and then take $N\to\infty$ to obtain the infinite-series result.
+
+      Common trap: Do not cancel nonadjacent terms by inspection without writing $S_N$; the surviving last term usually depends on $N$ and must be sent to its limit.
+
+      Why the other choices fail: $\frac{4}{n(n+4)}=An+B$ conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel; $\frac{4}{n(n+4)}=A^n$ conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel; $\frac{4}{n(n+4)}=\frac{A}{n^2}$ only conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel.
+  - id: telescoping-foundation-step-2
+    title: Solve the partial fractions
+    instruction: |
+      Set:
+
+      $$
+      \frac{4}{n(n+4)}=\frac{A}{n}+\frac{B}{n+4}.
+      $$
+
+      Multiply by $n(n+4)$:
+
+      $$
+      4=A(n+4)+Bn.
+      $$
+
+      Let $n=0$ to find $A$, and let $n=-4$ to find $B$.
+    type: selectAll
+    prompt: Which coefficient values are correct?
+    choices:
+    - id: a
+      text: $A=1$
+    - id: b
+      text: $B=-1$
+    - id: c
+      text: $A=4$
+    - id: d
+      text: $B=1$
+    answer:
+      choiceIds:
+      - a
+      - b
+    explanation: |-
+      Solution: From $n=0$, $4=4A$, so $A=1$. From $n=-4$, $4=-4B$, so $B=-1$.
+
+      Therefore:
+
+      $$
+      \frac{4}{n(n+4)}=\frac1n-\frac{1}{n+4}.
+      $$ Therefore the answer is $A=1$, $B=-1$.
+
+      Why it works: Rewrite the general term so consecutive partial-sum terms cancel. Write $S_N$ explicitly, cancel only terms that occur with opposite signs, and then take $N\to\infty$ to obtain the infinite-series result.
+
+      Common trap: Do not cancel nonadjacent terms by inspection without writing $S_N$; the surviving last term usually depends on $N$ and must be sent to its limit.
+  - id: telescoping-foundation-step-3
+    title: Write enough terms to see cancellation
+    instruction: |
+      The partial sum is:
+
+      $$
+      S_N=\sum_{n=1}^{N}\left(\frac1n-\frac{1}{n+4}\right).
+      $$
+
+      Write the first few terms:
+
+      $$
+      \left(1-\frac15\right)+\left(\frac12-\frac16\right)+\left(\frac13-\frac17\right)+\left(\frac14-\frac18\right)+\left(\frac15-\frac19\right)+\cdots.
+      $$
+    type: multipleChoice
+    prompt: Which terms survive after cancellation?
+    choices:
+    - id: a
+      text: The first four positive fractions and the last four negative tail fractions.
+    - id: b
+      text: |-
+        Only $\frac15$.
+    - id: c
+      text: Every term survives.
+    - id: d
+      text: Only the negative fractions survive.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Terms like $-\frac15$ cancel with $+\frac15$ later. The beginning boundary terms remain, and the final tail terms vanish in the infinite limit. Therefore the answer is The first four positive fractions and the last four negative tail fractions.. Therefore the answer is The first four positive fractions and the last four negative tail fractions.. Therefore the answer is The first four positive fractions and the last four negative tail fractions..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: Only $\frac15$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Every term survives. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Only the negative fractions survive. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: telescoping-foundation-step-4
+    title: Take the infinite limit
+    instruction: |
+      The surviving beginning terms are:
+
+      $$
+      1+\frac12+\frac13+\frac14.
+      $$
+
+      The negative tail terms approach $0$ as $N\to\infty$.
+    type: symbolicResponse
+    prompt: Write the exact sum.
+    answer:
+      expectedLatex: |-
+        \frac{25}{12}
+      equivalenceMode: expression
+      variables: []
+      tolerance: 0.000001
+    explanation: |-
+      Solution: Add the surviving boundary terms:
+
+      $$
+      1+\frac12+\frac13+\frac14
+      =
+      \frac{12+6+4+3}{12}
+      =
+      \frac{25}{12}.
+      $$ Therefore the answer is \frac{25}{12}.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+  - id: telescoping-foundation-step-5
+    title: Explain why this converges
+    instruction: 'Telescoping convergence comes from the partial sums approaching a finite boundary-term limit.
+
+      '
+    type: freeResponse
+    prompt: Explain why the series converges and give its sum.
+    answer:
+      expected: The series converges because the partial fraction form telescopes. Interior terms cancel, the tail terms approach zero, and the surviving boundary terms sum to 25/12.
+      gradingMode: selfCheck
+      keyPoints:
+      - |-
+        Decompose into $\frac1n-\frac{1}{n+4}$.
+      - Explain cancellation of interior terms.
+      - Explain that the tail terms vanish.
+      - |-
+        State the sum $\frac{25}{12}$.
+    explanation: |-
+      Solution: The exact cancellation pattern is the reason this series is solvable directly. The final answer is:
+
+      $$
+      \sum_{n=1}^{\infty}\frac{4}{n(n+4)}=\frac{25}{12}.
+      $$
+
+      Related topic: telescoping series from partial fractions. Therefore the answer is The series converges because the partial fraction form telescopes. Interior terms cancel, the tail terms approach zero, and the surviving boundary terms sum to 25/12.. Therefore the answer is The series converges because the partial fraction form telescopes. Interior terms cancel, the tail terms approach zero, and the surviving boundary terms sum to 25/12..
+
+      Why it works: Rewrite the general term so consecutive partial-sum terms cancel. Write $S_N$ explicitly, cancel only terms that occur with opposite signs, and then take $N\to\infty$ to obtain the infinite-series result.
+
+      Common trap: Do not cancel nonadjacent terms by inspection without writing $S_N$; the surviving last term usually depends on $N$ and must be sent to its limit.

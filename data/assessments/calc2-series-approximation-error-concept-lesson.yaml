@@ -6,6 +6,9 @@ categoryId: calculus-2
 topicId: series-approximation-error
 modeDefault: practice
 randomizeQuestions: false
+authoring:
+  visualRequirement: required
+  visualRationale: The relationship among the function, its truncation, and the signed remainder is most direct when learners can inspect it graphically.
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -197,3 +200,39 @@ lesson:
           For a valid alternating series estimate, the first omitted term bounds the error, so the largest guaranteed error is $0.0008$.
 
           Related topic: choosing terms for a target accuracy.
+    - id: sign-of-alternating-error
+      title: The next term also tells which side your approximation is on
+      required: true
+      content: |
+        For a valid alternating series, the exact sum lies between consecutive partial sums. The sign of the first omitted term is the sign of $R_N=S-S_N$.
+
+        Thus, if the next term is negative, $S_N$ is an overestimate; if it is positive, $S_N$ is an underestimate. This is useful when an answer asks for an interval, not merely an error magnitude.
+      check:
+        id: sign-of-alternating-error-check
+        type: multipleChoice
+        prompt: For $S=1-1/2+1/3-\cdots$, is $S_4$ above or below $S$?
+        choices:
+          - { id: a, text: 'Below, because the next term is positive.' }
+          - { id: b, text: 'Above, because the next term is positive.' }
+          - { id: c, text: 'Equal to $S$.' }
+          - { id: d, text: 'The sign cannot be determined.' }
+        answer: { choiceId: a }
+        explanation: The first omitted term is $+1/5$, so $R_4=S-S_4>0$ and $S_4<S$.
+    - id: choose-the-bound
+      title: Choose a theorem from the structure, not from the desired answer
+      required: true
+      content: |
+        Start by asking what information the series provides. A decreasing alternating numerical series gives a first-omitted-term bound. A positive decreasing tail written as $f(n)$ suggests integral bounds. A Taylor polynomial for a differentiable function may require a derivative maximum and Lagrange's remainder.
+
+        The same tolerance can lead to different calculations because the hypotheses, not the target decimal places, determine the valid theorem.
+      check:
+        id: choose-the-bound-check
+        type: multipleChoice
+        prompt: Which situation most directly supports the integral-test remainder estimate?
+        choices:
+          - { id: a, text: 'A positive decreasing series with $a_n=f(n)$ for an integrable decreasing function.' }
+          - { id: b, text: 'Any finite Taylor polynomial.' }
+          - { id: c, text: 'Any series with alternating signs, even if magnitudes increase.' }
+          - { id: d, text: 'A geometric series with ratio larger than one.' }
+        answer: { choiceId: a }
+        explanation: Integral tail bounds require a positive, continuous, decreasing function whose integer values give the series terms.

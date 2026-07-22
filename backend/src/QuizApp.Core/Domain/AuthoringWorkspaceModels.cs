@@ -100,6 +100,10 @@ public sealed record QuestionBlueprint(
     public IReadOnlyList<string> PrerequisiteObjectiveIds { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> ExtensionObjectiveIds { get; init; } = Array.Empty<string>();
     public string? VisualRationale { get; init; }
+    public IReadOnlyList<string> ExplanationOutline { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> DistractorRationale { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> OlympiadPrerequisites { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> FurtherStudy { get; init; } = Array.Empty<string>();
 }
 
 public sealed record ContentManifest(

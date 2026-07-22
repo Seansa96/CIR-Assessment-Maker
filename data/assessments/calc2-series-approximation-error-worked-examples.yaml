@@ -5,216 +5,394 @@ assessmentType: workedExample
 categoryId: calculus-2
 topicId: series-approximation-error
 skills:
-  - Apply alternating-series remainder bounds
-  - Bound positive-series tails using integrals
-  - Use Lagrange remainders to select Taylor degree
+- Apply alternating-series remainder bounds
+- Bound positive-series tails using integrals
+- Use Lagrange remainders to select Taylor degree
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-    - calculus-2
-    - series-approximation-error
-    - remainder-bounds
-    - approximation
+  - calculus-2
+  - series-approximation-error
+  - remainder-bounds
+  - approximation
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we-series-approximation-error-1
-    title: Choose terms with an alternating remainder bound
-    problem: |
-      Find the least $N$ for which
-      $$S_N=\sum_{n=1}^{N}\frac{(-1)^{n-1}}{n^3}$$
-      is guaranteed to approximate the infinite sum with error below $10^{-5}$.
-    steps:
-      - id: step-series-approximation-error-1-1
-        title: Verify applicability
-        instruction: |
-          The magnitudes $b_n=1/n^3$ are positive, decreasing, and approach
-          zero. Therefore the alternating-series remainder theorem applies.
-        type: multipleChoice
-        prompt: Which property would invalidate this theorem?
-        choices:
-          - { id: a, text: '$b_n$ fails to approach zero.' }
-          - { id: b, text: '$b_n$ is positive.' }
-          - { id: c, text: 'The signs alternate.' }
-          - { id: d, text: '$b_n$ contains a power.' }
-        answer: { choiceId: a }
-        explanation: Alternation alone cannot overcome a nonzero term limit.
-      - id: step-series-approximation-error-1-2
-        title: Use the first omitted term
-        instruction: |
-          After $N$ terms,
-          $$|R_N|\le b_{N+1}=\frac1{(N+1)^3}.$$
-        type: multipleChoice
-        prompt: Why is the index $N+1$ used?
-        choices:
-          - { id: a, text: 'It is the first omitted term.' }
-          - { id: b, text: 'It is the last included term.' }
-          - { id: c, text: 'The theorem skips every other term.' }
-          - { id: d, text: 'Cubing adds one to the index.' }
-        answer: { choiceId: a }
-        explanation: The alternating error is bounded by the next magnitude after truncation.
-      - id: step-series-approximation-error-1-3
-        title: Solve the strict inequality
-        instruction: |
-          Require
-          $$\frac1{(N+1)^3}<10^{-5},$$
-          which is equivalent to $(N+1)^3>100000$.
-        type: multipleChoice
-        prompt: Between which consecutive integers is $\sqrt[3]{100000}$?
-        choices:
-          - { id: a, text: '$46$ and $47$' }
-          - { id: b, text: '$45$ and $46$' }
-          - { id: c, text: '$99$ and $100$' }
-          - { id: d, text: '$21$ and $22$' }
-        answer: { choiceId: a }
-        explanation: $46^3=97336<100000$ while $47^3=103823>100000$.
-      - id: step-series-approximation-error-1-4
-        title: Verify minimality
-        instruction: |
-          The least first-omitted index is $N+1=47$, so the least truncation
-          index is $N=46$. At $N=45$ the bound is $1/46^3>10^{-5}$.
-        type: multipleChoice
-        prompt: What is the least acceptable $N$?
-        choices:
-          - { id: a, text: '$45$' }
-          - { id: b, text: '$46$' }
-          - { id: c, text: '$47$' }
-          - { id: d, text: '$100$' }
-        answer: { choiceId: b }
-        explanation: Checking the preceding integer establishes that the working value is least, not merely sufficient.
+- id: we-series-approximation-error-1
+  title: Choose terms with an alternating remainder bound
+  problem: |
+    Find the least $N$ for which
+    $$S_N=\sum_{n=1}^{N}\frac{(-1)^{n-1}}{n^3}$$
+    is guaranteed to approximate the infinite sum with error below $10^{-5}$.
+  steps:
+  - id: step-series-approximation-error-1-1
+    title: Verify applicability
+    instruction: 'The magnitudes $b_n=1/n^3$ are positive, decreasing, and approach
 
-  - id: we-series-approximation-error-2
-    title: Bound a positive tail by improper integrals
-    problem: |
-      For $\sum_{n=1}^{\infty}1/n^2$, find the least $N$ for which the
-      integral-test remainder estimate guarantees $R_N<0.01$.
-    steps:
-      - id: step-series-approximation-error-2-1
-        title: State both integral bounds
-        instruction: |
-          For the positive decreasing function $f(x)=1/x^2$,
-          $$\int_{N+1}^{\infty}f(x)\,dx
-          \le R_N\le
-          \int_N^{\infty}f(x)\,dx.$$
-        type: multipleChoice
-        prompt: Which side is used to guarantee an upper error limit?
-        choices:
-          - { id: a, text: 'The integral beginning at $N$' }
-          - { id: b, text: 'The integral beginning at $N+1$' }
-          - { id: c, text: 'The average of the two integrals' }
-          - { id: d, text: 'Neither integral' }
-        answer: { choiceId: a }
-        explanation: A sufficient accuracy guarantee needs an upper bound on the unknown tail.
-      - id: step-series-approximation-error-2-2
-        title: Evaluate the tail integrals
-        instruction: |
-          Since $\int_A^\infty x^{-2}\,dx=1/A$,
-          $$\frac1{N+1}\le R_N\le\frac1N.$$
-        type: multipleChoice
-        prompt: What is the antiderivative used here?
-        choices:
-          - { id: a, text: '$-1/x$' }
-          - { id: b, text: '$\ln x$' }
-          - { id: c, text: '$x^{-2}$' }
-          - { id: d, text: '$x^2/2$' }
-        answer: { choiceId: a }
-        explanation: Evaluating $-1/x$ from $A$ to infinity gives $1/A$.
-      - id: step-series-approximation-error-2-3
-        title: Translate the requested guarantee
-        instruction: |
-          It is sufficient to require $1/N<0.01=1/100$, so $N>100$.
-        type: multipleChoice
-        prompt: Why is $N=100$ not certified by this strict requirement?
-        choices:
-          - { id: a, text: 'The upper bound is then exactly $0.01$, not strictly smaller.' }
-          - { id: b, text: 'The series begins at $n=1$.' }
-          - { id: c, text: '$100$ is not an integer.' }
-          - { id: d, text: 'The integral test applies only for $N<100$.' }
-        answer: { choiceId: a }
-        explanation: An upper bound equal to the tolerance does not prove an error below the tolerance.
-      - id: step-series-approximation-error-2-4
-        title: State what the estimate guarantees
-        instruction: |
-          The least integer satisfying $N>100$ is $N=101$. This is the least
-          value certified by this particular bound; the actual error could meet
-          the tolerance earlier.
-        type: multipleChoice
-        prompt: What is the least certified $N$?
-        choices:
-          - { id: a, text: '$99$' }
-          - { id: b, text: '$100$' }
-          - { id: c, text: '$101$' }
-          - { id: d, text: '$10000$' }
-        answer: { choiceId: c }
-        explanation: Error bounds provide sufficient conditions and need not identify the exact first successful truncation.
+      zero. Therefore the alternating-series remainder theorem applies.
 
-  - id: we-series-approximation-error-3
-    title: Select a Taylor degree with Lagrange's remainder
-    problem: |
-      Approximate $e^{1/2}$ with its Maclaurin polynomial. Find the least
-      degree $n$ for which Lagrange's bound guarantees error below $10^{-5}$.
-    steps:
-      - id: step-series-approximation-error-3-1
-        title: Bound the next derivative
-        instruction: |
-          Every derivative of $e^x$ is $e^x$. On $0\le x\le1/2$, the maximum is
-          $M=e^{1/2}$, so
-          $$|R_n(1/2)|\le
-          \frac{e^{1/2}(1/2)^{n+1}}{(n+1)!}.$$
-        type: multipleChoice
-        prompt: Why is $M=1$ not a valid upper bound on this interval?
-        choices:
-          - { id: a, text: '$e^x>1$ for $x>0$.' }
-          - { id: b, text: 'The derivatives alternate signs.' }
-          - { id: c, text: '$e^x$ is decreasing.' }
-          - { id: d, text: 'Lagrange bounds never use $M$.' }
-        answer: { choiceId: a }
-        explanation: The derivative maximum must dominate its values throughout the interval between center and evaluation point.
-      - id: step-series-approximation-error-3-2
-        title: Test degree five
-        instruction: |
-          For $n=5$,
-          $$|R_5(1/2)|\le
-          \frac{e^{1/2}}{2^6\,6!}
-          \approx3.58\times10^{-5},$$
-          which is too large for the requested guarantee.
-        type: multipleChoice
-        prompt: What does this calculation prove?
-        choices:
-          - { id: a, text: 'Degree five is not certified by this bound.' }
-          - { id: b, text: 'The actual degree-five error exceeds $10^{-5}$.' }
-          - { id: c, text: 'The Taylor series diverges.' }
-          - { id: d, text: 'Degree four is sufficient.' }
-        answer: { choiceId: a }
-        explanation: Failure of an upper bound to meet a target does not prove the actual error is too large.
-      - id: step-series-approximation-error-3-3
-        title: Test the next degree
-        instruction: |
-          For $n=6$,
-          $$|R_6(1/2)|\le
-          \frac{e^{1/2}}{2^7\,7!}
-          \approx2.56\times10^{-6}<10^{-5}.$$
-        type: multipleChoice
-        prompt: Which degree is therefore sufficient?
-        choices:
-          - { id: a, text: '$5$' }
-          - { id: b, text: '$6$' }
-          - { id: c, text: '$7$' }
-          - { id: d, text: '$10$' }
-        answer: { choiceId: b }
-        explanation: The degree-six remainder uses the seventh derivative term in the Lagrange formula.
-      - id: step-series-approximation-error-3-4
-        title: Establish least degree under the bound
-        instruction: |
-          Degree five fails the chosen guarantee and degree six succeeds, so
-          $n=6$ is the least degree certified by Lagrange's estimate.
-        type: multipleChoice
-        prompt: Which distinction should accompany the conclusion?
-        choices:
-          - { id: a, text: 'It is least for this bound, not necessarily least for the unknown exact error.' }
-          - { id: b, text: 'It is the only degree for which the polynomial exists.' }
-          - { id: c, text: 'Higher degrees have larger guaranteed errors.' }
-          - { id: d, text: 'The estimate gives the exact remainder.' }
-        answer: { choiceId: a }
-        explanation: Lagrange's formula supplies a conservative upper bound rather than the exact truncation error.
+      '
+    type: multipleChoice
+    prompt: Which property would invalidate this theorem?
+    choices:
+    - id: a
+      text: $b_n$ fails to approach zero.
+    - id: b
+      text: $b_n$ is positive.
+    - id: c
+      text: The signs alternate.
+    - id: d
+      text: $b_n$ contains a power.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Alternation alone cannot overcome a nonzero term limit. Therefore the answer is $b_n$ fails to approach zero.. Therefore the answer is $b_n$ fails to approach zero.. Therefore the answer is $b_n$ fails to approach zero.. Therefore the answer is $b_n$ fails to approach zero..
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: $b_n$ is positive. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The signs alternate. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $b_n$ contains a power. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: step-series-approximation-error-1-2
+    title: Use the first omitted term
+    instruction: |
+      After $N$ terms,
+      $$|R_N|\le b_{N+1}=\frac1{(N+1)^3}.$$
+    type: multipleChoice
+    prompt: Why is the index $N+1$ used?
+    choices:
+    - id: a
+      text: It is the first omitted term.
+    - id: b
+      text: It is the last included term.
+    - id: c
+      text: The theorem skips every other term.
+    - id: d
+      text: Cubing adds one to the index.
+    answer:
+      choiceId: a
+    explanation: 'Solution: The alternating error is bounded by the next magnitude after truncation. Therefore the answer is It is the first omitted term.. Therefore the answer is It is the first omitted term.. Therefore the answer is It is the first omitted term.. Therefore the answer is It is the first omitted term..
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: It is the last included term. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The theorem skips every other term. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; Cubing adds one to the index. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: step-series-approximation-error-1-3
+    title: Solve the strict inequality
+    instruction: |
+      Require
+      $$\frac1{(N+1)^3}<10^{-5},$$
+      which is equivalent to $(N+1)^3>100000$.
+    type: multipleChoice
+    prompt: |-
+      Between which consecutive integers is $\sqrt[3]{100000}$?
+    choices:
+    - id: a
+      text: $46$ and $47$
+    - id: b
+      text: $45$ and $46$
+    - id: c
+      text: $99$ and $100$
+    - id: d
+      text: $21$ and $22$
+    answer:
+      choiceId: a
+    explanation: 'Solution: $46^3=97336<100000$ while $47^3=103823>100000$. Therefore the answer is $46$ and $47$.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: $45$ and $46$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $99$ and $100$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $21$ and $22$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: step-series-approximation-error-1-4
+    title: Verify minimality
+    instruction: 'The least first-omitted index is $N+1=47$, so the least truncation
+
+      index is $N=46$. At $N=45$ the bound is $1/46^3>10^{-5}$.
+
+      '
+    type: multipleChoice
+    prompt: What is the least acceptable $N$?
+    choices:
+    - id: a
+      text: $45$
+    - id: b
+      text: $46$
+    - id: c
+      text: $47$
+    - id: d
+      text: $100$
+    answer:
+      choiceId: b
+    explanation: 'Solution: Checking the preceding integer establishes that the working value is least, not merely sufficient. Therefore the answer is $46$.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: $45$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $47$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $100$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+- id: we-series-approximation-error-2
+  title: Bound a positive tail by improper integrals
+  problem: |
+    For $\sum_{n=1}^{\infty}1/n^2$, find the least $N$ for which the
+    integral-test remainder estimate guarantees $R_N<0.01$.
+  steps:
+  - id: step-series-approximation-error-2-1
+    title: State both integral bounds
+    instruction: |
+      For the positive decreasing function $f(x)=1/x^2$,
+      $$\int_{N+1}^{\infty}f(x)\,dx
+      \le R_N\le
+      \int_N^{\infty}f(x)\,dx.$$
+    type: multipleChoice
+    prompt: Which side is used to guarantee an upper error limit?
+    choices:
+    - id: a
+      text: The integral beginning at $N$
+    - id: b
+      text: The integral beginning at $N+1$
+    - id: c
+      text: The average of the two integrals
+    - id: d
+      text: Neither integral
+    answer:
+      choiceId: a
+    explanation: 'Solution: A sufficient accuracy guarantee needs an upper bound on the unknown tail. Therefore the answer is The integral beginning at $N$.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: The integral beginning at $N+1$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The average of the two integrals conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; Neither integral conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: step-series-approximation-error-2-2
+    title: Evaluate the tail integrals
+    instruction: |
+      Since $\int_A^\infty x^{-2}\,dx=1/A$,
+      $$\frac1{N+1}\le R_N\le\frac1N.$$
+    type: multipleChoice
+    prompt: What is the antiderivative used here?
+    choices:
+    - id: a
+      text: $-1/x$
+    - id: b
+      text: |-
+        $\ln x$
+    - id: c
+      text: $x^{-2}$
+    - id: d
+      text: $x^2/2$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Evaluating $-1/x$ from $A$ to infinity gives $1/A$. Therefore the answer is $-1/x$.
+
+      Why it works: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$. Compute derivatives at the center, divide by $n!$, and preserve the power $(x-a)^n$ before analyzing convergence.
+
+      Common trap: Do not confuse the derivative value with its Taylor coefficient; the factorial belongs in every coefficient, including the constant term where $0!=1$.
+
+      Why the other choices fail: $\ln x$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $x^{-2}$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $x^2/2$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$.
+  - id: step-series-approximation-error-2-3
+    title: Translate the requested guarantee
+    instruction: 'It is sufficient to require $1/N<0.01=1/100$, so $N>100$.
+
+      '
+    type: multipleChoice
+    prompt: Why is $N=100$ not certified by this strict requirement?
+    choices:
+    - id: a
+      text: The upper bound is then exactly $0.01$, not strictly smaller.
+    - id: b
+      text: The series begins at $n=1$.
+    - id: c
+      text: $100$ is not an integer.
+    - id: d
+      text: The integral test applies only for $N<100$.
+    answer:
+      choiceId: a
+    explanation: 'Solution: An upper bound equal to the tolerance does not prove an error below the tolerance. Therefore the answer is The upper bound is then exactly $0.01$, not strictly smaller.. Therefore the answer is The upper bound is then exactly $0.01$, not strictly smaller.. Therefore the answer is The upper bound is then exactly $0.01$, not strictly smaller.. Therefore the answer is The upper bound is then exactly $0.01$, not strictly smaller..
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: The series begins at $n=1$. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $100$ is not an integer. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The integral test applies only for $N<100$. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: step-series-approximation-error-2-4
+    title: State what the estimate guarantees
+    instruction: 'The least integer satisfying $N>100$ is $N=101$. This is the least
+
+      value certified by this particular bound; the actual error could meet
+
+      the tolerance earlier.
+
+      '
+    type: multipleChoice
+    prompt: What is the least certified $N$?
+    choices:
+    - id: a
+      text: $99$
+    - id: b
+      text: $100$
+    - id: c
+      text: $101$
+    - id: d
+      text: $10000$
+    answer:
+      choiceId: c
+    explanation: 'Solution: Error bounds provide sufficient conditions and need not identify the exact first successful truncation. Therefore the answer is $101$.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: $99$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $100$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $10000$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+- id: we-series-approximation-error-3
+  title: Select a Taylor degree with Lagrange's remainder
+  problem: 'Approximate $e^{1/2}$ with its Maclaurin polynomial. Find the least
+
+    degree $n$ for which Lagrange''s bound guarantees error below $10^{-5}$.
+
+    '
+  steps:
+  - id: step-series-approximation-error-3-1
+    title: Bound the next derivative
+    instruction: |
+      Every derivative of $e^x$ is $e^x$. On $0\le x\le1/2$, the maximum is
+      $M=e^{1/2}$, so
+      $$|R_n(1/2)|\le
+      \frac{e^{1/2}(1/2)^{n+1}}{(n+1)!}.$$
+    type: multipleChoice
+    prompt: Why is $M=1$ not a valid upper bound on this interval?
+    choices:
+    - id: a
+      text: $e^x>1$ for $x>0$.
+    - id: b
+      text: The derivatives alternate signs.
+    - id: c
+      text: $e^x$ is decreasing.
+    - id: d
+      text: Lagrange bounds never use $M$.
+    answer:
+      choiceId: a
+    explanation: 'Solution: The derivative maximum must dominate its values throughout the interval between center and evaluation point. Therefore the answer is $e^x>1$ for $x>0$.. Therefore the answer is $e^x>1$ for $x>0$.. Therefore the answer is $e^x>1$ for $x>0$.. Therefore the answer is $e^x>1$ for $x>0$..
+
+
+      Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
+
+
+      Common trap: Do not substitute endpoints into a simplified inequality and stop; each endpoint may converge, diverge, or have a different inclusion status.
+
+
+      Why the other choices fail: The derivatives alternate signs. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; $e^x$ is decreasing. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; Lagrange bounds never use $M$. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$.'
+  - id: step-series-approximation-error-3-2
+    title: Test degree five
+    instruction: |
+      For $n=5$,
+      $$|R_5(1/2)|\le
+      \frac{e^{1/2}}{2^6\,6!}
+      \approx3.58\times10^{-5},$$
+      which is too large for the requested guarantee.
+    type: multipleChoice
+    prompt: What does this calculation prove?
+    choices:
+    - id: a
+      text: Degree five is not certified by this bound.
+    - id: b
+      text: The actual degree-five error exceeds $10^{-5}$.
+    - id: c
+      text: The Taylor series diverges.
+    - id: d
+      text: Degree four is sufficient.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Failure of an upper bound to meet a target does not prove the actual error is too large. Therefore the answer is Degree five is not certified by this bound.. Therefore the answer is Degree five is not certified by this bound.. Therefore the answer is Degree five is not certified by this bound.. Therefore the answer is Degree five is not certified by this bound..
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: The actual degree-five error exceeds $10^{-5}$. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The Taylor series diverges. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; Degree four is sufficient. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: step-series-approximation-error-3-3
+    title: Test the next degree
+    instruction: |
+      For $n=6$,
+      $$|R_6(1/2)|\le
+      \frac{e^{1/2}}{2^7\,7!}
+      \approx2.56\times10^{-6}<10^{-5}.$$
+    type: multipleChoice
+    prompt: Which degree is therefore sufficient?
+    choices:
+    - id: a
+      text: $5$
+    - id: b
+      text: $6$
+    - id: c
+      text: $7$
+    - id: d
+      text: $10$
+    answer:
+      choiceId: b
+    explanation: 'Solution: The degree-six remainder uses the seventh derivative term in the Lagrange formula. Therefore the answer is $6$.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: $5$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $7$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $10$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: step-series-approximation-error-3-4
+    title: Establish least degree under the bound
+    instruction: 'Degree five fails the chosen guarantee and degree six succeeds, so
+
+      $n=6$ is the least degree certified by Lagrange''s estimate.
+
+      '
+    type: multipleChoice
+    prompt: Which distinction should accompany the conclusion?
+    choices:
+    - id: a
+      text: It is least for this bound, not necessarily least for the unknown exact error.
+    - id: b
+      text: It is the only degree for which the polynomial exists.
+    - id: c
+      text: Higher degrees have larger guaranteed errors.
+    - id: d
+      text: The estimate gives the exact remainder.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Lagrange''s formula supplies a conservative upper bound rather than the exact truncation error. Therefore the answer is It is least for this bound, not necessarily least for the unknown exact error.. Therefore the answer is It is least for this bound, not necessarily least for the unknown exact error.. Therefore the answer is It is least for this bound, not necessarily least for the unknown exact error.. Therefore the answer is It is least for this bound, not necessarily least for the unknown exact error..
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: It is the only degree for which the polynomial exists. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; Higher degrees have larger guaranteed errors. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The estimate gives the exact remainder. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'

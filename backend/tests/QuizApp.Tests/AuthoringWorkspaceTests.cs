@@ -38,7 +38,8 @@ public sealed class AuthoringWorkspaceTests : IDisposable
         await service.SaveBlueprintAsync(new QuestionBlueprint(1, "wave-speed-blueprint", "physics-1", "traveling-waves", "wave-speed", "numericResponse", [source.Chunks[0].Id], ["wave relation"], ["identify values", "solve relation"], ["scenario", "unknown"], "Using amplitude instead of wavelength.", "easy", 2, false, SourceReviewState.NeedsReview)
         {
             DifficultyDimensions = [DifficultyDimension.RepresentationTransfer, DifficultyDimension.AuxiliaryTechnique],
-            DifficultyEvidence = "Reads the wave relationship and then applies the governing relation."
+            DifficultyEvidence = "Reads the wave relationship and then applies the governing relation.",
+            ExplanationOutline = ["Solution: substitute the values and solve.", "Why it works: the wave relation connects the quantities."]
         });
 
         Assert.Single(packet.Chunks);
@@ -71,7 +72,8 @@ public sealed class AuthoringWorkspaceTests : IDisposable
             DifficultyDimensions = [DifficultyDimension.RepresentationTransfer, DifficultyDimension.ModelOrDerivation, DifficultyDimension.AuxiliaryTechnique],
             SubjectDifficultyTags = ["waveGraph", "methodBranch"],
             DifficultyEvidence = "Interprets a representation, builds a wave model, and applies a relation.",
-            PrerequisiteObjectiveIds = ["algebraic-rearrangement"]
+            PrerequisiteObjectiveIds = ["algebraic-rearrangement"],
+            ExplanationOutline = ["Solution: interpret, model, and solve.", "Why it works: the wave relation applies under the stated assumptions."]
         };
 
         await service.SaveBlueprintAsync(blueprint);
@@ -89,7 +91,7 @@ public sealed class AuthoringWorkspaceTests : IDisposable
         await File.WriteAllTextAsync(input, "Wave speed depends on frequency and wavelength.");
         var service = CreateService();
         var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
-        var payload = $$"""{"questionBlueprints":[{"schemaVersion":1,"id":"draft-wave-speed","categoryId":"physics-1","topicId":"traveling-waves","objectiveId":"wave-speed","questionType":"numericResponse","sourceChunkIds":["{{source.Chunks[0].Id}}"],"governingPrinciples":["wave relation"],"methodSteps":["identify values","solve relation"],"variationAxes":["scenario","unknown"],"commonTrap":"trap","difficulty":"easy","reasoningDepth":2,"requiresDiagram":false,"difficultyDimensions":["representationTransfer","auxiliaryTechnique"],"difficultyEvidence":"Reads a representation and applies the governing relation.","reviewState":"needsReview"}]}""";
+        var payload = $$"""{"questionBlueprints":[{"schemaVersion":1,"id":"draft-wave-speed","categoryId":"physics-1","topicId":"traveling-waves","objectiveId":"wave-speed","questionType":"numericResponse","sourceChunkIds":["{{source.Chunks[0].Id}}"],"governingPrinciples":["wave relation"],"methodSteps":["identify values","solve relation"],"variationAxes":["scenario","unknown"],"commonTrap":"trap","difficulty":"easy","reasoningDepth":2,"requiresDiagram":false,"difficultyDimensions":["representationTransfer","auxiliaryTechnique"],"difficultyEvidence":"Reads a representation and applies the governing relation.","explanationOutline":["Solution: substitute values.","Why it works: use the wave relation."],"reviewState":"needsReview"}]}""";
         var draft = await service.ImportDraftAsync("packet-test", payload);
         await service.SetDraftStateAsync(draft.Id, SourceReviewState.Approved);
         Assert.Equal(SourceReviewState.Approved, (await service.ListBlueprintsAsync("physics-1")).Single().ReviewState);

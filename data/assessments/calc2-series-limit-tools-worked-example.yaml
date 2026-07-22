@@ -17,273 +17,350 @@ navigation:
   - test-selection
 skills:
 - Apply calculus-2 concepts
-- Apply Series Fundamentals
-  - series-fundamentals
-  - series-convergence
-  - convergence-tests
-  - test-selection
+- Apply Series Fundamentals - series-fundamentals - series-convergence - convergence-tests - test-selection
 workedExamples:
-  - id: series-limit-tool-tour
-    title: Choosing the Right Convergence Test
-    problem: |
-      ![Partial sum behavior examples](/media/calculus/infinite-series/series-partial-sums-behaviors.svg)
+- id: series-limit-tool-tour
+  title: Choosing the Right Convergence Test
+  problem: '![Partial sum behavior examples](/media/calculus/infinite-series/series-partial-sums-behaviors.svg)
 
-      A series converges when its partial sums approach a finite number. Each test is a way of proving what the partial sums do without adding infinitely many terms.
-    steps:
-      - id: series-limit-tools-step-001
-        title: Always check the terms first
-        instruction: |
-          The nth-term test is a fast failure test.
 
-          $$
-          \sum_{n=1}^{\infty}\frac{5n^2+1}{2n^2+3}
-          $$
-        type: multipleChoice
-        prompt: What should you conclude?
-        choices:
-          - id: a
-            text: The series diverges because the terms approach $\frac52$, not $0$.
-          - id: b
-            text: The series converges because the terms have a finite limit.
-          - id: c
-            text: The series converges by p-series.
-          - id: d
-            text: The series converges conditionally.
-        answer:
-          choiceId: a
-        explanation: |
-          If $\lim a_n\ne 0$, then $\sum a_n$ diverges. Here the term limit is $\frac52$.
-      - id: series-limit-tools-step-002
-        title: Recognize geometric structure
-        instruction: |
-          Geometric series are decided by the ratio magnitude.
+    A series converges when its partial sums approach a finite number. Each test is a way of proving what the partial sums do without adding infinitely many terms.
 
-          $$
-          \sum_{n=0}^{\infty}6\left(-\frac23\right)^n
-          $$
-        type: multipleChoice
-        prompt: Does the series converge?
-        choices:
-          - id: a
-            text: Yes, because $|r|=\frac23<1$.
-          - id: b
-            text: No, because the signs alternate.
-          - id: c
-            text: No, because the first term is 6.
-          - id: d
-            text: Yes, because every alternating series converges.
-        answer:
-          choiceId: a
-        explanation: |
-          A geometric series converges exactly when $|r|<1$. Alternation is not the deciding feature here; the ratio is.
-      - id: series-limit-tools-step-003
-        title: Recognize p-series
-        instruction: |
-          A p-series has the form $\sum \frac1{n^p}$.
+    '
+  steps:
+  - id: series-limit-tools-step-001
+    title: Always check the terms first
+    instruction: |
+      The nth-term test is a fast failure test.
 
-          $$
-          \sum_{n=1}^{\infty}\frac1{n^{5/4}}
-          $$
-        type: multipleChoice
-        prompt: What is the result?
-        choices:
-          - id: a
-            text: It converges because $p=\frac54>1$.
-          - id: b
-            text: It diverges because $p=\frac54>1$.
-          - id: c
-            text: It diverges by nth-term test.
-          - id: d
-            text: It converges conditionally.
-        answer:
-          choiceId: a
-        explanation: |
-          p-series converge when $p>1$ and diverge when $p\le 1$.
-      - id: series-limit-tools-step-004
-        title: Use telescoping when terms cancel
-        instruction: |
-          Difference patterns often collapse in partial sums.
+      $$
+      \sum_{n=1}^{\infty}\frac{5n^2+1}{2n^2+3}
+      $$
+    type: multipleChoice
+    prompt: What should you conclude?
+    choices:
+    - id: a
+      text: |-
+        The series diverges because the terms approach $\frac52$, not $0$.
+    - id: b
+      text: The series converges because the terms have a finite limit.
+    - id: c
+      text: The series converges by p-series.
+    - id: d
+      text: The series converges conditionally.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: If $\lim a_n\ne 0$, then $\sum a_n$ diverges. Here the term limit is $\frac52$. Therefore the answer is The series diverges because the terms approach $\frac52$, not $0$.. Therefore the answer is The series diverges because the terms approach $\frac52$, not $0$.. Therefore the answer is The series diverges because the terms approach $\frac52$, not $0$..
 
-          $$
-          \sum_{n=1}^{\infty}\left(\frac1n-\frac1{n+2}\right)
-          $$
-        type: multipleChoice
-        prompt: What happens?
-        choices:
-          - id: a
-            text: It converges because the partial sums telescope.
-          - id: b
-            text: It diverges because each piece is harmonic.
-          - id: c
-            text: It diverges by nth-term test.
-          - id: d
-            text: It converges only conditionally.
-        answer:
-          choiceId: a
-        explanation: |
-          Writing out terms shows cancellation. The surviving tail terms go to $0$, leaving a finite sum.
-      - id: series-limit-tools-step-005
-        title: Use limit comparison for rational terms
-        instruction: |
-          Rational expressions usually behave like their dominant-power ratio.
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-          $$
-          \sum_{n=1}^{\infty}\frac{2n^2+1}{n^3+4}
-          $$
-        type: multipleChoice
-        prompt: Which comparison is appropriate?
-        choices:
-          - id: a
-            text: Compare with $\frac1n$; the series diverges.
-          - id: b
-            text: Compare with $\frac1{n^2}$; the series converges.
-          - id: c
-            text: Use alternating series test; it converges conditionally.
-          - id: d
-            text: Use geometric series test; it converges.
-        answer:
-          choiceId: a
-        explanation: |
-          The leading behavior is $\frac{2n^2}{n^3}=\frac2n$. Limit comparison with the harmonic series gives divergence.
-      - id: series-limit-tools-step-006
-        title: Use direct comparison for bounded factors
-        instruction: |
-          Bounded trig factors often allow comparison.
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
 
-          $$
-          \sum_{n=1}^{\infty}\frac{1+\sin^2 n}{n^2}
-          $$
-        type: multipleChoice
-        prompt: What is the best conclusion?
-        choices:
-          - id: a
-            text: It converges because $1+\sin^2 n\le 2$, so the terms are bounded by $\frac2{n^2}$.
-          - id: b
-            text: It diverges because $\sin^2 n$ oscillates.
-          - id: c
-            text: It diverges by nth-term test.
-          - id: d
-            text: It converges conditionally.
-        answer:
-          choiceId: a
-        explanation: |
-          Since $0\le \sin^2 n\le 1$, the whole numerator is between $1$ and $2$. Comparison to a convergent p-series proves convergence.
-      - id: series-limit-tools-step-007
-        title: Use the integral test for logarithmic denominators
-        instruction: |
-          Logarithmic denominator patterns often point to the integral test.
+      Why the other choices fail: The series converges because the terms have a finite limit. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The series converges by p-series. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The series converges conditionally. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: series-limit-tools-step-002
+    title: Recognize geometric structure
+    instruction: |
+      Geometric series are decided by the ratio magnitude.
 
-          $$
-          \sum_{n=2}^{\infty}\frac1{n\ln n}
-          $$
-        type: multipleChoice
-        prompt: What happens?
-        choices:
-          - id: a
-            text: It diverges because $\int \frac1{x\ln x}\,dx=\ln|\ln x|+C$ grows without bound.
-          - id: b
-            text: It converges because the terms go to 0.
-          - id: c
-            text: It converges by p-series with $p=2$.
-          - id: d
-            text: It diverges by oscillation.
-        answer:
-          choiceId: a
-        explanation: |
-          The integral test shows the accumulated area grows without bound. Term size going to $0$ is not enough.
-      - id: series-limit-tools-step-008
-        title: Use alternating series carefully
-        instruction: |
-          Alternating signs can create convergence even when the absolute-value series diverges.
+      $$
+      \sum_{n=0}^{\infty}6\left(-\frac23\right)^n
+      $$
+    type: multipleChoice
+    prompt: Does the series converge?
+    choices:
+    - id: a
+      text: |-
+        Yes, because $|r|=\frac23<1$.
+    - id: b
+      text: No, because the signs alternate.
+    - id: c
+      text: No, because the first term is 6.
+    - id: d
+      text: Yes, because every alternating series converges.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: A geometric series converges exactly when $|r|<1$. Alternation is not the deciding feature here; the ratio is. Therefore the answer is Yes, because $|r|=\frac23<1$.. Therefore the answer is Yes, because $|r|=\frac23<1$.. Therefore the answer is Yes, because $|r|=\frac23<1$..
 
-          $$
-          \sum_{n=1}^{\infty}\frac{(-1)^{n+1}}{\sqrt n}
-          $$
-        type: multipleChoice
-        prompt: What is true?
-        choices:
-          - id: a
-            text: It converges conditionally.
-          - id: b
-            text: It converges absolutely.
-          - id: c
-            text: It diverges by nth-term test.
-          - id: d
-            text: It diverges because p-series with $p=\frac12$ diverges.
-        answer:
-          choiceId: a
-        explanation: |
-          The alternating series test applies because $\frac1{\sqrt n}$ decreases to $0$. The absolute-value series diverges, so convergence is conditional.
-      - id: series-limit-tools-step-009
-        title: Use ratio test for factorials and exponentials
-        instruction: |
-          Factorials and exponentials usually simplify cleanly by comparing consecutive terms.
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-          $$
-          \sum_{n=0}^{\infty}\frac{3^n}{n!}
-          $$
-        type: multipleChoice
-        prompt: What does the ratio test show?
-        choices:
-          - id: a
-            text: The ratio limit is $0$, so the series converges.
-          - id: b
-            text: The ratio limit is $3$, so the series diverges.
-          - id: c
-            text: The terms do not go to $0$, so it diverges.
-          - id: d
-            text: The series converges conditionally.
-        answer:
-          choiceId: a
-        explanation: |
-          The ratio is
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
 
-          $$
-          \frac{3^{n+1}/(n+1)!}{3^n/n!}=\frac{3}{n+1}\to 0.
-          $$
-      - id: series-limit-tools-step-010
-        title: Use root test for nth-power terms
-        instruction: |
-          If the whole term is raised to the $n$th power, the root test is designed to remove it.
+      Why the other choices fail: No, because the signs alternate. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; No, because the first term is 6. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Yes, because every alternating series converges. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: series-limit-tools-step-003
+    title: Recognize p-series
+    instruction: |
+      A p-series has the form $\sum \frac1{n^p}$.
 
-          $$
-          \sum_{n=1}^{\infty}\left(\frac{n+1}{2n+3}\right)^n
-          $$
-        type: multipleChoice
-        prompt: What does the root test show?
-        choices:
-          - id: a
-            text: The root limit is $\frac12$, so the series converges.
-          - id: b
-            text: The root limit is $1$, so the test proves divergence.
-          - id: c
-            text: The root limit is $2$, so the series diverges.
-          - id: d
-            text: The series diverges by oscillation.
-        answer:
-          choiceId: a
-        explanation: |
-          Taking the $n$th root gives $\frac{n+1}{2n+3}\to \frac12<1$.
-      - id: series-limit-tools-step-011
-        title: Use local approximations when a trig expression hides a p-series
-        instruction: |
-          Some hard-looking terms become familiar after a small-angle approximation.
+      $$
+      \sum_{n=1}^{\infty}\frac1{n^{5/4}}
+      $$
+    type: multipleChoice
+    prompt: What is the result?
+    choices:
+    - id: a
+      text: |-
+        It converges because $p=\frac54>1$.
+    - id: b
+      text: |-
+        It diverges because $p=\frac54>1$.
+    - id: c
+      text: It diverges by nth-term test.
+    - id: d
+      text: It converges conditionally.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: p-series converge when $p>1$ and diverge when $p\le 1$. Therefore the answer is It converges because $p=\frac54>1$.. Therefore the answer is It converges because $p=\frac54>1$.. Therefore the answer is It converges because $p=\frac54>1$..
 
-          $$
-          \sum_{n=1}^{\infty}\left(1-\cos\frac1n\right)
-          $$
-        type: multipleChoice
-        prompt: What is the correct comparison?
-        choices:
-          - id: a
-            text: It behaves like $\frac1{2n^2}$, so it converges.
-          - id: b
-            text: It behaves like $\frac1n$, so it diverges.
-          - id: c
-            text: It diverges because cosine oscillates.
-          - id: d
-            text: It converges conditionally by alternating signs.
-        answer:
-          choiceId: a
-        explanation: |
-          Near $0$, $1-\cos x\sim \frac{x^2}{2}$. With $x=\frac1n$, the term behaves like $\frac1{2n^2}$.
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: It diverges because $p=\frac54>1$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It diverges by nth-term test. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It converges conditionally. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: series-limit-tools-step-004
+    title: Use telescoping when terms cancel
+    instruction: |
+      Difference patterns often collapse in partial sums.
+
+      $$
+      \sum_{n=1}^{\infty}\left(\frac1n-\frac1{n+2}\right)
+      $$
+    type: multipleChoice
+    prompt: What happens?
+    choices:
+    - id: a
+      text: It converges because the partial sums telescope.
+    - id: b
+      text: It diverges because each piece is harmonic.
+    - id: c
+      text: It diverges by nth-term test.
+    - id: d
+      text: It converges only conditionally.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Writing out terms shows cancellation. The surviving tail terms go to $0$, leaving a finite sum. Therefore the answer is It converges because the partial sums telescope.. Therefore the answer is It converges because the partial sums telescope.. Therefore the answer is It converges because the partial sums telescope..
+
+      Why it works: Rewrite the general term so consecutive partial-sum terms cancel. Write $S_N$ explicitly, cancel only terms that occur with opposite signs, and then take $N\to\infty$ to obtain the infinite-series result.
+
+      Common trap: Do not cancel nonadjacent terms by inspection without writing $S_N$; the surviving last term usually depends on $N$ and must be sent to its limit.
+
+      Why the other choices fail: It diverges because each piece is harmonic. conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel; It diverges by nth-term test. conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel; It converges only conditionally. conflicts with this criterion: Rewrite the general term so consecutive partial-sum terms cancel.
+  - id: series-limit-tools-step-005
+    title: Use limit comparison for rational terms
+    instruction: |
+      Rational expressions usually behave like their dominant-power ratio.
+
+      $$
+      \sum_{n=1}^{\infty}\frac{2n^2+1}{n^3+4}
+      $$
+    type: multipleChoice
+    prompt: Which comparison is appropriate?
+    choices:
+    - id: a
+      text: |-
+        Compare with $\frac1n$; the series diverges.
+    - id: b
+      text: |-
+        Compare with $\frac1{n^2}$; the series converges.
+    - id: c
+      text: Use alternating series test; it converges conditionally.
+    - id: d
+      text: Use geometric series test; it converges.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The leading behavior is $\frac{2n^2}{n^3}=\frac2n$. Limit comparison with the harmonic series gives divergence. Therefore the answer is Compare with $\frac1n$; the series diverges.. Therefore the answer is Compare with $\frac1n$; the series diverges.. Therefore the answer is Compare with $\frac1n$; the series diverges..
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: Compare with $\frac1{n^2}$; the series converges. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; Use alternating series test; it converges conditionally. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; Use geometric series test; it converges. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: series-limit-tools-step-006
+    title: Use direct comparison for bounded factors
+    instruction: |
+      Bounded trig factors often allow comparison.
+
+      $$
+      \sum_{n=1}^{\infty}\frac{1+\sin^2 n}{n^2}
+      $$
+    type: multipleChoice
+    prompt: What is the best conclusion?
+    choices:
+    - id: a
+      text: |-
+        It converges because $1+\sin^2 n\le 2$, so the terms are bounded by $\frac2{n^2}$.
+    - id: b
+      text: |-
+        It diverges because $\sin^2 n$ oscillates.
+    - id: c
+      text: It diverges by nth-term test.
+    - id: d
+      text: It converges conditionally.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Since $0\le \sin^2 n\le 1$, the whole numerator is between $1$ and $2$. Comparison to a convergent p-series proves convergence. Therefore the answer is It converges because $1+\sin^2 n\le 2$, so the terms are bounded by $\frac2{n^2}$.. Therefore the answer is It converges because $1+\sin^2 n\le 2$, so the terms are bounded by $\frac2{n^2}$.. Therefore the answer is It converges because $1+\sin^2 n\le 2$, so the terms are bounded by $\frac2{n^2}$..
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+      Why the other choices fail: It diverges because $\sin^2 n$ oscillates. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; It diverges by nth-term test. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; It converges conditionally. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.
+  - id: series-limit-tools-step-007
+    title: Use the integral test for logarithmic denominators
+    instruction: |
+      Logarithmic denominator patterns often point to the integral test.
+
+      $$
+      \sum_{n=2}^{\infty}\frac1{n\ln n}
+      $$
+    type: multipleChoice
+    prompt: What happens?
+    choices:
+    - id: a
+      text: |-
+        It diverges because $\int \frac1{x\ln x}\,dx=\ln|\ln x|+C$ grows without bound.
+    - id: b
+      text: It converges because the terms go to 0.
+    - id: c
+      text: It converges by p-series with $p=2$.
+    - id: d
+      text: It diverges by oscillation.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The integral test shows the accumulated area grows without bound. Term size going to $0$ is not enough. Therefore the answer is It diverges because $\int \frac1{x\ln x}\,dx=\ln|\ln x|+C$ grows without bound.. Therefore the answer is It diverges because $\int \frac1{x\ln x}\,dx=\ln|\ln x|+C$ grows without bound.. Therefore the answer is It diverges because $\int \frac1{x\ln x}\,dx=\ln|\ln x|+C$ grows without bound..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: It converges because the terms go to 0. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It converges by p-series with $p=2$. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It diverges by oscillation. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: series-limit-tools-step-008
+    title: Use alternating series carefully
+    instruction: |
+      Alternating signs can create convergence even when the absolute-value series diverges.
+
+      $$
+      \sum_{n=1}^{\infty}\frac{(-1)^{n+1}}{\sqrt n}
+      $$
+    type: multipleChoice
+    prompt: What is true?
+    choices:
+    - id: a
+      text: It converges conditionally.
+    - id: b
+      text: It converges absolutely.
+    - id: c
+      text: It diverges by nth-term test.
+    - id: d
+      text: |-
+        It diverges because p-series with $p=\frac12$ diverges.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The alternating series test applies because $\frac1{\sqrt n}$ decreases to $0$. The absolute-value series diverges, so convergence is conditional. Therefore the answer is It converges conditionally.. Therefore the answer is It converges conditionally.. Therefore the answer is It converges conditionally..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: It converges absolutely. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It diverges by nth-term test. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It diverges because p-series with $p=\frac12$ diverges. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: series-limit-tools-step-009
+    title: Use ratio test for factorials and exponentials
+    instruction: |
+      Factorials and exponentials usually simplify cleanly by comparing consecutive terms.
+
+      $$
+      \sum_{n=0}^{\infty}\frac{3^n}{n!}
+      $$
+    type: multipleChoice
+    prompt: What does the ratio test show?
+    choices:
+    - id: a
+      text: The ratio limit is $0$, so the series converges.
+    - id: b
+      text: The ratio limit is $3$, so the series diverges.
+    - id: c
+      text: The terms do not go to $0$, so it diverges.
+    - id: d
+      text: The series converges conditionally.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The ratio is
+
+      $$
+      \frac{3^{n+1}/(n+1)!}{3^n/n!}=\frac{3}{n+1}\to 0.
+      $$ Therefore the answer is The ratio limit is $0$, so the series converges.. Therefore the answer is The ratio limit is $0$, so the series converges.. Therefore the answer is The ratio limit is $0$, so the series converges..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: The ratio limit is $3$, so the series diverges. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The terms do not go to $0$, so it diverges. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The series converges conditionally. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: series-limit-tools-step-010
+    title: Use root test for nth-power terms
+    instruction: |
+      If the whole term is raised to the $n$th power, the root test is designed to remove it.
+
+      $$
+      \sum_{n=1}^{\infty}\left(\frac{n+1}{2n+3}\right)^n
+      $$
+    type: multipleChoice
+    prompt: What does the root test show?
+    choices:
+    - id: a
+      text: |-
+        The root limit is $\frac12$, so the series converges.
+    - id: b
+      text: The root limit is $1$, so the test proves divergence.
+    - id: c
+      text: The root limit is $2$, so the series diverges.
+    - id: d
+      text: The series diverges by oscillation.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Taking the $n$th root gives $\frac{n+1}{2n+3}\to \frac12<1$. Therefore the answer is The root limit is $\frac12$, so the series converges.. Therefore the answer is The root limit is $\frac12$, so the series converges.. Therefore the answer is The root limit is $\frac12$, so the series converges..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: The root limit is $1$, so the test proves divergence. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The root limit is $2$, so the series diverges. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; The series diverges by oscillation. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: series-limit-tools-step-011
+    title: Use local approximations when a trig expression hides a p-series
+    instruction: |
+      Some hard-looking terms become familiar after a small-angle approximation.
+
+      $$
+      \sum_{n=1}^{\infty}\left(1-\cos\frac1n\right)
+      $$
+    type: multipleChoice
+    prompt: What is the correct comparison?
+    choices:
+    - id: a
+      text: |-
+        It behaves like $\frac1{2n^2}$, so it converges.
+    - id: b
+      text: |-
+        It behaves like $\frac1n$, so it diverges.
+    - id: c
+      text: It diverges because cosine oscillates.
+    - id: d
+      text: It converges conditionally by alternating signs.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Near $0$, $1-\cos x\sim \frac{x^2}{2}$. With $x=\frac1n$, the term behaves like $\frac1{2n^2}$. Therefore the answer is It behaves like $\frac1{2n^2}$, so it converges.. Therefore the answer is It behaves like $\frac1{2n^2}$, so it converges.. Therefore the answer is It behaves like $\frac1{2n^2}$, so it converges..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: It behaves like $\frac1n$, so it diverges. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It diverges because cosine oscillates. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It converges conditionally by alternating signs. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.

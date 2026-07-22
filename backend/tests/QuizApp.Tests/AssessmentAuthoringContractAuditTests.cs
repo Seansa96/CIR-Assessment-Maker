@@ -54,7 +54,7 @@ public sealed class AssessmentAuthoringContractAuditTests
     }
 
     [Fact]
-    public void Thin_or_placeholder_explanations_require_review_but_do_not_block()
+    public void Missing_structured_explanation_components_block_new_content()
     {
         var question = EasyQuestion("q001") with { Explanation = "TODO: explain." };
         var assessment = TestData.Assessment(questions: Enumerable.Repeat(question, 10).ToList()) with
@@ -65,8 +65,9 @@ public sealed class AssessmentAuthoringContractAuditTests
 
         var diagnostics = audit.Evaluate(Stem, assessment, strict: true);
 
-        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "PLACEHOLDER_EXPLANATION" && !diagnostic.IsBlocking);
-        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "THIN_EXPLANATION" && !diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "PLACEHOLDER_EXPLANATION" && diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "MISSING_EXPLANATION_SOLUTION" && diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "MISSING_EXPLANATION_REASONING" && diagnostic.IsBlocking);
     }
 
     [Fact]
@@ -120,6 +121,8 @@ public sealed class AssessmentAuthoringContractAuditTests
         var diagnostics = audit.Evaluate(Stem, assessment, strict: true);
 
         Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "MISSING_EXTENSION_OBJECTIVE" && diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "MISSING_OLYMPIAD_PREREQUISITES" && diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "MISSING_OLYMPIAD_FURTHER_STUDY" && diagnostic.IsBlocking);
     }
 
     [Fact]
@@ -180,6 +183,7 @@ public sealed class AssessmentAuthoringContractAuditTests
 
     private static QuestionDefinition EasyQuestion(string id) => TestData.MultipleChoiceQuestion(id) with
     {
+        Explanation = "Solution: Select the stated result after evaluating the given relationship.\n\nWhy it works: The governing rule maps the given representation to the correct conclusion.\n\nWhy the other choices fail: They apply a different rule or omit the stated condition.",
         DifficultyDimensions = [DifficultyDimension.Simplification, DifficultyDimension.RepresentationTransfer],
         DifficultyEvidence = "Rewrites the stated expression and transfers it into the target representation."
     };

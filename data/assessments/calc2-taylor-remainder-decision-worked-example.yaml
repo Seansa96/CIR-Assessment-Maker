@@ -22,36 +22,48 @@ navigation:
 workedExamples:
 - id: we001
   title: Choose enough terms for a target error
-  problem: |
-    Use the Maclaurin series for $e^x$ to approximate $e^{0.2}$ with error less than $10^{-4}$.
+  problem: 'Use the Maclaurin series for $e^x$ to approximate $e^{0.2}$ with error less than $10^{-4}$.
+
+    '
   steps:
   - id: taylor-rem-s001
     title: Recall the series
     instruction: |
       The Maclaurin series for $e^x$ is $\sum_{k=0}^{\infty}x^k/k!$.
     type: multipleChoice
-    prompt: |
-      Which degree-$n$ polynomial is correct?
+    prompt: 'Which degree-$n$ polynomial is correct?
+
+      '
     choices:
     - id: a
-      text: $\sum_{k=0}^{n}\frac{x^k}{k!}$
+      text: |-
+        $\sum_{k=0}^{n}\frac{x^k}{k!}$
     - id: b
-      text: $\sum_{k=0}^{n}kx^k$
+      text: |-
+        $\sum_{k=0}^{n}kx^k$
     - id: c
       text: $1+x^n$
     - id: d
-      text: $\sum_{k=1}^{n}\frac{k!}{x^k}$
+      text: |-
+        $\sum_{k=1}^{n}\frac{k!}{x^k}$
     answer:
       choiceId: a
-    explanation: |
-      Every derivative of $e^x$ at zero is $1$.
+    explanation: |-
+      Solution: Every derivative of $e^x$ at zero is $1$. Therefore the answer is $\sum_{k=0}^{n}\frac{x^k}{k!}$.
+
+      Why it works: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$. Compute derivatives at the center, divide by $n!$, and preserve the power $(x-a)^n$ before analyzing convergence.
+
+      Common trap: Do not confuse the derivative value with its Taylor coefficient; the factorial belongs in every coefficient, including the constant term where $0!=1$.
+
+      Why the other choices fail: $\sum_{k=0}^{n}kx^k$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $1+x^n$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $\sum_{k=1}^{n}\frac{k!}{x^k}$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$.
   - id: taylor-rem-s002
     title: Bound the remainder
     instruction: |
       For $0\le x\le0.2$, use $e^{0.2}<2$ to get $|R_n(x)|\le 2(0.2)^{n+1}/(n+1)!$.
     type: multipleChoice
-    prompt: |
-      What is the role of $2$?
+    prompt: 'What is the role of $2$?
+
+      '
     choices:
     - id: a
       text: The exact value of $e^{0.2}$
@@ -63,27 +75,44 @@ workedExamples:
       text: The input value
     answer:
       choiceId: b
-    explanation: |
-      It is a convenient upper bound for the derivative size on the interval.
+    explanation: 'Solution: It is a convenient upper bound for the derivative size on the interval. Therefore the answer is A safe derivative bound.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: The exact value of $e^{0.2}$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The degree of the polynomial conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The input value conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
   - id: taylor-rem-s003
     title: Test degree 3
-    instruction: |
-      For $n=3$, the bound is $2(0.2)^4/4!$.
+    instruction: 'For $n=3$, the bound is $2(0.2)^4/4!$.
+
+      '
     type: numericResponse
-    prompt: |
-      Approximately what is the bound?
+    prompt: 'Approximately what is the bound?
+
+      '
     answer:
       value: 0.0001333333
       tolerance: 0.00001
-    explanation: |
-      This is slightly larger than $10^{-4}$, so degree $3$ is not enough by this bound.
+    explanation: 'Solution: This is slightly larger than $10^{-4}$, so degree $3$ is not enough by this bound.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.'
   - id: taylor-rem-s004
     title: Choose degree
-    instruction: |
-      Try the next degree.
+    instruction: 'Try the next degree.
+
+      '
     type: multipleChoice
-    prompt: |
-      Which degree is sufficient by this bound?
+    prompt: 'Which degree is sufficient by this bound?
+
+      '
     choices:
     - id: a
       text: $n=1$
@@ -95,5 +124,11 @@ workedExamples:
       text: No polynomial can do this
     answer:
       choiceId: c
-    explanation: |
-      For $n=4$, $2(0.2)^5/5!\approx0.00000533$, comfortably below $10^{-4}$.
+    explanation: |-
+      Solution: For $n=4$, $2(0.2)^5/5!\approx0.00000533$, comfortably below $10^{-4}$. Therefore the answer is $n=4$.
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+      Why the other choices fail: $n=1$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $n=2$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; No polynomial can do this conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.

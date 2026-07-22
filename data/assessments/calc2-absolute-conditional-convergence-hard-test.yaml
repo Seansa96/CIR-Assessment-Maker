@@ -11,7 +11,11 @@ skills:
 navigation:
   learningGoal: evaluate
   activityType: formalTest
-  tags: [calculus-2, absolute-conditional-convergence, hard, theorem-reasoning]
+  tags:
+  - calculus-2
+  - absolute-conditional-convergence
+  - hard
+  - theorem-reasoning
 modeDefault: evaluate
 randomizeQuestions: true
 attemptQuestionCount: 20
@@ -22,101 +26,280 @@ authoring:
 questions:
 - id: q001
   type: freeResponse
-  prompt: Classify $\sum_{n=2}^\infty(-1)^n\ln(n)/n$, including a proof of both its signed and absolute behavior.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; ln(n)/n decreases eventually to 0, while its positive series diverges by the integral test. }
-  explanation: Establish eventual monotonicity before invoking the alternating-series test.
+  prompt: |-
+    Classify $\sum_{n=2}^\infty(-1)^n\ln(n)/n$, including a proof of both its signed and absolute behavior.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; ln(n)/n decreases eventually to 0
+    while its positive series diverges by the integral test.: null
+  explanation: |-
+    Solution: Establish eventual monotonicity before invoking the alternating-series test. Answer check: Conditionally convergent; ln(n)/n decreases eventually to 0
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q002
   type: freeResponse
-  prompt: For real $p$, classify $\sum_{n=2}^\infty(-1)^{n-1}/(n(\ln n)^p)$ for all p.
-  answer: { gradingMode: selfCheck, checkModel: 'Divergent for p<=0; conditional for 0<p<=1; absolute for p>1.' }
-  explanation: Alternation needs the magnitudes to tend to zero; the logarithmic p-series gives the absolute threshold.
+  prompt: |-
+    For real $p$, classify $\sum_{n=2}^\infty(-1)^{n-1}/(n(\ln n)^p)$ for all p.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Divergent for p<=0; conditional for 0<p<=1; absolute for p>1.
+  explanation: |-
+    Solution: Alternation needs the magnitudes to tend to zero; the logarithmic p-series gives the absolute threshold.
+
+    Why it works: Match the positive tail to $\sum 1/n^p$. Its threshold is strict: it converges only when $p>1$ and diverges for $p\le1$.
+
+    Common trap: The harmonic boundary $p=1$ diverges, so replacing $p>1$ with $p\ge1$ changes the conclusion.
 - id: q003
   type: freeResponse
-  prompt: Classify $\sum_{n=1}^\infty(-1)^n\sqrt n/(n+1)$ and give the decisive necessary-condition argument.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; its positive magnitudes decrease to 0 and are asymptotic to 1/sqrt(n), so the absolute series diverges. }
-  explanation: Rewrite the magnitude as $\sqrt n/(n+1)$; it decreases to zero and is comparable to $1/\sqrt n$.
+  prompt: |-
+    Classify $\sum_{n=1}^\infty(-1)^n\sqrt n/(n+1)$ and give the decisive necessary-condition argument.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; its positive magnitudes decrease to 0 and are asymptotic to 1/sqrt(n)
+    so the absolute series diverges.: null
+  explanation: |-
+    Solution: Rewrite the magnitude as $\sqrt n/(n+1)$; it decreases to zero and is comparable to $1/\sqrt n$.
+
+    Why it works: Direct comparison uses nonnegative terms. An upper bound by a convergent benchmark proves convergence, while a lower bound by a divergent benchmark proves divergence.
+
+    Common trap: The inequality direction matters: an upper bound by a divergent series and a lower bound by a convergent series prove nothing.
 - id: q004
   type: freeResponse
-  prompt: Classify $\sum_{n=1}^\infty(-1)^{n(n+1)/2}3^n/n!$ without relying on its sign pattern.
-  answer: { gradingMode: selfCheck, checkModel: Absolutely convergent; the ratio of successive absolute terms is 3/(n+1), which tends to 0. }
-  explanation: Absolute convergence makes the complicated signs irrelevant.
+  prompt: |-
+    Classify $\sum_{n=1}^\infty(-1)^{n(n+1)/2}3^n/n!$ without relying on its sign pattern.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Absolutely convergent; the ratio of successive absolute terms is 3/(n+1)
+    which tends to 0.: null
+  explanation: 'Solution: Absolute convergence makes the complicated signs irrelevant. Answer check: Absolutely convergent; the ratio of successive absolute terms is 3/(n+1)
+
+
+    Why it works: Direct comparison uses nonnegative terms. An upper bound by a convergent benchmark proves convergence, while a lower bound by a divergent benchmark proves divergence.
+
+
+    Common trap: The inequality direction matters: an upper bound by a divergent series and a lower bound by a convergent series prove nothing.'
 - id: q005
   type: freeResponse
-  prompt: Let $\sum a_n$ be conditionally convergent and $\sum b_n$ absolutely convergent. Prove that $\sum(a_n+b_n)$ is conditionally convergent.
-  answer: { gradingMode: selfCheck, checkModel: It converges; if it were absolute then a_n=(a_n+b_n)-b_n would be absolutely summable, a contradiction. }
-  explanation: Use closure of absolutely convergent series under subtraction.
+  prompt: |-
+    Let $\sum a_n$ be conditionally convergent and $\sum b_n$ absolutely convergent. Prove that $\sum(a_n+b_n)$ is conditionally convergent.
+  answer:
+    gradingMode: selfCheck
+    checkModel: It converges; if it were absolute then a_n=(a_n+b_n)-b_n would be absolutely summable
+    a contradiction.: null
+  explanation: |-
+    Solution: Use closure of absolutely convergent series under subtraction. Answer check: It converges; if it were absolute then a_n=(a_n+b_n)-b_n would be absolutely summable
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q006
   type: freeResponse
-  prompt: Suppose $\sum a_n$ converges absolutely. Prove that every subseries obtained by retaining arbitrary terms converges absolutely.
-  answer: { gradingMode: selfCheck, checkModel: Its absolute partial sums are increasing and bounded above by the full absolute series. }
-  explanation: Compare retained absolute terms with $\sum|a_n|$.
+  prompt: |-
+    Suppose $\sum a_n$ converges absolutely. Prove that every subseries obtained by retaining arbitrary terms converges absolutely.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Its absolute partial sums are increasing and bounded above by the full absolute series.
+  explanation: |-
+    Solution: Compare retained absolute terms with $\sum|a_n|$. Answer check: Its absolute partial sums are increasing and bounded above by the full absolute series.
+
+    Why it works: Convergence of $\sum a_n$ requires the necessary condition $a_n\to0$. A nonzero limit, an infinite limit, or no limit immediately proves divergence.
+
+    Common trap: $a_n\to0$ is necessary but not sufficient; the harmonic series is the standard counterexample.
 - id: q007
   type: freeResponse
-  prompt: Let $a_n=(-1)^{n-1}/n$. Explain why grouping adjacent terms as $(a_1+a_2)+(a_3+a_4)+\cdots$ does not change its sum, although unrestricted rearrangement can.
-  answer: { gradingMode: selfCheck, checkModel: Grouped partial sums are an even-index subsequence of the original convergent partial sums, so they have the same limit. }
-  explanation: Grouping preserves order; rearrangement need not.
+  prompt: |-
+    Let $a_n=(-1)^{n-1}/n$. Explain why grouping adjacent terms as $(a_1+a_2)+(a_3+a_4)+\cdots$ does not change its sum, although unrestricted rearrangement can.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Grouped partial sums are an even-index subsequence of the original convergent partial sums
+    so they have the same limit.: null
+  explanation: |-
+    Solution: Grouping preserves order; rearrangement need not. Answer check: Grouped partial sums are an even-index subsequence of the original convergent partial sums
+
+    Why it works: Convergence of $\sum a_n$ requires the necessary condition $a_n\to0$. A nonzero limit, an infinite limit, or no limit immediately proves divergence.
+
+    Common trap: $a_n\to0$ is necessary but not sufficient; the harmonic series is the standard counterexample.
 - id: q008
   type: freeResponse
-  prompt: Classify $\sum_{n=1}^\infty(-1)^{n-1}(\sqrt{n^2+n}-n)$.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; rationalization gives 1/(sqrt(n^2+n)+n), asymptotic to 1/(2n). }
-  explanation: The transformed magnitudes decrease to zero and are harmonic-size.
+  prompt: |-
+    Classify $\sum_{n=1}^\infty(-1)^{n-1}(\sqrt{n^2+n}-n)$.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; rationalization gives 1/(sqrt(n^2+n)+n)
+    asymptotic to 1/(2n).: null
+  explanation: 'Solution: The transformed magnitudes decrease to zero and are harmonic-size. Answer check: Conditionally convergent; rationalization gives 1/(sqrt(n^2+n)+n)
+
+
+    Why it works: Direct comparison uses nonnegative terms. An upper bound by a convergent benchmark proves convergence, while a lower bound by a divergent benchmark proves divergence.
+
+
+    Common trap: The inequality direction matters: an upper bound by a divergent series and a lower bound by a convergent series prove nothing.'
 - id: q009
   type: freeResponse
-  prompt: Prove that if $\sum a_n$ is conditionally convergent, then the subseries of positive terms cannot have a finite sum.
-  answer: { gradingMode: selfCheck, checkModel: If the positive subseries were finite, convergence of the full series would force the negative subseries to be finite too, making sum |a_n| finite. }
-  explanation: Split $a_n$ into positive and negative parts.
+  prompt: |-
+    Prove that if $\sum a_n$ is conditionally convergent, then the subseries of positive terms cannot have a finite sum.
+  answer:
+    gradingMode: selfCheck
+    checkModel: If the positive subseries were finite
+    convergence of the full series would force the negative subseries to be finite too: null
+    making sum |a_n| finite.: null
+  explanation: |-
+    Solution: Split $a_n$ into positive and negative parts. Answer check: If the positive subseries were finite
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q010
   type: freeResponse
-  prompt: Classify $\sum_{n=1}^\infty(-1)^n\arctan(1/n)$, explicitly comparing its absolute values with a standard series.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; arctan(1/n)/(1/n) tends to 1, so the absolute series diverges. }
-  explanation: Alternation handles convergence; limit comparison rules out absolute convergence.
+  prompt: |-
+    Classify $\sum_{n=1}^\infty(-1)^n\arctan(1/n)$, explicitly comparing its absolute values with a standard series.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; arctan(1/n)/(1/n) tends to 1
+    so the absolute series diverges.: null
+  explanation: |-
+    Solution: Alternation handles convergence; limit comparison rules out absolute convergence. Answer check: Conditionally convergent; arctan(1/n)/(1/n) tends to 1
+
+    Why it works: For positive terms, choose a benchmark $b_n$ with the same leading behavior and compute $L=\lim a_n/b_n$. A finite positive limit means $a_n$ and $b_n$ converge or diverge together.
+
+    Common trap: The comparison limit need not equal $1$; any finite positive constant transfers the convergence classification.
 - id: q011
   type: freeResponse
-  prompt: For which real p does $\sum_{n=1}^\infty(-1)^n n^p/(n^2+1)$ converge absolutely, conditionally, or diverge?
-  answer: { gradingMode: selfCheck, checkModel: 'Absolute for p<1; conditional for 1<=p<2; divergent for p>=2.' }
-  explanation: The magnitude is asymptotic to $n^{p-2}$; combine the p-series and alternating tests.
+  prompt: |-
+    For which real p does $\sum_{n=1}^\infty(-1)^n n^p/(n^2+1)$ converge absolutely, conditionally, or diverge?
+  answer:
+    gradingMode: selfCheck
+    checkModel: Absolute for p<1; conditional for 1<=p<2; divergent for p>=2.
+  explanation: |-
+    Solution: The magnitude is asymptotic to $n^{p-2}$; combine the p-series and alternating tests.
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q012
   type: freeResponse
-  prompt: Let $\sum a_n$ converge absolutely and let $(\varepsilon_n)$ satisfy $|\varepsilon_n|\le1$. Prove $\sum\varepsilon_na_n$ converges absolutely.
-  answer: { gradingMode: selfCheck, checkModel: '|epsilon_n a_n|<=|a_n|, so comparison with the absolute series applies.' }
-  explanation: Bounded sign or coefficient changes cannot defeat absolute convergence.
+  prompt: |-
+    Let $\sum a_n$ converge absolutely and let $(\varepsilon_n)$ satisfy $|\varepsilon_n|\le1$. Prove $\sum\varepsilon_na_n$ converges absolutely.
+  answer:
+    gradingMode: selfCheck
+    checkModel: '|epsilon_n a_n|<=|a_n|, so comparison with the absolute series applies.'
+  explanation: 'Solution: Bounded sign or coefficient changes cannot defeat absolute convergence. Answer check: |epsilon_n a_n|<=|a_n|, so comparison with the absolute series applies.
+
+
+    Why it works: Direct comparison uses nonnegative terms. An upper bound by a convergent benchmark proves convergence, while a lower bound by a divergent benchmark proves divergence.
+
+
+    Common trap: The inequality direction matters: an upper bound by a divergent series and a lower bound by a convergent series prove nothing.'
 - id: q013
   type: freeResponse
-  prompt: Show that $\sum_{n=1}^\infty(-1)^n\sin(1/n)$ is conditional, stating why monotonicity is valid.
-  answer: { gradingMode: selfCheck, checkModel: sin(1/n) decreases to 0 because sin(x) increases on the relevant interval as 1/n decreases; its ratio to 1/n tends to 1. }
-  explanation: The alternating test and limit comparison supply the two classifications.
+  prompt: |-
+    Show that $\sum_{n=1}^\infty(-1)^n\sin(1/n)$ is conditional, stating why monotonicity is valid.
+  answer:
+    gradingMode: selfCheck
+    checkModel: sin(1/n) decreases to 0 because sin(x) increases on the relevant interval as 1/n decreases; its ratio to 1/n tends to 1.
+  explanation: |-
+    Solution: The alternating test and limit comparison supply the two classifications. Answer check: sin(1/n) decreases to 0 because sin(x) increases on the relevant interval as 1/n decreases; its ratio to 1/n tends to 1.
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q014
   type: freeResponse
-  prompt: An alternating series has positive decreasing terms $b_n$ with $b_n\to0$. If its first N terms are summed, state and prove the standard bound for the remainder.
-  answer: { gradingMode: selfCheck, checkModel: '|R_N|<=b_(N+1); the remainder lies between consecutive alternating partial sums.' }
-  explanation: Nested even and odd partial sums bracket the limit.
+  prompt: |-
+    An alternating series has positive decreasing terms $b_n$ with $b_n\to0$. If its first N terms are summed, state and prove the standard bound for the remainder.
+  answer:
+    gradingMode: selfCheck
+    checkModel: '|R_N|<=b_(N+1); the remainder lies between consecutive alternating partial sums.'
+  explanation: |-
+    Solution: Nested even and odd partial sums bracket the limit. Answer check: |R_N|<=b_(N+1); the remainder lies between consecutive alternating partial sums.
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q015
   type: freeResponse
-  prompt: Determine whether $\sum_{n=2}^\infty(-1)^n/(n\ln n+1)$ is absolute, conditional, or divergent.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; the magnitude is decreasing to 0 and limit-comparable to 1/(n ln n), whose positive series diverges. }
-  explanation: The added 1 does not change the logarithmic comparison.
+  prompt: |-
+    Determine whether $\sum_{n=2}^\infty(-1)^n/(n\ln n+1)$ is absolute, conditional, or divergent.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; the magnitude is decreasing to 0 and limit-comparable to 1/(n ln n)
+    whose positive series diverges.: null
+  explanation: |-
+    Solution: The added 1 does not change the logarithmic comparison. Answer check: Conditionally convergent; the magnitude is decreasing to 0 and limit-comparable to 1/(n ln n)
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q016
   type: freeResponse
   prompt: If a rearrangement of a conditionally convergent real series converges to the same sum, does that prove all rearrangements preserve the sum? Explain.
-  answer: { gradingMode: selfCheck, checkModel: No; one benign rearrangement does not establish unconditional convergence, and conditional series admit rearrangements with different behavior. }
-  explanation: Distinguish a particular grouping from the universal rearrangement theorem.
+  answer:
+    gradingMode: selfCheck
+    checkModel: No; one benign rearrangement does not establish unconditional convergence
+    and conditional series admit rearrangements with different behavior.: null
+  explanation: |-
+    Solution: Distinguish a particular grouping from the universal rearrangement theorem. Answer check: No; one benign rearrangement does not establish unconditional convergence
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q017
   type: freeResponse
-  prompt: Let $a_n=(-1)^{n-1}/n$ and define $c_n=a_n+1/n^2$. Classify $\sum c_n$ and justify both conclusions.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; it is a conditional series plus an absolutely convergent series, and absolute convergence would imply the harmonic alternating component was absolute. }
-  explanation: This uses the subtraction argument from conditional-plus-absolute sums.
+  prompt: |-
+    Let $a_n=(-1)^{n-1}/n$ and define $c_n=a_n+1/n^2$. Classify $\sum c_n$ and justify both conclusions.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; it is a conditional series plus an absolutely convergent series
+    and absolute convergence would imply the harmonic alternating component was absolute.: null
+  explanation: |-
+    Solution: This uses the subtraction argument from conditional-plus-absolute sums. Answer check: Conditionally convergent; it is a conditional series plus an absolutely convergent series
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q018
   type: freeResponse
-  prompt: Classify $\sum_{n=1}^\infty(-1)^n n/(n^2+4)$ by giving a monotonicity argument rather than only an asymptotic statement.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; x/(x^2+4) decreases for x>2 and tends to 0, while its ratio to 1/n tends to 1. }
-  explanation: Eventual monotonicity is enough for the alternating-series test.
+  prompt: |-
+    Classify $\sum_{n=1}^\infty(-1)^n n/(n^2+4)$ by giving a monotonicity argument rather than only an asymptotic statement.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; x/(x^2+4) decreases for x>2 and tends to 0
+    while its ratio to 1/n tends to 1.: null
+  explanation: |-
+    Solution: Eventual monotonicity is enough for the alternating-series test. Answer check: Conditionally convergent; x/(x^2+4) decreases for x>2 and tends to 0
+
+    Why it works: Write the series as $\sum(-1)^n b_n$. The Alternating Series Test requires $b_n\ge0$, eventual decrease, and $b_n\to0$; then test $\sum b_n$ separately to distinguish absolute from conditional convergence.
+
+    Common trap: Alternation alone is not enough. A series can pass the Alternating Series Test yet fail absolute convergence.
 - id: q019
   type: freeResponse
-  prompt: Prove that absolute convergence of $\sum a_n$ implies the Cauchy criterion for $\sum a_n$.
-  answer: { gradingMode: selfCheck, checkModel: The absolute tail can be made smaller than epsilon, and the triangle inequality bounds every signed tail by that absolute tail. }
-  explanation: This gives a direct proof of convergence without choosing a special sign pattern.
+  prompt: |-
+    Prove that absolute convergence of $\sum a_n$ implies the Cauchy criterion for $\sum a_n$.
+  answer:
+    gradingMode: selfCheck
+    checkModel: The absolute tail can be made smaller than epsilon
+    and the triangle inequality bounds every signed tail by that absolute tail.: null
+  explanation: 'Solution: This gives a direct proof of convergence without choosing a special sign pattern.
+
+
+    Why it works: Direct comparison uses nonnegative terms. An upper bound by a convergent benchmark proves convergence, while a lower bound by a divergent benchmark proves divergence.
+
+
+    Common trap: The inequality direction matters: an upper bound by a divergent series and a lower bound by a convergent series prove nothing.'
 - id: q020
   type: freeResponse
-  prompt: Classify $\sum_{n=1}^\infty(-1)^{n-1}/(\sqrt n+\sqrt{n+1})$.
-  answer: { gradingMode: selfCheck, checkModel: Conditionally convergent; the magnitude is asymptotic to 1/(2sqrt(n)), decreases to 0, and its absolute p-series comparison diverges. }
-  explanation: Rationalize or compare directly to $1/(2\sqrt n)$.
+  prompt: |-
+    Classify $\sum_{n=1}^\infty(-1)^{n-1}/(\sqrt n+\sqrt{n+1})$.
+  answer:
+    gradingMode: selfCheck
+    checkModel: Conditionally convergent; the magnitude is asymptotic to 1/(2sqrt(n))
+    decreases to 0: null
+    and its absolute p-series comparison diverges.: null
+  explanation: |-
+    Solution: Rationalize or compare directly to $1/(2\sqrt n)$. Answer check: Conditionally convergent; the magnitude is asymptotic to 1/(2sqrt(n))
+
+    Why it works: Form $L=\lim_{n\to\infty}|a_{n+1}/a_n|$ after cancelling common factors. The Ratio Test gives absolute convergence for $L<1$, divergence for $L>1$, and no conclusion for $L=1$.
+
+    Common trap: Do not reverse the ratio or treat $L=1$ as convergence; factorial cancellation must be completed before taking the limit.

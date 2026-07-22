@@ -19,501 +19,617 @@ navigation:
   - boundedness
 skills:
 - Apply calculus-2 concepts
-- Apply Sequence Fundamentals
-  - sequences
+- Apply Sequence Fundamentals - sequences
 workedExamples:
-  - id: generate-first-terms
-    title: Generate Terms from Explicit Formulas
-    problem: |
-      List the first five terms of each sequence.
+- id: generate-first-terms
+  title: Generate Terms from Explicit Formulas
+  problem: |
+    List the first five terms of each sequence.
+
+    $$
+    a_n=3n-2,\qquad
+    b_n=\cos\left(\frac{n\pi}{2}\right),\qquad
+    c_n=\frac{(-1)^n n}{n!+1}.
+    $$
+  steps:
+  - id: generate-first-terms-step-1
+    title: Decide the starting index
+    instruction: 'Unless the problem states otherwise, start with $n=1$. The first five terms come from substituting:
+
 
       $$
-      a_n=3n-2,\qquad
-      b_n=\cos\left(\frac{n\pi}{2}\right),\qquad
-      c_n=\frac{(-1)^n n}{n!+1}.
-      $$
-    steps:
-      - id: generate-first-terms-step-1
-        title: Decide the starting index
-        instruction: |
-          Unless the problem states otherwise, start with $n=1$. The first five terms come from substituting:
 
-          $$
-          n=1,2,3,4,5.
-          $$
-        type: multipleChoice
-        prompt: Why should we substitute integer values instead of all real values?
-        choices:
-          - id: a
-            text: Because a sequence is indexed by integer positions.
-          - id: b
-            text: Because cosine only accepts integers.
-          - id: c
-            text: Because factorials are always zero.
-          - id: d
-            text: Because sequences cannot contain fractions.
-        answer:
-          choiceId: a
-        explanation: |
-          A sequence is a list indexed by positions such as $1,2,3,\dots$. Related topic: sequence notation and indexing.
-      - id: generate-first-terms-step-2
-        title: Generate the linear sequence
-        instruction: |
-          Substitute $n=1,2,3,4,5$ into $a_n=3n-2$:
-
-          $$
-          1,\ 4,\ 7,\ 10,\ 13.
-          $$
-        type: numericResponse
-        prompt: What is the fifth term of $a_n=3n-2$?
-        answer:
-          value: 13
-          tolerance: 0
-        explanation: |
-          $a_5=3(5)-2=13$. Related topic: arithmetic pattern generation.
-      - id: generate-first-terms-step-3
-        title: Generate the trigonometric sequence
-        instruction: |
-          For
-
-          $$
-          b_n=\cos\left(\frac{n\pi}{2}\right),
-          $$
-
-          the inputs are $\frac{\pi}{2},\pi,\frac{3\pi}{2},2\pi,\frac{5\pi}{2}$. The first five terms are:
-
-          $$
-          0,\ -1,\ 0,\ 1,\ 0.
-          $$
-        type: multipleChoice
-        prompt: What structure explains the repeated pattern in this sequence?
-        choices:
-          - id: a
-            text: The unit-circle values repeat every $2\pi$.
-          - id: b
-            text: The sequence is increasing.
-          - id: c
-            text: The factorial terms cancel.
-          - id: d
-            text: The numerator and denominator have the same degree.
-        answer:
-          choiceId: a
-        explanation: |
-          Each step advances by $\frac{\pi}{2}$. After four steps, cosine has completed a full cycle. Related topic: oscillating sequences.
-      - id: generate-first-terms-step-4
-        title: Handle signs and factorials
-        instruction: |
-          For
-
-          $$
-          c_n=\frac{(-1)^n n}{n!+1},
-          $$
-
-          the $(-1)^n$ factor controls the sign, while $n!+1$ grows quickly:
-
-          $$
-          -\frac{1}{2},\ \frac{2}{3},\ -\frac{3}{7},\ \frac{4}{25},\ -\frac{5}{121}.
-          $$
-        type: multipleChoice
-        prompt: What does the factor $(-1)^n$ do?
-        choices:
-          - id: a
-            text: It makes every term positive.
-          - id: b
-            text: It makes the signs alternate.
-          - id: c
-            text: It makes the sequence unbounded.
-          - id: d
-            text: It removes the factorial.
-        answer:
-          choiceId: b
-        explanation: |
-          $(-1)^n$ alternates between $-1$ and $1$, so the sign changes from term to term. Related topic: alternating sequence factors.
-
-  - id: infer-general-term
-    title: Infer a Formula from a Pattern
-    problem: |
-      Find a formula for the general term $a_n$ if the pattern continues:
+      n=1,2,3,4,5.
 
       $$
-      \{5,8,11,14,17,\dots\}
-      $$
+
+      '
+    type: multipleChoice
+    prompt: Why should we substitute integer values instead of all real values?
+    choices:
+    - id: a
+      text: Because a sequence is indexed by integer positions.
+    - id: b
+      text: Because cosine only accepts integers.
+    - id: c
+      text: Because factorials are always zero.
+    - id: d
+      text: Because sequences cannot contain fractions.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: A sequence is a list indexed by positions such as $1,2,3,\dots$. Related topic: sequence notation and indexing. Therefore the answer is Because a sequence is indexed by integer positions.. Therefore the answer is Because a sequence is indexed by integer positions.. Therefore the answer is Because a sequence is indexed by integer positions..
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: Because cosine only accepts integers. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Because factorials are always zero. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; Because sequences cannot contain fractions. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: generate-first-terms-step-2
+    title: Generate the linear sequence
+    instruction: |
+      Substitute $n=1,2,3,4,5$ into $a_n=3n-2$:
 
       $$
-      \left\{\frac{3}{16},\frac{4}{25},\frac{5}{36},\frac{6}{49},\dots\right\}
+      1,\ 4,\ 7,\ 10,\ 13.
       $$
+    type: numericResponse
+    prompt: What is the fifth term of $a_n=3n-2$?
+    answer:
+      value: 13
+      tolerance: 0
+    explanation: 'Solution: $a_5=3(5)-2=13$. Related topic: arithmetic pattern generation.
 
-      $$
-      \left\{\frac{2}{3},\frac{4}{9},\frac{2}{9},\frac{8}{81},\frac{10}{243},\dots\right\}.
-      $$
-    steps:
-      - id: infer-general-term-step-1
-        title: Recognize the arithmetic pattern
-        instruction: |
-          The sequence $5,8,11,14,17,\dots$ increases by $3$ each time. Since $a_1=5$ and $d=3$:
 
-          $$
-          a_n=5+(n-1)3=3n+2.
-          $$
-        type: multipleChoice
-        prompt: Which feature tells you the first pattern is arithmetic?
-        choices:
-          - id: a
-            text: Consecutive terms have a constant difference.
-          - id: b
-            text: Consecutive terms have a constant ratio.
-          - id: c
-            text: Every term is a fraction.
-          - id: d
-            text: The signs alternate.
-        answer:
-          choiceId: a
-        explanation: |
-          Arithmetic sequences are identified by constant differences. Related topic: arithmetic sequence general terms.
-      - id: infer-general-term-step-2
-        title: Split numerator and denominator patterns
-        instruction: |
-          For
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
 
-          $$
-          \frac{3}{16},\frac{4}{25},\frac{5}{36},\frac{6}{49},\dots
-          $$
 
-          the numerators are $3,4,5,6,\dots$, which is $n+2$. The denominators are $4^2,5^2,6^2,7^2,\dots$, which is $(n+3)^2$. Thus:
-
-          $$
-          a_n=\frac{n+2}{(n+3)^2}.
-          $$
-        type: multipleChoice
-        prompt: What is the denominator pattern?
-        choices:
-          - id: a
-            text: '$n^2$'
-          - id: b
-            text: '$(n+3)^2$'
-          - id: c
-            text: '$3^n$'
-          - id: d
-            text: '$n+3$'
-        answer:
-          choiceId: b
-        explanation: |
-          When $n=1$, $(1+3)^2=16$; when $n=2$, $(2+3)^2=25$. Related topic: shifted square patterns.
-      - id: infer-general-term-step-3
-        title: Account for reduced fractions
-        instruction: |
-          For
-
-          $$
-          \frac{2}{3},\frac{4}{9},\frac{2}{9},\frac{8}{81},\frac{10}{243},\dots
-          $$
-
-          the intended unreduced third term is $\frac{6}{27}$, which simplifies to $\frac{2}{9}$. The numerator pattern is $2n$, and the denominator pattern is $3^n$:
-
-          $$
-          a_n=\frac{2n}{3^n}.
-          $$
-        type: multipleChoice
-        prompt: Why can the third term look like it breaks the pattern?
-        choices:
-          - id: a
-            text: It is probably $\frac{6}{27}$ written in reduced form as $\frac{2}{9}$.
-          - id: b
-            text: It means there is no possible formula.
-          - id: c
-            text: It proves the sequence is arithmetic.
-          - id: d
-            text: It means the denominators should be $n^3$.
-        answer:
-          choiceId: a
-        explanation: |
-          Formula hunting often requires checking whether displayed fractions have been simplified. Related topic: recognizing equivalent fractional forms.
-
-  - id: sequence-limit-decisions
-    title: Decide Whether a Sequence Converges
-    problem: |
-      Determine whether each sequence converges or diverges, and find the limit when it converges:
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.'
+  - id: generate-first-terms-step-3
+    title: Generate the trigonometric sequence
+    instruction: |
+      For
 
       $$
-      a_n=\frac{n+2}{(n+4)^2},\qquad
-      b_n=\frac{2n}{3n},\qquad
-      c_n=3n+2,\qquad
-      d_n=\frac{4n-3}{3n+4}.
+      b_n=\cos\left(\frac{n\pi}{2}\right),
       $$
-    steps:
-      - id: sequence-limit-decisions-step-1
-        title: Compare polynomial degrees
-        instruction: |
-          For
 
-          $$
-          a_n=\frac{n+2}{(n+4)^2},
-          $$
-
-          the denominator is effectively quadratic while the numerator is linear. The denominator wins, so:
-
-          $$
-          a_n\to 0.
-          $$
-        type: multipleChoice
-        prompt: What limit behavior matters most here?
-        choices:
-          - id: a
-            text: The denominator has higher degree than the numerator.
-          - id: b
-            text: The numerator has higher degree than the denominator.
-          - id: c
-            text: The sequence alternates signs.
-          - id: d
-            text: The cosine values cycle.
-        answer:
-          choiceId: a
-        explanation: |
-          Rational sequence limits often reduce to degree comparison. Higher denominator degree gives limit $0$.
-      - id: sequence-limit-decisions-step-2
-        title: Simplify before taking the limit
-        instruction: |
-          For
-
-          $$
-          b_n=\frac{2n}{3n},
-          $$
-
-          cancel $n$ for $n\ne0$:
-
-          $$
-          b_n=\frac{2}{3}.
-          $$
-        type: numericResponse
-        prompt: What is the limit of $b_n=\frac{2n}{3n}$?
-        answer:
-          value: 0.6666666667
-          tolerance: 0.001
-        explanation: |
-          Every term after simplification is $\frac{2}{3}$, so the sequence converges to $\frac{2}{3}$. Related topic: constant sequences after simplification.
-      - id: sequence-limit-decisions-step-3
-        title: Identify unbounded linear growth
-        instruction: |
-          For
-
-          $$
-          c_n=3n+2,
-          $$
-
-          the terms grow without bound as $n\to\infty$. The sequence diverges.
-        type: multipleChoice
-        prompt: Which statement best describes $c_n=3n+2$?
-        choices:
-          - id: a
-            text: It converges to $3$.
-          - id: b
-            text: It converges to $2$.
-          - id: c
-            text: It diverges to $+\infty$.
-          - id: d
-            text: It oscillates.
-        answer:
-          choiceId: c
-        explanation: |
-          Linear growth with positive slope becomes arbitrarily large. Related topic: divergence by unbounded growth.
-      - id: sequence-limit-decisions-step-4
-        title: Use leading coefficients
-        instruction: |
-          For
-
-          $$
-          d_n=\frac{4n-3}{3n+4},
-          $$
-
-          numerator and denominator have the same degree, so the limit is the ratio of leading coefficients:
-
-          $$
-          \frac{4}{3}.
-          $$
-        type: numericResponse
-        prompt: Enter the limit of $d_n=\frac{4n-3}{3n+4}$ as a decimal.
-        answer:
-          value: 1.3333333333
-          tolerance: 0.001
-        explanation: |
-          Dividing top and bottom by $n$ gives $\frac{4-3/n}{3+4/n}\to\frac{4}{3}$. Related topic: rational sequence limits.
-
-  - id: special-limit-patterns
-    title: Handle Oscillation, Logarithms, and Factorials
-    problem: |
-      Determine the convergence behavior of:
+      the inputs are $\frac{\pi}{2},\pi,\frac{3\pi}{2},2\pi,\frac{5\pi}{2}$. The first five terms are:
 
       $$
-      \sin\left(\frac{n\pi}{2}\right),\qquad
-      \ln(n+1)-\ln n,\qquad
-      \frac{(-3)^n}{n!}.
+      0,\ -1,\ 0,\ 1,\ 0.
       $$
-    steps:
-      - id: special-limit-patterns-step-1
-        title: Detect oscillation
-        instruction: |
-          The sequence
+    type: multipleChoice
+    prompt: What structure explains the repeated pattern in this sequence?
+    choices:
+    - id: a
+      text: |-
+        The unit-circle values repeat every $2\pi$.
+    - id: b
+      text: The sequence is increasing.
+    - id: c
+      text: The factorial terms cancel.
+    - id: d
+      text: The numerator and denominator have the same degree.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Each step advances by $\frac{\pi}{2}$. After four steps, cosine has completed a full cycle. Related topic: oscillating sequences. Therefore the answer is The unit-circle values repeat every $2\pi$.. Therefore the answer is The unit-circle values repeat every $2\pi$.. Therefore the answer is The unit-circle values repeat every $2\pi$..
 
-          $$
-          \sin\left(\frac{n\pi}{2}\right)
-          $$
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
 
-          cycles through values such as $1,0,-1,0,\dots$. Since it does not approach one number, it diverges by oscillation.
-        type: multipleChoice
-        prompt: What kind of divergence occurs here?
-        choices:
-          - id: a
-            text: Divergence by oscillation.
-          - id: b
-            text: Divergence to $+\infty$.
-          - id: c
-            text: Divergence to $-\infty$.
-          - id: d
-            text: It actually converges to $0$.
-        answer:
-          choiceId: a
-        explanation: |
-          The values revisit different numbers forever instead of settling. Related topic: oscillating trigonometric sequences.
-      - id: special-limit-patterns-step-2
-        title: Combine logarithms
-        instruction: |
-          Use logarithm rules:
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
 
-          $$
-          \ln(n+1)-\ln n=\ln\left(\frac{n+1}{n}\right)=\ln\left(1+\frac{1}{n}\right).
-          $$
-
-          Since $1+\frac{1}{n}\to1$, the sequence converges to $\ln(1)=0$.
-        type: numericResponse
-        prompt: What is the limit of $\ln(n+1)-\ln n$?
-        answer:
-          value: 0
-          tolerance: 0
-        explanation: |
-          The expression is the logarithm of a ratio approaching $1$, so its limit is $0$. Related topic: logarithm laws in sequence limits.
-      - id: special-limit-patterns-step-3
-        title: Compare exponential and factorial growth
-        instruction: |
-          Factorials eventually overpower fixed-base exponentials. In
-
-          $$
-          \frac{(-3)^n}{n!},
-          $$
-
-          the sign alternates, but the magnitude approaches $0$ because $n!$ grows faster than $3^n$.
-        type: multipleChoice
-        prompt: What is the limit of $\frac{(-3)^n}{n!}$?
-        choices:
-          - id: a
-            text: '$0$'
-          - id: b
-            text: '$3$'
-          - id: c
-            text: It diverges by oscillation with growing magnitude.
-          - id: d
-            text: '$-\infty$'
-        answer:
-          choiceId: a
-        explanation: |
-          The signs alternate, but the terms shrink toward $0$. Related topic: factorial growth versus exponential growth.
-
-  - id: monotonicity-boundedness-analysis
-    title: Analyze Monotonicity and Bounds
-    problem: |
-      Decide whether each sequence is increasing, decreasing, or not monotonic. Then decide whether it is bounded.
+      Why the other choices fail: The sequence is increasing. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The factorial terms cancel. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The numerator and denominator have the same degree. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: generate-first-terms-step-4
+    title: Handle signs and factorials
+    instruction: |
+      For
 
       $$
-      a_n=\frac{1}{5n},\qquad
-      b_n=\sin\left(\frac{n\pi}{2}\right),\qquad
-      c_n=\frac{3n+4}{2n+5}.
+      c_n=\frac{(-1)^n n}{n!+1},
       $$
-    steps:
-      - id: monotonicity-boundedness-analysis-step-1
-        title: Analyze a reciprocal sequence
-        instruction: |
-          For
 
-          $$
-          a_n=\frac{1}{5n},
-          $$
+      the $(-1)^n$ factor controls the sign, while $n!+1$ grows quickly:
 
-          the denominator grows as $n$ grows, so the terms decrease. Every term is positive and at most $\frac{1}{5}$, so it is bounded:
+      $$
+      -\frac{1}{2},\ \frac{2}{3},\ -\frac{3}{7},\ \frac{4}{25},\ -\frac{5}{121}.
+      $$
+    type: multipleChoice
+    prompt: What does the factor $(-1)^n$ do?
+    choices:
+    - id: a
+      text: It makes every term positive.
+    - id: b
+      text: It makes the signs alternate.
+    - id: c
+      text: It makes the sequence unbounded.
+    - id: d
+      text: It removes the factorial.
+    answer:
+      choiceId: b
+    explanation: |-
+      Solution: $(-1)^n$ alternates between $-1$ and $1$, so the sign changes from term to term. Related topic: alternating sequence factors. Therefore the answer is It makes the signs alternate.. Therefore the answer is It makes the signs alternate.. Therefore the answer is It makes the signs alternate..
 
-          $$
-          0<a_n\le \frac{1}{5}.
-          $$
-        type: multipleChoice
-        prompt: Which description fits $a_n=\frac{1}{5n}$?
-        choices:
-          - id: a
-            text: Decreasing and bounded.
-          - id: b
-            text: Increasing and unbounded.
-          - id: c
-            text: Not monotonic and unbounded.
-          - id: d
-            text: Oscillating and unbounded.
-        answer:
-          choiceId: a
-        explanation: |
-          Reciprocals with growing positive denominators decrease toward $0$. Related topic: monotone bounded sequences.
-      - id: monotonicity-boundedness-analysis-step-2
-        title: Separate boundedness from convergence
-        instruction: |
-          For
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
 
-          $$
-          b_n=\sin\left(\frac{n\pi}{2}\right),
-          $$
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
 
-          the values are bounded between $-1$ and $1$, but they are not monotonic and do not converge.
-        type: multipleChoice
-        prompt: Why is this sequence bounded?
-        choices:
-          - id: a
-            text: Sine values always lie between $-1$ and $1$.
-          - id: b
-            text: The values eventually become all positive.
-          - id: c
-            text: The values grow linearly.
-          - id: d
-            text: The numerator and denominator have the same degree.
-        answer:
-          choiceId: a
-        explanation: |
-          Boundedness only requires the values stay inside fixed limits. It does not require convergence.
-      - id: monotonicity-boundedness-analysis-step-3
-        title: Analyze a rational sequence
-        instruction: |
-          For
+      Why the other choices fail: It makes every term positive. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It makes the sequence unbounded. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; It removes the factorial. conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+- id: infer-general-term
+  title: Infer a Formula from a Pattern
+  problem: |
+    Find a formula for the general term $a_n$ if the pattern continues:
 
-          $$
-          c_n=\frac{3n+4}{2n+5},
-          $$
+    $$
+    \{5,8,11,14,17,\dots\}
+    $$
 
-          compare it to its limit $\frac{3}{2}$. The first few values are:
+    $$
+    \left\{\frac{3}{16},\frac{4}{25},\frac{5}{36},\frac{6}{49},\dots\right\}
+    $$
 
-          $$
-          \frac{7}{7}=1,\quad \frac{10}{9},\quad \frac{13}{11},\quad \frac{16}{13},\dots
-          $$
+    $$
+    \left\{\frac{2}{3},\frac{4}{9},\frac{2}{9},\frac{8}{81},\frac{10}{243},\dots\right\}.
+    $$
+  steps:
+  - id: infer-general-term-step-1
+    title: Recognize the arithmetic pattern
+    instruction: |
+      The sequence $5,8,11,14,17,\dots$ increases by $3$ each time. Since $a_1=5$ and $d=3$:
 
-          The terms increase and approach $\frac{3}{2}$ from below, so one clean bound statement is:
+      $$
+      a_n=5+(n-1)3=3n+2.
+      $$
+    type: multipleChoice
+    prompt: Which feature tells you the first pattern is arithmetic?
+    choices:
+    - id: a
+      text: Consecutive terms have a constant difference.
+    - id: b
+      text: Consecutive terms have a constant ratio.
+    - id: c
+      text: Every term is a fraction.
+    - id: d
+      text: The signs alternate.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Arithmetic sequences are identified by constant differences. Related topic: arithmetic sequence general terms. Therefore the answer is Consecutive terms have a constant difference.. Therefore the answer is Consecutive terms have a constant difference.. Therefore the answer is Consecutive terms have a constant difference..
 
-          $$
-          1\le c_n<\frac{3}{2}.
-          $$
-        type: multipleChoice
-        prompt: Which bound statement is correct for $c_n=\frac{3n+4}{2n+5}$ starting at $n=1$?
-        choices:
-          - id: a
-            text: '$1\le c_n<\frac{3}{2}$'
-          - id: b
-            text: '$c_n>10$'
-          - id: c
-            text: '$c_n<0$'
-          - id: d
-            text: '$c_n$ is unbounded.'
-        answer:
-          choiceId: a
-        explanation: |
-          The sequence begins at $1$ and increases toward, but never reaches, $\frac{3}{2}$. Related topic: bounded rational sequences.
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+
+      Why the other choices fail: Consecutive terms have a constant ratio. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; Every term is a fraction. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; The signs alternate. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.'
+  - id: infer-general-term-step-2
+    title: Split numerator and denominator patterns
+    instruction: |
+      For
+
+      $$
+      \frac{3}{16},\frac{4}{25},\frac{5}{36},\frac{6}{49},\dots
+      $$
+
+      the numerators are $3,4,5,6,\dots$, which is $n+2$. The denominators are $4^2,5^2,6^2,7^2,\dots$, which is $(n+3)^2$. Thus:
+
+      $$
+      a_n=\frac{n+2}{(n+3)^2}.
+      $$
+    type: multipleChoice
+    prompt: What is the denominator pattern?
+    choices:
+    - id: a
+      text: $n^2$
+    - id: b
+      text: $(n+3)^2$
+    - id: c
+      text: $3^n$
+    - id: d
+      text: $n+3$
+    answer:
+      choiceId: b
+    explanation: |-
+      Solution: When $n=1$, $(1+3)^2=16$; when $n=2$, $(2+3)^2=25$. Related topic: shifted square patterns. Therefore the answer is $(n+3)^2$.
+
+      Why it works: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$. The series converges precisely when the sequence $S_N$ has a finite limit.
+
+      Common trap: Terms approaching zero do not guarantee that the partial sums converge; separate the term test from an actual convergence test.
+
+      Why the other choices fail: $n^2$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $3^n$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$; $n+3$ conflicts with this criterion: A series $\sum a_n$ is defined through its partial sums $S_N=\sum_{n=1}^{N}a_n$.
+  - id: infer-general-term-step-3
+    title: Account for reduced fractions
+    instruction: |
+      For
+
+      $$
+      \frac{2}{3},\frac{4}{9},\frac{2}{9},\frac{8}{81},\frac{10}{243},\dots
+      $$
+
+      the intended unreduced third term is $\frac{6}{27}$, which simplifies to $\frac{2}{9}$. The numerator pattern is $2n$, and the denominator pattern is $3^n$:
+
+      $$
+      a_n=\frac{2n}{3^n}.
+      $$
+    type: multipleChoice
+    prompt: Why can the third term look like it breaks the pattern?
+    choices:
+    - id: a
+      text: |-
+        It is probably $\frac{6}{27}$ written in reduced form as $\frac{2}{9}$.
+    - id: b
+      text: It means there is no possible formula.
+    - id: c
+      text: It proves the sequence is arithmetic.
+    - id: d
+      text: It means the denominators should be $n^3$.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Formula hunting often requires checking whether displayed fractions have been simplified. Related topic: recognizing equivalent fractional forms. Therefore the answer is It is probably $\frac{6}{27}$ written in reduced form as $\frac{2}{9}$.. Therefore the answer is It is probably $\frac{6}{27}$ written in reduced form as $\frac{2}{9}$.. Therefore the answer is It is probably $\frac{6}{27}$ written in reduced form as $\frac{2}{9}$..
+
+      Why it works: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$. For a finite sum, use $S_n=n(a_1+a_n)/2$ after identifying the correct first and last terms.
+
+      Common trap: The $n$th term has $(n-1)d$, not $nd$; distinguish the number of terms from the index of the final term.
+
+      Why the other choices fail: It means there is no possible formula. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; It proves the sequence is arithmetic. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$; It means the denominators should be $n^3$. conflicts with this criterion: An arithmetic sequence has constant difference $d$, so $a_n=a_1+(n-1)d$.
+- id: sequence-limit-decisions
+  title: Decide Whether a Sequence Converges
+  problem: |
+    Determine whether each sequence converges or diverges, and find the limit when it converges:
+
+    $$
+    a_n=\frac{n+2}{(n+4)^2},\qquad
+    b_n=\frac{2n}{3n},\qquad
+    c_n=3n+2,\qquad
+    d_n=\frac{4n-3}{3n+4}.
+    $$
+  steps:
+  - id: sequence-limit-decisions-step-1
+    title: Compare polynomial degrees
+    instruction: |
+      For
+
+      $$
+      a_n=\frac{n+2}{(n+4)^2},
+      $$
+
+      the denominator is effectively quadratic while the numerator is linear. The denominator wins, so:
+
+      $$
+      a_n\to 0.
+      $$
+    type: multipleChoice
+    prompt: What limit behavior matters most here?
+    choices:
+    - id: a
+      text: The denominator has higher degree than the numerator.
+    - id: b
+      text: The numerator has higher degree than the denominator.
+    - id: c
+      text: The sequence alternates signs.
+    - id: d
+      text: The cosine values cycle.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Rational sequence limits often reduce to degree comparison. Higher denominator degree gives limit $0$. Therefore the answer is The denominator has higher degree than the numerator.. Therefore the answer is The denominator has higher degree than the numerator.. Therefore the answer is The denominator has higher degree than the numerator..
+
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+
+      Why the other choices fail: The numerator has higher degree than the denominator. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The sequence alternates signs. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; The cosine values cycle. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.'
+  - id: sequence-limit-decisions-step-2
+    title: Simplify before taking the limit
+    instruction: |
+      For
+
+      $$
+      b_n=\frac{2n}{3n},
+      $$
+
+      cancel $n$ for $n\ne0$:
+
+      $$
+      b_n=\frac{2}{3}.
+      $$
+    type: numericResponse
+    prompt: |-
+      What is the limit of $b_n=\frac{2n}{3n}$?
+    answer:
+      value: 0.6666666667
+      tolerance: 0.001
+    explanation: |-
+      Solution: Every term after simplification is $\frac{2}{3}$, so the sequence converges to $\frac{2}{3}$. Related topic: constant sequences after simplification.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+  - id: sequence-limit-decisions-step-3
+    title: Identify unbounded linear growth
+    instruction: |
+      For
+
+      $$
+      c_n=3n+2,
+      $$
+
+      the terms grow without bound as $n\to\infty$. The sequence diverges.
+    type: multipleChoice
+    prompt: Which statement best describes $c_n=3n+2$?
+    choices:
+    - id: a
+      text: It converges to $3$.
+    - id: b
+      text: It converges to $2$.
+    - id: c
+      text: |-
+        It diverges to $+\infty$.
+    - id: d
+      text: It oscillates.
+    answer:
+      choiceId: c
+    explanation: |-
+      Solution: Linear growth with positive slope becomes arbitrarily large. Related topic: divergence by unbounded growth. Therefore the answer is It diverges to $+\infty$.. Therefore the answer is It diverges to $+\infty$.. Therefore the answer is It diverges to $+\infty$..
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+      Why the other choices fail: It converges to $3$. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; It converges to $2$. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; It oscillates. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.
+  - id: sequence-limit-decisions-step-4
+    title: Use leading coefficients
+    instruction: |
+      For
+
+      $$
+      d_n=\frac{4n-3}{3n+4},
+      $$
+
+      numerator and denominator have the same degree, so the limit is the ratio of leading coefficients:
+
+      $$
+      \frac{4}{3}.
+      $$
+    type: numericResponse
+    prompt: |-
+      Enter the limit of $d_n=\frac{4n-3}{3n+4}$ as a decimal.
+    answer:
+      value: 1.3333333333
+      tolerance: 0.001
+    explanation: |-
+      Solution: Dividing top and bottom by $n$ gives $\frac{4-3/n}{3+4/n}\to\frac{4}{3}$. Related topic: rational sequence limits.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+- id: special-limit-patterns
+  title: Handle Oscillation, Logarithms, and Factorials
+  problem: |
+    Determine the convergence behavior of:
+
+    $$
+    \sin\left(\frac{n\pi}{2}\right),\qquad
+    \ln(n+1)-\ln n,\qquad
+    \frac{(-3)^n}{n!}.
+    $$
+  steps:
+  - id: special-limit-patterns-step-1
+    title: Detect oscillation
+    instruction: |
+      The sequence
+
+      $$
+      \sin\left(\frac{n\pi}{2}\right)
+      $$
+
+      cycles through values such as $1,0,-1,0,\dots$. Since it does not approach one number, it diverges by oscillation.
+    type: multipleChoice
+    prompt: What kind of divergence occurs here?
+    choices:
+    - id: a
+      text: Divergence by oscillation.
+    - id: b
+      text: |-
+        Divergence to $+\infty$.
+    - id: c
+      text: |-
+        Divergence to $-\infty$.
+    - id: d
+      text: It actually converges to $0$.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The values revisit different numbers forever instead of settling. Related topic: oscillating trigonometric sequences. Therefore the answer is Divergence by oscillation.. Therefore the answer is Divergence by oscillation.. Therefore the answer is Divergence by oscillation..
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: Divergence to $+\infty$. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; Divergence to $-\infty$. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It actually converges to $0$. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+  - id: special-limit-patterns-step-2
+    title: Combine logarithms
+    instruction: |
+      Use logarithm rules:
+
+      $$
+      \ln(n+1)-\ln n=\ln\left(\frac{n+1}{n}\right)=\ln\left(1+\frac{1}{n}\right).
+      $$
+
+      Since $1+\frac{1}{n}\to1$, the sequence converges to $\ln(1)=0$.
+    type: numericResponse
+    prompt: |-
+      What is the limit of $\ln(n+1)-\ln n$?
+    answer:
+      value: 0
+      tolerance: 0
+    explanation: 'Solution: The expression is the logarithm of a ratio approaching $1$, so its limit is $0$. Related topic: logarithm laws in sequence limits.
+
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.'
+  - id: special-limit-patterns-step-3
+    title: Compare exponential and factorial growth
+    instruction: |
+      Factorials eventually overpower fixed-base exponentials. In
+
+      $$
+      \frac{(-3)^n}{n!},
+      $$
+
+      the sign alternates, but the magnitude approaches $0$ because $n!$ grows faster than $3^n$.
+    type: multipleChoice
+    prompt: |-
+      What is the limit of $\frac{(-3)^n}{n!}$?
+    choices:
+    - id: a
+      text: $0$
+    - id: b
+      text: $3$
+    - id: c
+      text: It diverges by oscillation with growing magnitude.
+    - id: d
+      text: |-
+        $-\infty$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The signs alternate, but the terms shrink toward $0$. Related topic: factorial growth versus exponential growth. Therefore the answer is $0$.
+
+      Why it works: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit. A sequence converges only when its terms approach one finite number from all sufficiently large indices.
+
+      Common trap: Checking several numerical terms suggests a pattern but does not prove a limit; account for sign changes, growth rates, and subsequences.
+
+      Why the other choices fail: $3$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; It diverges by oscillation with growing magnitude. conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit; $-\infty$ conflicts with this criterion: Evaluate the long-run behavior of $a_n$ using limit laws, dominant terms, or a standard limit.
+- id: monotonicity-boundedness-analysis
+  title: Analyze Monotonicity and Bounds
+  problem: |
+    Decide whether each sequence is increasing, decreasing, or not monotonic. Then decide whether it is bounded.
+
+    $$
+    a_n=\frac{1}{5n},\qquad
+    b_n=\sin\left(\frac{n\pi}{2}\right),\qquad
+    c_n=\frac{3n+4}{2n+5}.
+    $$
+  steps:
+  - id: monotonicity-boundedness-analysis-step-1
+    title: Analyze a reciprocal sequence
+    instruction: |
+      For
+
+      $$
+      a_n=\frac{1}{5n},
+      $$
+
+      the denominator grows as $n$ grows, so the terms decrease. Every term is positive and at most $\frac{1}{5}$, so it is bounded:
+
+      $$
+      0<a_n\le \frac{1}{5}.
+      $$
+    type: multipleChoice
+    prompt: |-
+      Which description fits $a_n=\frac{1}{5n}$?
+    choices:
+    - id: a
+      text: Decreasing and bounded.
+    - id: b
+      text: Increasing and unbounded.
+    - id: c
+      text: Not monotonic and unbounded.
+    - id: d
+      text: Oscillating and unbounded.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Reciprocals with growing positive denominators decrease toward $0$. Related topic: monotone bounded sequences. Therefore the answer is Decreasing and bounded.. Therefore the answer is Decreasing and bounded.. Therefore the answer is Decreasing and bounded..
+
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+
+      Why the other choices fail: Increasing and unbounded. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; Not monotonic and unbounded. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; Oscillating and unbounded. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.'
+  - id: monotonicity-boundedness-analysis-step-2
+    title: Separate boundedness from convergence
+    instruction: |
+      For
+
+      $$
+      b_n=\sin\left(\frac{n\pi}{2}\right),
+      $$
+
+      the values are bounded between $-1$ and $1$, but they are not monotonic and do not converge.
+    type: multipleChoice
+    prompt: Why is this sequence bounded?
+    choices:
+    - id: a
+      text: Sine values always lie between $-1$ and $1$.
+    - id: b
+      text: The values eventually become all positive.
+    - id: c
+      text: The values grow linearly.
+    - id: d
+      text: The numerator and denominator have the same degree.
+    answer:
+      choiceId: a
+    explanation: 'Solution: Boundedness only requires the values stay inside fixed limits. It does not require convergence. Therefore the answer is Sine values always lie between $-1$ and $1$.. Therefore the answer is Sine values always lie between $-1$ and $1$.. Therefore the answer is Sine values always lie between $-1$ and $1$..
+
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+
+      Why the other choices fail: The values eventually become all positive. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The values grow linearly. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; The numerator and denominator have the same degree. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.'
+  - id: monotonicity-boundedness-analysis-step-3
+    title: Analyze a rational sequence
+    instruction: |
+      For
+
+      $$
+      c_n=\frac{3n+4}{2n+5},
+      $$
+
+      compare it to its limit $\frac{3}{2}$. The first few values are:
+
+      $$
+      \frac{7}{7}=1,\quad \frac{10}{9},\quad \frac{13}{11},\quad \frac{16}{13},\dots
+      $$
+
+      The terms increase and approach $\frac{3}{2}$ from below, so one clean bound statement is:
+
+      $$
+      1\le c_n<\frac{3}{2}.
+      $$
+    type: multipleChoice
+    prompt: |-
+      Which bound statement is correct for $c_n=\frac{3n+4}{2n+5}$ starting at $n=1$?
+    choices:
+    - id: a
+      text: |-
+        $1\le c_n<\frac{3}{2}$
+    - id: b
+      text: $c_n>10$
+    - id: c
+      text: $c_n<0$
+    - id: d
+      text: $c_n$ is unbounded.
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The sequence begins at $1$ and increases toward, but never reaches, $\frac{3}{2}$. Related topic: bounded rational sequences. Therefore the answer is $1\le c_n<\frac{3}{2}$.
+
+      Why it works: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit. Establish both monotonicity and the appropriate bound before concluding convergence.
+
+      Common trap: Boundedness alone does not imply a sequence converges; for example, $(-1)^n$ is bounded but oscillates.
+
+      Why the other choices fail: $c_n>10$ conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; $c_n<0$ conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit; $c_n$ is unbounded. conflicts with this criterion: The Monotone Convergence Theorem says an increasing sequence bounded above, or a decreasing sequence bounded below, has a finite limit.

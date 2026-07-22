@@ -77,6 +77,7 @@ Supported question types:
 - `numericResponse`
 - `symbolicResponse`
 - `code`
+- `circuit` (restricted to electronics category only)
 
 Important rules:
 

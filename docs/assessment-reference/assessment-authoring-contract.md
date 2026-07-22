@@ -38,11 +38,17 @@ Concept lessons, worked examples, glossaries, and recall drills collectively pre
 
 ## Answers, feedback, and explanations
 
-Every scored quiz or test item must provide a correct, machine-verifiable or self-checkable answer and a substantive explanation. The explanation must state the governing principle or rule, identify the decisive modeling, transformation, or method step, and connect that work to the reported answer. Include a domain condition, boundary case, or common trap whenever it materially affects correctness.
+Every answer-bearing item—concept checks, worked-example steps, glossary drills, recall drills, quizzes, and tests—must include learner-visible, ordered reasoning from the givens to the conclusion. Use these Markdown labels in each explanation:
 
-For procedural STEM items, the explanation is a concise solution path rather than a bare formula or final value. For self-check free-response items, it must give enough intermediate reasoning for a learner to compare their method, not merely reveal the result. Non-STEM explanations likewise identify the relevant pattern or API/tool behavior, implementation decision, and likely failure mode where applicable. Olympiad items remain stricter: their explanations must give the complete modeling and solution path.
+- `Solution:` states the result and shows each material procedural step in order. Mathematical or computational solutions include the relevant algebra, substitutions, intermediate results, techniques, and units when applicable.
+- `Why it works:` names and applies the governing definition, theorem, principle, pattern, or technique. Conceptual and recognition items define the relevant term, expression, notation, or diagram cue and show the logical chain that identifies the result.
+- `Common trap:` is required whenever a domain condition, boundary case, assumption, unit issue, or likely misconception materially affects correctness.
 
-Missing explanations are blocking defects for new or materially modified quiz/test items. Placeholder and unusually thin explanations are review warnings; authors must expand them before approval when they do not provide useful corrective feedback.
+Multiple-choice explanations also include `Why the other choices fail:`. Briefly identify why each plausible distractor is incorrect; do not repeat the whole derivation for every choice.
+
+Olympiad explanations also include `Prerequisites:` and `Further study:`. They give a complete modeling and solution path, justify non-obvious steps, name the necessary prerequisite concepts or theorems, and recommend targeted concepts or readings for the outside knowledge required. Generic advice such as “research more” is insufficient.
+
+Missing required labels are blocking defects for new or materially modified content. The legacy baseline audit reports them without blocking catalog loading. A short-text heuristic is supplemental only; structural completeness, not a word count, determines sufficiency.
 
 ## Difficulty dimensions for STEM evaluation
 
@@ -81,7 +87,7 @@ Finals Practice areas are exempt from the normal learn-to-practice progression a
 
 For newly created or materially modified STEM quiz/test items, missing or invalid difficulty dimensions, insufficient distinct dimensions, missing difficulty evidence, and absent required transfer objectives are blocking save-time defects.
 
-For all newly created or materially modified quiz/test items, a missing explanation is a blocking save-time defect. Thin or placeholder explanations are review warnings.
+For all newly created or materially modified answer-bearing items, missing explanation labels and placeholder text are blocking save-time defects. Thin explanations remain review warnings after the structural requirements are met.
 
 Blocking checks apply when an assessment is saved: missing category profile or authoring metadata, invalid directed-project placement, absent visual declaration/rationale, required media missing, missing quiz/test tier, nonstandard 10/20 attempt counts without an exception, fewer than seven lesson sections, missing lesson checks, or a worked example outside the 2–4 problem range.
 

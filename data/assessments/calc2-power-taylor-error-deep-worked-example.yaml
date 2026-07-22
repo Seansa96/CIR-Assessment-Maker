@@ -22,503 +22,647 @@ skills:
 - Apply calculus-2 concepts
 - Apply Power Series and Representations
 - Apply Taylor and Maclaurin Series
-- Apply Series Approximation and Error
-  - power-series
-  - taylor-series
-  - error-bounds
+- Apply Series Approximation and Error - power-series - taylor-series - error-bounds
 workedExamples:
-  - id: interval-of-convergence-with-endpoints
-    title: Radius and Interval of Convergence with Endpoint Tests
-    problem: |
-      Find the interval of convergence:
+- id: interval-of-convergence-with-endpoints
+  title: Radius and Interval of Convergence with Endpoint Tests
+  problem: |
+    Find the interval of convergence:
+
+    $$
+    \sum_{n=1}^{\infty}\frac{(x+2)^n}{n4^n}.
+    $$
+  steps:
+  - id: power-interval-step-1
+    title: Apply the ratio test to the variable part
+    instruction: |
+      Let
 
       $$
-      \sum_{n=1}^{\infty}\frac{(x+2)^n}{n4^n}.
-      $$
-    steps:
-      - id: power-interval-step-1
-        title: Apply the ratio test to the variable part
-        instruction: |
-          Let
-
-          $$
-          a_n=\frac{(x+2)^n}{n4^n}.
-          $$
-
-          The ratio test gives:
-
-          $$
-          L=\lim_{n\to\infty}\left|\frac{a_{n+1}}{a_n}\right|.
-          $$
-        type: multipleChoice
-        prompt: What does $L$ simplify to?
-        choices:
-          - id: a
-            text: '$\left|\frac{x+2}{4}\right|$'
-          - id: b
-            text: '$\left|\frac{4}{x+2}\right|$'
-          - id: c
-            text: '$\left|\frac{x+2}{n}\right|$'
-          - id: d
-            text: '$0$ for every $x$'
-        answer:
-          choiceId: a
-        explanation: |
-          The ratio becomes:
-
-          $$
-          \left|\frac{(x+2)^{n+1}}{(n+1)4^{n+1}}\cdot\frac{n4^n}{(x+2)^n}\right|
-          =
-          \left|\frac{x+2}{4}\cdot\frac{n}{n+1}\right|
-          \to
-          \left|\frac{x+2}{4}\right|.
-          $$
-      - id: power-interval-step-2
-        title: Solve the inequality for the open interval
-        instruction: |
-          The ratio test requires:
-
-          $$
-          \left|\frac{x+2}{4}\right|<1.
-          $$
-        type: multipleChoice
-        prompt: What is the open interval before endpoint testing?
-        choices:
-          - id: a
-            text: '$(-6,2)$'
-          - id: b
-            text: '$(-2,4)$'
-          - id: c
-            text: '$(-4,4)$'
-          - id: d
-            text: '$(-\infty,\infty)$'
-        answer:
-          choiceId: a
-        explanation: |
-          $\left|\frac{x+2}{4}\right|<1$ gives $|x+2|<4$, so $-6<x<2$.
-      - id: power-interval-step-3
-        title: Test the left endpoint
-        instruction: |
-          At $x=-6$:
-
-          $$
-          x+2=-4.
-          $$
-
-          The series becomes:
-
-          $$
-          \sum_{n=1}^{\infty}\frac{(-4)^n}{n4^n}
-          =
-          \sum_{n=1}^{\infty}\frac{(-1)^n}{n}.
-          $$
-        type: multipleChoice
-        prompt: What happens at $x=-6$?
-        choices:
-          - id: a
-            text: It converges conditionally by the Alternating Series Test.
-          - id: b
-            text: It diverges because it is the harmonic series.
-          - id: c
-            text: It converges absolutely.
-          - id: d
-            text: The ratio test proves convergence.
-        answer:
-          choiceId: a
-        explanation: |
-          The endpoint series is alternating harmonic. It converges conditionally, not absolutely.
-      - id: power-interval-step-4
-        title: Test the right endpoint
-        instruction: |
-          At $x=2$:
-
-          $$
-          x+2=4.
-          $$
-
-          The series becomes:
-
-          $$
-          \sum_{n=1}^{\infty}\frac{4^n}{n4^n}
-          =
-          \sum_{n=1}^{\infty}\frac1n.
-          $$
-        type: multipleChoice
-        prompt: What happens at $x=2$?
-        choices:
-          - id: a
-            text: It diverges as the harmonic series.
-          - id: b
-            text: It converges by the Alternating Series Test.
-          - id: c
-            text: It converges absolutely.
-          - id: d
-            text: It telescopes.
-        answer:
-          choiceId: a
-        explanation: |
-          The harmonic series diverges, so the right endpoint is excluded.
-      - id: power-interval-step-5
-        title: State the interval of convergence
-        instruction: |
-          Combine the open interval with endpoint decisions:
-
-          - include $x=-6$,
-          - exclude $x=2$.
-        type: multipleChoice
-        prompt: What is the interval of convergence?
-        choices:
-          - id: a
-            text: '$[-6,2)$'
-          - id: b
-            text: '$(-6,2)$'
-          - id: c
-            text: '$[-6,2]$'
-          - id: d
-            text: '$(-6,2]$'
-        answer:
-          choiceId: a
-        explanation: |
-          The interval of convergence is $[-6,2)$. Endpoint testing is required because the ratio test is inconclusive at endpoints.
-  - id: build-power-series-from-geometric
-    title: Build a Power Series from a Geometric Series
-    problem: |
-      Find a power series representation for:
-
-      $$
-      f(x)=\frac{x^2}{1+3x}.
+      a_n=\frac{(x+2)^n}{n4^n}.
       $$
 
-      Also state where the representation converges.
-    steps:
-      - id: build-power-step-1
-        title: Match the geometric template
-        instruction: |
-          The core template is:
-
-          $$
-          \frac{1}{1-r}=\sum_{n=0}^{\infty}r^n,
-          \qquad |r|<1.
-          $$
-
-          Rewrite:
-
-          $$
-          \frac{1}{1+3x}=\frac{1}{1-(-3x)}.
-          $$
-        type: multipleChoice
-        prompt: What is $r$?
-        choices:
-          - id: a
-            text: '$-3x$'
-          - id: b
-            text: '$3x$'
-          - id: c
-            text: '$x^2$'
-          - id: d
-            text: '$1+3x$'
-        answer:
-          choiceId: a
-        explanation: |
-          Since $1+3x=1-(-3x)$, the geometric ratio is $r=-3x$.
-      - id: build-power-step-2
-        title: Write the base series
-        instruction: |
-          Substitute $r=-3x$:
-
-          $$
-          \frac{1}{1+3x}
-          =
-          \sum_{n=0}^{\infty}(-3x)^n.
-          $$
-        type: multipleChoice
-        prompt: What convergence condition comes from the geometric template?
-        choices:
-          - id: a
-            text: '$|-3x|<1$'
-          - id: b
-            text: '$|x|>3$'
-          - id: c
-            text: '$x^2<0$'
-          - id: d
-            text: No condition is needed.
-        answer:
-          choiceId: a
-        explanation: |
-          A geometric series converges when $|r|<1$, so here $|-3x|<1$.
-      - id: build-power-step-3
-        title: Multiply by the extra factor
-        instruction: |
-          The original function has an extra factor of $x^2$:
-
-          $$
-          \frac{x^2}{1+3x}
-          =
-          x^2\sum_{n=0}^{\infty}(-3x)^n.
-          $$
-        type: multipleChoice
-        prompt: Write the resulting series as a single summation.
-        choices:
-          - id: a
-            text: '$\sum_{n=0}^{\infty}(-3)^n x^{n+2}$'
-          - id: b
-            text: '$\sum_{n=0}^{\infty}(-3)^n x^n$'
-          - id: c
-            text: '$\sum_{n=0}^{\infty}3^n x^{n-2}$'
-          - id: d
-            text: '$\sum_{n=0}^{\infty}x^{2n}$'
-        answer:
-          choiceId: a
-        explanation: |
-          Multiplying by $x^2$ gives:
-
-          $$
-          x^2(-3x)^n=(-3)^n x^{n+2}.
-          $$
-      - id: build-power-step-4
-        title: State the interval of convergence
-        instruction: |
-          Solve:
-
-          $$
-          |-3x|<1.
-          $$
-        type: multipleChoice
-        prompt: What is the interval of convergence?
-        choices:
-          - id: a
-            text: '$\left(-\frac13,\frac13\right)$'
-          - id: b
-            text: '$(-3,3)$'
-          - id: c
-            text: '$(-\infty,\infty)$'
-          - id: d
-            text: '$\left[-\frac13,\frac13\right]$ automatically'
-        answer:
-          choiceId: a
-        explanation: |
-          $|-3x|<1$ gives $|x|<\frac13$. Because this came from a geometric series, the endpoints are not included.
-  - id: compose-maclaurin-series
-    title: Compose a Maclaurin Series
-    problem: |
-      Find the Maclaurin series for:
+      The ratio test gives:
 
       $$
-      \sin(x^2).
+      L=\lim_{n\to\infty}\left|\frac{a_{n+1}}{a_n}\right|.
       $$
-    steps:
-      - id: compose-maclaurin-step-1
-        title: Recall the parent series
-        instruction: |
-          Start from the known Maclaurin series:
+    type: multipleChoice
+    prompt: What does $L$ simplify to?
+    choices:
+    - id: a
+      text: |-
+        $\left|\frac{x+2}{4}\right|$
+    - id: b
+      text: |-
+        $\left|\frac{4}{x+2}\right|$
+    - id: c
+      text: |-
+        $\left|\frac{x+2}{n}\right|$
+    - id: d
+      text: $0$ for every $x$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The ratio becomes:
 
-          $$
-          \sin u=\sum_{n=0}^{\infty}(-1)^n\frac{u^{2n+1}}{(2n+1)!}.
-          $$
-        type: multipleChoice
-        prompt: What substitution should be made?
-        choices:
-          - id: a
-            text: '$u=x^2$'
-          - id: b
-            text: '$u=2x$'
-          - id: c
-            text: '$u=\sin x$'
-          - id: d
-            text: '$u=n$'
-        answer:
-          choiceId: a
-        explanation: |
-          Since the input to sine is $x^2$, substitute $u=x^2$ into the known sine series.
-      - id: compose-maclaurin-step-2
-        title: Substitute into the powers
-        instruction: |
-          Replace $u$ with $x^2$:
+      $$
+      \left|\frac{(x+2)^{n+1}}{(n+1)4^{n+1}}\cdot\frac{n4^n}{(x+2)^n}\right|
+      =
+      \left|\frac{x+2}{4}\cdot\frac{n}{n+1}\right|
+      \to
+      \left|\frac{x+2}{4}\right|.
+      $$ Therefore the answer is $\left|\frac{x+2}{4}\right|$.
 
-          $$
-          \sin(x^2)=\sum_{n=0}^{\infty}(-1)^n\frac{(x^2)^{2n+1}}{(2n+1)!}.
-          $$
-        type: symbolicResponse
-        prompt: Simplify the power $(x^2)^{2n+1}$.
-        answer:
-          expectedLatex: 'x^{4n+2}'
-          equivalenceMode: expression
-          variables:
-            - x
-            - n
-          tolerance: 0.000001
-        explanation: |
-          Use exponent multiplication:
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
 
-          $$
-          (x^2)^{2n+1}=x^{2(2n+1)}=x^{4n+2}.
-          $$
-      - id: compose-maclaurin-step-3
-        title: Write the final series
-        instruction: |
-          After simplifying the power, the series is:
+      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
 
-          $$
-          \sin(x^2)=\sum_{n=0}^{\infty}(-1)^n\frac{x^{4n+2}}{(2n+1)!}.
-          $$
-        type: multipleChoice
-        prompt: What are the first three nonzero terms?
-        choices:
-          - id: a
-            text: '$x^2-\frac{x^6}{3!}+\frac{x^{10}}{5!}$'
-          - id: b
-            text: '$x-\frac{x^3}{3!}+\frac{x^5}{5!}$'
-          - id: c
-            text: '$x^2+\frac{x^4}{2!}+\frac{x^6}{3!}$'
-          - id: d
-            text: '$1-x^2+\frac{x^4}{2!}$'
-        answer:
-          choiceId: a
-        explanation: |
-          Plug in $n=0,1,2$:
+      Why the other choices fail: $\left|\frac{4}{x+2}\right|$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $\left|\frac{x+2}{n}\right|$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $0$ for every $x$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.
+  - id: power-interval-step-2
+    title: Solve the inequality for the open interval
+    instruction: |
+      The ratio test requires:
 
-          $$
-          x^2-\frac{x^6}{3!}+\frac{x^{10}}{5!}.
-          $$
-      - id: compose-maclaurin-step-4
-        title: State the convergence behavior
-        instruction: |
-          The sine series converges for all real inputs. Composing with $x^2$ does not create a finite radius restriction.
-        type: multipleChoice
-        prompt: For which $x$ does the series converge?
-        choices:
-          - id: a
-            text: All real $x$
-          - id: b
-            text: Only $|x|<1$
-          - id: c
-            text: Only $x=0$
-          - id: d
-            text: Only $x>0$
-        answer:
-          choiceId: a
-        explanation: |
-          The Maclaurin series for $\sin u$ has infinite radius of convergence, so $\sin(x^2)$ also has a series representation valid for every real $x$.
-  - id: approximation-error-for-exponential
-    title: Approximation Error for $e^x$
-    problem: |
-      ![Taylor polynomials of increasing degree approximating e to the x near the center](/assessments/calc2-infinite-series/taylor-approximation-error.svg)
+      $$
+      \left|\frac{x+2}{4}\right|<1.
+      $$
+    type: multipleChoice
+    prompt: What is the open interval before endpoint testing?
+    choices:
+    - id: a
+      text: $(-6,2)$
+    - id: b
+      text: $(-2,4)$
+    - id: c
+      text: $(-4,4)$
+    - id: d
+      text: |-
+        $(-\infty,\infty)$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: $\left|\frac{x+2}{4}\right|<1$ gives $|x+2|<4$, so $-6<x<2$. Therefore the answer is $(-6,2)$.
 
-      Use the degree $3$ Maclaurin polynomial for $e^x$ to approximate $e^{0.2}$ and bound the error.
-    steps:
-      - id: exponential-error-step-1
-        title: Write the degree 3 polynomial
-        instruction: |
-          The Maclaurin series for $e^x$ is:
+      Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
 
-          $$
-          e^x=\sum_{n=0}^{\infty}\frac{x^n}{n!}.
-          $$
+      Common trap: Do not substitute endpoints into a simplified inequality and stop; each endpoint may converge, diverge, or have a different inclusion status.
 
-          The degree $3$ polynomial is:
+      Why the other choices fail: $(-2,4)$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; $(-4,4)$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; $(-\infty,\infty)$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$.
+  - id: power-interval-step-3
+    title: Test the left endpoint
+    instruction: |
+      At $x=-6$:
 
-          $$
-          P_3(x)=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}.
-          $$
-        type: numericResponse
-        prompt: What is $P_3(0.2)$?
-        answer:
-          value: 1.2213333333
-          tolerance: 0.000001
-        explanation: |
-          Compute:
+      $$
+      x+2=-4.
+      $$
 
-          $$
-          1+0.2+\frac{0.2^2}{2}+\frac{0.2^3}{6}
-          =
-          1.2213333333\ldots
-          $$
-      - id: exponential-error-step-2
-        title: Choose the error tool
-        instruction: |
-          The exponential series is not alternating for positive $x$, so use a Lagrange remainder bound.
-        type: multipleChoice
-        prompt: What derivative controls the degree 3 remainder?
-        choices:
-          - id: a
-            text: The fourth derivative of $e^x$.
-          - id: b
-            text: The first derivative only.
-          - id: c
-            text: The common ratio of a geometric series.
-          - id: d
-            text: The derivative of $x^3$ only.
-        answer:
-          choiceId: a
-        explanation: |
-          A degree $3$ Taylor polynomial leaves a remainder controlled by the next derivative, $f^{(4)}$.
-      - id: exponential-error-step-3
-        title: Bound the next derivative
-        instruction: |
-          For $f(x)=e^x$, every derivative is $e^x$.
+      The series becomes:
 
-          On $0\le x\le0.2$, a simple upper bound is $M=e^{0.2}$. Since $e^{0.2}<2$, we may use the convenient bound $M=2$.
-        type: multipleChoice
-        prompt: Which valid simple bound can be used for $M$?
-        choices:
-          - id: a
-            text: '$M=2$'
-          - id: b
-            text: '$M=0$'
-          - id: c
-            text: '$M=-1$'
-          - id: d
-            text: '$M=\frac{1}{1000}$'
-        answer:
-          choiceId: a
-        explanation: |
-          Since $e^x$ is less than $2$ on $[0,0.2]$, $M=2$ is a valid, easy upper bound.
-      - id: exponential-error-step-4
-        title: Compute the Lagrange bound
-        instruction: |
-          The Lagrange bound is:
+      $$
+      \sum_{n=1}^{\infty}\frac{(-4)^n}{n4^n}
+      =
+      \sum_{n=1}^{\infty}\frac{(-1)^n}{n}.
+      $$
+    type: multipleChoice
+    prompt: What happens at $x=-6$?
+    choices:
+    - id: a
+      text: It converges conditionally by the Alternating Series Test.
+    - id: b
+      text: It diverges because it is the harmonic series.
+    - id: c
+      text: It converges absolutely.
+    - id: d
+      text: The ratio test proves convergence.
+    answer:
+      choiceId: a
+    explanation: 'Solution: The endpoint series is alternating harmonic. It converges conditionally, not absolutely. Therefore the answer is It converges conditionally by the Alternating Series Test.. Therefore the answer is It converges conditionally by the Alternating Series Test.. Therefore the answer is It converges conditionally by the Alternating Series Test.. Therefore the answer is It converges conditionally by the Alternating Series Test..
 
-          $$
-          |R_3(0.2)|\le\frac{M}{4!}(0.2)^4.
-          $$
 
-          Use $M=2$.
-        type: numericResponse
-        prompt: What upper bound do we get for the error?
-        answer:
-          value: 0.0001333333
-          tolerance: 0.0000001
-        explanation: |
-          Compute:
+      Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
 
-          $$
-          \frac{2}{24}(0.2)^4
-          =
-          \frac{1}{12}(0.0016)
-          =
-          0.0001333333\ldots
-          $$
-      - id: exponential-error-step-5
-        title: State the approximation with trust
-        instruction: |
-          A useful approximation answer should include both the estimate and the error guarantee.
-        type: freeResponse
-        prompt: State the approximation and error guarantee.
-        answer:
-          expected: Using the degree 3 Maclaurin polynomial, e^0.2 is approximately 1.2213333333. The Lagrange remainder with M=2 gives an error at most about 0.0001333333.
-          gradingMode: selfCheck
-          keyPoints:
-            - Use $P_3(0.2)=1.2213333333\ldots$.
-            - Use the fourth derivative for the remainder.
-            - Use a valid bound such as $M=2$ on $[0,0.2]$.
-            - State the error bound $0.0001333333\ldots$.
-        explanation: |
-          The final result is not just a decimal. It is a decimal with a guarantee:
 
-          $$
-          e^{0.2}\approx1.2213333333
-          $$
+      Common trap: Do not substitute endpoints into a simplified inequality and stop; each endpoint may converge, diverge, or have a different inclusion status.
 
-          with error at most about $0.0001333333$.
 
-          Related topic: Lagrange remainder and approximation accuracy.
+      Why the other choices fail: It diverges because it is the harmonic series. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; It converges absolutely. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; The ratio test proves convergence. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$.'
+  - id: power-interval-step-4
+    title: Test the right endpoint
+    instruction: |
+      At $x=2$:
+
+      $$
+      x+2=4.
+      $$
+
+      The series becomes:
+
+      $$
+      \sum_{n=1}^{\infty}\frac{4^n}{n4^n}
+      =
+      \sum_{n=1}^{\infty}\frac1n.
+      $$
+    type: multipleChoice
+    prompt: What happens at $x=2$?
+    choices:
+    - id: a
+      text: It diverges as the harmonic series.
+    - id: b
+      text: It converges by the Alternating Series Test.
+    - id: c
+      text: It converges absolutely.
+    - id: d
+      text: It telescopes.
+    answer:
+      choiceId: a
+    explanation: 'Solution: The harmonic series diverges, so the right endpoint is excluded. Therefore the answer is It diverges as the harmonic series.. Therefore the answer is It diverges as the harmonic series.. Therefore the answer is It diverges as the harmonic series.. Therefore the answer is It diverges as the harmonic series..
+
+
+      Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
+
+
+      Common trap: Do not substitute endpoints into a simplified inequality and stop; each endpoint may converge, diverge, or have a different inclusion status.
+
+
+      Why the other choices fail: It converges by the Alternating Series Test. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; It converges absolutely. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; It telescopes. conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$.'
+  - id: power-interval-step-5
+    title: State the interval of convergence
+    instruction: 'Combine the open interval with endpoint decisions:
+
+
+      - include $x=-6$,
+
+      - exclude $x=2$.
+
+      '
+    type: multipleChoice
+    prompt: What is the interval of convergence?
+    choices:
+    - id: a
+      text: $[-6,2)$
+    - id: b
+      text: $(-6,2)$
+    - id: c
+      text: $[-6,2]$
+    - id: d
+      text: $(-6,2]$
+    answer:
+      choiceId: a
+    explanation: 'Solution: The interval of convergence is $[-6,2)$. Endpoint testing is required because the ratio test is inconclusive at endpoints. Therefore the answer is $[-6,2)$.
+
+
+      Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
+
+
+      Common trap: Do not substitute endpoints into a simplified inequality and stop; each endpoint may converge, diverge, or have a different inclusion status.
+
+
+      Why the other choices fail: $(-6,2)$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; $[-6,2]$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; $(-6,2]$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$.'
+- id: build-power-series-from-geometric
+  title: Build a Power Series from a Geometric Series
+  problem: |
+    Find a power series representation for:
+
+    $$
+    f(x)=\frac{x^2}{1+3x}.
+    $$
+
+    Also state where the representation converges.
+  steps:
+  - id: build-power-step-1
+    title: Match the geometric template
+    instruction: |
+      The core template is:
+
+      $$
+      \frac{1}{1-r}=\sum_{n=0}^{\infty}r^n,
+      \qquad |r|<1.
+      $$
+
+      Rewrite:
+
+      $$
+      \frac{1}{1+3x}=\frac{1}{1-(-3x)}.
+      $$
+    type: multipleChoice
+    prompt: What is $r$?
+    choices:
+    - id: a
+      text: $-3x$
+    - id: b
+      text: $3x$
+    - id: c
+      text: $x^2$
+    - id: d
+      text: $1+3x$
+    answer:
+      choiceId: a
+    explanation: 'Solution: Since $1+3x=1-(-3x)$, the geometric ratio is $r=-3x$. Therefore the answer is $-3x$.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: $3x$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $x^2$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $1+3x$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: build-power-step-2
+    title: Write the base series
+    instruction: |
+      Substitute $r=-3x$:
+
+      $$
+      \frac{1}{1+3x}
+      =
+      \sum_{n=0}^{\infty}(-3x)^n.
+      $$
+    type: multipleChoice
+    prompt: What convergence condition comes from the geometric template?
+    choices:
+    - id: a
+      text: $|-3x|<1$
+    - id: b
+      text: $|x|>3$
+    - id: c
+      text: $x^2<0$
+    - id: d
+      text: No condition is needed.
+    answer:
+      choiceId: a
+    explanation: 'Solution: A geometric series converges when $|r|<1$, so here $|-3x|<1$. Therefore the answer is $|-3x|<1$.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: $|x|>3$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $x^2<0$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; No condition is needed. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: build-power-step-3
+    title: Multiply by the extra factor
+    instruction: |
+      The original function has an extra factor of $x^2$:
+
+      $$
+      \frac{x^2}{1+3x}
+      =
+      x^2\sum_{n=0}^{\infty}(-3x)^n.
+      $$
+    type: multipleChoice
+    prompt: Write the resulting series as a single summation.
+    choices:
+    - id: a
+      text: |-
+        $\sum_{n=0}^{\infty}(-3)^n x^{n+2}$
+    - id: b
+      text: |-
+        $\sum_{n=0}^{\infty}(-3)^n x^n$
+    - id: c
+      text: |-
+        $\sum_{n=0}^{\infty}3^n x^{n-2}$
+    - id: d
+      text: |-
+        $\sum_{n=0}^{\infty}x^{2n}$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Multiplying by $x^2$ gives:
+
+      $$
+      x^2(-3x)^n=(-3)^n x^{n+2}.
+      $$ Therefore the answer is $\sum_{n=0}^{\infty}(-3)^n x^{n+2}$.
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+      Why the other choices fail: $\sum_{n=0}^{\infty}(-3)^n x^n$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $\sum_{n=0}^{\infty}3^n x^{n-2}$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $\sum_{n=0}^{\infty}x^{2n}$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.
+  - id: build-power-step-4
+    title: State the interval of convergence
+    instruction: 'Solve:
+
+
+      $$
+
+      |-3x|<1.
+
+      $$
+
+      '
+    type: multipleChoice
+    prompt: What is the interval of convergence?
+    choices:
+    - id: a
+      text: |-
+        $\left(-\frac13,\frac13\right)$
+    - id: b
+      text: $(-3,3)$
+    - id: c
+      text: |-
+        $(-\infty,\infty)$
+    - id: d
+      text: |-
+        $\left[-\frac13,\frac13\right]$ automatically
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: $|-3x|<1$ gives $|x|<\frac13$. Because this came from a geometric series, the endpoints are not included. Therefore the answer is $\left(-\frac13,\frac13\right)$.
+
+      Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
+
+      Common trap: Do not substitute endpoints into a simplified inequality and stop; each endpoint may converge, diverge, or have a different inclusion status.
+
+      Why the other choices fail: $(-3,3)$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; $(-\infty,\infty)$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; $\left[-\frac13,\frac13\right]$ automatically conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$.
+- id: compose-maclaurin-series
+  title: Compose a Maclaurin Series
+  problem: |
+    Find the Maclaurin series for:
+
+    $$
+    \sin(x^2).
+    $$
+  steps:
+  - id: compose-maclaurin-step-1
+    title: Recall the parent series
+    instruction: |
+      Start from the known Maclaurin series:
+
+      $$
+      \sin u=\sum_{n=0}^{\infty}(-1)^n\frac{u^{2n+1}}{(2n+1)!}.
+      $$
+    type: multipleChoice
+    prompt: What substitution should be made?
+    choices:
+    - id: a
+      text: $u=x^2$
+    - id: b
+      text: $u=2x$
+    - id: c
+      text: |-
+        $u=\sin x$
+    - id: d
+      text: $u=n$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Since the input to sine is $x^2$, substitute $u=x^2$ into the known sine series. Therefore the answer is $u=x^2$.
+
+      Why it works: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$. Compute derivatives at the center, divide by $n!$, and preserve the power $(x-a)^n$ before analyzing convergence.
+
+      Common trap: Do not confuse the derivative value with its Taylor coefficient; the factorial belongs in every coefficient, including the constant term where $0!=1$.
+
+      Why the other choices fail: $u=2x$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $u=\sin x$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $u=n$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$.
+  - id: compose-maclaurin-step-2
+    title: Substitute into the powers
+    instruction: |
+      Replace $u$ with $x^2$:
+
+      $$
+      \sin(x^2)=\sum_{n=0}^{\infty}(-1)^n\frac{(x^2)^{2n+1}}{(2n+1)!}.
+      $$
+    type: symbolicResponse
+    prompt: Simplify the power $(x^2)^{2n+1}$.
+    answer:
+      expectedLatex: x^{4n+2}
+      equivalenceMode: expression
+      variables:
+      - x
+      - n
+      tolerance: 0.000001
+    explanation: 'Solution: Use exponent multiplication:
+
+
+      $$
+
+      (x^2)^{2n+1}=x^{2(2n+1)}=x^{4n+2}.
+
+      $$ Therefore the answer is x^{4n+2}.
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.'
+  - id: compose-maclaurin-step-3
+    title: Write the final series
+    instruction: |
+      After simplifying the power, the series is:
+
+      $$
+      \sin(x^2)=\sum_{n=0}^{\infty}(-1)^n\frac{x^{4n+2}}{(2n+1)!}.
+      $$
+    type: multipleChoice
+    prompt: What are the first three nonzero terms?
+    choices:
+    - id: a
+      text: |-
+        $x^2-\frac{x^6}{3!}+\frac{x^{10}}{5!}$
+    - id: b
+      text: |-
+        $x-\frac{x^3}{3!}+\frac{x^5}{5!}$
+    - id: c
+      text: |-
+        $x^2+\frac{x^4}{2!}+\frac{x^6}{3!}$
+    - id: d
+      text: |-
+        $1-x^2+\frac{x^4}{2!}$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Plug in $n=0,1,2$:
+
+      $$
+      x^2-\frac{x^6}{3!}+\frac{x^{10}}{5!}.
+      $$ Therefore the answer is $x^2-\frac{x^6}{3!}+\frac{x^{10}}{5!}$.
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+      Why the other choices fail: $x-\frac{x^3}{3!}+\frac{x^5}{5!}$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $x^2+\frac{x^4}{2!}+\frac{x^6}{3!}$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $1-x^2+\frac{x^4}{2!}$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.
+  - id: compose-maclaurin-step-4
+    title: State the convergence behavior
+    instruction: 'The sine series converges for all real inputs. Composing with $x^2$ does not create a finite radius restriction.
+
+      '
+    type: multipleChoice
+    prompt: For which $x$ does the series converge?
+    choices:
+    - id: a
+      text: All real $x$
+    - id: b
+      text: Only $|x|<1$
+    - id: c
+      text: Only $x=0$
+    - id: d
+      text: Only $x>0$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: The Maclaurin series for $\sin u$ has infinite radius of convergence, so $\sin(x^2)$ also has a series representation valid for every real $x$. Therefore the answer is All real $x$.
+
+      Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
+
+      Common trap: Do not substitute endpoints into a simplified inequality and stop; each endpoint may converge, diverge, or have a different inclusion status.
+
+      Why the other choices fail: Only $|x|<1$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; Only $x=0$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$; Only $x>0$ conflicts with this criterion: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$.
+- id: approximation-error-for-exponential
+  title: Approximation Error for $e^x$
+  problem: '![Taylor polynomials of increasing degree approximating e to the x near the center](/assessments/calc2-infinite-series/taylor-approximation-error.svg)
+
+
+    Use the degree $3$ Maclaurin polynomial for $e^x$ to approximate $e^{0.2}$ and bound the error.
+
+    '
+  steps:
+  - id: exponential-error-step-1
+    title: Write the degree 3 polynomial
+    instruction: |
+      The Maclaurin series for $e^x$ is:
+
+      $$
+      e^x=\sum_{n=0}^{\infty}\frac{x^n}{n!}.
+      $$
+
+      The degree $3$ polynomial is:
+
+      $$
+      P_3(x)=1+x+\frac{x^2}{2!}+\frac{x^3}{3!}.
+      $$
+    type: numericResponse
+    prompt: What is $P_3(0.2)$?
+    answer:
+      value: 1.2213333333
+      tolerance: 0.000001
+    explanation: |-
+      Solution: Compute:
+
+      $$
+      1+0.2+\frac{0.2^2}{2}+\frac{0.2^3}{6}
+      =
+      1.2213333333\ldots
+      $$
+
+      Why it works: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$. Compute derivatives at the center, divide by $n!$, and preserve the power $(x-a)^n$ before analyzing convergence.
+
+      Common trap: Do not confuse the derivative value with its Taylor coefficient; the factorial belongs in every coefficient, including the constant term where $0!=1$.
+  - id: exponential-error-step-2
+    title: Choose the error tool
+    instruction: 'The exponential series is not alternating for positive $x$, so use a Lagrange remainder bound.
+
+      '
+    type: multipleChoice
+    prompt: What derivative controls the degree 3 remainder?
+    choices:
+    - id: a
+      text: The fourth derivative of $e^x$.
+    - id: b
+      text: The first derivative only.
+    - id: c
+      text: The common ratio of a geometric series.
+    - id: d
+      text: The derivative of $x^3$ only.
+    answer:
+      choiceId: a
+    explanation: 'Solution: A degree $3$ Taylor polynomial leaves a remainder controlled by the next derivative, $f^{(4)}$. Therefore the answer is The fourth derivative of $e^x$.. Therefore the answer is The fourth derivative of $e^x$.. Therefore the answer is The fourth derivative of $e^x$.. Therefore the answer is The fourth derivative of $e^x$..
+
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem''s hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+
+
+      Why the other choices fail: The first derivative only. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The common ratio of a geometric series. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; The derivative of $x^3$ only. conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.'
+  - id: exponential-error-step-3
+    title: Bound the next derivative
+    instruction: |
+      For $f(x)=e^x$, every derivative is $e^x$.
+
+      On $0\le x\le0.2$, a simple upper bound is $M=e^{0.2}$. Since $e^{0.2}<2$, we may use the convenient bound $M=2$.
+    type: multipleChoice
+    prompt: Which valid simple bound can be used for $M$?
+    choices:
+    - id: a
+      text: $M=2$
+    - id: b
+      text: $M=0$
+    - id: c
+      text: $M=-1$
+    - id: d
+      text: |-
+        $M=\frac{1}{1000}$
+    answer:
+      choiceId: a
+    explanation: |-
+      Solution: Since $e^x$ is less than $2$ on $[0,0.2]$, $M=2$ is a valid, easy upper bound. Therefore the answer is $M=2$.
+
+      Why it works: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$. Compute derivatives at the center, divide by $n!$, and preserve the power $(x-a)^n$ before analyzing convergence.
+
+      Common trap: Do not confuse the derivative value with its Taylor coefficient; the factorial belongs in every coefficient, including the constant term where $0!=1$.
+
+      Why the other choices fail: $M=0$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $M=-1$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$; $M=\frac{1}{1000}$ conflicts with this criterion: The Taylor formula is $\sum_{n=0}^{\infty} f^{(n)}(a)(x-a)^n/n!$.
+  - id: exponential-error-step-4
+    title: Compute the Lagrange bound
+    instruction: |
+      The Lagrange bound is:
+
+      $$
+      |R_3(0.2)|\le\frac{M}{4!}(0.2)^4.
+      $$
+
+      Use $M=2$.
+    type: numericResponse
+    prompt: What upper bound do we get for the error?
+    answer:
+      value: 0.0001333333
+      tolerance: 0.0000001
+    explanation: |-
+      Solution: Compute:
+
+      $$
+      \frac{2}{24}(0.2)^4
+      =
+      \frac{1}{12}(0.0016)
+      =
+      0.0001333333\ldots
+      $$
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
+  - id: exponential-error-step-5
+    title: State the approximation with trust
+    instruction: 'A useful approximation answer should include both the estimate and the error guarantee.
+
+      '
+    type: freeResponse
+    prompt: State the approximation and error guarantee.
+    answer:
+      expected: Using the degree 3 Maclaurin polynomial, e^0.2 is approximately 1.2213333333. The Lagrange remainder with M=2 gives an error at most about 0.0001333333.
+      gradingMode: selfCheck
+      keyPoints:
+      - |-
+        Use $P_3(0.2)=1.2213333333\ldots$.
+      - Use the fourth derivative for the remainder.
+      - Use a valid bound such as $M=2$ on $[0,0.2]$.
+      - |-
+        State the error bound $0.0001333333\ldots$.
+    explanation: |-
+      Solution: The final result is not just a decimal. It is a decimal with a guarantee:
+
+      $$
+      e^{0.2}\approx1.2213333333
+      $$
+
+      with error at most about $0.0001333333$.
+
+      Related topic: Lagrange remainder and approximation accuracy. Therefore the answer is Using the degree 3 Maclaurin polynomial, e^0.2 is approximately 1.2213333333. The Lagrange remainder with M=2 gives an error at most about 0.0001333333.. Therefore the answer is Using the degree 3 Maclaurin polynomial, e^0.2 is approximately 1.2213333333. The Lagrange remainder with M=2 gives an error at most about 0.0001333333.. Therefore the answer is Using the degree 3 Maclaurin polynomial, e^0.2 is approximately 1.2213333333. The Lagrange remainder with M=2 gives an error at most about 0.0001333333..
+
+      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+
+      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.

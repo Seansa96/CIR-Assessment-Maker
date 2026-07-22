@@ -58,7 +58,7 @@ Drafts remain `needs-review` until all required checks pass:
 - every item links to a blueprint and source chunks;
 - every scored STEM item satisfies its tier's distinct difficulty-dimension and transfer-objective requirement;
 - all answers are independently verified;
-- every scored quiz/test item has a substantive explanation: governing principle, decisive method/model step, and connection to the answer; self-check items include a concise solution outline rather than only a final result;
+- every answer-bearing item uses `Solution:` and `Why it works:` to show ordered reasoning; multiple choice also uses `Why the other choices fail:`; Olympiad items also use `Prerequisites:` and `Further study:` with targeted preparation;
 - diagram-to-prompt consistency is checked when a diagram is required;
 - prompts provide all needed givens and units;
 - lessons have meaningful depth and visuals; worked examples expose intermediate reasoning;
