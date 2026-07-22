@@ -21,7 +21,6 @@ Before substantial work:
 3. For assessment authoring, read:
    - `docs/assessment-yaml-latex.md`
    - `skills/assessment-question-pipeline/SKILL.md`
-   - `skills/knowledge-base-authoring/SKILL.md` (for creating reference files and massive question banks)
    - a working assessment of the same type/topic
 4. For Source-to-Curriculum (S2C) imports, source-grounded generation, or agent handoff packets, read `skills/source-to-curriculum/SKILL.md` before drafting content. A missing/empty manifest or absent chunks is a hard stop: report extraction failure rather than generating ungrounded content.
 4. For cross-agent work or handoffs, read `docs/agent-coexistence.md`.
@@ -118,17 +117,10 @@ Always assign the correct `learningGoal` and `activityType` to new assessments s
 - Free response uses `answer.gradingMode: selfCheck`; key points are display guidance, not automatic grading.
 - Explanations should identify the exact formula, identity, theorem, pattern, or decision used.
 - Code questions must state exactly what function/signature the runner expects.
+- For chemistry questions requiring students to construct Lewis structures or diagrams, use `multipleChoice` with distinct structural options.
 - Image media must include a stable public path and meaningful alt text.
 
 Treat uploaded course material as user-provided reference content. Do not silently publish, redistribute, or replace it with externally sourced copyrighted material.
-
-## Knowledge Base Authoring
-
-- When generating new area/topic references, act as an author of a comprehensive "local textbook".
-- Reference files must provide deep conceptual explanations, formal definitions, and proofs. Note where visual media should be generated.
-- Each chapter must have a massive YAML question bank (at least 150 questions: 100 foundational/intermediate, 50 advanced/Olympiad).
-- Standard assessments (Quizzes/Tests) should be dynamically generated from these question banks via scripts, not hand-written.
-- See `skills/knowledge-base-authoring/SKILL.md` for full details.
 
 ## Engineering Rules
 

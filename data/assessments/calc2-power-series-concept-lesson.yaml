@@ -10,6 +10,9 @@ skills:
   - power-series
 modeDefault: practice
 randomizeQuestions: false
+authoring:
+  visualRequirement: required
+  difficultyTier: easy
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -52,6 +55,10 @@ lesson:
         $$
 
         ![Power series input map showing that different x values produce different convergence behavior](/assessments/calc2-infinite-series/power-series-input-interval-map.svg)
+      media:
+        - type: image
+          src: /assessments/calc2-infinite-series/power-series-input-interval-map.svg
+          alt: A number line marking a power series center, an interior convergence interval, and inputs outside the interval.
       check:
         id: power-series-as-variable-series-check
         type: multipleChoice
@@ -95,6 +102,10 @@ lesson:
         - $R=\infty$: all real $x$.
 
         ![Power series interval map showing center radius and separate endpoint tests](/assessments/calc2-infinite-series/power-series-radius-endpoints-map.svg)
+      media:
+        - type: image
+          src: /assessments/calc2-infinite-series/power-series-radius-endpoints-map.svg
+          alt: A centered interval with radius R, separately marked endpoints, and endpoint-test decision branches.
       check:
         id: center-and-radius-check
         type: multipleChoice
@@ -225,6 +236,10 @@ lesson:
         The interval of convergence must also transform with the substitution.
 
         ![Flow diagram for building new power series through substitution multiplication differentiation and integration](/assessments/calc2-infinite-series/power-series-operations-map.svg)
+      media:
+        - type: image
+          src: /assessments/calc2-infinite-series/power-series-operations-map.svg
+          alt: A flow map from the geometric series to substitution, multiplication, differentiation, and integration operations, each retaining an interval condition.
       check:
         id: operations-on-power-series-check
         type: multipleChoice
@@ -281,3 +296,55 @@ lesson:
             - c
         explanation: |
           The radius gives the interior. Endpoint tests decide brackets, and interval notation records the final answer.
+
+    - id: representation-equality
+      title: A Representation Is an Identity on Its Interval
+      required: true
+      content: |
+        A series representation is not a formal pattern that may be used everywhere. For example,
+
+        $$
+        \frac{1}{1-x}=1+x+x^2+\cdots
+        $$
+
+        is an equality only for $|x|<1$. At $x=2$, the rational function is defined but the displayed series diverges. State the interval whenever you derive a representation, then check that a requested evaluation point lies inside it before substituting.
+      check:
+        id: representation-equality-check
+        type: multipleChoice
+        prompt: Why may you not evaluate $1+x+x^2+\cdots$ at $x=2$ by replacing it with $1/(1-x)$?
+        choices:
+          - id: a
+            text: The geometric-series identity has interval $|x|<1$, and $2$ is outside it.
+          - id: b
+            text: Rational functions can never be negative.
+          - id: c
+            text: A power series has no center.
+          - id: d
+            text: The ratio test always gives zero at $x=2$.
+        answer:
+          choiceId: a
+        explanation: The rational expression and its power-series representation agree only inside the geometric series convergence interval. The original function being defined at a point does not make the series converge there.
+
+    - id: choose-a-representation
+      title: Choose the Operation Before Expanding
+      required: true
+      content: |
+        Before writing terms, decide which operation connects the target to a known representation. A denominator of the form $1-u$ suggests substitution. An extra factor of $x$ suggests multiplication. A coefficient $n$ or $n+1$ often signals differentiation, while a denominator $n+1$ can signal integration.
+
+        This decision prevents an unproductive derivative calculation and keeps the interval condition attached to the representation you build.
+      check:
+        id: choose-a-representation-check
+        type: multipleChoice
+        prompt: Which operation most directly produces a representation for $\ln(1-x)$ from the geometric series?
+        choices:
+          - id: a
+            text: Integrate $1/(1-x)=\sum_{n=0}^{\infty}x^n$ term by term and choose the constant using $\ln 1=0$.
+          - id: b
+            text: Differentiate the geometric series until every coefficient is one.
+          - id: c
+            text: Substitute $x=1$ before expanding.
+          - id: d
+            text: Test only the endpoints.
+        answer:
+          choiceId: a
+        explanation: Integrating the geometric identity gives $-\ln(1-x)=\sum_{n=0}^{\infty}x^{n+1}/(n+1)$ for $|x|<1$. Negating both sides yields the desired representation.

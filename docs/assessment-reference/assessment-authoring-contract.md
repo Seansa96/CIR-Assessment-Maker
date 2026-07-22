@@ -30,7 +30,7 @@ authoring:
     requiredRepresentations: [systemBoundary, freeBodyDiagram, coordinateAxes, forceComponents]
 ```
 
-This is a teaching-model declaration, not a tag. `systemBoundary` and `freeBodyDiagram` are required for all Dynamics model lessons and examples. Inclined-plane material also requires `coordinateAxes` and `forceComponents`; connected systems and static equilibrium require `motionConstraint`; friction requires a static-versus-kinetic decision branch; circular-motion material requires `radialDirection`. Dynamics lessons include an FBD/system-boundary choice or correction activity. Worked examples begin with the system, FBD, and axes before equations, use 2â€“4 related problem families, and surface a sign, force-pair, or constraint trap.
+This is a teaching-model declaration, not a tag. `systemBoundary` and `freeBodyDiagram` are required for all Dynamics model lessons and examples. Inclined-plane material also requires `coordinateAxes` and `forceComponents`; connected systems and static equilibrium require `motionConstraint`; friction requires a static-versus-kinetic decision branch; circular-motion material requires `radialDirection`. Dynamics lessons include an FBD/system-boundary choice or correction activity. Worked examples begin with the system, FBD, and axes before equations, use 2–4 related problem families, and surface a sign, force-pair, or constraint trap.
 
 ## Required progression
 
@@ -72,6 +72,10 @@ Items must remain solvable from stated givens. Missing data, unstated convention
 | Directed project | Non-STEM plus Electrical Engineering/Electronics and Circuits only; requires real-world practice guidance and measurable completion checks. |
 
 `interactiveExploration` is out of scope for this v1 policy beyond normal schema validation.
+
+## Finals Practice areas
+
+Finals Practice areas are exempt from the normal learn-to-practice progression and may contain only quizzes and tests. Each such area must contain at least one Easy Test, one Hard Test, and one Olympiad Test. Those tests retain their ordinary contract requirements: Easy and Hard Tests have 20 attempt items, Olympiad Tests have 5, and all count, difficulty-dimension, answer, explanation, and provenance requirements still apply.
 
 ## Enforcement
 

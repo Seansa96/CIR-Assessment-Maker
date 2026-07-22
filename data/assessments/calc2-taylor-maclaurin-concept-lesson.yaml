@@ -10,6 +10,9 @@ skills:
   - taylor-maclaurin
 modeDefault: practice
 randomizeQuestions: false
+authoring:
+  visualRequirement: required
+  difficultyTier: easy
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -45,6 +48,10 @@ lesson:
         More matched derivatives usually means a better local imitation near $x=a$.
 
         ![Sine curve with first, third, and fifth degree Taylor polynomial approximations near zero](/assessments/calc2-infinite-series/taylor-polynomial-imitation-sinx.svg)
+      media:
+        - type: image
+          src: /assessments/calc2-infinite-series/taylor-polynomial-imitation-sinx.svg
+          alt: A sine curve together with first-, third-, and fifth-degree Taylor polynomials that agree increasingly closely near x equals zero.
       check:
         id: polynomial-imitation-check
         type: multipleChoice
@@ -198,6 +205,10 @@ lesson:
         $$
 
         ![Flow map showing how known Taylor series become new series through substitution, differentiation, and integration](/assessments/calc2-infinite-series/taylor-known-series-transformation-map.svg)
+      media:
+        - type: image
+          src: /assessments/calc2-infinite-series/taylor-known-series-transformation-map.svg
+          alt: A transformation map from standard Taylor series through substitution, multiplication, differentiation, and integration.
       check:
         id: building-from-known-series-check
         type: multipleChoice
@@ -274,6 +285,10 @@ lesson:
         $$
 
         ![Taylor approximation error visual showing how the approximation departs away from the center](/assessments/calc2-infinite-series/taylor-approximation-error.svg)
+      media:
+        - type: image
+          src: /assessments/calc2-infinite-series/taylor-approximation-error.svg
+          alt: A function and Taylor polynomial that agree near the center and separate farther away, with their difference labeled remainder.
       check:
         id: error-intuition-check
         type: selectAll
@@ -294,3 +309,31 @@ lesson:
             - c
         explanation: |
           Taylor approximations are local. They usually improve with more terms and with inputs closer to the center, provided the function behaves well there.
+
+    - id: shifted-center-coefficients
+      title: Shift the Center Before Reading Coefficients
+      required: true
+      content: |
+        A Taylor series centered at $a$ is organized in powers of $(x-a)$, not powers of $x$:
+
+        $$
+        \sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x-a)^n.
+        $$
+
+        Keep the shifted factor intact while constructing the series. A Maclaurin series is only the special case $a=0$; it is not the default center for every problem.
+      check:
+        id: shifted-center-coefficients-check
+        type: multipleChoice
+        prompt: In a Taylor series centered at $a=3$, which factor accompanies the second-derivative coefficient?
+        choices:
+          - id: a
+            text: '$\frac{f''(3)}{2!}(x-3)^2$'
+          - id: b
+            text: '$f''(x)x^2$'
+          - id: c
+            text: '$\frac{f(3)}{2!}x$'
+          - id: d
+            text: '$f''(0)(x-3)$'
+        answer:
+          choiceId: a
+        explanation: The second derivative is evaluated at the center and divided by $2!$, with the shifted basis term $(x-3)^2$.
