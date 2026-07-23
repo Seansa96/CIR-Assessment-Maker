@@ -1,0 +1,75 @@
+schemaVersion: 1
+id: physics-fluid-dynamics-advanced-test
+title: Fluid Dynamics Advanced Test
+assessmentType: test
+categoryId: physics-1
+topicId: physics-fluid-dynamics
+modeDefault: test
+randomizeQuestions: true
+skills:
+- physics-fluid-dynamics
+navigation:
+  learningGoal: evaluate
+  activityType: formalTest
+  tags:
+  - physics-1
+  - physics-fluid-dynamics
+authoring:
+  visualRequirement: notApplicable
+questions:
+- id: q001
+  type: numericResponse
+  prompt: |
+    A Pitot tube is mounted on an airplane to measure its airspeed. The tube compares the stagnation pressure $P_s$ (where the air is brought to a complete stop, $v=0$) to the static atmospheric pressure $P_{atm}$ (where the air flows past at the plane's speed $v$).
+    The instruments measure a pressure difference $\Delta P = P_s - P_{atm} = 4500 \text{ Pa}$. 
+    If the air density at this altitude is $1.2 \text{ kg/m}^3$, calculate the airspeed of the plane in m/s.
+  answer:
+    value: 86.6
+    tolerance: 0.2
+  explanation: |
+    Solution:
+    Apply Bernoulli's equation along a horizontal streamline from the free stream (1) to the stagnation point (2):
+    $P_{atm} + \frac{1}{2}\rho v^2 = P_s + \frac{1}{2}\rho (0)^2$
+    $\frac{1}{2}\rho v^2 = P_s - P_{atm} = \Delta P$
+    $v = \sqrt{ \frac{2\Delta P}{\rho} }$
+    $v = \sqrt{ \frac{2(4500)}{1.2} } = \sqrt{7500} \approx 86.602 \text{ m/s}$.
+    
+    Why it works:
+    The Pitot tube intentionally blocks the air, forcing its kinetic energy to convert entirely into pressure (stagnation pressure). By measuring how much higher the stagnation pressure is compared to ambient static pressure, the plane's computer can instantly deduce the kinetic energy and thus the velocity.
+  difficultyDimensions:
+  - RepresentationTransfer
+  - IdentityConstruction
+  - AuxiliaryTechnique
+  - Simplification
+  - ModelOrDerivation
+- id: q002
+  type: symbolicResponse
+  prompt: |
+    Water flows smoothly out of a circular faucet with an initial downward velocity $v_0$ and an initial cross-sectional area $A_0$. 
+    As the water falls a vertical distance $y$, gravity causes it to speed up, which by the equation of continuity means the stream must narrow. 
+    Write the expression for the cross-sectional area $A(y)$ of the falling stream as a function of the drop distance $y$. 
+    Use `A_0`, `v_0`, `g`, and `y`. (Hint: Use kinematics to find the velocity $v(y)$ first).
+  answer:
+    expectedLatex: \frac{A_0 v_0}{\sqrt{v_0^2 + 2gy}}
+    equivalenceMode: expression
+    variables: [A_0, v_0, g, y]
+    tolerance: 0.00001
+    keyPoints:
+    - (A_0 v_0) / \sqrt{v_0^2 + 2gy}
+  explanation: |
+    Solution:
+    From kinematics for an object in free fall (or Bernoulli's equation):
+    $v(y)^2 = v_0^2 + 2gy \implies v(y) = \sqrt{v_0^2 + 2gy}$
+    From the equation of continuity:
+    $A_0 v_0 = A(y) v(y)$
+    $A(y) = \frac{A_0 v_0}{v(y)}$
+    $A(y) = \frac{A_0 v_0}{\sqrt{v_0^2 + 2gy}}$
+    
+    Why it works:
+    This combines mass conservation and energy conservation. The fluid accelerates due to gravity, so it must narrow to maintain the same volume flow rate. This is why a stream of water from a tap smoothly tapers the further it falls, eventually breaking into droplets when the stream becomes too thin to hold itself together!
+  difficultyDimensions:
+  - RepresentationTransfer
+  - IdentityConstruction
+  - AuxiliaryTechnique
+  - Simplification
+  - ModelOrDerivation

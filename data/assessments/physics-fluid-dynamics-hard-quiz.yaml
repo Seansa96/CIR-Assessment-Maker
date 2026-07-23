@@ -1,0 +1,79 @@
+schemaVersion: 1
+id: physics-fluid-dynamics-hard-quiz
+title: Fluid Dynamics Hard Quiz
+assessmentType: quiz
+categoryId: physics-1
+topicId: physics-fluid-dynamics
+modeDefault: practice
+randomizeQuestions: true
+skills:
+- physics-fluid-dynamics
+navigation:
+  learningGoal: practice
+  activityType: mixedPractice
+  tags:
+  - physics-1
+  - physics-fluid-dynamics
+authoring:
+  visualRequirement: notApplicable
+questions:
+- id: q001
+  type: numericResponse
+  prompt: |
+    A water pump in a basement forces water ($\rho = 1000 \text{ kg/m}^3$) into a pipe of radius $r_1 = 0.05 \text{ m}$ at a pressure of $P_1 = 3.0 \times 10^5 \text{ Pa}$ and a speed of $v_1 = 1.0 \text{ m/s}$. 
+    The pipe travels up to a second-floor bathroom, which is $y_2 = 5.0 \text{ m}$ above the basement pump ($y_1 = 0$). In the bathroom, the pipe narrows to a radius of $r_2 = 0.025 \text{ m}$.
+    Calculate the absolute pressure of the water in the bathroom pipe in Pascals. Use $g = 9.8 \text{ m/s}^2$.
+  answer:
+    value: 243500
+    tolerance: 1000
+  explanation: |
+    Solution:
+    First, use continuity to find $v_2$. $A_1 = \pi(0.05)^2$ and $A_2 = \pi(0.025)^2$.
+    Because $r_2$ is half of $r_1$, $A_2$ is $1/4$ of $A_1$. Thus, $v_2 = 4 v_1 = 4.0 \text{ m/s}$.
+    Next, apply Bernoulli's equation: $P_1 + \frac{1}{2}\rho v_1^2 + \rho g y_1 = P_2 + \frac{1}{2}\rho v_2^2 + \rho g y_2$.
+    $300000 + 0.5(1000)(1.0)^2 + 0 = P_2 + 0.5(1000)(4.0)^2 + 1000(9.8)(5.0)$
+    $300000 + 500 = P_2 + 500(16) + 49000$
+    $300500 = P_2 + 8000 + 49000$
+    $300500 = P_2 + 57000$
+    $P_2 = 300500 - 57000 = 243500 \text{ Pa}$.
+    
+    Why it works:
+    The pressure must drop for two reasons: (1) the fluid is lifted against gravity, expending potential energy, and (2) the fluid speeds up in the narrower pipe, expending kinetic energy. The remaining energy density manifests as the new, lower pressure.
+  difficultyDimensions:
+  - RepresentationTransfer
+  - AuxiliaryTechnique
+  - Simplification
+  - ModelOrDerivation
+- id: q002
+  type: symbolicResponse
+  prompt: |
+    A large, sealed water tank is pressurized with air at the top such that the air exerts a gauge pressure $P_{gauge}$ on the surface of the water. 
+    A small hole is opened at a depth $h$ below the water surface, letting water spray out into the open atmosphere.
+    Write the expression for the exit velocity $v$ of the water.
+    Use `P_{gauge}`, `\rho`, `g`, and `h`.
+  answer:
+    expectedLatex: \sqrt{ 2gh + \frac{2P_{gauge}}{\rho} }
+    equivalenceMode: expression
+    variables: ['P_{gauge}', '\rho', 'g', 'h']
+    tolerance: 0.00001
+    keyPoints:
+    - \sqrt{2gh + 2P_{gauge}/\rho}
+  explanation: |
+    Solution:
+    Apply Bernoulli's equation between the pressurized surface (1) and the exit hole (2).
+    Let $y_1 = h$ and $y_2 = 0$. $v_1 \approx 0$.
+    $P_1 + \rho g h = P_2 + \frac{1}{2}\rho v^2$
+    The absolute pressure at the surface is $P_1 = P_{atm} + P_{gauge}$.
+    The absolute pressure at the exit is $P_2 = P_{atm}$.
+    Substituting: $(P_{atm} + P_{gauge}) + \rho g h = P_{atm} + \frac{1}{2}\rho v^2$.
+    The $P_{atm}$ cancels out: $P_{gauge} + \rho g h = \frac{1}{2}\rho v^2$.
+    Multiply by $2/\rho$: $v^2 = \frac{2P_{gauge}}{\rho} + 2gh$.
+    $v = \sqrt{ \frac{2P_{gauge}}{\rho} + 2gh }$.
+    
+    Why it works:
+    Both the hydrostatic pressure ($\rho g h$) and the external pressurized air ($P_{gauge}$) drive the water out. The kinetic energy of the exiting fluid is the sum of both driving energy densities.
+  difficultyDimensions:
+  - RepresentationTransfer
+  - AuxiliaryTechnique
+  - Simplification
+  - ModelOrDerivation

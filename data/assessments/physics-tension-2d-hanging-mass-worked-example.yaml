@@ -26,297 +26,395 @@ authoring:
   physicsModel:
     modelId: staticEquilibrium
     modelRole: application
-    requiredRepresentations: [systemBoundary, freeBodyDiagram, coordinateAxes, forceComponents, motionConstraint]
+    requiredRepresentations:
+    - systemBoundary
+    - freeBodyDiagram
+    - coordinateAxes
+    - forceComponents
+    - motionConstraint
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we-2d-tension-derivation
-    title: Deriving String Tensions for a Hanging Mass
-    problem: |
-      A mass $m$ hangs at rest from a knot (junction point) supported by two strings. **String 1** makes an angle $\theta_1$ above the horizontal on the left, and **String 2** makes an angle $\theta_2$ above the horizontal on the right. The knot is stationary.
+- id: we-2d-tension-derivation
+  title: Deriving String Tensions for a Hanging Mass
+  problem: 'A mass $m$ hangs at rest from a knot (junction point) supported by two strings. **String 1** makes an angle $\theta_1$ above the horizontal on the left, and **String 2** makes an angle $\theta_2$ above the horizontal on the right. The knot is stationary.
 
-      ![Two-string static equilibrium setup showing the knot, two angled tensions, and the hanging weight](/media/physics/worked-examples/two-string-tension-setup.svg)
 
-      ![Component breakdown at the knot showing horizontal cancellation and vertical support](/media/physics/worked-examples/two-string-tension-components.svg)
+    ![Two-string static equilibrium setup showing the knot, two angled tensions, and the hanging weight](/media/physics/worked-examples/two-string-tension-setup.svg)
 
-      Our goal is to derive a **general formula** for the tensions $T_1$ and $T_2$ in terms of $m$, $g$, $\theta_1$, and $\theta_2$.
 
-    steps:
-      - id: step-1
-        title: Step 1 — Choosing the Right Object to Analyze
-        instruction: |
-          The most important first step is choosing *what* to draw a free-body diagram of. Here, we have the mass $m$, the strings, and the knot. Which object should we isolate?
+    ![Component breakdown at the knot showing horizontal cancellation and vertical support](/media/physics/worked-examples/two-string-tension-components.svg)
 
-          The **knot** (the junction where the strings meet) is the object in static equilibrium. It is the point where all three forces intersect: tension from String 1, tension from String 2, and the weight of the hanging mass transmitted through it.
 
-          > **Why not the mass itself?** The mass hangs from the knot via a third short string segment. The *knot* is what the two support strings attach to. Analyzing the knot lets us write equations that directly involve $T_1$, $T_2$, and $mg$ all at once.
-        type: multipleChoice
-        prompt: |
-          If we wanted to find the tension $T_2$ using Newton's second law, which object's free-body diagram should we draw?
-        choices:
-          - id: a
-            text: 'The hanging mass $m$ alone'
-          - id: b
-            text: 'The knot (junction point) where all three strings meet'
-          - id: c
-            text: 'The entire system (mass + knot + strings) as one body'
-          - id: d
-            text: 'String 2 alone'
-        answer:
-          choiceId: b
-        explanation: |
-          **The knot** is the correct object. It is in static equilibrium with three forces acting on it simultaneously: $T_1$ pulling along String 1's direction, $T_2$ pulling along String 2's direction, and $W = mg$ pulling straight down (the weight of the hanging mass transferred through the lower string segment). Drawing the FBD of the knot lets us write $\sum F_x = 0$ and $\sum F_y = 0$ in terms of all three unknowns at once.
+    Our goal is to derive a **general formula** for the tensions $T_1$ and $T_2$ in terms of $m$, $g$, $\theta_1$, and $\theta_2$.
 
-          Analyzing the mass alone would give $T_{\text{lower string}} = mg$, which is true but doesn't tell us $T_1$ or $T_2$ individually.
+    '
+  steps:
+  - id: step-1
+    title: Step 1 — Choosing the Right Object to Analyze
+    instruction: 'The most important first step is choosing *what* to draw a free-body diagram of. Here, we have the mass $m$, the strings, and the knot. Which object should we isolate?
 
-      - id: step-2
-        title: Step 2 — Drawing the Free-Body Diagram of the Knot
-        instruction: |
-          At the knot, three forces act:
-          - **$\vec{T}_1$**: Along String 1, pointing up and to the left at angle $\theta_1$ above horizontal.
-          - **$\vec{T}_2$**: Along String 2, pointing up and to the right at angle $\theta_2$ above horizontal.
-          - **$\vec{W} = mg$**: Straight downward (the weight of the hanging mass).
 
-          We resolve each tension into its horizontal (x) and vertical (y) components, taking **right as positive x** and **up as positive y**:
+      The **knot** (the junction where the strings meet) is the object in static equilibrium. It is the point where all three forces intersect: tension from String 1, tension from String 2, and the weight of the hanging mass transmitted through it.
 
-          ![Free-body diagram at the knot with tension components labeled](/media/physics/worked-examples/two-string-tension-components.svg)
 
-          $$T_{1x} = -T_1\cos\theta_1 \quad \text{(points left)}$$
-          $$T_{1y} = T_1\sin\theta_1 \quad \text{(points up)}$$
-          $$T_{2x} = +T_2\cos\theta_2 \quad \text{(points right)}$$
-          $$T_{2y} = T_2\sin\theta_2 \quad \text{(points up)}$$
-          $$W_x = 0, \quad W_y = -mg \quad \text{(points down)}$$
-        type: multipleChoice
-        prompt: |
-          The knot is in static equilibrium, meaning the net force is zero. Which pair of statements correctly describes the x and y equilibrium conditions?
-        choices:
-          - id: a
-            text: '$T_1 = T_2$ and $T_1 + T_2 = mg$'
-          - id: b
-            text: '$T_1\cos\theta_1 = T_2\cos\theta_2$ and $T_1\sin\theta_1 + T_2\sin\theta_2 = mg$'
-          - id: c
-            text: '$T_1\sin\theta_1 = T_2\sin\theta_2$ and $T_1\cos\theta_1 + T_2\cos\theta_2 = mg$'
-          - id: d
-            text: '$T_1\cos\theta_1 + T_2\cos\theta_2 = 0$ and $T_1 + T_2 = mg$'
-        answer:
-          choiceId: b
-        explanation: |
-          Applying $\sum F_x = 0$ (horizontal):
-          $$-T_1\cos\theta_1 + T_2\cos\theta_2 = 0 \implies T_1\cos\theta_1 = T_2\cos\theta_2$$
+      > **Why not the mass itself?** The mass hangs from the knot via a third short string segment. The *knot* is what the two support strings attach to. Analyzing the knot lets us write equations that directly involve $T_1$, $T_2$, and $mg$ all at once.
 
-          This says the **horizontal components must cancel exactly**. String 1 pulls left; String 2 pulls right with the same horizontal force.
+      '
+    type: multipleChoice
+    prompt: 'If we wanted to find the tension $T_2$ using Newton''s second law, which object''s free-body diagram should we draw?
 
-          Applying $\sum F_y = 0$ (vertical):
-          $$T_1\sin\theta_1 + T_2\sin\theta_2 - mg = 0 \implies T_1\sin\theta_1 + T_2\sin\theta_2 = mg$$
+      '
+    choices:
+    - id: a
+      text: The hanging mass $m$ alone
+    - id: b
+      text: The knot (junction point) where all three strings meet
+    - id: c
+      text: The entire system (mass + knot + strings) as one body
+    - id: d
+      text: String 2 alone
+    answer:
+      choiceId: b
+    explanation: 'Solution: **The knot** is the correct object. It is in static equilibrium with three forces acting on it simultaneously: $T_1$ pulling along String 1''s direction, $T_2$ pulling along String 2''s direction, and $W = mg$ pulling straight down (the weight of the hanging mass transferred through the lower string segment). Drawing the FBD of the knot lets us write $\sum F_x = 0$ and $\sum F_y = 0$ in terms of all three unknowns at once.
 
-          This says the **vertical components together must support the full weight**.
 
-      - id: step-3
-        title: Step 3 — Solving the System of Equations
-        instruction: |
-          We now have two equations with two unknowns ($T_1$ and $T_2$):
+      Analyzing the mass alone would give $T_{\text{lower string}} = mg$, which is true but doesn''t tell us $T_1$ or $T_2$ individually.
 
-          $$\text{(i) } T_1\cos\theta_1 = T_2\cos\theta_2$$
-          $$\text{(ii) } T_1\sin\theta_1 + T_2\sin\theta_2 = mg$$
 
-          **Isolate $T_1$ from equation (i):**
-          $$T_1 = T_2\frac{\cos\theta_2}{\cos\theta_1}$$
+      Why it works: This step applies the stated physical model and carries its result into the next step.'
+  - id: step-2
+    title: Step 2 — Drawing the Free-Body Diagram of the Knot
+    instruction: 'At the knot, three forces act:
 
-          **Substitute into equation (ii):**
-          $$T_2\frac{\cos\theta_2}{\cos\theta_1}\cdot\sin\theta_1 + T_2\sin\theta_2 = mg$$
-          $$T_2\left(\cos\theta_2\tan\theta_1 + \sin\theta_2\right) = mg$$
+      - **$\vec{T}_1$**: Along String 1, pointing up and to the left at angle $\theta_1$ above horizontal.
 
-          **Factor the bracket using the sine addition identity** $\sin(A+B) = \sin A\cos B + \cos A\sin B$:
-          $$\cos\theta_2\tan\theta_1 + \sin\theta_2 = \frac{\cos\theta_2\sin\theta_1 + \sin\theta_2\cos\theta_1}{\cos\theta_1} = \frac{\sin(\theta_1+\theta_2)}{\cos\theta_1}$$
+      - **$\vec{T}_2$**: Along String 2, pointing up and to the right at angle $\theta_2$ above horizontal.
 
-          Therefore:
-          $$T_2\cdot\frac{\sin(\theta_1+\theta_2)}{\cos\theta_1} = mg$$
-        type: multipleChoice
-        prompt: |
-          After the algebra above, the closed-form result for $T_2$ is:
-        choices:
-          - id: a
-            text: '$T_2 = \dfrac{mg}{\sin(\theta_1+\theta_2)}$'
-          - id: b
-            text: '$T_2 = \dfrac{mg\cos\theta_1}{\sin(\theta_1+\theta_2)}$'
-          - id: c
-            text: '$T_2 = \dfrac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)}$'
-          - id: d
-            text: '$T_2 = \dfrac{mg\sin\theta_1}{\sin(\theta_1+\theta_2)}$'
-        answer:
-          choiceId: b
-        explanation: |
-          Solving:
-          $$\boxed{T_2 = \frac{mg\cos\theta_1}{\sin(\theta_1+\theta_2)}}$$
+      - **$\vec{W} = mg$**: Straight downward (the weight of the hanging mass).
 
-          And by the same method (or by symmetry, swapping subscripts 1 and 2):
-          $$\boxed{T_1 = \frac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)}}$$
 
-          Both formulas share the same denominator $\sin(\theta_1+\theta_2)$. Notice the elegant **cross-over**: $T_1$ depends on $\cos\theta_2$ (the *other* string's angle) and $T_2$ depends on $\cos\theta_1$. This makes physical sense — a string is pulled harder when the other string is at a shallower angle and can't contribute as much vertical support.
+      We resolve each tension into its horizontal (x) and vertical (y) components, taking **right as positive x** and **up as positive y**:
 
-      - id: step-4
-        title: Step 4 — Physical Interpretation of the Formulas
-        instruction: |
-          Let's examine what these formulas reveal about the physics:
 
-          $$T_1 = \frac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)}, \qquad T_2 = \frac{mg\cos\theta_1}{\sin(\theta_1+\theta_2)}$$
+      ![Free-body diagram at the knot with tension components labeled](/media/physics/worked-examples/two-string-tension-components.svg)
 
-          **Key insight 1 — Angles matter more than length.** The tension depends only on the *angles* and the *mass*. A shorter or longer string under the same geometry carries the same tension.
 
-          **Key insight 2 — As a string becomes horizontal ($\theta \to 0°$), its own tension grows without bound.** If $\theta_1 \to 0°$: $\cos\theta_1 \to 1$, $\sin(\theta_1+\theta_2) \to \sin\theta_2$, but $T_1 = mg\cos\theta_2/\sin(\theta_1+\theta_2) \to mg\cos\theta_2/\sin\theta_2 = mg\cot\theta_2$, which remains finite. However, the horizontal string *cannot contribute any vertical support* ($T_1\sin\theta_1 = 0$), so the other string must carry all of $mg$ vertically.
+      $$T_{1x} = -T_1\cos\theta_1 \quad \text{(points left)}$$
 
-          **Key insight 3 — When $\theta_1 + \theta_2 = 90°$, the denominator equals 1**, giving the simplest form: $T_1 = mg\cos\theta_2$ and $T_2 = mg\cos\theta_1$.
+      $$T_{1y} = T_1\sin\theta_1 \quad \text{(points up)}$$
 
-          **Key insight 4 — The steeper a string, the less tension it carries** (for a fixed geometry). A nearly vertical string is efficient: its upward component per unit tension is close to 1.
-        type: multipleChoice
-        prompt: |
-          String 1 is at $\theta_1 = 20°$ from horizontal and String 2 is at $\theta_2 = 60°$ from horizontal. A mass $m$ hangs from the knot. Without computing exact values, which string carries greater tension?
-        choices:
-          - id: a
-            text: 'String 1 (at $20°$), because it is pulling more sharply to the left'
-          - id: b
-            text: 'String 2 (at $60°$), because it is more vertical and supports more weight'
-          - id: c
-            text: 'String 1 (at $20°$), because $T_1 \propto \cos\theta_2 = \cos 60° = 0.5$ while $T_2 \propto \cos\theta_1 = \cos 20° \approx 0.94$, so $T_2 > T_1$'
-          - id: d
-            text: 'They are equal since the knot is in equilibrium'
-        answer:
-          choiceId: c
-        explanation: |
-          $T_1 = mg\cos\theta_2/\sin(80°)$ and $T_2 = mg\cos\theta_1/\sin(80°)$.
+      $$T_{2x} = +T_2\cos\theta_2 \quad \text{(points right)}$$
 
-          Since $\cos 60° = 0.50 < \cos 20° \approx 0.94$, we have $T_1 < T_2$.
+      $$T_{2y} = T_2\sin\theta_2 \quad \text{(points up)}$$
 
-          **String 2 carries more tension**, even though it is steeper. This seems counterintuitive at first — "it's closer to vertical, so shouldn't the nearly-horizontal string be doing more work?" The resolution is that both strings must satisfy **both** the x and y equations simultaneously. The steeper string is more efficient at carrying vertical load, but the horizontal balance forces the shallower string to also be quite strong. Working through the math always reveals which is larger.
+      $$W_x = 0, \quad W_y = -mg \quad \text{(points down)}$$
 
-      - id: step-5
-        title: Step 5 — Numerical Example
-        instruction: |
-          **Given:** $\theta_1 = 30°$, $\theta_2 = 45°$, $m = 10\text{ kg}$, $g = 9.8\text{ m/s}^2$.
+      '
+    type: multipleChoice
+    prompt: 'The knot is in static equilibrium, meaning the net force is zero. Which pair of statements correctly describes the x and y equilibrium conditions?
 
-          **Step A:** Compute the denominator.
-          $$\sin(\theta_1 + \theta_2) = \sin(75°) = \sin 30°\cos 45° + \cos 30°\sin 45°$$
-          $$= \frac{1}{2}\cdot\frac{\sqrt{2}}{2} + \frac{\sqrt{3}}{2}\cdot\frac{\sqrt{2}}{2} = \frac{\sqrt{2}(1+\sqrt{3})}{4} \approx 0.9659$$
+      '
+    choices:
+    - id: a
+      text: $T_1 = T_2$ and $T_1 + T_2 = mg$
+    - id: b
+      text: $T_1\cos\theta_1 = T_2\cos\theta_2$ and $T_1\sin\theta_1 + T_2\sin\theta_2 = mg$
+    - id: c
+      text: $T_1\sin\theta_1 = T_2\sin\theta_2$ and $T_1\cos\theta_1 + T_2\cos\theta_2 = mg$
+    - id: d
+      text: $T_1\cos\theta_1 + T_2\cos\theta_2 = 0$ and $T_1 + T_2 = mg$
+    answer:
+      choiceId: b
+    explanation: 'Solution: Applying $\sum F_x = 0$ (horizontal):
 
-          **Step B:** Compute $T_1$.
-          $$T_1 = \frac{mg\cos 45°}{\sin 75°} = \frac{10(9.8)(0.7071)}{0.9659} \approx 71.7\text{ N}$$
+      $$-T_1\cos\theta_1 + T_2\cos\theta_2 = 0 \implies T_1\cos\theta_1 = T_2\cos\theta_2$$
 
-          **Step C:** Compute $T_2$.
-          $$T_2 = \frac{mg\cos 30°}{\sin 75°} = \frac{10(9.8)(0.8660)}{0.9659} \approx 87.8\text{ N}$$
 
-          **Verification (x-direction):** $T_1\cos 30° = 71.7(0.866) = 62.1\text{ N}$ and $T_2\cos 45° = 87.8(0.707) = 62.1\text{ N}$ ✓
+      This says the **horizontal components must cancel exactly**. String 1 pulls left; String 2 pulls right with the same horizontal force.
 
-          **Verification (y-direction):** $T_1\sin 30° + T_2\sin 45° = 71.7(0.5) + 87.8(0.707) = 35.9 + 62.1 = 98.0\text{ N} = mg$ ✓
-        type: numericResponse
-        prompt: |
-          Using the setup above ($\theta_1=30°$, $\theta_2=45°$, $m=10\text{ kg}$, $g=9.8\text{ m/s}^2$), what is $T_1$ (the tension in String 1, at $30°$) in Newtons? Round to the nearest tenth.
-        answer:
-          value: 71.7
-          tolerance: 0.5
-        explanation: |
-          $$T_1 = \frac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)} = \frac{10(9.8)\cos 45°}{\sin 75°} = \frac{98(0.7071)}{0.9659} \approx 71.7\text{ N}$$
 
-      - id: step-6
-        title: 'Step 6 — Special Case: One String Horizontal (Wall Attachment)'
-        instruction: |
-          A common variant is when one string is anchored to a **vertical wall** and is therefore **horizontal** ($\theta_1 = 0°$). The other string goes to the ceiling at angle $\theta_2$ from horizontal.
+      Applying $\sum F_y = 0$ (vertical):
 
-          Substituting $\theta_1 = 0°$ into our formulas:
-          - $\sin(\theta_1+\theta_2) = \sin\theta_2$
-          - $\cos\theta_1 = \cos 0° = 1$
-          - $\cos\theta_2$ remains as is
+      $$T_1\sin\theta_1 + T_2\sin\theta_2 - mg = 0 \implies T_1\sin\theta_1 + T_2\sin\theta_2 = mg$$
 
-          $$T_{\text{wall}} = \frac{mg\cos\theta_2}{\sin\theta_2} = mg\cot\theta_2$$
-          $$T_{\text{ceiling}} = \frac{mg\cdot 1}{\sin\theta_2} = \frac{mg}{\sin\theta_2}$$
 
-          The wall string provides **only horizontal** force (it can't help support the weight). The ceiling string must **single-handedly** support the full weight via its vertical component: $T_{\text{ceiling}}\sin\theta_2 = mg$.
+      This says the **vertical components together must support the full weight**.
 
-          You can also derive this directly: since $T_{\text{wall}}$ is horizontal, the vertical balance gives $T_{\text{ceiling}}\sin\theta_2 = mg$ immediately.
-        type: multipleChoice
-        prompt: |
-          A 5 kg mass hangs from a knot. A horizontal string attaches the knot to a wall. A second string at $\theta_2 = 60°$ from horizontal attaches the knot to the ceiling. Which expression gives the tension in the wall string?
-        choices:
-          - id: a
-            text: '$T_{\text{wall}} = mg\sin 60°$'
-          - id: b
-            text: '$T_{\text{wall}} = mg\cos 60°$'
-          - id: c
-            text: '$T_{\text{wall}} = mg\cot 60° = mg/\sqrt{3}$'
-          - id: d
-            text: '$T_{\text{wall}} = mg\tan 60° = mg\sqrt{3}$'
-        answer:
-          choiceId: c
-        explanation: |
-          From $T_{\text{ceiling}}\sin 60° = mg$: $T_{\text{ceiling}} = mg/\sin 60° = 5(9.8)/0.866 \approx 56.6\text{ N}$.
 
-          From x-balance: $T_{\text{wall}} = T_{\text{ceiling}}\cos 60° = 56.6(0.5) = 28.3\text{ N}$.
+      Why it works: This step applies the stated physical model and carries its result into the next step.'
+  - id: step-3
+    title: Step 3 — Solving the System of Equations
+    instruction: 'We now have two equations with two unknowns ($T_1$ and $T_2$):
 
-          Alternatively: $T_{\text{wall}} = mg\cot 60° = mg/\sqrt{3} = 5(9.8)/1.732 \approx 28.3\text{ N}$.
 
-  - id: we-2d-tension-symmetric
-    title: Special Case — Equal Angles and Symmetric Suspension
-    problem: |
-      When both strings make the **same angle** $\theta$ above the horizontal, the setup is symmetric. This is common in chandeliers, signs, and bridge cables. Derive the tension in each string, and explain what happens as the strings approach horizontal.
+      $$\text{(i) } T_1\cos\theta_1 = T_2\cos\theta_2$$
 
-      ![Symmetric two-string setup showing equal tensions and canceling horizontal components](/media/physics/worked-examples/two-string-tension-symmetric.svg)
+      $$\text{(ii) } T_1\sin\theta_1 + T_2\sin\theta_2 = mg$$
 
-    steps:
-      - id: step-sym-1
-        title: Step 1 — Apply Symmetry
-        instruction: |
-          When $\theta_1 = \theta_2 = \theta$, the problem is symmetric. By symmetry, $T_1 = T_2 = T$.
 
-          The x-equation $T_1\cos\theta_1 = T_2\cos\theta_2$ becomes $T\cos\theta = T\cos\theta$, which is satisfied automatically for any $T$. It provides no constraint — as expected by symmetry.
+      **Isolate $T_1$ from equation (i):**
 
-          The y-equation $T_1\sin\theta_1 + T_2\sin\theta_2 = mg$ becomes:
-          $$2T\sin\theta = mg$$
-          $$\boxed{T = \frac{mg}{2\sin\theta}}$$
+      $$T_1 = T_2\frac{\cos\theta_2}{\cos\theta_1}$$
 
-          This is a beautifully simple result. Each string contributes exactly half the vertical support.
-        type: multipleChoice
-        prompt: |
-          Two identical strings each make angle $\theta = 30°$ above horizontal and support a mass $m = 8\text{ kg}$ ($g = 9.8\text{ m/s}^2$). What is the tension in each string?
-        choices:
-          - id: a
-            text: '39.2 N'
-          - id: b
-            text: '78.4 N'
-          - id: c
-            text: '68.0 N'
-          - id: d
-            text: '56.0 N'
-        answer:
-          choiceId: b
-        explanation: |
-          $$T = \frac{mg}{2\sin 30°} = \frac{8(9.8)}{2(0.5)} = \frac{78.4}{1.0} = 78.4\text{ N}$$
 
-      - id: step-sym-2
-        title: Step 2 — The Danger of Nearly Horizontal Strings
-        instruction: |
-          From $T = mg/(2\sin\theta)$, examine what happens as the angle $\theta$ approaches zero:
+      **Substitute into equation (ii):**
 
-          - At $\theta = 90°$ (vertical strings): $T = mg/2$ — each string carries only half the weight. Most efficient.
-          - At $\theta = 45°$: $T = mg/(2 \cdot 0.707) = 0.707\,mg$. Slightly higher.
-          - At $\theta = 10°$: $T = mg/(2 \cdot 0.174) = 2.87\,mg$. Nearly three times the weight!
-          - At $\theta = 1°$: $T = mg/(2 \cdot 0.0175) \approx 28.6\,mg$. 
-          - As $\theta \to 0°$: $T \to \infty$.
+      $$T_2\frac{\cos\theta_2}{\cos\theta_1}\cdot\sin\theta_1 + T_2\sin\theta_2 = mg$$
 
-          **This is why power lines, suspension bridges, and cables cannot be perfectly straight (horizontal) under a load.** They must sag. The sag creates a nonzero $\theta$, which allows the vertical components to support the weight. More sag = smaller tension.
-        type: multipleChoice
-        prompt: |
-          A sign of mass $m$ hangs from two wires. A manager insists the wires must be perfectly horizontal for aesthetic reasons. Ignoring material limits, what tension would be required?
-        choices:
-          - id: a
-            text: '$mg/2$, one wire per half the weight'
-          - id: b
-            text: '$mg$, the full weight since the wires are horizontal'
-          - id: c
-            text: 'Infinite tension — it is physically impossible to support a weight with perfectly horizontal strings'
-          - id: d
-            text: 'Zero tension — perfectly horizontal strings produce no vertical force so gravity balances itself'
-        answer:
-          choiceId: c
-        explanation: |
-          A horizontal string ($\theta = 0°$) has **zero vertical component**. No matter how large $T$ is, $T\sin 0° = 0$. The vertical equilibrium equation $2T\sin\theta = mg$ has no solution for $T$ when $\theta = 0°$ and $mg > 0$.
+      $$T_2\left(\cos\theta_2\tan\theta_1 + \sin\theta_2\right) = mg$$
 
-          In practice, materials fail long before the required tension becomes infinite. The string either snaps or the setup is forced into some nonzero sag angle. This is a fundamental structural engineering constraint.
+
+      **Factor the bracket using the sine addition identity** $\sin(A+B) = \sin A\cos B + \cos A\sin B$:
+
+      $$\cos\theta_2\tan\theta_1 + \sin\theta_2 = \frac{\cos\theta_2\sin\theta_1 + \sin\theta_2\cos\theta_1}{\cos\theta_1} = \frac{\sin(\theta_1+\theta_2)}{\cos\theta_1}$$
+
+
+      Therefore:
+
+      $$T_2\cdot\frac{\sin(\theta_1+\theta_2)}{\cos\theta_1} = mg$$
+
+      '
+    type: multipleChoice
+    prompt: 'After the algebra above, the closed-form result for $T_2$ is:
+
+      '
+    choices:
+    - id: a
+      text: $T_2 = \dfrac{mg}{\sin(\theta_1+\theta_2)}$
+    - id: b
+      text: $T_2 = \dfrac{mg\cos\theta_1}{\sin(\theta_1+\theta_2)}$
+    - id: c
+      text: $T_2 = \dfrac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)}$
+    - id: d
+      text: $T_2 = \dfrac{mg\sin\theta_1}{\sin(\theta_1+\theta_2)}$
+    answer:
+      choiceId: b
+    explanation: 'Solution: Solving:
+
+      $$\boxed{T_2 = \frac{mg\cos\theta_1}{\sin(\theta_1+\theta_2)}}$$
+
+
+      And by the same method (or by symmetry, swapping subscripts 1 and 2):
+
+      $$\boxed{T_1 = \frac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)}}$$
+
+
+      Both formulas share the same denominator $\sin(\theta_1+\theta_2)$. Notice the elegant **cross-over**: $T_1$ depends on $\cos\theta_2$ (the *other* string''s angle) and $T_2$ depends on $\cos\theta_1$. This makes physical sense — a string is pulled harder when the other string is at a shallower angle and can''t contribute as much vertical support.
+
+
+      Why it works: This step applies the stated physical model and carries its result into the next step.'
+  - id: step-4
+    title: Step 4 — Physical Interpretation of the Formulas
+    instruction: 'Let''s examine what these formulas reveal about the physics:
+
+
+      $$T_1 = \frac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)}, \qquad T_2 = \frac{mg\cos\theta_1}{\sin(\theta_1+\theta_2)}$$
+
+
+      **Key insight 1 — Angles matter more than length.** The tension depends only on the *angles* and the *mass*. A shorter or longer string under the same geometry carries the same tension.
+
+
+      **Key insight 2 — As a string becomes horizontal ($\theta \to 0°$), its own tension grows without bound.** If $\theta_1 \to 0°$: $\cos\theta_1 \to 1$, $\sin(\theta_1+\theta_2) \to \sin\theta_2$, but $T_1 = mg\cos\theta_2/\sin(\theta_1+\theta_2) \to mg\cos\theta_2/\sin\theta_2 = mg\cot\theta_2$, which remains finite. However, the horizontal string *cannot contribute any vertical support* ($T_1\sin\theta_1 = 0$), so the other string must carry all of $mg$ vertically.
+
+
+      **Key insight 3 — When $\theta_1 + \theta_2 = 90°$, the denominator equals 1**, giving the simplest form: $T_1 = mg\cos\theta_2$ and $T_2 = mg\cos\theta_1$.
+
+
+      **Key insight 4 — The steeper a string, the less tension it carries** (for a fixed geometry). A nearly vertical string is efficient: its upward component per unit tension is close to 1.
+
+      '
+    type: multipleChoice
+    prompt: 'String 1 is at $\theta_1 = 20°$ from horizontal and String 2 is at $\theta_2 = 60°$ from horizontal. A mass $m$ hangs from the knot. Without computing exact values, which string carries greater tension?
+
+      '
+    choices:
+    - id: a
+      text: String 1 (at $20°$), because it is pulling more sharply to the left
+    - id: b
+      text: String 2 (at $60°$), because it is more vertical and supports more weight
+    - id: c
+      text: String 1 (at $20°$), because $T_1 \propto \cos\theta_2 = \cos 60° = 0.5$ while $T_2 \propto \cos\theta_1 = \cos 20° \approx 0.94$, so $T_2 > T_1$
+    - id: d
+      text: They are equal since the knot is in equilibrium
+    answer:
+      choiceId: c
+    explanation: 'Solution: $T_1 = mg\cos\theta_2/\sin(80°)$ and $T_2 = mg\cos\theta_1/\sin(80°)$.
+
+
+      Since $\cos 60° = 0.50 < \cos 20° \approx 0.94$, we have $T_1 < T_2$.
+
+
+      **String 2 carries more tension**, even though it is steeper. This seems counterintuitive at first — "it''s closer to vertical, so shouldn''t the nearly-horizontal string be doing more work?" The resolution is that both strings must satisfy **both** the x and y equations simultaneously. The steeper string is more efficient at carrying vertical load, but the horizontal balance forces the shallower string to also be quite strong. Working through the math always reveals which is larger.
+
+
+      Why it works: This step applies the stated physical model and carries its result into the next step.'
+  - id: step-5
+    title: Step 5 — Numerical Example
+    instruction: '**Given:** $\theta_1 = 30°$, $\theta_2 = 45°$, $m = 10\text{ kg}$, $g = 9.8\text{ m/s}^2$.
+
+
+      **Step A:** Compute the denominator.
+
+      $$\sin(\theta_1 + \theta_2) = \sin(75°) = \sin 30°\cos 45° + \cos 30°\sin 45°$$
+
+      $$= \frac{1}{2}\cdot\frac{\sqrt{2}}{2} + \frac{\sqrt{3}}{2}\cdot\frac{\sqrt{2}}{2} = \frac{\sqrt{2}(1+\sqrt{3})}{4} \approx 0.9659$$
+
+
+      **Step B:** Compute $T_1$.
+
+      $$T_1 = \frac{mg\cos 45°}{\sin 75°} = \frac{10(9.8)(0.7071)}{0.9659} \approx 71.7\text{ N}$$
+
+
+      **Step C:** Compute $T_2$.
+
+      $$T_2 = \frac{mg\cos 30°}{\sin 75°} = \frac{10(9.8)(0.8660)}{0.9659} \approx 87.8\text{ N}$$
+
+
+      **Verification (x-direction):** $T_1\cos 30° = 71.7(0.866) = 62.1\text{ N}$ and $T_2\cos 45° = 87.8(0.707) = 62.1\text{ N}$ ✓
+
+
+      **Verification (y-direction):** $T_1\sin 30° + T_2\sin 45° = 71.7(0.5) + 87.8(0.707) = 35.9 + 62.1 = 98.0\text{ N} = mg$ ✓
+
+      '
+    type: numericResponse
+    prompt: 'Using the setup above ($\theta_1=30°$, $\theta_2=45°$, $m=10\text{ kg}$, $g=9.8\text{ m/s}^2$), what is $T_1$ (the tension in String 1, at $30°$) in Newtons? Round to the nearest tenth.
+
+      '
+    answer:
+      value: 71.7
+      tolerance: 0.5
+    explanation: 'Solution: $$T_1 = \frac{mg\cos\theta_2}{\sin(\theta_1+\theta_2)} = \frac{10(9.8)\cos 45°}{\sin 75°} = \frac{98(0.7071)}{0.9659} \approx 71.7\text{ N}$$
+
+
+      Why it works: This step applies the stated physical model and carries its result into the next step.'
+  - id: step-6
+    title: 'Step 6 — Special Case: One String Horizontal (Wall Attachment)'
+    instruction: 'A common variant is when one string is anchored to a **vertical wall** and is therefore **horizontal** ($\theta_1 = 0°$). The other string goes to the ceiling at angle $\theta_2$ from horizontal.
+
+
+      Substituting $\theta_1 = 0°$ into our formulas:
+
+      - $\sin(\theta_1+\theta_2) = \sin\theta_2$
+
+      - $\cos\theta_1 = \cos 0° = 1$
+
+      - $\cos\theta_2$ remains as is
+
+
+      $$T_{\text{wall}} = \frac{mg\cos\theta_2}{\sin\theta_2} = mg\cot\theta_2$$
+
+      $$T_{\text{ceiling}} = \frac{mg\cdot 1}{\sin\theta_2} = \frac{mg}{\sin\theta_2}$$
+
+
+      The wall string provides **only horizontal** force (it can''t help support the weight). The ceiling string must **single-handedly** support the full weight via its vertical component: $T_{\text{ceiling}}\sin\theta_2 = mg$.
+
+
+      You can also derive this directly: since $T_{\text{wall}}$ is horizontal, the vertical balance gives $T_{\text{ceiling}}\sin\theta_2 = mg$ immediately.
+
+      '
+    type: multipleChoice
+    prompt: 'A 5 kg mass hangs from a knot. A horizontal string attaches the knot to a wall. A second string at $\theta_2 = 60°$ from horizontal attaches the knot to the ceiling. Which expression gives the tension in the wall string?
+
+      '
+    choices:
+    - id: a
+      text: $T_{\text{wall}} = mg\sin 60°$
+    - id: b
+      text: $T_{\text{wall}} = mg\cos 60°$
+    - id: c
+      text: $T_{\text{wall}} = mg\cot 60° = mg/\sqrt{3}$
+    - id: d
+      text: $T_{\text{wall}} = mg\tan 60° = mg\sqrt{3}$
+    answer:
+      choiceId: c
+    explanation: 'Solution: From $T_{\text{ceiling}}\sin 60° = mg$: $T_{\text{ceiling}} = mg/\sin 60° = 5(9.8)/0.866 \approx 56.6\text{ N}$.
+
+
+      From x-balance: $T_{\text{wall}} = T_{\text{ceiling}}\cos 60° = 56.6(0.5) = 28.3\text{ N}$.
+
+
+      Alternatively: $T_{\text{wall}} = mg\cot 60° = mg/\sqrt{3} = 5(9.8)/1.732 \approx 28.3\text{ N}$.
+
+
+      Why it works: This step applies the stated physical model and carries its result into the next step.'
+- id: we-2d-tension-symmetric
+  title: Special Case — Equal Angles and Symmetric Suspension
+  problem: 'When both strings make the **same angle** $\theta$ above the horizontal, the setup is symmetric. This is common in chandeliers, signs, and bridge cables. Derive the tension in each string, and explain what happens as the strings approach horizontal.
+
+
+    ![Symmetric two-string setup showing equal tensions and canceling horizontal components](/media/physics/worked-examples/two-string-tension-symmetric.svg)
+
+    '
+  steps:
+  - id: step-sym-1
+    title: Step 1 — Apply Symmetry
+    instruction: 'When $\theta_1 = \theta_2 = \theta$, the problem is symmetric. By symmetry, $T_1 = T_2 = T$.
+
+
+      The x-equation $T_1\cos\theta_1 = T_2\cos\theta_2$ becomes $T\cos\theta = T\cos\theta$, which is satisfied automatically for any $T$. It provides no constraint — as expected by symmetry.
+
+
+      The y-equation $T_1\sin\theta_1 + T_2\sin\theta_2 = mg$ becomes:
+
+      $$2T\sin\theta = mg$$
+
+      $$\boxed{T = \frac{mg}{2\sin\theta}}$$
+
+
+      This is a beautifully simple result. Each string contributes exactly half the vertical support.
+
+      '
+    type: multipleChoice
+    prompt: 'Two identical strings each make angle $\theta = 30°$ above horizontal and support a mass $m = 8\text{ kg}$ ($g = 9.8\text{ m/s}^2$). What is the tension in each string?
+
+      '
+    choices:
+    - id: a
+      text: 39.2 N
+    - id: b
+      text: 78.4 N
+    - id: c
+      text: 68.0 N
+    - id: d
+      text: 56.0 N
+    answer:
+      choiceId: b
+    explanation: 'Solution: $$T = \frac{mg}{2\sin 30°} = \frac{8(9.8)}{2(0.5)} = \frac{78.4}{1.0} = 78.4\text{ N}$$
+
+
+      Why it works: This step applies the stated physical model and carries its result into the next step.'
+  - id: step-sym-2
+    title: Step 2 — The Danger of Nearly Horizontal Strings
+    instruction: |
+      From $T = mg/(2\sin\theta)$, examine what happens as the angle $\theta$ approaches zero:
+      
+      - At $\theta = 90°$ (vertical strings): $T = mg/2$ — each string carries only half the weight. Most efficient.
+      - At $\theta = 45°$: $T = mg/(2 \cdot 0.707) = 0.707\,mg$. Slightly higher.
+      - At $\theta = 10°$: $T = mg/(2 \cdot 0.174) = 2.87\,mg$. Nearly three times the weight!
+      - At $\theta = 1°$: $T = mg/(2 \cdot 0.0175) \approx 28.6\,mg$. 
+      - As $\theta \to 0°$: $T \to \infty$.
+      
+      **This is why power lines, suspension bridges, and cables cannot be perfectly straight (horizontal) under a load.** They must sag. The sag creates a nonzero $\theta$, which allows the vertical components to support the weight. More sag = smaller tension.
+    type: multipleChoice
+    prompt: 'A sign of mass $m$ hangs from two wires. A manager insists the wires must be perfectly horizontal for aesthetic reasons. Ignoring material limits, what tension would be required?
+
+      '
+    choices:
+    - id: a
+      text: $mg/2$, one wire per half the weight
+    - id: b
+      text: $mg$, the full weight since the wires are horizontal
+    - id: c
+      text: Infinite tension — it is physically impossible to support a weight with perfectly horizontal strings
+    - id: d
+      text: Zero tension — perfectly horizontal strings produce no vertical force so gravity balances itself
+    answer:
+      choiceId: c
+    explanation: 'Solution: A horizontal string ($\theta = 0°$) has **zero vertical component**. No matter how large $T$ is, $T\sin 0° = 0$. The vertical equilibrium equation $2T\sin\theta = mg$ has no solution for $T$ when $\theta = 0°$ and $mg > 0$.
+
+
+      In practice, materials fail long before the required tension becomes infinite. The string either snaps or the setup is forced into some nonzero sag angle. This is a fundamental structural engineering constraint.
+
+
+      Why it works: This step applies the stated physical model and carries its result into the next step.'

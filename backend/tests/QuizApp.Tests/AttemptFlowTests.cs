@@ -681,7 +681,7 @@ internal static class TestData
     {
         return new AssessmentDefinition(
             1,
-            "area-between-curves-basic",
+            "calc2-area-between-curves-easy-quiz-s2c",
             "Area Between Curves Basic Quiz",
             type,
             "calculus-2",

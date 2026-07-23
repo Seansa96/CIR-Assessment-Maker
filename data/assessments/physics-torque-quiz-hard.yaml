@@ -1,145 +1,176 @@
 schemaVersion: 1
 id: physics-torque-quiz-hard
 title: 'Quiz (Hard): Torque'
-description: Advanced practice problems for Torque.
+description: Transfer-focused practice with signed torque, force geometry, and rigid-body balance.
 assessmentType: quiz
 categoryId: physics-1
 topicId: physics-torque
-skills:
-- Apply Torque
-- physics-torque
-- torque
-- lever-arm
+skills: [torque, lever-arm, rotational-dynamics]
 navigation:
   learningGoal: practice
   activityType: focusedPractice
-  tags:
-  - physics-1
-  - physics-torque
+  tags: [physics-1, torque, hard-practice]
 modeDefault: practice
 randomizeQuestions: true
 questions:
 - id: q001
   title: Angled cable balance
   type: numericResponse
-  prompt: |-
-    A $120\text{ N}$ load is $2.0\text{ m}$ from a pivot. A cable $3.0\text{ m}$ from the pivot makes $40^\circ$ with the beam. What tension balances it?
-  answer:
-    value: 124.4
-    tolerance: 1.0
-  explanation: |-
-    $T(3)\sin40^\circ=120(2)$, so $T\approx124\text{ N}$.
+  prompt: A 120 N load acts 2.0 m from a pivot. A cable acts 3.0 m from the pivot at 40 degrees to the beam. What cable tension in N balances the load?
+  answer: { value: 124.46, tolerance: 0.6 }
+  explanation: |
+    Solution: Balance torques about the pivot: $T(3.0)\sin 40^\circ=(120)(2.0)$. Thus $T=240/[3\sin40^\circ]=124.46$ N.
+
+    Why it works: The perpendicular component of the cable force supplies the counterclockwise torque; the component along the beam has no lever arm.
+  difficultyDimensions: [modelOrDerivation, representationTransfer, reverseReasoning]
+  subjectDifficultyTags: [angledTorque]
+  difficultyEvidence: The force direction must be resolved into its torque-producing component before solving for an unknown tension.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-torque]
 - id: q002
-  title: Angular acceleration
+  title: Signed component torque
   type: numericResponse
-  prompt: |-
-    A wheel with $I=2.5$ has net torque $15\text{ N}\cdot\text{m}$. What is $\alpha$?
-  answer:
-    value: 6.0
-    tolerance: 0.05
-  explanation: |-
-    $\alpha=\tau/I=15/2.5=6.0\text{ rad/s}^2$.
+  prompt: A force has components $F_x=30$ N and $F_y=40$ N at position $(x,y)=(0.20,0.50)$ m. What is its z-component torque, in N m, using $\tau_z=xF_y-yF_x$?
+  answer: { value: -7, tolerance: 0.1 }
+  explanation: |
+    Solution: $\tau_z=(0.20)(40)-(0.50)(30)=8-15=-7$ N m.
+
+    Why it works: The component formula encodes the signed two-dimensional cross product, so the negative result means clockwise rotation by the chosen convention.
+  difficultyDimensions: [modelOrDerivation, representationTransfer, signConvention]
+  subjectDifficultyTags: [componentTorque]
+  difficultyEvidence: Cartesian force and position data must be converted into a signed rotational effect.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-torque]
 - id: q003
-  title: Torque components
-  type: numericResponse
-  prompt: |-
-    A force has $F_x=30\text{ N}$ and $F_y=40\text{ N}$ at $(0.20,0.50)\text{ m}$. What is $\tau_z=xF_y-yF_x$?
-  answer:
-    value: -7.0
-    tolerance: 0.1
-  explanation: |-
-    $\tau_z=0.20(40)-0.50(30)=-7\text{ N}\cdot\text{m}$.
-- id: q004
   title: Line of action trap
   type: multipleChoice
-  prompt: |-
-    A large force can produce little or no torque if:
+  prompt: A large force can produce little or no torque about a pivot when which condition holds?
   choices:
-  - id: a
-    text: |-
-      its line of action passes close to or through the pivot
-  - id: b
-    text: |-
-      it is measured in Newtons
-  - id: c
-    text: |-
-      the object has mass
-  - id: d
-    text: |-
-      the pivot is named
-  answer:
-    choiceId: a
-  explanation: |-
-    Torque depends on perpendicular lever arm.
+  - { id: a, text: Its line of action passes close to or through the pivot. }
+  - { id: b, text: Its magnitude is expressed in newtons. }
+  - { id: c, text: The object has nonzero mass. }
+  - { id: d, text: The pivot is at the center of a coordinate grid. }
+  answer: { choiceId: a }
+  explanation: |
+    Solution: Its line of action passes close to or through the pivot.
+
+    Why it works: Torque magnitude is force times perpendicular lever arm. A zero lever arm gives zero torque regardless of force magnitude.
+
+    Why the other choices fail: Units, mass, and the coordinate grid do not determine the perpendicular distance from the force line to the pivot.
+  difficultyDimensions: [errorDiagnosis, representationTransfer, modelOrDerivation]
+  subjectDifficultyTags: [lineOfAction]
+  difficultyEvidence: The item reverses the usual torque calculation by requiring a geometric condition from the torque result.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-torque]
+- id: q004
+  title: Competing pulley forces
+  type: numericResponse
+  prompt: A pulley has moment of inertia 0.80 kg m^2. A 12 N tangential force acts at 0.30 m, while an opposing 5 N tangential force acts at 0.20 m. What angular acceleration in rad/s^2 results?
+  answer: { value: 3.25, tolerance: 0.05 }
+  explanation: |
+    Solution: The net torque is $(12)(0.30)-(5)(0.20)=2.60$ N m. Then $\alpha=\tau_{net}/I=2.60/0.80=3.25$ rad/s^2.
+
+    Why it works: Tangential forces have perpendicular lever arms equal to their radii, and the signed net torque determines the angular acceleration.
+  difficultyDimensions: [modelOrDerivation, signConvention, multiStep]
+  subjectDifficultyTags: [netTorque]
+  difficultyEvidence: Opposing rotational effects must be combined before the rotational Newton second-law relation is applied.
+  prerequisiteObjectiveIds: [phys1-obj-torque]
+  extensionObjectiveIds: [phys1-obj-newtons-second-law-rotation]
 - id: q005
-  title: Opposing torques
+  title: Infer the force angle
   type: numericResponse
-  prompt: |-
-    A pulley with $I=0.80$ has $12\text{ N}$ at $0.30\text{ m}$ and opposing $5\text{ N}$ at $0.20\text{ m}$. What is $\alpha$?
-  answer:
-    value: 3.25
-    tolerance: 0.05
-  explanation: |-
-    Net torque $=3.6-1.0=2.6$, so $\alpha=2.6/0.80=3.25$.
+  prompt: A 50 N force applied 0.40 m from a pivot produces 10 N m of torque. What is the smaller angle in degrees between the force and the radius?
+  answer: { value: 30, tolerance: 0.2 }
+  explanation: |
+    Solution: $10=(50)(0.40)\sin\theta$, so $\sin\theta=0.50$ and $\theta=30^\circ$.
+
+    Why it works: Only the perpendicular fraction of the 50 N force contributes to torque, which is represented by the sine factor.
+  difficultyDimensions: [reverseReasoning, modelOrDerivation, representationTransfer]
+  subjectDifficultyTags: [torqueAngle]
+  difficultyEvidence: The governing relation is inverted and the physically appropriate angle branch is selected.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-torque]
 - id: q006
-  title: Find angle
+  title: Uniform beam cable
   type: numericResponse
-  prompt: |-
-    A $50\text{ N}$ force at $0.40\text{ m}$ produces $10\text{ N}\cdot\text{m}$. What is the smaller angle?
-  answer:
-    value: 30.0
-    tolerance: 0.2
-  explanation: |-
-    $10=20\sin\theta$, so $\theta=30^\circ$.
+  prompt: A 4.0 m uniform horizontal beam weighs 200 N and is hinged at its left end. A vertical cable supports its right end. Ignoring the hinge torque, what cable tension in N gives equilibrium?
+  answer: { value: 100, tolerance: 0.5 }
+  explanation: |
+    Solution: The beam weight acts at its center, 2.0 m from the hinge. Torque balance gives $T(4.0)=(200)(2.0)$, so $T=100$ N.
+
+    Why it works: Taking moments about the hinge removes the unknown hinge forces and uses the center-of-mass location of a uniform beam.
+  difficultyDimensions: [modelOrDerivation, representationTransfer, simplification]
+  subjectDifficultyTags: [uniformBeam]
+  difficultyEvidence: The distributed beam weight must be modeled as a center-of-mass force before a strategically chosen torque balance.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-rigid-structure-equilibrium]
 - id: q007
-  title: Uniform beam support
-  type: numericResponse
-  prompt: |-
-    A $4.0\text{ m}$ uniform beam weighs $200\text{ N}$ and is supported by a right-end vertical cable. What is cable tension?
-  answer:
-    value: 100.0
-    tolerance: 0.5
-  explanation: |-
-    $T(4.0)=200(2.0)$, so $T=100\text{ N}$.
-- id: q008
-  title: Pivot choice
+  title: Pivot selection
   type: multipleChoice
-  prompt: |-
-    Why choose a pivot at an unknown force?
+  prompt: Why is a pivot often selected at the point where an unknown support force acts?
   choices:
-  - id: a
-    text: |-
-      That force has zero torque and drops out.
-  - id: b
-    text: |-
-      It makes all forces zero.
-  - id: c
-    text: |-
-      It changes weight.
-  - id: d
-    text: |-
-      It removes units.
-  answer:
-    choiceId: a
-  explanation: |-
-    Forces at the pivot have zero lever arm.
-- id: q009
-  title: Signed torque
+  - { id: a, text: The support force then has zero lever arm and drops out of the torque equation. }
+  - { id: b, text: It makes every force on the object equal to zero. }
+  - { id: c, text: It changes the object's weight. }
+  - { id: d, text: It removes units from the torque equation. }
+  answer: { choiceId: a }
+  explanation: |
+    Solution: The support force then has zero lever arm and drops out of the torque equation.
+
+    Why it works: A force applied at the chosen pivot has no perpendicular separation from that pivot, so its torque is zero.
+
+    Why the other choices fail: Choosing a pivot changes neither the physical forces nor their units; it only changes the convenient torque bookkeeping.
+  difficultyDimensions: [strategySelection, modelOrDerivation, representationTransfer]
+  subjectDifficultyTags: [pivotChoice]
+  difficultyEvidence: The item asks for the modeling strategy that simplifies an unknown-force equilibrium calculation.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-rigid-structure-equilibrium]
+- id: q008
+  title: Left-side vertical force
   type: numericResponse
-  prompt: |-
-    A force $F_y=20\text{ N}$ is applied at $x=-0.30\text{ m}$. What is $\tau_z$?
-  answer:
-    value: -6.0
-    tolerance: 0.1
-  explanation: |-
-    $\tau_z=xF_y=-0.30(20)=-6$.
-- id: q010
+  prompt: A vertical upward force of 20 N acts at $x=-0.30$ m relative to a pivot. What is its z-component torque in N m, using counterclockwise positive?
+  answer: { value: -6, tolerance: 0.1 }
+  explanation: |
+    Solution: $\tau_z=xF_y=(-0.30)(20)=-6$ N m.
+
+    Why it works: An upward force to the left of the pivot turns the object clockwise, which is negative under the stated sign convention.
+  difficultyDimensions: [signConvention, representationTransfer, modelOrDerivation]
+  subjectDifficultyTags: [signedTorque]
+  difficultyEvidence: Spatial placement and force direction must be reconciled with an explicitly stated rotational sign convention.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-torque]
+- id: q009
   title: Required angled force
   type: numericResponse
-  prompt: |-
-    You need $36\text{ N}\cdot\text{m}$ at $0.90\text{ m}$ with force $60^\circ$ to the handle. What force is required?
-  answer:
-    value: 46.19
-    tolerance: 0.3
-  explanation: |-
-    $F=36/(0.90\sin60^\circ)=46.2\text{ N}$.
+  prompt: A handle is 0.90 m long. What force in N at 60 degrees to the handle is required to produce 36 N m of torque?
+  answer: { value: 46.19, tolerance: 0.3 }
+  explanation: |
+    Solution: $36=F(0.90)\sin60^\circ$, so $F=36/[0.90\sin60^\circ]=46.19$ N.
+
+    Why it works: The torque is fixed, so the unknown force is found from its perpendicular component and the given lever arm.
+  difficultyDimensions: [reverseReasoning, modelOrDerivation, unitAnalysis]
+  subjectDifficultyTags: [angledTorque]
+  difficultyEvidence: The learner must rearrange a trigonometric torque relation and retain compatible force, length, and torque units.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-torque]
+- id: q010
+  title: Same force different geometry
+  type: multipleChoice
+  prompt: The same 40 N force acts at the end of a 0.50 m wrench. In which case is the torque magnitude greatest?
+  choices:
+  - { id: a, text: The force is perpendicular to the wrench. }
+  - { id: b, text: The force is parallel to the wrench. }
+  - { id: c, text: The force points toward the pivot along the wrench. }
+  - { id: d, text: The force is applied at the pivot. }
+  answer: { choiceId: a }
+  explanation: |
+    Solution: The force is perpendicular to the wrench.
+
+    Why it works: $|\tau|=rF\sin\theta$ is largest when $\theta=90^\circ$, so the sine factor is one.
+
+    Why the other choices fail: Parallel or radial forces have zero perpendicular component, and a force at the pivot has zero lever arm.
+  difficultyDimensions: [representationTransfer, optimization, modelOrDerivation]
+  subjectDifficultyTags: [maximumTorque]
+  difficultyEvidence: The torque model is used qualitatively to compare several geometric arrangements rather than to substitute numbers.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-torque]

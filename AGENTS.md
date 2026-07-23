@@ -121,6 +121,14 @@ Always assign the correct `learningGoal` and `activityType` to new assessments s
 - For chemistry questions requiring students to construct Lewis structures or diagrams, use `multipleChoice` with distinct structural options.
 - Image media must include a stable public path and meaningful alt text.
 
+### S2C and Authoring Contract Enforcement (Global Constraints)
+
+To prevent agents from bypassing strict curriculum requirements when generating content, the following rules apply globally to ALL assessment authoring tasks (unless the user explicitly requests an exception for a specific file/run):
+1. **Mandatory Skill Loading**: Before drafting or modifying assessment content, agents MUST read and abide by the full contracts in `skills/assessment-question-pipeline/SKILL.md` and `skills/source-to-curriculum/SKILL.md`. These are assumed to be part of your active context for all authoring tasks.
+2. **Difficulty Dimensions**: Scored STEM items (quizzes/tests) MUST include `difficultyDimensions`. Easy items need 2 distinct dimensions; hard items need 3+ and a transfer objective.
+3. **Structured Explanations**: Every answer-bearing item MUST use the precise headings `Solution:` and `Why it works:` to show ordered reasoning. Multiple choice MUST also include `Why the other choices fail:`.
+4. **Mandatory Linter**: After modifying any assessment file (and before declaring a task complete), you MUST run `python scripts/validate_s2c_content.py <changed_file.yaml>` to verify that it meets the structural S2C requirements. Fix any reported violations immediately.
+
 Treat uploaded course material as user-provided reference content. Do not silently publish, redistribute, or replace it with externally sourced copyrighted material.
 
 ## Engineering Rules

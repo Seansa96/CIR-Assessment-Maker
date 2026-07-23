@@ -1,0 +1,103 @@
+schemaVersion: 1
+id: calc2-geometric-intuition-concept-lesson-s2c
+title: 'Geometric Integration: Build the Slice Before the Integral'
+
+assessmentType: conceptLesson
+categoryId: calculus-2
+topicId: geometric-intuition
+modeDefault: practice
+randomizeQuestions: false
+skills: [geometric-modeling, definite-integral-interpretation, representative-slice, unit-analysis]
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags: [calculus-2, geometric-intuition, integration-modeling]
+authoring:
+  visualRequirement: required
+  visualRationale: Geometric quantities are determined by a spatial slice model, so the diagram is integral to every step.
+lesson:
+  introduction: 'An integral is a limit of accumulated small geometric contributions. Before choosing a formula, identify one representative piece, its measurement, and the thickness that carries it across the region.'
+  sections:
+    - id: geom-meaning
+      title: 1. Read an integral as accumulated change
+      required: true
+      content: 'For a nonnegative function, $\int_a^b f(x)\,dx$ accumulates heights $f(x)$ across tiny widths $dx$. Its value is an area when height is measured in length units, but the same structure can represent volume, arc length, work, or another accumulated quantity.'
+      media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Representative vertical slice inside a region between two curves, caption: Start with one small contribution, not a memorized formula. }]
+      check:
+        id: geom-meaning-check
+        type: multipleChoice
+        prompt: 'If $f(x)$ is measured in meters and $x$ in meters, what are the units of $\int_a^b f(x)\,dx$?'
+        choices: [{ id: a, text: square meters }, { id: b, text: meters per second }, { id: c, text: meters }, { id: d, text: unitless }]
+        answer: { choiceId: a }
+        explanation: 'Solution: The integral combines a height in meters with a width $dx$ in meters, giving $\text{m}\cdot\text{m}=\text{m}^2$. Why it works: Unit multiplication follows the representative rectangle $f(x)\,dx$. Common trap: The integral does not retain only the units of the function. Why the other choices fail: Meters per second introduces time; meters omits the slice width; unitless omits both measurements.'
+    - id: geom-slice
+      title: 2. Make one representative slice explicit
+      required: true
+      content: 'A vertical slice has thickness $dx$ and runs from a lower $y$-value to an upper $y$-value. Its height is not either curve alone; it is $y_{\mathrm{top}}-y_{\mathrm{bottom}}$. The integral adds the areas of these thin rectangles.'
+      media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Vertical rectangle with width dx and height upper curve minus lower curve, caption: The slice height is a difference of measurements. }]
+      check:
+        id: geom-slice-check
+        type: multipleChoice
+        prompt: 'For the region between $y=x+4$ and $y=x^2$ on $0\le x\le2$, which expression is the vertical-slice height?'
+        choices: [{ id: a, text: '$x+4-x^2$' }, { id: b, text: '$x^2-(x+4)$' }, { id: c, text: '$x+4$' }, { id: d, text: '$x^2$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: On $[0,2]$, $x+4$ lies above $x^2$, so height equals upper minus lower: $(x+4)-x^2$. Why it works: A vertical rectangle measures a change in $y$. Common trap: Reversing the order makes the area contribution negative. Why the other choices fail: The reversed difference has the wrong sign; either single curve omits the other boundary.'
+    - id: geom-variable
+      title: 3. Let the slice direction choose the variable
+      required: true
+      content: 'Vertical slices vary in $x$, so their boundaries are naturally written as $y=f(x)$ and their thickness is $dx$. Horizontal slices vary in $y$, so their boundaries are written as $x=R(y)$ and $x=L(y)$ with thickness $dy$.'
+      media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Vertical slice showing top minus bottom measurement, caption: 'Rotate the slice mentally: horizontal slices use right minus left instead.' }]
+      check:
+        id: geom-variable-check
+        type: multipleChoice
+        prompt: 'A horizontal slice through a region has right boundary $x=R(y)$ and left boundary $x=L(y)$. What is its length?'
+        choices: [{ id: a, text: '$R(y)-L(y)$' }, { id: b, text: '$L(y)-R(y)$' }, { id: c, text: '$R(y)+L(y)$' }, { id: d, text: '$dy$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: A horizontal distance is right coordinate minus left coordinate, $R(y)-L(y)$. Why it works: The slice measures change in $x$ while $y$ is held fixed. Common trap: $dy$ is thickness, not the slice length. Why the other choices fail: Left minus right reverses sign; addition is not a distance between boundaries.'
+    - id: geom-bounds
+      title: 4. Bounds describe where the slice exists
+      required: true
+      content: 'The lower and upper bounds are not decoration: they tell the integral which slices to accumulate. Find them from intersections, stated endpoints, or the physical start and end of the region. A correct integrand with incorrect bounds models a different object.'
+      media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Shaded region bounded by curves and endpoints, caption: Bounds mark the first and last slice included in the model. }]
+      check:
+        id: geom-bounds-check
+        type: multipleChoice
+        prompt: 'If two curves intersect at $x=-1$ and $x=3$, which bounds describe all vertical slices between them?'
+        choices: [{ id: a, text: '$-1\le x\le3$' }, { id: b, text: '$-1\le y\le3$' }, { id: c, text: '$0\le x\le2$' }, { id: d, text: '$x\ge3$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: Vertical slices are indexed by $x$, beginning at the left intersection $-1$ and ending at the right intersection $3$. Why it works: The interval lists every slice location once. Common trap: Do not use $y$-bounds unless the model uses horizontal slices. Why the other choices fail: The remaining choices omit part of the region or use the wrong variable.'
+    - id: geom-sign
+      title: 5. Separate signed accumulation from geometric area
+      required: true
+      content: 'A definite integral is signed: a graph below the $x$-axis contributes negatively. Geometric area is nonnegative, so a region crossing an axis must be split or modeled with an absolute value. This distinction prevents a cancellation from being misreported as area.'
+      media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Region model emphasizing measurement differences, caption: Area uses a nonnegative slice measurement; signed integral may not. }]
+      check:
+        id: geom-sign-check
+        type: multipleChoice
+        prompt: 'Why can $\int_{-1}^{1}x\,dx=0$ even though the region between $y=x$ and the $x$-axis has positive geometric area?'
+        choices: [{ id: a, text: The integral uses opposite signed contributions that cancel. }, { id: b, text: The region has no width. }, { id: c, text: Every odd function has zero area. }, { id: d, text: $dx$ is zero. }]
+        answer: { choiceId: a }
+        explanation: 'Solution: The portion below the axis contributes negatively and cancels the equal positive portion above it. Why it works: A definite integral records signed accumulation. Common trap: Geometric area requires adding magnitudes, not cancelling them. Why the other choices fail: The region has width; oddness gives signed cancellation rather than zero area; $dx$ is a differential width, not zero.'
+    - id: geom-units
+      title: 6. Use units to check the model
+      required: true
+      content: 'A slice model has the form measurement $\times$ thickness. For area, length times length gives square units. For volume, cross-sectional area times length gives cubic units. If the units do not match the requested quantity, revisit the measurement assigned to the slice.'
+      media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Slice as measurement times thickness, caption: Units provide a fast independent model check. }]
+      check:
+        id: geom-units-check
+        type: multipleChoice
+        prompt: 'A cross-sectional area $A(x)$ is measured in $\text{cm}^2$ and $x$ in cm. What are the units of $\int_a^bA(x)\,dx$?'
+        choices: [{ id: a, text: '$\text{cm}^3$' }, { id: b, text: '$\text{cm}^2$' }, { id: c, text: cm }, { id: d, text: '$\text{cm}^{-1}$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: $A(x)\,dx$ has units $\text{cm}^2\cdot\text{cm}=\text{cm}^3$, so the integral is a volume. Why it works: Cross-sectional area times thickness is a volume slice. Common trap: Do not report the units of $A(x)$ alone after integrating. Why the other choices fail: Square or linear units are missing one length factor; inverse length has no geometric interpretation here.'
+    - id: geom-workflow
+      title: 7. Commit to a model before evaluating
+      required: true
+      content: 'Use a repeatable sequence: sketch the region or solid, choose slice direction, label its measurement and thickness, find bounds, write the integral, check units and sign, then evaluate. This workflow transfers directly to area, volume, arc length, surface area, and physical accumulation problems.'
+      media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Complete representative-slice diagram, caption: Sketch, slice, measure, bound, check, then integrate. }]
+      check:
+        id: geom-workflow-check
+        type: freeResponse
+        prompt: 'Before evaluating an integral for a geometric quantity, name the three pieces of information a representative slice must supply.'
+        answer: { gradingMode: selfCheck, keyPoints: [slice measurement, slice thickness, bounds or variable interval] }
+        explanation: 'Solution: A complete model identifies the slice measurement, its thickness ($dx$ or $dy$), and the bounds over which those slices are accumulated. Why it works: These pieces determine the infinitesimal contribution and the portion of the object included. Common trap: Naming only a formula skips the geometric quantity the formula is meant to represent.'

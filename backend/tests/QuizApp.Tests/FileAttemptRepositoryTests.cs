@@ -15,7 +15,7 @@ public sealed class FileAttemptRepositoryTests
         await File.WriteAllTextAsync(attemptPath, JsonSerializer.Serialize(new
         {
             id = attemptId,
-            assessmentId = "area-between-curves-basic",
+            assessmentId = "calc2-area-between-curves-easy-quiz-s2c",
             mode = AssessmentMode.Practice,
             questionOrder = new[] { "q001" },
             answers = Array.Empty<object>(),
@@ -39,7 +39,7 @@ public sealed class FileAttemptRepositoryTests
         await File.WriteAllTextAsync(attemptPath, JsonSerializer.Serialize(new
         {
             id = attemptId,
-            assessmentId = "area-between-curves-basic",
+            assessmentId = "calc2-area-between-curves-easy-quiz-s2c",
             mode = AssessmentMode.Practice,
             questionOrder = new[] { "q001" },
             answers = Array.Empty<object>(),

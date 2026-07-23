@@ -1,0 +1,87 @@
+schemaVersion: 1
+id: physics-manometers-worked-example
+title: 'Open-Tube Manometer: Gas Pressure'
+assessmentType: workedExample
+categoryId: physics-1
+topicId: physics-fluid-statics
+modeDefault: practice
+randomizeQuestions: false
+skills: [manometer, hydrostatic-pressure, gauge-pressure]
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [physics-1, physics-fluid-statics, manometer]
+authoring:
+  visualRequirement: required
+  visualRationale: The pressure comparison depends on which liquid surface is lower.
+workedExamples:
+- id: open-tube-pressure-example
+  title: Find gas pressure from a water manometer
+  problem: |
+    A vessel is connected to one arm of an open water manometer. The water surface on the vessel side is $0.180\text{ m}$ lower than the surface on the atmospheric side. Take $\rho=1000\text{ kg/m}^3$, $g=9.80\text{ m/s}^2$, and $p_{\text{atm}}=101\text{ kPa}$.
+
+    ![Open-tube manometer with the gas side lower than the atmospheric side](/media/physics/owa/open-tube-manometer.svg)
+
+    Find the gauge pressure and absolute pressure of the gas.
+  steps:
+  - id: identify-sign
+    title: Identify the higher-pressure side
+    instruction: The gas-side surface is lower, so the gas pushed the liquid down on its own side. Its pressure is greater than atmospheric pressure.
+    type: multipleChoice
+    prompt: Which sign belongs in $p_{\text{gas}}=p_{\text{atm}}\pm\rho gh$?
+    choices:
+    - { id: a, text: '+' }
+    - { id: b, text: '-' }
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Choose $+$.
+
+      Why it works: The lower liquid level marks the side with greater pressure, so the gas exceeds atmosphere by $\rho gh$.
+
+      Why the other choices fail: A minus sign would describe a gas-side surface higher than the atmospheric side.
+  - id: compute-gauge
+    title: Compute the gauge pressure
+    instruction: Use the vertical difference, not either arm's total liquid height.
+    type: numericResponse
+    prompt: What is the gas gauge pressure in Pa?
+    answer: { value: 1764, tolerance: 2 }
+    explanation: |
+      Solution: $p_{\text{gauge}}=\rho gh=(1000)(9.80)(0.180)=1764\text{ Pa}$.
+
+      Why it works: Hydrostatic pressure difference depends on density, gravity, and the vertical height difference.
+  - id: convert
+    title: Express the gauge pressure in kPa
+    instruction: Convert only after the calculation so the pressure units remain consistent.
+    type: numericResponse
+    prompt: What is the gauge pressure in kPa?
+    answer: { value: 1.764, tolerance: 0.003 }
+    explanation: |
+      Solution: $1764\text{ Pa}/1000=1.764\text{ kPa}$.
+
+      Why it works: One kilopascal equals $1000\text{ Pa}$.
+  - id: absolute
+    title: Add atmospheric pressure
+    instruction: Gauge pressure is the excess over atmosphere; absolute pressure includes atmosphere.
+    type: numericResponse
+    prompt: What is the gas absolute pressure in kPa?
+    answer: { value: 102.764, tolerance: 0.005 }
+    explanation: |
+      Solution: $p_{\text{absolute}}=101\text{ kPa}+1.764\text{ kPa}=102.764\text{ kPa}$.
+
+      Why it works: By definition, $p_{\text{gauge}}=p_{\text{absolute}}-p_{\text{atm}}$.
+  - id: check
+    title: Check the result physically
+    instruction: Compare the result with atmosphere and with the observed level difference.
+    type: multipleChoice
+    prompt: Which statement checks the result?
+    choices:
+    - { id: a, text: The absolute pressure is slightly above atmosphere, matching the lower gas-side surface. }
+    - { id: b, text: The absolute pressure must be below atmosphere because water is present. }
+    - { id: c, text: Gauge pressure and absolute pressure must be equal. }
+    answer: { choiceId: a }
+    explanation: |
+      Solution: The absolute pressure is slightly above atmosphere.
+
+      Why it works: The calculated positive gauge pressure agrees with the gas side pushing its liquid surface lower.
+
+      Why the other choices fail: The liquid is a measuring medium; it does not determine whether absolute and gauge pressures are equal.

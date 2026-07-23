@@ -1,0 +1,90 @@
+schemaVersion: 1
+id: calc2-geometric-intuition-worked-examples-s2c
+title: 'Geometric Integration Worked Examples: From Slice to Integral'
+
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: geometric-intuition
+modeDefault: practice
+randomizeQuestions: false
+skills: [geometric-modeling, representative-slice, unit-analysis, definite-integral-interpretation]
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [calculus-2, geometric-intuition, worked-example]
+authoring:
+  visualRequirement: required
+  visualRationale: Each problem asks the learner to translate a spatial slice into a measurement and thickness.
+workedExamples:
+  - id: area-slice-setup
+    title: Model an area between two curves
+    problem: 'Set up and evaluate the area enclosed by $y=4-x^2$ and $y=x^2$.'
+    steps:
+      - id: area-s1
+        title: Find the endpoints of the region
+        instruction: 'Intersections determine where the representative slices begin and end.'
+        type: freeResponse
+        prompt: 'Solve $x^2=4-x^2$ for the two intersection x-values.'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Representative vertical slice for an area model, caption: Replace the generic curves with the two boundaries in this problem. }]
+        answer: { gradingMode: selfCheck, keyPoints: ['$x=-\sqrt2$', '$x=\sqrt2$'] }
+        explanation: 'Solution: $x^2=4-x^2$ gives $2x^2=4$, so $x=\pm\sqrt2$. Why it works: Intersection coordinates locate the first and last slice. Common trap: Do not invent symmetric bounds unless the equations actually produce them.'
+      - id: area-s2
+        title: Choose the slice direction
+        instruction: 'Both boundaries are already written as y-functions of x, and one upper curve persists across the region.'
+        type: freeResponse
+        prompt: 'Explain why vertical slices are efficient for this region.'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Region whose bounds must be found from intersections, caption: A model must agree with its stated boundaries and bounds. }]
+        answer: { gradingMode: selfCheck, keyPoints: [curves are y functions of x, upper and lower curves remain identifiable, one integral] }
+        explanation: 'Solution: Vertical slices use the existing y-functions, have one top and one bottom curve throughout $[-\sqrt2,\sqrt2]$, and need no partition. Why it works: The slice direction should make the boundary measurement simple. Common trap: Horizontal slices can work, but need solving for x and may add unnecessary algebra.'
+      - id: area-s3
+        title: Write a positive slice height
+        instruction: 'On $[-\sqrt2,\sqrt2]$, $4-x^2$ is above $x^2$.'
+        type: symbolicResponse
+        prompt: 'Write the vertical-slice height as one simplified expression.'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Vertical slice with upper and lower boundary labels, caption: Use upper minus lower for the slice height. }]
+        answer: { expectedLatex: '4-2x^2', equivalenceMode: expression, variables: [x], tolerance: 0.000001 }
+        explanation: 'Solution: Height is $(4-x^2)-x^2=4-2x^2$. Why it works: A vertical slice measures the y-distance from the lower curve to the upper curve. Common trap: Writing $2x^2-4$ reverses the distance and makes the area contribution negative.'
+      - id: area-s4
+        title: Accumulate the slices
+        instruction: 'Multiply height by thickness and add across every x-value in the region.'
+        type: symbolicResponse
+        prompt: 'Write the definite integral for the area.'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Representative vertical rectangle with dx thickness, caption: Height times dx is the differential area contribution. }]
+        answer: { expectedLatex: '\int_{-\sqrt{2}}^{\sqrt{2}}(4-2x^2)\,dx', equivalenceMode: expression, variables: [x], tolerance: 0.000001 }
+        explanation: 'Solution: $A=\int_{-\sqrt2}^{\sqrt2}(4-2x^2)\,dx$. Why it works: The integrand is slice height and $dx$ supplies thickness. Common trap: Do not integrate a single boundary curve when the region has two boundaries.'
+      - id: area-s5
+        title: Evaluate and check units
+        instruction: 'Use an antiderivative and remember that an area must be nonnegative.'
+        type: symbolicResponse
+        prompt: 'Evaluate the area integral.'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Shaded region between upper and lower curves, caption: A positive integrand should produce a positive geometric area. }]
+        answer: { expectedLatex: '16\sqrt{2}/3', equivalenceMode: expression, variables: [], tolerance: 0.000001 }
+        explanation: 'Solution: $\left[4x-\frac{2}{3}x^3\right]_{-\sqrt2}^{\sqrt2}=16\sqrt2/3$. Why it works: The symmetric positive region may also be doubled from $0$ to $\sqrt2$. Common trap: The result has square units; a negative result would signal reversed boundaries.'
+  - id: volume-slice-units
+    title: Model volume from cross-sectional area
+    problem: 'A solid extends from $x=0$ to $x=3$ cm. A cross section perpendicular to the x-axis has area $A(x)=x^2+1$ cm$^2$. Find its volume.'
+    steps:
+      - id: volume-s1
+        title: Identify the differential volume
+        instruction: 'A thin slab has cross-sectional area times thickness.'
+        type: freeResponse
+        prompt: 'Write the differential volume and its units.'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Representative slice used as a thin slab, caption: For volume, the measurement is cross-sectional area. }]
+        answer: { gradingMode: selfCheck, keyPoints: ['$dV=A(x)dx$', 'cm^3'] }
+        explanation: 'Solution: $dV=A(x)\,dx=(x^2+1)\,dx$ and has units $\text{cm}^2\cdot\text{cm}=\text{cm}^3$. Why it works: Cross-sectional area times a small length is a thin volume slab. Common trap: $A(x)$ alone has square units, not volume units.'
+      - id: volume-s2
+        title: Set the accumulation bounds
+        instruction: 'The solid begins at 0 cm and ends at 3 cm along the x-axis.'
+        type: symbolicResponse
+        prompt: 'Write the volume integral.'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Slice thickness dx indicating accumulation along x, caption: The x-interval determines the slab bounds. }]
+        answer: { expectedLatex: '\int_0^3(x^2+1)\,dx', equivalenceMode: expression, variables: [x], tolerance: 0.000001 }
+        explanation: 'Solution: $V=\int_0^3(x^2+1)\,dx$. Why it works: The cross-sectional formula is already the slice measurement, so only thickness and the physical x-interval remain. Common trap: Do not square or rotate $A(x)$ again; it is already an area.'
+      - id: volume-s3
+        title: Evaluate the model
+        instruction: 'Integrate the cross-sectional area with respect to the direction of thickness.'
+        type: numericResponse
+        prompt: 'What is the volume in cubic centimeters?'
+        media: [{ type: image, src: /media/calculus/geometric-slice-model.svg, alt: Representative slab showing area times thickness, caption: The final units must be cubic centimeters. }]
+        answer: { value: 12, tolerance: 0.0001 }
+        explanation: 'Solution: $V=[x^3/3+x]_0^3=9+3=12\text{ cm}^3$. Why it works: Integrating each area slab sums the solid’s volume. Common trap: Reporting 12 cm$^2$ loses the thickness dimension.'

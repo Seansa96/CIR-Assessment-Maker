@@ -3,15 +3,16 @@ id: calc2-parametric-review-horizontal-vertical-tangents-worked-example
 title: Parametric Horizontal and Vertical Tangents Review
 assessmentType: workedExample
 categoryId: calculus-2
-topicId: parametric-polar-review
+topicId: parametric-derivatives
 modeDefault: practice
 randomizeQuestions: false
+authoring: { visualRequirement: required, visualRationale: 'Tangent direction is interpreted from a curve trace.', sourceId: src-20260719182540-a40fdcd443 }
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
   - calculus-2
-  - parametric-polar-review
+  - parametric-derivatives
   - parametric-curves
   - parametric-derivatives
   - horizontal-vertical-tangents
@@ -58,6 +59,7 @@ workedExamples:
             - a
             - b
         explanation: |
+          Solution:
           Differentiate term by term:
 
           $$
@@ -67,6 +69,8 @@ workedExamples:
           $$
           \frac{dy}{dt}=3t^2-12=3(t-2)(t+2).
           $$
+
+          Why it works: Horizontal and vertical classifications begin with the two component rates.
       - id: cubic-tangent-values-step-2
         title: Find horizontal candidates
         instruction: |
@@ -95,6 +99,7 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           Since
 
           $$
@@ -102,6 +107,8 @@ workedExamples:
           $$
 
           the candidates are $t=-2$ and $t=2$.
+
+          Why it works: A zero numerator is necessary before a horizontal tangent can be considered.
       - id: cubic-tangent-values-step-3
         title: Keep only valid horizontal tangents
         instruction: |
@@ -120,6 +127,7 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           Check $\frac{dx}{dt}=3t(t-2)$.
 
           At $t=-2$:
@@ -137,6 +145,8 @@ workedExamples:
           $$
 
           so $t=2$ is a singular candidate, not an ordinary horizontal tangent.
+
+          Why it works: A horizontal tangent requires $dy/dt=0$ and $dx/dt\ne0$ at the same parameter.
       - id: cubic-tangent-values-step-4
         title: Find vertical candidates
         instruction: |
@@ -165,6 +175,7 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           Since
 
           $$
@@ -172,6 +183,8 @@ workedExamples:
           $$
 
           the candidates are $t=0$ and $t=2$.
+
+          Why it works: A zero horizontal rate identifies candidates for a vertical tangent.
       - id: cubic-tangent-values-step-5
         title: Keep only valid vertical tangents
         instruction: |
@@ -190,6 +203,7 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           At $t=0$:
 
           $$
@@ -199,6 +213,8 @@ workedExamples:
           so $t=0$ gives a vertical tangent.
 
           At $t=2$, both component derivatives are zero, so it must be analyzed separately.
+
+          Why it works: A vertical tangent requires $dx/dt=0$ and $dy/dt\ne0$.
       - id: cubic-tangent-values-step-6
         title: Classify the shared zero
         instruction: |
@@ -226,13 +242,14 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           The simplified slope approaches:
 
           $$
           \lim_{t\to2}\frac{t+2}{t}=2.
           $$
 
-          Since the limiting tangent slope is finite and nonzero, it is not horizontal and not vertical.
+          Why it works: Since the limiting tangent slope is finite and nonzero, it is not horizontal and not vertical.
       - id: cubic-tangent-values-step-7
         title: State the final values
         instruction: |
@@ -251,6 +268,7 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           Final result:
 
           $$
@@ -263,4 +281,74 @@ workedExamples:
           \boxed{\text{vertical tangent at }t=0.}
           $$
 
-          The shared zero at $t=2$ has limiting slope $2$, so it is a special tangent point but not horizontal or vertical.
+          Why it works: The shared zero at $t=2$ has limiting slope $2$, so it is a special tangent point but not horizontal or vertical.
+  - id: second-derivative-example
+    title: Concavity From a Parametric Slope
+    problem: |
+      For $x=t^2+1$ and $y=t^3-3t$, determine the concavity at $t=1$.
+    steps:
+      - id: concavity-step-1
+        title: Form the first derivative
+        instruction: 'Differentiate both components and divide: $dy/dx=(3t^2-3)/(2t)$.'
+        type: multipleChoice
+        prompt: 'Which factorization is useful before differentiating this slope again?'
+        choices: [{ id: a, text: '$\frac32(t-1/t)$' }, { id: b, text: '$\frac32(t+1/t)$' }, { id: c, text: '$2t/(3t^2-3)$' }, { id: d, text: '$3t^2-3$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: $(3t^2-3)/(2t)=\frac32(t-1/t)$. Why it works: Separating the quotient makes the next derivative direct. Common trap: Inverting the slope ratio. Why the other choices fail: They alter a sign, invert the ratio, or omit the denominator.'
+      - id: concavity-step-2
+        title: Differentiate with respect to t
+        instruction: 'Differentiate the first-derivative expression before converting back to an x-derivative.'
+        type: freeResponse
+        prompt: 'Find $d(dy/dx)/dt$ at $t=1$.'
+        answer: { gradingMode: selfCheck, keyPoints: ['three halves times one plus one over t squared', 'value three'] }
+        explanation: 'Solution: $d(dy/dx)/dt=\frac32(1+1/t^2)$, which equals 3 at t equals 1. Why it works: The derivative of negative one over t is positive one over t squared. Common trap: Forgetting this sign change.'
+      - id: concavity-step-3
+        title: Convert to a second derivative
+        instruction: 'Divide the t-rate of slope change by $dx/dt=2t$.'
+        type: numericResponse
+        prompt: 'What is $d^2y/dx^2$ at $t=1$?'
+        answer: { value: 1.5, tolerance: 0.000001 }
+        explanation: 'Solution: $d^2y/dx^2=3/(2)=3/2$. Why it works: The second derivative must be a rate of slope change per x-change. Common trap: Reporting 3, which is still per parameter.'
+      - id: concavity-step-4
+        title: Interpret the sign
+        instruction: 'A positive second derivative means tangent slopes increase as x increases locally.'
+        type: multipleChoice
+        prompt: 'What is the concavity at $t=1$?'
+        choices: [{ id: a, text: concave up }, { id: b, text: concave down }, { id: c, text: neither because slope is zero }, { id: d, text: vertical }]
+        answer: { choiceId: a }
+        explanation: 'Solution: Three halves is positive, so the curve is concave up. Why it works: Positive second derivative means increasing slope. Common trap: Confusing zero first derivative with zero concavity. Why the other choices fail: The sign is not negative, undefined, or a vertical-tangent condition.'
+  - id: simultaneous-zero-example
+    title: A Simultaneous-Zero Tangent Requires a Limit
+    problem: |
+      For $x=t^3$ and $y=t^2$, classify the tangent behavior at $t=0$.
+    steps:
+      - id: simultaneous-step-1
+        title: Identify the indeterminate slope form
+        instruction: 'Compute both component rates before applying a horizontal or vertical rule.'
+        type: multipleChoice
+        prompt: 'What does the direct slope quotient give at t equals 0?'
+        choices: [{ id: a, text: '$0/0$' }, { id: b, text: '$0/2$' }, { id: c, text: '$2/0$' }, { id: d, text: '$1$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: x-prime equals $3t^2$ and y-prime equals $2t$, so both vanish at zero. Why it works: The direct quotient is indeterminate. Common trap: Calling it horizontal because y-prime is zero. Why the other choices fail: Neither rate is nonzero at the parameter.'
+      - id: simultaneous-step-2
+        title: Simplify away from the singular parameter
+        instruction: 'For t not equal to zero, simplify the slope expression before taking a limit.'
+        type: freeResponse
+        prompt: 'Simplify $dy/dx=(2t)/(3t^2)$ for t not equal to zero.'
+        answer: { gradingMode: selfCheck, keyPoints: ['two over three t'] }
+        explanation: 'Solution: Cancel one nonzero factor of t to get $2/(3t)$. Why it works: Cancellation is valid only away from t equals zero, which is why a limit is still needed. Common trap: Cancelling and then blindly substituting zero.'
+      - id: simultaneous-step-3
+        title: Interpret the nearby slopes
+        instruction: 'Examine the magnitude of the simplified slope as t approaches zero from either side.'
+        type: multipleChoice
+        prompt: 'What tangent direction does the slope behavior support?'
+        choices: [{ id: a, text: vertical tangent direction }, { id: b, text: horizontal tangent }, { id: c, text: slope zero }, { id: d, text: no local tangent information }]
+        answer: { choiceId: a }
+        explanation: 'Solution: $2/(3t)$ becomes unbounded in magnitude as t approaches zero, so the tangent direction is vertical. Why it works: Nearby slopes, not the indeterminate value itself, determine the direction. Common trap: Treating the opposite signs on the two sides as evidence of a horizontal tangent. Why the other choices fail: The slopes do not approach zero or a finite number.'
+      - id: simultaneous-step-4
+        title: Connect the limit to the curve shape
+        instruction: 'Eliminating the parameter gives $y^3=x^2$, which has a cusp at the origin.'
+        type: freeResponse
+        prompt: 'Why is the point not classified by the ordinary vertical-tangent rule even though its tangent direction is vertical?'
+        answer: { gradingMode: selfCheck, keyPoints: ['ordinary rule requires y prime nonzero', 'both rates are zero', 'limit or local analysis required'] }
+        explanation: 'Solution: The ordinary vertical rule requires x-prime zero and y-prime nonzero, but both vanish here. A limit/local analysis establishes the vertical tangent direction at a cusp. Why it works: The rule is sufficient only when its nonzero condition holds. Common trap: Treating a cusp and a regular vertical tangent as identical.'

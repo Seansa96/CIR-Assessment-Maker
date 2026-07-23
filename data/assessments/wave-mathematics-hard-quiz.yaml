@@ -1,69 +1,62 @@
 schemaVersion: 1
 id: wave-mathematics-hard-quiz
-title: Wave Mathematics — Hard Quiz
-description: Dynamically generated hard quiz for physics-wave-mathematics.
+title: 'Wave Mathematics — Hard Quiz'
+description: Transfer practice with wave equations, phase, and inverse wave relations.
 assessmentType: quiz
 categoryId: physics-1
 topicId: physics-wave-mathematics
 modeDefault: practice
 randomizeQuestions: true
-skills:
-- physics-wave-mathematics
+skills: [wave-equation, phase, wavelength]
 navigation:
   learningGoal: practice
   activityType: focusedPractice
-  tags:
-  - physics-1
-  - physics-wave-mathematics
-  - s2c-generated
+  tags: [physics-1, physics-wave-mathematics, hard-practice]
 questions:
 - id: q001
   type: numericResponse
-  skills:
-  - physics-wave-mathematics
-  prompt: A tensioned cable vibrates with wavelength 3.32 m when driven at 19.9 Hz.
-    What is the angular frequency omega in rad/s?
-  answer:
-    value: 125.0354
-    tolerance: 0.05
-  explanation: omega = 2*pi*f = 2*pi*19.9 = 125.0354 rad/s.
+  prompt: A wave has angular frequency 24 rad/s and wave number 3.0 rad/m. What speed in m/s follows from $v=\omega/k$?
+  answer: { value: 8, tolerance: 0.1 }
+  explanation: |
+    Solution: $v=\omega/k=24/3.0=8.0$ m/s.
+
+    Why it works: The angular phase parameters give speed as temporal phase rate divided by spatial phase rate.
+  difficultyDimensions: [modelOrDerivation, representationTransfer, unitAnalysis]
+  extensionObjectiveIds: [phys1-obj-wave-boundaries]
 - id: q002
   type: numericResponse
-  skills:
-  - physics-wave-mathematics
-  prompt: A laboratory ripple tank generates water waves of length 14.26 m at a frequency
-    of 42.1 Hz. What is the wave speed in m/s?
-  answer:
-    value: 600.346
-    tolerance: 0.05
-  explanation: v = lambda * f = 14.26 * 42.1 = 600.35 m/s.
+  prompt: A wave travels at 18 m/s with frequency 6.0 Hz. What wave number in rad/m does it have?
+  answer: { value: 2.0944, tolerance: 0.01 }
+  explanation: |
+    Solution: $\lambda=v/f=18/6.0=3.0$ m, then $k=2\pi/\lambda=2.0944$ rad/m.
+
+    Why it works: Wave speed first determines wavelength from frequency; wave number then converts wavelength to spatial phase rate.
+  difficultyDimensions: [multiStep, modelCombination, unitConversion]
+  extensionObjectiveIds: [phys1-obj-wave-boundaries]
 - id: q003
-  type: numericResponse
-  skills:
-  - physics-wave-mathematics
-  prompt: A laboratory ripple tank generates water waves of length 14.1 m at a frequency
-    of 13.5 Hz. What is the angular frequency omega in rad/s?
-  answer:
-    value: 84.823
-    tolerance: 0.05
-  explanation: omega = 2*pi*f = 2*pi*13.5 = 84.8230 rad/s.
+  type: multipleChoice
+  prompt: For $y=A\sin(kx-\omega t)$, which direction does the wave pattern travel?
+  choices:
+  - { id: a, text: Positive x direction }
+  - { id: b, text: Negative x direction }
+  - { id: c, text: It does not travel. }
+  - { id: d, text: It travels only upward. }
+  answer: { choiceId: a }
+  explanation: |
+    Solution: Positive x direction.
+
+    Why it works: Keeping $kx-\omega t$ constant gives $x=(\omega/k)t+\text{constant}$, which increases with time.
+
+    Why the other choices fail: A plus sign between $kx$ and $\omega t$ would indicate negative x propagation; a nonzero phase speed rules out the other choices.
+  difficultyDimensions: [symbolicManipulation, representationTransfer, signConvention]
+  extensionObjectiveIds: [phys1-obj-wave-boundaries]
 - id: q004
-  type: numericResponse
-  skills:
-  - physics-wave-mathematics
-  prompt: A tensioned cable vibrates with wavelength 12.58 m when driven at 24.8 Hz.
-    What is the wave speed in m/s?
-  answer:
-    value: 311.984
-    tolerance: 0.05
-  explanation: v = lambda * f = 12.58 * 24.8 = 311.98 m/s.
-- id: q005
-  type: numericResponse
-  skills:
-  - physics-wave-mathematics
-  prompt: A tensioned cable vibrates with wavelength 14.63 m when driven at 97.7 Hz.
-    What is the wave speed in m/s?
-  answer:
-    value: 1429.351
-    tolerance: 0.05
-  explanation: v = lambda * f = 14.63 * 97.7 = 1429.35 m/s.
+  type: symbolicResponse
+  prompt: Starting from $v=f\lambda$, enter wavelength $\lambda$ in terms of wave speed $v$ and period $T$.
+  answer: { expectedLatex: 'v*T', equivalenceMode: expression, variables: [v, T], tolerance: 0.000001 }
+  explanation: |
+    Solution: Since $f=1/T$, $v=(1/T)\lambda$, so $\lambda=vT$.
+
+    Why it works: Substituting the reciprocal relation between frequency and period gives the distance the wave travels in one cycle.
+  difficultyDimensions: [symbolicManipulation, modelCombination, reverseReasoning]
+  extensionObjectiveIds: [phys1-obj-wave-boundaries]

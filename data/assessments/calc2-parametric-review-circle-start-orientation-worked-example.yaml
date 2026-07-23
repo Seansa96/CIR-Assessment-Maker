@@ -3,15 +3,16 @@ id: calc2-parametric-review-circle-start-orientation-worked-example
 title: Parametric Circle From Center, Start, and Orientation
 assessmentType: workedExample
 categoryId: calculus-2
-topicId: parametric-polar-review
+topicId: parametric-curves
 modeDefault: practice
 randomizeQuestions: false
+authoring: { visualRequirement: required, visualRationale: 'Circle orientation and start point are spatial.', sourceId: src-20260719182540-a40fdcd443 }
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
   - calculus-2
-  - parametric-polar-review
+  - parametric-curves
   - parametric-curves
   - circle-parametrization
   - orientation
@@ -55,13 +56,14 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           Subtract the center from the starting point:
 
           $$
           (6,-2)-(1,-2)=(5,0).
           $$
 
-          The start is one radius to the right of the center. Related topic: translating a standard circle.
+          Why it works: The start is one radius to the right of the center. Translating a standard circle preserves that radius offset.
       - id: circle-start-orientation-step-2
         title: Choose the standard counterclockwise form
         instruction: |
@@ -86,13 +88,14 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           At $t=0$, $\cos 0=1$ and $\sin 0=0$, so this gives:
 
           $$
           (x,y)=(h+r,k).
           $$
 
-          As $t$ increases slightly, $\sin t$ becomes positive, so the point moves upward from the rightmost point. That is counterclockwise motion.
+          Why it works: As $t$ increases slightly, $\sin t$ becomes positive, so the point moves upward from the rightmost point. That is counterclockwise motion.
       - id: circle-start-orientation-step-3
         title: Substitute the center and radius
         instruction: |
@@ -111,10 +114,13 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           Substitute directly into the translated circle template:
 
           $$
           x=1+5\cos t,\qquad y=-2+5\sin t.
+
+          Why it works: Translation adds the center coordinates while the radius multiplies both unit-circle components.
           $$
       - id: circle-start-orientation-step-4
         title: Verify the start
@@ -126,13 +132,14 @@ workedExamples:
           value: 6
           tolerance: 0.000001
         explanation: |
+          Solution:
           Since $\cos 0=1$,
 
           $$
           x(0)=1+5(1)=6.
           $$
 
-          Also $y(0)=-2+5(0)=-2$, so the curve starts at $(6,-2)$.
+          Why it works: Also $y(0)=-2+5(0)=-2$, so the curve starts at $(6,-2)$ as required.
       - id: circle-start-orientation-step-5
         title: State the final answer
         instruction: |
@@ -151,10 +158,152 @@ workedExamples:
         answer:
           choiceId: a
         explanation: |
+          Solution:
           The correct parametrization is:
 
           $$
           \boxed{x=1+5\cos t,\qquad y=-2+5\sin t,\qquad 0\le t<2\pi.}
           $$
 
-          The cosine term starts one radius to the right, and the positive sine term makes the motion counterclockwise.
+          Why it works: The cosine term starts one radius to the right, and the positive sine term makes the motion counterclockwise.
+
+  - id: ellipse-elimination-and-orientation-example
+    title: 'Ellipse: eliminate the parameter and identify orientation'
+    problem: |
+      Analyze the curve
+
+      $$
+      x=2+3\cos t,\qquad y=-1-2\sin t,\qquad 0\le t<2\pi.
+      $$
+
+      Give its Cartesian equation, center, and direction of tracing.
+    steps:
+      - id: ellipse-step-1
+        title: Isolate the unit-circle components
+        instruction: |
+          Move the center and divide by each semiaxis before squaring.
+        type: freeResponse
+        prompt: Write expressions for $\cos t$ and $\sin t$ in terms of $x$ and $y$.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - '$\cos t=(x-2)/3$'
+            - '$\sin t=-(y+1)/2$'
+        explanation: |
+          Solution: From $x-2=3\cos t$, divide by $3$ to obtain $\cos t=(x-2)/3$. From $y+1=-2\sin t$, divide by $-2$ to obtain $\sin t=-(y+1)/2$.
+
+          Why it works: The translation is removed first, then each coordinate is scaled to a unit-circle component.
+      - id: ellipse-step-2
+        title: Apply the Pythagorean identity
+        instruction: |
+          Use $\cos^2t+\sin^2t=1$ after the substitutions.
+        type: multipleChoice
+        prompt: Which Cartesian equation is correct?
+        choices:
+          - id: a
+            text: '$\frac{(x-2)^2}{9}+\frac{(y+1)^2}{4}=1$'
+          - id: b
+            text: '$\frac{(x+2)^2}{9}+\frac{(y-1)^2}{4}=1$'
+          - id: c
+            text: '$\frac{(x-2)^2}{4}+\frac{(y+1)^2}{9}=1$'
+          - id: d
+            text: '$\frac{x^2}{9}+\frac{y^2}{4}=1$'
+        answer:
+          choiceId: a
+        explanation: |
+          Solution: Substitute the isolated components into $\cos^2t+\sin^2t=1$:
+
+          $$
+          \left(\frac{x-2}{3}\right)^2+\left(-\frac{y+1}{2}\right)^2=1,
+          $$
+
+          which simplifies to choice a.
+
+          Why it works: Squaring removes the sign on the sine component and produces the standard translated-ellipse equation.
+
+          Why the other choices fail: b reverses both translations; c swaps the semiaxis lengths; d omits the translation.
+      - id: ellipse-step-3
+        title: Read the initial motion
+        instruction: |
+          Evaluate the point and velocity at $t=0$.
+        type: multipleChoice
+        prompt: How is the ellipse traced as $t$ increases from $0$?
+        choices:
+          - id: a
+            text: Starts at $(5,-1)$ and moves downward, so it is clockwise.
+          - id: b
+            text: Starts at $(2,1)$ and moves right, so it is counterclockwise.
+          - id: c
+            text: Starts at $(-1,-1)$ and moves upward, so it is counterclockwise.
+          - id: d
+            text: Starts at $(5,-1)$ and moves upward, so it is counterclockwise.
+        answer:
+          choiceId: a
+        explanation: |
+          Solution: At $t=0$, the point is $(2+3,-1)=(5,-1)$. Also $y'(t)=-2\cos t$, so $y'(0)=-2<0$: motion initially goes downward from the rightmost point.
+
+          Why it works: Downward motion from the rightmost point is the clockwise orientation.
+
+          Why the other choices fail: b uses the top point; c uses the left point; d gives the opposite initial vertical velocity.
+
+  - id: retracing-interval-example
+    title: Detect retracing and choose one-trace bounds
+    problem: |
+      For
+
+      $$
+      x=\cos(2t),\qquad y=\sin(2t),\qquad 0\le t\le 2\pi,
+      $$
+
+      determine how many times the unit circle is traced and give a shortest interval that traces it once.
+    steps:
+      - id: retrace-step-1
+        title: Compare angular speed to the standard circle
+        instruction: |
+          The pair $(\cos u,\sin u)$ completes one circle whenever $u$ increases by $2\pi$.
+        type: freeResponse
+        prompt: What change in $t$ makes $2t$ increase by $2\pi$?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - '$\Delta t=\pi$'
+        explanation: |
+          Solution: Set $2\Delta t=2\pi$. Dividing by $2$ gives $\Delta t=\pi$.
+
+          Why it works: The inner angle $2t$ is the actual circular angle, so one full revolution is determined by its change.
+      - id: retrace-step-2
+        title: Count full traces on the supplied interval
+        instruction: |
+          The total parameter length is $2\pi$; compare it with the one-trace length.
+        type: numericResponse
+        prompt: How many complete traces occur on $0\le t\le2\pi$?
+        answer:
+          value: 2
+          tolerance: 0.000001
+        explanation: |
+          Solution: One trace requires length $\pi$, while the supplied interval has length $2\pi$. Therefore $2\pi/\pi=2$ complete traces occur.
+
+          Why it works: Each consecutive interval of length $\pi$ advances the inner angle by exactly one revolution.
+      - id: retrace-step-3
+        title: Give one-trace bounds
+        instruction: |
+          Any interval of length $\pi$ works; choose the natural interval beginning at zero.
+        type: multipleChoice
+        prompt: Which bounds trace the curve exactly once?
+        choices:
+          - id: a
+            text: '$0\le t\le\pi$'
+          - id: b
+            text: '$0\le t\le2\pi$'
+          - id: c
+            text: '$0\le t\le\pi/2$'
+          - id: d
+            text: '$0\le t\le4\pi$'
+        answer:
+          choiceId: a
+        explanation: |
+          Solution: On $0\le t\le\pi$, the angle $2t$ runs from $0$ to $2\pi$, which is one complete revolution.
+
+          Why it works: A parametric interval must be judged by the inner angle, not merely by the familiar $2\pi$ endpoint.
+
+          Why the other choices fail: b and d retrace the circle two and four times; c advances the angle only through $\pi$, giving half a circle.

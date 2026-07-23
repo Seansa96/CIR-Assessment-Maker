@@ -1,0 +1,31 @@
+schemaVersion: 1
+id: calc2-volumes-of-solids-worked-examples-s2c
+title: 'Volumes of Solids: Disk and Washer Worked Examples'
+
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: volumes-of-solids
+modeDefault: practice
+randomizeQuestions: false
+skills: [disk-method, washer-method, radius-modeling, definite-integrals]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [calculus-2, volumes-of-solids, disks, washers] }
+authoring: { visualRequirement: required, visualRationale: Axis distance and the presence of a hole must be modeled spatially. }
+workedExamples:
+  - id: disk-parabola
+    title: 'Disk model: rotate a parabola about the x-axis'
+    problem: 'Rotate the region under $y=\sqrt{x}$ from $x=0$ to $x=4$ about the x-axis. Find its exact volume.'
+    media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Disk slice perpendicular to the x-axis }]
+    steps:
+      - { id: disk-s1, title: Identify the disk slices, instruction: 'Read the axis first and choose slices perpendicular to it.', prompt: 'Name the axis and the perpendicular slice orientation.', type: freeResponse, answer: { gradingMode: selfCheck, keyPoints: [x-axis, vertical slices, dx] }, explanation: 'Solution: The axis is the x-axis, so use vertical slices of thickness $dx$. Why it works: Vertical slices are perpendicular to a horizontal axis. Common trap: Horizontal slices would be parallel and suggest shells.' }
+      - { id: disk-s2, title: Measure the disk radius, instruction: 'Radius is the distance from the graph to the rotation axis.', prompt: 'Write the disk radius $R(x)$.', type: symbolicResponse, answer: { gradingMode: auto, expectedLatex: '\\sqrt{x}', equivalenceMode: expression, tolerance: 0, variables: [x] }, explanation: 'Solution: $R(x)=\sqrt{x}$. Why it works: It is the vertical distance from y=0 to $y=\sqrt{x}$. Common trap: Do not square the radius until forming the area.' }
+      - { id: disk-s3, title: Build the disk integral, instruction: 'Use area $\pi R^2$ and the stated x-bounds.', prompt: 'Write the volume integral.', type: symbolicResponse, answer: { gradingMode: auto, expectedLatex: '\\int_0^4 \\pi x \\, dx', equivalenceMode: expression, tolerance: 0, variables: [x] }, explanation: 'Solution: $V=\int_0^4\pi(\sqrt{x})^2\,dx=\int_0^4\pi x\,dx$. Why it works: A disk has area $\pi R^2$. Common trap: The bounds are x-values because the thickness is $dx$.' }
+      - { id: disk-s4, title: Evaluate and check units, instruction: 'Integrate the cross-sectional area and retain cubic units.', prompt: 'Evaluate the volume.', type: symbolicResponse, answer: { gradingMode: auto, expectedLatex: '8\\pi', equivalenceMode: expression, tolerance: 0, variables: [] }, explanation: 'Solution: $V=\pi[x^2/2]_0^4=\pi(16/2)=8\pi$. Why it works: Cross-sectional area times length gives cubic units. Common trap: $8\pi$ is volume, so its units are cubic length units.' }
+  - id: washer-offset-axis
+    title: 'Washer model: rotate a region about an offset axis'
+    problem: 'Rotate the region between $y=x$ and $y=2$ for $0\le x\le2$ about $y=3$. Find its exact volume.'
+    media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Washer slice with outer and inner radii measured to the line y equals 3 }]
+    steps:
+      - { id: washer-s1, title: Measure both radii, instruction: "Measure each boundary's vertical distance to y=3 before deciding which is outer.", prompt: 'Identify the outer and inner radii.', type: freeResponse, answer: { gradingMode: selfCheck, keyPoints: ['outer radius 3-x', 'inner radius 1'] }, explanation: 'Solution: The farther boundary $y=x$ is $R=3-x$; the nearer boundary $y=2$ is $r=3-2=1$. Why it works: Both are distances to y=3. Common trap: The larger function value is not automatically the outer radius when the axis is above both curves.' }
+      - { id: washer-s2, title: Form the washer area, instruction: 'Subtract the inner circular area from the outer circular area.', prompt: 'Write the washer area $A(x)$.', type: symbolicResponse, answer: { gradingMode: auto, expectedLatex: '\\pi((3-x)^2-1)', equivalenceMode: expression, tolerance: 0, variables: [x] }, explanation: 'Solution: $A(x)=\pi[(3-x)^2-1^2]$. Why it works: Washer area is outer-circle area minus inner-circle area. Common trap: Do not use $\pi((3-x)-1)^2$.' }
+      - { id: washer-s3, title: Accumulate the washers, instruction: 'Use dx because the cross sections come from vertical slices.', prompt: 'Set up the volume integral.', type: symbolicResponse, answer: { gradingMode: auto, expectedLatex: '\\int_0^2 \\pi((3-x)^2-1) \\, dx', equivalenceMode: expression, tolerance: 0, variables: [x] }, explanation: 'Solution: $V=\int_0^2\pi[(3-x)^2-1]dx$. Why it works: The vertical slices run across the stated x-interval. Common trap: Retain the squared outer radius before simplifying.' }
+      - { id: washer-s4, title: Evaluate the volume, instruction: 'Expand carefully, integrate, then check that the hole was subtracted.', prompt: 'Evaluate the volume.', type: symbolicResponse, answer: { gradingMode: auto, expectedLatex: '14\\pi/3', equivalenceMode: expression, tolerance: 0, variables: [] }, explanation: 'Solution: Expand to $\pi(x^2-6x+8)$: $V=\pi[x^3/3-3x^2+8x]_0^2=\pi(8/3-12+16)=14\pi/3$. Why it works: The cross-sectional area stays nonnegative on $[0,2]$. Common trap: Forgetting the $-1$ hole term overestimates the volume.' }

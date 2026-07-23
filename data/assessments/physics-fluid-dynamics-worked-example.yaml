@@ -1,0 +1,93 @@
+schemaVersion: 1
+id: physics-fluid-dynamics-worked-example
+title: Torricelli's Law and Leaking Tanks
+assessmentType: workedExample
+categoryId: physics-1
+topicId: physics-fluid-dynamics
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- physics-fluid-dynamics
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - physics-1
+  - physics-fluid-dynamics
+authoring:
+  visualRequirement: notApplicable
+workedExamples:
+- id: we001
+  title: Torricelli's Law
+  problem: |
+    A large, open water tank has a small circular hole near its bottom, located at a depth $h = 5.0 \text{ m}$ below the surface of the water. 
+    Use Bernoulli's Equation to calculate the exit velocity $v_2$ of the water shooting out of the hole. Use $g = 9.8 \text{ m/s}^2$.
+  steps:
+  - id: step-1
+    title: 1. Identify the boundary conditions
+    instruction: |
+      Set point 1 at the top surface of the water, and point 2 just outside the exit hole at the bottom.
+      Since the top of the tank is open, $P_1 = P_{atm}$. Since the water exits into the open air, $P_2 = P_{atm}$.
+      Because the tank is very large compared to the hole, the top surface drops very slowly. We can approximate $v_1 \approx 0$.
+    type: symbolicResponse
+    prompt: |
+      Based on Bernoulli's equation for this specific setup, what does the quantity $P_0 + \rho g y_1$ equal on the right side?
+      Use `P_0`, `\rho`, `g`, `v_2`, and `y_2`.
+    answer:
+      expectedLatex: P_0 + \frac{1}{2}\rho v_2^2 + \rho g y_2
+      equivalenceMode: expression
+      variables: [P_0, \rho, g, v_2, y_2]
+      tolerance: 0.00001
+      keyPoints:
+      - P_0 + 0.5 \rho v_2^2 + \rho g y_2
+    explanation: |
+      Solution:
+      $P_0 + \frac{1}{2}\rho v_2^2 + \rho g y_2$
+      
+      Why it works:
+      We applied Bernoulli's full equation and removed the kinetic energy term at the surface because the velocity there is negligibly small compared to the exit velocity.
+
+  - id: step-2
+    title: 2. Simplify the equation
+    instruction: |
+      Notice that $P_0$ appears on both sides and cancels out.
+      Also, notice that $\rho$ appears in every remaining term, so we can divide the entire equation by $\rho$.
+    type: symbolicResponse
+    prompt: |
+      After canceling $P_0$ from both sides, we have $\rho g y_1 = \frac{1}{2}\rho v_2^2 + \rho g y_2$.
+      Divide the entire equation by $\rho$. What is the resulting expression on the right side of the equation?
+      Use `g`, `v_2`, and `y_2`.
+    answer:
+      expectedLatex: \frac{1}{2} v_2^2 + g y_2
+      equivalenceMode: expression
+      variables: [g, v_2, y_2]
+      tolerance: 0.00001
+      keyPoints:
+      - 0.5 v_2^2 + g y_2
+    explanation: |
+      Solution:
+      $\frac{1}{2} v_2^2 + g y_2$
+      
+      Why it works:
+      Because the fluid is exposed to the same atmospheric pressure at both points, pressure doesn't drive the flow—only gravity does. The density cancels out, meaning the exit velocity is independent of whether the fluid is water or heavy mercury!
+
+  - id: step-3
+    title: 3. Solve for exit velocity
+    instruction: |
+      The difference in height between the top surface and the hole is $y_1 - y_2 = h$.
+      Rearrange the simplified equation to solve for $v_2$, and calculate the numerical value using $h = 5.0 \text{ m}$ and $g = 9.8 \text{ m/s}^2$.
+    type: numericResponse
+    prompt: |
+      What is the exit velocity $v_2$ in m/s?
+    answer:
+      value: 9.899
+      tolerance: 0.1
+    explanation: |
+      Solution:
+      $g(y_1 - y_2) = \frac{1}{2} v_2^2$
+      $gh = \frac{1}{2} v_2^2$
+      $v_2 = \sqrt{2gh}$
+      $v_2 = \sqrt{2(9.8)(5.0)} = \sqrt{98} \approx 9.899 \text{ m/s}$.
+      
+      Why it works:
+      This result, $v = \sqrt{2gh}$, is known as Torricelli's Law. It is exactly the same velocity an object would have if it were dropped in free fall from a height $h$. The potential energy of the fluid at the surface is perfectly converted into kinetic energy at the exit!

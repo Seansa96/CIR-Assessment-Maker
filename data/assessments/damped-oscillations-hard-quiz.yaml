@@ -21,49 +21,89 @@ questions:
   type: numericResponse
   skills:
   - physics-damped-oscillations
-  prompt: An industrial suspension system features a spring of 295.4 N/m supporting
-    a load of 8.36 kg. What is the period of oscillation in seconds?
+  prompt: A $4.0\text{ kg}$ sensor is mounted on a spring with $k=100\text{ N/m}$. A damper is to make the system critically damped. What damping coefficient $b_c$ in kg/s is required?
   answer:
-    value: 1.057
-    tolerance: 0.05
-  explanation: T = 2*pi*sqrt(m/k) = 2*pi*sqrt(8.36/295.4) = 1.0570 s.
+    value: 40
+    tolerance: 0.1
+  explanation: |
+    Solution: Critical damping requires $b_c=2\sqrt{mk}=2\sqrt{(4.0)(100)}=40\text{ kg/s}$.
+
+    Why it works: Setting the characteristic-root discriminant to zero gives the boundary between oscillatory and non-oscillatory return.
+  difficultyDimensions: [modelOrDerivation, simplification, domainCondition]
+  subjectDifficultyTags: [criticalDamping]
+  difficultyEvidence: The learner chooses the critical-damping condition, evaluates a square-root model, and interprets the boundary case.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-rigid-structure-equilibrium]
 - id: q002
   type: numericResponse
   skills:
   - physics-damped-oscillations
-  prompt: A mass of 1.92 kg is attached to a horizontal spring with constant 236.7
-    N/m on a frictionless table. What is the period of oscillation in seconds?
+  prompt: An underdamped oscillator has $m=2.0\text{ kg}$, $k=50.0\text{ N/m}$, and $b=8.0\text{ kg/s}$. What is its damped angular frequency in rad/s? Use $\omega'=\sqrt{k/m-(b/2m)^2}$.
   answer:
-    value: 0.5659
-    tolerance: 0.05
-  explanation: T = 2*pi*sqrt(m/k) = 2*pi*sqrt(1.92/236.7) = 0.5659 s.
+    value: 4.582576
+    tolerance: 0.02
+  explanation: |
+    Solution: $\omega'=\sqrt{50/2-(8/(2\cdot2))^2}=\sqrt{25-4}=\sqrt{21}=4.58\text{ rad/s}$.
+
+    Why it works: The damping term reduces the squared natural frequency; the positive result confirms the oscillator remains underdamped.
+  difficultyDimensions: [modelOrDerivation, simplification, domainCondition]
+  subjectDifficultyTags: [underdampedFrequency]
+  difficultyEvidence: The damped-frequency expression is evaluated and the positive radicand is interpreted as an underdamped condition.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-rigid-structure-equilibrium]
 - id: q003
-  type: numericResponse
+  type: multipleChoice
   skills:
   - physics-damped-oscillations
-  prompt: A vehicle's strut of 373.2 N/m supports a quarter of the car's mass, which
-    is 2.69 kg. What is the period of oscillation in seconds?
+  prompt: For the same mass and spring, a damper changes from $b=0$ to a small positive $b$ while remaining underdamped. Which comparison is correct?
+  choices:
+  - { id: a, text: The amplitude decays and the oscillation frequency is slightly lower. }
+  - { id: b, text: The amplitude grows and the oscillation frequency is slightly higher. }
+  - { id: c, text: The damping force does not affect the motion until critical damping. }
   answer:
-    value: 0.5334
-    tolerance: 0.05
-  explanation: T = 2*pi*sqrt(m/k) = 2*pi*sqrt(2.69/373.2) = 0.5334 s.
+    choiceId: a
+  explanation: |
+    Solution: The amplitude decays and the frequency is slightly lower.
+
+    Why it works: Viscous damping removes mechanical energy, and the underdamped frequency $\omega'$ is less than the undamped value $\sqrt{k/m}$.
+
+    Why the other choices fail: Damping does not supply energy to grow amplitude, and even weak damping changes the model before the critical boundary is reached.
+  difficultyDimensions: [representationTransfer, errorDiagnosis, modelOrDerivation]
+  subjectDifficultyTags: [dampedEnvelope]
+  difficultyEvidence: The learner transfers the equation and envelope model to reject two plausible but incorrect qualitative claims.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-rigid-structure-equilibrium]
 - id: q004
   type: numericResponse
   skills:
   - physics-damped-oscillations
-  prompt: An industrial suspension system features a spring of 173.4 N/m supporting
-    a load of 0.54 kg. If the amplitude is 0.322 m, what is the maximum speed in m/s?
+  prompt: A vibration isolator has $m=1.0\text{ kg}$ and $k=36\text{ N/m}$. It starts with amplitude $0.20\text{ m}$. In the weak-damping model $A(t)=A_0e^{-bt/(2m)}$, what value of $b$ in kg/s makes the amplitude $0.10\text{ m}$ after $0.50\text{ s}$?
   answer:
-    value: 5.7701
-    tolerance: 0.05
-  explanation: v_max = A*omega = 0.322 * sqrt(173.4/0.54) = 5.7701 m/s.
+    value: 2.772589
+    tolerance: 0.02
+  explanation: |
+    Solution: $0.10/0.20=e^{-b(0.50)/(2\cdot1.0)}$, so $\ln(0.5)=-0.25b$ and $b=2.77\text{ kg/s}$.
+
+    Why it works: Taking a logarithm isolates the coefficient in the exponential decay envelope.
+  difficultyDimensions: [modelOrDerivation, reverseReasoning, simplification]
+  subjectDifficultyTags: [amplitudeEnvelope]
+  difficultyEvidence: The amplitude relation is inverted with logarithms rather than evaluated in the forward direction.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-rigid-structure-equilibrium]
 - id: q005
   type: numericResponse
   skills:
   - physics-damped-oscillations
-  prompt: A vehicle's strut of 220.6 N/m supports a quarter of the car's mass, which
-    is 2.94 kg. If the amplitude is 0.307 m, what is the maximum speed in m/s?
+  prompt: A $2.0\text{ kg}$ mass on a $50.0\text{ N/m}$ spring is to return to equilibrium as quickly as possible without oscillating. What damping coefficient in kg/s should be selected?
   answer:
-    value: 2.6593
-    tolerance: 0.05
-  explanation: v_max = A*omega = 0.307 * sqrt(220.6/2.94) = 2.6593 m/s.
+    value: 20
+    tolerance: 0.03
+  explanation: |
+    Solution: "As quickly as possible without oscillating" identifies critical damping, so $b_c=2\sqrt{mk}=2\sqrt{(2.0)(50.0)}=20.0\text{ kg/s}$.
+
+    Why it works: Critical damping is the unique boundary that avoids oscillation without the slower return of overdamping.
+  difficultyDimensions: [representationTransfer, modelOrDerivation, domainCondition]
+  subjectDifficultyTags: [criticalDamping]
+  difficultyEvidence: A design-language constraint must be translated into the critical-damping boundary before calculation.
+  prerequisiteObjectiveIds: [phys1-obj-newtons-laws]
+  extensionObjectiveIds: [phys1-obj-rigid-structure-equilibrium]

@@ -1,0 +1,311 @@
+schemaVersion: 1
+id: calc2-taylor-maclaurin-quick-chain-worked-example
+title: Taylor Series Quick-Chain Worked Example
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: taylor-maclaurin
+modeDefault: practice
+randomizeQuestions: false
+skills:
+  - Apply Taylor and Maclaurin Series
+  - taylor-maclaurin
+  - taylor-polynomial
+  - chain-rule
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - calculus-2
+    - taylor-maclaurin
+    - streamlined-method
+    - derivative-chain
+workedExamples:
+  - id: taylor-quick-chain-implicit-derivatives
+    title: Build Three Taylor Terms From a Derivative Rule
+    problem: |
+      A differentiable function satisfies
+
+      $$f(5)=-4 \qquad\text{and}\qquad f'(x)=\frac{1}{[f(x)]^2}.$$
+
+      Find the first three terms of the Taylor polynomial for $f(x)$ centered at $a=5$.
+
+      **Short route:** write the three slots, find $f'(5)$, find $f''(5)$, then fill the slots.
+    steps:
+      - id: taylor-quick-chain-step-1
+        title: 'Do this: write the three slots before calculating'
+        instruction: |
+          “First three terms” means stop after the quadratic term:
+
+          $$T_2(x)=f(5)+f'(5)(x-5)+\frac{f''(5)}{2!}(x-5)^2.$$
+
+          So the only values still needed are $f'(5)$ and $f''(5)$.
+        type: freeResponse
+        prompt: Which two derivative values must still be found?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - "$f'(5)$."
+            - "$f''(5)$."
+        explanation: |
+          Solution: Find $f'(5)$ and $f''(5)$.
+
+          Why it works: The constant value $f(5)$ is already given, and a degree-$2$ Taylor polynomial uses derivatives only through order $2$.
+      - id: taylor-quick-chain-step-2
+        title: 'Then this: plug the known function value into the derivative rule'
+        instruction: |
+          The derivative rule already gives $f'(x)$ in terms of $f(x)$:
+
+          $$f'(x)=\frac{1}{[f(x)]^2}.$$
+
+          Set $x=5$ and use $f(5)=-4$.
+        type: symbolicResponse
+        prompt: Find $f'(5)$.
+        answer:
+          expectedLatex: '\frac{1}{16}'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$f'(5)=\frac{1}{[f(5)]^2}=\frac{1}{(-4)^2}=\frac{1}{16}.$$
+
+          Why it works: The rule for $f'(x)$ needs only the value of $f$ at the same input. Squaring $-4$ makes the denominator positive.
+      - id: taylor-quick-chain-step-3
+        title: 'Then this: differentiate the rule one time'
+        instruction: |
+          Rewrite the rule as $f'(x)=[f(x)]^{-2}$, then use the chain rule:
+
+          $$f''(x)=-2[f(x)]^{-3}f'(x).$$
+
+          Replace $f'(x)$ with the original rule to make this depend only on $f(x)$:
+
+          $$f''(x)=-2[f(x)]^{-5}.$$
+        type: symbolicResponse
+        prompt: Find $f''(5)$.
+        answer:
+          expectedLatex: '\frac{1}{512}'
+          equivalenceMode: expression
+          variables: []
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$f''(5)=-2(-4)^{-5}=-\frac{2}{-1024}=\frac{1}{512}.$$
+
+          Why it works: Differentiating $[f(x)]^{-2}$ creates the factor $-2[f(x)]^{-3}$ and another factor of $f'(x)$. The given derivative rule supplies that extra factor, so the powers combine to $[f(x)]^{-5}$.
+      - id: taylor-quick-chain-step-4
+        title: 'Finally: put the three values into the slots'
+        instruction: |
+          Now use
+
+          $$f(5)=-4,\qquad f'(5)=\frac1{16},\qquad f''(5)=\frac1{512}.$$
+
+          Remember that the quadratic coefficient divides $f''(5)$ by $2!$.
+        type: symbolicResponse
+        prompt: Write the first three Taylor terms centered at $5$.
+        answer:
+          expectedLatex: '-4+\frac{x-5}{16}+\frac{(x-5)^2}{1024}'
+          equivalenceMode: expression
+          variables: [x]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$T_2(x)=-4+\frac1{16}(x-5)+\frac{(1/512)}{2}(x-5)^2=-4+\frac{x-5}{16}+\frac{(x-5)^2}{1024}.$$
+
+          Why it works: The three Taylor slots use the function value, first derivative, and second derivative at the center. Dividing $1/512$ by $2!=2$ gives the quadratic coefficient $1/1024$.
+      - id: taylor-quick-chain-step-5
+        title: Keep this chain for similar problems
+        instruction: |
+          For a question that gives $f(a)$ and a rule for $f'(x)$, use this short checklist:
+
+          1. Write only as many Taylor slots as the requested number of terms needs.
+          2. Plug $a$ into the derivative rule to get $f'(a)$.
+          3. Differentiate that rule only until you have the needed derivatives.
+          4. Plug $a$ in, divide by the factorials, and assemble.
+        type: freeResponse
+        prompt: Why is it useful to write the Taylor slots before differentiating repeatedly?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - The requested number of terms tells you the highest derivative needed.
+            - It prevents calculating derivatives that do not appear in the polynomial.
+        explanation: |
+          Solution: Writing the slots first tells you exactly which derivative values are needed.
+
+          Why it works: The Taylor-polynomial degree is a stopping rule. Once the needed derivative order has been reached, extra differentiation adds work without changing the requested answer.
+  - id: taylor-quick-chain-exponential
+    title: Maclaurin Polynomials From a Two-Term Exponential
+    problem: |
+      Let
+
+      $$f(x)=2e^x+5e^{-x}.$$
+
+      Find $f(0)$, $f'(0)$, $f''(0)$, $T_1(x)$, and $T_2(x)$.
+
+      **Short route:** because the center is $0$, the powers are just $1$, $x$, and $x^2$. Find the three values at zero, then fill the degree-$1$ and degree-$2$ slots.
+    steps:
+      - id: taylor-exponential-step-1
+        title: Evaluate the constant slot
+        instruction: |
+          At $x=0$, both exponentials equal $1$.
+        type: numericResponse
+        prompt: Find $f(0)$.
+        answer:
+          value: 7
+          tolerance: 0
+        explanation: |
+          Solution: $$f(0)=2e^0+5e^0=2+5=7.$$
+
+          Why it works: The Maclaurin constant term is the function value at zero. Here $e^0=1$, so both exponential pieces become their coefficients.
+      - id: taylor-exponential-step-2
+        title: Differentiate once, then evaluate
+        instruction: |
+          The useful sign check is
+
+          $$\frac{d}{dx}e^{-x}=-e^{-x}.$$
+
+          Therefore $f'(x)=2e^x-5e^{-x}$.
+        type: numericResponse
+        prompt: Find $f'(0)$.
+        answer:
+          value: -3
+          tolerance: 0
+        explanation: |
+          Solution: $$f'(0)=2e^0-5e^0=2-5=-3.$$
+
+          Why it works: Differentiating the inside $-x$ contributes the negative sign. Evaluating at zero again changes each exponential factor to $1$.
+      - id: taylor-exponential-step-3
+        title: Differentiate once more
+        instruction: |
+          Differentiating $-5e^{-x}$ produces a second negative sign, so
+
+          $$f''(x)=2e^x+5e^{-x}=f(x).$$
+        type: numericResponse
+        prompt: Find $f''(0)$.
+        answer:
+          value: 7
+          tolerance: 0
+        explanation: |
+          Solution: $$f''(0)=2e^0+5e^0=7.$$
+
+          Why it works: The two differentiations return the function to its original sign pattern. The value at zero is therefore the same as $f(0)$.
+      - id: taylor-exponential-step-4
+        title: Fill the degree-1 slots
+        instruction: |
+          At a Maclaurin center,
+
+          $$T_1(x)=f(0)+f'(0)x.$$
+        type: symbolicResponse
+        prompt: Write $T_1(x)$.
+        answer:
+          expectedLatex: '7-3x'
+          equivalenceMode: expression
+          variables: [x]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$T_1(x)=7+(-3)x=7-3x.$$
+
+          Why it works: A degree-$1$ Maclaurin polynomial keeps only the constant and linear slots; no factorial beyond $1!=1$ changes those coefficients.
+      - id: taylor-exponential-step-5
+        title: Add the quadratic slot
+        instruction: |
+          The only new piece is
+
+          $$\frac{f''(0)}{2!}x^2=\frac{7}{2}x^2.$$
+        type: symbolicResponse
+        prompt: Write $T_2(x)$.
+        answer:
+          expectedLatex: '7-3x+\frac{7}{2}x^2'
+          equivalenceMode: expression
+          variables: [x]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$T_2(x)=7-3x+\frac{7}{2}x^2.$$
+
+          Why it works: The degree-$2$ polynomial adds the second-derivative value divided by $2!$. The center is zero, so $(x-0)^2$ is simply $x^2$.
+  - id: taylor-quick-chain-cosh
+    title: Read a Maclaurin Series From a Repeating Derivative Pattern
+    problem: |
+      Find the first five nonzero Maclaurin terms for $\cosh x$, write the compact series, and state its interval of convergence.
+
+      **Short route:** identify the derivative cycle, evaluate that cycle at zero, keep the nonzero terms, then read the even-power pattern.
+    steps:
+      - id: taylor-cosh-step-1
+        title: Spot the derivative cycle
+        instruction: |
+          Use
+
+          $$\frac{d}{dx}\cosh x=\sinh x,\qquad \frac{d}{dx}\sinh x=\cosh x.$$
+
+          The derivatives alternate between these two functions.
+        type: freeResponse
+        prompt: What are $f'(x)$ and $f''(x)$ when $f(x)=\cosh x$?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - "$f'(x)=\\sinh x$."
+            - "$f''(x)=\\cosh x$."
+        explanation: |
+          Solution: $$f'(x)=\sinh x\quad\text{and}\quad f''(x)=\cosh x.$$
+
+          Why it works: Differentiating twice returns to the original function, so the derivative pattern repeats with period two.
+      - id: taylor-cosh-step-2
+        title: Evaluate the repeating pattern at zero
+        instruction: |
+          At zero,
+
+          $$\cosh 0=1,\qquad \sinh 0=0.$$
+
+          Therefore even-order derivative values are $1$ and odd-order derivative values are $0$.
+        type: freeResponse
+        prompt: Which Maclaurin powers disappear for $\cosh x$?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - The odd powers disappear.
+            - Their coefficients use odd-order derivatives, which are zero at the center.
+        explanation: |
+          Solution: The odd powers disappear.
+
+          Why it works: Their coefficients come from odd-order derivatives evaluated at zero, and those derivatives are $\sinh 0=0$.
+      - id: taylor-cosh-step-3
+        title: Keep the first five nonzero terms
+        instruction: |
+          Keep the even powers only, with the factorial that matches each power.
+        type: symbolicResponse
+        prompt: Write the first five nonzero Maclaurin terms for $\cosh x$.
+        answer:
+          expectedLatex: '1+\frac{x^2}{2!}+\frac{x^4}{4!}+\frac{x^6}{6!}+\frac{x^8}{8!}'
+          equivalenceMode: expression
+          variables: [x]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$1+\frac{x^2}{2!}+\frac{x^4}{4!}+\frac{x^6}{6!}+\frac{x^8}{8!}.$$
+
+          Why it works: Each even-order derivative value is $1$, while the odd-order values are zero and contribute no term. The Maclaurin formula supplies the matching factorial denominators.
+      - id: taylor-cosh-step-4
+        title: Compress the pattern
+        instruction: |
+          The powers are $x^{0},x^{2},x^{4},\ldots$, and the factorials are $0!,2!,4!,\ldots$.
+        type: symbolicResponse
+        prompt: Write the compact Maclaurin series for $\cosh x$.
+        answer:
+          expectedLatex: '\sum_{n=0}^{\infty}\frac{x^{2n}}{(2n)!}'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$\cosh x=\sum_{n=0}^{\infty}\frac{x^{2n}}{(2n)!}.$$
+
+          Why it works: Replacing $n$ with $0,1,2,\ldots$ produces the even exponents $0,2,4,\ldots$ and the matching factorials.
+      - id: taylor-cosh-step-5
+        title: State the convergence result
+        instruction: |
+          The factorial denominator grows faster than any fixed power of $x$. The ratio of successive absolute terms tends to $0$ for every fixed real $x$.
+        type: freeResponse
+        prompt: State the interval of convergence.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - '$(-\infty,\infty)$.'
+            - The ratio-test limit is $0$ for every fixed real $x$.
+        explanation: |
+          Solution: The interval of convergence is $$(-\infty,\infty).$$
+
+          Why it works: For any fixed $x$, the factorial denominator in $(2n)!$ makes the ratio of successive terms tend to $0$, which is less than $1$.
