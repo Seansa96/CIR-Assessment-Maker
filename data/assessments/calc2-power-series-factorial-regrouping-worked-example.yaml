@@ -1,0 +1,239 @@
+schemaVersion: 1
+id: calc2-power-series-factorial-regrouping-worked-example
+title: 'Power Series Coefficients: Grouping Factorials into Odds and Evens'
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: power-series
+modeDefault: practice
+randomizeQuestions: false
+attemptQuestionCount:
+questionTimerSeconds:
+assessmentTimerSeconds:
+questionSelection:
+questions: []
+workedExamples:
+- id: factorial-regrouping-special-series
+  title: 'Rewrite special factorial products before analyzing a power series'
+  problem: |
+    The denominators in the following three power series contain only odd or
+    even factors:
+
+    $$
+    \sum_{n=1}^{\infty}\frac{x^n}{1\cdot3\cdot5\cdots(2n-1)},\qquad
+    \sum_{n=1}^{\infty}\frac{n!x^n}{1\cdot3\cdot5\cdots(2n-1)},\qquad
+    \sum_{n=1}^{\infty}\frac{n^2x^n}{2\cdot4\cdot6\cdots(2n)}.
+    $$
+
+    Build factorial identities that rewrite every coefficient using ordinary
+    factorials and powers of $2$. These identities make later convergence or
+    coefficient calculations much easier.
+
+    ![A factorial split into paired odd and even factors](/assessments/calc2-infinite-series/power-series-factorial-pairing.svg)
+  steps:
+  - id: factorial-pairing
+    title: 1. Pair the factors of $(2n)!$
+    instruction: |
+      Start with the complete product $(2n)!=1\cdot2\cdot3\cdot4\cdots(2n-1)\cdot(2n)$.
+      The associative property permits parentheses, and the commutative
+      property permits reordering the factors.
+    hint: 'Write the product first as $(1\cdot2)(3\cdot4)\cdots((2n-1)\cdot2n)$.'
+    type: freeResponse
+    prompt: What identity results when the odd factors and even factors are collected separately?
+    choices: []
+    answer:
+      choiceId:
+      choiceIds: []
+      gradingMode: selfCheck
+      expectedLatex:
+      equivalenceMode:
+      variables: []
+      value:
+      tolerance:
+      media: []
+      keyPoints:
+      - '$(2n)!=[1\cdot3\cdot5\cdots(2n-1)][2\cdot4\cdot6\cdots(2n)]$.'
+      - The equality is a rearrangement and regrouping of the same finite factors.
+      circuitAnswer:
+      graphingAnswer:
+    explanation: |
+      Solution: Use associativity to group the factors and commutativity to
+      move every odd factor before every even factor:
+
+      $$
+      (2n)!=(1\cdot3\cdots(2n-1))(2\cdot4\cdots2n).
+      $$
+
+      Why it works: Multiplication of a finite list of real numbers is unchanged
+      by reordering and by changing parentheses. No factors are added, removed,
+      or altered; they are only collected by parity.
+    media: []
+    language:
+    functionName:
+    executionMode: unspecified
+    starterCode:
+    tests:
+    issueSignals: []
+  - id: factorial-even-product
+    title: 2. Turn the even product into $2^n n!$
+    instruction: |
+      Factor $2$ out of each even factor. There are exactly $n$ factors from
+      $2$ through $2n$.
+    hint: 'Use $2k=2\,k$ for each $k=1,2,\ldots,n$.'
+    type: freeResponse
+    prompt: Simplify $2\cdot4\cdot6\cdots(2n)$ using factorial notation.
+    choices: []
+    answer:
+      choiceId:
+      choiceIds: []
+      gradingMode: selfCheck
+      expectedLatex:
+      equivalenceMode:
+      variables: []
+      value:
+      tolerance:
+      media: []
+      keyPoints:
+      - '$2\cdot4\cdot6\cdots(2n)=(2\cdot1)(2\cdot2)\cdots(2\cdot n)$.'
+      - '$2\cdot4\cdot6\cdots(2n)=2^n n!$.'
+      circuitAnswer:
+      graphingAnswer:
+    explanation: |
+      Solution:
+
+      $$
+      2\cdot4\cdots(2n)=(2\cdot1)(2\cdot2)\cdots(2\cdot n)
+      =\underbrace{2\cdot2\cdots2}_{n\text{ factors}}(1\cdot2\cdots n)=2^n n!.
+      $$
+
+      Why it works: Each factor $2k$ contributes one factor of $2$ and one
+      factor of $k$. Commutativity then collects the $n$ copies of $2$, while
+      the remaining factors are precisely $n!$.
+    media: []
+    language:
+    functionName:
+    executionMode: unspecified
+    starterCode:
+    tests:
+    issueSignals: []
+  - id: factorial-odd-product
+    title: 3. Solve for the odd product
+    instruction: |
+      Substitute the even-product identity into the paired-factor identity,
+      then divide by the nonzero even product.
+    hint: 'Replace $2\cdot4\cdots(2n)$ by $2^n n!$ before isolating the odd product.'
+    type: freeResponse
+    prompt: Express $1\cdot3\cdot5\cdots(2n-1)$ in ordinary factorial notation.
+    choices: []
+    answer:
+      choiceId:
+      choiceIds: []
+      gradingMode: selfCheck
+      expectedLatex:
+      equivalenceMode:
+      variables: []
+      value:
+      tolerance:
+      media: []
+      keyPoints:
+      - '$1\cdot3\cdot5\cdots(2n-1)=\frac{(2n)!}{2^n n!}$.'
+      circuitAnswer:
+      graphingAnswer:
+    explanation: |
+      Solution:
+
+      $$
+      (2n)!=[1\cdot3\cdots(2n-1)](2^n n!),
+      \qquad
+      1\cdot3\cdots(2n-1)=\frac{(2n)!}{2^n n!}.
+      $$
+
+      Why it works: Step 1 decomposes the full factorial into odd and even
+      products, and Step 2 evaluates the even product. Dividing by $2^n n!$
+      isolates exactly the odd factors.
+    media: []
+    language:
+    functionName:
+    executionMode: unspecified
+    starterCode:
+    tests:
+    issueSignals: []
+  - id: factorial-rewrite-series
+    title: 4. Rewrite the three displayed series
+    instruction: |
+      Replace an odd product by $(2n)!/(2^n n!)$ and an even product by
+      $2^n n!$. When a product is in a denominator, take the reciprocal of
+      its replacement.
+    hint: 'For the first denominator, use $1/[ (2n)!/(2^n n!)] = 2^n n!/(2n)!$.'
+    type: freeResponse
+    prompt: Rewrite all three series using $n!$, $(2n)!$, and $2^n$ only.
+    choices: []
+    answer:
+      choiceId:
+      choiceIds: []
+      gradingMode: selfCheck
+      expectedLatex:
+      equivalenceMode:
+      variables: []
+      value:
+      tolerance:
+      media: []
+      keyPoints:
+      - '$\sum_{n=1}^{\infty}\frac{2^n n!}{(2n)!}x^n$.'
+      - '$\sum_{n=1}^{\infty}\frac{2^n(n!)^2}{(2n)!}x^n$.'
+      - '$\sum_{n=1}^{\infty}\frac{n^2}{2^n n!}x^n$.'
+      circuitAnswer:
+      graphingAnswer:
+    explanation: |
+      Solution:
+
+      $$
+      \sum_{n=1}^{\infty}\frac{x^n}{1\cdot3\cdots(2n-1)}
+      =\sum_{n=1}^{\infty}\frac{2^n n!}{(2n)!}x^n,
+      $$
+
+      $$
+      \sum_{n=1}^{\infty}\frac{n!x^n}{1\cdot3\cdots(2n-1)}
+      =\sum_{n=1}^{\infty}\frac{2^n(n!)^2}{(2n)!}x^n,
+      \qquad
+      \sum_{n=1}^{\infty}\frac{n^2x^n}{2\cdot4\cdots(2n)}
+      =\sum_{n=1}^{\infty}\frac{n^2}{2^n n!}x^n.
+      $$
+
+      Why it works: The two product identities replace special odd/even
+      denominators by standard factorial expressions. Taking a reciprocal in
+      the first two coefficients moves $2^n n!$ to the numerator; the factor
+      $n!$ already present in the second numerator then produces $(n!)^2$.
+      These forms expose adjacent factorial cancellations for the Ratio Test.
+    media: []
+    language:
+    functionName:
+    executionMode: unspecified
+    starterCode:
+    tests:
+    issueSignals: []
+guidedProject:
+items: []
+glossary:
+lesson:
+exploration:
+directedProject:
+sandbox:
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - calculus-2
+  - power-series
+  - factorials
+  - double-factorial
+  - coefficient-simplification
+skills:
+- Regroup finite products using commutativity and associativity
+- Express even and odd factorial products in standard factorial notation
+- Simplify power-series coefficients before applying convergence tests
+authoring:
+  visualRequirement: required
+  visualRationale: The factor-pairing diagram makes the parity split of $(2n)!$ visible before the symbolic identities are introduced.
+  difficultyTier: easy
+  exceptionReason:
+  physicsModel:

@@ -1,0 +1,77 @@
+schemaVersion: 1
+id: calc2-taylor-notes-applications-worked-example
+title: 'Taylor and Maclaurin Notes: Series Applications'
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: taylor-maclaurin
+modeDefault: practice
+randomizeQuestions: false
+questions: []
+workedExamples:
+- id: notes-cubic-centered-one
+  title: 'A polynomial written as a Taylor series about $1$'
+  problem: Write $f(x)=x^3-3x+7$ as a Taylor series about $a=1$, then use it to find $f(1.1)$.
+  steps:
+  - id: notes-cubic-final
+    title: Stop when the derivatives stop
+    instruction: Compute values through $f'''(1)$; all higher derivatives are zero.
+    type: freeResponse
+    prompt: Write the Taylor form and evaluate it at $1.1$.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints: ['$f(x)=5+3(x-1)^2+(x-1)^3$.', '$f(1.1)=5.031$.']
+    explanation: |
+      Solution: $f(1)=5$, $f'(1)=0$, $f''(1)=6$, and $f'''(1)=6$. Therefore
+
+      $$f(x)=5+0(x-1)+\frac6{2!}(x-1)^2+\frac6{3!}(x-1)^3
+      =5+3(x-1)^2+(x-1)^3.$$
+
+      At $x=1.1$, $f(1.1)=5+3(0.1)^2+(0.1)^3=5.031$.
+
+      Why it works: A cubic has zero derivatives after the third, so its Taylor polynomial is exact. The derivative values, not a guessed expansion, determine the shifted coefficients.
+    media: []
+- id: notes-sine-square-integral
+  title: 'Approximate $\int_0^1\sin(x^2)\,dx$'
+  problem: Approximate $\int_0^1\sin(x^2)\,dx$ with accuracy $0.001$ using a power series.
+  steps:
+  - id: notes-sine-square-final
+    title: Substitute, integrate, and bound the omitted contribution
+    instruction: Substitute $x^2$ into the sine series and integrate term by term on $[0,1]$.
+    type: freeResponse
+    prompt: Give a series approximation meeting the tolerance and justify its error.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints: ['$\int_0^1\sin(x^2)\,dx=\frac13-\frac1{42}+\frac1{1320}-\cdots$.', '$\frac13-\frac1{42}+\frac1{1320}=0.310281\ldots$.', 'Next term $1/(7!\cdot15)=1/75600<0.001$.']
+    explanation: |
+      Solution:
+
+      $$\sin(x^2)=x^2-\frac{x^6}{3!}+\frac{x^{10}}{5!}-\cdots,$$
+
+      so
+
+      $$\int_0^1\sin(x^2)\,dx=\frac13-\frac1{42}+\frac1{1320}-\cdots.$$
+
+      Keeping the first three terms gives $0.310281\ldots$. The next omitted magnitude is $1/(7!\cdot15)=1/75600<0.001$, so this approximation meets the target.
+
+      Why it works: On $[0,1]$, the integrated terms alternate and decrease in magnitude. The alternating-series estimate bounds the error by the first omitted integrated term.
+    media: []
+guidedProject:
+items: []
+glossary:
+lesson:
+exploration:
+directedProject:
+sandbox:
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [calculus-2, taylor-maclaurin, applications, integration]
+skills:
+- Express a polynomial in shifted Taylor form
+- Integrate a transformed power series and control approximation error
+authoring:
+  visualRequirement: required
+  visualRationale: The approximation-error visual used in the companion set supplies the local-error context for series-based approximation.
+  difficultyTier: easy

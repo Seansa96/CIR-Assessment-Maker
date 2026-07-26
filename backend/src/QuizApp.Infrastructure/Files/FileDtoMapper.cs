@@ -615,7 +615,8 @@ public static class FileDtoMapper
             FunctionName = dto.FunctionName,
             ExecutionMode = dto.ExecutionMode,
             StarterCode = dto.StarterCode,
-            Tests = dto.Tests
+            Tests = dto.Tests,
+            IssueSignals = dto.IssueSignals
         });
 
         return new WorkedExampleStepDefinition(
@@ -645,7 +646,8 @@ public static class FileDtoMapper
             FunctionName = question.FunctionName,
             ExecutionMode = question.ExecutionMode,
             StarterCode = question.StarterCode,
-            Tests = question.Tests
+            Tests = question.Tests,
+            IssueSignals = question.IssueSignals
         };
     }
 
@@ -656,33 +658,8 @@ public static class FileDtoMapper
             dto.Id ?? string.Empty,
             type,
             dto.Prompt ?? string.Empty,
-            (dto.Choices ?? new List<ChoiceFileDto>())
-                .Select(choice => new ChoiceOption(
-                    choice.Id ?? string.Empty,
-                    choice.Text ?? string.Empty,
-                    (choice.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList()))
-                .ToList(),
-            new AnswerDefinition(
-                dto.Answer?.ChoiceId,
-                dto.Answer?.ChoiceIds ?? new List<string>(),
-                dto.Answer?.Expected,
-                dto.Answer?.GradingMode,
-                dto.Answer?.Value,
-                dto.Answer?.Tolerance,
-                (dto.Answer?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
-            {
-                ExpectedLatex = dto.Answer?.ExpectedLatex,
-                EquivalenceMode = dto.Answer?.EquivalenceMode,
-                Variables = dto.Answer?.Variables ?? new List<string>(),
-                Tolerance = dto.Answer?.Tolerance,
-                SymbolicExpectedLatex = dto.Answer?.ExpectedLatex,
-                SymbolicEquivalenceMode = dto.Answer?.EquivalenceMode,
-                SymbolicVariables = dto.Answer?.Variables ?? new List<string>(),
-                SymbolicTolerance = dto.Answer?.Tolerance,
-                KeyPoints = dto.Answer?.KeyPoints ?? new List<string>(),
-                CircuitAnswer = ToDomain(dto.Answer?.CircuitAnswer),
-                GraphingAnswer = ToDomain(dto.Answer?.GraphingAnswer)
-            },
+            (dto.Choices ?? new List<ChoiceFileDto>()).Select(ToDomain).ToList(),
+            ToDomain(dto.Answer),
             dto.Explanation,
             (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
         {
@@ -695,6 +672,9 @@ public static class FileDtoMapper
             DifficultyEvidence = dto.DifficultyEvidence,
             PrerequisiteObjectiveIds = dto.PrerequisiteObjectiveIds ?? new List<string>(),
             ExtensionObjectiveIds = dto.ExtensionObjectiveIds ?? new List<string>()
+            ,
+            Parts = (dto.Parts ?? new List<MultipartPartFileDto>()).Select(ToDomain).ToList(),
+            IssueSignals = ToDomain(dto.IssueSignals)
         };
     }
 
@@ -705,28 +685,8 @@ public static class FileDtoMapper
             Id = question.Id,
             Type = ToWireValue(question.Type),
             Prompt = question.Prompt,
-            Choices = question.Choices.Select(choice => new ChoiceFileDto
-            {
-                Id = choice.Id,
-                Text = choice.Text,
-                Media = choice.Media.Select(ToDto).ToList()
-            }).ToList(),
-            Answer = new AnswerFileDto
-            {
-                ChoiceId = question.Answer.ChoiceId,
-                ChoiceIds = question.Answer.ChoiceIds.ToList(),
-                Expected = question.Answer.Expected,
-                GradingMode = question.Answer.GradingMode,
-                ExpectedLatex = question.Answer.SymbolicExpectedLatex ?? question.Answer.ExpectedLatex,
-                EquivalenceMode = question.Answer.SymbolicEquivalenceMode ?? question.Answer.EquivalenceMode,
-                Variables = (question.Answer.SymbolicVariables.Count > 0 ? question.Answer.SymbolicVariables : question.Answer.Variables).ToList(),
-                Value = question.Answer.NumericValue,
-                Tolerance = question.Answer.NumericTolerance ?? question.Answer.SymbolicTolerance ?? question.Answer.Tolerance,
-                Media = question.Answer.Media.Select(ToDto).ToList(),
-                KeyPoints = question.Answer.KeyPoints.ToList(),
-                CircuitAnswer = ToDto(question.Answer.CircuitAnswer),
-                GraphingAnswer = ToDto(question.Answer.GraphingAnswer)
-            },
+            Choices = question.Choices.Select(ToDto).ToList(),
+            Answer = ToDto(question.Answer),
             Explanation = question.Explanation,
             Media = question.Media.Select(ToDto).ToList(),
             Language = question.CodeQuestion?.Language,
@@ -746,8 +706,102 @@ public static class FileDtoMapper
             DifficultyEvidence = question.DifficultyEvidence,
             PrerequisiteObjectiveIds = question.PrerequisiteObjectiveIds.ToList(),
             ExtensionObjectiveIds = question.ExtensionObjectiveIds.ToList()
+            ,
+            Parts = question.Parts.Select(ToDto).ToList(),
+            IssueSignals = ToDto(question.IssueSignals)
         };
     }
+
+    private static MultipartPartDefinition ToDomain(MultipartPartFileDto dto) => new(
+        dto.Id ?? string.Empty,
+        ParseQuestionType(dto.Type),
+        dto.Prompt ?? string.Empty,
+        (dto.Choices ?? new List<ChoiceFileDto>()).Select(ToDomain).ToList(),
+        ToDomain(dto.Answer),
+        dto.Explanation,
+        (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
+    {
+        Skills = dto.Skills ?? new List<string>(),
+        IssueSignals = ToDomain(dto.IssueSignals)
+    };
+
+    private static MultipartPartFileDto ToDto(MultipartPartDefinition part) => new()
+    {
+        Id = part.Id,
+        Type = ToWireValue(part.Type),
+        Prompt = part.Prompt,
+        Choices = part.Choices.Select(ToDto).ToList(),
+        Answer = ToDto(part.Answer),
+        Explanation = part.Explanation,
+        Media = part.Media.Select(ToDto).ToList(),
+        Skills = part.Skills.ToList(),
+        IssueSignals = ToDto(part.IssueSignals)
+    };
+
+    private static IReadOnlyList<IssueSignal> ToDomain(List<IssueSignalFileDto>? signals) =>
+        (signals ?? new List<IssueSignalFileDto>())
+            .Where(signal => !string.IsNullOrWhiteSpace(signal.Id))
+            .Select(signal => new IssueSignal(signal.Id!, signal.Domains ?? new List<string>()))
+            .ToList();
+
+    private static List<IssueSignalFileDto> ToDto(IReadOnlyList<IssueSignal> signals) => signals
+        .Select(signal => new IssueSignalFileDto { Id = signal.Id, Domains = signal.Domains.ToList() })
+        .ToList();
+
+    private static ChoiceOption ToDomain(ChoiceFileDto dto) => new(
+        dto.Id ?? string.Empty,
+        dto.Text ?? string.Empty,
+        (dto.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
+    {
+        IssueSignals = ToDomain(dto.IssueSignals)
+    };
+
+    private static ChoiceFileDto ToDto(ChoiceOption choice) => new()
+    {
+        Id = choice.Id,
+        Text = choice.Text,
+        Media = choice.Media.Select(ToDto).ToList(),
+        IssueSignals = ToDto(choice.IssueSignals)
+    };
+
+    private static AnswerDefinition ToDomain(AnswerFileDto? dto) => new(
+        dto?.ChoiceId,
+        dto?.ChoiceIds ?? new List<string>(),
+        dto?.Expected,
+        dto?.GradingMode,
+        dto?.Value,
+        dto?.Tolerance,
+        (dto?.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList())
+    {
+        ExpectedLatex = dto?.ExpectedLatex,
+        EquivalenceMode = dto?.EquivalenceMode,
+        Variables = dto?.Variables ?? new List<string>(),
+        Tolerance = dto?.Tolerance,
+        SymbolicExpectedLatex = dto?.ExpectedLatex,
+        SymbolicEquivalenceMode = dto?.EquivalenceMode,
+        SymbolicVariables = dto?.Variables ?? new List<string>(),
+        SymbolicTolerance = dto?.Tolerance,
+        KeyPoints = dto?.KeyPoints ?? new List<string>(),
+        CircuitAnswer = ToDomain(dto?.CircuitAnswer),
+        GraphingAnswer = ToDomain(dto?.GraphingAnswer)
+    };
+
+    private static AnswerFileDto ToDto(AnswerDefinition answer) => new()
+    {
+        ChoiceId = answer.ChoiceId,
+        ChoiceIds = answer.ChoiceIds.ToList(),
+        Expected = answer.Expected,
+        GradingMode = answer.GradingMode,
+        ExpectedLatex = answer.SymbolicExpectedLatex ?? answer.ExpectedLatex,
+        EquivalenceMode = answer.SymbolicEquivalenceMode ?? answer.EquivalenceMode,
+        Variables = (answer.SymbolicVariables.Count > 0 ? answer.SymbolicVariables : answer.Variables).ToList(),
+        Value = answer.NumericValue,
+        Tolerance = answer.NumericTolerance ?? answer.SymbolicTolerance ?? answer.Tolerance,
+        Media = answer.Media.Select(ToDto).ToList(),
+        KeyPoints = answer.KeyPoints.ToList(),
+        CircuitAnswer = ToDto(answer.CircuitAnswer),
+        GraphingAnswer = ToDto(answer.GraphingAnswer)
+    };
 
     private static CodeQuestionDefinition? ToCodeQuestion(QuestionFileDto dto)
     {

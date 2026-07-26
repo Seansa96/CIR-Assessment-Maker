@@ -43,6 +43,11 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
     public async Task SaveAsync(AssessmentDefinition assessment, CancellationToken cancellationToken = default)
     {
         var validation = validator.Validate(assessment);
+        var signalIssues = await new IssueSignalCatalog(options).ValidateAsync(assessment, cancellationToken);
+        if (signalIssues.Count > 0)
+        {
+            validation = new AssessmentValidationResult(validation.Issues.Concat(signalIssues).ToList());
+        }
         if (!validation.IsValid)
         {
             throw new InvalidOperationException($"Assessment '{assessment.Id}' is invalid: {string.Join("; ", validation.Issues.Select(issue => issue.Message))}");
@@ -79,7 +84,11 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
             return new AssessmentValidationResult(new[] { new ValidationIssue("FILE_NOT_READABLE", $"Assessment file '{fileName}' could not be read.") });
         }
 
-        return validator.Validate(assessment);
+        var validation = validator.Validate(assessment);
+        var signalIssues = await new IssueSignalCatalog(options).ValidateAsync(assessment, cancellationToken);
+        return signalIssues.Count == 0
+            ? validation
+            : new AssessmentValidationResult(validation.Issues.Concat(signalIssues).ToList());
     }
 
     private async Task<IReadOnlyList<AssessmentDefinition>> LoadAllAsync(CancellationToken cancellationToken)

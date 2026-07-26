@@ -144,7 +144,7 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         await WriteTrackedAsync(Path.Combine(CurriculumPath, $"{manifest.Id}.json"), manifest, cancellationToken);
     }
     public async Task<IReadOnlyList<CurriculumManifest>> ListCurriculumsAsync(CancellationToken cancellationToken = default)
-        => await ReadDirectoryAsync<CurriculumManifest>(CurriculumPath, cancellationToken);
+        => await ReadCurriculumManifestsAsync(cancellationToken);
 
     public async Task SaveContentManifestAsync(ContentManifest manifest, CancellationToken cancellationToken = default)
     {
@@ -229,8 +229,8 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
     public async Task<IReadOnlyList<AuthoringCoverageRow>> GetCoverageAsync(string? categoryId, CancellationToken cancellationToken = default)
     {
         var curriculums = (await ListCurriculumsAsync(cancellationToken)).Where(item => string.IsNullOrWhiteSpace(categoryId) || item.CategoryId.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
-        var content = await ReadDirectoryAsync<ContentManifest>(ContentPath, cancellationToken); var blueprints = await ListBlueprintsAsync(categoryId, cancellationToken);
-        return curriculums.SelectMany(curriculum => curriculum.Objectives.Select(objective =>
+        var content = await ReadContentManifestsAsync(cancellationToken); var blueprints = await ListBlueprintsAsync(categoryId, cancellationToken);
+        return curriculums.SelectMany(curriculum => (curriculum.Objectives ?? []).Select(objective =>
         {
             var approvedContent = content.Count(item => item.CategoryId == curriculum.CategoryId && item.ObjectiveId == objective.Id && item.ReviewState == SourceReviewState.Approved);
             var approvedBlueprints = blueprints.Count(item => item.CategoryId == curriculum.CategoryId && item.ObjectiveId == objective.Id && item.ReviewState == SourceReviewState.Approved);
@@ -413,6 +413,72 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         if (!File.Exists(path)) return default;
         await using var stream = File.OpenRead(path);
         return await JsonSerializer.DeserializeAsync<T>(stream, JsonOptions, ct);
+    }
+    private async Task<IReadOnlyList<ContentManifest>> ReadContentManifestsAsync(CancellationToken cancellationToken)
+    {
+        if (!Directory.Exists(ContentPath)) return [];
+
+        var manifests = new List<ContentManifest>();
+        foreach (var file in Directory.EnumerateFiles(ContentPath, "*.json"))
+        {
+            await using var stream = File.OpenRead(file);
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            var root = document.RootElement;
+
+            // Packets share this tracked directory for historical reasons. They
+            // deliberately do not have the ContentManifest contract, so skip
+            // them before enum deserialization of their review state.
+            if (!IsContentManifest(root)) continue;
+
+            var manifest = root.Deserialize<ContentManifest>(JsonOptions)
+                ?? throw new JsonException($"Invalid content manifest: {file}");
+            manifests.Add(manifest);
+        }
+
+        return manifests;
+    }
+
+    private async Task<IReadOnlyList<CurriculumManifest>> ReadCurriculumManifestsAsync(CancellationToken cancellationToken)
+    {
+        if (!Directory.Exists(CurriculumPath)) return [];
+
+        var manifests = new List<CurriculumManifest>();
+        foreach (var file in Directory.EnumerateFiles(CurriculumPath, "*.json"))
+        {
+            await using var stream = File.OpenRead(file);
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            var root = document.RootElement;
+
+            // Curriculum-adjacent metadata can live here too. Coverage needs
+            // only records with the curriculum objective collection.
+            if (!IsCurriculumManifest(root)) continue;
+
+            var manifest = root.Deserialize<CurriculumManifest>(JsonOptions)
+                ?? throw new JsonException($"Invalid curriculum manifest: {file}");
+            manifests.Add(manifest);
+        }
+
+        return manifests;
+    }
+
+    private static bool IsContentManifest(JsonElement root)
+    {
+        if (root.ValueKind != JsonValueKind.Object) return false;
+        return root.TryGetProperty("categoryId", out _)
+            && root.TryGetProperty("topicId", out _)
+            && root.TryGetProperty("objectiveId", out _)
+            && root.TryGetProperty("artifactType", out _)
+            && root.TryGetProperty("sourceChunkIds", out _)
+            && root.TryGetProperty("requiresVisual", out _);
+    }
+
+    private static bool IsCurriculumManifest(JsonElement root)
+    {
+        if (root.ValueKind != JsonValueKind.Object) return false;
+        return root.TryGetProperty("categoryId", out var categoryId)
+            && categoryId.ValueKind == JsonValueKind.String
+            && root.TryGetProperty("objectives", out var objectives)
+            && objectives.ValueKind == JsonValueKind.Array;
     }
     private static async Task WriteAsync<T>(string path, T value, CancellationToken ct) { Directory.CreateDirectory(Path.GetDirectoryName(path)!); await using var stream = File.Create(path); await JsonSerializer.SerializeAsync(stream, value, JsonOptions, ct); }
     private static async Task<IReadOnlyList<T>> ReadDirectoryAsync<T>(string path, CancellationToken ct) { if (!Directory.Exists(path)) return []; var output = new List<T>(); foreach (var file in Directory.EnumerateFiles(path, "*.json")) { var item = await ReadAsync<T>(file, ct); if (item is not null) output.Add(item); } return output; }

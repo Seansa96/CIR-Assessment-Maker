@@ -20,6 +20,15 @@ public enum RecallRating
     ForgotCompletely
 }
 
+public enum MasteryTier
+{
+    Unknown,
+    Novice,
+    Developing,
+    Proficient,
+    Mastered
+}
+
 public sealed record Attempt(
     string Id,
     string AssessmentId,
@@ -158,6 +167,8 @@ public sealed record QuestionResult(
     public decimal EarnedPoints { get; init; }
     public decimal PossiblePoints { get; init; }
     public IReadOnlyList<QuestionResult> PartResults { get; init; } = Array.Empty<QuestionResult>();
+    public IReadOnlyList<string> IssueSignalIds { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<IssueSignal> AvailableIssueSignals { get; init; } = Array.Empty<IssueSignal>();
 }
 
 public sealed record GradeLogEntry(

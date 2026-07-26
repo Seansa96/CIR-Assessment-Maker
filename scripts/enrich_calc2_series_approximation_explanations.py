@@ -1,4 +1,9 @@
-"""Add structured learner feedback to the canonical Series Approximation and Error path."""
+"""Draft structured learner feedback for unstructured Calc II series content.
+
+This tool is deliberately opt-in: it reports candidates by default and only writes
+when --apply is provided. It never replaces an existing structured explanation.
+"""
+import argparse
 from pathlib import Path
 import re
 import yaml
@@ -158,10 +163,10 @@ def foundations_feedback(question):
         "Common trap: Keep finite partial sums separate from the limit that defines an infinite series or convergent sequence."
     )
 
-def enrich(question, olympiad=False, targeted=False, feedback=convergence_feedback):
+def enrich(question, olympiad=False, feedback=convergence_feedback):
     original = (question.get("explanation") or "").strip()
-    if "Solution:" in original and "Why it works:" in original and not targeted:
-        return
+    if "Solution:" in original and "Why it works:" in original:
+        return False
     selected = answer_text(question)
     answer = question.get("answer", {})
     solution = original.split("\n\nWhy it works:", 1)[0].strip()
@@ -188,25 +193,59 @@ def enrich(question, olympiad=False, targeted=False, feedback=convergence_feedba
             "Further study: Review the relevant Taylor remainder theorem and a proof or derivation of the error estimate before attempting related extrapolation or error-propagation problems.",
         ])
     question["explanation"] = "\n\n".join(parts)
+    return True
 
-for path in ASSESSMENTS.glob("calc2-*.yaml"):
-    try:
-        data = yaml.safe_load(path.read_text(encoding="utf-8"))
-    except yaml.YAMLError:
-        # A malformed legacy file is left for a focused syntax repair rather
-        # than risking a lossy rewrite during explanation enrichment.
-        continue
-    if data.get("topicId") not in TOPICS or data.get("assessmentType") not in {"workedExample", "quiz", "test"}:
-        continue
-    olympiad = data.get("authoring", {}).get("difficultyTier") == "olympiad"
-    convergence_topics = {"convergence-tests", "ratio-root-tests", "alternating-series", "absolute-conditional-convergence", "geometric-telescoping-series"}
-    power_topics = {"power-series", "taylor-maclaurin", "series-approximation-error", "power-taylor-review"}
-    foundation_topics = {"sequences-series", "sequence-fundamentals", "series-fundamentals", "arithmetic-series", "infinite-series-review"}
-    targeted = data.get("topicId") in convergence_topics | power_topics | foundation_topics
-    feedback = power_taylor_feedback if data.get("topicId") in power_topics else foundations_feedback if data.get("topicId") in foundation_topics else convergence_feedback
-    if data.get("assessmentType") == "workedExample":
-        for example in data.get("workedExamples", []):
-            for step in example.get("steps", []): enrich(step, False, targeted, feedback)
-    else:
-        for question in data.get("questions", []): enrich(question, olympiad, targeted, feedback)
-    path.write_text(yaml.dump(data, Dumper=Dumper, sort_keys=False, allow_unicode=True, width=1000), encoding="utf-8")
+def remove_repeated_conclusions(question):
+    explanation = question.get("explanation") or ""
+    repaired = re.sub(
+        r"(?P<conclusion>Therefore the answer is .+?)(?:\.\s*(?P=conclusion)){1,}\.",
+        r"\g<conclusion>.",
+        explanation)
+    if repaired == explanation:
+        return False
+    question["explanation"] = repaired
+    return True
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--apply", action="store_true", help="Write drafts into files with unstructured explanations.")
+    parser.add_argument("--repair-repetition", action="store_true", help="Remove duplicated conclusion sentences without changing structured reasoning.")
+    parser.add_argument("paths", nargs="*", type=Path, help="Optional assessment files to inspect.")
+    args = parser.parse_args()
+    changed_paths = []
+
+    paths = args.paths or ASSESSMENTS.glob("calc2-*.yaml")
+    for path in paths:
+        try:
+            data = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except yaml.YAMLError:
+            # A malformed legacy file is left for a focused syntax repair rather
+            # than risking a lossy rewrite during explanation enrichment.
+            continue
+        if data.get("topicId") not in TOPICS or data.get("assessmentType") not in {"workedExample", "quiz", "test"}:
+            continue
+        olympiad = data.get("authoring", {}).get("difficultyTier") == "olympiad"
+        convergence_topics = {"convergence-tests", "ratio-root-tests", "alternating-series", "absolute-conditional-convergence", "geometric-telescoping-series"}
+        power_topics = {"power-series", "taylor-maclaurin", "series-approximation-error", "power-taylor-review"}
+        foundation_topics = {"sequences-series", "sequence-fundamentals", "series-fundamentals", "arithmetic-series", "infinite-series-review"}
+        feedback = power_taylor_feedback if data.get("topicId") in power_topics else foundations_feedback if data.get("topicId") in foundation_topics else convergence_feedback
+        changed = False
+        if data.get("assessmentType") == "workedExample":
+            for example in data.get("workedExamples", []):
+                for step in example.get("steps", []):
+                    changed = (remove_repeated_conclusions(step) if args.repair_repetition else enrich(step, False, feedback)) or changed
+        else:
+            for question in data.get("questions", []):
+                changed = (remove_repeated_conclusions(question) if args.repair_repetition else enrich(question, olympiad, feedback)) or changed
+        if changed:
+            changed_paths.append(path)
+            if args.apply:
+                path.write_text(yaml.dump(data, Dumper=Dumper, sort_keys=False, allow_unicode=True, width=1000), encoding="utf-8")
+
+    action = "Updated" if args.apply else "Would update"
+    for path in changed_paths:
+        print(f"{action}: {path.resolve().relative_to(ROOT)}")
+
+
+if __name__ == "__main__":
+    main()

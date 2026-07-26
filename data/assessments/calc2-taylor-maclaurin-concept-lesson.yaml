@@ -27,7 +27,7 @@ lesson:
   introduction: |
     Taylor series let us replace a function with a polynomial-like expression that matches the function near a chosen center.
 
-    The point is not just to memorize a formula. The point is to understand why polynomials can imitate functions and how to build useful approximations from derivative information.
+    The point is not just to memorize a formula. The point is to understand why polynomials can imitate functions, how derivative data determines their coefficients, and when a finite approximation is trustworthy.
   sections:
     - id: polynomial-imitation
       title: Why Taylor Polynomials Work
@@ -55,6 +55,13 @@ lesson:
       check:
         id: polynomial-imitation-check
         type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: What does a Taylor polynomial try to match at the center $a$?
         choices:
           - id: a
@@ -95,6 +102,13 @@ lesson:
       check:
         id: taylor-formula-check
         type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: Why does the Taylor coefficient use $\frac{f^{(n)}(a)}{n!}$?
         choices:
           - id: a
@@ -130,12 +144,61 @@ lesson:
       check:
         id: maclaurin-series-check
         type: numericResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: If $f(x)=e^x$, what is $f^{(n)}(0)$ for any nonnegative integer $n$?
         answer:
           value: 1
           tolerance: 0.000001
         explanation: |
           Every derivative of $e^x$ is still $e^x$, and $e^0=1$.
+
+    - id: deriving-a-polynomial
+      title: Derive a Taylor Polynomial by Matching Derivatives
+      required: true
+      content: |
+        To see where the formula comes from, start with a cubic centered at $a$:
+
+        $$
+        P_3(x)=c_0+c_1(x-a)+c_2(x-a)^2+c_3(x-a)^3.
+        $$
+
+        Matching $P_3(a)=f(a)$ gives $c_0=f(a)$. Differentiating once and evaluating at $a$ gives $c_1=f'(a)$. Repeating gives $2!c_2=f''(a)$ and $3!c_3=f'''(a)$. Thus
+
+        $$
+        P_3(x)=f(a)+f'(a)(x-a)+\frac{f''(a)}{2!}(x-a)^2+\frac{f'''(a)}{3!}(x-a)^3.
+        $$
+
+        The infinite Taylor series continues this same matching process. The polynomial is useful near $a$; farther away, its error must be checked rather than assumed small.
+      check:
+        id: deriving-a-polynomial-check
+        type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: If $P_2(x)$ matches $f(a)$, $f'(a)$, and $f''(a)$, what is the coefficient of $(x-a)^2$?
+        choices:
+          - id: a
+            text: '$\frac{f''(a)}{2!}$'
+          - id: b
+            text: '$f''(a)$'
+          - id: c
+            text: '$\frac{f''(a)}{2!}$'
+          - id: d
+            text: '$\frac{f(a)}{2!}$'
+        answer:
+          choiceId: a
+        explanation: |
+          Differentiating $c_2(x-a)^2$ twice gives $2!c_2$, so matching $f''(a)$ requires $c_2=f''(a)/2!$.
 
     - id: essential-series
       title: Essential Series to Recognize
@@ -163,6 +226,13 @@ lesson:
       check:
         id: essential-series-check
         type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: Which feature identifies the Maclaurin series for $\cos x$?
         choices:
           - id: a
@@ -212,6 +282,13 @@ lesson:
       check:
         id: building-from-known-series-check
         type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: What is the cleanest way to find a Maclaurin series for $e^{2x}$?
         choices:
           - id: a
@@ -247,6 +324,13 @@ lesson:
       check:
         id: taylor-polynomial-vs-series-check
         type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: What is the main difference between a Taylor polynomial and a Taylor series?
         choices:
           - id: a
@@ -292,6 +376,13 @@ lesson:
       check:
         id: error-intuition-check
         type: selectAll
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: Which factors usually affect Taylor polynomial accuracy?
         choices:
           - id: a
@@ -324,6 +415,13 @@ lesson:
       check:
         id: shifted-center-coefficients-check
         type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
         prompt: In a Taylor series centered at $a=3$, which factor accompanies the second-derivative coefficient?
         choices:
           - id: a

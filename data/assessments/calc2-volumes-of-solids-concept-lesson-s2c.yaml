@@ -1,22 +1,527 @@
 schemaVersion: 1
 id: calc2-volumes-of-solids-concept-lesson-s2c
 title: 'Volumes of Solids: Cross Sections, Disks, and Washers'
-
 assessmentType: conceptLesson
 categoryId: calculus-2
 topicId: volumes-of-solids
 modeDefault: practice
 randomizeQuestions: false
-skills: [cross-sectional-volume, disk-method, washer-method, radius-modeling]
-navigation: { learningGoal: learn, activityType: conceptLesson, tags: [calculus-2, volumes-of-solids, disks, washers] }
-authoring: { visualRequirement: required, visualRationale: Radius, hole, axis, and slice orientation are geometric spatial relationships. }
+attemptQuestionCount: 
+questionTimerSeconds: 
+assessmentTimerSeconds: 
+questionSelection: 
+questions: []
+workedExamples: []
+guidedProject: 
+items: []
+glossary: 
 lesson:
   introduction: 'Volume is accumulated cross-sectional area: identify one thin slice, write its area, and multiply by its thickness.'
   sections:
-    - { id: v1, title: '1. Begin with cross-sectional area', required: true, content: 'If a solid has perpendicular cross-sectional area $A(x)$, then $V=\int_a^bA(x)\,dx$. This is the parent model behind every disk and washer formula.', media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Washer slice with thickness dx, caption: 'A thin cross section contributes area times thickness.' }], check: { id: c1, type: multipleChoice, prompt: 'What is the differential volume of a slice with area $A(x)$?', choices: [{ id: a, text: '$A(x)dx$' }, { id: b, text: '$A(x)/dx$' }, { id: c, text: '$A(x)^2$' }, { id: d, text: '$A(x)$ only' }], answer: { choiceId: a }, explanation: 'Solution: $dV=A(x)dx$. Why it works: Area times a small length is volume. Common trap: Area alone is not volume. Why the other choices fail: The remaining forms divide, square, or omit thickness.' } }
-    - { id: v2, title: '2. A disk has no hole', required: true, content: 'Rotating a filled segment of radius $R(x)$ produces a disk with area $\pi R(x)^2$, hence $V=\int\pi R(x)^2\,dx$.', media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Cross-section diagram with outer radius, caption: 'When inner radius is zero, the washer becomes a disk.' }], check: { id: c2, type: multipleChoice, prompt: 'What condition makes a washer a disk?', choices: [{ id: a, text: 'The inner radius is zero.' }, { id: b, text: 'The outer radius is zero.' }, { id: c, text: 'The thickness is zero.' }, { id: d, text: 'The axis is horizontal.' }], answer: { choiceId: a }, explanation: 'Solution: A disk is a washer with $r=0$. Why it works: $\pi(R^2-0^2)=\pi R^2$. Common trap: Zero thickness gives no volume. Why the other choices fail: Outer radius zero collapses the slice; axis direction alone changes no-hole status.' } }
-    - { id: v3, title: '3. A washer subtracts the hole', required: true, content: 'If rotation leaves a central gap, its cross-sectional area is $\pi[R(x)^2-r(x)^2]$. Outer and inner radii are distances to the axis, not automatically the two function values.', media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Washer with outer and inner radii labelled, caption: 'Subtract the inner circular area from the outer circular area.' }], check: { id: c3, type: multipleChoice, prompt: 'Which washer area is correct?', choices: [{ id: a, text: '$\pi(R^2-r^2)$' }, { id: b, text: '$\pi(R-r)^2$' }, { id: c, text: '$\pi(R+r)^2$' }, { id: d, text: '$R-r$' }], answer: { choiceId: a }, explanation: 'Solution: The area is outer circle minus inner circle, $\pi R^2-\pi r^2$. Why it works: Areas, not radii, are subtracted. Common trap: Squaring $R-r$ introduces an incorrect cross term. Why the other choices fail: b and c are not area differences; d has length units.' } }
-    - { id: v4, title: '4. Measure every radius from the axis', required: true, content: 'For rotation about $y=k$, a vertical distance is $|f(x)-k|$. For rotation about $x=k$, a horizontal distance is $|g(y)-k|$. Draw the axis before naming radii.', media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Axis and radii shown on a washer model, caption: 'A radius is a distance from the rotation axis.' }], check: { id: c4, type: freeResponse, prompt: 'For rotation about $y=3$, write the radius from $y=f(x)$ to the axis.', answer: { gradingMode: selfCheck, keyPoints: ['$|f(x)-3|$'] }, explanation: 'Solution: The radius is $|f(x)-3|$. Why it works: Radius is a nonnegative vertical distance to y=3. Common trap: Using f(x) alone silently assumes the axis is y=0.' } }
-    - { id: v5, title: '5. Slice perpendicular to the axis for disks and washers', required: true, content: 'A horizontal rotation axis usually pairs naturally with vertical slices and $dx$; a vertical axis with horizontal slices and $dy$. The key is perpendicular slices, not a memorized coordinate rule.', media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Perpendicular cross section through a solid of revolution, caption: 'Disk and washer slices cut across the axis.' }], check: { id: c5, type: multipleChoice, prompt: 'For rotation about the x-axis, which slice orientation is naturally perpendicular?', choices: [{ id: a, text: vertical slices with dx }, { id: b, text: horizontal slices with dy }, { id: c, text: either without changing formulas }, { id: d, text: no slices are needed }], answer: { choiceId: a }, explanation: 'Solution: Vertical slices are perpendicular to the horizontal x-axis. Why it works: Their rotation produces circular cross sections. Common trap: Horizontal slices are parallel and lead to shells instead. Why the other choices fail: b selects the parallel orientation; c and d omit the geometric relationship.' } }
-    - { id: v6, title: '6. Bounds follow the slice variable', required: true, content: 'With $dx$, bounds are x-locations; with $dy$, bounds are y-locations. Rebuild the region description after changing orientation instead of reusing old bounds.', media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Slice thickness dx and axis, caption: 'The differential variable and bounds must agree.' }], check: { id: c6, type: multipleChoice, prompt: 'A washer setup uses dy. Its bounds should be', choices: [{ id: a, text: y-values }, { id: b, text: x-values only }, { id: c, text: radii only }, { id: d, text: volume units }], answer: { choiceId: a }, explanation: 'Solution: dy accumulates over y-values. Why it works: Bounds index the same variable as the slice thickness. Common trap: Reusing x-bounds after switching orientation is a different model. Why the other choices fail: The alternatives are not accumulation coordinates.' } }
-    - { id: v7, title: '7. Check the volume model before evaluating', required: true, content: 'Name the axis, outer radius, inner radius if present, thickness, and bounds. Then verify cubic units and a nonnegative cross-sectional area. These checks catch most disk/washer errors before integration.', media: [{ type: image, src: /media/calculus/disk-washer-model.svg, alt: Complete washer model with labels, caption: 'Axis, radii, area, thickness, and bounds form a complete model.' }], check: { id: c7, type: freeResponse, prompt: 'Name two labels a washer diagram must include before you write its integral.', answer: { gradingMode: selfCheck, keyPoints: [axis of rotation, outer radius, inner radius, thickness, bounds] }, explanation: 'Solution: Any two of axis, outer radius, inner radius, thickness, and bounds are essential labels. Why it works: They determine the cross-sectional area and accumulation interval. Common trap: A formula without an identified axis has ambiguous radii.' } }
+  - id: v1
+    title: 1. Begin with cross-sectional area
+    required: true
+    content: If a solid has perpendicular cross-sectional area $A(x)$, then $V=\int_a^bA(x)\,dx$. This is the parent model behind every disk and washer formula.
+    media:
+    - type: image
+      src: /media/calculus/disk-washer-model.svg
+      alt: Washer slice with thickness dx
+      caption: A thin cross section contributes area times thickness.
+    check:
+      id: c1
+      type: multipleChoice
+      prompt: What is the differential volume of a slice with area $A(x)$?
+      choices:
+      - id: a
+        text: $A(x)dx$
+        media: []
+        issueSignals: []
+      - id: b
+        text: $A(x)/dx$
+        media: []
+        issueSignals: []
+      - id: c
+        text: $A(x)^2$
+        media: []
+        issueSignals: []
+      - id: d
+        text: $A(x)$ only
+        media: []
+        issueSignals: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: 'Solution: $dV=A(x)dx$. Why it works: Area times a small length is volume. Common trap: Area alone is not volume. Why the other choices fail: The remaining forms divide, square, or omit thickness.'
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: expression-equation-recognition-error
+        domains: []
+      - id: algebraic-simplification-error
+        domains: []
+      - id: sign-error
+        domains: []
+      - id: geometric-volume-formula-error
+        domains: []
+      - id: mathematical-translation-error
+        domains: []
+      - id: function-analysis-error
+        domains: []
+  - id: v2
+    title: 2. A disk has no hole
+    required: true
+    content: Rotating a filled segment of radius $R(x)$ produces a disk with area $\pi R(x)^2$, hence $V=\int\pi R(x)^2\,dx$.
+    media:
+    - type: image
+      src: /media/calculus/disk-washer-model.svg
+      alt: Cross-section diagram with outer radius
+      caption: When inner radius is zero, the washer becomes a disk.
+    check:
+      id: c2
+      type: multipleChoice
+      prompt: What condition makes a washer a disk?
+      choices:
+      - id: a
+        text: The inner radius is zero.
+        media: []
+        issueSignals: []
+      - id: b
+        text: The outer radius is zero.
+        media: []
+        issueSignals: []
+      - id: c
+        text: The thickness is zero.
+        media: []
+        issueSignals: []
+      - id: d
+        text: The axis is horizontal.
+        media: []
+        issueSignals: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: 'Solution: A disk is a washer with $r=0$. Why it works: $\pi(R^2-0^2)=\pi R^2$. Common trap: Zero thickness gives no volume. Why the other choices fail: Outer radius zero collapses the slice; axis direction alone changes no-hole status.'
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: expression-equation-recognition-error
+        domains: []
+      - id: algebraic-simplification-error
+        domains: []
+      - id: sign-error
+        domains: []
+      - id: geometric-volume-formula-error
+        domains: []
+      - id: mathematical-translation-error
+        domains: []
+      - id: function-analysis-error
+        domains: []
+  - id: v3
+    title: 3. A washer subtracts the hole
+    required: true
+    content: If rotation leaves a central gap, its cross-sectional area is $\pi[R(x)^2-r(x)^2]$. Outer and inner radii are distances to the axis, not automatically the two function values.
+    media:
+    - type: image
+      src: /media/calculus/disk-washer-model.svg
+      alt: Washer with outer and inner radii labelled
+      caption: Subtract the inner circular area from the outer circular area.
+    check:
+      id: c3
+      type: multipleChoice
+      prompt: Which washer area is correct?
+      choices:
+      - id: a
+        text: $\pi(R^2-r^2)$
+        media: []
+        issueSignals: []
+      - id: b
+        text: $\pi(R-r)^2$
+        media: []
+        issueSignals: []
+      - id: c
+        text: $\pi(R+r)^2$
+        media: []
+        issueSignals: []
+      - id: d
+        text: $R-r$
+        media: []
+        issueSignals: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: 'Solution: The area is outer circle minus inner circle, $\pi R^2-\pi r^2$. Why it works: Areas, not radii, are subtracted. Common trap: Squaring $R-r$ introduces an incorrect cross term. Why the other choices fail: b and c are not area differences; d has length units.'
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: expression-equation-recognition-error
+        domains: []
+      - id: algebraic-simplification-error
+        domains: []
+      - id: sign-error
+        domains: []
+      - id: geometric-volume-formula-error
+        domains: []
+      - id: mathematical-translation-error
+        domains: []
+      - id: function-analysis-error
+        domains: []
+  - id: v4
+    title: 4. Measure every radius from the axis
+    required: true
+    content: For rotation about $y=k$, a vertical distance is $|f(x)-k|$. For rotation about $x=k$, a horizontal distance is $|g(y)-k|$. Draw the axis before naming radii.
+    media:
+    - type: image
+      src: /media/calculus/disk-washer-model.svg
+      alt: Axis and radii shown on a washer model
+      caption: A radius is a distance from the rotation axis.
+    check:
+      id: c4
+      type: freeResponse
+      prompt: For rotation about $y=3$, write the radius from $y=f(x)$ to the axis.
+      choices: []
+      answer:
+        choiceId: 
+        choiceIds: []
+        expected: 
+        gradingMode: selfCheck
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints:
+        - $|f(x)-3|$
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: 'Solution: The radius is $|f(x)-3|$. Why it works: Radius is a nonnegative vertical distance to y=3. Common trap: Using f(x) alone silently assumes the axis is y=0.'
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: expression-equation-recognition-error
+        domains: []
+      - id: algebraic-simplification-error
+        domains: []
+      - id: sign-error
+        domains: []
+      - id: geometric-volume-formula-error
+        domains: []
+      - id: mathematical-translation-error
+        domains: []
+      - id: function-analysis-error
+        domains: []
+  - id: v5
+    title: 5. Slice perpendicular to the axis for disks and washers
+    required: true
+    content: A horizontal rotation axis usually pairs naturally with vertical slices and $dx$; a vertical axis with horizontal slices and $dy$. The key is perpendicular slices, not a memorized coordinate rule.
+    media:
+    - type: image
+      src: /media/calculus/disk-washer-model.svg
+      alt: Perpendicular cross section through a solid of revolution
+      caption: Disk and washer slices cut across the axis.
+    check:
+      id: c5
+      type: multipleChoice
+      prompt: For rotation about the x-axis, which slice orientation is naturally perpendicular?
+      choices:
+      - id: a
+        text: vertical slices with dx
+        media: []
+        issueSignals: []
+      - id: b
+        text: horizontal slices with dy
+        media: []
+        issueSignals: []
+      - id: c
+        text: either without changing formulas
+        media: []
+        issueSignals: []
+      - id: d
+        text: no slices are needed
+        media: []
+        issueSignals: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: 'Solution: Vertical slices are perpendicular to the horizontal x-axis. Why it works: Their rotation produces circular cross sections. Common trap: Horizontal slices are parallel and lead to shells instead. Why the other choices fail: b selects the parallel orientation; c and d omit the geometric relationship.'
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: expression-equation-recognition-error
+        domains: []
+      - id: algebraic-simplification-error
+        domains: []
+      - id: sign-error
+        domains: []
+      - id: geometric-volume-formula-error
+        domains: []
+      - id: mathematical-translation-error
+        domains: []
+      - id: function-analysis-error
+        domains: []
+  - id: v6
+    title: 6. Bounds follow the slice variable
+    required: true
+    content: With $dx$, bounds are x-locations; with $dy$, bounds are y-locations. Rebuild the region description after changing orientation instead of reusing old bounds.
+    media:
+    - type: image
+      src: /media/calculus/disk-washer-model.svg
+      alt: Slice thickness dx and axis
+      caption: The differential variable and bounds must agree.
+    check:
+      id: c6
+      type: multipleChoice
+      prompt: A washer setup uses dy. Its bounds should be
+      choices:
+      - id: a
+        text: y-values
+        media: []
+        issueSignals: []
+      - id: b
+        text: x-values only
+        media: []
+        issueSignals: []
+      - id: c
+        text: radii only
+        media: []
+        issueSignals: []
+      - id: d
+        text: volume units
+        media: []
+        issueSignals: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: 'Solution: dy accumulates over y-values. Why it works: Bounds index the same variable as the slice thickness. Common trap: Reusing x-bounds after switching orientation is a different model. Why the other choices fail: The alternatives are not accumulation coordinates.'
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: expression-equation-recognition-error
+        domains: []
+      - id: algebraic-simplification-error
+        domains: []
+      - id: sign-error
+        domains: []
+      - id: geometric-volume-formula-error
+        domains: []
+      - id: mathematical-translation-error
+        domains: []
+      - id: function-analysis-error
+        domains: []
+  - id: v7
+    title: 7. Check the volume model before evaluating
+    required: true
+    content: Name the axis, outer radius, inner radius if present, thickness, and bounds. Then verify cubic units and a nonnegative cross-sectional area. These checks catch most disk/washer errors before integration.
+    media:
+    - type: image
+      src: /media/calculus/disk-washer-model.svg
+      alt: Complete washer model with labels
+      caption: Axis, radii, area, thickness, and bounds form a complete model.
+    check:
+      id: c7
+      type: freeResponse
+      prompt: Name two labels a washer diagram must include before you write its integral.
+      choices: []
+      answer:
+        choiceId: 
+        choiceIds: []
+        expected: 
+        gradingMode: selfCheck
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints:
+        - axis of rotation
+        - outer radius
+        - inner radius
+        - thickness
+        - bounds
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: 'Solution: Any two of axis, outer radius, inner radius, thickness, and bounds are essential labels. Why it works: They determine the cross-sectional area and accumulation interval. Common trap: A formula without an identified axis has ambiguous radii.'
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: expression-equation-recognition-error
+        domains: []
+      - id: algebraic-simplification-error
+        domains: []
+      - id: sign-error
+        domains: []
+      - id: geometric-volume-formula-error
+        domains: []
+      - id: mathematical-translation-error
+        domains: []
+      - id: function-analysis-error
+        domains: []
+exploration: 
+directedProject: 
+sandbox: 
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - calculus-2
+  - disks
+  - volumes-of-solids
+  - washers
+skills:
+- cross-sectional-volume
+- disk-method
+- radius-modeling
+- washer-method
+authoring:
+  visualRequirement: required
+  visualRationale: Radius
+  difficultyTier: unspecified
+  exceptionReason: 
+  physicsModel: 

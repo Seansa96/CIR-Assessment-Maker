@@ -1,0 +1,403 @@
+schemaVersion: 1
+id: calc2-taylor-maclaurin-quick-paths-worked-example
+title: Taylor and Maclaurin Quick-Paths Worked Examples
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: taylor-maclaurin
+modeDefault: practice
+randomizeQuestions: false
+skills:
+  - Build Taylor coefficients from derivatives
+  - Derive shifted Taylor series and test endpoints
+  - Transform known Maclaurin series by substitution
+  - Approximate functions with Taylor polynomials and error bounds
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - calculus-2
+    - taylor-maclaurin
+    - taylor-polynomials
+    - known-series
+    - series-approximation
+    - streamlined-method
+workedExamples:
+  - id: taylor-quick-paths-exponential-coefficients
+    title: Build $e^{2x}$ From Its Taylor Coefficients
+    problem: |
+      Find the first four Maclaurin terms of
+
+      $$f(x)=e^{2x}$$
+
+      and state its radius of convergence.
+
+      **Short route:** identify the derivative pattern at $0$, place those values in the Maclaurin formula, then recognize the exponential series converges for every real input.
+    steps:
+      - id: taylor-quick-paths-exponential-step-1
+        title: Read the derivative pattern at the center
+        instruction: |
+          Each differentiation of $e^{2x}$ brings down another factor of $2$:
+
+          $$f^{(n)}(x)=2^n e^{2x}.$$
+
+          At the Maclaurin center, $e^0=1$.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: What is $f^{(n)}(0)$?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - '$f^{(n)}(0)=2^n$.'
+            - 'The factor $e^{2\cdot0}$ equals $1$.'
+        explanation: |
+          Solution:
+
+          $$
+          f^{(n)}(0)=2^n e^0=2^n.
+          $$
+
+          Why it works: The derivative pattern contributes one factor of $2$ for each derivative, and evaluating the remaining exponential at zero gives $1$.
+      - id: taylor-quick-paths-exponential-step-2
+        title: Fill the first four Maclaurin slots
+        instruction: |
+          Use
+
+          $$f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}x^n.$$
+
+          The values for $n=0,1,2,3$ are $1,2,4,8$.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: Write the first four Maclaurin terms of $e^{2x}$.
+        answer:
+          expectedLatex: '1+2x+2x^2+\frac{4}{3}x^3'
+          equivalenceMode: expression
+          variables: [x]
+          tolerance: 0.000001
+        explanation: |
+          Solution:
+
+          $$
+          e^{2x}=1+2x+\frac{4}{2!}x^2+\frac{8}{3!}x^3+\cdots=1+2x+2x^2+\frac43x^3+\cdots.
+          $$
+
+          Why it works: Each coefficient is the matching derivative value at zero divided by that term's factorial.
+      - id: taylor-quick-paths-exponential-step-3
+        title: State the convergence shortcut
+        instruction: |
+          The series for $e^u$ converges for every real value of $u$. Here the substituted input is $u=2x$.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: What is the radius of convergence for the Maclaurin series of $e^{2x}$?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - 'The radius is $\infty$.'
+            - 'The interval of convergence is $(-\infty,\infty)$.'
+        explanation: |
+          Solution: The radius of convergence is
+
+          $$
+          R=\infty.
+          $$
+
+          Why it works: Replacing the input of the exponential series by $2x$ does not restrict convergence, because the exponential series converges for every real input.
+
+  - id: taylor-quick-paths-shifted-logarithm
+    title: Shift First for the Taylor Series of $\ln x$
+    problem: |
+      Find the Taylor series for $\ln x$ centered at $a=1$ and state its interval of convergence.
+
+      **Short route:** rewrite $x$ as $1+(x-1)$, use the known series for $\ln(1+u)$, then transform its interval with $u=x-1$.
+    steps:
+      - id: taylor-quick-paths-logarithm-step-1
+        title: Make the center become zero
+        instruction: |
+          Let
+
+          $$u=x-1.$$
+
+          Then $x=1+u$, so the target becomes $\ln(1+u)$, whose series is centered at $u=0$.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: Why does $u=x-1$ make this a series centered at $x=1$?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - 'When $x=1$, $u=0$.'
+            - 'Powers of $u$ become powers of $(x-1)$.'
+        explanation: |
+          Solution: At $x=1$,
+
+          $$
+          u=x-1=0,
+          $$
+
+          and $u^n=(x-1)^n$.
+
+          Why it works: A Taylor series centered at $1$ must be organized in powers of $(x-1)$, so this substitution shifts the center to zero.
+      - id: taylor-quick-paths-logarithm-step-2
+        title: Substitute into the logarithm template
+        instruction: |
+          Use
+
+          $$\ln(1+u)=\sum_{n=1}^{\infty}(-1)^{n+1}\frac{u^n}{n}.$$
+
+          Replace every $u$ with $x-1$.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: Write the Taylor series for $\ln x$ centered at $1$.
+        answer:
+          expectedLatex: '\sum_{n=1}^{\infty}(-1)^{n+1}\frac{(x-1)^n}{n}'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution:
+
+          $$
+          \ln x=\sum_{n=1}^{\infty}(-1)^{n+1}\frac{(x-1)^n}{n}.
+          $$
+
+          Why it works: Since $x=1+(x-1)$, the known series for $\ln(1+u)$ applies directly with $u=x-1$.
+      - id: taylor-quick-paths-logarithm-step-3
+        title: Transform and test the interval
+        instruction: |
+          The logarithm template converges when
+
+          $$-1<u\leq1.$$
+
+          Substitute $u=x-1$: the left endpoint gives $x=0$ and diverges, while the right endpoint gives $x=2$ and converges.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: State the interval of convergence in terms of $x$.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - '$(0,2]$.'
+            - '$x=0$ is excluded and $x=2$ is included.'
+        explanation: |
+          Solution: The interval of convergence is
+
+          $$
+          (0,2].
+          $$
+
+          Why it works: Solving $-1<x-1\leq1$ gives $0<x\leq2$. The endpoint behavior is inherited from the known logarithm series after the same substitution.
+
+  - id: taylor-quick-paths-known-series-substitution
+    title: Transform the Exponential Series for $e^{-x^2}$
+    problem: |
+      Find the first four nonzero Maclaurin terms of
+
+      $$e^{-x^2}.$$
+
+      **Short route:** start with $e^u$, substitute $u=-x^2$, and keep the requested terms. Do not differentiate the composite function repeatedly.
+    steps:
+      - id: taylor-quick-paths-known-series-step-1
+        title: Choose the memorized source
+        instruction: |
+          The target is an exponential with a changed input. The source template is
+
+          $$e^u=\sum_{n=0}^{\infty}\frac{u^n}{n!}.$$
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: What expression should replace $u$ in the exponential template?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - '$u=-x^2$.'
+        explanation: |
+          Solution: Use
+
+          $$
+          u=-x^2.
+          $$
+
+          Why it works: The target has the form $e^u$ with the entire exponent $-x^2$ acting as the input.
+      - id: taylor-quick-paths-known-series-step-2
+        title: Substitute before expanding
+        instruction: |
+          Replacing $u$ with $-x^2$ gives alternating powers:
+
+          $$e^{-x^2}=1+(-x^2)+\frac{(-x^2)^2}{2!}+\frac{(-x^2)^3}{3!}+\cdots.$$
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: Write the first four nonzero Maclaurin terms of $e^{-x^2}$.
+        answer:
+          expectedLatex: '1-x^2+\frac{x^4}{2}-\frac{x^6}{6}'
+          equivalenceMode: expression
+          variables: [x]
+          tolerance: 0.000001
+        explanation: |
+          Solution:
+
+          $$
+          e^{-x^2}=1-x^2+\frac{x^4}{2!}-\frac{x^6}{3!}+\cdots=1-x^2+\frac{x^4}{2}-\frac{x^6}{6}+\cdots.
+          $$
+
+          Why it works: Raising $-x^2$ to successive powers produces powers $x^{2n}$ and alternating signs; the exponential template supplies the factorial denominators.
+      - id: taylor-quick-paths-known-series-step-3
+        title: Keep the convergence promise
+        instruction: |
+          The exponential series converges for every real input $u$. Here $u=-x^2$ is real for every real $x$.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: What is the interval of convergence for this series?
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - '$(-\infty,\infty)$.'
+        explanation: |
+          Solution: The interval of convergence is
+
+          $$
+          (-\infty,\infty).
+          $$
+
+          Why it works: The substituted input $-x^2$ can be any nonpositive real number, and the exponential series converges for all real inputs.
+
+  - id: taylor-quick-paths-cosine-error
+    title: Approximate $\cos(0.3)$ and Bound the Error
+    problem: |
+      Use the degree-two Maclaurin polynomial for $\cos x$ to approximate $\cos(0.3)$. Then certify an error bound using the next alternating term.
+
+      **Short route:** keep the constant and quadratic cosine terms, evaluate at $0.3$, and use the first omitted term as the alternating-series error bound.
+    steps:
+      - id: taylor-quick-paths-cosine-step-1
+        title: Keep the degree-two cosine terms
+        instruction: |
+          The cosine Maclaurin series begins
+
+          $$\cos x=1-\frac{x^2}{2!}+\frac{x^4}{4!}-\cdots.$$
+
+          A degree-two polynomial stops after the quadratic term.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: Write $T_2(x)$ for $\cos x$.
+        answer:
+          expectedLatex: '1-\frac{x^2}{2}'
+          equivalenceMode: expression
+          variables: [x]
+          tolerance: 0.000001
+        explanation: |
+          Solution:
+
+          $$
+          T_2(x)=1-\frac{x^2}{2!}=1-\frac{x^2}{2}.
+          $$
+
+          Why it works: Cosine has no odd powers in its Maclaurin series, so the degree-two truncation contains only the constant and quadratic terms.
+      - id: taylor-quick-paths-cosine-step-2
+        title: Evaluate the quick approximation
+        instruction: |
+          Substitute $x=0.3$ into the degree-two polynomial:
+
+          $$T_2(0.3)=1-\frac{0.3^2}{2}.$$
+        type: numericResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: What approximation does $T_2(0.3)$ give for $\cos(0.3)$?
+        answer:
+          value: 0.955
+          tolerance: 0.000001
+        explanation: |
+          Solution:
+
+          $$
+          T_2(0.3)=1-\frac{0.09}{2}=1-0.045=0.955.
+          $$
+
+          Why it works: Evaluating the Taylor polynomial at the target input gives its polynomial approximation to the function.
+      - id: taylor-quick-paths-cosine-step-3
+        title: Use the next alternating term for the bound
+        instruction: |
+          The first omitted term is
+
+          $$\frac{0.3^4}{4!}.$$
+
+          Cosine's terms alternate and decrease in magnitude at $x=0.3$, so the alternating-series error is no larger than this term.
+        type: numericResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: power-rule-error
+        - id: algebraic-simplification-error
+        - id: exponent-rule-misapplied
+        - id: chain-rule-missed
+        - id: function-composition-error
+        prompt: What upper bound does the next term give for the absolute error?
+        answer:
+          value: 0.0003375
+          tolerance: 0.0000001
+        explanation: |
+          Solution:
+
+          $$
+          \left|R_2(0.3)\right|\leq\frac{0.3^4}{4!}=\frac{0.0081}{24}=0.0003375.
+          $$
+
+          Why it works: For an alternating series with decreasing term magnitudes, the error after truncation is at most the magnitude of the first omitted term.

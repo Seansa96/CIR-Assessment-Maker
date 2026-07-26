@@ -190,7 +190,7 @@ public sealed class AssessmentReportServiceTests
 public sealed class AssessmentReportAggregationTests
 {
     [Fact]
-    public async Task Dashboard_groups_orders_filters_and_formats_reports_deterministically()
+    public async Task Dashboard_groups_and_formats_only_entries_matching_the_filter()
     {
         var reports = new InMemoryAssessmentReportRepository();
         var now = new DateTimeOffset(2026, 7, 17, 12, 0, 0, TimeSpan.Zero);
@@ -210,17 +210,17 @@ public sealed class AssessmentReportAggregationTests
         Assert.Equal(["assessment-a", "assessment-b"], dashboard.Assessments.Select(group => group.AssessmentId));
         var alpha = dashboard.Assessments[0];
         Assert.Equal("Alpha renamed", alpha.AssessmentTitle);
-        Assert.Equal(3, alpha.TotalCount);
+        Assert.Equal(2, alpha.TotalCount);
         Assert.Equal(2, alpha.OpenCount);
-        Assert.Equal(1, alpha.ResolvedCount);
+        Assert.Equal(0, alpha.ResolvedCount);
         Assert.Equal(1, alpha.BugCount);
         Assert.Equal(1, alpha.ImprovementCount);
-        Assert.Equal(1, alpha.CommentCount);
+        Assert.Equal(0, alpha.CommentCount);
         Assert.Equal(["r4", "r2", "r1"], dashboard.Entries.Select(entry => entry.Id));
         Assert.Contains("Wrong \\| answer", markdown);
         Assert.Contains("Add<br>visual", markdown);
         Assert.DoesNotContain("Useful note", markdown);
-        Assert.Contains("| Alpha renamed (`assessment-a`) | 2 | 1 | 1 | 1 | 1 | 3 |", markdown);
+        Assert.Contains("| Alpha renamed (`assessment-a`) | 2 | 0 | 1 | 1 | 0 | 2 |", markdown);
     }
 
     private static AssessmentReportEntry Entry(

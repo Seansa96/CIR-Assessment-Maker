@@ -3,6 +3,12 @@ import sys
 import yaml
 import glob
 
+REPEATED_CONCLUSION = 'Therefore the answer is '
+
+def repeated_conclusion(explanation):
+    conclusions = [part.strip() for part in explanation.split(REPEATED_CONCLUSION)[1:]]
+    return len(conclusions) > 1 and any(conclusions[0] == conclusion for conclusion in conclusions[1:])
+
 def validate_file(filepath):
     errors = []
     try:
@@ -30,6 +36,8 @@ def validate_file(filepath):
                         errors.append(f"{q_id}: Explanation missing 'Why it works:'.")
                     if q_type == 'multipleChoice' and 'Why the other choices fail:' not in explanation:
                         errors.append(f"{q_id}: multipleChoice explanation missing 'Why the other choices fail:'.")
+                    if repeated_conclusion(explanation):
+                        errors.append(f"{q_id}: Explanation repeats its 'Therefore the answer is' conclusion.")
                 
                 # Difficulty Dimensions (Quizzes and Tests)
                 if assessment_type in ['quiz', 'test']:
@@ -62,6 +70,8 @@ def validate_file(filepath):
                             errors.append(f"{step_id}: Explanation missing 'Solution:'.")
                         if 'Why it works:' not in explanation:
                             errors.append(f"{step_id}: Explanation missing 'Why it works:'.")
+                        if repeated_conclusion(explanation):
+                            errors.append(f"{step_id}: Explanation repeats its 'Therefore the answer is' conclusion.")
 
                     if step_type == 'freeResponse':
                         answer = step.get('answer', {})

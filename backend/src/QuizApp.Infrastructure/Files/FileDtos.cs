@@ -425,6 +425,7 @@ public sealed class WorkedExampleStepFileDto
     public string? ExecutionMode { get; set; }
     public string? StarterCode { get; set; }
     public List<CodeQuestionTestFileDto>? Tests { get; set; }
+    public List<IssueSignalFileDto>? IssueSignals { get; set; }
 }
 
 public sealed class QuestionFileDto
@@ -449,6 +450,21 @@ public sealed class QuestionFileDto
     public string? DifficultyEvidence { get; set; }
     public List<string>? PrerequisiteObjectiveIds { get; set; }
     public List<string>? ExtensionObjectiveIds { get; set; }
+    public List<MultipartPartFileDto>? Parts { get; set; }
+    public List<IssueSignalFileDto>? IssueSignals { get; set; }
+}
+
+public sealed class MultipartPartFileDto
+{
+    public string? Id { get; set; }
+    public string? Type { get; set; }
+    public string? Prompt { get; set; }
+    public List<ChoiceFileDto>? Choices { get; set; }
+    public AnswerFileDto? Answer { get; set; }
+    public string? Explanation { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
+    public List<string>? Skills { get; set; }
+    public List<IssueSignalFileDto>? IssueSignals { get; set; }
 }
 
 public sealed class ChoiceFileDto
@@ -456,6 +472,13 @@ public sealed class ChoiceFileDto
     public string? Id { get; set; }
     public string? Text { get; set; }
     public List<MediaFileDto>? Media { get; set; }
+    public List<IssueSignalFileDto>? IssueSignals { get; set; }
+}
+
+public sealed class IssueSignalFileDto
+{
+    public string? Id { get; set; }
+    public List<string>? Domains { get; set; }
 }
 
 public sealed class AnswerFileDto

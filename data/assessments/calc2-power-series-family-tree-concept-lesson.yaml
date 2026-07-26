@@ -1,0 +1,223 @@
+schemaVersion: 1
+id: calc2-power-series-family-tree-concept-lesson
+title: Power Series Family Tree Concept Lesson
+assessmentType: conceptLesson
+categoryId: calculus-2
+topicId: power-series
+modeDefault: practice
+randomizeQuestions: false
+authoring:
+  visualRequirement: required
+  difficultyTier: easy
+skills:
+  - Apply Power Series and Representations
+  - Transform known series by substitution and termwise operations
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags: [calculus-2, power-series, geometric-series, known-series, series-transformations]
+lesson:
+  introduction: |
+    Series representation is a recognition skill, not a contest to memorize unrelated formulas. Learn a small set of templates and the operations that connect them.
+  sections:
+    - id: geometric-root
+      title: The Geometric Series Is the Root
+      required: true
+      content: |
+        Start with the geometric series:
+
+        $$
+        \frac{1}{1-x}=\sum_{n=0}^{\infty}x^n,\qquad |x|<1.
+        $$
+
+        Substitution changes its input, differentiation changes coefficients, integration creates denominators, and multiplication supplies outside factors. Those operations create a family of related representations rather than unrelated facts.
+
+        ![Flow map from standard Taylor series through substitution, multiplication, differentiation, and integration](/assessments/calc2-infinite-series/taylor-known-series-transformation-map.svg)
+      media:
+        - type: image
+          src: /assessments/calc2-infinite-series/taylor-known-series-transformation-map.svg
+          alt: A transformation map connecting standard series through substitution, multiplication, differentiation, and integration.
+      check:
+        id: geometric-root-check
+        type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Which template is the best starting point for deriving many rational-function power series?
+        choices:
+          - id: a
+            text: '$\frac{1}{1-x}=\sum_{n=0}^{\infty}x^n$'
+          - id: b
+            text: '$\sum_{n=1}^{\infty}\frac{1}{n}$'
+          - id: c
+            text: '$\sum_{n=0}^{\infty}n!x^n$'
+          - id: d
+            text: '$\sum_{n=0}^{\infty}x^n$ for every real $x$'
+        answer:
+          choiceId: a
+        explanation: |
+          Solution: The root template is $$\frac{1}{1-x}=\sum_{n=0}^{\infty}x^n$$ for $|x|<1$.
+
+          Why it works: Its simple powers of $x$ respond directly to substitution, termwise differentiation, and termwise integration.
+
+          Why the other choices fail: The harmonic series is not a function template; factorial coefficients do not give the geometric root; and the geometric identity is not valid for every real $x$.
+    - id: operations-are-branches
+      title: Operations Create Branches
+      required: true
+      content: |
+        Replace $x$ by $-x$ to obtain
+
+        $$\frac{1}{1+x}=\sum_{n=0}^{\infty}(-1)^n x^n.$$
+
+        Integrating that result from $0$ to $x$ gives
+
+        $$\ln(1+x)=\sum_{n=1}^{\infty}\frac{(-1)^{n-1}x^n}{n}.$$
+
+        Differentiating the root instead gives
+
+        $$\frac{1}{(1-x)^2}=\sum_{n=1}^{\infty}n x^{n-1}.$$
+      check:
+        id: operations-are-branches-check
+        type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Which operation turns the geometric series into coefficients of the form $n x^{n-1}$?
+        choices:
+          - id: a
+            text: Differentiate term by term.
+          - id: b
+            text: Integrate term by term.
+          - id: c
+            text: Replace $x$ with $-x$.
+          - id: d
+            text: Multiply every term by $0$.
+        answer:
+          choiceId: a
+        explanation: |
+          Solution: Differentiate $$\sum_{n=0}^{\infty}x^n$$ to get $$\sum_{n=1}^{\infty}n x^{n-1}.$$
+
+          Why it works: The power rule lowers each exponent by one and brings the old exponent down as its coefficient.
+
+          Why the other choices fail: Integration creates denominators, substitution changes signs or inputs, and multiplication by zero destroys the series.
+    - id: standard-library
+      title: The Standard Maclaurin Library
+      required: true
+      content: |
+        Memorize these directly because they are especially useful templates:
+
+        $$e^x=\sum_{n=0}^{\infty}\frac{x^n}{n!},\qquad
+        \sin x=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{(2n+1)!}$$
+
+        $$\cos x=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n}}{(2n)!},\qquad
+        \arctan x=\sum_{n=0}^{\infty}\frac{(-1)^n x^{2n+1}}{2n+1}.$$
+
+        The geometric series plus this small library is enough to build many targets by recognition.
+      check:
+        id: standard-library-check
+        type: selectAll
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Which series are part of the standard Maclaurin library worth recognizing directly?
+        choices:
+          - id: a
+            text: '$e^x$'
+          - id: b
+            text: '$\sin x$'
+          - id: c
+            text: '$\cos x$'
+          - id: d
+            text: '$\arctan x$'
+        answer:
+          choiceIds: [a, b, c, d]
+        explanation: |
+          Solution: All four listed functions have standard Maclaurin templates.
+
+          Why it works: Their derivative patterns or standard representations make them recurring starting points for substitution and algebraic transformations.
+    - id: recognition-workflow
+      title: Recognize, Transform, Then Simplify
+      required: true
+      content: |
+        Use this workflow before expanding:
+
+        1. Rewrite the target to reveal a known template.
+        2. Substitute an inner expression when needed.
+        3. Differentiate or integrate only when the coefficient pattern calls for it.
+        4. Multiply by any outside polynomial factor.
+        5. Simplify exponents and carry along the convergence condition.
+
+        For $x^2\ln(1+x^3)$, recognize $\ln(1+u)$, use $u=x^3$, then multiply the resulting series by $x^2$.
+      check:
+        id: recognition-workflow-check
+        type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: What is the first transformation for $x^2\ln(1+x^3)$?
+        choices:
+          - id: a
+            text: Substitute $u=x^3$ into the series for $\ln(1+u)$.
+          - id: b
+            text: Differentiate $x^2$ three times.
+          - id: c
+            text: Replace $x$ with $1/x$.
+          - id: d
+            text: Evaluate at $x=1$ immediately.
+        answer:
+          choiceId: a
+        explanation: |
+          Solution: First use the known template for $\ln(1+u)$ with $$u=x^3.$$
+
+          Why it works: The inside expression matches the template's input; the outside factor $x^2$ is applied after the substitution.
+
+          Why the other choices fail: Differentiating $x^2$, inverting the input, or evaluating at one point does not create the requested series representation.
+    - id: interval-discipline
+      title: The Interval Travels With the Series
+      required: true
+      content: |
+        Every transformation carries an interval condition. If a source series requires $|u|<1$ and you substitute $u=x^3$, the new interior condition is $|x^3|<1$, or $|x|<1$. Differentiation and integration preserve the radius of convergence, but endpoint behavior can change and must be checked separately when an interval is requested.
+      check:
+        id: interval-discipline-check
+        type: multipleChoice
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: If a known series requires $|u|<1$ and $u=-2x$, what is the new interior condition?
+        choices:
+          - id: a
+            text: '$|x|<\frac12$'
+          - id: b
+            text: '$|x|<2$'
+          - id: c
+            text: '$|x|<1$'
+          - id: d
+            text: '$|x|>\frac12$'
+        answer:
+          choiceId: a
+        explanation: |
+          Solution: $$|-2x|<1\quad\Longrightarrow\quad |x|<\frac12.$$
+
+          Why it works: The convergence condition belongs to the substituted input, not automatically to the original variable.
+
+          Why the other choices fail: The factor $2$ shrinks the allowable interval rather than enlarging or ignoring it.

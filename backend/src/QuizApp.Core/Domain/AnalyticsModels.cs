@@ -38,6 +38,7 @@ public sealed record GradeAnalyticsSummary(
     IReadOnlyList<RecallGroupAnalytics> RecallSubcategories,
     IReadOnlyList<WeakFocusSummary> WeakAreas,
     IReadOnlyList<SkillPerformance> WeakestSkills,
+    IReadOnlyList<IssueSignalPerformance> IssueSignals,
     IReadOnlyList<ActionableNextStep> ActionableNextSteps,
     IReadOnlyList<AttemptHistoryRow> Attempts);
 
@@ -109,13 +110,31 @@ public sealed record SkillPerformance(
 {
     public string? CategoryId { get; init; }
     public string? TopicId { get; init; }
+    public MasteryTier Tier { get; init; }
+    public IReadOnlyList<string> TriggeredIssueSignals { get; init; } = Array.Empty<string>();
+}
+
+public sealed record RecommendedAssessment(
+    string Id,
+    string Title,
+    string ActivityType);
+
+public sealed record IssueSignalPerformance(
+    string SignalId,
+    int TriggerCount,
+    decimal UrgencyScore)
+{
+    public string? CategoryId { get; init; }
+    public string? TopicId { get; init; }
+    public IReadOnlyList<string> SkillIds { get; init; } = Array.Empty<string>();
 }
 
 public sealed record ActionableNextStep(
     string SkillId,
     string Message,
-    string RecommendedAssessmentId,
-    string RecommendedAssessmentTitle)
+    MasteryTier Tier,
+    decimal UrgencyScore,
+    IReadOnlyList<RecommendedAssessment> Playlist)
 {
     public string? CategoryId { get; init; }
     public string? CategoryTitle { get; init; }

@@ -15,6 +15,13 @@ public enum AssessmentType
     Sandbox
 }
 
+public enum MetadataStatus
+{
+    None,
+    Coarse,
+    Verified
+}
+
 public enum AssessmentMode
 {
     Practice,
@@ -218,6 +225,7 @@ public sealed record AssessmentDefinition(
     public NavigationMetadata? Navigation { get; init; }
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
     public AssessmentAuthoringMetadata? Authoring { get; init; }
+    public MetadataStatus MetadataStatus { get; init; } = MetadataStatus.None;
 }
 
 public sealed record AssessmentAuthoringMetadata(
@@ -584,6 +592,7 @@ public sealed record QuestionDefinition(
     public string? DifficultyEvidence { get; init; }
     public IReadOnlyList<string> PrerequisiteObjectiveIds { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> ExtensionObjectiveIds { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<IssueSignal> IssueSignals { get; init; } = Array.Empty<IssueSignal>();
 }
 
 public sealed record MultipartPartDefinition(
@@ -598,12 +607,20 @@ public sealed record MultipartPartDefinition(
     public CodeQuestionDefinition? CodeQuestion { get; init; }
     public CircuitQuestionDefinition? CircuitQuestion { get; init; }
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<IssueSignal> IssueSignals { get; init; } = Array.Empty<IssueSignal>();
 }
+
+public sealed record IssueSignal(
+    string Id,
+    IReadOnlyList<string> Domains);
 
 public sealed record ChoiceOption(
     string Id,
     string Text,
-    IReadOnlyList<MediaAsset> Media);
+    IReadOnlyList<MediaAsset> Media)
+{
+    public IReadOnlyList<IssueSignal> IssueSignals { get; init; } = Array.Empty<IssueSignal>();
+}
 
 public sealed record AnswerDefinition(
     string? ChoiceId,
@@ -659,6 +676,7 @@ public sealed record SubmittedAnswer(
     public SubmittedCircuitAnswer? CircuitAnswer { get; init; }
     public SubmittedGraphAnswer? GraphingAnswer { get; init; }
     public IReadOnlyList<SubmittedAnswer> PartAnswers { get; init; } = Array.Empty<SubmittedAnswer>();
+    public IReadOnlyList<string> SelectedIssueSignalIds { get; init; } = Array.Empty<string>();
 }
 
 public sealed record AnswerEvaluation(
@@ -716,6 +734,7 @@ public sealed record AssessmentSummary(
     public string? ActivityType { get; init; }
     public IReadOnlyList<string> Tags { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+    public MetadataStatus MetadataStatus { get; init; } = MetadataStatus.None;
 }
 
 public sealed record GraphingQuestionDefinition(

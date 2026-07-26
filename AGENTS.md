@@ -120,6 +120,14 @@ Always assign the correct `learningGoal` and `activityType` to new assessments s
 - Code questions must state exactly what function/signature the runner expects.
 - For chemistry questions requiring students to construct Lewis structures or diagrams, use `multipleChoice` with distinct structural options.
 - Image media must include a stable public path and meaningful alt text.
+- **Issue Signals**: When authoring `multipleChoice` items, provide `issueSignals` on incorrect `choiceOptions` to capture specific misconceptions or mechanical errors (e.g., `sign-error`, `chain-rule-missed`).
+
+### Remediation Engine and CIR Intelligence
+
+The CIR Intelligence dashboard evaluates `issueSignals` triggered during scored attempts to compute an UrgencyScore (frequency of misses + score deficiency).
+- Performance is classified into four `MasteryTier` levels: `Mastered` (>=95%), `Proficient` (>=80%), `Developing` (>=60%), and `Novice` (<60%).
+- Actionable next steps generate a 3-step `RemediationPlaylist` (Concept Lesson -> Guided Worked Example -> Practice Drill) utilizing a hybrid matching strategy (querying the current category first, then globally).
+- Ensure new skills and signals map cleanly into existing or logically named paths so the engine can accurately target weak areas.
 
 ### S2C and Authoring Contract Enforcement (Global Constraints)
 

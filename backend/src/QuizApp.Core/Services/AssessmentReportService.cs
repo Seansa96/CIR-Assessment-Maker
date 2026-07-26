@@ -93,7 +93,17 @@ public sealed class AssessmentReportService
         CancellationToken cancellationToken = default)
     {
         var allEntries = await reportRepository.ListAsync(cancellationToken);
-        var groups = allEntries
+        var entries = allEntries
+            .Where(entry => string.IsNullOrWhiteSpace(filter.AssessmentId)
+                || string.Equals(entry.AssessmentId, filter.AssessmentId.Trim(), StringComparison.OrdinalIgnoreCase))
+            .Where(entry => filter.Kind is null || entry.Kind == filter.Kind)
+            .Where(entry => filter.Status is null || entry.Status == filter.Status)
+            .OrderBy(entry => entry.Status is AssessmentReportStatus.Open ? 0 : 1)
+            .ThenByDescending(entry => entry.CreatedAt)
+            .ThenBy(entry => entry.Id, StringComparer.Ordinal)
+            .ToList();
+
+        var groups = entries
             .GroupBy(entry => entry.AssessmentId, StringComparer.OrdinalIgnoreCase)
             .Select(group =>
             {
@@ -113,16 +123,6 @@ public sealed class AssessmentReportService
             .ThenByDescending(group => group.LatestReportedAt)
             .ThenBy(group => group.AssessmentTitle, StringComparer.OrdinalIgnoreCase)
             .ThenBy(group => group.AssessmentId, StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        var entries = allEntries
-            .Where(entry => string.IsNullOrWhiteSpace(filter.AssessmentId)
-                || string.Equals(entry.AssessmentId, filter.AssessmentId.Trim(), StringComparison.OrdinalIgnoreCase))
-            .Where(entry => filter.Kind is null || entry.Kind == filter.Kind)
-            .Where(entry => filter.Status is null || entry.Status == filter.Status)
-            .OrderBy(entry => entry.Status is AssessmentReportStatus.Open ? 0 : 1)
-            .ThenByDescending(entry => entry.CreatedAt)
-            .ThenBy(entry => entry.Id, StringComparer.Ordinal)
             .ToList();
 
         return new AssessmentReportDashboard(entries, groups);

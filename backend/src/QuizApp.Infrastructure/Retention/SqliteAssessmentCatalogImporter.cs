@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.Data.Sqlite;
+using YamlDotNet.Core;
 using QuizApp.Core.Domain;
 using QuizApp.Core.Repositories;
 using QuizApp.Core.Services;
@@ -156,8 +157,9 @@ public sealed class SqliteAssessmentCatalogImporter
                     var existingId = await GetIdByPathAsync(connection, path, cancellationToken);
                     if (existingId is not null) seenIds.Add(existingId);
                     invalid++;
-                    await InsertDiagnosticAsync(connection, runId, path, existingId, "Error", "UNHANDLED_EXCEPTION", ex.Message, null, null, null, null, cancellationToken);
-                    Console.Error.WriteLine($"[CatalogImporter] Skipping invalid assessment file: {path}. {ex.Message}");
+                    var diagnostic = DescribeImportException(ex);
+                    await InsertDiagnosticAsync(connection, runId, path, existingId, "Error", diagnostic.Code, diagnostic.Message, diagnostic.Line, diagnostic.Column, null, null, cancellationToken);
+                    Console.Error.WriteLine($"[CatalogImporter] Skipping invalid assessment file: {path}. {diagnostic.Message}");
                 }
             }
 
@@ -431,9 +433,9 @@ public sealed class SqliteAssessmentCatalogImporter
         upsertCmd.CommandText = """
             INSERT INTO assessments (id, title, assessment_type, category_id, learning_goal, activity_type,
                 definition_json, source_path, content_hash, source_last_write_utc, source_length,
-                import_status, last_error, is_active, imported_at, updated_at)
+                import_status, last_error, is_active, imported_at, updated_at, metadata_status)
             VALUES (@id, @title, @type, @cat, @goal, @activity, @json, @path, @hash, @sourceLastWriteUtc,
-                @sourceLength, @importStatus, @lastError, 1, @importedAt, @now)
+                @sourceLength, @importStatus, @lastError, 1, @importedAt, @now, @metadataStatus)
             ON CONFLICT(id) DO UPDATE SET
                 title = excluded.title,
                 assessment_type = excluded.assessment_type,
@@ -448,7 +450,8 @@ public sealed class SqliteAssessmentCatalogImporter
                 import_status = excluded.import_status,
                 last_error = excluded.last_error,
                 is_active = 1,
-                updated_at = excluded.updated_at;
+                updated_at = excluded.updated_at,
+                metadata_status = excluded.metadata_status;
             """;
         upsertCmd.Parameters.AddWithValue("@id", domain.Id);
         upsertCmd.Parameters.AddWithValue("@title", domain.Title);
@@ -465,6 +468,7 @@ public sealed class SqliteAssessmentCatalogImporter
         upsertCmd.Parameters.AddWithValue("@lastError", lastError ?? (object)DBNull.Value);
         upsertCmd.Parameters.AddWithValue("@importedAt", importedAt);
         upsertCmd.Parameters.AddWithValue("@now", now);
+        upsertCmd.Parameters.AddWithValue("@metadataStatus", (int)domain.MetadataStatus);
         await upsertCmd.ExecuteNonQueryAsync(cancellationToken);
 
         // Replace subcategory rows
@@ -625,6 +629,30 @@ public sealed class SqliteAssessmentCatalogImporter
         }
 
         return count;
+    }
+
+    private static (string Code, string Message, int? Line, int? Column) DescribeImportException(Exception exception)
+    {
+        var yamlException = FindYamlException(exception);
+        if (yamlException is null)
+            return ("UNHANDLED_EXCEPTION", exception.Message, null, null);
+
+        var cause = yamlException.InnerException?.Message;
+        var message = string.IsNullOrWhiteSpace(cause)
+            ? yamlException.Message
+            : $"YAML deserialization failed: {cause}";
+        return ("YAML_DESERIALIZATION", message, checked((int)yamlException.Start.Line + 1), checked((int)yamlException.Start.Column + 1));
+    }
+
+    private static YamlException? FindYamlException(Exception exception)
+    {
+        for (Exception? current = exception; current is not null; current = current.InnerException)
+        {
+            if (current is YamlException yamlException)
+                return yamlException;
+        }
+
+        return null;
     }
 
     private static async Task<ExistingCatalogFile?> GetExistingFileAsync(SqliteConnection connection, string path, CancellationToken cancellationToken)

@@ -146,6 +146,10 @@ public sealed class SqliteRetentionInitializer
         {
             await ExecuteAsync(connection, "ALTER TABLE assessments ADD COLUMN last_error TEXT NULL;", cancellationToken);
         }
+        if (!await ColumnExistsAsync(connection, "assessments", "metadata_status", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE assessments ADD COLUMN metadata_status INTEGER NOT NULL DEFAULT 0;", cancellationToken);
+        }
 
         await ExecuteAsync(connection, """
             CREATE TABLE IF NOT EXISTS assessment_subcategories (

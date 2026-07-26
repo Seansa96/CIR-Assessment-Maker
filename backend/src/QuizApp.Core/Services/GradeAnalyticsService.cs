@@ -64,6 +64,7 @@ public sealed class GradeAnalyticsService
         var recallSubcategorySummaries = BuildRecallSubcategorySummaries(historyRows, attempts, assessmentLookup, categories);
         var weakAreas = BuildWeakFocusSummaries(categorySummaries, areaSummaries);
         var skillSummaries = BuildSkillPerformanceSummaries(historyRows, attempts, assessmentLookup);
+        var issueSignals = BuildIssueSignalSummaries(historyRows, attempts, assessmentLookup);
         var catalog = await catalogService.GetCatalogAsync(cancellationToken);
         var actionableNextSteps = BuildActionableNextSteps(skillSummaries, recallTagSummaries, catalog, assessmentLookup, categories, areas);
 
@@ -90,6 +91,7 @@ public sealed class GradeAnalyticsService
             recallSubcategorySummaries,
             weakAreas,
             skillSummaries,
+            issueSignals,
             actionableNextSteps,
             historyRows);
     }
@@ -418,7 +420,7 @@ public sealed class GradeAnalyticsService
     {
         return areas.Where(area =>
             area.CategoryIds.Contains(assessment.CategoryId, StringComparer.OrdinalIgnoreCase)
-            || assessment.SubcategoryIds.Any(subcategoryId => area.SubcategoryIds.Contains(subcategoryId, StringComparer.OrdinalIgnoreCase)));
+            && area.SubcategoryIds.Contains(assessment.TopicId, StringComparer.OrdinalIgnoreCase));
     }
 
     private static IReadOnlyList<QuestionType> ExtractQuestionTypes(AssessmentDefinition assessment)
@@ -537,7 +539,7 @@ public sealed class GradeAnalyticsService
             .Where(row => row.Status is AttemptStatus.Completed)
             .Select(row => row.AttemptId)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var stats = new Dictionary<(string CategoryId, string TopicId, string Skill), (int Answered, int Correct)>();
+        var stats = new Dictionary<(string CategoryId, string TopicId, string Skill), (int Answered, int Correct, HashSet<string> TriggeredIssueSignals)>();
 
         foreach (var attempt in attempts.Where(attempt => includedAttemptIds.Contains(attempt.Id)))
         {
@@ -565,27 +567,77 @@ public sealed class GradeAnalyticsService
                 foreach (var skill in skills)
                 {
                     var key = (assessment.CategoryId, assessment.TopicId, skill);
-                    var current = stats.TryGetValue(key, out var value) ? value : (Answered: 0, Correct: 0);
+                    var current = stats.TryGetValue(key, out var value) ? value : (Answered: 0, Correct: 0, TriggeredIssueSignals: new HashSet<string>());
+                    var signals = current.TriggeredIssueSignals;
+                    foreach (var id in question.IssueSignalIds)
+                    {
+                        signals.Add(id);
+                    }
                     stats[key] = (
                         current.Answered + 1,
-                        current.Correct + (question.IsCorrect == true ? 1 : 0));
+                        current.Correct + (question.IsCorrect == true ? 1 : 0),
+                        signals);
                 }
             }
         }
 
         return stats
-            .Select(pair => new SkillPerformance(
-                pair.Key.Skill,
-                pair.Value.Answered,
-                pair.Value.Correct,
-                pair.Value.Answered == 0 ? 0 : Math.Round(pair.Value.Correct * 100m / pair.Value.Answered, 2))
-            {
-                CategoryId = pair.Key.CategoryId,
-                TopicId = pair.Key.TopicId
+            .Select(pair => {
+                var percent = pair.Value.Answered == 0 ? 0 : Math.Round(pair.Value.Correct * 100m / pair.Value.Answered, 2);
+                return new SkillPerformance(
+                    pair.Key.Skill,
+                    pair.Value.Answered,
+                    pair.Value.Correct,
+                    percent)
+                {
+                    CategoryId = pair.Key.CategoryId,
+                    TopicId = pair.Key.TopicId,
+                    Tier = percent switch
+                    {
+                        >= 95m => MasteryTier.Mastered,
+                        >= 80m => MasteryTier.Proficient,
+                        >= 60m => MasteryTier.Developing,
+                        _ => MasteryTier.Novice
+                    },
+                    TriggeredIssueSignals = pair.Value.TriggeredIssueSignals.ToList()
+                };
             })
             .OrderBy(summary => summary.CorrectPercent)
             .ThenByDescending(summary => summary.AnsweredCount)
             .ToList();
+    }
+
+    private IReadOnlyList<IssueSignalPerformance> BuildIssueSignalSummaries(
+        IReadOnlyList<AttemptHistoryRow> rows,
+        IReadOnlyList<Attempt> attempts,
+        IReadOnlyDictionary<string, AssessmentDefinition> assessments)
+    {
+        var included = rows.Where(row => row.Status is AttemptStatus.Completed).Select(row => row.AttemptId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var stats = new Dictionary<(string Category, string Topic, string Signal), (int Count, HashSet<string> Skills)>();
+        foreach (var attempt in attempts.Where(attempt => included.Contains(attempt.Id)))
+        {
+            if (!assessments.TryGetValue(attempt.AssessmentId, out var assessment)) continue;
+            var skills = assessment.Questions.ToDictionary(question => question.Id, question => question.Skills, StringComparer.OrdinalIgnoreCase);
+            var results = scoringService.BuildResults(assessment, attempt);
+            foreach (var result in results.Questions.Where(result => result.IsCorrect == false && result.IssueSignalIds.Count > 0))
+            {
+                var questionSkills = skills.TryGetValue(result.QuestionId, out var values) ? values : Array.Empty<string>();
+                foreach (var signal in result.IssueSignalIds.Distinct(StringComparer.OrdinalIgnoreCase))
+                {
+                    var key = (assessment.CategoryId, assessment.TopicId, signal);
+                    var current = stats.TryGetValue(key, out var value) ? value : (Count: 0, Skills: new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+                    current.Skills.UnionWith(questionSkills);
+                    stats[key] = (current.Count + 1, current.Skills);
+                }
+            }
+        }
+        return stats.Select(pair => new IssueSignalPerformance(pair.Key.Signal, pair.Value.Count, pair.Value.Count * 100m)
+        {
+            CategoryId = pair.Key.Category,
+            TopicId = pair.Key.Topic,
+            SkillIds = pair.Value.Skills.OrderBy(value => value).ToList()
+        }).OrderByDescending(signal => signal.UrgencyScore).ToList();
     }
 
     private static decimal? ComputeWeightedAverage(IEnumerable<GradeLogEntry> entries, IReadOnlyDictionary<string, AssessmentDefinition> assessments)
@@ -611,39 +663,80 @@ public sealed class GradeAnalyticsService
         var steps = new List<ActionableNextStep>();
         foreach (var weakSkill in skills.Where(s => s.CorrectPercent < 80))
         {
-            var targetActivity = weakSkill.CorrectPercent < 60 ? "conceptLesson" : "guidedWorkedExample";
+            var urgencyScore = weakSkill.AnsweredCount * (100m - weakSkill.CorrectPercent);
+            var playlist = new List<RecommendedAssessment>();
             
-            var assessment = catalog.Assessments
-                .FirstOrDefault(a => string.Equals(a.ActivityType, targetActivity, StringComparison.OrdinalIgnoreCase)
+            // 1. Concept Lesson
+            var conceptLesson = catalog.Assessments
+                .FirstOrDefault(a => string.Equals(a.ActivityType, "conceptLesson", StringComparison.OrdinalIgnoreCase)
                     && string.Equals(a.SubjectId, weakSkill.CategoryId, StringComparison.OrdinalIgnoreCase)
-                    && (string.IsNullOrWhiteSpace(weakSkill.TopicId) || string.Equals(a.TopicId, weakSkill.TopicId, StringComparison.OrdinalIgnoreCase))
                     && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase));
-            
-            assessment ??= catalog.Assessments
-                .FirstOrDefault(a => string.Equals(a.SubjectId, weakSkill.CategoryId, StringComparison.OrdinalIgnoreCase)
-                    && (string.IsNullOrWhiteSpace(weakSkill.TopicId) || string.Equals(a.TopicId, weakSkill.TopicId, StringComparison.OrdinalIgnoreCase))
+            conceptLesson ??= catalog.Assessments
+                .FirstOrDefault(a => string.Equals(a.ActivityType, "conceptLesson", StringComparison.OrdinalIgnoreCase)
                     && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase));
+            if (conceptLesson is not null)
+                playlist.Add(new RecommendedAssessment(conceptLesson.Id, conceptLesson.Title, conceptLesson.ActivityType));
+                
+            // 2. Worked Example
+            var workedExample = catalog.Assessments
+                .FirstOrDefault(a => string.Equals(a.ActivityType, "guidedWorkedExample", StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(a.SubjectId, weakSkill.CategoryId, StringComparison.OrdinalIgnoreCase)
+                    && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase)
+                    && a.Id != conceptLesson?.Id);
+            workedExample ??= catalog.Assessments
+                .FirstOrDefault(a => string.Equals(a.ActivityType, "guidedWorkedExample", StringComparison.OrdinalIgnoreCase)
+                    && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase)
+                    && a.Id != conceptLesson?.Id);
+            if (workedExample is not null)
+                playlist.Add(new RecommendedAssessment(workedExample.Id, workedExample.Title, workedExample.ActivityType));
+                
+            // 3. Practice
+            var practice = catalog.Assessments
+                .FirstOrDefault(a => (string.Equals(a.ActivityType, "focusedPractice", StringComparison.OrdinalIgnoreCase) || string.Equals(a.ActivityType, "mixedPractice", StringComparison.OrdinalIgnoreCase))
+                    && string.Equals(a.SubjectId, weakSkill.CategoryId, StringComparison.OrdinalIgnoreCase)
+                    && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase)
+                    && a.Id != conceptLesson?.Id && a.Id != workedExample?.Id);
+            practice ??= catalog.Assessments
+                .FirstOrDefault(a => (string.Equals(a.ActivityType, "focusedPractice", StringComparison.OrdinalIgnoreCase) || string.Equals(a.ActivityType, "mixedPractice", StringComparison.OrdinalIgnoreCase))
+                    && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase)
+                    && a.Id != conceptLesson?.Id && a.Id != workedExample?.Id);
+            if (practice is not null)
+                playlist.Add(new RecommendedAssessment(practice.Id, practice.Title, practice.ActivityType));
+                
+            if (playlist.Count == 0)
+            {
+                var any = catalog.Assessments
+                    .FirstOrDefault(a => string.Equals(a.SubjectId, weakSkill.CategoryId, StringComparison.OrdinalIgnoreCase)
+                        && a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase));
+                any ??= catalog.Assessments
+                    .FirstOrDefault(a => a.Skills.Contains(weakSkill.SkillId, StringComparer.OrdinalIgnoreCase));
+                if (any is not null)
+                    playlist.Add(new RecommendedAssessment(any.Id, any.Title, any.ActivityType));
+            }
             
-            if (assessment is not null)
+            if (playlist.Count > 0)
             {
                 var message = weakSkill.CorrectPercent < 60 
                     ? $"Review the fundamental concepts for {weakSkill.SkillId}." 
                     : $"Practice more examples for {weakSkill.SkillId}.";
 
-                assessments.TryGetValue(assessment.Id, out var def);
-                var categoryId = def?.CategoryId ?? assessment.SubjectId;
-                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, categoryId, StringComparison.OrdinalIgnoreCase));
+                var anchorAssessment = playlist.First();
+                assessments.TryGetValue(anchorAssessment.Id, out var def);
+                var anchorCatId = def?.CategoryId ?? weakSkill.CategoryId;
+                var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, anchorCatId, StringComparison.OrdinalIgnoreCase));
                 var matchingAreas = def is not null ? MatchAreas(def, areas).ToList() : new List<AreaDefinition>();
-                var matchingTopics = catalog.Topics.Where(t => string.Equals(assessment.TopicId, t.Id, StringComparison.OrdinalIgnoreCase)).ToList();
+                var anchorTopicId = def?.TopicId ?? weakSkill.TopicId;
+                var matchingTopics = catalog.Topics.Where(t => string.Equals(anchorTopicId, t.Id, StringComparison.OrdinalIgnoreCase)).ToList();
 
                 steps.Add(new ActionableNextStep(
                     weakSkill.SkillId,
                     message,
-                    assessment.Id,
-                    assessment.Title)
+                    weakSkill.Tier,
+                    urgencyScore,
+                    playlist)
                 {
-                    CategoryId = categoryId,
-                    CategoryTitle = category?.Title ?? categoryId,
+                    CategoryId = anchorCatId,
+                    CategoryTitle = category?.Title ?? anchorCatId,
                     AreaIds = matchingAreas.Select(a => a.Id).ToList(),
                     AreaTitles = matchingAreas.Select(a => a.Title).ToList(),
                     TopicIds = matchingTopics.Select(t => t.Id).ToList(),
@@ -656,32 +749,38 @@ public sealed class GradeAnalyticsService
 
         foreach (var weakTag in recallTags.Where(t => t.AverageRating < 3.0m))
         {
+            var urgencyScore = weakTag.AttemptCount * (4.0m - weakTag.AverageRating) * 20m;
+            var playlist = new List<RecommendedAssessment>();
             var assessment = catalog.Assessments
                 .FirstOrDefault(a => string.Equals(a.ActivityType, "conceptLesson", StringComparison.OrdinalIgnoreCase)
                     && string.Equals(a.SubjectId, weakTag.CategoryId, StringComparison.OrdinalIgnoreCase)
-                    && (string.IsNullOrWhiteSpace(weakTag.TopicId) || string.Equals(a.TopicId, weakTag.TopicId, StringComparison.OrdinalIgnoreCase))
                     && a.Tags.Contains(weakTag.Tag, StringComparer.OrdinalIgnoreCase));
             
             assessment ??= catalog.Assessments
                 .FirstOrDefault(a => string.Equals(a.SubjectId, weakTag.CategoryId, StringComparison.OrdinalIgnoreCase)
-                    && (string.IsNullOrWhiteSpace(weakTag.TopicId) || string.Equals(a.TopicId, weakTag.TopicId, StringComparison.OrdinalIgnoreCase))
                     && a.Tags.Contains(weakTag.Tag, StringComparer.OrdinalIgnoreCase));
             
             if (assessment is not null)
+                playlist.Add(new RecommendedAssessment(assessment.Id, assessment.Title, assessment.ActivityType));
+            
+            if (playlist.Count > 0)
             {
                 var message = $"Review the fundamental concepts for {weakTag.Tag}.";
 
-                assessments.TryGetValue(assessment.Id, out var def);
-                var categoryId = def?.CategoryId ?? assessment.SubjectId;
+                var anchorAssessment = playlist.First();
+                assessments.TryGetValue(anchorAssessment.Id, out var def);
+                var categoryId = def?.CategoryId ?? weakTag.CategoryId;
                 var category = categories.FirstOrDefault(candidate => string.Equals(candidate.Id, categoryId, StringComparison.OrdinalIgnoreCase));
                 var matchingAreas = def is not null ? MatchAreas(def, areas).ToList() : new List<AreaDefinition>();
-                var matchingTopics = catalog.Topics.Where(t => string.Equals(assessment.TopicId, t.Id, StringComparison.OrdinalIgnoreCase)).ToList();
+                var anchorTopicId = def?.TopicId ?? weakTag.TopicId;
+                var matchingTopics = catalog.Topics.Where(t => string.Equals(anchorTopicId, t.Id, StringComparison.OrdinalIgnoreCase)).ToList();
 
                 steps.Add(new ActionableNextStep(
                     weakTag.Tag,
                     message,
-                    assessment.Id,
-                    assessment.Title)
+                    MasteryTier.Novice,
+                    urgencyScore,
+                    playlist)
                 {
                     CategoryId = categoryId,
                     CategoryTitle = category?.Title ?? categoryId,

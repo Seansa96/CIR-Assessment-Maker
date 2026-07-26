@@ -114,6 +114,37 @@ public sealed class AuthoringWorkspaceTests : IDisposable
         Assert.DoesNotContain(packet.Chunks, chunk => chunk.Text.StartsWith("CHAPTER 5 Newton's Laws 193", StringComparison.Ordinal));
     }
 
+    [Fact]
+    public async Task Coverage_ignores_packet_json_files_in_the_content_manifest_directory()
+    {
+        Directory.CreateDirectory(root);
+        var input = Path.Combine(root, "source.txt");
+        await File.WriteAllTextAsync(input, "Taylor coefficients come from derivatives at the center.");
+        var service = CreateService();
+        var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
+        var referenceRoot = Path.Combine(root, "docs", "assessment-reference");
+        var curriculumDirectory = Path.Combine(referenceRoot, "curriculum-manifests");
+        var contentDirectory = Path.Combine(referenceRoot, "content-manifests");
+        Directory.CreateDirectory(curriculumDirectory);
+        Directory.CreateDirectory(contentDirectory);
+        await File.WriteAllTextAsync(Path.Combine(curriculumDirectory, "taylor.json"), """
+            {"schemaVersion":1,"id":"taylor-curriculum","categoryId":"calculus-2","areaId":"calculus-infinite-series","title":"Taylor","objectives":[{"id":"taylor-coefficients","title":"Recover coefficients","prerequisiteIds":[],"requiredActivities":[],"sourceIds":[]}],"reviewState":"approved"}
+            """);
+        await File.WriteAllTextAsync(Path.Combine(curriculumDirectory, "source-map.json"), """
+            {"schemaVersion":1,"id":"source-map","sourceId":"source","reviewState":"not-a-review-state"}
+            """);
+        await service.SaveContentManifestAsync(new ContentManifest(1, "taylor-coefficient-lesson", "calculus-2", "taylor-maclaurin", "taylor-coefficients", "conceptLesson", [source.Chunks[0].Id], true, SourceReviewState.Approved));
+        await File.WriteAllTextAsync(Path.Combine(contentDirectory, "packet-unrelated.json"), """
+            {"schemaVersion":1,"id":"packet-unrelated","sourceId":"source","reviewState":"not-a-review-state"}
+            """);
+
+        var coverage = await service.GetCoverageAsync("calculus-2");
+
+        var row = Assert.Single(coverage);
+        Assert.Equal("taylor-coefficients", row.ObjectiveId);
+        Assert.Equal(1, row.ApprovedContentCount);
+    }
+
 
 
     private FileAuthoringWorkspaceService CreateService() => new(new FileStorageOptions { DataRoot = Path.Combine(root, "data") });

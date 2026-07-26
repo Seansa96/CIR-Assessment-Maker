@@ -1,209 +1,559 @@
 schemaVersion: 1
 id: precalculus-binomial-theorem-concept-lesson
-title: Binomial Theorem Concept Lesson
+title: 'Binomial Theorem: Patterns, Meaning, and Efficient Expansion'
 assessmentType: conceptLesson
 categoryId: precalculus
 topicId: precalc-binomial
 modeDefault: practice
 randomizeQuestions: false
-navigation:
-  learningGoal: learn
-  activityType: conceptLesson
-  tags:
-  - precalculus
-  - precalc-binomial
-  - binomial-theorem
-  - pascals-triangle
-  - binomial-expansion
-skills:
-- Apply Binomial Theorem
-- precalc-binomial
+attemptQuestionCount: 
+questionTimerSeconds: 
+assessmentTimerSeconds: 
+questionSelection: 
+questions: []
+workedExamples: []
+guidedProject: 
+items: []
+glossary: 
 lesson:
-  introduction: |
-    The binomial theorem is a shortcut for expanding powers of two-term expressions. The practical goal is not to memorize huge expansions. The goal is to know how coefficients, powers, and signs move so you can expand small powers quickly and extract a requested term from larger powers.
+  introduction: >
+    The binomial theorem is a pattern language for powers of two-term expressions. Instead of multiplying $(a+b)$ by itself repeatedly, track three coordinated patterns: coefficients, the falling exponent on $a$, and the rising exponent on $b$.
   sections:
-  - id: theorem-structure
-    title: The structure of the theorem
+  - id: theorem-meaning
+    title: Why binomial coefficients appear
     required: true
-    content: |
-      For a binomial $(a+b)^n$, each term chooses some copies of $b$ and the remaining copies of $a$. That is why a typical term looks like
+    content: >
+      In $(a+b)^n$, choose $b$ from exactly $k$ of the $n$ factors and $a$ from the rest. Every such choice makes $a^{n-k}b^k$, and there are $\binom nk$ choices. Therefore
+
 
       $$
-      \binom{n}{k}a^{n-k}b^k.
-      $$
 
-      The coefficient counts how many ways that choice can occur. The exponents always add to $n$.
+      (a+b)^n=\sum_{k=0}^{n}\binom nk a^{n-k}b^k.
+
+      $$
+    media:
+    - type: image
+      src: /assessments/precalc-binomial/term-map.svg
+      alt: A visual table connecting coefficients with descending a exponents and ascending b exponents.
+      caption: 
     check:
-      id: theorem-structure-check
+      id: theorem-meaning-check
       type: selectAll
-      prompt: |
-        Which facts are true for every term of $(a+b)^n$?
+      prompt: Which statements describe every term $\binom nk a^{n-k}b^k$?
       choices:
       - id: a
-        text: The powers on $a$ and $b$ add to $n$.
+        text: The exponents add to $n$.
+        media: []
+        issueSignals: []
       - id: b
-        text: The power on $a$ decreases while the power on $b$ increases.
+        text: The exponent on $a$ decreases as $k$ increases.
+        media: []
+        issueSignals: []
       - id: c
-        text: Every coefficient is always $1$.
+        text: Every coefficient is $1$.
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
       - id: d
-        text: $\binom{n}{k}$ counts how many copies of that product occur.
+        text: $\binom nk$ counts factor choices.
+        media: []
+        issueSignals: []
       answer:
+        choiceId: 
         choiceIds:
         - a
         - b
         - d
-      explanation: |
-        The exponent pattern and the counting coefficient are the core of the theorem.
-  - id: pascal-triangle
-    title: Pascal's triangle as coefficient memory
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >
+        Solution: The true statements are A, B, and D.
+
+
+        Why it works: $(n-k)+k=n$, and $\binom nk$ counts the selections of $k$ factors contributing $b$.
+
+
+        Why the other choices fail: Coefficients vary with $k$ except at the ends.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+  - id: pascal-pattern
+    title: Pascal's triangle is a coefficient calculator
     required: true
-    content: |
-      Pascal's triangle builds each interior number by adding the two numbers above it. The row for power $n$ gives the coefficients of $(a+b)^n$.
-
-      Useful rows:
-
-      ```text
-      n=0: 1
-      n=1: 1 1
-      n=2: 1 2 1
-      n=3: 1 3 3 1
-      n=4: 1 4 6 4 1
-      n=5: 1 5 10 10 5 1
-      ```
+    content: >
+      Pascal's triangle gives the coefficient row for each nonnegative integer exponent. Start and end every row with $1$; each interior value is the sum of the two values above it. For example, row $5$ is $1,5,10,10,5,1$.
+    media:
+    - type: image
+      src: /assessments/precalc-binomial/pascal-triangle.svg
+      alt: Pascal's triangle through row five with row five highlighted.
+      caption: 
     check:
-      id: pascal-triangle-check
+      id: pascal-pattern-check
       type: multipleChoice
-      prompt: |
-        Which row should be used for $(a+b)^5$?
+      prompt: Which coefficient row is used for $(a-b)^5$?
       choices:
       - id: a
         text: $1,5,10,10,5,1$
+        media: []
+        issueSignals: []
       - id: b
         text: $1,4,6,4,1$
+        media: []
+        issueSignals:
+        - id: exponent-rule-misapplied
+          domains: []
       - id: c
-        text: $1,3,3,1$
+        text: $1,1,1,1,1,1$
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
       - id: d
         text: $5,10,10,5$
+        media: []
+        issueSignals:
+        - id: algebraic-simplification-error
+          domains: []
       answer:
         choiceId: a
-      explanation: |
-        The exponent is $5$, so use row $n=5$.
-  - id: mapping-coefficients
-    title: Mapping coefficients onto powers
-    required: true
-    content: |
-      After choosing the coefficient row, attach it to descending powers of the first term and ascending powers of the second term. For $(a+b)^4$, the pattern is
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >
+        Solution: Use row $5$: $1,5,10,10,5,1$.
 
-      $$
-      a^4+4a^3b+6a^2b^2+4ab^3+b^4.
-      $$
 
-      The row gives coefficients; the power pattern tells you where they go.
-    check:
-      id: mapping-coefficients-check
-      type: multipleChoice
-      prompt: |
-        In $(a+b)^4$, which term uses coefficient $6$?
-      choices:
-      - id: a
-        text: $6a^2b^2$
-      - id: b
-        text: $6a^4$
-      - id: c
-        text: $6ab^3$
-      - id: d
-        text: $6b^4$
-      answer:
-        choiceId: a
-      explanation: |
-        The middle coefficient belongs where both terms have power $2$.
-  - id: signs
-    title: Handling negative terms
+        Why it works: The exponent selects the row; the sign of the second term does not change the coefficients.
+
+
+        Why the other choices fail: They use a different row or omit endpoint coefficients.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+  - id: signs-and-substitution
+    title: Preserve signs by substituting whole terms
     required: true
-    content: |
-      Treat subtraction as addition of a negative term: $(a-b)^n=(a+(-b))^n$. Odd powers of $-b$ are negative and even powers are positive. This is why signs alternate in $(a-b)^n$.
+    content: >
+      Treat a difference as a sum with a negative second term: $(3x-2)^6=(3x+(-2))^6$. Then $(-2)^k$ automatically produces the correct alternating signs. First build the symbolic pattern; simplify numeric powers afterward.
+    media: []
     check:
       id: signs-check
       type: multipleChoice
-      prompt: |
-        What is the safest way to expand $(x-3)^4$?
+      prompt: In $(x-4)^4$, what should be substituted for $b$?
       choices:
       - id: a
-        text: Treat it as $(x+(-3))^4$.
+        text: $-4$
+        media: []
+        issueSignals: []
       - id: b
-        text: Ignore the minus sign until the end.
+        text: $4$, then make all terms negative
+        media: []
+        issueSignals:
+        - id: sign-error
+          domains: []
       - id: c
-        text: Make every term negative.
+        text: $x-4$
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
       - id: d
-        text: Use only positive coefficients and positive terms.
+        text: $-x$
+        media: []
+        issueSignals:
+        - id: sign-error
+          domains: []
       answer:
         choiceId: a
-      explanation: |
-        Including the sign inside the second term prevents sign errors.
-  - id: memorized-forms
-    title: Small forms worth memorizing
-    required: true
-    content: |
-      The most useful forms to know cold are:
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >
+        Solution: Write the expression as $(x+(-4))^4$, so $b=-4$.
 
-      $$
-      (a+b)^2=a^2+2ab+b^2
-      $$
 
-      $$
-      (a-b)^2=a^2-2ab+b^2
-      $$
+        Why it works: The sign is part of the second term and is raised to the power $k$.
 
-      $$
-      (a+b)^3=a^3+3a^2b+3ab^2+b^3
-      $$
 
-      $$
-      (a-b)^3=a^3-3a^2b+3ab^2-b^3
-      $$
-
-      These appear constantly in factoring, completing the square, polynomial rewriting, and approximation.
-    check:
-      id: memorized-forms-check
-      type: selectAll
-      prompt: |
-        Which expansions are correct?
-      choices:
-      - id: a
-        text: $(a+b)^2=a^2+2ab+b^2$
-      - id: b
-        text: $(a-b)^2=a^2-2ab+b^2$
-      - id: c
-        text: $(a-b)^3=a^3-3a^2b+3ab^2-b^3$
-      - id: d
-        text: $(a+b)^3=a^3+a^2b+ab^2+b^3$
-      answer:
-        choiceIds:
-        - a
-        - b
-        - c
-      explanation: |
-        The cube coefficients are $1,3,3,1$, not $1,1,1,1$.
+        Why the other choices fail: They detach the sign from the term or replace the wrong quantity.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
   - id: coefficient-extraction
-    title: Extracting one coefficient
+    title: Extract one term instead of expanding all of them
     required: true
-    content: |
-      If a problem asks for one coefficient, do not expand everything. Use the general term, match the desired power, and compute only that term. This is the main practical use of the binomial theorem in larger powers.
+    content: >
+      If only one coefficient is requested, use the general term, match the desired power, solve for $k$, and evaluate that one term. This is faster and makes the exponent bookkeeping visible.
+    media:
+    - type: image
+      src: /assessments/precalc-binomial/coefficient-flow.svg
+      alt: Four-step flow for finding a binomial coefficient without a full expansion.
+      caption: 
     check:
-      id: coefficient-extraction-check
+      id: extraction-check
       type: multipleChoice
-      prompt: |
-        If you need only the coefficient of $x^7$ in a large binomial expansion, what is the best first move?
+      prompt: To find the $x^4$ term of $(2x-3)^7$, which equation identifies the needed $k$?
       choices:
       - id: a
-        text: Use the general term and match the requested power.
+        text: $7-k=4$
+        media: []
+        issueSignals: []
       - id: b
-        text: Multiply every binomial by hand.
+        text: $k=4$
+        media: []
+        issueSignals:
+        - id: exponent-rule-misapplied
+          domains: []
       - id: c
-        text: Use polynomial long division.
+        text: $7+k=4$
+        media: []
+        issueSignals:
+        - id: algebraic-simplification-error
+          domains: []
       - id: d
-        text: Assume the coefficient is always $1$.
+        text: $2k=4$
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
       answer:
         choiceId: a
-      explanation: |
-        Targeted coefficient extraction is faster and less error-prone than full expansion.
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >
+        Solution: The $x$ power comes from $(2x)^{7-k}$, so solve $7-k=4$.
+
+
+        Why it works: The exponent on the first binomial term falls from $7$ by $k$.
+
+
+        Why the other choices fail: They do not match the actual exponent of $x$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+  - id: exponent-bookkeeping
+    title: Track both exponents in every term
+    required: true
+    content: >
+      In the $k$th selection pattern, the first term supplies $a^{n-k}$ and the second supplies $b^k$. The exponents always add to $n$, which is a quick check that no factor has been lost. For $(x+2)^6$, the term containing $x^4$ must use $k=2$.
+    media: []
+    check:
+      id: exponent-bookkeeping-check
+      type: multipleChoice
+      prompt: Which term of $(x+2)^6$ contains $x^4$ before its numerical coefficient is simplified?
+      choices:
+      - id: a
+        text: $\binom62x^4(2)^2$
+        media: []
+        issueSignals: []
+      - id: b
+        text: $\binom64x^4(2)^4$
+        media: []
+        issueSignals:
+        - id: exponent-rule-misapplied
+          domains: []
+      - id: c
+        text: $\binom62x^2(2)^4$
+        media: []
+        issueSignals:
+        - id: exponent-rule-misapplied
+          domains: []
+      - id: d
+        text: $\binom66x^4$
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >
+        Solution: Set $6-k=4$, so $k=2$ and the term is $\binom62x^4(2)^2$.
+
+
+        Why it works: The first exponent is $n-k$ and the second exponent is $k$, so their sum remains $6$.
+
+
+        Why the other choices fail: They use an exponent pair that does not produce $x^4$ while keeping both exponents tied to the same $k$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+  - id: coefficient-calculation
+    title: Separate the binomial count from numerical powers
+    required: true
+    content: >
+      A coefficient can have two sources: the binomial coefficient and the numerical powers inside the two terms. For example, the $x^2$ term of $(x+3)^4$ has coefficient $\binom42 3^2$, not merely $\binom42$.
+    media: []
+    check:
+      id: coefficient-calculation-check
+      type: multipleChoice
+      prompt: What is the coefficient of $x^2$ in $(x+3)^4$?
+      choices:
+      - id: a
+        text: $54$
+        media: []
+        issueSignals: []
+      - id: b
+        text: $6$
+        media: []
+        issueSignals:
+        - id: algebraic-simplification-error
+          domains: []
+      - id: c
+        text: $18$
+        media: []
+        issueSignals:
+        - id: exponent-rule-misapplied
+          domains: []
+      - id: d
+        text: $81$
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >
+        Solution: The $x^2$ term has $k=2$, so its coefficient is $\binom42 3^2=6\cdot9=54$.
+
+
+        Why it works: Matching $4-k=2$ selects the correct term, then both the binomial count and the constant power contribute to its coefficient.
+
+
+        Why the other choices fail: They omit either the binomial coefficient, part of the power of $3$, or use the constant endpoint instead.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+  - id: choose-a-method
+    title: Choose expansion or extraction deliberately
+    required: true
+    content: >
+      Expand the whole expression when the complete polynomial is needed. When a question asks for one coefficient or one term, the general-term method is more efficient because it avoids computing terms that will not be used.
+    media: []
+    check:
+      id: choose-a-method-check
+      type: multipleChoice
+      prompt: Which task is best handled by the general term instead of a full expansion?
+      choices:
+      - id: a
+        text: Find the coefficient of $x^5$ in $(2x-1)^9$.
+        media: []
+        issueSignals: []
+      - id: b
+        text: List every term of $(x+1)^4$.
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
+      - id: c
+        text: Rewrite $(x+1)^2$ as a product.
+        media: []
+        issueSignals:
+        - id: algebraic-simplification-error
+          domains: []
+      - id: d
+        text: Decide whether $x=1$ is a root of $x^2-1$.
+        media: []
+        issueSignals:
+        - id: expression-equation-recognition-error
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >
+        Solution: Use the general term to isolate the one term containing $x^5$ in $(2x-1)^9$.
+
+
+        Why it works: The requested output is one coefficient, so matching an exponent is faster than calculating every term of a ninth power.
+
+
+        Why the other choices fail: They either require the whole expansion or are not binomial-expansion tasks.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+exploration: 
+directedProject: 
+sandbox: 
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - binomial-theorem
+  - coefficient-extraction
+  - computational
+  - pascals-triangle
+  - precalc-binomial
+  - precalculus
+skills:
+- construct-binomial-terms
+- extract-binomial-coefficients
+- read-pascals-triangle
+authoring:
+  visualRequirement: required
+  visualRationale: 
+  difficultyTier: unspecified
+  exceptionReason: 
+  physicsModel: 

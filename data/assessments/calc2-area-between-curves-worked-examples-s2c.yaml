@@ -1,70 +1,340 @@
 schemaVersion: 1
 id: calc2-area-between-curves-worked-examples-s2c
 title: 'Area Between Curves Worked Examples: One Model and a Partitioned Model'
-
 assessmentType: workedExample
 categoryId: calculus-2
 topicId: area-between-curves
 modeDefault: practice
 randomizeQuestions: false
-skills: [curve-intersections, top-minus-bottom, right-minus-left, piecewise-partitioning]
-navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [calculus-2, area-between-curves, worked-example] }
-authoring: { visualRequirement: required, visualRationale: Each problem requires visual boundary order and partition decisions. }
+attemptQuestionCount: 
+questionTimerSeconds: 
+assessmentTimerSeconds: 
+questionSelection: 
+questions: []
 workedExamples:
-  - id: one-piece-vertical
-    title: One-piece vertical model
-    problem: 'Find the area enclosed by $y=4-x^2$ and $y=x^2$.'
-    steps:
-      - id: one-s1
-        title: Find intersections
-        instruction: 'Set the two y-values equal before choosing bounds.'
-        type: freeResponse
-        prompt: 'Find the two x-intersection values.'
-        media: [{ type: image, src: /media/calculus/area-between-curves-model.svg, alt: Intersections and a vertical slice between two curves, caption: 'Bounds come from where the boundary curves meet.' }]
-        answer: { gradingMode: selfCheck, keyPoints: ['$x=-\sqrt2$', '$x=\sqrt2$'] }
-        explanation: 'Solution: $4-x^2=x^2$ gives $2x^2=4$, so $x=\pm\sqrt2$. Why it works: Equal curve heights locate the outer bounds. Common trap: Do not use vertex coordinates as bounds unless they are intersections.'
-      - id: one-s2
-        title: Determine boundary order
-        instruction: 'Test x=0, which lies inside the interval.'
-        type: multipleChoice
-        prompt: 'Which curve is on top between the intersections?'
-        media: [{ type: image, src: /media/calculus/area-between-curves-model.svg, alt: Vertical slice whose height is upper minus lower, caption: 'Check one interior point to establish the order.' }]
-        choices: [{ id: a, text: '$y=4-x^2$' }, { id: b, text: '$y=x^2$' }, { id: c, text: neither curve }, { id: d, text: the order changes at every x }]
-        answer: { choiceId: a }
-        explanation: 'Solution: At x=0, $4-x^2=4$ while $x^2=0$, so $4-x^2$ is top. Why it works: There is no other intersection inside the interval, so the order remains fixed. Common trap: Checking an endpoint gives equal heights and cannot reveal which curve is above. Why the other choices fail: The parabola is lower at an interior point; the remaining claims contradict the intersection structure.'
-      - id: one-s3
-        title: Build and evaluate the area model
-        instruction: 'Use top minus bottom with vertical thickness.'
-        type: symbolicResponse
-        prompt: 'Evaluate $\int_{-\sqrt2}^{\sqrt2}[(4-x^2)-x^2]\,dx$.'
-        media: [{ type: image, src: /media/calculus/area-between-curves-model.svg, alt: Shaded area with a representative dx slice, caption: 'The integrand is the positive slice height.' }]
-        answer: { expectedLatex: '16\sqrt{2}/3', equivalenceMode: expression, variables: [], tolerance: 0.000001 }
-        explanation: 'Solution: The integrand is $4-2x^2$. Its antiderivative is $4x-\frac23x^3$, and evaluation from $-\sqrt2$ to $\sqrt2$ gives $16\sqrt2/3$. Why it works: Each vertical slice has height upper minus lower. Common trap: The result is area, so it carries square units and must be nonnegative.'
-  - id: sign-changing-area
-    title: Partition an axis-bounded area
-    problem: 'Find the geometric area between $y=x^2-1$ and the x-axis on $[-2,2]$.'
-    steps:
-      - id: sign-s1
-        title: Locate the sign changes
-        instruction: 'The x-axis intersects the curve where $x^2-1=0$.'
-        type: freeResponse
-        prompt: 'At which x-values must the interval be partitioned?'
-        media: [{ type: image, src: /media/calculus/area-between-curves-model.svg, alt: Area model emphasizing a possible change in boundary order, caption: 'Split where the curve crosses its axis boundary.' }]
-        answer: { gradingMode: selfCheck, keyPoints: ['$x=-1$', '$x=1$'] }
-        explanation: 'Solution: $x^2-1=0$ at x=-1 and x=1. Why it works: These are where the curve changes from above to below the axis. Common trap: The outer interval endpoints are not the only relevant model breakpoints.'
-      - id: sign-s2
-        title: Write nonnegative pieces
-        instruction: 'The curve is above the axis on [-2,-1] and [1,2], and below it on [-1,1].'
-        type: freeResponse
-        prompt: 'Write a complete nonnegative area setup.'
-        media: [{ type: image, src: /media/calculus/area-between-curves-model.svg, alt: Vertical slice model used to reason about sign and positive area, caption: 'Below-axis height must be negated for geometric area.' }]
-        answer: { gradingMode: selfCheck, keyPoints: ['$\int_{-2}^{-1}(x^2-1)dx$', '$\int_{-1}^{1}(1-x^2)dx$', '$\int_1^2(x^2-1)dx$'] }
-        explanation: 'Solution: Use $\int_{-2}^{-1}(x^2-1)dx+\int_{-1}^{1}(1-x^2)dx+\int_1^2(x^2-1)dx$. Why it works: Each piece is top minus bottom and therefore nonnegative. Common trap: Integrating $x^2-1$ once over [-2,2] gives signed accumulation, not the requested area.'
-      - id: sign-s3
-        title: Use symmetry to finish
-        instruction: 'The graph is even, so the left and right outer areas match.'
-        type: symbolicResponse
-        prompt: 'Evaluate the total geometric area.'
-        media: [{ type: image, src: /media/calculus/area-between-curves-model.svg, alt: Symmetric region split into sign-consistent pieces, caption: 'Symmetry can shorten evaluation after the correct partition is built.' }]
-        answer: { expectedLatex: '4', equivalenceMode: expression, variables: [], tolerance: 0.000001 }
-        explanation: 'Solution: The central area is $\int_{-1}^{1}(1-x^2)dx=4/3$. Each outer area is $\int_1^2(x^2-1)dx=4/3$, giving $4/3+2(4/3)=4$. Why it works: Even symmetry duplicates the outer contribution. Common trap: Symmetry does not remove the need to correct the sign before integrating.'
+- id: one-piece-vertical
+  title: One-piece vertical model
+  problem: Find the area enclosed by $y=4-x^2$ and $y=x^2$.
+  steps:
+  - id: one-s1
+    title: Find intersections
+    instruction: Set the two y-values equal before choosing bounds.
+    hint: 
+    type: freeResponse
+    prompt: Find the two x-intersection values.
+    choices: []
+    answer:
+      choiceId: 
+      choiceIds: []
+      expected: 
+      gradingMode: selfCheck
+      expectedLatex: 
+      equivalenceMode: 
+      variables: []
+      value: 
+      tolerance: 
+      media: []
+      keyPoints:
+      - $x=-\sqrt2$
+      - $x=\sqrt2$
+      circuitAnswer: 
+      graphingAnswer: 
+    explanation: 'Solution: $4-x^2=x^2$ gives $2x^2=4$, so $x=\pm\sqrt2$. Why it works: Equal curve heights locate the outer bounds. Common trap: Do not use vertex coordinates as bounds unless they are intersections.'
+    media:
+    - type: image
+      src: /media/calculus/area-between-curves-model.svg
+      alt: Intersections and a vertical slice between two curves
+      caption: Bounds come from where the boundary curves meet.
+    language: 
+    functionName: 
+    executionMode: unspecified
+    starterCode: 
+    tests: 
+    issueSignals:
+    - id: sign-error
+      domains: []
+    - id: expression-equation-recognition-error
+      domains: []
+    - id: algebraic-simplification-error
+      domains: []
+    - id: geometric-area-formula-error
+      domains: []
+    - id: mathematical-translation-error
+      domains: []
+    - id: function-analysis-error
+      domains: []
+  - id: one-s2
+    title: Determine boundary order
+    instruction: Test x=0, which lies inside the interval.
+    hint: 
+    type: multipleChoice
+    prompt: Which curve is on top between the intersections?
+    choices:
+    - id: a
+      text: $y=4-x^2$
+      media: []
+      issueSignals: []
+    - id: b
+      text: $y=x^2$
+      media: []
+      issueSignals: []
+    - id: c
+      text: neither curve
+      media: []
+      issueSignals: []
+    - id: d
+      text: the order changes at every x
+      media: []
+      issueSignals: []
+    answer:
+      choiceId: a
+      choiceIds: []
+      expected: 
+      gradingMode: 
+      expectedLatex: 
+      equivalenceMode: 
+      variables: []
+      value: 
+      tolerance: 
+      media: []
+      keyPoints: []
+      circuitAnswer: 
+      graphingAnswer: 
+    explanation: 'Solution: At x=0, $4-x^2=4$ while $x^2=0$, so $4-x^2$ is top. Why it works: There is no other intersection inside the interval, so the order remains fixed. Common trap: Checking an endpoint gives equal heights and cannot reveal which curve is above. Why the other choices fail: The parabola is lower at an interior point; the remaining claims contradict the intersection structure.'
+    media:
+    - type: image
+      src: /media/calculus/area-between-curves-model.svg
+      alt: Vertical slice whose height is upper minus lower
+      caption: Check one interior point to establish the order.
+    language: 
+    functionName: 
+    executionMode: unspecified
+    starterCode: 
+    tests: 
+    issueSignals:
+    - id: sign-error
+      domains: []
+    - id: expression-equation-recognition-error
+      domains: []
+    - id: algebraic-simplification-error
+      domains: []
+    - id: geometric-area-formula-error
+      domains: []
+    - id: mathematical-translation-error
+      domains: []
+    - id: function-analysis-error
+      domains: []
+  - id: one-s3
+    title: Build and evaluate the area model
+    instruction: Use top minus bottom with vertical thickness.
+    hint: 
+    type: symbolicResponse
+    prompt: Evaluate $\int_{-\sqrt2}^{\sqrt2}[(4-x^2)-x^2]\,dx$.
+    choices: []
+    answer:
+      choiceId: 
+      choiceIds: []
+      expected: 
+      gradingMode: 
+      expectedLatex: 16\sqrt{2}/3
+      equivalenceMode: expression
+      variables: []
+      value: 
+      tolerance: 0.000001
+      media: []
+      keyPoints: []
+      circuitAnswer: 
+      graphingAnswer: 
+    explanation: 'Solution: The integrand is $4-2x^2$. Its antiderivative is $4x-\frac23x^3$, and evaluation from $-\sqrt2$ to $\sqrt2$ gives $16\sqrt2/3$. Why it works: Each vertical slice has height upper minus lower. Common trap: The result is area, so it carries square units and must be nonnegative.'
+    media:
+    - type: image
+      src: /media/calculus/area-between-curves-model.svg
+      alt: Shaded area with a representative dx slice
+      caption: The integrand is the positive slice height.
+    language: 
+    functionName: 
+    executionMode: unspecified
+    starterCode: 
+    tests: 
+    issueSignals:
+    - id: sign-error
+      domains: []
+    - id: expression-equation-recognition-error
+      domains: []
+    - id: algebraic-simplification-error
+      domains: []
+    - id: geometric-area-formula-error
+      domains: []
+    - id: mathematical-translation-error
+      domains: []
+    - id: function-analysis-error
+      domains: []
+- id: sign-changing-area
+  title: Partition an axis-bounded area
+  problem: Find the geometric area between $y=x^2-1$ and the x-axis on $[-2,2]$.
+  steps:
+  - id: sign-s1
+    title: Locate the sign changes
+    instruction: The x-axis intersects the curve where $x^2-1=0$.
+    hint: 
+    type: freeResponse
+    prompt: At which x-values must the interval be partitioned?
+    choices: []
+    answer:
+      choiceId: 
+      choiceIds: []
+      expected: 
+      gradingMode: selfCheck
+      expectedLatex: 
+      equivalenceMode: 
+      variables: []
+      value: 
+      tolerance: 
+      media: []
+      keyPoints:
+      - $x=-1$
+      - $x=1$
+      circuitAnswer: 
+      graphingAnswer: 
+    explanation: 'Solution: $x^2-1=0$ at x=-1 and x=1. Why it works: These are where the curve changes from above to below the axis. Common trap: The outer interval endpoints are not the only relevant model breakpoints.'
+    media:
+    - type: image
+      src: /media/calculus/area-between-curves-model.svg
+      alt: Area model emphasizing a possible change in boundary order
+      caption: Split where the curve crosses its axis boundary.
+    language: 
+    functionName: 
+    executionMode: unspecified
+    starterCode: 
+    tests: 
+    issueSignals:
+    - id: sign-error
+      domains: []
+    - id: expression-equation-recognition-error
+      domains: []
+    - id: algebraic-simplification-error
+      domains: []
+    - id: geometric-area-formula-error
+      domains: []
+    - id: mathematical-translation-error
+      domains: []
+    - id: function-analysis-error
+      domains: []
+  - id: sign-s2
+    title: Write nonnegative pieces
+    instruction: The curve is above the axis on [-2,-1] and [1,2], and below it on [-1,1].
+    hint: 
+    type: freeResponse
+    prompt: Write a complete nonnegative area setup.
+    choices: []
+    answer:
+      choiceId: 
+      choiceIds: []
+      expected: 
+      gradingMode: selfCheck
+      expectedLatex: 
+      equivalenceMode: 
+      variables: []
+      value: 
+      tolerance: 
+      media: []
+      keyPoints:
+      - $\int_{-2}^{-1}(x^2-1)dx$
+      - $\int_{-1}^{1}(1-x^2)dx$
+      - $\int_1^2(x^2-1)dx$
+      circuitAnswer: 
+      graphingAnswer: 
+    explanation: 'Solution: Use $\int_{-2}^{-1}(x^2-1)dx+\int_{-1}^{1}(1-x^2)dx+\int_1^2(x^2-1)dx$. Why it works: Each piece is top minus bottom and therefore nonnegative. Common trap: Integrating $x^2-1$ once over [-2,2] gives signed accumulation, not the requested area.'
+    media:
+    - type: image
+      src: /media/calculus/area-between-curves-model.svg
+      alt: Vertical slice model used to reason about sign and positive area
+      caption: Below-axis height must be negated for geometric area.
+    language: 
+    functionName: 
+    executionMode: unspecified
+    starterCode: 
+    tests: 
+    issueSignals:
+    - id: sign-error
+      domains: []
+    - id: expression-equation-recognition-error
+      domains: []
+    - id: algebraic-simplification-error
+      domains: []
+    - id: geometric-area-formula-error
+      domains: []
+    - id: mathematical-translation-error
+      domains: []
+    - id: function-analysis-error
+      domains: []
+  - id: sign-s3
+    title: Use symmetry to finish
+    instruction: The graph is even, so the left and right outer areas match.
+    hint: 
+    type: symbolicResponse
+    prompt: Evaluate the total geometric area.
+    choices: []
+    answer:
+      choiceId: 
+      choiceIds: []
+      expected: 
+      gradingMode: 
+      expectedLatex: 4
+      equivalenceMode: expression
+      variables: []
+      value: 
+      tolerance: 0.000001
+      media: []
+      keyPoints: []
+      circuitAnswer: 
+      graphingAnswer: 
+    explanation: 'Solution: The central area is $\int_{-1}^{1}(1-x^2)dx=4/3$. Each outer area is $\int_1^2(x^2-1)dx=4/3$, giving $4/3+2(4/3)=4$. Why it works: Even symmetry duplicates the outer contribution. Common trap: Symmetry does not remove the need to correct the sign before integrating.'
+    media:
+    - type: image
+      src: /media/calculus/area-between-curves-model.svg
+      alt: Symmetric region split into sign-consistent pieces
+      caption: Symmetry can shorten evaluation after the correct partition is built.
+    language: 
+    functionName: 
+    executionMode: unspecified
+    starterCode: 
+    tests: 
+    issueSignals:
+    - id: sign-error
+      domains: []
+    - id: expression-equation-recognition-error
+      domains: []
+    - id: algebraic-simplification-error
+      domains: []
+    - id: geometric-area-formula-error
+      domains: []
+    - id: mathematical-translation-error
+      domains: []
+    - id: function-analysis-error
+      domains: []
+guidedProject: 
+items: []
+glossary: 
+lesson: 
+exploration: 
+directedProject: 
+sandbox: 
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - area-between-curves
+  - calculus-2
+  - worked-example
+skills:
+- curve-intersections
+- piecewise-partitioning
+- right-minus-left
+- top-minus-bottom
+authoring:
+  visualRequirement: required
+  visualRationale: Each problem requires visual boundary order and partition decisions.
+  difficultyTier: unspecified
+  exceptionReason: 
+  physicsModel: 

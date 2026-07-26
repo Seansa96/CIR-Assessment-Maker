@@ -1,0 +1,94 @@
+schemaVersion: 1
+id: physics-relative-motion-hard-quiz
+title: Relative Motion Course-Correction Quiz
+assessmentType: quiz
+categoryId: physics-1
+topicId: physics-motion-2d
+skills: [Apply Motion in Two Dimensions, relative-velocity, vector-components, course-correction]
+navigation:
+  learningGoal: practice
+  activityType: mixedPractice
+  tags: [physics-1, physics-motion-2d, relative-motion]
+modeDefault: practice
+randomizeQuestions: true
+authoring:
+  difficultyTier: hard
+  visualRequirement: notApplicable
+questions:
+  - id: q001
+    type: numericResponse
+    prompt: 'A plane has an airspeed of $250 \text{km/h}$. A wind blows $90 \text{km/h}$ due east. To travel due north over the ground, how many degrees west of north must the pilot head?'
+    answer:
+      value: 21.1
+      tolerance: 0.1
+    difficultyDimensions: [representationTransfer, domainCondition, auxiliaryTechnique]
+    subjectDifficultyTags: [course-correction, inverse-trigonometry]
+    difficultyEvidence: Uses a zero east-west ground-velocity constraint and inverse trigonometry to determine the heading.
+    prerequisiteObjectiveIds: [phys1-relative-motion-components]
+    extensionObjectiveIds: [phys1-relative-motion-course-correction]
+    explanation: |
+      Solution: The plane needs a westward airspeed component of $90 \text{km/h}$ to cancel the eastward wind. If $\theta$ is west of north,
+
+      $$
+      250\sin\theta=90,\qquad \theta=\sin^{-1}\left(\frac{90}{250}\right)=21.1^\circ.
+      $$
+
+      Why it works: A due-north ground track requires the east-west components of the plane's airspeed and the wind to sum to zero.
+  - id: q002
+    type: numericResponse
+    prompt: 'A river is $300 \text{m}$ wide and flows east at $4.0 \text{m/s}$. A boat moves at $10.0 \text{m/s}$ relative to the water and aims so it lands directly across the river. How long does the crossing take, in seconds?'
+    answer:
+      value: 32.73
+      tolerance: 0.02
+    difficultyDimensions: [modelOrDerivation, domainCondition, auxiliaryTechnique]
+    subjectDifficultyTags: [course-correction, component-constraint]
+    difficultyEvidence: Enforces zero drift, finds the remaining across-river component, then calculates travel time.
+    prerequisiteObjectiveIds: [phys1-relative-motion-components]
+    extensionObjectiveIds: [phys1-relative-motion-course-correction]
+    explanation: |
+      Solution: To cancel the $4.0 \text{m/s}$ eastward current, the boat supplies a $4.0 \text{m/s}$ westward component. Its northward component is
+
+      $$
+      v_N=sqrt{10.0^2-4.0^2}=9.165 \text{m/s}.
+      $$
+
+      Thus
+
+      $$
+      t=\frac{300}{9.165}=32.73 \text{s}.
+      $$
+
+      Why it works: The zero-drift condition fixes one component; only the remaining northward component moves the boat across the width.
+  - id: q003
+    type: multipleChoice
+    prompt: 'Let east be $+x$ and north be $+y$. Car A moves $20 \text{m/s}$ east and car B moves $15 \text{m/s}$ north. What is the velocity of car A relative to car B?'
+    choices:
+      - id: a
+        text: '$25 \text{m/s}$ at $36.9^circ$ south of east'
+      - id: b
+        text: '$25 \text{m/s}$ at $36.9^circ$ north of east'
+        issueSignals: [{id: relative-velocity-frame-error, domains: [relative-motion, vector-components]}]
+      - id: c
+        text: '$35 \text{m/s}$ at $36.9^circ$ north of east'
+        issueSignals: [{id: vector-addition-geometry-error, domains: [relative-motion, vector-components]}]
+      - id: d
+        text: '$5 \text{m/s}$ east'
+        issueSignals: [{id: vector-addition-error, domains: [relative-motion, vector-components]}]
+    answer:
+      choiceId: a
+    difficultyDimensions: [representationTransfer, errorDiagnosis, modelOrDerivation]
+    subjectDifficultyTags: [observer-subtraction, vector-direction]
+    difficultyEvidence: Requires component subtraction, resultant magnitude, and quadrant-aware direction.
+    prerequisiteObjectiveIds: [phys1-relative-motion-frame-equation]
+    extensionObjectiveIds: [phys1-relative-motion-course-correction]
+    explanation: |
+      Solution: Subtract the observer's velocity:
+
+      $$
+      \vec v_{A/B}=(20,0)-(0,15)=(20,-15) \text{m/s}.
+      $$
+
+      Its magnitude is $sqrt{20^2+15^2}=25 \text{m/s}$ and its direction is $\tan^{-1}(15/20)=36.9^circ$ south of east.
+
+      Why it works: Car B's northward velocity becomes a southward component in B's frame, because B is the observer being subtracted.
+      Why the other choices fail: Choice b has the vertical direction reversed; choice c adds perpendicular speeds instead of using component subtraction and the Pythagorean theorem; choice d incorrectly treats a two-dimensional vector as scalar speeds.

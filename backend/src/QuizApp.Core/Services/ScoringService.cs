@@ -152,6 +152,24 @@ public sealed class ScoringService
             var isPendingSelfCheck = question.Type is QuestionType.FreeResponse
                 && answer?.Answer.FreeResponseText is not null
                 && answer.Answer.SelfCheckCorrect is null;
+            
+            var issueSignalIds = new List<string>();
+            if (question.Type == QuestionType.MultipleChoice && answer?.Answer?.ChoiceId != null)
+            {
+                var selectedChoice = question.Choices.FirstOrDefault(c => string.Equals(c.Id, answer.Answer.ChoiceId, StringComparison.OrdinalIgnoreCase));
+                if (selectedChoice != null)
+                {
+                    issueSignalIds.AddRange(selectedChoice.IssueSignals.Select(s => s.Id));
+                }
+            }
+            else if (question.Type != QuestionType.MultipleChoice)
+            {
+                var isIncorrect = (answer?.UserOverriddenCorrect ?? answer?.Evaluation?.IsCorrect) == false;
+                if (answer?.Answer?.SelectedIssueSignalIds?.Count > 0)
+                {
+                    issueSignalIds.AddRange(answer.Answer.SelectedIssueSignalIds);
+                }
+            }
 
             return new QuestionResult(
                 question.Id,
@@ -176,7 +194,9 @@ public sealed class ScoringService
                 KeyPoints = showFeedback ? question.Answer.KeyPoints : Array.Empty<string>(),
                 IsPendingSelfCheck = isPendingSelfCheck,
                 EarnedPoints = answer?.UserOverriddenCorrect == true ? (answer?.Evaluation?.PossiblePoints ?? 1m) : (answer?.Evaluation?.EarnedPoints ?? 0m),
-                PossiblePoints = answer?.Evaluation?.PossiblePoints ?? 1m
+                PossiblePoints = answer?.Evaluation?.PossiblePoints ?? 1m,
+                IssueSignalIds = issueSignalIds.ToArray(),
+                AvailableIssueSignals = question.IssueSignals
             };
         }).ToList();
 

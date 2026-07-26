@@ -1,0 +1,317 @@
+schemaVersion: 1
+id: calc2-power-series-family-tree-worked-example
+title: Power Series Family Tree Worked Examples
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: power-series
+modeDefault: practice
+randomizeQuestions: false
+skills:
+  - Apply Power Series and Representations
+  - Transform known series by substitution differentiation and multiplication
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [calculus-2, power-series, geometric-series, known-series, series-transformations]
+workedExamples:
+  - id: family-tree-logarithm-composition
+    title: 'Build $x^2\ln(1+x^3)$ From the Logarithm Template'
+    problem: |
+      Find a power-series representation for
+
+      $$x^2\ln(1+x^3)$$
+
+      and state its interval of convergence.
+
+      **Short route:** recognize $\ln(1+u)$, substitute $u=x^3$, multiply by $x^2$, then transform the interval.
+    steps:
+      - id: family-tree-logarithm-step-1
+        title: Identify the parent series
+        instruction: |
+          The needed template is
+
+          $$\ln(1+u)=\sum_{n=1}^{\infty}\frac{(-1)^{n-1}u^n}{n},\qquad -1<u\leq1.$$
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: What input should replace $u$?
+        answer:
+          gradingMode: selfCheck
+          keyPoints: ['$u=x^3$.']
+        explanation: |
+          Solution:
+
+          $$u=x^3.$$
+
+          Why it works:
+          The logarithm's input is exactly $1+x^3$, which matches the template $1+u$.
+      - id: family-tree-logarithm-step-2
+        title: Substitute before multiplying
+        instruction: Replace $u$ by $x^3$ in every term of the logarithm series.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Write the series for $\ln(1+x^3)$.
+        answer:
+          expectedLatex: '\sum_{n=1}^{\infty}\frac{(-1)^{n-1}x^{3n}}{n}'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$\ln(1+x^3)=\sum_{n=1}^{\infty}\frac{(-1)^{n-1}x^{3n}}{n}.$$
+
+          Why it works: $(x^3)^n=x^{3n}$, while the alternating sign and denominator remain part of the source template.
+      - id: family-tree-logarithm-step-3
+        title: Apply the outside factor
+        instruction: Multiply each term by $x^2$ and combine exponents using $x^2x^{3n}=x^{3n+2}$.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Write the series for $x^2\ln(1+x^3)$.
+        answer:
+          expectedLatex: '\sum_{n=1}^{\infty}\frac{(-1)^{n-1}x^{3n+2}}{n}'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$x^2\ln(1+x^3)=\sum_{n=1}^{\infty}\frac{(-1)^{n-1}x^{3n+2}}{n}.$$
+
+          Why it works: Multiplication by an outside polynomial factor shifts every exponent but does not change the coefficients from the logarithm series.
+      - id: family-tree-logarithm-step-4
+        title: Carry the endpoint rule through the substitution
+        instruction: The source condition $-1<u\leq1$ becomes $-1<x^3\leq1$. Since cubing is increasing on the real line, test the corresponding endpoints using the source logarithm behavior.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: State the interval of convergence.
+        answer:
+          gradingMode: selfCheck
+          keyPoints: ['The interval is $(-1,1]$.', '$x=-1$ is excluded and $x=1$ is included.']
+        explanation: |
+          Solution: The interval of convergence is $$(-1,1].$$
+
+          Why it works: The substitution sends $x=-1$ to $u=-1$, where the logarithm series diverges, and sends $x=1$ to $u=1$, where it converges conditionally.
+  - id: family-tree-differentiated-geometric
+    title: Build $\frac{x}{(1+x)^2}$ From the Geometric Series
+    problem: |
+      Find a power-series representation for
+
+      $$\frac{x}{(1+x)^2}.$$
+
+      **Short route:** start with the geometric series, replace $x$ by $-x$, differentiate, then multiply by the outside $x$.
+    steps:
+      - id: family-tree-rational-step-1
+        title: Change the geometric input
+        instruction: |
+          From $1/(1-u)=\sum u^n$, use $u=-x$:
+
+          $$\frac{1}{1+x}=\sum_{n=0}^{\infty}(-1)^n x^n,\qquad |x|<1.$$
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Differentiate the series for $1/(1+x)$ term by term.
+        answer:
+          expectedLatex: '\sum_{n=1}^{\infty}(-1)^n n x^{n-1}'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$\frac{d}{dx}\sum_{n=0}^{\infty}(-1)^n x^n=\sum_{n=1}^{\infty}(-1)^n n x^{n-1}.$$
+
+          Why it works: The constant term differentiates to zero, and the power rule turns $x^n$ into $n x^{n-1}$.
+      - id: family-tree-rational-step-2
+        title: Match the differentiated function
+        instruction: |
+          Differentiating the left side gives
+
+          $$\frac{d}{dx}(1+x)^{-1}=-(1+x)^{-2}.$$
+
+          Multiply both sides by $-1$ before using the outside factor.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Write the series for $\frac{1}{(1+x)^2}$.
+        answer:
+          expectedLatex: '\sum_{n=1}^{\infty}(-1)^{n-1}n x^{n-1}'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$\frac{1}{(1+x)^2}=\sum_{n=1}^{\infty}(-1)^{n-1}n x^{n-1}.$$
+
+          Why it works: Negating the differentiated identity changes $(-1)^n$ to $(-1)^{n-1}$ and makes the rational expression positive.
+      - id: family-tree-rational-step-3
+        title: Multiply by the remaining $x$
+        instruction: Multiply every term by $x$, so $x\cdot x^{n-1}=x^n$.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Write the series for $\frac{x}{(1+x)^2}$.
+        answer:
+          expectedLatex: '\sum_{n=1}^{\infty}(-1)^{n-1}n x^n'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$\frac{x}{(1+x)^2}=\sum_{n=1}^{\infty}(-1)^{n-1}n x^n.$$
+
+          Why it works: The outside factor shifts the power from $n-1$ to $n$ without changing the alternating coefficient pattern.
+      - id: family-tree-rational-step-4
+        title: Keep the source interval
+        instruction: Differentiation preserves the geometric series radius, and multiplication by $x$ does not create a new singularity.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: What is the radius of convergence?
+        answer:
+          gradingMode: selfCheck
+          keyPoints: ['$R=1$.', 'The interior interval is $(-1,1)$.']
+        explanation: |
+          Solution: The radius of convergence is $$R=1.$$
+
+          Why it works: The source geometric series has radius $1$, and termwise differentiation retains that radius.
+  - id: family-tree-logarithm-reindexing
+    title: Derive and Re-index the Series for $\ln(1+x)$
+    problem: |
+      Starting with the geometric representation for $1/(1+x)$, derive the power series for
+
+      $$\ln(1+x)$$
+
+      in the form
+
+      $$\sum_{n=1}^{\infty}\frac{(-1)^{n+1}x^n}{n}.$$
+
+      **Short route:** integrate with a temporary index $k$, determine the constant at $x=0$, then shift $k+1$ to the final index $n$.
+    steps:
+      - id: family-tree-logarithm-reindex-step-1
+        title: Start with a temporary index
+        instruction: |
+          The geometric series with input $-x$ is
+
+          $$\frac{1}{1+x}=\sum_{k=0}^{\infty}(-1)^k x^k,\qquad |x|<1.$$
+
+          Using $k$ now leaves $n$ available for the final re-indexed answer.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Integrate the right side term by term, keeping the index $k$.
+        answer:
+          expectedLatex: '\sum_{k=0}^{\infty}\frac{(-1)^k x^{k+1}}{k+1}'
+          equivalenceMode: expression
+          variables: [x, k]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$\int\sum_{k=0}^{\infty}(-1)^k x^k\,dx=\sum_{k=0}^{\infty}\frac{(-1)^k x^{k+1}}{k+1}+C.$$
+
+          Why it works: Termwise integration changes $x^k$ to $x^{k+1}/(k+1)$ while leaving the alternating factor attached to the same index.
+      - id: family-tree-logarithm-reindex-step-2
+        title: Determine the integration constant
+        instruction: |
+          The left side integrates to $\ln(1+x)$. At $x=0$, the logarithm is $\ln 1=0$, and every term in the integrated series contains a positive power of $x$.
+        type: numericResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: What is the integration constant $C$?
+        answer:
+          value: 0
+          tolerance: 0
+        explanation: |
+          Solution: $$C=0.$$
+
+          Why it works: Substituting $x=0$ gives $\ln(1+0)=0$, and the series sum is also $0$, so no additional constant is present.
+      - id: family-tree-logarithm-reindex-step-3
+        title: Shift the starting index deliberately
+        instruction: |
+          Set
+
+          $$n=k+1.$$
+
+          Then the old first index $k=0$ becomes $n=1$. Make the same replacement everywhere: $k=n-1$, $k+1=n$, and $x^{k+1}=x^n$.
+        type: freeResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: After setting $n=k+1$, what does the sign factor $(-1)^k$ become?
+        answer:
+          gradingMode: selfCheck
+          keyPoints: ['$(-1)^{n-1}$.', 'This equals $(-1)^{n+1}$ because the exponents differ by $2$.']
+        explanation: |
+          Solution: $$(-1)^k=(-1)^{n-1}=(-1)^{n+1}.$$
+
+          Why it works: Replacing $k$ by $n-1$ gives the first form. Adding $2$ to an exponent does not change a power of $-1$, since $(-1)^2=1$.
+      - id: family-tree-logarithm-reindex-step-4
+        title: Write the standard indexed form
+        instruction: |
+          The integrated series starts at $k=0$, but after $n=k+1$ its first term must start at $n=1$. Use the equivalent sign form requested in the problem.
+        type: symbolicResponse
+        issueSignals:
+        - id: power-series-expansion-error
+        - id: geometric-series-convergence-error
+        - id: series-test-selection-error
+        - id: exponent-rule-misapplied
+        - id: limit-evaluation-error
+        - id: function-composition-error
+        prompt: Write the re-indexed power series for $\ln(1+x)$.
+        answer:
+          expectedLatex: '\sum_{n=1}^{\infty}\frac{(-1)^{n+1}x^n}{n}'
+          equivalenceMode: expression
+          variables: [x, n]
+          tolerance: 0.000001
+        explanation: |
+          Solution: $$\ln(1+x)=\sum_{n=1}^{\infty}\frac{(-1)^{n+1}x^n}{n},\qquad -1<x\leq1.$$
+
+          Why it works: Re-indexing changes the lower bound from $0$ to $1$, the exponent from $k+1$ to $n$, and the denominator from $k+1$ to $n$. The sign $(-1)^{n-1}$ can be written as $(-1)^{n+1}$ without changing any term.

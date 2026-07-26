@@ -1,0 +1,341 @@
+schemaVersion: 1
+id: calc2-taylor-maclaurin-coefficient-coordinates-concept-lesson
+title: 'Taylor and Maclaurin Series: Coefficients as Coordinates'
+assessmentType: conceptLesson
+categoryId: calculus-2
+topicId: taylor-maclaurin
+modeDefault: practice
+randomizeQuestions: false
+attemptQuestionCount:
+questionTimerSeconds:
+assessmentTimerSeconds:
+questionSelection:
+questions: []
+workedExamples: []
+guidedProject:
+items: []
+glossary:
+lesson:
+  introduction: |
+    A power series is not merely a long formula. With the powers
+    $1,x,x^2,x^3,\ldots$ fixed in their usual order, its coefficients act like
+    coordinates: each coefficient occupies one address, or slot.
+
+    Taylor and Maclaurin series explain how derivatives recover those
+    coordinates. Taylor polynomials then use the first finitely many recovered
+    coordinates to approximate a function locally.
+  sections:
+  - id: coefficient-slots
+    title: Powers are addresses for coefficients
+    required: true
+    content: |
+      Consider
+
+      $$
+      P(x)=2+3x+5x^2.
+      $$
+
+      It can also be written as
+
+      $$
+      P(x)=2+3x+5x^2+0x^3+0x^4+\cdots.
+      $$
+
+      The two expressions represent the same polynomial. Relative to the
+      ordered building blocks $1,x,x^2,\ldots$, the coefficient sequence is
+
+      $$
+      (2,3,5,0,0,\ldots).
+      $$
+
+      The variable does not change the coefficient data. The power $x^n$
+      tells the coefficient $a_n$ which slot it occupies when we evaluate
+      $\sum a_nx^n$.
+
+      ![A coefficient-slot diagram for a polynomial and a power series](/assessments/calc2-infinite-series/taylor-coefficient-coordinates.svg)
+    media:
+    - type: image
+      src: /assessments/calc2-infinite-series/taylor-coefficient-coordinates.svg
+      alt: A row of coefficient slots labeled by powers of x, followed by a derivative filter that isolates one coefficient.
+      caption:
+    check:
+      id: coefficient-slots-check
+      type: multipleChoice
+      prompt: Which coefficient sequence represents $4-x+6x^2$?
+      choices:
+      - id: a
+        text: '$(4,-1,6,0,0,\ldots)$'
+        issueSignals: []
+      - id: b
+        text: '$(4,1,6,0,0,\ldots)$'
+        issueSignals:
+        - id: sign-lost-in-coefficient-sequence
+          domains: []
+      - id: c
+        text: '$(4,-1,6)$ only; later coefficients cannot be specified.'
+        issueSignals:
+        - id: zero-coefficients-omitted
+          domains: []
+      - id: d
+        text: '$(4,x,6x^2,0,0,\ldots)$'
+        issueSignals:
+        - id: coefficient-and-basis-confused
+          domains: []
+      answer:
+        choiceId: a
+      explanation: |
+        Solution: The coefficients in the $1,x,x^2,x^3,\ldots$ slots are
+        $4,-1,6,0,\ldots$, so the sequence is $(4,-1,6,0,0,\ldots)$.
+
+        Why it works: A coefficient is the number multiplying a fixed basis
+        power. The absent $x^3,x^4,\ldots$ terms have coefficient zero; the
+        powers themselves are labels, not entries in the sequence.
+
+        Why the other choices fail: Choice b loses the negative coefficient;
+        choice c overlooks the zero-filled continuation; choice d puts basis
+        expressions into slots that should contain numbers.
+  - id: coefficient-operations
+    title: Addition is coordinatewise; multiplication mixes coordinates
+    required: true
+    content: |
+      Addition uses matching slots. For example,
+
+      $$
+      (2+3x+5x^2)+(1+4x+2x^2)=3+7x+7x^2.
+      $$
+
+      In coefficient form this is simply
+
+      $$
+      (2,3,5)+(1,4,2)=(3,7,7).
+      $$
+
+      Multiplication is different. The coefficient of $x^n$ in a product
+      receives contributions from every pair of exponents that adds to $n$.
+      For $(1+x)^2$, the middle coefficient is $2$ because $x^1$ comes from
+      both $1\cdot x$ and $x\cdot1$. This mixing rule is called convolution.
+    check:
+      id: coefficient-convolution-check
+      type: multipleChoice
+      prompt: Why is the coefficient of $x$ in $(1+x)(1+x)$ equal to $2$?
+      choices:
+      - id: a
+        text: '$x$ is formed by $1\cdot x$ and by $x\cdot1$.'
+        issueSignals: []
+      - id: b
+        text: '$x\cdot x=x$.'
+        issueSignals:
+        - id: exponent-addition-error
+          domains: []
+      - id: c
+        text: Every polynomial coefficient doubles under multiplication.
+        issueSignals:
+        - id: convolution-rule-misunderstood
+          domains: []
+      - id: d
+        text: The two constant terms add to $2x$.
+        issueSignals:
+        - id: coefficient-and-power-confused
+          domains: []
+      answer:
+        choiceId: a
+      explanation: |
+        Solution: The two products with total exponent $1$ are $1\cdot x$
+        and $x\cdot1$, so their coefficients add to $1+1=2$.
+
+        Why it works: In a product, exponents add. To build $x^n$, collect all
+        products whose exponents total $n$ and add their coefficient products.
+
+        Why the other choices fail: Choice b gives $x^2$, not $x$; choice c
+        invents a rule that does not hold; choice d confuses a constant
+        contribution with a linear term.
+  - id: derivative-detector
+    title: The nth derivative is a coefficient detector
+    required: true
+    content: |
+      Let
+
+      $$
+      f(x)=7+5x+9x^2+2x^3.
+      $$
+
+      The third derivative is $f'''(x)=12$. The original cubic coefficient
+      was $2$, and $12=3!\cdot2$.
+
+      In general, applying $n$ derivatives to one basis term gives
+
+      $$
+      \frac{d^n}{dx^n}(cx^n)=n!c.
+      $$
+
+      Lower powers vanish before the $n$th derivative. Higher powers still
+      contain a factor of $x$, so evaluating at $x=0$ makes them vanish.
+      Thus $f^{(n)}(0)$ isolates exactly the coefficient in the $x^n$ slot,
+      multiplied by $n!$.
+    check:
+      id: derivative-detector-check
+      type: symbolicResponse
+      prompt: If $g(x)=4-3x+8x^2-5x^3$, what is $g'''(0)$?
+      choices: []
+      answer:
+        expectedLatex: '-30'
+        equivalenceMode: expression
+        variables: []
+        tolerance: 0.000001
+      explanation: |
+        Solution: The cubic term contributes $3!(-5)=-30$, so
+        $g'''(0)=-30$.
+
+        Why it works: The constant, linear, and quadratic terms disappear
+        after three derivatives. No higher powers are present; generally,
+        any higher-power term would still have an $x$ factor and vanish at
+        $x=0$.
+  - id: taylor-coordinates
+    title: Taylor series recover the coordinate sequence
+    required: true
+    content: |
+      For a Maclaurin series
+
+      $$
+      f(x)=\sum_{n=0}^{\infty}c_nx^n,
+      $$
+
+      the detector rule gives
+
+      $$
+      c_n=\frac{f^{(n)}(0)}{n!}.
+      $$
+
+      Therefore, if a function equals its Maclaurin series,
+
+      $$
+      f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(0)}{n!}x^n.
+      $$
+
+      Centering at $a$ changes the slots to $1,(x-a),(x-a)^2,\ldots$ and
+      gives the Taylor formula
+
+      $$
+      f(x)=\sum_{n=0}^{\infty}\frac{f^{(n)}(a)}{n!}(x-a)^n.
+      $$
+
+      Derivatives do not describe a relationship between consecutive
+      coefficients. They measure one particular coefficient relative to the
+      chosen power basis.
+    check:
+      id: taylor-coordinates-check
+      type: multipleChoice
+      prompt: In a Taylor series centered at $a$, what does $f^{(4)}(a)/4!$ determine?
+      choices:
+      - id: a
+        text: The coefficient of $(x-a)^4$.
+        issueSignals: []
+      - id: b
+        text: The fourth coefficient's change from the third coefficient.
+        issueSignals:
+        - id: consecutive-coefficients-confused
+          domains: []
+      - id: c
+        text: The coefficient of $(x-a)$.
+        issueSignals:
+        - id: derivative-order-slot-mismatch
+          domains: []
+      - id: d
+        text: The radius of convergence.
+        issueSignals:
+        - id: coefficient-and-convergence-confused
+          domains: []
+      answer:
+        choiceId: a
+      explanation: |
+        Solution: $f^{(4)}(a)/4!$ is the coefficient multiplying $(x-a)^4$.
+
+        Why it works: Four differentiations isolate the fourth shifted-power
+        slot and produce a factor of $4!$, which the denominator cancels.
+
+        Why the other choices fail: Choice b treats derivatives as a
+        consecutive-term rule; choice c uses the wrong slot; choice d confuses
+        coefficient recovery with a convergence property.
+  - id: approximation-and-equality
+    title: A Taylor polynomial is local data made usable
+    required: true
+    content: |
+      The first $N+1$ Taylor coordinates form the Taylor polynomial
+
+      $$
+      T_N(x)=\sum_{n=0}^{N}\frac{f^{(n)}(a)}{n!}(x-a)^n.
+      $$
+
+      It matches the function and its first $N$ derivatives at the center
+      $a$. That is why it is a local approximation: it preserves the function's
+      value, slope, curvature, and higher local behavior that those derivatives
+      record.
+
+      The remainder is
+
+      $$
+      R_N(x)=f(x)-T_N(x).
+      $$
+
+      More matching coordinates often improve the approximation near $a$, but
+      they do not automatically prove that an infinite Taylor series equals the
+      original function. Equality requires the remainder to approach zero in
+      the region being considered.
+    check:
+      id: approximation-equality-check
+      type: selectAll
+      prompt: Which statements about $T_N(x)$ are true?
+      choices:
+      - id: a
+        text: It matches $f$ and its first $N$ derivatives at the center.
+        issueSignals: []
+      - id: b
+        text: It is generally intended for use near the center.
+        issueSignals: []
+      - id: c
+        text: Its existence alone proves that the infinite Taylor series equals $f$ everywhere.
+        issueSignals:
+        - id: taylor-equality-assumed-without-remainder
+          domains: []
+      - id: d
+        text: Its error is $R_N(x)=f(x)-T_N(x)$.
+        issueSignals: []
+      answer:
+        choiceIds:
+        - a
+        - b
+        - d
+      explanation: |
+        Solution: Statements a, b, and d are true. The false statement is c.
+
+        Why it works: A Taylor polynomial is constructed to match derivative
+        data at its center, and the remainder measures its difference from the
+        function. To conclude equality with an infinite Taylor series, one must
+        additionally show the remainders tend to zero.
+
+        Why the other choices fail: Choice c mistakes derivative matching at
+        every finite degree for a proof of global equality with an infinite
+        series.
+exploration:
+directedProject:
+sandbox:
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - calculus-2
+  - taylor-maclaurin
+  - taylor-series
+  - coefficient-sequences
+  - basis-functions
+  - approximation
+skills:
+- Interpret polynomial and power-series coefficients as coordinates in a power basis
+- Use derivatives at a center to recover Taylor and Maclaurin coefficients
+- Distinguish local Taylor-polynomial approximation from equality with an infinite Taylor series
+authoring:
+  visualRequirement: required
+  visualRationale: The coefficient-slot and derivative-filter visual connects the indexed coefficient sequence to the derivative operation that extracts one slot.
+  difficultyTier: easy
+  exceptionReason:
+  physicsModel:

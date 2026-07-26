@@ -113,7 +113,7 @@ public sealed class AttemptService
 
         if (attempt.Status is not AttemptStatus.InProgress)
         {
-            if (!CanUpdateCompletedFreeResponseSelfCheck(attempt, question, submittedAnswer, existingAnswer))
+            if (!CanUpdateCompletedAttemptAnswer(attempt, question, submittedAnswer, existingAnswer))
             {
                 throw new InvalidOperationException("Can only submit answers to an in-progress attempt.");
             }
@@ -798,16 +798,25 @@ public sealed class AttemptService
         await attemptSessionStore.DeleteAsync(attempt.Id, cancellationToken);
     }
 
-    private static bool CanUpdateCompletedFreeResponseSelfCheck(
+    private static bool CanUpdateCompletedAttemptAnswer(
         Attempt attempt,
         QuestionDefinition question,
         SubmittedAnswer submittedAnswer,
         AttemptAnswer? existingAnswer)
     {
-        return attempt.Status is AttemptStatus.Completed
-            && question.Type is QuestionType.FreeResponse
+        if (attempt.Status is not AttemptStatus.Completed)
+        {
+            return false;
+        }
+        
+        var isFreeResponseSelfCheck = question.Type is QuestionType.FreeResponse
             && existingAnswer?.Answer.FreeResponseText is not null
             && submittedAnswer.SelfCheckCorrect is not null;
+
+        var isUpdatingReflection = submittedAnswer.SelectedIssueSignalIds?.Count > 0 
+            && existingAnswer?.Evaluation?.IsCorrect == false;
+
+        return isFreeResponseSelfCheck || isUpdatingReflection;
     }
 
     private static SubmittedAnswer NormalizeSubmittedAnswer(
@@ -815,14 +824,29 @@ public sealed class AttemptService
         SubmittedAnswer submittedAnswer,
         AttemptAnswer? existingAnswer)
     {
-        if (question.Type is not QuestionType.FreeResponse
-            || submittedAnswer.SelfCheckCorrect is null
-            || existingAnswer?.Answer.FreeResponseText is null)
+        if (existingAnswer == null)
         {
             return submittedAnswer;
         }
 
-        return submittedAnswer with { FreeResponseText = existingAnswer.Answer.FreeResponseText };
+        var isUpdatingReflection = submittedAnswer.SelectedIssueSignalIds?.Count > 0 
+            && existingAnswer.Evaluation?.IsCorrect == false;
+
+        if (question.Type is QuestionType.FreeResponse && submittedAnswer.SelfCheckCorrect is not null)
+        {
+            return submittedAnswer with 
+            { 
+                FreeResponseText = existingAnswer.Answer.FreeResponseText,
+                SelectedIssueSignalIds = submittedAnswer.SelectedIssueSignalIds ?? Array.Empty<string>()
+            };
+        }
+
+        if (isUpdatingReflection)
+        {
+            return existingAnswer.Answer with { SelectedIssueSignalIds = submittedAnswer.SelectedIssueSignalIds ?? Array.Empty<string>() };
+        }
+
+        return submittedAnswer;
     }
 
     private static string? GetCurrentWorkedExampleStepId(Attempt attempt)

@@ -47,6 +47,39 @@ public sealed class GradeAnalyticsServiceTests
     }
 
     [Fact]
+    public async Task GetSummaryAsync_attributes_an_attempt_to_its_topic_area_not_every_area_in_the_category()
+    {
+        var dynamics = TestData.Assessment(questions: [TestData.MultipleChoiceQuestion("q001")]) with
+        {
+            Id = "dynamics-concept-test",
+            CategoryId = "physics-1",
+            TopicId = "physics-newton-laws"
+        };
+        var attempts = new InMemoryAttemptRepository();
+        var grades = new InMemoryGradeLogRepository();
+        var attempt = new Attempt("attempt-1", dynamics.Id, AssessmentMode.Scored, AttemptStatus.Completed,
+            ["q001"], [CorrectAnswer("q001")], DateTimeOffset.UtcNow.AddMinutes(-1), null, DateTimeOffset.UtcNow, null);
+        await attempts.SaveAsync(attempt);
+        await grades.AddAsync(new GradeLogEntry("grade-1", attempt.Id, dynamics.Id, dynamics.Title, attempt.Mode, 1, 1, 100m, DateTimeOffset.UtcNow));
+
+        var service = new GradeAnalyticsService(
+            grades, attempts, new InMemoryAttemptSessionStore(), new MultiAssessmentRepository([dynamics]),
+            new StaticCategoryRepository([new(1, "physics-1", "Physics I", [new("physics-newton-laws", "Newton's Laws"), new("physics-work-energy", "Work and Energy")])]),
+            new StaticAreaRepository([
+                new("physics-dynamics", "Physics Dynamics", ["physics-1"], ["physics-newton-laws"]),
+                new("physics-energy-momentum", "Physics Energy & Momentum", ["physics-1"], ["physics-work-energy"])
+            ]),
+            new DummyNavigationCatalogService(), new ScoringService(null!, null!, null!, null!));
+
+        var summary = await service.GetSummaryAsync(EmptyFilter());
+
+        var area = Assert.Single(summary.Areas);
+        Assert.Equal("physics-dynamics", area.AreaId);
+        Assert.Equal(1, area.AttemptCount);
+        Assert.Equal(100m, area.AveragePercent);
+    }
+
+    [Fact]
     public async Task GetSummaryAsync_includes_active_sessions_in_attempt_history()
     {
         var assessment = TestData.Assessment();
@@ -155,7 +188,7 @@ public sealed class GradeAnalyticsServiceTests
         var summary = await service.GetSummaryAsync(EmptyFilter());
 
         var step = Assert.Single(summary.ActionableNextSteps, next => next.SkillId == "model-selection");
-        Assert.Equal("calc-lesson", step.RecommendedAssessmentId);
+        Assert.Equal("calc-lesson", step.Playlist.First().Id);
         Assert.Equal("calculus-2", step.CategoryId);
         Assert.Equal(["area-between-curves"], step.TopicIds);
     }

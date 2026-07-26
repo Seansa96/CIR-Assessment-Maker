@@ -86,6 +86,8 @@ builder.Services.AddSingleton<SqliteNavigationCatalogService>();
 builder.Services.AddSingleton<INavigationCatalogService>(sp => sp.GetRequiredService<SqliteNavigationCatalogService>());
 builder.Services.AddSingleton<NavigationRecommendationService>();
 builder.Services.AddSingleton<SqliteAssessmentSearchService>();
+builder.Services.AddSingleton<ILocalAssessmentAnalyzer, QuizApp.Infrastructure.Analysis.HeuristicAssessmentAnalyzer>();
+builder.Services.AddHostedService<QuizApp.Api.Services.PassiveAnalyzerBackgroundService>();
 
 builder.Services.AddCors(options =>
 {
@@ -592,6 +594,31 @@ api.MapPost("/assessments", async (
 
     await repository.SaveAsync(assessment, cancellationToken);
     return Results.Created($"/api/assessments/{assessment.Id}", assessment);
+});
+
+api.MapPost("/assessments/{assessmentId}/analyze", async (
+    string assessmentId,
+    IAssessmentRepository repository,
+    ILocalAssessmentAnalyzer analyzer,
+    CancellationToken cancellationToken) =>
+{
+    var assessment = await repository.GetByIdAsync(assessmentId, cancellationToken);
+    if (assessment is null) return Results.NotFound(ApiError("ASSESSMENT_NOT_FOUND", $"Assessment '{assessmentId}' was not found."));
+
+    var analyzed = await analyzer.AnalyzeAsync(assessment, cancellationToken);
+    await repository.SaveAsync(analyzed, cancellationToken);
+    
+    return Results.Ok(analyzed);
+});
+
+api.MapGet("/dev/issue-signals", async (
+    QuizApp.Infrastructure.Files.FileStorageOptions options,
+    CancellationToken cancellationToken) =>
+{
+    var path = Path.Combine(options.DataRoot, "issue-signals.yaml");
+    if (!File.Exists(path)) return Results.Ok(new List<QuizApp.Infrastructure.Files.IssueSignalCatalogEntryFileDto>());
+    var entries = await QuizApp.Infrastructure.Files.FileFormat.ReadAsync<List<QuizApp.Infrastructure.Files.IssueSignalCatalogEntryFileDto>>(path, cancellationToken);
+    return Results.Ok(entries ?? new List<QuizApp.Infrastructure.Files.IssueSignalCatalogEntryFileDto>());
 });
 
 api.MapPut("/assessments/{assessmentId}", async (

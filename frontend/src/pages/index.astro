@@ -121,6 +121,7 @@ const isDev = import.meta.env.DEV;
               </div>
             </fieldset>
             <button class="primary action-button" id="nav-start-attempt">Start Selected</button>
+            {isDev && <button class="action-button" id="nav-edit-metadata" style="margin-left: 0.5rem;">Edit Metadata (Dev)</button>}
           </div>
 
           <!-- Error fallback message -->
@@ -449,6 +450,31 @@ const isDev = import.meta.env.DEV;
           </section>
         )}
       </section>
+
+      {isDev && (
+        <section class="view" id="view-metadata-editor" aria-labelledby="metadata-editor-title" hidden>
+           <div class="section-header">
+             <h2 id="metadata-editor-title">Edit Assessment Metadata</h2>
+             <div class="button-row">
+                <button type="button" id="metadata-editor-cancel">Cancel</button>
+                <button type="button" id="metadata-editor-save" class="primary action-button">Save Changes</button>
+             </div>
+           </div>
+           <p id="metadata-editor-status" role="status" class="quiet-hint"></p>
+           
+           <div class="field">
+             <label for="metadata-editor-skills">Assessment Skills (comma separated)</label>
+             <input type="text" id="metadata-editor-skills" class="input" placeholder="e.g. algebra, limits" />
+           </div>
+
+           <div class="field">
+             <label for="metadata-editor-tags">Assessment Tags (comma separated)</label>
+             <input type="text" id="metadata-editor-tags" class="input" placeholder="e.g. review, midterm" />
+           </div>
+
+           <div id="metadata-editor-questions" style="margin-top: 2rem;"></div>
+        </section>
+      )}
     </main>
 
     {isDev && (
@@ -731,6 +757,7 @@ const isDev = import.meta.env.DEV;
       interface ChoiceOption {
         id: string;
         text: string;
+        issueSignals?: { id: string; domains: string[] }[];
         media?: MediaAsset[];
       }
 
@@ -761,6 +788,8 @@ const isDev = import.meta.env.DEV;
         circuitQuestion?: CircuitQuestionDefinition;
         graphingQuestion?: GraphingQuestionDefinition;
         parts?: Question[];
+        skills?: string[];
+        issueSignals?: { id: string; domains: string[] }[];
       }
 
       interface CodeQuestionDefinition {
@@ -1112,6 +1141,7 @@ const isDev = import.meta.env.DEV;
         circuitAnswer?: SubmittedCircuitAnswer | null;
         graphingAnswer?: SubmittedGraphAnswer | null;
         partAnswers?: SubmittedAnswer[];
+        selectedIssueSignalIds?: string[];
       }
 
       interface CodeFeedback {
@@ -1162,6 +1192,8 @@ const isDev = import.meta.env.DEV;
         earnedPoints?: number;
         possiblePoints?: number;
         partResults?: QuestionResult[];
+        issueSignalIds?: string[];
+        availableIssueSignals?: { id: string; domains: string[] }[];
         userOverriddenCorrect?: boolean | null;
       }
 
@@ -1390,18 +1422,35 @@ const isDev = import.meta.env.DEV;
         attempts: AttemptHistoryRow[];
       }
 
+      enum MasteryTier {
+        Unknown = 0,
+        Novice = 1,
+        Developing = 2,
+        Proficient = 3,
+        Mastered = 4
+      }
+
+      interface RecommendedAssessment {
+        id: string;
+        title: string;
+        activityType: string;
+      }
+
       interface SkillPerformance {
         skillId: string;
         answeredCount: number;
         correctCount: number;
         correctPercent: number;
+        tier: MasteryTier;
+        triggeredIssueSignals: string[];
       }
 
       interface ActionableNextStep {
         skillId: string;
         message: string;
-        recommendedAssessmentId: string;
-        recommendedAssessmentTitle: string;
+        tier: MasteryTier;
+        urgencyScore: number;
+        playlist: RecommendedAssessment[];
         categoryId?: string | null;
         categoryTitle?: string | null;
       }
@@ -2465,7 +2514,7 @@ const isDev = import.meta.env.DEV;
         }
       }
 
-      async function markFreeResponseSelfCheck(questionId: string, isCorrect: boolean) {
+      async function markFreeResponseSelfCheck(questionId: string, isCorrect: boolean, selectedIssueSignalIds: string[] = []) {
         if (!state.attempt || !state.latestResults) return;
         const questionResults = state.latestResults.questions.flatMap((candidate) => [candidate, ...(candidate.partResults ?? [])]);
         const result = questionResults.find((candidate) => candidate.questionId === questionId)
@@ -2480,7 +2529,8 @@ const isDev = import.meta.env.DEV;
             questionId,
             choiceIds: [],
             freeResponseText: result.submittedAnswer.freeResponseText,
-            selfCheckCorrect: isCorrect
+            selfCheckCorrect: isCorrect,
+            selectedIssueSignalIds
           })
         });
         state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
@@ -2840,6 +2890,7 @@ const isDev = import.meta.env.DEV;
               </td>
               <td>
                 <div style="margin-bottom: 4px;">${escapeHtml(d.message || '-')}</div>
+                ${d.code === 'YAML_DESERIALIZATION' ? `<div style="font-size: 0.85em; color: var(--text-muted);">Correct the value at the reported YAML location, then refresh the catalog diagnostics.</div>` : ''}
                 ${d.suggestedKey ? `<div style="font-size: 0.85em; color: var(--text-muted); padding: 4px; background: rgba(0,0,0,0.05); border-radius: 4px;">Found: <code>${escapeHtml(d.actualKey || '')}</code> &rarr; Try: <code>${escapeHtml(d.suggestedKey)}</code></div>` : ''}
               </td>
             </tr>
@@ -3096,106 +3147,100 @@ const isDev = import.meta.env.DEV;
         setupGradeLogInteractions();
       }
 
-      function renderAnalyticsDashboard(analytics: GradeAnalyticsSummary, entries: GradeLogEntry[]) {
-        const weakestCategory = analytics.weakestCategory ? `${analytics.weakestCategory.title} (${analytics.weakestCategory.averagePercent}%)` : "Not enough data";
-        const weakestArea = analytics.weakestArea ? `${analytics.weakestArea.title} (${analytics.weakestArea.averagePercent}%)` : "Not enough data";
-        const weakestQuestionType = analytics.weakestQuestionType ? `${questionTypeLabel(analytics.weakestQuestionType.questionType)} (${analytics.weakestQuestionType.correctPercent}%)` : "Not enough data";
+      function renderMasteryBadge(tier: MasteryTier): string {
+        switch (tier) {
+          case MasteryTier.Mastered: return '<span class="mastery-badge mastered">Mastered</span>';
+          case MasteryTier.Proficient: return '<span class="mastery-badge proficient">Proficient</span>';
+          case MasteryTier.Developing: return '<span class="mastery-badge developing">Developing</span>';
+          case MasteryTier.Novice: return '<span class="mastery-badge novice">Novice</span>';
+          default: return '<span class="mastery-badge unknown">Unknown</span>';
+        }
+      }
 
-        const categoriesHtml = analytics.categories.map(c => `
-          <button type="button" class="analytics-category-btn ${state.activeAnalyticsCategory === c.categoryId ? 'active' : ''}" data-category-id="${escapeHtml(c.categoryId)}">
-            ${escapeHtml(c.categoryTitle)}
+      function renderAnalyticsDashboard(analytics: GradeAnalyticsSummary, entries: GradeLogEntry[]) {
+        const navTilesHtml = `
+          <button type="button" class="nav-tile ${state.activeAnalyticsCategory === null ? 'selected' : ''} analytics-category-btn" data-category-id="">
+            <strong>Action Queue</strong>
+            <div class="nav-tile-description">Intelligence & Overview</div>
+          </button>
+        ` + analytics.categories.map(c => `
+          <button type="button" class="nav-tile ${state.activeAnalyticsCategory === c.categoryId ? 'selected' : ''} analytics-category-btn" data-category-id="${escapeHtml(c.categoryId)}">
+            <strong>${escapeHtml(c.categoryTitle)}</strong>
+            <div class="nav-tile-description">GPA: ${c.averagePercent}% | ${c.attemptCount} Sessions</div>
           </button>
         `).join("");
-
-        const sidebar = `
-          <aside class="grade-log-sidebar">
-            <p class="eyebrow">Grade Log</p>
-            <div class="guided-check-list" style="margin-top: 1rem;">
-              <button type="button" class="analytics-category-btn ${state.activeAnalyticsCategory === null ? 'active' : ''}" data-category-id="">Overview</button>
-              ${categoriesHtml}
-            </div>
-          </aside>
-        `;
 
         let content = "";
 
         if (state.activeAnalyticsCategory === null) {
+          const actionQueueHtml = (analytics.actionableNextSteps || [])
+            .sort((a, b) => b.urgencyScore - a.urgencyScore)
+            .slice(0, 10)
+            .map((step, index) => {
+              const urgencyClass = step.urgencyScore > 500 ? 'urgency-critical' : step.urgencyScore > 200 ? 'urgency-high' : 'urgency-medium';
+              const tierBadge = renderMasteryBadge(step.tier);
+              const playlistHtml = step.playlist.map((p, i) => `
+                <li class="playlist-item">
+                  <span class="playlist-step-num">${i + 1}</span>
+                  <div class="playlist-details">
+                    <strong>${escapeHtml(p.title)}</strong>
+                    <small>${escapeHtml(p.activityType)}</small>
+                  </div>
+                  <button type="button" class="btn-small primary" onclick="window.startAssessmentDirectly('${escapeHtml(p.id)}')">Start</button>
+                </li>
+              `).join("");
+
+              return `
+                <div class="action-card ${urgencyClass}">
+                  <div class="action-card-header">
+                    <div class="action-card-title">
+                      <h4>${escapeHtml(step.skillId)}</h4>
+                      ${tierBadge}
+                    </div>
+                    <button type="button" class="btn-repair" onclick="this.closest('.action-card').classList.toggle('expanded')">Repair this now</button>
+                  </div>
+                  <p class="action-card-message">${escapeHtml(step.message)}</p>
+                  <div class="action-card-playlist">
+                    <h5>Remediation Path</h5>
+                    <ul class="playlist-list">${playlistHtml}</ul>
+                  </div>
+                </div>
+              `;
+            }).join("");
+
           content = `
-            <section class="analytics-dashboard">
-              <div class="metric-row analytics-metrics">
-                <div><span>${analytics.committedEntryCount}</span><small>Committed scores</small></div>
-                <div><span>${analytics.overallCommittedAverage ?? 0}%</span><small>Overall average<br/>(Includes weighted recall drills)</small></div>
-                <div><span>${analytics.attempts.length}</span><small>Attempt sessions</small></div>
-                <div><span>${analytics.weakAreas.length}</span><small>Focus signals</small></div>
-              </div>
-              <div class="analytics-focus-grid">
-                <article><small>Weakest category</small><strong>${escapeHtml(weakestCategory)}</strong></article>
-                <article><small>Weakest area</small><strong>${escapeHtml(weakestArea)}</strong></article>
-                <article><small>Weakest question type</small><strong>${escapeHtml(weakestQuestionType)}</strong></article>
-               ${analytics.weakAreas.length > 0 ? `
-                <div class="focus-callout">
-                  ${analytics.weakAreas.map((weak) => `<p>${escapeHtml(weak.message)}</p>`).join("")}
+            <section class="cir-intelligence-dashboard">
+              <div class="dashboard-panes">
+                <div class="dashboard-left-pane">
+                  <h3>Learning Telemetry</h3>
+                  <div class="metric-row analytics-metrics" style="margin-bottom: 2rem;">
+                    <div><span>${analytics.overallCommittedAverage ?? 0}%</span><small>Overall GPA</small></div>
+                    <div><span>${analytics.attempts.length}</span><small>Attempt sessions</small></div>
+                  </div>
+                  <div class="analytics-table-grid">
+                    ${renderCategoryAnalyticsTable(analytics.categories)}
+                    ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
+                  </div>
+                  <details class="grade-ledger-details" style="margin-top: 2rem;">
+                    <summary>View Raw Grade Ledger</summary>
+                    ${renderCommittedEntries(entries)}
+                  </details>
                 </div>
-              ` : ""}
-              ${analytics.actionableNextSteps && analytics.actionableNextSteps.length > 0 ? `
-                <div class="actionable-next-steps">
-                  <h3>Recommended Next Steps</h3>
-                  <ul>
-                    ${analytics.actionableNextSteps.map((step) => `
-                      <li>
-                        <strong>${escapeHtml(step.skillId)}:</strong> ${escapeHtml(step.message)}
-                        <br />
-                        <a href="#view-attempt" onclick="window.startAssessmentDirectly('${escapeHtml(step.recommendedAssessmentId)}')">
-                          &#10148; Go to ${escapeHtml(step.recommendedAssessmentTitle)}
-                        </a>
-                      </li>
-                    `).join("")}
-                  </ul>
+                <div class="dashboard-right-pane">
+                  <div class="action-queue-header">
+                    <h3>Your Focus Areas</h3>
+                    <p class="quiet-hint">Prioritized by frequency and score deficiency.</p>
+                  </div>
+                  <div class="action-queue">
+                    ${actionQueueHtml || '<div class="empty-state">No focus areas identified yet. Keep practicing!</div>'}
+                  </div>
                 </div>
-              ` : ""}
-              ${analytics.weakestSkills && analytics.weakestSkills.length > 0 ? `
-                <div class="weakest-skills-section">
-                  <h3>Weakest Skills</h3>
-                  <table class="data-table">
-                    <thead>
-                      <tr>
-                        <th>Skill</th>
-                        <th>Answered</th>
-                        <th>Correct %</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      ${analytics.weakestSkills.map(skill => `
-                        <tr>
-                          <td>${escapeHtml(skill.skillId)}</td>
-                          <td>${skill.answeredCount}</td>
-                          <td>${skill.correctPercent}%</td>
-                        </tr>
-                      `).join("")}
-                    </tbody>
-                  </table>
-                </div>
-              ` : ""}
               </div>
-              ${analytics.attempts.length > 0 ? "" : `<div class="empty-state">Commit a few completed attempts to start surfacing weak topics.</div>`}
-              <div class="analytics-table-grid">
-                ${renderCategoryAnalyticsTable(analytics.categories)}
-                ${renderAreaAnalyticsTable(analytics.areas)}
-                ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
-              </div>
-              <div class="analytics-table-grid recall-analytics-grid">
-                ${renderRecallRatingAnalyticsTable(analytics.recallRatings)}
-                ${renderRecallTagAnalyticsTable(analytics.recallTags)}
-                ${renderRecallGroupAnalyticsTable("Recall Categories", analytics.recallCategories)}
-              </div>
-              ${renderCommittedEntries(entries)}
             </section>
           `;
         } else {
           const category = analytics.categories.find(c => c.categoryId === state.activeAnalyticsCategory);
           const categoryAreas = analytics.areas.filter(a => a.categoryId === state.activeAnalyticsCategory || a.categoryIds?.includes(state.activeAnalyticsCategory));
-          const categorySteps = analytics.actionableNextSteps?.filter(step => step.categoryId === state.activeAnalyticsCategory) || [];
-          
           const categoryEntries = entries.filter(e => {
             const attempt = analytics.attempts.find(a => a.attemptId === e.attemptId);
             return attempt?.categoryId === state.activeAnalyticsCategory;
@@ -3210,36 +3255,23 @@ const isDev = import.meta.env.DEV;
                   <div><span>${category.averagePercent}%</span><small>Category Average</small></div>
                 </div>
               ` : ""}
-              ${categorySteps.length > 0 ? `
-                <div class="actionable-next-steps">
-                  <h3>Recommended Next Steps</h3>
-                  <ul>
-                    ${categorySteps.map((step) => `
-                      <li>
-                        <strong>${escapeHtml(step.source === "recall" ? step.skillId : step.skillId)}:</strong> ${escapeHtml(step.message)}
-                        <br />
-                        <a href="#view-attempt" onclick="window.startAssessmentDirectly('${escapeHtml(step.recommendedAssessmentId)}')">
-                          &#10148; Go to ${escapeHtml(step.recommendedAssessmentTitle)}
-                        </a>
-                      </li>
-                    `).join("")}
-                  </ul>
-                </div>
-              ` : ""}
               <div class="analytics-table-grid">
                 ${renderAreaAnalyticsTable(categoryAreas)}
               </div>
-              ${renderCommittedEntries(categoryEntries)}
+              <details class="grade-ledger-details" style="margin-top: 2rem;">
+                <summary>View Raw Grade Ledger</summary>
+                ${renderCommittedEntries(categoryEntries)}
+              </details>
             </section>
           `;
         }
 
         return `
-          <div class="grade-log-shell">
-            ${sidebar}
-            <div class="grade-log-content">
-              ${content}
+          <div class="grade-log-full-width">
+            <div class="nav-tile-grid" style="margin-bottom: 2rem;">
+              ${navTilesHtml}
             </div>
+            ${content}
           </div>
         `;
       }
@@ -3271,42 +3303,72 @@ const isDev = import.meta.env.DEV;
       }
 
       function renderCategoryAnalyticsTable(categories: CategoryGradeAnalytics[]) {
-        return renderMiniAnalyticsTable(
-          "Category Averages",
-          ["Category", "Attempts", "Average", "Last"],
-          categories.map((category) => [
-            category.categoryTitle,
-            String(category.attemptCount),
-            `${category.averagePercent}%`,
-            category.lastPercent === null ? "-" : `${category.lastPercent}%`
-          ]),
-          "No category grade data yet.");
+        if (categories.length === 0) return `<div class="analytics-card"><h3>Category Averages</h3><div class="empty-state compact">No category grade data yet.</div></div>`;
+        return `
+          <section class="analytics-card">
+            <h3>Category Averages</h3>
+            <div class="bar-chart-container">
+              ${categories.map(c => `
+                <div class="bar-chart-row">
+                  <div class="bar-chart-label">
+                    <span class="label-title">${escapeHtml(c.categoryTitle)}</span>
+                    <span class="label-value">${c.averagePercent}%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: ${c.averagePercent}%;"></div>
+                  </div>
+                  <div class="bar-chart-subtitle">${c.attemptCount} attempt${c.attemptCount === 1 ? '' : 's'}</div>
+                </div>
+              `).join("")}
+            </div>
+          </section>
+        `;
       }
 
       function renderAreaAnalyticsTable(areas: AreaGradeAnalytics[]) {
-        return renderMiniAnalyticsTable(
-          "Area Averages",
-          ["Area", "Attempts", "Average", "Weakest subtopic"],
-          areas.map((area) => [
-            area.areaTitle,
-            String(area.attemptCount),
-            `${area.averagePercent}%`,
-            area.weakestSubcategoryTitle ?? "-"
-          ]),
-          "No area mappings have committed scores yet.");
+        if (areas.length === 0) return `<div class="analytics-card"><h3>Area Averages</h3><div class="empty-state compact">No area mappings have committed scores yet.</div></div>`;
+        return `
+          <section class="analytics-card">
+            <h3>Area Averages</h3>
+            <div class="bar-chart-container">
+              ${areas.map(a => `
+                <div class="bar-chart-row">
+                  <div class="bar-chart-label">
+                    <span class="label-title">${escapeHtml(a.areaTitle)}</span>
+                    <span class="label-value">${a.averagePercent}%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: ${a.averagePercent}%;"></div>
+                  </div>
+                  <div class="bar-chart-subtitle">${a.attemptCount} attempt${a.attemptCount === 1 ? '' : 's'}</div>
+                </div>
+              `).join("")}
+            </div>
+          </section>
+        `;
       }
 
       function renderQuestionTypeAnalyticsTable(questionTypes: QuestionTypePerformance[]) {
-        return renderMiniAnalyticsTable(
-          "Question Types",
-          ["Type", "Answered", "Correct", "Needs review"],
-          questionTypes.map((type) => [
-            questionTypeLabel(type.questionType),
-            String(type.answeredCount),
-            `${type.correctPercent}%`,
-            String(type.needsReviewCount)
-          ]),
-          "No completed question results yet.");
+        if (questionTypes.length === 0) return `<div class="analytics-card"><h3>Question Types</h3><div class="empty-state compact">No completed question results yet.</div></div>`;
+        return `
+          <section class="analytics-card">
+            <h3>Question Types</h3>
+            <div class="bar-chart-container">
+              ${questionTypes.map(t => `
+                <div class="bar-chart-row">
+                  <div class="bar-chart-label">
+                    <span class="label-title">${escapeHtml(questionTypeLabel(t.questionType))}</span>
+                    <span class="label-value">${t.correctPercent}%</span>
+                  </div>
+                  <div class="bar-track">
+                    <div class="bar-fill" style="width: ${t.correctPercent}%;"></div>
+                  </div>
+                  <div class="bar-chart-subtitle">${t.answeredCount} answered</div>
+                </div>
+              `).join("")}
+            </div>
+          </section>
+        `;
       }
 
       function renderRecallRatingAnalyticsTable(rows: RecallRatingAnalytics[]) {
@@ -4630,6 +4692,28 @@ const isDev = import.meta.env.DEV;
         if (errors.length > 0) {
           createStatus.textContent = errors.join(" ");
           return;
+        }
+
+        const lacksMetadata = 
+          (assessment.skills && assessment.skills.length === 0) || 
+          (assessment.questions && assessment.questions.some(q => !q.skills || q.skills.length === 0 || !q.issueSignals || q.issueSignals.length === 0));
+
+        if (lacksMetadata) {
+          const proceed = confirm("Your assessment doesn't have any defined issue signals, skills or tags. Your assessment will be inaccurate for mastery evaluation but will still work for grading. Would you like to submit it for processing before posting it? Your assessment will be automatically submitted once it is finished processing, but it may take a few moments for it to process.");
+          
+          if (proceed) {
+             createStatus.textContent = "Processing and saving assessment...";
+             try {
+                 const response = await api("/assessments", { method: "POST", body: JSON.stringify(assessment) });
+                 const saved = await response.json();
+                 await api(`/assessments/${saved.id}/analyze`, { method: "POST" });
+                 createStatus.textContent = "Assessment processed and saved. It is now available in Load Quiz/Test.";
+                 await loadAssessments(categorySelect.value);
+             } catch (err) {
+                 createStatus.textContent = "Failed to process assessment: " + (err instanceof Error ? err.message : String(err));
+             }
+             return;
+          }
         }
 
         await api("/assessments", {
@@ -6040,6 +6124,36 @@ const isDev = import.meta.env.DEV;
           const symbolicFeedbackHtml = await renderSymbolicFeedback(question.symbolicFeedback);
           const selfCheckHtml = await renderFreeResponseSelfCheck(question, true);
 
+          let autoGradedReflectionHtml = "";
+          if (question.type !== "freeResponse" && !question.isCorrect && question.availableIssueSignals && question.availableIssueSignals.length > 0 && results.status === "completed") {
+            const checkedSignals = new Set(question.issueSignalIds || []);
+            autoGradedReflectionHtml = `
+              <div class="result-detail reflection-panel" style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-sm);">
+                <strong>Reflection (Optional)</strong>
+                <p style="font-size: 0.9em; opacity: 0.8; margin-bottom: 0.5rem;">What was hard or what would you say you struggled most with on this question?</p>
+                <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                  ${question.availableIssueSignals.map(signal => `
+                    <li>
+                      <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer;">
+                        <input type="checkbox" class="issue-signal-checkbox-auto" data-question-id="${escapeHtml(question.questionId)}" value="${escapeHtml(signal.id)}" ${checkedSignals.has(signal.id) && !checkedSignals.has("im-not-sure") ? "checked" : ""}>
+                        <span style="font-size: 0.9em;"><code>${escapeHtml(signal.id)}</code></span>
+                      </label>
+                    </li>
+                  `).join("")}
+                  <li>
+                    <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer; margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
+                      <input type="checkbox" class="issue-signal-not-sure-auto" data-question-id="${escapeHtml(question.questionId)}" ${checkedSignals.has("im-not-sure") || checkedSignals.size === 0 ? "checked" : ""}>
+                      <span style="font-size: 0.9em;"><strong>I'm not sure</strong></span>
+                    </label>
+                  </li>
+                </ul>
+                <div class="button-row" style="margin-top: 1rem;">
+                  <button class="chunky secondary-action" type="button" data-save-reflection="true" data-question-id="${escapeHtml(question.questionId)}">Save Reflection</button>
+                </div>
+              </div>
+            `;
+          }
+
           return `
             <article class="result-item ${question.isCorrect ? "correct" : "incorrect"}">
               ${question.title ? `<h3>${escapeHtml(question.title)}</h3>` : ""}
@@ -6058,6 +6172,7 @@ const isDev = import.meta.env.DEV;
               ${question.type !== "freeResponse" && expectedHtml ? `<div class="result-detail"><strong>Expected:</strong><div class="markdown">${expectedHtml}</div></div>` : ""}
               ${hintHtml ? `<details><summary>Hint used for this step</summary><div class="markdown">${hintHtml}</div></details>` : ""}
               ${question.type !== "freeResponse" && explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
+              ${autoGradedReflectionHtml}
             </article>
           `;
         }));
@@ -6086,6 +6201,24 @@ const isDev = import.meta.env.DEV;
         document.querySelector<HTMLButtonElement>("#close-assessment")?.addEventListener("click", clearAssessmentView);
         setupDevAssessmentTools();
         setupSelfCheckButtons();
+
+        document.querySelectorAll<HTMLButtonElement>("[data-save-reflection]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const questionId = button.dataset.questionId ?? "";
+            
+            let selectedIssueSignalIds: string[] = [];
+            const notSureCb = document.querySelector<HTMLInputElement>(`.issue-signal-not-sure-auto[data-question-id="${questionId}"]`);
+            if (notSureCb?.checked) {
+              const allCbs = Array.from(document.querySelectorAll<HTMLInputElement>(`.issue-signal-checkbox-auto[data-question-id="${questionId}"]`));
+              selectedIssueSignalIds = allCbs.map(cb => cb.value);
+            } else {
+              const checkedCbs = Array.from(document.querySelectorAll<HTMLInputElement>(`.issue-signal-checkbox-auto[data-question-id="${questionId}"]:checked`));
+              selectedIssueSignalIds = checkedCbs.map(cb => cb.value);
+            }
+
+            void saveAutoGradedReflection(questionId, selectedIssueSignalIds);
+          });
+        });
 
         document.querySelectorAll<HTMLButtonElement>(".override-correct-btn").forEach(btn => {
           btn.addEventListener("click", async () => {
@@ -6145,6 +6278,30 @@ const isDev = import.meta.env.DEV;
             });
           }
         });
+      }
+
+      async function saveAutoGradedReflection(questionId: string, selectedIssueSignalIds: string[]) {
+        if (!state.attempt || !state.latestResults) return;
+        const questionResults = state.latestResults.questions.flatMap((candidate) => [candidate, ...(candidate.partResults ?? [])]);
+        const result = questionResults.find((candidate) => candidate.questionId === questionId);
+        if (!result) return;
+
+        state.attempt = await api<Attempt>(`/attempts/${state.attempt.id}/answers`, {
+          method: "POST",
+          body: JSON.stringify({
+            questionId,
+            choiceIds: result.submittedAnswer?.choiceIds || [],
+            freeResponseText: result.submittedAnswer?.freeResponseText || null,
+            choiceId: result.submittedAnswer?.choiceId || null,
+            numericValue: result.submittedAnswer?.numericValue || null,
+            codeText: result.submittedAnswer?.codeText || null,
+            symbolicLatex: result.submittedAnswer?.symbolicLatex || null,
+            selfCheckCorrect: null,
+            selectedIssueSignalIds
+          })
+        });
+        state.latestResults = await api<AttemptResults>(`/attempts/${state.attempt.id}/results`);
+        void renderSessionState();
       }
 
       async function renderLearningResults(results: AttemptResults) {
@@ -6537,12 +6694,39 @@ const isDev = import.meta.env.DEV;
         const expectedHtml = result.expectedAnswer ? await renderMarkdown(result.expectedAnswer) : "";
         const explanationHtml = result.explanation ? await renderMarkdown(result.explanation) : "";
         const keyPoints = result.keyPoints ?? [];
+        const keyPointsHtml = await Promise.all(keyPoints.map((point) => renderMarkdown(point)));
         const responseText = result.submittedAnswer?.freeResponseText?.trim()
           ? result.submittedAnswer.freeResponseText
           : "(blank response)";
         const status = result.isPendingSelfCheck
           ? "Awaiting self-check"
           : result.isCorrect ? "Marked correct" : "Marked needs review";
+
+        let issueSignalsHtml = "";
+        if (result.isPendingSelfCheck && result.availableIssueSignals && result.availableIssueSignals.length > 0) {
+          issueSignalsHtml = `
+            <div class="result-detail reflection-panel" style="margin-top: 1rem; padding: 1rem; background: var(--bg-tertiary); border-radius: var(--radius-sm);">
+              <strong>What was hard or what would you say you struggled most with?</strong>
+              <p style="font-size: 0.9em; opacity: 0.8; margin-bottom: 0.5rem;">Select any that apply before marking needs review.</p>
+              <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.5rem;">
+                ${result.availableIssueSignals.map(signal => `
+                  <li>
+                    <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer;">
+                      <input type="checkbox" class="issue-signal-checkbox" data-question-id="${escapeHtml(result.questionId)}" value="${escapeHtml(signal.id)}">
+                      <span style="font-size: 0.9em;"><code>${escapeHtml(signal.id)}</code></span>
+                    </label>
+                  </li>
+                `).join("")}
+                <li>
+                  <label style="display: flex; gap: 0.5rem; align-items: flex-start; cursor: pointer; margin-top: 0.5rem; border-top: 1px solid var(--border-color); padding-top: 0.5rem;">
+                    <input type="checkbox" class="issue-signal-not-sure" data-question-id="${escapeHtml(result.questionId)}" checked>
+                    <span style="font-size: 0.9em;"><strong>I'm not sure</strong></span>
+                  </label>
+                </li>
+              </ul>
+            </div>
+          `;
+        }
 
         return `
           <div class="self-check-panel ${result.isPendingSelfCheck ? "pending" : result.isCorrect ? "correct" : "incorrect"}">
@@ -6559,13 +6743,14 @@ const isDev = import.meta.env.DEV;
               <div class="result-detail">
                 <strong>Key points:</strong>
                 <ul class="key-point-list">
-                  ${keyPoints.map((point) => `<li>${escapeHtml(point)}</li>`).join("")}
+                  ${keyPointsHtml.map((point) => `<li class="markdown">${point}</li>`).join("")}
                 </ul>
               </div>
             ` : ""}
             ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
+            ${issueSignalsHtml}
             ${result.isPendingSelfCheck ? `
-              <div class="button-row">
+              <div class="button-row" style="margin-top: 1rem;">
                 <button class="primary chunky" type="button" data-self-check="true" data-question-id="${escapeHtml(result.questionId)}">Mark Correct</button>
                 <button class="chunky secondary-action" type="button" data-self-check="false" data-question-id="${escapeHtml(result.questionId)}">Mark Needs Review</button>
               </div>
@@ -7040,7 +7225,19 @@ const isDev = import.meta.env.DEV;
           button.addEventListener("click", () => {
             const questionId = button.dataset.questionId ?? "";
             const isCorrect = button.dataset.selfCheck === "true";
-            void markFreeResponseSelfCheck(questionId, isCorrect);
+            
+            // Gather selected issue signals
+            let selectedIssueSignalIds: string[] = [];
+            const notSureCb = document.querySelector<HTMLInputElement>(`.issue-signal-not-sure[data-question-id="${questionId}"]`);
+            if (notSureCb?.checked) {
+              const allCbs = Array.from(document.querySelectorAll<HTMLInputElement>(`.issue-signal-checkbox[data-question-id="${questionId}"]`));
+              selectedIssueSignalIds = allCbs.map(cb => cb.value);
+            } else {
+              const checkedCbs = Array.from(document.querySelectorAll<HTMLInputElement>(`.issue-signal-checkbox[data-question-id="${questionId}"]:checked`));
+              selectedIssueSignalIds = checkedCbs.map(cb => cb.value);
+            }
+
+            void markFreeResponseSelfCheck(questionId, isCorrect, selectedIssueSignalIds);
           });
         });
       }
@@ -7520,7 +7717,11 @@ const isDev = import.meta.env.DEV;
       }
 
       async function renderMarkdown(value: string | null | undefined) {
-        const processed = await markdownProcessor.process(value ?? "");
+        const normalized = (value ?? "").replace(
+          /^((?:Solution|Why it works|Why the other choices fail):[^\r\n]*?)\s*\$\$([^\r\n]*?)\$\$\s*$/gm,
+          (_match, lead, math) => `${lead}\n\n$$${math}$$`
+        );
+        const processed = await markdownProcessor.process(normalized);
         return String(processed);
       }
 

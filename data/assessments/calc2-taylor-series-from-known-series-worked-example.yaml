@@ -55,6 +55,13 @@ workedExamples:
 
       The expression $e^{-x^2}$ has the same outer function, so the efficient move is substitution.
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: Which known series should be used first for $e^{-x^2}$?
     choices:
     - id: a
@@ -88,6 +95,13 @@ workedExamples:
       e^{-x^2}=\sum_{n=0}^{\infty}\frac{(-x^2)^n}{n!}.
       $$
     type: symbolicResponse
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: |-
       Simplify the general term $\frac{(-x^2)^n}{n!}$.
     answer:
@@ -112,6 +126,13 @@ workedExamples:
       1-x^2+\frac{x^4}{2!}-\frac{x^6}{3!}+\cdots
       $$
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: Which first four terms match $e^{-x^2}$?
     choices:
     - id: a
@@ -151,6 +172,13 @@ workedExamples:
       \int_0^1\left(1-x^2+\frac{x^4}{2}-\frac{x^6}{6}+\cdots\right)\,dx.
       $$
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: What happens to the term $-x^2$ after integrating from $0$ to $1$?
     choices:
     - id: a
@@ -180,6 +208,13 @@ workedExamples:
 
       '
     type: selectAll
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: Why is the series method useful here?
     choices:
     - id: a
@@ -195,7 +230,7 @@ workedExamples:
       - a
       - b
       - d
-    explanation: 'Solution: Series methods still require attention to convergence and error, but they are powerful when ordinary antiderivatives are unavailable. Therefore the answer is It replaces a non-elementary antiderivative with term-by-term integration., It gives controllable polynomial approximations., It can estimate a definite integral.. Therefore the answer is It replaces a non-elementary antiderivative with term-by-term integration., It gives controllable polynomial approximations., It can estimate a definite integral.. Therefore the answer is It replaces a non-elementary antiderivative with term-by-term integration., It gives controllable polynomial approximations., It can estimate a definite integral..
+    explanation: 'Solution: Series methods still require attention to convergence and error, but they are powerful when ordinary antiderivatives are unavailable. Therefore the answer is It replaces a non-elementary antiderivative with term-by-term integration., It gives controllable polynomial approximations., It can estimate a definite integral..
 
 
       Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
@@ -205,7 +240,13 @@ workedExamples:
   - id: taylor-known-step-006
     title: Start logarithms from geometric series
     instruction: |
-      The series for $\ln(1+x)$ can be produced from the geometric series:
+      The logarithm series comes from a derivative relationship. Because
+
+      $$
+      \frac{d}{dx}\ln(1+x)=\frac{1}{1+x},
+      $$
+
+      first build a series for $\frac{1}{1+x}$ from the geometric series:
 
       $$
       \frac{1}{1-t}=\sum_{n=0}^{\infty}t^n.
@@ -217,8 +258,15 @@ workedExamples:
       \frac{1}{1+x}=\frac{1}{1-(-x)},
       $$
 
-      substitute $t=-x$.
+      substitute $t=-x$. This changes every $t^n$ into $(-x)^n$, so the signs alternate.
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: |-
       What is the series for $\frac{1}{1+x}$?
     choices:
@@ -237,24 +285,29 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |-
-      Solution: Substitute $t=-x$ into $1+t+t^2+t^3+\cdots$. Therefore the answer is $1-x+x^2-x^3+\cdots$.
+      Solution: Substitute $t=-x$ into $1+t+t^2+t^3+\cdots$ to obtain $1-x+x^2-x^3+\cdots$. Therefore the answer is $1-x+x^2-x^3+\cdots$.
 
-      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+      Why it works: The geometric identity is valid for $|t|<1$. With $t=-x$, it becomes a representation for $1/(1-(-x))=1/(1+x)$, and the factor $(-x)^n$ supplies the alternating signs.
 
-      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
-
-      Why the other choices fail: $1+x+x^2+x^3+\cdots$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $x-\frac{x^2}{2}+\frac{x^3}{3}-\cdots$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $1-x^2+x^4-\cdots$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.
+      Why the other choices fail: $1+x+x^2+x^3+\cdots$ uses $t=x$ and represents $1/(1-x)$; $x-\frac{x^2}{2}+\frac{x^3}{3}-\cdots$ is the integrated logarithm series, not its derivative; $1-x^2+x^4-\cdots$ omits every odd power.
   - id: taylor-known-step-007
     title: Integrate to get logarithm
     instruction: |
-      Because:
+      Now reverse the derivative relationship:
 
       $$
       \frac{d}{dx}\ln(1+x)=\frac{1}{1+x},
       $$
 
-      integrate the series for $\frac{1}{1+x}$ term by term.
+      integrate the series for $\frac{1}{1+x}$ term by term. Integrating $(-x)^n$ produces $(-1)^n x^{n+1}/(n+1)$, and use $\ln(1+0)=0$ to determine the constant.
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: |-
       Which series matches $\ln(1+x)$?
     choices:
@@ -275,11 +328,9 @@ workedExamples:
     explanation: |-
       Solution: Integrating $1-x+x^2-x^3+\cdots$ gives $x-\frac{x^2}{2}+\frac{x^3}{3}-\frac{x^4}{4}+\cdots$. The constant is $0$ because $\ln(1+0)=0$. Therefore the answer is $x-\frac{x^2}{2}+\frac{x^3}{3}-\frac{x^4}{4}+\cdots$.
 
-      Why it works: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone. Check the derivative bound and the interval between the expansion center and the target value, then evaluate the resulting upper bound for $|R_n(x)|$.
+      Why it works: Integration raises each power by one and divides by its new exponent. Since $\ln(1+x)$ equals $0$ at $x=0$, the integration constant is $0$.
 
-      Common trap: The first omitted term is not automatically an error bound. State the theorem's hypotheses, use the correct derivative order, and keep the degree $n$ distinct from the first omitted index $n+1$.
-
-      Why the other choices fail: $1-x+x^2-x^3+\cdots$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $x+x^2+x^3+x^4+\cdots$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone; $1+\frac{x^2}{2}+\frac{x^3}{3}+\cdots$ conflicts with this criterion: For a Taylor polynomial $T_n$, use the applicable remainder theorem rather than the next written term alone.
+      Why the other choices fail: $1-x+x^2-x^3+\cdots$ is the derivative series; $x+x^2+x^3+x^4+\cdots$ loses the alternating signs and denominators; $1+\frac{x^2}{2}+\frac{x^3}{3}+\cdots$ has the wrong constant and misses the linear term.
   - id: taylor-known-step-008
     title: Track the interval
     instruction: 'The geometric source converges for $|-x|<1$, so initially:
@@ -296,6 +347,13 @@ workedExamples:
 
       '
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: What is the open interval inherited before endpoint testing?
     choices:
     - id: a
@@ -336,6 +394,13 @@ workedExamples:
 
       diverges.
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: |-
       What is the interval of convergence for $\ln(1+x)$?
     choices:
@@ -370,6 +435,13 @@ workedExamples:
 
       Substitute $2x$ wherever $x$ appears in the known logarithm series.
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: |-
       What is the first nonzero term of $\ln(1+2x)$?
     choices:
@@ -401,6 +473,13 @@ workedExamples:
       \ln(1+2x)=\sum_{n=1}^{\infty}(-1)^{n+1}\frac{(2x)^n}{n}.
       $$
     type: selectAll
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: Which features are correct for this transformed logarithm series?
     choices:
     - id: a
@@ -416,7 +495,7 @@ workedExamples:
       - a
       - b
       - c
-    explanation: 'Solution: The logarithm series starts at $n=1$ and has no constant term. Therefore the answer is Powers are $(2x)^n$., Signs alternate., The denominator is $n$.. Therefore the answer is Powers are $(2x)^n$., Signs alternate., The denominator is $n$.. Therefore the answer is Powers are $(2x)^n$., Signs alternate., The denominator is $n$..
+    explanation: 'Solution: The logarithm series starts at $n=1$ and has no constant term. Therefore the answer is Powers are $(2x)^n$., Signs alternate., The denominator is $n$..
 
 
       Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
@@ -432,6 +511,13 @@ workedExamples:
       -1<2x\leq 1.
       $$
     type: multipleChoice
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: |-
       Which interval follows for $\ln(1+2x)$?
     choices:
@@ -464,10 +550,16 @@ workedExamples:
 
       '
     type: freeResponse
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: |-
       Explain why the interval for $\ln(1+2x)$ is smaller than the interval for $\ln(1+x)$.
     answer:
-      expected: The known logarithm series converges when the substituted input is greater than -1 and at most 1. For ln(1+2x), the input is 2x, so 2x must stay in (-1, 1], giving x in (-1/2, 1/2].
       gradingMode: selfCheck
       keyPoints:
       - The convergence condition belongs to the substituted input.
@@ -475,7 +567,7 @@ workedExamples:
         Use $-1<2x\leq1$.
       - |-
         Dividing by $2$ gives $\left(-\frac12,\frac12\right]$.
-    explanation: 'Solution: The interval is not copied mechanically. It is transformed by the same substitution that transformed the function. Therefore the answer is The known logarithm series converges when the substituted input is greater than -1 and at most 1. For ln(1+2x), the input is 2x, so 2x must stay in (-1, 1], giving x in (-1/2, 1/2].. Therefore the answer is The known logarithm series converges when the substituted input is greater than -1 and at most 1. For ln(1+2x), the input is 2x, so 2x must stay in (-1, 1], giving x in (-1/2, 1/2].. Therefore the answer is The known logarithm series converges when the substituted input is greater than -1 and at most 1. For ln(1+2x), the input is 2x, so 2x must stay in (-1, 1], giving x in (-1/2, 1/2]..
+    explanation: 'Solution: The interval is not copied mechanically. It is transformed by the same substitution that transformed the function. Therefore the answer is The known logarithm series converges when the substituted input is greater than -1 and at most 1. For ln(1+2x), the input is 2x, so 2x must stay in (-1, 1], giving x in (-1/2, 1/2]..
 
 
       Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
@@ -497,6 +589,13 @@ workedExamples:
 
       '
     type: selectAll
+    issueSignals:
+    - id: power-series-expansion-error
+    - id: power-rule-error
+    - id: algebraic-simplification-error
+    - id: exponent-rule-misapplied
+    - id: chain-rule-missed
+    - id: function-composition-error
     prompt: Which are valid ways to build new Taylor series from known series?
     choices:
     - id: a
@@ -512,7 +611,7 @@ workedExamples:
       - a
       - b
       - d
-    explanation: 'Solution: Known series are templates. The main discipline is transforming both the terms and the interval consistently. Therefore the answer is Substitute a new expression into the input., Integrate or differentiate term by term inside the interval of convergence., Multiply by a simple factor when the target has that factor.. Therefore the answer is Substitute a new expression into the input., Integrate or differentiate term by term inside the interval of convergence., Multiply by a simple factor when the target has that factor.. Therefore the answer is Substitute a new expression into the input., Integrate or differentiate term by term inside the interval of convergence., Multiply by a simple factor when the target has that factor..
+    explanation: 'Solution: Known series are templates. The main discipline is transforming both the terms and the interval consistently. Therefore the answer is Substitute a new expression into the input., Integrate or differentiate term by term inside the interval of convergence., Multiply by a simple factor when the target has that factor..
 
 
       Why it works: First apply the Ratio or Root Test to obtain the open radius condition $|x-c|<R$. Then test each endpoint separately in the original series, because endpoint behavior is not determined by the ratio calculation.
