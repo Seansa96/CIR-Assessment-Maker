@@ -4,71 +4,104 @@ title: The Work-Energy Theorem
 assessmentType: conceptLesson
 categoryId: physics-1
 topicId: physics-work-energy
-skills:
-- Apply Work and Kinetic Energy
-- physics-work-energy
-- work-energy-theorem
-- kinetic-energy
-- work
+skills: [Apply Work and Kinetic Energy, physics-work-energy, work-energy-theorem, kinetic-energy]
 navigation:
   learningGoal: learn
   activityType: conceptLesson
-  tags:
-  - physics-1
-  - physics-work-energy
+  tags: [physics-1, physics-work-energy]
 modeDefault: study
 randomizeQuestions: false
 sections:
-- id: theorem-definition
-  title: The Work-Kinetic Energy Theorem
-  content: "The **Work-Kinetic Energy Theorem** states that the net work done on an\
-    \ object by all forces equals the change in the object's kinetic energy.\n\n$$\
-    \ W_{net} = \\Delta K = K_f - K_i $$\n\nThis is a direct consequence of Newton's\
-    \ Second Law and the definitions of work and kinetic energy. \n* If $W_{net} >\
-    \ 0$, the object speeds up (kinetic energy increases).\n* If $W_{net} < 0$, the\
-    \ object slows down (kinetic energy decreases).\n* If $W_{net} = 0$, the object\
-    \ maintains a constant speed.\n"
-- id: why-its-useful
-  title: Why Use Energy Instead of Newton's Laws?
-  content: 'You can solve many problems using either Newton''s laws (to find acceleration)
-    followed by kinematic equations, OR by using the work-energy theorem.
-
-
-    However, the Work-Energy Theorem is often **much easier and faster** because:
-
-    1. Work and Energy are **scalars**, not vectors. You don''t have to break them
-    into x and y components.
-
-    2. It relates speed and position directly, completely ignoring the *time* it takes
-    and the *path* taken (for conservative forces).
-
-    3. It works easily even when forces are varying (using the area under the force-position
-    curve), whereas kinematics with varying acceleration requires integrating differential
-    equations.
-
-    '
+  - id: theorem-definition
+    title: Net work and kinetic energy
+    content: 'The work-energy theorem is $W_{net}=\Delta K=K_f-K_i$. Positive net work raises kinetic energy, negative net work lowers it, and zero net work leaves speed unchanged.'
+  - id: strategy
+    title: A force inventory
+    content: 'List every force that acts during the displacement, decide the signed work of each, add those works, and set their sum equal to the kinetic-energy change.'
 lesson:
-  introduction: The Work-Energy Theorem
+  introduction: Use net work to connect the forces acting through a displacement directly to a change in speed.
   sections:
-  - id: sec-q001
-    title: A net work of $-50$ J is done on a shopping cart as it moves across a parking
-      lot. Which of the following must be true?
-    content: |
-      A net work of $-50$ J is done on a shopping cart as it moves across a parking lot. Which of the following must be true?
-    check:
-      id: check-q001
-      type: multipleChoice
-      prompt: 'Select the correct statement:'
-      choices:
-      - id: a
-        text: The cart is speeding up.
-      - id: b
-        text: The cart is slowing down.
-      - id: c
-        text: The cart is moving at a constant speed.
-      - id: d
-        text: The cart is moving backwards.
-      answer:
-        choiceId: b
-      explanation: |
-        According to the Work-Kinetic Energy Theorem, $W_{net} = \Delta K$. Since the net work is negative, $\Delta K$ is negative, meaning the final kinetic energy is less than the initial kinetic energy. Therefore, the cart is slowing down.
+    - id: wet-sec1
+      title: Core statement
+      content: 'The theorem uses net work, the signed sum of work done by all forces.'
+      check:
+        id: wet-c1
+        type: multipleChoice
+        prompt: 'The work-energy theorem states that:'
+        choices:
+          - { id: a, text: '$W_{net}=\Delta K$', issueSignals: [] }
+          - { id: b, text: '$W_{net}=K_f+K_i$', issueSignals: [{ id: kinetic-energy-change-sign, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: The correct relation is $W_{net}=K_f-K_i=\Delta K$.\n\nWhy it works: Net work measures the energy transferred into or out of motion.\n\nWhy the other choices fail: Adding the two kinetic energies does not represent a change.'
+    - id: wet-sec2
+      title: Positive net work
+      content: 'If total work is positive, final kinetic energy exceeds initial kinetic energy.'
+      check:
+        id: wet-c2
+        type: multipleChoice
+        prompt: 'If the net work on a moving particle is positive, its speed must:'
+        choices:
+          - { id: a, text: 'increase', issueSignals: [] }
+          - { id: b, text: 'decrease', issueSignals: [{ id: reversed-net-work-speed-change, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: $W_{net}>0$ means $\Delta K>0$, so speed increases.\n\nWhy it works: Kinetic energy is proportional to $v^2$.\n\nWhy the other choices fail: A decrease in speed requires negative, not positive, net work.'
+    - id: wet-sec3
+      title: Negative net work
+      content: 'For a moving object, negative net work reduces kinetic energy and hence speed.'
+      check:
+        id: wet-c3
+        type: multipleChoice
+        prompt: 'A cart experiences $-50$ J of net work. Which statement is supported?'
+        choices:
+          - { id: a, text: 'Its kinetic energy decreases by $50$ J.', issueSignals: [] }
+          - { id: b, text: 'Its kinetic energy increases by $50$ J.', issueSignals: [{ id: net-work-sign-error, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: $\Delta K=W_{net}=-50$ J.\n\nWhy it works: The theorem preserves the sign of net work.\n\nWhy the other choices fail: An increase of $50$ J would require $+50$ J of net work.'
+    - id: wet-sec4
+      title: Zero net work
+      content: 'Zero net work means kinetic energy, and therefore speed, is unchanged; the direction can still change.'
+      check:
+        id: wet-c4
+        type: multipleChoice
+        prompt: 'If the net work is zero, which quantity is guaranteed unchanged?'
+        choices:
+          - { id: a, text: 'Speed', issueSignals: [] }
+          - { id: b, text: 'Velocity vector', issueSignals: [{ id: speed-velocity-confusion, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: $\Delta K=0$ fixes the speed, not necessarily direction.\n\nWhy it works: Kinetic energy depends on speed squared.\n\nWhy the other choices fail: A perpendicular force can turn a velocity vector while doing zero work.'
+    - id: wet-sec5
+      title: Sum all forces
+      content: 'The theorem requires the total work, so include applied forces, gravity, friction, and any other force that has a component along displacement.'
+      check:
+        id: wet-c5
+        type: multipleChoice
+        prompt: 'A block moves horizontally while an applied force and friction act. Which work belongs in $W_{net}$?'
+        choices:
+          - { id: a, text: 'The signed sum of both forces'' work', issueSignals: [] }
+          - { id: b, text: 'Only the applied-force work', issueSignals: [{ id: omitted-friction-from-net-work, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: Add the applied positive work and friction''s negative work.\n\nWhy it works: Net work is the sum over all forces.\n\nWhy the other choices fail: Omitting friction overstates the energy transferred to the block.'
+    - id: wet-sec6
+      title: Normal force on a path
+      content: 'A normal force often contributes zero work because it is perpendicular to the instantaneous displacement along a surface.'
+      check:
+        id: wet-c6
+        type: multipleChoice
+        prompt: 'Why can a normal force be omitted from the work sum for motion along a smooth track?'
+        choices:
+          - { id: a, text: 'It is perpendicular to the displacement.', issueSignals: [] }
+          - { id: b, text: 'It has zero magnitude.', issueSignals: [{ id: normal-force-zero-confusion, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: Its dot product with the tangent displacement is zero.\n\nWhy it works: $W=Fd\cos90^\circ=0$.\n\nWhy the other choices fail: A normal force can be substantial while still doing no work.'
+    - id: wet-sec7
+      title: Solving for speed
+      content: 'After computing $W_{net}$, write $W_{net}=\tfrac12m(v_f^2-v_i^2)$ and solve for the requested speed.'
+      check:
+        id: wet-c7
+        type: multipleChoice
+        prompt: 'A $2.0$ kg object starts at rest and receives $36$ J of net work. Its final speed is:'
+        choices:
+          - { id: a, text: '$6.0$ m/s', issueSignals: [] }
+          - { id: b, text: '$18$ m/s', issueSignals: [{ id: forgot-half-mv-squared, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: $36=\tfrac12(2.0)v_f^2$, hence $v_f=6.0$ m/s.\n\nWhy it works: Initial kinetic energy is zero and net work becomes final kinetic energy.\n\nWhy the other choices fail: Treating kinetic energy as $mv$ gives incorrect dimensions and value.'

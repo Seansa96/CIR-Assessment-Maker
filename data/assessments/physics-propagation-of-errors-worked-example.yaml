@@ -62,9 +62,11 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |
-      If $z=f(x,y)$, then uncertainty propagation estimates $\delta z$ from uncertainties such as $\delta x$ and $\delta y$.
+      Solution:       If $z=f(x,y)$, then uncertainty propagation estimates $\delta z$ from uncertainties such as $\delta x$ and $\delta y$.
 
       Related topic: measurement uncertainty. Strengthen the idea that calculated quantities inherit uncertainty from measured quantities.
+
+        Why it works: The stated uncertainty rule follows from identifying the operation and the relevant error model.
   - id: step-we001-2
     title: Addition and subtraction
     instruction: 'For sums and differences, track absolute uncertainty.
@@ -85,13 +87,15 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |
-      For addition or subtraction, conservative absolute errors add:
+      Solution:       For addition or subtraction, conservative absolute errors add:
 
       $$
       \delta z=\delta x+\delta y.
       $$
 
       Related topic: absolute uncertainty. Use this when the operation is $+$ or $-$.
+
+        Why it works: The stated uncertainty rule follows from identifying the operation and the relevant error model.
   - id: step-we001-3
     title: Independent random errors
     instruction: 'When errors are random and independent, uncertainties combine by
@@ -113,13 +117,15 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |
-      Independent random errors partly cancel statistically, so they are combined in quadrature:
+      Solution:       Independent random errors partly cancel statistically, so they are combined in quadrature:
 
       $$
       \delta z=\sqrt{(\delta x)^2+(\delta y)^2}.
       $$
 
       Related topic: quadrature. Use this only when the independence/random-error assumption is justified.
+
+        Why it works: The stated uncertainty rule follows from identifying the operation and the relevant error model.
   - id: step-we001-4
     title: Multiplication and division
     instruction: 'Products and quotients are easiest to handle with fractional uncertainty.
@@ -140,13 +146,15 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |
-      For multiplication and division, relative uncertainties add:
+      Solution:       For multiplication and division, relative uncertainties add:
 
       $$
       \frac{\delta z}{|z|}=\frac{\delta x}{|x|}+\frac{\delta y}{|y|}.
       $$
 
       Related topic: fractional uncertainty. The operation determines whether absolute or fractional uncertainty is the natural form.
+
+        Why it works: The stated uncertainty rule follows from identifying the operation and the relevant error model.
   - id: step-we001-5
     title: Power rule
     instruction: 'A power magnifies relative uncertainty by the absolute value of
@@ -168,7 +176,7 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |
-      For a power,
+      Solution:       For a power,
 
       $$
       y=x^n
@@ -181,6 +189,8 @@ workedExamples:
       $$
 
       Related topic: fractional error in powers. This comes from\rhow strongly a power function changes when its input changes.
+
+        Why it works: The stated uncertainty rule follows from identifying the operation and the relevant error model.
   - id: step-we001-6
     title: General function rule
     instruction: 'For a one-variable function, the derivative measures sensitivity.
@@ -201,13 +211,15 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |
-      The derivative tells you\rhow much the output changes for a small change in input:
+      Solution:       The derivative tells you\rhow much the output changes for a small change in input:
 
       $$
       \delta y\a\approx\left|\frac{df}{dx}\right|\delta x.
       $$
 
       Related topic: local linear a\approximation. Review derivatives as sensitivity, not just slopes on graphs.
+
+        Why it works: The stated uncertainty rule follows from identifying the operation and the relevant error model.
   - id: step-we001-7
     title: Two-variable function
     instruction: 'A function of two variables depends on sensitivity to each variable
@@ -230,10 +242,57 @@ workedExamples:
     answer:
       choiceId: a
     explanation: |
-      Use partial derivatives to measure sensitivity to each input, then combine independent errors by quadrature:
+      Solution:       Use partial derivatives to measure sensitivity to each input, then combine independent errors by quadrature:
 
       $$
       \delta z=\sqrt{\left(\frac{\partial z}{\partial x}\delta x\right)^2+\left(\frac{\partial z}{\partial y}\delta y\right)^2}.
       $$
 
       Related topic: partial derivatives and uncertainty propagation. The procedure is sensitivity first, combination rule second.
+
+
+        Why it works: The stated uncertainty rule follows from identifying the operation and the relevant error model.
+- id: we002
+  title: Propagate uncertainty for a density calculation
+  problem: |
+    A rectangular sample has mass $(20.0\pm0.2)$ g and volume $(5.0\pm0.1)$ cm$^3$.
+    Estimate its density and conservative fractional uncertainty using
+    $\rho=m/V$.
+  steps:
+  - id: step-we002-1
+    title: Calculate the best-estimate density
+    instruction: Divide the measured mass by the measured volume.
+    type: numericResponse
+    prompt: What is the best-estimate density in g/cm$^3$?
+    choices: []
+    answer: { value: 4.0, tolerance: 0.001 }
+    explanation: |
+      Solution:       Solution: $\rho=20.0/5.0=4.0$ g/cm$^3$.
+
+      Why it works: Density is mass divided by volume.
+  - id: step-we002-2
+    title: Combine fractional uncertainties
+    instruction: Because density is a quotient, add conservative fractional uncertainties.
+    type: numericResponse
+    prompt: What is the conservative fractional uncertainty in density?
+    choices: []
+    answer: { value: 0.03, tolerance: 0.0001 }
+    explanation: |
+      Solution:       Solution: $\delta\rho/\rho=0.2/20.0+0.1/5.0=0.01+0.02=0.03$.
+
+      Why it works: For a quotient, conservative fractional uncertainties add.
+
+      Common trap: Do not add 0.2 g and 0.1 cm$^3$ directly; unlike units require fractional comparison first.
+  - id: step-we002-3
+    title: Convert back to an absolute uncertainty
+    instruction: Multiply the fractional uncertainty by the best-estimate density.
+    type: numericResponse
+    prompt: What absolute uncertainty should be reported in g/cm$^3$?
+    choices: []
+    answer: { value: 0.12, tolerance: 0.001 }
+    explanation: |
+      Solution:       Solution: $\delta\rho=(0.03)(4.0)=0.12$ g/cm$^3$, so report
+      $\rho=(4.00\pm0.12)$ g/cm$^3$.
+
+      Why it works: Multiplying the relative uncertainty by the calculated
+      quantity converts it to the quantity's own units.

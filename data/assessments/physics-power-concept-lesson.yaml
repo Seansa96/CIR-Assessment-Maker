@@ -4,72 +4,104 @@ title: Power
 assessmentType: conceptLesson
 categoryId: physics-1
 topicId: physics-work-energy
-skills:
-- Apply Work and Kinetic Energy
-- physics-work-energy
-- work-energy-theorem
-- kinetic-energy
-- work
-- power
+skills: [Apply Work and Kinetic Energy, physics-work-energy, power]
 navigation:
   learningGoal: learn
   activityType: conceptLesson
-  tags:
-  - physics-1
-  - physics-work-energy
+  tags: [physics-1, physics-work-energy]
 modeDefault: study
 randomizeQuestions: false
 sections:
-- id: average-power
-  title: Average Power
-  content: "While work tells you *how much* energy was transferred, it tells you nothing\
-    \ about *how long* the transfer took. \n\n**Power ($P$)** is the rate at which\
-    \ work is done (or energy is transferred) with respect to time.\n\n$$ P_{avg}\
-    \ = \\frac{W}{\\Delta t} = \\frac{\\Delta E}{\\Delta t} $$\n\n* **Units:** Joules\
-    \ per second (J/s), which is called a **Watt (W)**.\n* $1 \\text{ W} = 1 \\text{\
-    \ J/s}$\n* Note: Engine power is often measured in\rhorsepower (hp). $1 \\text{\
-    \ hp} \\a\approx 746 \\text{ W}$.\n"
-- id: instantaneous-power
-  title: Instantaneous Power
-  content: 'In calculus terms, the instantaneous power is the derivative of work with
-    respect to time:
-
-    $$ P = \frac{dW}{dt} $$
-
-
-    Since $dW = \vec{F} \cdot d\vec{r}$, we can divide both sides by $dt$ to find
-    a very useful alternative equation for instantaneous power:
-
-    $$ P = \vec{F} \cdot \frac{d\vec{r}}{dt} = \vec{F} \cdot \vec{v} $$
-
-
-    This means that the instantaneous power delivered by a force $\vec{F}$ on a particle
-    moving with velocity $\vec{v}$ is the dot product of the force and the velocity
-    vectors.
-
-    '
+  - id: average-power
+    title: Energy-transfer rate
+    content: 'Average power is energy transferred per elapsed time: $P_{avg}=W/\Delta t=\Delta E/\Delta t$. Its SI unit is the watt, $1\ \mathrm{W}=1\ \mathrm{J/s}$.'
+  - id: instantaneous-power
+    title: Force and velocity
+    content: 'For a force acting on a moving object, instantaneous power is $P=\vec F\cdot\vec v$. Only the velocity component parallel to the force contributes.'
 lesson:
-  introduction: Power
+  introduction: Distinguish the amount of energy transferred from the rate at which that transfer occurs.
   sections:
-  - id: sec-q001
-    title: A motor applies a constant upward force of $500$ N to lift a load at a
-      constant steady velocity of $2.0$ m/s. What is the power output of the motor?
-    content: |
-      A motor applies a constant upward force of $500$ N to lift a load at a constant steady velocity of $2.0$ m/s. What is the power output of the motor?
-    check:
-      id: check-q001
-      type: multipleChoice
-      prompt: 'Select the correct statement:'
-      choices:
-      - id: a
-        text: 1000 W
-      - id: b
-        text: 250 W
-      - id: c
-        text: 500 W
-      - id: d
-        text: 0 W
-      answer:
-        choiceId: a
-      explanation: |
-        Since the force and velocity are constant and in the same direction, we can use the dot product formula: $P = \vec{F} \cdot \vec{v} = F v \cos(0^\circ) = (500)(2.0) = 1000$ W.
+    - id: power-sec1
+      title: Average power
+      content: 'Use average power when the total work and the entire time interval are known.'
+      check:
+        id: power-c1
+        type: multipleChoice
+        prompt: 'A hoist does $600$ J of work in $3.0$ s. Its average power is:'
+        choices:
+          - { id: a, text: '$200$ W', issueSignals: [] }
+          - { id: b, text: '$1800$ W', issueSignals: [{ id: multiplied-instead-of-divided, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: $P_{avg}=W/\Delta t=600/3.0=200$ W.\n\nWhy it works: Average power is total energy transfer divided by elapsed time.\n\nWhy the other choices fail: Multiplying work by time does not produce an energy-transfer rate.'
+    - id: power-sec2
+      title: Watt and joule
+      content: 'A joule measures energy or work; a watt measures joules delivered each second.'
+      check:
+        id: power-c2
+        type: multipleChoice
+        prompt: 'Which quantity has units of watts?'
+        choices:
+          - { id: a, text: 'Energy transferred per time', issueSignals: [] }
+          - { id: b, text: 'Force times displacement', issueSignals: [{ id: power-work-confusion, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: A watt is $\mathrm{J/s}$, so it measures energy transferred per time.\n\nWhy it works: Power is a rate.\n\nWhy the other choices fail: Force times displacement is work, measured in joules.'
+    - id: power-sec3
+      title: Same work, different rates
+      content: 'Two devices can do the same work while having different powers if their completion times differ.'
+      check:
+        id: power-c3
+        type: multipleChoice
+        prompt: 'Two elevators raise identical loads through the same height. Elevator A takes half as long as B. Compared with B, A has:'
+        choices:
+          - { id: a, text: 'twice the average power', issueSignals: [] }
+          - { id: b, text: 'the same average power', issueSignals: [{ id: ignored-time-in-power, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: Equal work in half the time gives $P_A=W/(t_B/2)=2P_B$.\n\nWhy it works: Power increases when the same energy transfer happens faster.\n\nWhy the other choices fail: Equal work does not imply equal power unless the times are also equal.'
+    - id: power-sec4
+      title: Instantaneous power
+      content: 'At one instant, use $P=\vec F\cdot\vec v=Fv\cos\theta$ rather than total work divided by an interval.'
+      check:
+        id: power-c4
+        type: multipleChoice
+        prompt: 'A $50$ N force points in the direction of an object moving at $4.0$ m/s. The instantaneous power is:'
+        choices:
+          - { id: a, text: '$200$ W', issueSignals: [] }
+          - { id: b, text: '$12.5$ W', issueSignals: [{ id: divided-force-by-speed, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: $P=Fv\cos0^\circ=(50)(4.0)=200$ W.\n\nWhy it works: Force and velocity are parallel.\n\nWhy the other choices fail: Dividing force by speed is not the force-velocity power relation.'
+    - id: power-sec5
+      title: Direction matters
+      content: 'The dot product makes power positive, zero, or negative according to whether the force helps, is perpendicular to, or opposes the motion.'
+      check:
+        id: power-c5
+        type: multipleChoice
+        prompt: 'A magnetic force is perpendicular to an object''s velocity. Its instantaneous power is:'
+        choices:
+          - { id: a, text: '$0$ W', issueSignals: [] }
+          - { id: b, text: 'positive because the force is nonzero', issueSignals: [{ id: nonzero-force-means-power, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: $P=Fv\cos90^\circ=0$.\n\nWhy it works: A perpendicular force has no component along the velocity.\n\nWhy the other choices fail: A force can be nonzero while transferring no energy at that instant.'
+    - id: power-sec6
+      title: Negative power
+      content: 'A force opposite the velocity removes kinetic energy and therefore delivers negative power to the object.'
+      check:
+        id: power-c6
+        type: multipleChoice
+        prompt: 'During braking, the friction force points opposite the car''s velocity. Its power on the car is:'
+        choices:
+          - { id: a, text: 'negative', issueSignals: [] }
+          - { id: b, text: 'positive', issueSignals: [{ id: ignored-dot-product-sign, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: Opposite vectors have $\cos180^\circ=-1$, so $P<0$.\n\nWhy it works: Friction removes the car''s kinetic energy.\n\nWhy the other choices fail: Positive power would increase, rather than decrease, the car''s energy.'
+    - id: power-sec7
+      title: Choosing a model
+      content: 'Use $W/\Delta t$ for an interval and $\vec F\cdot\vec v$ when force and velocity at a particular instant are supplied.'
+      check:
+        id: power-c7
+        type: multipleChoice
+        prompt: 'Which data set most directly supports finding instantaneous power?'
+        choices:
+          - { id: a, text: 'The force vector and velocity vector at one instant', issueSignals: [] }
+          - { id: b, text: 'Only the object''s mass and height', issueSignals: [{ id: missing-time-or-velocity-for-power, domains: [physics-1] }] }
+        answer: { choiceId: a }
+        explanation: 'Solution: Use $P=\vec F\cdot\vec v$ with force and velocity at that instant.\n\nWhy it works: This equation directly defines instantaneous power.\n\nWhy the other choices fail: Mass and height can determine a change in potential energy, but not a rate without time or velocity information.'

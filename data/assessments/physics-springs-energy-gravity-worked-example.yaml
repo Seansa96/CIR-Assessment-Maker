@@ -4,67 +4,51 @@ title: Spring Energy and Gravity
 assessmentType: workedExample
 categoryId: physics-1
 topicId: physics-work-energy
-skills:
-- Apply physics-1 concepts
-- physics-work-energy
-- work-energy-theorem
-- kinetic-energy
-- work
-- spring-energy
-- conservation-of-energy
-- conservation-of-mechanical-energy
-- potential-energy
-- Apply Work and Kinetic Energy
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-  - physics-1
-  - physics-work-energy
+skills: [Apply Work and Kinetic Energy, physics-work-energy, spring-energy, conservation-of-energy]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [physics-1, physics-work-energy] }
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we-spring-gravity
-    title: Launching a Block
-    problem: |
-      Let's combine spring potential energy and gravitational potential energy using conservation of mechanical energy.
+  - id: we-spring-gravity-symbolic
+    title: Spring launch height
+    problem: 'A vertical spring of stiffness $k$ is compressed by $d$ under a mass $m$, then releases the mass upward. Derive its maximum height above the initially compressed position.'
     steps:
-      - id: step-1
-        title: Step 1 — Initial Energy
-        instruction: |
-          A block of mass $m$ sits on top of a vertical spring (constant $k$) which is compressed downward by a distance $d$ from its relaxed length. The system is at rest. Let's set gravitational potential energy $U_g = 0$ at this initial compressed position.
+      - id: sgs-1
+        title: Initial energy
+        instruction: 'Choose gravitational potential energy zero at the initially compressed position.'
         type: symbolicResponse
-        prompt: |
-          What is the total initial mechanical energy $E_i$ of the system?
-        answer:
-          gradingMode: auto
-          expectedLatex: (1/2)*k*d^2
-          equivalenceMode: expression
-          tolerance: 0
-        explanation: 'Since it starts from rest ($K_i = 0$) and we set $U_{g,i} = 0$, the only energy is the spring potential energy: $E_i = \frac{1}{2}kd^2$.'
-      - id: step-2
-        title: Step 2 — Final Energy
-        instruction: |
-          The spring is released, launching the block straight up into the air. The spring detaches when it reaches its relaxed length. At the block's maximum height $h$ (measured from the launch point), it briefly stops moving.
+        prompt: 'What is the initial mechanical energy?'
+        answer: { gradingMode: auto, expectedLatex: 'k d^2/2', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $E_i=\tfrac12kd^2$.\n\nWhy it works: The system starts at rest and energy is initially stored in the compressed spring.'
+      - id: sgs-2
+        title: Maximum-height energy
+        instruction: 'At maximum height the block is momentarily at rest and detached from the spring.'
         type: symbolicResponse
-        prompt: |
-          What is the total final mechanical energy $E_f$ of the system at maximum height?
-        answer:
-          gradingMode: auto
-          expectedLatex: m*g*h
-          equivalenceMode: expression
-          tolerance: 0
-        explanation: 'At max height, $K_f = 0$ and the spring is detached so $U_{s,f} = 0$. The only energy is gravitational: $E_f = mgh$.'
-      - id: step-3
-        title: Step 3 — Conservation of Energy
-        instruction: |
-          Since there are no nonconservative forces doing work (ignoring air resistance), $E_i = E_f$.
+        prompt: 'Write the final energy.'
+        answer: { gradingMode: auto, expectedLatex: 'm g h', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $E_f=mgh$.\n\nWhy it works: Kinetic and spring potential energies are both zero at the top.'
+      - id: sgs-3
+        title: Solve for height
+        instruction: 'Conserve mechanical energy.'
         type: symbolicResponse
-        prompt: |
-          Set $E_i = E_f$ and solve for the maximum height $h$.
-        answer:
-          gradingMode: auto
-          expectedLatex: (k*d^2)/(2*m*g)
-          equivalenceMode: expression
-          tolerance: 0
-        explanation: 'Equating them gives $\frac{1}{2}kd^2 = mgh$. Dividing by $mg$ yields $h = \frac{kd^2}{2mg}$.'
+        prompt: 'Write $h$.'
+        answer: { gradingMode: auto, expectedLatex: 'k d^2/(2m g)', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $\tfrac12kd^2=mgh$, so $h=kd^2/(2mg)$.\n\nWhy it works: With no nonconservative work, initial and final mechanical energies are equal.'
+  - id: we-spring-gravity-numerical
+    title: Numerical spring launch
+    problem: 'A $0.20$ kg block is launched by a spring with $k=200$ N/m compressed $0.10$ m. Ignore air resistance and use $g=9.8$ m/s$^2$. Find the maximum height above the initial compressed position.'
+    steps:
+      - id: sgn-1
+        title: Calculate spring energy
+        instruction: 'Evaluate $\tfrac12kd^2$.'
+        type: numericResponse
+        prompt: 'What initial spring energy is stored, in joules?'
+        answer: { value: 1, tolerance: 0.01 }
+        explanation: 'Solution: $\tfrac12(200)(0.10)^2=1.0$ J.\n\nWhy it works: Spring energy depends on stiffness times compression squared.'
+      - id: sgn-2
+        title: Convert energy to height
+        instruction: 'Set the spring energy equal to gravitational potential energy.'
+        type: numericResponse
+        prompt: 'What maximum height is reached, in meters?'
+        answer: { value: 0.510204, tolerance: 0.001 }
+        explanation: 'Solution: $h=1.0/[(0.20)(9.8)]=0.510$ m.\n\nWhy it works: At the top, all initial spring energy has become gravitational potential energy.'

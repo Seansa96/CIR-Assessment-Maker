@@ -4,54 +4,44 @@ title: Deriving Work for a Variable Force
 assessmentType: workedExample
 categoryId: physics-1
 topicId: physics-work-energy
-skills:
-- Apply Work and Kinetic Energy
-- physics-work-energy
-- work-energy-theorem
-- kinetic-energy
-- work
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-  - physics-1
-  - physics-work-energy
+skills: [Apply Work and Kinetic Energy, physics-work-energy, work]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [physics-1, physics-work-energy] }
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: ex-variable-force-work
-  title: From Dot Product to 1D Integral
-  problem: |
-    Let's derive the formula for the work done by a position-dependent force $F(x)$ moving an object in 1D from $x_i$ to $x_f$.
-  steps:
-  - id: step-1
-    title: Step 1 — Vector Dot Product
-    instruction: |
-      Start with the general vector definition of infinitesimal work: $dW = \vec F \cdot d\vec r$.
-      If the force is purely along the x-axis, we write $\vec F = F(x) \hat i$.
-      For 1D motion along the x-axis, $d\vec r = dx \hat i$.
-    type: multipleChoice
-    prompt: What is the result of the dot product $\vec F \cdot d\vec r$?
-    choices:
-    - id: a
-      text: $F(x) \, dx$
-    - id: b
-      text: $0$
-    - id: c
-      text: $F(x) \times dx$ (cross product)
-    answer:
-      choiceId: a
-    explanation: Since $\hat i \cdot \hat i = 1$, the dot product evaluates to exactly $F(x) \, dx$.
-  - id: step-2
-    title: Step 2 — Integration
-    instruction: |
-      We now have $dW = F(x) \, dx$. This is the tiny amount of work done over an infinitesimally small step $dx$.
-      To find the total work done over a macroscopic distance, we must sum up all these tiny amounts of work.
-    type: symbolicResponse
-    prompt: Write the definite integral for the total work $W$ from position $x_i$ to $x_f$. (Use 'int' for integral, e.g., \int_{x_i}^{x_f})
-    answer:
-      gradingMode: auto
-      expectedLatex: \int_{x_i}^{x_f} F(x) dx
-      equivalenceMode: expression
-      tolerance: 0
-    explanation: Total work is simply the integral of the force with respect to position. Geometrically, this is the signed area under the $F$ vs. $x$ graph.
+  - id: ex-variable-force-work
+    title: From dot product to a one-dimensional integral
+    problem: 'Derive work for a force $F(x)\hat i$ moving an object from $x_i$ to $x_f$.'
+    steps:
+      - id: vf-1
+        title: Infinitesimal work
+        instruction: 'Use $d\vec r=dx\hat i$.'
+        type: symbolicResponse
+        prompt: 'What is $dW$?'
+        answer: { gradingMode: auto, expectedLatex: 'F(x) dx', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $dW=(F(x)\hat i)\cdot(dx\hat i)=F(x)dx$.\n\nWhy it works: The unit vector dot product is $\hat i\cdot\hat i=1$.'
+      - id: vf-2
+        title: Sum the increments
+        instruction: 'Integrate the infinitesimal work across the interval.'
+        type: symbolicResponse
+        prompt: 'Write the total work.'
+        answer: { gradingMode: auto, expectedLatex: '\int_{x_i}^{x_f} F(x) dx', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $W=\int_{x_i}^{x_f}F(x)\,dx$.\n\nWhy it works: Integration adds each infinitesimal energy transfer over the path.'
+  - id: ex-variable-force-linear
+    title: Linear force calculation
+    problem: 'A one-dimensional force is $F(x)=3x$ N. Find the work from $x=0$ m to $x=4.0$ m.'
+    steps:
+      - id: vl-1
+        title: Set up the integral
+        instruction: 'Substitute the supplied force function into the work integral.'
+        type: symbolicResponse
+        prompt: 'Write the integral for work.'
+        answer: { gradingMode: auto, expectedLatex: '\int_0^4 3x dx', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $W=\int_0^4 3x\,dx$.\n\nWhy it works: The force is position dependent, so force must be integrated over displacement.'
+      - id: vl-2
+        title: Evaluate the integral
+        instruction: 'Use an antiderivative of $3x$.'
+        type: numericResponse
+        prompt: 'What is the work in joules?'
+        answer: { value: 24, tolerance: 0.01 }
+        explanation: 'Solution: $W=[\tfrac32x^2]_0^4=\tfrac32(16)=24$ J.\n\nWhy it works: The signed area under the positive $F$-versus-$x$ curve is the work.'

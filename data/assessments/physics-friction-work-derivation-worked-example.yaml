@@ -4,57 +4,46 @@ title: Deriving Kinetic Friction Work
 assessmentType: workedExample
 categoryId: physics-1
 topicId: physics-work-energy
-skills:
-- Apply Work and Kinetic Energy
-- physics-work-energy
-- work-energy-theorem
-- kinetic-energy
-- work
-- friction
-- normal-force
-- conservation-of-energy
-- conservation-of-mechanical-energy
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-  - physics-1
-  - physics-work-energy
+skills: [Apply Work and Kinetic Energy, physics-work-energy, friction, work]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [physics-1, physics-work-energy] }
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: ex-friction-work
-  title: Nonconservative Work by Friction
-  problem: |
-    Let's derive the work done by kinetic friction ($W_f = -f_k d$) over a straight-line distance $d$.
-  steps:
-  - id: step-1
-    title: Step 1 — Vector Dot Product
-    instruction: |
-      Start with the work dot product $dW = \vec f_k \cdot d\vec r$.
-      Kinetic friction always points exactly opposite to the microscopic displacement $d\vec r$.
-    type: multipleChoice
-    prompt: What is the angle $\theta$ between the kinetic friction vector and the displacement vector?
-    choices:
-    - id: a
-      text: $0^\circ$
-    - id: b
-      text: $90^\circ$
-    - id: c
-      text: $180^\circ$
-    answer:
-      choiceId: c
-    explanation: Friction opposes motion, so it points perfectly opposite to displacement ($180^\circ$). The cosine of $180^\circ$ is $-1$.
-  - id: step-2
-    title: Step 2 — Integration
-    instruction: |
-      Because $\cos(180^\circ) = -1$, the dot product becomes $dW = -f_k \, |d\vec r| = -f_k \, ds$.
-      We integrate this from $s=0$ to $s=d$. Since the normal force is constant, $f_k = \mu_k N$ is constant.
-    type: symbolicResponse
-    prompt: Evaluate the integral $\int_0^d -f_k \, ds$. What is $W_f$?
-    answer:
-      gradingMode: auto
-      expectedLatex: -f_k d
-      equivalenceMode: expression
-      tolerance: 0
-    explanation: Pulling $-f_k$ out of the integral leaves $\int ds = d$. So $W_f = -f_k d$. This negative work drains mechanical energy from the system.
+  - id: ex-friction-work
+    title: Constant friction on a level path
+    problem: 'Derive the work done by a constant kinetic-friction force of magnitude $f_k$ over a straight distance $d$.'
+    steps:
+      - id: fw-1
+        title: Direction of friction
+        instruction: 'Kinetic friction opposes the displacement.'
+        type: multipleChoice
+        prompt: 'What angle separates friction and displacement?'
+        choices: [{ id: a, text: '$180^\circ$' }, { id: b, text: '$90^\circ$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: The angle is $180^\circ$.\n\nWhy it works: Kinetic friction points opposite the direction of sliding.\n\nWhy the other choices fail: A $90^\circ$ angle describes a perpendicular force, not an opposing one.'
+      - id: fw-2
+        title: Evaluate work
+        instruction: 'Apply $W=Fd\cos\theta$.'
+        type: symbolicResponse
+        prompt: 'Write the friction work.'
+        answer: { gradingMode: auto, expectedLatex: '-f_k d', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $W_f=f_kd\cos180^\circ=-f_kd$.\n\nWhy it works: The cosine supplies the negative sign for an opposing force.'
+  - id: ex-friction-numerical
+    title: Frictional energy loss
+    problem: 'A $12$ N kinetic-friction force acts on a crate sliding $5.0$ m horizontally. Find the work by friction and interpret its sign.'
+    steps:
+      - id: fn-1
+        title: Compute the work
+        instruction: 'The force is opposite the displacement.'
+        type: numericResponse
+        prompt: 'What is the work done by friction in joules?'
+        answer: { value: -60, tolerance: 0.01 }
+        explanation: 'Solution: $W_f=-(12)(5.0)=-60$ J.\n\nWhy it works: Friction opposes motion, so its work is negative.'
+      - id: fn-2
+        title: Interpret the sign
+        instruction: 'Relate negative work to the object''s kinetic energy.'
+        type: multipleChoice
+        prompt: 'The $-60$ J means friction:'
+        choices: [{ id: a, text: 'removes $60$ J of kinetic energy if it is the only working force' }, { id: b, text: 'adds $60$ J of kinetic energy' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: It removes $60$ J of kinetic energy when no other work is present.\n\nWhy it works: Negative net work produces a negative kinetic-energy change.\n\nWhy the other choices fail: Adding kinetic energy would require positive work.'

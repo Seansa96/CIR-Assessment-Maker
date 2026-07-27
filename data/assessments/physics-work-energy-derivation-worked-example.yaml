@@ -4,66 +4,45 @@ title: Deriving the Work-Energy Theorem
 assessmentType: workedExample
 categoryId: physics-1
 topicId: physics-work-energy
-skills:
-- Apply Work and Kinetic Energy
-- physics-work-energy
-- work-energy-theorem
-- kinetic-energy
-- work
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-  - physics-1
-  - physics-work-energy
+skills: [Apply Work and Kinetic Energy, physics-work-energy, work-energy-theorem]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [physics-1, physics-work-energy] }
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-- id: ex-work-energy
-  title: Newton's Second Law to Work-Energy
-  problem: |
-    Let's derive the work-energy theorem ($W_{\text{net}} = \Delta K$) starting from Newton's second law ($\vec F_{\text{net}} = m\vec a$).
-  steps:
-  - id: step-1
-    title: Step 1 — Define Infinitesimal Work
-    instruction: |
-      Start with the definition of the tiny amount of work $dW$ done over a tiny displacement $d\vec r$.
-    type: multipleChoice
-    prompt: Which equation correctly defines infinitesimal work?
-    choices:
-    - id: a
-      text: $dW = \vec F_{\text{net}} \cdot d\vec r$
-    - id: b
-      text: $dW = \vec F_{\text{net}} \times d\vec r$
-    - id: c
-      text: $dW = m d\vec r$
-    answer:
-      choiceId: a
-    explanation: Work is the dot product of force and displacement.
-  - id: step-2
-    title: Step 2 — Substitute Newton's Second Law and Kinematics
-    instruction: |
-      Substitute $\vec F_{\text{net}} = m\vec a$ into $dW = \vec F_{\text{net}} \cdot d\vec r$.
-      Then, substitute the kinematic definitions $\vec a = d\vec v / dt$ and $d\vec r = \vec v \, dt$.
-    type: symbolicResponse
-    prompt: After making these substitutions and canceling $dt$, what expression equals $dW$? (Write the expression using $m$, $\vec v$, and $d\vec v$)
-    answer:
-      gradingMode: auto
-      expectedLatex: m\vec{v} \cdot d\vec{v}
-      equivalenceMode: expression
-      tolerance: 0
-    explanation: $dW = (m d\vec v / dt) \cdot (\vec v \, dt) = m \vec v \cdot d\vec v$.
-  - id: step-3
-    title: Step 3 — Integrate
-    instruction: |
-      We now integrate both sides. $\int dW = W_{\text{net}}$.
-      On the right, we integrate $m \int_{v_i}^{v_f} \vec v \cdot d\vec v$.
-      The dot product $\vec v \cdot d\vec v$ is exactly $\frac{1}{2}d(v^2)$.
-    type: symbolicResponse
-    prompt: Evaluate the integral $m \int_{v_i}^{v_f} v \, dv$. What is the final resulting expression?
-    answer:
-      gradingMode: auto
-      expectedLatex: \frac{1}{2}mv_f^2 - \frac{1}{2}mv_i^2
-      equivalenceMode: expression
-      tolerance: 0
-    explanation: The integral of $v \, dv$ is $\frac{1}{2}v^2$. Evaluating from $v_i$ to $v_f$ gives exactly $\Delta K$.
+  - id: ex-newton-to-energy
+    title: Newton''s law to kinetic energy
+    problem: 'Derive the work-energy theorem from $\vec F_{net}=m\vec a$.'
+    steps:
+      - id: ne-1
+        title: Differential work
+        instruction: 'Substitute $\vec F_{net}=m\,d\vec v/dt$ and $d\vec r=\vec vdt$ into $dW=\vec F\cdot d\vec r$.'
+        type: symbolicResponse
+        prompt: 'What expression results for $dW$?'
+        answer: { gradingMode: auto, expectedLatex: 'm \vec{v} \cdot d\vec{v}', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $dW=m\vec v\cdot d\vec v$.\n\nWhy it works: The factors of $dt$ cancel after substituting acceleration and displacement.'
+      - id: ne-2
+        title: Integrate speed change
+        instruction: 'Integrate between initial and final speed.'
+        type: symbolicResponse
+        prompt: 'What is the resulting net work?'
+        answer: { gradingMode: auto, expectedLatex: '\frac{1}{2}m v_f^2-\frac{1}{2}m v_i^2', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $W_{net}=\tfrac12mv_f^2-\tfrac12mv_i^2=\Delta K$.\n\nWhy it works: $\vec v\cdot d\vec v=\tfrac12d(v^2)$.'
+  - id: ex-net-work-speed
+    title: Applying the theorem
+    problem: 'A $4.0$ kg object speeds up from $3.0$ m/s to $7.0$ m/s. Find the net work.'
+    steps:
+      - id: ns-1
+        title: Find kinetic-energy change
+        instruction: 'Use $W_{net}=\tfrac12m(v_f^2-v_i^2)$.'
+        type: numericResponse
+        prompt: 'What is the net work in joules?'
+        answer: { value: 80, tolerance: 0.01 }
+        explanation: 'Solution: $W_{net}=\tfrac12(4.0)(49-9)=80$ J.\n\nWhy it works: Net work equals the change in kinetic energy.'
+      - id: ns-2
+        title: Check the sign
+        instruction: 'Compare final and initial speeds.'
+        type: multipleChoice
+        prompt: 'Why is the net work positive?'
+        choices: [{ id: a, text: 'The final kinetic energy is larger.' }, { id: b, text: 'Mass is always positive.' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: The final kinetic energy is larger.\n\nWhy it works: Kinetic energy grows as speed squared.\n\nWhy the other choices fail: Positive mass alone does not determine the sign of an energy change.'

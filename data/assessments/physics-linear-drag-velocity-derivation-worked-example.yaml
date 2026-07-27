@@ -41,7 +41,7 @@ workedExamples:
       text: Because drag only happens in fluids.
     answer:
       choiceId: a
-    explanation: Since $a = -bv/m$, the acceleration changes continuously as the object slows down. Algebraic kinematics only works for constant acceleration. We must use calculus.
+    explanation: 'Solution: Do not use constant-acceleration kinematics.\n\nWhy it works: $a=-bv/m$ changes as velocity changes.\n\nWhy the other choices fail: Mass does not change, and fluid drag can require calculus.'
   - id: step-2
     title: Step 2 — Separate Variables
     instruction: |
@@ -53,7 +53,7 @@ workedExamples:
       expectedLatex: -\frac{b}{m} dt
       equivalenceMode: expression
       tolerance: 0
-    explanation: Dividing by $v$ and multiplying by $dt/m$ gives $dv/v = -(b/m) dt$.
+    explanation: 'Solution: $dv/v=-(b/m)dt$.\n\nWhy it works: Separating variables places velocity and time differentials on opposite sides.'
   - id: step-3
     title: Step 3 — Integrate and Exponentiate
     instruction: |
@@ -67,4 +67,23 @@ workedExamples:
       expectedLatex: v_0 e^{-bt/m}
       equivalenceMode: expression
       tolerance: 0
-    explanation: Exponentiating gives $v/v_0 = e^{-bt/m}$, so $v(t) = v_0 e^{-bt/m}$. The velocity decays exponentially!
+    explanation: 'Solution: $v(t)=v_0e^{-bt/m}$.\n\nWhy it works: Exponentiating reverses the logarithm after integration.'
+
+- id: linear-drag-we002
+  title: Evaluate Linear Drag Decay
+  problem: 'A 2.0 kg cart has linear drag coefficient $b=1.0\ \mathrm{kg/s}$ and initial speed 10 m/s. Find its speed after 2.0 s.'
+  steps:
+  - id: ldwe4
+    title: Substitute into the decay law
+    instruction: Use $v=v_0e^{-bt/m}$.
+    type: numericResponse
+    prompt: 'What is the speed after 2.0 s in m/s?'
+    answer: { value: 3.6788, tolerance: 0.01 }
+    explanation: 'Solution: $v=10e^{-(1.0)(2.0)/2.0}=10e^{-1}=3.68$ m/s.\n\nWhy it works: Linear drag causes exponential velocity decay.'
+  - id: ldwe5
+    title: Interpret the result
+    instruction: Compare the speed to initial speed.
+    type: freeResponse
+    prompt: 'Has the cart stopped after 2.0 s?'
+    answer: { gradingMode: selfCheck, keyPoints: ['no', 'speed remains positive'] }
+    explanation: 'Solution: No; its speed is still positive.\n\nWhy it works: Exponential decay approaches zero asymptotically.'

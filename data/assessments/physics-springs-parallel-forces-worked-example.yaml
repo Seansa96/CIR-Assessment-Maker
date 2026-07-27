@@ -4,56 +4,45 @@ title: Individual Forces in Parallel Springs
 assessmentType: workedExample
 categoryId: physics-1
 topicId: physics-work-energy
-skills:
-- Apply physics-1 concepts
-- physics-work-energy
-- work-energy-theorem
-- kinetic-energy
-- work
-- tension
-- spring-energy
-- Apply Work and Kinetic Energy
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-  - physics-1
-  - physics-work-energy
+skills: [Apply Work and Kinetic Energy, physics-work-energy, spring-energy]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [physics-1, physics-work-energy] }
 modeDefault: practice
 randomizeQuestions: false
 workedExamples:
-  - id: we-parallel-forces
-    title: Distributing the Load
-    problem: |
-      When two springs are in parallel, how does the total force distribute between them? Let's find out.
+  - id: we-parallel-symbolic
+    title: Load sharing in parallel
+    problem: 'Two springs $k_1$ and $k_2$ support a load in parallel and extend by $x$.'
     steps:
-      - id: step-1
-        title: Step 1 — Common Extension
-        instruction: |
-          Two springs with constants $k_1$ and $k_2$ are in parallel and stretched by a total displacement $x$.
+      - id: pfs-1
+        title: Common extension
+        instruction: 'The springs share attachment points.'
         type: multipleChoice
-        prompt: |
-          What is the displacement of the first spring ($x_1$) compared to the total displacement ($x$)?
-        choices:
-          - id: a
-            text: '$x_1 = x$'
-          - id: b
-            text: '$x_1 = x / 2$'
-          - id: c
-            text: '$x_1 = k_1 x$'
-        answer:
-          choiceId: a
-        explanation: 'Parallel springs always share the exact same extension. Both stretch by $x$.'
-      - id: step-2
-        title: Step 2 — Individual Force
-        instruction: |
-          Knowing that the first spring stretches by $x$, we can find the force it carries.
+        prompt: 'What extension does spring 1 have?'
+        choices: [{ id: a, text: '$x_1=x$' }, { id: b, text: '$x_1=x/2$' }]
+        answer: { choiceId: a }
+        explanation: 'Solution: $x_1=x$.\n\nWhy it works: Parallel branches have the same endpoint displacement.\n\nWhy the other choices fail: The extension is not divided merely because there are two branches.'
+      - id: pfs-2
+        title: Individual force
+        instruction: 'Apply Hooke''s law to spring 1.'
         type: symbolicResponse
-        prompt: |
-          Using Hooke's Law, what is the force $F_1$ carried by the first spring?
-        answer:
-          gradingMode: auto
-          expectedLatex: k_1*x
-          equivalenceMode: expression
-          tolerance: 0
-        explanation: 'The force in any spring is its constant times its stretch: $F_1 = k_1 x$. The stiffer spring (larger $k$) will carry more of the total load!'
+        prompt: 'Write $F_1$. '
+        answer: { gradingMode: auto, expectedLatex: 'k_1 x', equivalenceMode: expression, tolerance: 0 }
+        explanation: 'Solution: $F_1=k_1x$.\n\nWhy it works: Each spring''s force is its stiffness times the shared extension.'
+  - id: we-parallel-numerical
+    title: Numerical load split
+    problem: 'Parallel springs have $k_1=100$ N/m and $k_2=300$ N/m and extend $0.20$ m. Find each force and the total.'
+    steps:
+      - id: pfn-1
+        title: Force in first spring
+        instruction: 'Use $F_1=k_1x$.'
+        type: numericResponse
+        prompt: 'What is $F_1$ in newtons?'
+        answer: { value: 20, tolerance: 0.01 }
+        explanation: 'Solution: $F_1=(100)(0.20)=20$ N.\n\nWhy it works: The first spring has the common extension.'
+      - id: pfn-2
+        title: Sum branch forces
+        instruction: 'Calculate the second branch and add.'
+        type: numericResponse
+        prompt: 'What total force supports the extension, in newtons?'
+        answer: { value: 80, tolerance: 0.01 }
+        explanation: 'Solution: $F_2=(300)(0.20)=60$ N and $F_{total}=20+60=80$ N.\n\nWhy it works: Parallel spring forces add at the shared attachment.'

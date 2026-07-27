@@ -40,7 +40,10 @@ workedExamples:
       text: $W_c = \Delta K + \Delta U$
     answer:
       choiceId: b
-    explanation: By definition, the work done by a conservative force equals the negative change in potential energy associated with it.
+    explanation: |
+      Solution: $W_c=-\Delta U$.
+
+      Why it works: Potential energy is defined so conservative-force work is its negative change.
   - id: step-2
     title: Step 2 — Substitute and Rearrange
     instruction: |
@@ -53,7 +56,10 @@ workedExamples:
       expectedLatex: \Delta K + \Delta U
       equivalenceMode: expression
       tolerance: 0
-    explanation: Moving $-\Delta U$ to the right side gives $W_{\text{nc}} = \Delta K + \Delta U$. Since Mechanical Energy $E = K + U$, this means $W_{\text{nc}} = \Delta E$.
+    explanation: |
+      Solution: $W_{\text{nc}}=\Delta K+\Delta U=\Delta E_{mech}$.
+
+      Why it works: Rearranging the work-energy theorem separates conservative and nonconservative work.
   - id: step-3
     title: Step 3 — The Special Case
     instruction: |
@@ -66,4 +72,42 @@ workedExamples:
       expectedLatex: K_f + U_f
       equivalenceMode: expression
       tolerance: 0
-    explanation: 'This is the famous conservation of mechanical energy equation: $K_i + U_i = K_f + U_f$.'
+    explanation: |
+      Solution: $K_i+U_i=K_f+U_f$.
+
+      Why it works: With $W_{\text{nc}}=0$, mechanical energy has no net change.
+
+- id: ex-mechanical-energy-friction
+  title: Account for Frictional Work
+  problem: A 2.0 kg crate starts from rest 4.0 m above the floor and reaches the floor at 7.0 m/s. Find the work done by air resistance and friction together, using $g=9.8$ m/s$^2$.
+  steps:
+  - id: friction-step-1
+    title: Calculate the mechanical-energy change
+    instruction: Take the floor as $U_f=0$.
+    type: numericResponse
+    prompt: What is $\Delta K+\Delta U$ in J?
+    choices: []
+    answer: { value: -29.0, tolerance: 0.01 }
+    explanation: |
+      Solution: $\Delta K=\tfrac12(2.0)(7.0)^2=49.0$ J and $\Delta U=0-(2.0)(9.8)(4.0)=-78.4$ J, so the sum is $-29.4$ J.
+
+      Why it works: The change in mechanical energy equals nonconservative work.
+  - id: friction-step-2
+    title: Interpret the sign
+    instruction: Use $W_{nc}=\Delta K+\Delta U$.
+    type: multipleChoice
+    prompt: What does the negative nonconservative work mean?
+    choices:
+    - id: a
+      text: Mechanical energy was dissipated to thermal energy or the surroundings.
+      issueSignals: []
+    - id: b
+      text: Gravity did no work.
+      issueSignals: [{ id: gravity-work-confusion, domains: [physics-1] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Choose a.
+
+      Why it works: Negative $W_{nc}$ removes mechanical energy from the crate-Earth system model.
+
+      Why the other choices fail: Gravity changes potential energy even though it is conservative.
