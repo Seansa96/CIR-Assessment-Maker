@@ -1,0 +1,311 @@
+schemaVersion: 1
+id: calc2-finals-practice-center-mass-worked-example
+title: Method Selection for Center of Mass
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: calc2-finals-practice
+modeDefault: practice
+randomizeQuestions: false
+skills: [select integration method, evaluate moment integrals, apply symmetry]
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [calculus-2, center-of-mass, centroid, finals-practice]
+workedExamples:
+- id: centroid-symmetric-arch
+  title: Centroid of a Symmetric Arch
+  problem: |
+    Find the centroid $(\bar{x}, \bar{y})$ of the region bounded by $y = \cos x$ and the x-axis on the interval $[-\frac{\pi}{2}, \frac{\pi}{2}]$. Assume uniform density $\rho = 1$. Use symmetry to shortcut the calculations.
+  steps:
+  - id: apply-symmetry
+    title: Step 1 — Apply geometric symmetry
+    instruction: Determine if the region has an axis of symmetry to immediately find one coordinate.
+    type: multipleChoice
+    prompt: What is the x-coordinate of the centroid, $\bar{x}$?
+    explanation: |
+      **Solution:**
+      $\bar{x} = 0$
+
+      **Why it works:**
+      The region bounded by $y = \cos x$ on $[-\pi/2, \pi/2]$ is perfectly symmetric across the y-axis (since $\cos(-x) = \cos x$). For a uniform lamina, if the region has an axis of symmetry, the centroid must lie on that axis. Therefore, the centroid lies on the y-axis, meaning $\bar{x} = 0$.
+
+      **Why the other choices fail:**
+      - **$\bar{x} = \pi/4$** fails because this would imply the mass is shifted to the right, contradicting the symmetry.
+      - **We must compute $M_y / m$ to find out** fails because symmetry allows us to bypass the integral computation entirely.
+    choices:
+    - id: a
+      text: '$\bar{x} = 0$'
+    - id: b
+      text: '$\bar{x} = \pi/4$'
+      issueSignals:
+        - id: mathematical-translation-error
+    - id: c
+      text: 'We must compute $M_y / m$ to find out.'
+      issueSignals:
+        - id: boundary-condition-failure
+    answer:
+      choiceId: a
+  - id: compute-mass
+    title: Step 2 — Compute the mass (area)
+    instruction: Calculate the mass $m = \int \rho \, dA$. Since $\rho = 1$, this is just the area of the region.
+    type: symbolicResponse
+    prompt: What is the mass $m$?
+    explanation: |
+      **Solution:**
+      $2$
+
+      **Why it works:**
+      The mass is given by the area under the curve: $m = \int_{-\pi/2}^{\pi/2} \cos x \, dx$.
+      The antiderivative is $\sin x$.
+      Evaluating from $-\pi/2$ to $\pi/2$: $\sin(\pi/2) - \sin(-\pi/2) = 1 - (-1) = 2$.
+    answer:
+      expectedLatex: '2'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: []
+  - id: setup-mx
+    title: Step 3 — Set up the moment about the x-axis (M_x)
+    instruction: Set up the integral for $M_x = \frac{1}{2} \int_a^b [f(x)]^2 \, dx$.
+    type: symbolicResponse
+    prompt: Enter the integrand for $M_x$ (including the $\frac{1}{2}$ factor).
+    explanation: |
+      **Solution:**
+      $\frac{1}{2}\cos^2 x$
+
+      **Why it works:**
+      The moment about the x-axis for a region under a curve $f(x)$ is $M_x = \rho \int_a^b \frac{1}{2}[f(x)]^2 \, dx$.
+      Since $\rho = 1$ and $f(x) = \cos x$, the integrand is exactly $\frac{1}{2}\cos^2 x$.
+    answer:
+      expectedLatex: '\frac{1}{2}\cos^2 x'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [x]
+  - id: evaluate-y-bar
+    title: Step 4 — Evaluate the centroid coordinate
+    instruction: Compute $M_x$ using the half-angle identity, then find $\bar{y} = \frac{M_x}{m}$.
+    type: symbolicResponse
+    prompt: Enter the exact value of $\bar{y}$.
+    explanation: |
+      **Solution:**
+      $\frac{\pi}{8}$
+
+      **Why it works:**
+      First, compute $M_x = \int_{-\pi/2}^{\pi/2} \frac{1}{2}\cos^2 x \, dx$.
+      Using the half-angle identity: $\cos^2 x = \frac{1 + \cos(2x)}{2}$.
+      So, $M_x = \frac{1}{4} \int_{-\pi/2}^{\pi/2} (1 + \cos(2x)) \, dx$.
+      Antiderivative: $\frac{1}{4} [x + \frac{1}{2}\sin(2x)]_{-\pi/2}^{\pi/2}$.
+      Evaluate: $\frac{1}{4} [ (\pi/2 + 0) - (-\pi/2 + 0) ] = \frac{1}{4} [\pi] = \frac{\pi}{4}$.
+      Finally, $\bar{y} = \frac{M_x}{m} = \frac{\pi/4}{2} = \frac{\pi}{8}$.
+    answer:
+      expectedLatex: '\frac{\pi}{8}'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [\pi]
+
+- id: centroid-horizontal-strips
+  title: Centroid Using Horizontal Strips
+  problem: |
+    Find the centroid of the region bounded by $x = y^2$ and $x = 4$. Assume uniform density $\rho = 1$. Choose the best variable of integration.
+  steps:
+  - id: choose-variable
+    title: Step 1 — Choose the variable of integration
+    instruction: Decide whether it is better to integrate with respect to $x$ or $y$.
+    type: multipleChoice
+    prompt: Which variable of integration avoids splitting the region into top and bottom halves with radicals?
+    explanation: |
+      **Solution:**
+      Integrate with respect to $y$.
+
+      **Why it works:**
+      - **Integrating w.r.t $y$:** The right boundary is always $x_R = 4$ and the left boundary is always $x_L = y^2$. The intersection points are at $y = -2$ and $y = 2$. We can easily set up horizontal strips.
+      - **Integrating w.r.t $x$:** We would have to solve for $y$, yielding a top curve $y = \sqrt{x}$ and a bottom curve $y = -\sqrt{x}$. While possible, using $y$ as the variable avoids radicals entirely and uses simple polynomials.
+      Therefore, integrating with respect to $y$ is cleaner.
+
+      **Why the other choices fail:**
+      - **Integrate with respect to $x$** fails because it introduces fractional powers, increasing algebraic complexity.
+    choices:
+    - id: a
+      text: 'Integrate with respect to $y$.'
+    - id: b
+      text: 'Integrate with respect to $x$.'
+      issueSignals:
+        - id: mathematical-translation-error
+    answer:
+      choiceId: a
+  - id: compute-mass-y
+    title: Step 2 — Compute the mass
+    instruction: Set up and evaluate the area integral with respect to $y$.
+    type: symbolicResponse
+    prompt: What is the exact mass $m$?
+    explanation: |
+      **Solution:**
+      $\frac{32}{3}$
+
+      **Why it works:**
+      The area is $\int_{-2}^2 (\text{Right} - \text{Left}) \, dy = \int_{-2}^2 (4 - y^2) \, dy$.
+      Because it's an even function, this is $2 \int_0^2 (4 - y^2) \, dy$.
+      Antiderivative: $2 [4y - \frac{y^3}{3}]_0^2$.
+      Evaluate: $2 (8 - \frac{8}{3}) = 2 (\frac{16}{3}) = \frac{32}{3}$.
+    answer:
+      expectedLatex: '\frac{32}{3}'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: []
+  - id: compute-my
+    title: Step 3 — Compute the moment about the y-axis
+    instruction: For horizontal strips, the moment arm is the average $x$-value, $\frac{1}{2}(x_R + x_L)$. Set up and evaluate $M_y$.
+    type: symbolicResponse
+    prompt: What is the exact value of $M_y$?
+    explanation: |
+      **Solution:**
+      $\frac{128}{5}$
+
+      **Why it works:**
+      The formula for $M_y$ using horizontal strips is $\int \rho \bar{x} \, dA = \int_{-2}^2 \frac{1}{2}(\text{Right} + \text{Left})(\text{Right} - \text{Left}) \, dy$.
+      This simplifies to $\frac{1}{2} \int_{-2}^2 (x_R^2 - x_L^2) \, dy = \frac{1}{2} \int_{-2}^2 (16 - y^4) \, dy$.
+      Because it's an even function, this is $\int_0^2 (16 - y^4) \, dy$.
+      Antiderivative: $[16y - \frac{y^5}{5}]_0^2$.
+      Evaluate: $32 - \frac{32}{5} = \frac{160 - 32}{5} = \frac{128}{5}$.
+    answer:
+      expectedLatex: '\frac{128}{5}'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: []
+  - id: centroid-coordinates-y
+    title: Step 4 — Find the final coordinates
+    instruction: State $\bar{x}$ using $M_y/m$, and use symmetry to find $\bar{y}$.
+    type: multipleChoice
+    prompt: What are the coordinates $(\bar{x}, \bar{y})$ of the centroid?
+    explanation: |
+      **Solution:**
+      $(\frac{12}{5}, 0)$
+
+      **Why it works:**
+      We found $M_y = \frac{128}{5}$ and $m = \frac{32}{3}$.
+      $\bar{x} = \frac{M_y}{m} = \frac{128/5}{32/3} = \frac{128 \times 3}{5 \times 32} = \frac{4 \times 3}{5} = \frac{12}{5}$.
+      The region is symmetric across the x-axis, so the moment $M_x = 0$, giving $\bar{y} = 0$.
+      Therefore, the centroid is $(\frac{12}{5}, 0)$.
+
+      **Why the other choices fail:**
+      - **$(0, \frac{12}{5})$** fails because the symmetry is across the x-axis, not the y-axis, so $\bar{y}=0$, not $\bar{x}$.
+      - **$(\frac{5}{12}, 0)$** fails because it is the reciprocal.
+    choices:
+    - id: a
+      text: '$(\frac{12}{5}, 0)$'
+    - id: b
+      text: '$(0, \frac{12}{5})$'
+      issueSignals:
+        - id: boundary-condition-failure
+    - id: c
+      text: '$(\frac{5}{12}, 0)$'
+      issueSignals:
+        - id: algebraic-simplification-error
+    answer:
+      choiceId: a
+
+- id: centroid-triangle
+  title: Centroid of a Triangle
+  problem: |
+    Find the centroid of the triangle with vertices $(0, 0)$, $(6, 0)$, and $(0, 9)$. Verify your result using the geometric rule for triangles.
+  steps:
+  - id: setup-triangle-equations
+    title: Step 1 — Formulate the boundary equations
+    instruction: Determine the equation of the hypotenuse connecting $(0, 9)$ to $(6, 0)$.
+    type: symbolicResponse
+    prompt: What is the equation of the top boundary $y = f(x)$?
+    explanation: |
+      **Solution:**
+      $-\frac{3}{2}x + 9$
+
+      **Why it works:**
+      The slope of the line connecting $(0, 9)$ and $(6, 0)$ is $m = \frac{0 - 9}{6 - 0} = -\frac{9}{6} = -\frac{3}{2}$.
+      The y-intercept is clearly at $y = 9$.
+      Thus, the equation is $y = -\frac{3}{2}x + 9$.
+    answer:
+      expectedLatex: '-\frac{3}{2}x + 9'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [x]
+  - id: compute-moments-triangle
+    title: Step 2 — Compute the mass and moment Mx
+    instruction: Find the area (mass) and set up $M_x$.
+    type: multipleChoice
+    prompt: What are the values of $m$ and $M_x$?
+    explanation: |
+      **Solution:**
+      $m = 27, M_x = 81$
+
+      **Why it works:**
+      The area of a right triangle is $\frac{1}{2} \times \text{base} \times \text{height} = \frac{1}{2}(6)(9) = 27$. So $m = 27$.
+      The moment about the x-axis is $M_x = \frac{1}{2} \int_0^6 (-\frac{3}{2}x + 9)^2 \, dx$.
+      Substitute $u = -\frac{3}{2}x + 9$, $du = -\frac{3}{2} dx$, so $dx = -\frac{2}{3} du$.
+      $M_x = \frac{1}{2} \int_{9}^0 u^2 (-\frac{2}{3}) \, du = \frac{1}{3} \int_0^9 u^2 \, du = \frac{1}{3} [\frac{u^3}{3}]_0^9 = \frac{1}{9}(729) = 81$.
+
+      **Why the other choices fail:**
+      - **$m = 54, M_x = 81$** fails because $54$ is base $\times$ height, missing the $\frac{1}{2}$ for a triangle.
+      - **$m = 27, M_x = 162$** fails because it forgets the $\frac{1}{2}$ factor in the $M_x$ formula.
+    choices:
+    - id: a
+      text: '$m = 27, M_x = 81$'
+    - id: b
+      text: '$m = 54, M_x = 81$'
+      issueSignals:
+        - id: algebraic-simplification-error
+    - id: c
+      text: '$m = 27, M_x = 162$'
+      issueSignals:
+        - id: mathematical-translation-error
+    answer:
+      choiceId: a
+  - id: compute-my-triangle
+    title: Step 3 — Compute the moment My
+    instruction: Set up and evaluate the integral for $M_y = \int x f(x) \, dx$.
+    type: symbolicResponse
+    prompt: What is the exact value of $M_y$?
+    explanation: |
+      **Solution:**
+      $54$
+
+      **Why it works:**
+      The formula is $M_y = \int_0^6 x (-\frac{3}{2}x + 9) \, dx = \int_0^6 (-\frac{3}{2}x^2 + 9x) \, dx$.
+      Antiderivative: $[-\frac{1}{2}x^3 + \frac{9}{2}x^2]_0^6$.
+      Evaluate at $6$: $-\frac{1}{2}(216) + \frac{9}{2}(36) = -108 + 162 = 54$.
+    answer:
+      expectedLatex: '54'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: []
+  - id: geometric-verification
+    title: Step 4 — Verify with the geometric rule
+    instruction: Calculate the centroid using integration results and verify it matches the average of the vertices.
+    type: multipleChoice
+    prompt: What is the centroid, and does it equal the average of the vertices $(\frac{x_1+x_2+x_3}{3}, \frac{y_1+y_2+y_3}{3})$?
+    explanation: |
+      **Solution:**
+      $(2, 3)$, yes it matches perfectly.
+
+      **Why it works:**
+      From our integrals: $\bar{x} = \frac{M_y}{m} = \frac{54}{27} = 2$.
+      $\bar{y} = \frac{M_x}{m} = \frac{81}{27} = 3$.
+      So the centroid is $(2, 3)$.
+      Using the geometric shortcut for a triangle, the centroid is the average of its vertices:
+      $\bar{x} = \frac{0 + 6 + 0}{3} = \frac{6}{3} = 2$.
+      $\bar{y} = \frac{0 + 0 + 9}{3} = \frac{9}{3} = 3$.
+      They match exactly! This is a fantastic pattern to remember to save time on exams.
+
+      **Why the other choices fail:**
+      - **$(3, 4.5)$, it matches the midpoint of the hypotenuse** fails because the centroid is the center of mass of the region, not the midpoint of an edge.
+      - **$(2, 3)$, but the shortcut doesn't always apply** fails because the vertex average shortcut is a universal geometric theorem for uniform triangles.
+    choices:
+    - id: a
+      text: '$(2, 3)$, yes it matches perfectly.'
+    - id: b
+      text: '$(3, 4.5)$, it matches the midpoint of the hypotenuse.'
+      issueSignals:
+        - id: boundary-condition-failure
+    - id: c
+      text: '$(2, 3)$, but the shortcut doesn''t always apply.'
+      issueSignals:
+        - id: mathematical-translation-error
+    answer:
+      choiceId: a

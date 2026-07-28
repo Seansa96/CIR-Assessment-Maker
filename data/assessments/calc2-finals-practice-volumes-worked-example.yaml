@@ -1,0 +1,319 @@
+schemaVersion: 1
+id: calc2-finals-practice-volumes-worked-example
+title: Method Selection for Volumes of Solids
+assessmentType: workedExample
+categoryId: calculus-2
+topicId: calc2-finals-practice
+modeDefault: practice
+randomizeQuestions: false
+skills: [select integration method, evaluate volume integrals]
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [calculus-2, volume, shells, washers, finals-practice]
+workedExamples:
+- id: volumes-method-lnx
+  title: Region bounded by y = ln(x)
+  problem: |
+    Consider the region bounded by $y = \ln x$, $x = e$, and $y = 0$. This region is rotated about the y-axis. Choose the most efficient method and set up the integral for the volume of the solid.
+  steps:
+  - id: choose-method
+    title: Step 1 — Choose the most efficient method
+    instruction: Decide whether the Disk/Washer method or the Cylindrical Shells method is easier based on the required integrand.
+    type: multipleChoice
+    prompt: Which method requires the simpler integration technique?
+    explanation: |
+      **Solution:**
+      The Washer method, because it requires integrating an exponential function rather than using Integration by Parts.
+
+      **Why it works:**
+      - **Shell Method:** The axis of rotation is vertical (y-axis). For shells, we integrate with respect to $x$. The radius is $x$ and the height is $\ln x$. The integral would be $\int 2\pi x \ln x \, dx$, which requires Integration by Parts.
+      - **Washer Method:** We integrate with respect to $y$. The outer radius is constant ($R = e$), and the inner radius is $x = e^y$. The integral is $\int \pi (e^2 - (e^y)^2) \, dy$, which is a straightforward exponential integral.
+      Therefore, the Washer method is mathematically simpler.
+
+      **Why the other choices fail:**
+      - **The Shell method** fails because although it requires only one integral, the integrand $x \ln x$ is more complex to integrate than $e^{2y}$.
+      - **Both methods are equally complex** fails because integrating polynomials and exponentials is typically taught as simpler and less prone to mechanical error than Integration by Parts.
+    choices:
+    - id: a
+      text: 'The Washer method, because it requires integrating an exponential function rather than using Integration by Parts.'
+    - id: b
+      text: 'The Shell method, because the boundary function is given in terms of $x$.'
+      issueSignals:
+        - id: mathematical-translation-error
+    - id: c
+      text: 'Both methods are equally complex.'
+      issueSignals:
+        - id: boundary-condition-failure
+    answer:
+      choiceId: a
+  - id: bounds-radii
+    title: Step 2 — Set up bounds and radii
+    instruction: Determine the limits of integration and the inner/outer radii for the Washer method.
+    type: multipleChoice
+    prompt: What are the bounds and the squared radii, $R(y)^2$ and $r(y)^2$?
+    explanation: |
+      **Solution:**
+      Bounds: $[0, 1]$, $R(y)^2 = e^2$, $r(y)^2 = e^{2y}$
+
+      **Why it works:**
+      The region is bounded below by $y=0$. It is bounded on the right by $x=e$, which intersects $y=\ln x$ at $y=\ln e = 1$. Thus, the integration bounds are $0$ to $1$.
+      The outer radius $R(y)$ is the distance from the y-axis to the right boundary $x=e$, so $R(y) = e$, and $R(y)^2 = e^2$.
+      The inner radius $r(y)$ is the distance from the y-axis to the left boundary $y=\ln x$. Solving for $x$ gives $x=e^y$. So $r(y) = e^y$, and $r(y)^2 = (e^y)^2 = e^{2y}$.
+
+      **Why the other choices fail:**
+      - **Bounds: $[1, e]$** fails because these are the $x$-bounds, but the Washer method around the y-axis requires $y$-bounds.
+      - **$R(y)^2 = e^{2y}$** fails because it swaps the inner and outer radii.
+    choices:
+    - id: a
+      text: 'Bounds: $[0, 1]$, $R(y)^2 = e^2$, $r(y)^2 = e^{2y}$'
+    - id: b
+      text: 'Bounds: $[1, e]$, $R(x)^2 = e^2$, $r(x)^2 = (\ln x)^2$'
+      issueSignals:
+        - id: boundary-condition-failure
+    - id: c
+      text: 'Bounds: $[0, 1]$, $R(y)^2 = e^{2y}$, $r(y)^2 = e^2$'
+      issueSignals:
+        - id: mathematical-translation-error
+    answer:
+      choiceId: a
+  - id: set-up-integral
+    title: Step 3 — Construct the integral
+    instruction: Combine the components into the Washer volume formula.
+    type: symbolicResponse
+    prompt: Enter the integral expression without evaluating it. Use $\pi$ for pi.
+    explanation: |
+      **Solution:**
+      $\pi \int_0^1 (e^2 - e^{2y}) \, dy$
+
+      **Why it works:**
+      The volume formula for washers is $V = \pi \int_c^d [R(y)^2 - r(y)^2] \, dy$.
+      Substituting our values gives $V = \pi \int_0^1 [e^2 - e^{2y}] \, dy$.
+    answer:
+      expectedLatex: '\pi \int_0^1 (e^2 - e^{2y}) \, dy'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [y]
+  - id: evaluate
+    title: Step 4 — Evaluate the integral
+    instruction: Compute the final numerical value of the volume.
+    type: symbolicResponse
+    prompt: Enter the exact volume.
+    explanation: |
+      **Solution:**
+      $\frac{\pi}{2}(e^2 + 1)$
+
+      **Why it works:**
+      We integrate $\pi \int_0^1 (e^2 - e^{2y}) \, dy$.
+      The antiderivative is $\pi [e^2 y - \frac{1}{2}e^{2y}]_0^1$.
+      Evaluate at the upper bound $1$: $\pi (e^2 - \frac{1}{2}e^2) = \frac{\pi}{2}e^2$.
+      Evaluate at the lower bound $0$: $\pi (0 - \frac{1}{2}e^0) = -\frac{\pi}{2}$.
+      Subtract the lower bound from the upper bound: $\frac{\pi}{2}e^2 - (-\frac{\pi}{2}) = \frac{\pi}{2}e^2 + \frac{\pi}{2} = \frac{\pi}{2}(e^2 + 1)$.
+    answer:
+      expectedLatex: '\frac{\pi}{2}(e^2 + 1)'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [e, \pi]
+
+- id: volumes-method-quadratic
+  title: Region bounded by y = x - x^2 rotated about x = 2
+  problem: |
+    Consider the region bounded by $y = x - x^2$ and the x-axis, rotated about the vertical line $x = 2$. Choose the most efficient method and set up the integral for the volume.
+  steps:
+  - id: choose-method-2
+    title: Step 1 — Choose the most efficient method
+    instruction: Decide whether the Disk/Washer method or the Cylindrical Shells method is easier based on the invertibility of the boundary function.
+    type: multipleChoice
+    prompt: Which method avoids having to use the quadratic formula to solve for $x$?
+    explanation: |
+      **Solution:**
+      The Shell method.
+
+      **Why it works:**
+      - **Washer Method:** The axis of rotation is vertical, so Washers require integrating with respect to $y$. We would need to solve $y = x - x^2$ for $x$ in terms of $y$, which requires the quadratic formula and splits into two radical expressions for the inner and outer radii.
+      - **Shell Method:** Shells require integrating with respect to $x$ (opposite the axis of rotation). The function $y = x - x^2$ is already explicitly defined in terms of $x$, making it simple to construct the height. 
+      Therefore, the Shell method is much more direct.
+
+      **Why the other choices fail:**
+      - **The Washer method** fails because it explicitly requires solving for $x$.
+      - **Both methods are equally direct** fails because one requires the quadratic formula and radical integrals, while the other only uses polynomials.
+    choices:
+    - id: a
+      text: 'The Shell method.'
+    - id: b
+      text: 'The Washer method.'
+      issueSignals:
+        - id: mathematical-translation-error
+    - id: c
+      text: 'Both methods are equally direct.'
+      issueSignals:
+        - id: boundary-condition-failure
+    answer:
+      choiceId: a
+  - id: shell-radius-height
+    title: Step 2 — Determine shell radius and height
+    instruction: For a typical shell at position $x$, identify its radius and height.
+    type: multipleChoice
+    prompt: What are the radius $r(x)$ and height $h(x)$ of the shells?
+    explanation: |
+      **Solution:**
+      $r(x) = 2 - x$, $h(x) = x - x^2$
+
+      **Why it works:**
+      The region lies between the x-intercepts of $y = x - x^2$, which are $x=0$ and $x=1$. 
+      The axis of rotation is $x=2$, which is to the right of the region.
+      The radius is the distance from a slice at $x$ to the axis $x=2$, so $r(x) = 2 - x$.
+      The height is simply the curve value, $h(x) = x - x^2$.
+
+      **Why the other choices fail:**
+      - **$r(x) = x - 2$** fails because for $x$ in $[0, 1]$, $x-2$ is negative, but a radius must be positive.
+      - **$r(x) = x$** fails because this would represent rotation about the y-axis ($x=0$), not $x=2$.
+    choices:
+    - id: a
+      text: '$r(x) = 2 - x$, $h(x) = x - x^2$'
+    - id: b
+      text: '$r(x) = x - 2$, $h(x) = x - x^2$'
+      issueSignals:
+        - id: boundary-condition-failure
+    - id: c
+      text: '$r(x) = x$, $h(x) = x - x^2$'
+      issueSignals:
+        - id: mathematical-translation-error
+    answer:
+      choiceId: a
+  - id: set-up-integral-2
+    title: Step 3 — Construct and expand the integral
+    instruction: Combine the components into the Shell volume formula $V = \int 2\pi r(x) h(x) dx$ and expand the polynomial.
+    type: symbolicResponse
+    prompt: Enter the expanded integrand (including $2\pi$).
+    explanation: |
+      **Solution:**
+      $2\pi (x^3 - 3x^2 + 2x)$
+
+      **Why it works:**
+      The volume formula is $V = \int_0^1 2\pi (2 - x)(x - x^2) \, dx$.
+      Expanding the product: $(2 - x)(x - x^2) = 2x - 2x^2 - x^2 + x^3 = x^3 - 3x^2 + 2x$.
+      Multiplying by $2\pi$ gives the required integrand.
+    answer:
+      expectedLatex: '2\pi (x^3 - 3x^2 + 2x)'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [x, \pi]
+  - id: evaluate-2
+    title: Step 4 — Evaluate the integral
+    instruction: Compute the final numerical value of the volume.
+    type: symbolicResponse
+    prompt: Enter the exact volume.
+    explanation: |
+      **Solution:**
+      $\frac{\pi}{2}$
+
+      **Why it works:**
+      We integrate $2\pi \int_0^1 (x^3 - 3x^2 + 2x) \, dx$.
+      The antiderivative is $2\pi [\frac{1}{4}x^4 - x^3 + x^2]_0^1$.
+      Evaluate at $1$: $2\pi (\frac{1}{4} - 1 + 1) = 2\pi (\frac{1}{4}) = \frac{\pi}{2}$.
+      The lower bound evaluates to $0$.
+    answer:
+      expectedLatex: '\frac{\pi}{2}'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [\pi]
+
+- id: volumes-method-off-axis
+  title: Region between y = sqrt(x) and y = x^3 rotated about y = -1
+  problem: |
+    Consider the region in the first quadrant bounded by $y = \sqrt{x}$ and $y = x^3$. The region is rotated about the horizontal line $y = -1$. Select the most efficient method and set up the volume integral.
+  steps:
+  - id: choose-method-3
+    title: Step 1 — Choose the most efficient method
+    instruction: Decide whether Washers or Shells is more appropriate for a horizontal axis of rotation.
+    type: multipleChoice
+    prompt: Which method integrates with respect to $x$ and avoids fractional exponents like $\sqrt[3]{y}$?
+    explanation: |
+      **Solution:**
+      The Washer method.
+
+      **Why it works:**
+      - **Washer Method:** The axis of rotation is horizontal ($y = -1$), so Washers require integrating with respect to $x$. Both boundary functions are already given in terms of $x$ and are simple polynomials/radicals.
+      - **Shell Method:** Shells would require integrating with respect to $y$, which means solving for $x$: $x = y^2$ and $x = \sqrt[3]{y}$. While possible, Washers with respect to $x$ avoids fractional exponents like $\sqrt[3]{y}$.
+
+      **Why the other choices fail:**
+      - **The Shell method** fails because it forces an integration with respect to $y$, making the integrand slightly more tedious to work with, whereas the problem asks for the most efficient approach.
+    choices:
+    - id: a
+      text: 'The Washer method.'
+    - id: b
+      text: 'The Shell method.'
+      issueSignals:
+        - id: mathematical-translation-error
+    answer:
+      choiceId: a
+  - id: washer-radii-3
+    title: Step 2 — Determine the outer and inner radii
+    instruction: Identify the outer radius $R(x)$ and inner radius $r(x)$ relative to the axis $y = -1$.
+    type: multipleChoice
+    prompt: What are the outer and inner radii for the Washer method?
+    explanation: |
+      **Solution:**
+      $R(x) = \sqrt{x} + 1$, $r(x) = x^3 + 1$
+
+      **Why it works:**
+      The curves intersect at $x=0$ and $x=1$. In this interval, $\sqrt{x} \ge x^3$, so $y=\sqrt{x}$ is the top curve.
+      The axis of rotation is $y=-1$, which is below the region.
+      The outer radius is the distance from the axis to the top curve: $R(x) = \text{Top} - \text{Axis} = \sqrt{x} - (-1) = \sqrt{x} + 1$.
+      The inner radius is the distance from the axis to the bottom curve: $r(x) = \text{Bottom} - \text{Axis} = x^3 - (-1) = x^3 + 1$.
+
+      **Why the other choices fail:**
+      - **$R(x) = \sqrt{x} - 1$, $r(x) = x^3 - 1$** fails because subtracting a negative axis requires addition.
+      - **$R(x) = x^3 + 1$, $r(x) = \sqrt{x} + 1$** fails because it swaps the inner and outer radii, which would yield a negative volume.
+    choices:
+    - id: a
+      text: '$R(x) = \sqrt{x} + 1$, $r(x) = x^3 + 1$'
+    - id: b
+      text: '$R(x) = \sqrt{x} - 1$, $r(x) = x^3 - 1$'
+      issueSignals:
+        - id: boundary-condition-failure
+    - id: c
+      text: '$R(x) = x^3 + 1$, $r(x) = \sqrt{x} + 1$'
+      issueSignals:
+        - id: algebraic-simplification-error
+    answer:
+      choiceId: a
+  - id: set-up-integral-3
+    title: Step 3 — Construct the integral
+    instruction: Substitute the radii into the Washer volume formula.
+    type: symbolicResponse
+    prompt: Enter the integral expression without evaluating it. Use $\pi$ for pi.
+    explanation: |
+      **Solution:**
+      $\pi \int_0^1 ((\sqrt{x} + 1)^2 - (x^3 + 1)^2) \, dx$
+
+      **Why it works:**
+      The Washer volume formula is $V = \pi \int_a^b [R(x)^2 - r(x)^2] \, dx$.
+      Substituting our limits and radii yields: $V = \pi \int_0^1 [(\sqrt{x} + 1)^2 - (x^3 + 1)^2] \, dx$.
+    answer:
+      expectedLatex: '\pi \int_0^1 ((\sqrt{x} + 1)^2 - (x^3 + 1)^2) \, dx'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [x, \pi]
+  - id: evaluate-3
+    title: Step 4 — Evaluate the integral
+    instruction: Expand the integrand and compute the final numerical volume.
+    type: symbolicResponse
+    prompt: Enter the exact volume.
+    explanation: |
+      **Solution:**
+      $\frac{25\pi}{21}$
+
+      **Why it works:**
+      Expand the terms:
+      $(\sqrt{x} + 1)^2 = x + 2\sqrt{x} + 1$
+      $(x^3 + 1)^2 = x^6 + 2x^3 + 1$
+      Subtracting them: $(x + 2\sqrt{x} + 1) - (x^6 + 2x^3 + 1) = -x^6 - 2x^3 + x + 2x^{1/2}$.
+      Integrate: $\pi [-\frac{1}{7}x^7 - \frac{1}{2}x^4 + \frac{1}{2}x^2 + \frac{4}{3}x^{3/2}]_0^1$.
+      Evaluate at $1$: $\pi (-\frac{1}{7} - \frac{1}{2} + \frac{1}{2} + \frac{4}{3}) = \pi (\frac{4}{3} - \frac{1}{7}) = \pi (\frac{28}{21} - \frac{3}{21}) = \frac{25\pi}{21}$.
+    answer:
+      expectedLatex: '\frac{25\pi}{21}'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [\pi]

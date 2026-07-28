@@ -48,28 +48,36 @@ lesson:
       check:
         id: check-order
         type: multipleChoice
-        issueSignals:
-        - id: boundary-condition-failure
-        - id: expression-equation-recognition-error
-        - id: algebraic-simplification-error
-        - id: chain-rule-missed
-        - id: mathematical-translation-error
-        - id: domain-range-misidentified
         prompt: |
           What is the order of the differential equation: $\frac{d^3y}{dx^3} + \left(\frac{dy}{dx}\right)^4 = \sin x$?
         choices:
           - id: c1
             text: First-order
+            issueSignals:
+              - id: expression-equation-recognition-error
           - id: c2
             text: Third-order
           - id: c3
             text: Fourth-order
+            issueSignals:
+              - id: expression-equation-recognition-error
           - id: c4
             text: Seventh-order
+            issueSignals:
+              - id: algebraic-simplification-error
         answer:
           choiceId: c2
           explanation: |
-            The order is determined by the highest derivative present in the equation, which is $\frac{d^3y}{dx^3}$ (the third derivative). The power of $4$ on the first derivative does not affect the order.
+            **Solution:**
+            Third-order.
+
+            **Why it works:**
+            The order of a differential equation is the order of the highest derivative that occurs in the equation. In this equation, the terms contain a third derivative, $\frac{d^3y}{dx^3}$, and a first derivative, $\frac{dy}{dx}$. The highest derivative is the third derivative, making it a third-order differential equation.
+
+            **Why the other choices fail:**
+            - **First-order** fails because it is the lowest derivative present, but the order is determined by the highest derivative.
+            - **Fourth-order** fails because the power of 4 applies to the first derivative. The exponent on a derivative does not define the order of the equation.
+            - **Seventh-order** fails because it erroneously adds the highest derivative (3) and the highest exponent (4) together.
 
     - id: direction-fields
       title: Direction Slope Fields
@@ -88,26 +96,31 @@ lesson:
       check:
         id: check-slope-field
         type: multipleChoice
-        issueSignals:
-        - id: boundary-condition-failure
-        - id: expression-equation-recognition-error
-        - id: algebraic-simplification-error
-        - id: chain-rule-missed
-        - id: mathematical-translation-error
-        - id: domain-range-misidentified
         prompt: |
           In the slope field for $y' = x/y$, what happens to the slope segments as you approach the x-axis ($y \to 0$)?
         choices:
           - id: c1
             text: The slopes become horizontal (zero slope).
+            issueSignals:
+              - id: boundary-condition-failure
           - id: c2
             text: The slopes become vertical (undefined slope).
           - id: c3
             text: The slopes become 1 or -1.
+            issueSignals:
+              - id: mathematical-translation-error
         answer:
           choiceId: c2
           explanation: |
-            As $y \to 0$, the denominator approaches zero, causing the slope $y' = x/y$ to approach infinity (becoming vertical).
+            **Solution:**
+            The slopes become vertical (undefined slope).
+
+            **Why it works:**
+            The given differential equation is $y' = x/y$. The x-axis is defined by the equation $y = 0$. As we approach the x-axis, $y \to 0$. In the expression $x/y$, as the denominator $y$ approaches $0$, the overall value of the fraction approaches infinity. Therefore, the slope $y'$ approaches infinity, which corresponds to vertical line segments.
+
+            **Why the other choices fail:**
+            - **The slopes become horizontal (zero slope)** fails because a horizontal slope corresponds to a slope of $0$, which happens when the numerator $x$ is $0$ (i.e., along the y-axis), not when the denominator is $0$.
+            - **The slopes become 1 or -1** fails because this would happen along the lines $y = x$ or $y = -x$, not near the x-axis.
 
     - id: intro-to-modeling
       title: Introduction to Modeling
@@ -135,27 +148,36 @@ lesson:
       check:
         id: check-modeling
         type: multipleChoice
-        issueSignals:
-        - id: boundary-condition-failure
-        - id: expression-equation-recognition-error
-        - id: algebraic-simplification-error
-        - id: chain-rule-missed
-        - id: mathematical-translation-error
-        - id: domain-range-misidentified
         prompt: |
           Translate the following sentence into a differential equation: 
           "The rate at which a rumor spreads is proportional to the product of the number of people who have heard it ($y$) and the number of people who have not heard it ($M - y$)."
         choices:
           - id: c1
-            text: $\frac{dy}{dt} = ky(M - y)$
+            text: '$\frac{dy}{dt} = ky(M - y)$'
           - id: c2
-            text: $\frac{dy}{dt} = k(M - y)$
+            text: '$\frac{dy}{dt} = k(M - y)$'
+            issueSignals:
+              - id: mathematical-translation-error
           - id: c3
-            text: $\frac{dy}{dt} = \frac{ky}{M-y}$
+            text: '$\frac{dy}{dt} = \frac{ky}{M-y}$'
+            issueSignals:
+              - id: mathematical-translation-error
         answer:
           choiceId: c1
           explanation: |
-            "Proportional to" means we multiply by a constant $k$. "The product of... and..." means we multiply $y$ and $(M-y)$ together. Thus, $\frac{dy}{dt} = ky(M - y)$.
+            **Solution:**
+            $\frac{dy}{dt} = ky(M - y)$
+
+            **Why it works:**
+            Let's break down the sentence:
+            - "The rate at which a rumor spreads" translates to the rate of change of the number of people who have heard it over time, which is $\frac{dy}{dt}$.
+            - "is proportional to" translates to multiplying by a proportionality constant, $k$.
+            - "the product of the number of people who have heard it ($y$) and the number of people who have not heard it ($M - y$)" translates to the mathematical product $y(M - y)$.
+            Putting it all together, we get $\frac{dy}{dt} = ky(M - y)$.
+
+            **Why the other choices fail:**
+            - **$\frac{dy}{dt} = k(M - y)$** fails because it only states the rate is proportional to the number of people who have not heard it, omitting the dependence on those who have.
+            - **$\frac{dy}{dt} = \frac{ky}{M-y}$** fails because it models the rate as proportional to the quotient (ratio) of the two groups, rather than their product.
 
     - id: model-building-workflow
       title: An Eight-Step Modeling Workflow

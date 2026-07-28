@@ -21,58 +21,148 @@ workedExamples:
     title: Step 1 — Identify the changing groups
     instruction: Express the number who have not heard the rumor.
     type: symbolicResponse
-    issueSignals:
-    - id: boundary-condition-failure
-    - id: expression-equation-recognition-error
-    - id: algebraic-simplification-error
-    - id: chain-rule-missed
-    - id: mathematical-translation-error
-    - id: domain-range-misidentified
     prompt: Enter the number who have not heard it.
-    answer: { expectedLatex: 'M-y', equivalenceMode: expression, tolerance: 0.000001, variables: [M, y], explanation: The population is fixed, so the two groups sum to $M$. }
+    explanation: |
+      **Solution:**
+      $M - y$
+
+      **Why it works:**
+      The total population is fixed at $M$ people. If $y$ people have heard the rumor, then the remaining population is simply the total minus those who have heard it, which is $M - y$.
+    answer: 
+      expectedLatex: 'M-y'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [M, y]
   - id: rate-equation
     title: Step 2 — Translate proportionality
     instruction: A positive constant $k$ represents the contact/spread rate.
     type: symbolicResponse
-    issueSignals:
-    - id: boundary-condition-failure
-    - id: expression-equation-recognition-error
-    - id: algebraic-simplification-error
-    - id: chain-rule-missed
-    - id: mathematical-translation-error
-    - id: domain-range-misidentified
     prompt: Enter $dy/dt$.
-    answer: { expectedLatex: 'k*y*(M-y)', equivalenceMode: expression, tolerance: 0.000001, variables: [k, y, M], explanation: The rate is proportional to the product $y(M-y)$. }
+    explanation: |
+      **Solution:**
+      $k y(M-y)$
+
+      **Why it works:**
+      The rate of spread is $\frac{dy}{dt}$. Proportionality implies multiplying by a constant $k$. The product of those who have heard the rumor ($y$) and those who have not ($M - y$) is $y(M - y)$. Putting this together gives $\frac{dy}{dt} = k y (M - y)$.
+    answer: 
+      expectedLatex: 'k*y*(M-y)'
+      equivalenceMode: expression
+      tolerance: 0.000001
+      variables: [k, y, M]
   - id: equilibria
     title: Step 3 — Find constant solutions
     instruction: Set the right side equal to zero.
     type: multipleChoice
-    issueSignals:
-    - id: boundary-condition-failure
-    - id: expression-equation-recognition-error
-    - id: algebraic-simplification-error
-    - id: chain-rule-missed
-    - id: mathematical-translation-error
-    - id: domain-range-misidentified
     prompt: Which pair gives the equilibrium levels?
+    explanation: |
+      **Solution:**
+      $y=0$ and $y=M$
+
+      **Why it works:**
+      Constant solutions (equilibria) occur when the rate of change is zero, meaning $\frac{dy}{dt} = 0$. Setting $k y(M-y) = 0$ gives two possible roots: $y=0$ and $M-y=0$ (which means $y=M$). Therefore, the equilibrium levels are $y=0$ and $y=M$.
+
+      **Why the other choices fail:**
+      - **$y=k$ and $y=M-k$** fails because $k$ is the proportionality constant, not a root of the equation $y(M-y) = 0$.
+      - **$y=1$ and $y=-1$** fails because it implies roots independent of the population size $M$, which does not satisfy $y(M-y) = 0$.
     choices:
-    - { id: a, text: '$y=0$ and $y=M$' }
-    - { id: b, text: '$y=k$ and $y=M-k$' }
-    - { id: c, text: '$y=1$ and $y=-1$' }
-    answer: { choiceId: a, explanation: '$k y(M-y)=0$ gives $y=0$ or $y=M$ when $k\ne0$.' }
+    - id: a
+      text: '$y=0$ and $y=M$'
+    - id: b
+      text: '$y=k$ and $y=M-k$'
+      issueSignals:
+        - id: algebraic-simplification-error
+    - id: c
+      text: '$y=1$ and $y=-1$'
+      issueSignals:
+        - id: expression-equation-recognition-error
+    answer: 
+      choiceId: a
   - id: interpret-sign
     title: Step 4 — Interpret the sign
     instruction: Assume $k>0$ and $0<y<M$.
     type: multipleChoice
-    issueSignals:
-    - id: boundary-condition-failure
-    - id: expression-equation-recognition-error
-    - id: algebraic-simplification-error
-    - id: chain-rule-missed
-    - id: mathematical-translation-error
-    - id: domain-range-misidentified
     prompt: What does the sign of $y'$ say about the number who have heard the rumor?
+    explanation: |
+      **Solution:**
+      It is increasing.
+
+      **Why it works:**
+      For $0 < y < M$, both $y$ and $M-y$ are positive. Since $k > 0$, their product $k y(M-y)$ is also positive. This means $\frac{dy}{dt} > 0$, so the number of people who have heard the rumor is increasing.
+
+      **Why the other choices fail:**
+      - **It is decreasing** fails because a decreasing population requires $\frac{dy}{dt} < 0$, which is impossible here since all factors ($k$, $y$, and $M-y$) are positive.
     choices:
-    - { id: increasing, text: It is increasing. }
-    - { id: decreasing, text: It is decreasing. }
-    answer: { choiceId: increasing, explanation: Both $y$ and $M-y$ are positive, so $y'>0$. }
+    - id: increasing
+      text: It is increasing.
+    - id: decreasing
+      text: It is decreasing.
+      issueSignals:
+        - id: mathematical-translation-error
+    answer: 
+      choiceId: increasing
+
+- id: polynomial-rate-analysis
+  title: Analyze Constant Solutions and Intervals of Increase
+  problem: |
+    A function $y(t)$ satisfies the differential equation $\frac{dy}{dt} = y^4 - 6y^3 + 5y^2$. Determine the constant solutions and analyze when the function is increasing or decreasing.
+  steps:
+  - id: find-equilibria
+    title: Step 1 — Find the constant solutions
+    instruction: Factor the polynomial to find where $\frac{dy}{dt} = 0$.
+    type: multipleChoice
+    prompt: What are the constant solutions of the equation?
+    explanation: |
+      **Solution:**
+      $y=0$, $y=1$, and $y=5$
+
+      **Why it works:**
+      Constant solutions occur where $\frac{dy}{dt} = 0$. Setting $y^4 - 6y^3 + 5y^2 = 0$, we can factor out $y^2$ to get $y^2(y^2 - 6y + 5) = 0$. Factoring the quadratic yields $y^2(y - 1)(y - 5) = 0$. The roots are $y=0$, $y=1$, and $y=5$.
+
+      **Why the other choices fail:**
+      - **$y=1$ and $y=5$** fails because it misses the root $y=0$, which comes from the $y^2$ factor.
+      - **$y=0$, $y=-1$, and $y=-5$** fails because of a sign error when factoring $y^2 - 6y + 5$.
+    choices:
+    - id: a
+      text: '$y=0$, $y=1$, and $y=5$'
+    - id: b
+      text: '$y=1$ and $y=5$'
+      issueSignals:
+        - id: algebraic-simplification-error
+    - id: c
+      text: '$y=0$, $y=-1$, and $y=-5$'
+      issueSignals:
+        - id: algebraic-simplification-error
+    answer:
+      choiceId: a
+  - id: analyze-increasing
+    title: Step 2 — Determine where the function is increasing
+    instruction: Use test points in the intervals between the constant solutions to find where $\frac{dy}{dt} > 0$.
+    type: multipleChoice
+    prompt: For what values of $y$ is $y$ increasing?
+    explanation: |
+      **Solution:**
+      $y < 1$ (except $y=0$) and $y > 5$
+
+      **Why it works:**
+      The function $y(t)$ is increasing when $\frac{dy}{dt} > 0$. The sign of $\frac{dy}{dt} = y^2(y - 1)(y - 5)$ is determined by its factors. Since $y^2 \ge 0$, the sign depends on $(y - 1)(y - 5)$. 
+      - For $y < 0$ or $0 < y < 1$, both $(y - 1)$ and $(y - 5)$ are negative, so their product is positive, and $\frac{dy}{dt} > 0$.
+      - For $1 < y < 5$, $(y - 1)$ is positive but $(y - 5)$ is negative, so $\frac{dy}{dt} < 0$.
+      - For $y > 5$, both factors are positive, so $\frac{dy}{dt} > 0$.
+      Therefore, $y$ is increasing when $y < 1$ (excluding $y=0$, where it is constant) and $y > 5$.
+
+      **Why the other choices fail:**
+      - **$1 < y < 5$** fails because in this interval, the derivative is negative, meaning the function is decreasing.
+      - **$y > 5$ only** fails because it misses the interval $y < 1$, where the product of two negative factors results in a positive derivative.
+    choices:
+    - id: a
+      text: '$y < 1$ (except $y=0$) and $y > 5$'
+    - id: b
+      text: '$1 < y < 5$'
+      issueSignals:
+        - id: boundary-condition-failure
+    - id: c
+      text: '$y > 5$ only'
+      issueSignals:
+        - id: algebraic-simplification-error
+    answer:
+      choiceId: a
