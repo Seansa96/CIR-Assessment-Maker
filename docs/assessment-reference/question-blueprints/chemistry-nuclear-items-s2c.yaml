@@ -1,0 +1,137 @@
+schemaVersion: 1
+id: chemistry-nuclear-items-s2c
+sourceId: src-20260720035703-91ea51b0d8
+packetId: packet-chemistry-nuclear-v1
+reviewState: approved
+templates:
+  equations: &equations
+    objectiveId: chem-nuclear-equations
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2430, src-20260720035703-91ea51b0d8:chunk-2431]
+    reviewState: approved
+    givens: 'Nuclear notation or an incomplete nuclear equation.'
+    unknown: 'A missing particle, daughter nuclide, mass number, or atomic number.'
+    representationRequirement: required
+    governingPrinciple: 'Mass number and atomic number are separately conserved in nuclear equations.'
+    methodSteps: [sum mass numbers, sum atomic numbers, solve missing values, identify element or particle, verify both sums]
+    likelyMisconception: 'Treating chemical charge or ordinary atom coefficients as nuclear mass and atomic numbers.'
+    difficultyEvidence: 'Coordinates two conservation equations with isotope notation.'
+    answerVerificationMethod: 'independent mass-number and atomic-number audit'
+    variationAxes: [missing quantity, decay representation, nuclide family, requested interpretation]
+  stability: &stability
+    objectiveId: chem-nuclear-stability-decay
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2436]
+    reviewState: approved
+    givens: 'A decay mode, parent nuclide, or neutron-to-proton condition.'
+    unknown: 'Daughter-number change, likely decay mode, or stability implication.'
+    representationRequirement: required
+    governingPrinciple: 'Each decay mode has a characteristic mass-number and atomic-number change related to nuclear stability.'
+    methodSteps: [identify decay particle, apply delta A and delta Z, identify daughter or trend, verify conservation]
+    likelyMisconception: 'Changing mass number during beta-family decay or applying the atomic-number shift backward.'
+    difficultyEvidence: 'Links a symbolic emission to daughter location and stability direction.'
+    answerVerificationMethod: 'decay-change table and conservation check'
+    variationAxes: [decay mode, parent location, unknown, stability condition]
+  half: &half
+    objectiveId: chem-nuclear-half-life
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2455, src-20260720035703-91ea51b0d8:chunk-2460, src-20260720035703-91ea51b0d8:chunk-2461]
+    reviewState: approved
+    givens: 'Initial amount, elapsed time or half-lives, and a half-life or decay constant.'
+    unknown: 'Remaining amount, elapsed time, half-life, or decay constant.'
+    representationRequirement: none
+    governingPrinciple: '$N=N_0(1/2)^{t/t_{1/2}}$ and $t_{1/2}=\ln2/k$ for first-order radioactive decay.'
+    methodSteps: [identify model, count half-lives or convert k, evaluate fraction, attach units, reverse-check]
+    likelyMisconception: 'Subtracting equal amounts each half-life instead of halving what remains.'
+    difficultyEvidence: 'Applies multiplicative decay with time and unit interpretation.'
+    answerVerificationMethod: 'reverse half-life count or substitution into exponential decay'
+    variationAxes: [given quantity, requested quantity, discrete or continuous model, time unit]
+  energy: &energy
+    objectiveId: chem-nuclear-energy
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2473, src-20260720035703-91ea51b0d8:chunk-2475, src-20260720035703-91ea51b0d8:chunk-2491]
+    reviewState: approved
+    givens: 'Nuclear masses, binding-energy information, or a fission/fusion description.'
+    unknown: 'Mass defect, binding-energy implication, or process classification.'
+    representationRequirement: none
+    governingPrinciple: 'A positive mass defect corresponds to nuclear binding energy through $E=\Delta mc^2$; fission splits heavy nuclei and fusion joins light nuclei.'
+    methodSteps: [identify constituents or process, compare masses or products, apply energy relation or binding trend, verify sign and units]
+    likelyMisconception: 'Using a negative mass defect or reversing fission and fusion.'
+    difficultyEvidence: 'Connects microscopic mass differences to energy and nuclear process direction.'
+    answerVerificationMethod: 'mass inventory, sign, unit, and process-definition check'
+    variationAxes: [process type, representation, requested energy meaning, nuclear mass region]
+  radiation: &radiation
+    objectiveId: chem-nuclear-radiation
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2463, src-20260720035703-91ea51b0d8:chunk-2496, src-20260720035703-91ea51b0d8:chunk-2497]
+    reviewState: approved
+    givens: 'A radiation type, exposure geometry, detector, or shielding scenario.'
+    unknown: 'Penetration, monitoring choice, shielding, or relative hazard.'
+    representationRequirement: required
+    governingPrinciple: 'Alpha, beta, and gamma differ in ionization and penetration; hazard also depends on whether the source is outside or inside the body.'
+    methodSteps: [identify radiation, compare range and penetration, locate source, select detector or shield, state limitation]
+    likelyMisconception: 'Equating greatest penetration with greatest hazard in every exposure context.'
+    difficultyEvidence: 'Integrates radiation identity, material interaction, and exposure location.'
+    answerVerificationMethod: 'penetration model and internal-versus-external consistency check'
+    variationAxes: [radiation type, source location, material, detector or safety unknown]
+blueprints:
+  - { <<: *equations, id: nuclear-concept-c1, assessmentId: chemistry-nuclear-concept-lesson-s2c, questionId: c1, questionType: multipleChoice, reasoningSignature: conserve-alpha-missing-particle }
+  - { <<: *stability, id: nuclear-concept-c2, assessmentId: chemistry-nuclear-concept-lesson-s2c, questionId: c2, questionType: multipleChoice, reasoningSignature: beta-minus-daughter-shift }
+  - { <<: *stability, id: nuclear-concept-c3, assessmentId: chemistry-nuclear-concept-lesson-s2c, questionId: c3, questionType: multipleChoice, reasoningSignature: neutron-rich-stability-response }
+  - { <<: *half, id: nuclear-concept-c4, assessmentId: chemistry-nuclear-concept-lesson-s2c, questionId: c4, questionType: numericResponse, reasoningSignature: repeated-half-life-remaining }
+  - { <<: *energy, id: nuclear-concept-c5, assessmentId: chemistry-nuclear-concept-lesson-s2c, questionId: c5, questionType: multipleChoice, reasoningSignature: mass-defect-binding-meaning }
+  - { <<: *radiation, id: nuclear-concept-c6, assessmentId: chemistry-nuclear-concept-lesson-s2c, questionId: c6, questionType: multipleChoice, reasoningSignature: alpha-internal-external-hazard }
+  - { <<: *equations, id: nuclear-glossary-d1, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d1, questionType: flashcard, reasoningSignature: define-nuclide }
+  - { <<: *stability, id: nuclear-glossary-d2, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d2, questionType: flashcard, reasoningSignature: define-radionuclide }
+  - { <<: *stability, id: nuclear-glossary-d3, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d3, questionType: flashcard, reasoningSignature: define-alpha }
+  - { <<: *stability, id: nuclear-glossary-d4, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d4, questionType: flashcard, reasoningSignature: define-beta-minus }
+  - { <<: *stability, id: nuclear-glossary-d5, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d5, questionType: flashcard, reasoningSignature: define-positron }
+  - { <<: *stability, id: nuclear-glossary-d6, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d6, questionType: flashcard, reasoningSignature: define-electron-capture }
+  - { <<: *radiation, id: nuclear-glossary-d7, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d7, questionType: flashcard, reasoningSignature: define-gamma }
+  - { <<: *half, id: nuclear-glossary-d8, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d8, questionType: flashcard, reasoningSignature: define-half-life }
+  - { <<: *half, id: nuclear-glossary-d9, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d9, questionType: flashcard, reasoningSignature: define-decay-constant }
+  - { <<: *radiation, id: nuclear-glossary-d10, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d10, questionType: flashcard, reasoningSignature: define-activity }
+  - { <<: *energy, id: nuclear-glossary-d11, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d11, questionType: flashcard, reasoningSignature: define-mass-defect }
+  - { <<: *energy, id: nuclear-glossary-d12, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d12, questionType: flashcard, reasoningSignature: define-binding-energy }
+  - { <<: *energy, id: nuclear-glossary-d13, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d13, questionType: flashcard, reasoningSignature: define-fission }
+  - { <<: *energy, id: nuclear-glossary-d14, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d14, questionType: flashcard, reasoningSignature: define-fusion }
+  - { <<: *radiation, id: nuclear-glossary-d15, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d15, questionType: flashcard, reasoningSignature: define-dosimeter }
+  - { <<: *radiation, id: nuclear-glossary-d16, assessmentId: chemistry-nuclear-glossary-s2c, questionId: d16, questionType: flashcard, reasoningSignature: define-shielding }
+  - { <<: *equations, id: nuclear-worked-e1s1, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e1s1, questionType: numericResponse, reasoningSignature: alpha-daughter-mass-number }
+  - { <<: *equations, id: nuclear-worked-e1s2, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e1s2, questionType: numericResponse, reasoningSignature: alpha-daughter-atomic-number }
+  - { <<: *equations, id: nuclear-worked-e1s3, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e1s3, questionType: freeResponse, reasoningSignature: alpha-complete-equation }
+  - { <<: *half, id: nuclear-worked-e2s1, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e2s1, questionType: numericResponse, reasoningSignature: decay-constant-half-life }
+  - { <<: *half, id: nuclear-worked-e2s2, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e2s2, questionType: numericResponse, reasoningSignature: elapsed-time-half-life-count }
+  - { <<: *half, id: nuclear-worked-e2s3, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e2s3, questionType: numericResponse, reasoningSignature: remaining-mass-repeated-half-life }
+  - { <<: *energy, id: nuclear-worked-e3s1, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e3s1, questionType: numericResponse, reasoningSignature: separated-nucleon-mass-sum }
+  - { <<: *energy, id: nuclear-worked-e3s2, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e3s2, questionType: numericResponse, reasoningSignature: helium-mass-defect }
+  - { <<: *energy, id: nuclear-worked-e3s3, assessmentId: chemistry-nuclear-worked-examples-s2c, questionId: e3s3, questionType: numericResponse, reasoningSignature: mass-defect-binding-energy }
+  - { <<: *equations, id: nuclear-recall-r1, assessmentId: chemistry-nuclear-recall-s2c, questionId: r1, questionType: typedRecall, reasoningSignature: recall-conserve-a-z }
+  - { <<: *stability, id: nuclear-recall-r2, assessmentId: chemistry-nuclear-recall-s2c, questionId: r2, questionType: typedRecall, reasoningSignature: recall-alpha-shift }
+  - { <<: *stability, id: nuclear-recall-r3, assessmentId: chemistry-nuclear-recall-s2c, questionId: r3, questionType: typedRecall, reasoningSignature: recall-beta-minus-shift }
+  - { <<: *stability, id: nuclear-recall-r4, assessmentId: chemistry-nuclear-recall-s2c, questionId: r4, questionType: typedRecall, reasoningSignature: recall-positron-capture-shift }
+  - { <<: *radiation, id: nuclear-recall-r5, assessmentId: chemistry-nuclear-recall-s2c, questionId: r5, questionType: typedRecall, reasoningSignature: recall-gamma-no-number-change }
+  - { <<: *stability, id: nuclear-recall-r6, assessmentId: chemistry-nuclear-recall-s2c, questionId: r6, questionType: typedRecall, reasoningSignature: recall-neutron-rich-beta }
+  - { <<: *half, id: nuclear-recall-r7, assessmentId: chemistry-nuclear-recall-s2c, questionId: r7, questionType: typedRecall, reasoningSignature: recall-half-life-fraction }
+  - { <<: *half, id: nuclear-recall-r8, assessmentId: chemistry-nuclear-recall-s2c, questionId: r8, questionType: typedRecall, reasoningSignature: recall-half-life-decay-constant }
+  - { <<: *radiation, id: nuclear-recall-r9, assessmentId: chemistry-nuclear-recall-s2c, questionId: r9, questionType: typedRecall, reasoningSignature: recall-activity-definition }
+  - { <<: *energy, id: nuclear-recall-r10, assessmentId: chemistry-nuclear-recall-s2c, questionId: r10, questionType: typedRecall, reasoningSignature: recall-mass-defect-definition }
+  - { <<: *energy, id: nuclear-recall-r11, assessmentId: chemistry-nuclear-recall-s2c, questionId: r11, questionType: typedRecall, reasoningSignature: recall-fission-fusion }
+  - { <<: *radiation, id: nuclear-recall-r12, assessmentId: chemistry-nuclear-recall-s2c, questionId: r12, questionType: recognition, reasoningSignature: recall-penetration-source-location }
+  - { <<: *equations, id: nuclear-quiz-q1, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q1, questionType: multipleChoice, reasoningSignature: alpha-daughter-two-number, difficultyDimensions: [nuclearConservation, elementIdentification], subjectDifficultyTags: [alpha-decay, isotope-notation] }
+  - { <<: *stability, id: nuclear-quiz-q2, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q2, questionType: multipleChoice, reasoningSignature: beta-minus-daughter-element, difficultyDimensions: [decayMode, daughterPrediction], subjectDifficultyTags: [beta-minus, isotope-notation] }
+  - { <<: *stability, id: nuclear-quiz-q3, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q3, questionType: selectAll, reasoningSignature: decay-number-invariance, difficultyDimensions: [multiConditionClassification, conservationPattern], subjectDifficultyTags: [decay-modes, mass-number] }
+  - { <<: *half, id: nuclear-quiz-q4, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q4, questionType: numericResponse, reasoningSignature: repeated-four-half-lives, difficultyDimensions: [halfLifeCount, fractionalChange], subjectDifficultyTags: [repeated-halving, remaining-mass] }
+  - { <<: *half, id: nuclear-quiz-q5, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q5, questionType: numericResponse, reasoningSignature: elapsed-duration-halving, difficultyDimensions: [timeToIntervals, quantitativeDecay], subjectDifficultyTags: [half-life, elapsed-time] }
+  - { <<: *stability, id: nuclear-quiz-q6, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q6, questionType: multipleChoice, reasoningSignature: neutron-excess-mode, difficultyDimensions: [stabilityPattern, particleConversion], subjectDifficultyTags: [neutron-rich, beta-minus] }
+  - { <<: *radiation, id: nuclear-quiz-q7, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q7, questionType: numericResponse, reasoningSignature: activity-time-conversion, difficultyDimensions: [rateDefinition, unitConversion], subjectDifficultyTags: [activity, becquerel] }
+  - { <<: *energy, id: nuclear-quiz-q8, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q8, questionType: numericResponse, reasoningSignature: direct-mass-defect, difficultyDimensions: [massInventory, subtractionDirection], subjectDifficultyTags: [mass-defect, binding] }
+  - { <<: *energy, id: nuclear-quiz-q9, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q9, questionType: multipleChoice, reasoningSignature: fission-fusion-process, difficultyDimensions: [processClassification, nuclearScale], subjectDifficultyTags: [fission, fusion] }
+  - { <<: *radiation, id: nuclear-quiz-q10, assessmentId: chemistry-nuclear-easy-quiz-s2c, questionId: q10, questionType: multipleChoice, reasoningSignature: gamma-shield-selection, difficultyDimensions: [penetrationComparison, materialSelection], subjectDifficultyTags: [gamma, shielding] }
+  - { <<: *equations, id: nuclear-test-q1, assessmentId: chemistry-nuclear-test-s2c, questionId: q1, questionType: multipleChoice, reasoningSignature: electron-capture-balanced-equation, difficultyDimensions: [particlePlacement, dualConservation, daughterIdentity], subjectDifficultyTags: [electron-capture, nuclear-equations], prerequisiteObjectiveIds: [chem-nuclear-equations], extensionObjectiveIds: [chem-nuclear-stability-decay] }
+  - { <<: *equations, id: nuclear-test-q2, assessmentId: chemistry-nuclear-test-s2c, questionId: q2, questionType: multipleChoice, reasoningSignature: two-alpha-net-daughter, difficultyDimensions: [multiEventSequence, nuclearConservation, elementIdentification], subjectDifficultyTags: [decay-series, alpha-decay], prerequisiteObjectiveIds: [chem-nuclear-equations], extensionObjectiveIds: [chem-nuclear-stability-decay] }
+  - { <<: *stability, id: nuclear-test-q3, assessmentId: chemistry-nuclear-test-s2c, questionId: q3, questionType: selectAll, reasoningSignature: proton-rich-decay-selection, difficultyDimensions: [stabilityDiagnosis, multiAnswerSelection, particleConversion], subjectDifficultyTags: [positron-emission, electron-capture], prerequisiteObjectiveIds: [chem-nuclear-equations], extensionObjectiveIds: [chem-nuclear-stability-decay] }
+  - { <<: *half, id: nuclear-test-q4, assessmentId: chemistry-nuclear-test-s2c, questionId: q4, questionType: numericResponse, reasoningSignature: continuous-exponential-remaining, difficultyDimensions: [modelSelection, exponentialEvaluation, unitInterpretation], subjectDifficultyTags: [continuous-decay, decay-constant], prerequisiteObjectiveIds: [chem-nuclear-half-life], extensionObjectiveIds: [chem-nuclear-radiation] }
+  - { <<: *half, id: nuclear-test-q5, assessmentId: chemistry-nuclear-test-s2c, questionId: q5, questionType: numericResponse, reasoningSignature: inverse-fraction-age, difficultyDimensions: [fractionToIntervals, inverseReasoning, timeScaling], subjectDifficultyTags: [radiometric-dating, half-life], prerequisiteObjectiveIds: [chem-nuclear-half-life], extensionObjectiveIds: [chem-nuclear-stability-decay] }
+  - { <<: *half, id: nuclear-test-q6, assessmentId: chemistry-nuclear-test-s2c, questionId: q6, questionType: numericResponse, reasoningSignature: constant-from-half-life, difficultyDimensions: [relationRearrangement, logarithmicConstant, inverseTimeUnits], subjectDifficultyTags: [decay-constant, half-life], prerequisiteObjectiveIds: [chem-nuclear-half-life], extensionObjectiveIds: [chem-nuclear-radiation] }
+  - { <<: *energy, id: nuclear-test-q7, assessmentId: chemistry-nuclear-test-s2c, questionId: q7, questionType: numericResponse, reasoningSignature: fission-mass-energy-conversion, difficultyDimensions: [massDefectInterpretation, energyConversion, processContext], subjectDifficultyTags: [fission, mass-energy], prerequisiteObjectiveIds: [chem-nuclear-energy], extensionObjectiveIds: [chem-nuclear-radiation] }
+  - { <<: *energy, id: nuclear-test-q8, assessmentId: chemistry-nuclear-test-s2c, questionId: q8, questionType: numericResponse, reasoningSignature: per-nucleon-binding-comparison, difficultyDimensions: [totalToIntensive, nucleonCount, stabilityInterpretation], subjectDifficultyTags: [binding-energy, stability], prerequisiteObjectiveIds: [chem-nuclear-energy], extensionObjectiveIds: [chem-nuclear-stability-decay] }
+  - { <<: *energy, id: nuclear-test-q9, assessmentId: chemistry-nuclear-test-s2c, questionId: q9, questionType: multipleChoice, reasoningSignature: chain-reaction-control-mechanism, difficultyDimensions: [processModel, neutronPopulation, controlStrategy], subjectDifficultyTags: [fission, chain-reaction], prerequisiteObjectiveIds: [chem-nuclear-energy], extensionObjectiveIds: [chem-nuclear-radiation] }
+  - { <<: *energy, id: nuclear-test-q10, assessmentId: chemistry-nuclear-test-s2c, questionId: q10, questionType: selectAll, reasoningSignature: fusion-conditions-energy-transfer, difficultyDimensions: [multiConditionReasoning, electrostaticBarrier, bindingTrend], subjectDifficultyTags: [fusion, plasma], prerequisiteObjectiveIds: [chem-nuclear-energy], extensionObjectiveIds: [chem-nuclear-stability-decay] }
+  - { <<: *radiation, id: nuclear-test-q11, assessmentId: chemistry-nuclear-test-s2c, questionId: q11, questionType: multipleChoice, reasoningSignature: monitoring-contamination-distinction, difficultyDimensions: [measurementGoal, detectorSelection, exposureInterpretation], subjectDifficultyTags: [dosimetry, contamination], prerequisiteObjectiveIds: [chem-nuclear-radiation], extensionObjectiveIds: [chem-nuclear-half-life] }
+  - { <<: *radiation, id: nuclear-test-q12, assessmentId: chemistry-nuclear-test-s2c, questionId: q12, questionType: multipleChoice, reasoningSignature: mixed-source-shielding-priority, difficultyDimensions: [sourceLocation, radiationType, mitigationChoice], subjectDifficultyTags: [alpha, gamma, safety], prerequisiteObjectiveIds: [chem-nuclear-radiation], extensionObjectiveIds: [chem-nuclear-stability-decay] }

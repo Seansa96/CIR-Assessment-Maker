@@ -1,0 +1,132 @@
+schemaVersion: 1
+id: chemistry-electrochemistry-s2c-blueprints
+sourceId: src-20260720035703-91ea51b0d8
+packetId: packet-chemistry-electrochemistry-v1
+reviewState: approved
+templates:
+  redox: &redox
+    objectiveId: chem-electrochem-redox
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2293, src-20260720035703-91ea51b0d8:chunk-2299]
+    reviewState: approved
+    givens: 'Oxidation states or a redox equation with stated medium.'
+    unknown: 'Electron-transfer roles or a mass- and charge-balanced relation.'
+    representationRequirement: none
+    governingPrinciple: 'Oxidation loses electrons, reduction gains them, and both atoms and net charge are conserved.'
+    methodSteps: [assign oxidation states, separate half-reactions, balance mass and charge, cancel electrons, verify]
+    likelyMisconception: 'Reversing oxidation and reduction or balancing atoms without charge.'
+    answerVerificationMethod: 'independent atom, charge, and electron-count audit'
+    variationAxes: [medium, species roles, unknown, representation]
+  cells: &cells
+    objectiveId: chem-electrochem-cells
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2311, src-20260720035703-91ea51b0d8:chunk-2317]
+    reviewState: approved
+    givens: 'A cell reaction, half-cells, or labeled cell representation.'
+    unknown: 'Anode, cathode, electron/ion direction, notation, or practical implication.'
+    representationRequirement: required
+    governingPrinciple: 'Oxidation occurs at the anode, reduction at the cathode, and electrons travel externally from anode to cathode.'
+    methodSteps: [identify half-reactions, assign electrodes, trace electrons and ions, encode notation, verify charge balance]
+    likelyMisconception: 'Using electrode sign instead of oxidation/reduction to name anode and cathode.'
+    answerVerificationMethod: 'half-reaction and circuit-direction consistency check'
+    variationAxes: [cell type, representation, requested direction, active species]
+  potential: &potential
+    objectiveId: chem-electrochem-potential
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2319, src-20260720035703-91ea51b0d8:chunk-2325, src-20260720035703-91ea51b0d8:chunk-2334]
+    reviewState: approved
+    givens: 'Standard reduction potentials and a balanced electron count.'
+    unknown: 'Cell potential, spontaneity, free energy, or equilibrium implication.'
+    representationRequirement: none
+    governingPrinciple: '$E^\circ_{cell}=E^\circ_{red,cathode}-E^\circ_{red,anode}$ and $\Delta G^\circ=-nFE^\circ$.'
+    methodSteps: [choose cathode, subtract reduction potentials, interpret sign, apply thermodynamic relation, verify units]
+    likelyMisconception: 'Multiplying an intensive potential by a balancing coefficient or reversing the subtraction.'
+    answerVerificationMethod: 'independent sign, unit, and half-reaction check'
+    variationAxes: [electrode pair, unknown, sign interpretation, thermodynamic link]
+  nonstandard: &nonstandard
+    objectiveId: chem-electrochem-nonstandard
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2340, src-20260720035703-91ea51b0d8:chunk-2344, src-20260720035703-91ea51b0d8:chunk-2345]
+    reviewState: approved
+    givens: 'A balanced cell reaction, $E^\circ$, temperature, n, and Q or concentrations.'
+    unknown: 'Nonstandard potential, Q trend, free energy, or equilibrium state.'
+    representationRequirement: none
+    governingPrinciple: 'At 25 C, $E=E^\circ-(0.05916/n)\log Q$; equilibrium has E=0 and Q=K.'
+    methodSteps: [form Q, count electrons, apply Nernst equation, interpret sign and limiting state, verify]
+    likelyMisconception: 'Reversing Q or the Nernst correction direction.'
+    answerVerificationMethod: 'recalculation plus limiting-case check at Q=1 or Q=K'
+    variationAxes: [concentration pattern, requested quantity, reaction direction, temperature condition]
+  electrolysis: &electrolysis
+    objectiveId: chem-electrochem-electrolysis
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-2375, src-20260720035703-91ea51b0d8:chunk-2378, src-20260720035703-91ea51b0d8:chunk-2380]
+    reviewState: approved
+    givens: 'Current, time, Faraday constant, half-reaction electron count, and molar mass as needed.'
+    unknown: 'Charge, moles of electrons, deposited amount, time, or electrolytic direction.'
+    representationRequirement: required
+    governingPrinciple: '$q=It$, $n(e^-)=q/F$, and half-reaction stoichiometry converts electrons to substance.'
+    methodSteps: [convert time, calculate charge, convert to electron moles, apply stoichiometry, convert to requested unit]
+    likelyMisconception: 'Skipping electron stoichiometry or treating current as total charge.'
+    answerVerificationMethod: 'independent dimensional and electron-mole calculation'
+    variationAxes: [ion charge, requested quantity, current-time data, cell representation]
+blueprints:
+  - { <<: *redox, id: electro-concept-c1, assessmentId: chemistry-electrochemistry-concept-lesson-s2c, questionId: c1, questionType: multipleChoice, reasoningSignature: oxidation-number-role }
+  - { <<: *redox, id: electro-concept-c2, assessmentId: chemistry-electrochemistry-concept-lesson-s2c, questionId: c2, questionType: multipleChoice, reasoningSignature: acidic-half-reaction-balance }
+  - { <<: *cells, id: electro-concept-c3, assessmentId: chemistry-electrochemistry-concept-lesson-s2c, questionId: c3, questionType: multipleChoice, reasoningSignature: galvanic-electrode-assignment }
+  - { <<: *cells, id: electro-concept-c4, assessmentId: chemistry-electrochemistry-concept-lesson-s2c, questionId: c4, questionType: multipleChoice, reasoningSignature: salt-bridge-ion-direction }
+  - { <<: *nonstandard, id: electro-concept-c5, assessmentId: chemistry-electrochemistry-concept-lesson-s2c, questionId: c5, questionType: multipleChoice, reasoningSignature: nernst-q-potential-direction }
+  - { <<: *electrolysis, id: electro-concept-c6, assessmentId: chemistry-electrochemistry-concept-lesson-s2c, questionId: c6, questionType: multipleChoice, reasoningSignature: electrolytic-power-direction }
+  - { <<: *redox, id: electro-glossary-d1, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d1, questionType: flashcard, reasoningSignature: define-oxidation }
+  - { <<: *redox, id: electro-glossary-d2, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d2, questionType: flashcard, reasoningSignature: define-reduction }
+  - { <<: *redox, id: electro-glossary-d3, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d3, questionType: flashcard, reasoningSignature: define-oxidizing-agent }
+  - { <<: *redox, id: electro-glossary-d4, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d4, questionType: flashcard, reasoningSignature: define-reducing-agent }
+  - { <<: *redox, id: electro-glossary-d5, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d5, questionType: flashcard, reasoningSignature: define-half-reaction }
+  - { <<: *cells, id: electro-glossary-d6, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d6, questionType: flashcard, reasoningSignature: define-anode }
+  - { <<: *cells, id: electro-glossary-d7, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d7, questionType: flashcard, reasoningSignature: define-cathode }
+  - { <<: *cells, id: electro-glossary-d8, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d8, questionType: flashcard, reasoningSignature: define-salt-bridge }
+  - { <<: *cells, id: electro-glossary-d9, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d9, questionType: flashcard, reasoningSignature: define-galvanic-cell }
+  - { <<: *electrolysis, id: electro-glossary-d10, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d10, questionType: flashcard, reasoningSignature: define-electrolytic-cell }
+  - { <<: *potential, id: electro-glossary-d11, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d11, questionType: flashcard, reasoningSignature: define-reduction-potential }
+  - { <<: *potential, id: electro-glossary-d12, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d12, questionType: flashcard, reasoningSignature: define-cell-potential }
+  - { <<: *cells, id: electro-glossary-d13, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d13, questionType: flashcard, reasoningSignature: define-cell-notation }
+  - { <<: *nonstandard, id: electro-glossary-d14, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d14, questionType: flashcard, reasoningSignature: define-reaction-quotient }
+  - { <<: *nonstandard, id: electro-glossary-d15, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d15, questionType: flashcard, reasoningSignature: define-nernst-equation }
+  - { <<: *electrolysis, id: electro-glossary-d16, assessmentId: chemistry-electrochemistry-glossary-s2c, questionId: d16, questionType: flashcard, reasoningSignature: define-faraday-constant }
+  - { <<: *redox, id: electro-worked-e1s1, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e1s1, questionType: freeResponse, reasoningSignature: split-redox-halves }
+  - { <<: *redox, id: electro-worked-e1s2, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e1s2, questionType: freeResponse, reasoningSignature: balance-acidic-electrons }
+  - { <<: *redox, id: electro-worked-e1s3, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e1s3, questionType: freeResponse, reasoningSignature: verify-net-redox }
+  - { <<: *cells, id: electro-worked-e2s1, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e2s1, questionType: multipleChoice, reasoningSignature: choose-electrodes-from-potentials }
+  - { <<: *cells, id: electro-worked-e2s2, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e2s2, questionType: freeResponse, reasoningSignature: encode-cell-notation }
+  - { <<: *potential, id: electro-worked-e2s3, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e2s3, questionType: numericResponse, reasoningSignature: calculate-standard-emf }
+  - { <<: *electrolysis, id: electro-worked-e3s1, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e3s1, questionType: numericResponse, reasoningSignature: current-time-charge }
+  - { <<: *electrolysis, id: electro-worked-e3s2, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e3s2, questionType: numericResponse, reasoningSignature: charge-electron-moles }
+  - { <<: *electrolysis, id: electro-worked-e3s3, assessmentId: chemistry-electrochemistry-worked-examples-s2c, questionId: e3s3, questionType: numericResponse, reasoningSignature: electron-moles-metal-mass }
+  - { <<: *redox, id: electro-recall-r1, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r1, questionType: typed, reasoningSignature: recall-oxidation }
+  - { <<: *redox, id: electro-recall-r2, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r2, questionType: typed, reasoningSignature: recall-agent }
+  - { <<: *redox, id: electro-recall-r3, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r3, questionType: typed, reasoningSignature: recall-half-balance }
+  - { <<: *cells, id: electro-recall-r4, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r4, questionType: typed, reasoningSignature: recall-anode }
+  - { <<: *cells, id: electro-recall-r5, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r5, questionType: typed, reasoningSignature: recall-electron-flow }
+  - { <<: *cells, id: electro-recall-r6, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r6, questionType: typed, reasoningSignature: recall-ion-migration }
+  - { <<: *potential, id: electro-recall-r7, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r7, questionType: typed, reasoningSignature: recall-emf-formula }
+  - { <<: *potential, id: electro-recall-r8, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r8, questionType: typed, reasoningSignature: recall-spontaneity }
+  - { <<: *nonstandard, id: electro-recall-r9, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r9, questionType: typed, reasoningSignature: recall-nernst }
+  - { <<: *nonstandard, id: electro-recall-r10, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r10, questionType: typed, reasoningSignature: recall-equilibrium-cell }
+  - { <<: *electrolysis, id: electro-recall-r11, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r11, questionType: typed, reasoningSignature: recall-charge-current }
+  - { <<: *electrolysis, id: electro-recall-r12, assessmentId: chemistry-electrochemistry-recall-s2c, questionId: r12, questionType: typed, reasoningSignature: recall-faraday }
+  - { <<: *cells, id: electro-quiz-q1, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q1, questionType: multipleChoice, difficultyDimensions: [conceptIdentification, directionReasoning], subjectDifficultyTags: [galvanic-cell], difficultyEvidence: 'Identifies oxidation site and electrode role.', prerequisiteObjectiveIds: [chem-electrochem-redox], extensionObjectiveIds: [chem-electrochem-potential], reasoningSignature: quiz-anode-site }
+  - { <<: *cells, id: electro-quiz-q2, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q2, questionType: multipleChoice, difficultyDimensions: [diagramInterpretation, directionReasoning], subjectDifficultyTags: [electron-flow], difficultyEvidence: 'Reads electron direction from cell roles.', prerequisiteObjectiveIds: [chem-electrochem-redox], extensionObjectiveIds: [chem-electrochem-potential], reasoningSignature: quiz-electron-flow }
+  - { <<: *redox, id: electro-quiz-q3, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q3, questionType: multipleChoice, difficultyDimensions: [oxidationState, roleClassification], subjectDifficultyTags: [redox], difficultyEvidence: 'Combines oxidation-state change with agent classification.', prerequisiteObjectiveIds: [chemistry-reactions], extensionObjectiveIds: [chem-electrochem-cells], reasoningSignature: quiz-agent-role }
+  - { <<: *potential, id: electro-quiz-q4, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q4, questionType: numericResponse, difficultyDimensions: [formulaSelection, signConvention], subjectDifficultyTags: [standard-potential], difficultyEvidence: 'Subtracts two reduction potentials in electrode order.', prerequisiteObjectiveIds: [chem-electrochem-cells], extensionObjectiveIds: [chem-electrochem-nonstandard], reasoningSignature: quiz-standard-emf }
+  - { <<: *potential, id: electro-quiz-q5, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q5, questionType: multipleChoice, difficultyDimensions: [intensiveProperty, coefficientReasoning], subjectDifficultyTags: [potential-scaling], difficultyEvidence: 'Rejects scaling an intensive potential.', prerequisiteObjectiveIds: [chem-electrochem-redox], extensionObjectiveIds: [chem-electrochem-nonstandard], reasoningSignature: quiz-no-potential-scaling }
+  - { <<: *cells, id: electro-quiz-q6, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q6, questionType: multipleChoice, difficultyDimensions: [notationReading, phaseBoundary], subjectDifficultyTags: [cell-notation], difficultyEvidence: 'Maps notation separators to physical cell parts.', prerequisiteObjectiveIds: [chem-electrochem-redox], extensionObjectiveIds: [chem-electrochem-potential], reasoningSignature: quiz-cell-notation }
+  - { <<: *nonstandard, id: electro-quiz-q7, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q7, questionType: multipleChoice, difficultyDimensions: [quotientTrend, potentialDirection], subjectDifficultyTags: [nernst], difficultyEvidence: 'Predicts the Nernst correction without arithmetic.', prerequisiteObjectiveIds: [chemistry-equilibrium], extensionObjectiveIds: [chem-electrochem-nonstandard], reasoningSignature: quiz-q-less-one }
+  - { <<: *electrolysis, id: electro-quiz-q8, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q8, questionType: numericResponse, difficultyDimensions: [unitConversion, quantitativeReasoning], subjectDifficultyTags: [charge], difficultyEvidence: 'Converts current and time to charge.', prerequisiteObjectiveIds: [chemistry-stoichiometry], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: quiz-current-charge }
+  - { <<: *electrolysis, id: electro-quiz-q9, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q9, questionType: multipleChoice, difficultyDimensions: [cellComparison, energyDirection], subjectDifficultyTags: [electrolytic-cell], difficultyEvidence: 'Distinguishes driven and spontaneous cells.', prerequisiteObjectiveIds: [chem-electrochem-cells], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: quiz-cell-type }
+  - { <<: *cells, id: electro-quiz-q10, assessmentId: chemistry-electrochemistry-easy-quiz-s2c, questionId: q10, questionType: selectAll, difficultyDimensions: [multiConditionReasoning, ionMigration], subjectDifficultyTags: [salt-bridge], difficultyEvidence: 'Selects all charge-balance functions of the salt bridge.', prerequisiteObjectiveIds: [chem-electrochem-cells], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: quiz-salt-bridge-functions }
+  - { <<: *redox, id: electro-test-q1, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q1, questionType: multipleChoice, difficultyDimensions: [massBalance, chargeBalance, mediumSelection], subjectDifficultyTags: [acidic-redox], difficultyEvidence: 'Selects a fully balanced acidic equation.', prerequisiteObjectiveIds: [chemistry-reactions], extensionObjectiveIds: [chem-electrochem-cells], reasoningSignature: test-acidic-balance }
+  - { <<: *redox, id: electro-test-q2, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q2, questionType: selectAll, difficultyDimensions: [oxidationState, electronTransfer, agentClassification], subjectDifficultyTags: [redox-agents], difficultyEvidence: 'Tracks both changing species and their roles.', prerequisiteObjectiveIds: [chemistry-reactions], extensionObjectiveIds: [chem-electrochem-cells], reasoningSignature: test-redox-role-set }
+  - { <<: *cells, id: electro-test-q3, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q3, questionType: multipleChoice, difficultyDimensions: [cellNotation, electrodeAssignment, directionReasoning], subjectDifficultyTags: [galvanic-cell], difficultyEvidence: 'Translates a reaction into notation and flow.', prerequisiteObjectiveIds: [chem-electrochem-redox], extensionObjectiveIds: [chem-electrochem-potential], reasoningSignature: test-cell-notation-flow }
+  - { <<: *potential, id: electro-test-q4, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q4, questionType: numericResponse, difficultyDimensions: [electrodeSelection, formulaApplication, signInterpretation], subjectDifficultyTags: [standard-emf], difficultyEvidence: 'Determines electrode roles before calculating emf.', prerequisiteObjectiveIds: [chem-electrochem-cells], extensionObjectiveIds: [chem-electrochem-nonstandard], reasoningSignature: test-emf-from-table }
+  - { <<: *potential, id: electro-test-q5, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q5, questionType: numericResponse, difficultyDimensions: [electronCount, energyConversion, unitConversion], subjectDifficultyTags: [free-energy], difficultyEvidence: 'Combines balanced electron count with emf and Faraday constant.', prerequisiteObjectiveIds: [chem-electrochem-redox], extensionObjectiveIds: [chemistry-equilibrium], reasoningSignature: test-delta-g }
+  - { <<: *nonstandard, id: electro-test-q6, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q6, questionType: numericResponse, difficultyDimensions: [quotientConstruction, logarithm, potentialCorrection], subjectDifficultyTags: [nernst], difficultyEvidence: 'Forms Q and calculates nonstandard emf.', prerequisiteObjectiveIds: [chemistry-equilibrium], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: test-nernst-emf }
+  - { <<: *nonstandard, id: electro-test-q7, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q7, questionType: multipleChoice, difficultyDimensions: [equilibriumCondition, potentialLimit, quotientInterpretation], subjectDifficultyTags: [cell-equilibrium], difficultyEvidence: 'Connects E=0 to Q=K and no net work.', prerequisiteObjectiveIds: [chemistry-equilibrium], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: test-dead-cell-equilibrium }
+  - { <<: *electrolysis, id: electro-test-q8, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q8, questionType: numericResponse, difficultyDimensions: [chargeCalculation, faradayConversion, ionStoichiometry], subjectDifficultyTags: [electroplating], difficultyEvidence: 'Converts current-time data to deposited metal.', prerequisiteObjectiveIds: [chemistry-stoichiometry], extensionObjectiveIds: [chem-electrochem-cells], reasoningSignature: test-plating-mass }
+  - { <<: *electrolysis, id: electro-test-q9, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q9, questionType: numericResponse, difficultyDimensions: [massToMoles, electronStoichiometry, timeCalculation], subjectDifficultyTags: [electrolysis-time], difficultyEvidence: 'Works backward from target mass to operating time.', prerequisiteObjectiveIds: [chemistry-stoichiometry], extensionObjectiveIds: [chem-electrochem-cells], reasoningSignature: test-plating-time }
+  - { <<: *cells, id: electro-test-q10, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q10, questionType: multipleChoice, difficultyDimensions: [corrosionModel, electrodeRole, protectionStrategy], subjectDifficultyTags: [corrosion], difficultyEvidence: 'Uses relative oxidation tendency to explain sacrificial protection.', prerequisiteObjectiveIds: [chem-electrochem-redox], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: test-sacrificial-anode }
+  - { <<: *cells, id: electro-test-q11, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q11, questionType: selectAll, difficultyDimensions: [batteryModel, energyConversion, processDirection], subjectDifficultyTags: [practical-cells], difficultyEvidence: 'Distinguishes discharge and recharge behavior.', prerequisiteObjectiveIds: [chem-electrochem-cells], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: test-battery-operation }
+  - { <<: *nonstandard, id: electro-test-q12, assessmentId: chemistry-electrochemistry-test-s2c, questionId: q12, questionType: multipleChoice, difficultyDimensions: [reactionReversal, quotientInversion, potentialSign], subjectDifficultyTags: [nernst-transfer], difficultyEvidence: 'Reverses a cell reaction while preserving thermodynamic consistency.', prerequisiteObjectiveIds: [chemistry-equilibrium], extensionObjectiveIds: [chem-electrochem-electrolysis], reasoningSignature: test-reverse-cell }

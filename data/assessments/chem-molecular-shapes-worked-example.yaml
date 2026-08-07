@@ -4,242 +4,184 @@ title: 'Molecular Shapes: Worked VSEPR Decisions'
 assessmentType: workedExample
 categoryId: chemistry
 topicId: chem-molecular-shapes
-skills:
-  - Apply chemistry concepts
-  - Determine electron-domain and molecular geometry
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-    - chemistry
-    - chem-molecular-shapes
-    - chem-lewis-dot-structures
+skills: [Apply chemistry concepts, Determine electron-domain and molecular geometry]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [chemistry, chem-molecular-shapes, chem-lewis-dot-structures] }
 modeDefault: study
+randomizeQuestions: false
+authoring: { visualRequirement: required, visualRationale: 'Each example uses a spatial diagram to expose the domain-to-shape decision.', sourceId: src-20260720035703-91ea51b0d8 }
 workedExamples:
   - id: we-so2-workflow
-    title: 'From a Lewis structure to a geometry: sulfur dioxide'
-    problem: |
-      Use VSEPR to analyze $SO_2$. A valid resonance contributor has sulfur as the central atom, two S–O bonding directions, and one lone pair on sulfur. Determine the electron-domain geometry, molecular geometry, and a defensible angle prediction.
-    media:
-      - type: image
-        src: /media/chemistry/vsepr-domain-workflow.svg
-        alt: VSEPR workflow diagram for converting a Lewis structure into electron-domain geometry, molecular geometry, and an angle estimate.
-        caption: The same workflow works even when a Lewis structure contains resonance or a multiple bond.
+    title: 'From resonance to local geometry: sulfur dioxide'
+    problem: 'Analyze $SO_2$ given two S-O bonding directions and one lone pair on sulfur. Determine both geometry names and a defensible angle trend.'
+    media: [{ type: image, src: /media/chemistry/vsepr-domain-workflow.svg, alt: VSEPR workflow applied to a three-domain sulfur center., caption: Bond direction, not the number of drawn bond lines, controls the domain count. }]
     steps:
       - id: so2-center
         title: Identify the local center
+        instruction: 'Choose the atom at the vertex of the requested angle.'
         type: multipleChoice
-        prompt: 'Which atom must be analyzed to name the O–S–O angle and the local molecular geometry of $SO_2$?'
-        choices:
-          - id: a
-            text: Either terminal oxygen
-          - id: b
-            text: Sulfur, the atom between the two oxygens
-          - id: c
-            text: All three atoms together as one center
-          - id: d
-            text: The oxygen in the double bond only
-        answer:
-          choiceId: b
-        instruction: The vertex of an O–S–O angle is sulfur, so all VSEPR counting is done around sulfur.
+        prompt: 'Which atom is the vertex of the O-S-O angle?'
+        choices: [{ id: a, text: Either oxygen, issueSignals: [{ id: chemistry-vsepr-multicenter-error }] }, { id: b, text: Sulfur, issueSignals: [] }, { id: c, text: All three atoms together, issueSignals: [{ id: chemistry-vsepr-multicenter-error }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: Sulfur is the local center. Why it works: It is the middle atom and angle vertex. Why the other choices fail: Terminal oxygen is not the vertex, and VSEPR does not use a three-atom global center.'
       - id: so2-domains
         title: Count domains rather than bond lines
+        instruction: 'Count bond directions and central lone pairs separately, then add them.'
         type: numericResponse
-        prompt: 'How many electron domains are around sulfur in the stated $SO_2$ Lewis environment?'
-        answer:
-          value: 3
-          tolerance: 0
-        instruction: Two S–O bond directions contribute two domains, and the sulfur lone pair contributes the third. A double bond remains one domain.
+        prompt: 'How many electron domains surround sulfur?'
+        answer: { value: 3, tolerance: 0 }
+        explanation: 'Solution: There are 3 domains: two S-O bond directions and one sulfur lone pair. Why it works: Each bond direction counts once regardless of resonance bond order.'
       - id: so2-ede
         title: Name the electron-domain geometry
+        instruction: 'Map the total domain count to its least-repulsion arrangement.'
         type: multipleChoice
-        prompt: 'What electron-domain geometry follows from three domains around sulfur?'
-        choices:
-          - id: a
-            text: Linear
-          - id: b
-            text: Trigonal planar
-          - id: c
-            text: Tetrahedral
-          - id: d
-            text: Trigonal bipyramidal
-        answer:
-          choiceId: b
-        instruction: Three electron domains spread into a trigonal-planar arrangement with a 120° ideal separation.
+        prompt: 'Which electron-domain geometry follows from three domains?'
+        choices: [{ id: a, text: Linear, issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }, { id: b, text: Trigonal planar, issueSignals: [] }, { id: c, text: Tetrahedral, issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: The electron-domain geometry is trigonal planar. Why it works: Three domains minimize repulsion in three directions near 120 degrees. Why the other choices fail: Linear uses two domains and tetrahedral uses four.'
       - id: so2-axe
-        title: Record the occupied positions
+        title: Record the occupancy pattern
+        instruction: 'Write X for bonded atoms and E for central lone pairs.'
         type: multipleChoice
-        prompt: 'Which AXE description matches sulfur in this $SO_2$ model?'
-        choices:
-          - id: a
-            text: AX$_2$E
-          - id: b
-            text: AX$_3$
-          - id: c
-            text: AX$_2$E$_2$
-          - id: d
-            text: AX$_3$E
-        answer:
-          choiceId: a
-        instruction: Sulfur has two atom-containing bond domains and one lone-pair domain.
+        prompt: 'Which AXE description matches sulfur?'
+        choices: [{ id: a, text: 'AX$_2$E', issueSignals: [] }, { id: b, text: 'AX$_3$', issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }, { id: c, text: 'AX$_2$E$_2$', issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }]
+        answer: { choiceId: a }
+        explanation: 'Solution: Sulfur is AX$_2$E. Why it works: It has two bonded atoms and one central lone pair. Why the other choices fail: AX$_3$ omits the lone pair; AX$_2$E$_2$ adds a nonexistent second lone pair.'
       - id: so2-mg
         title: Remove the lone-pair position from the name
+        instruction: 'Name only the positions occupied by atoms.'
         type: multipleChoice
-        prompt: 'After the lone-pair position is ignored, what molecular geometry remains?'
-        choices:
-          - id: a
-            text: Linear
-          - id: b
-            text: Bent
-          - id: c
-            text: Trigonal planar
-          - id: d
-            text: Trigonal pyramidal
-        answer:
-          choiceId: b
-        instruction: Only the two oxygen positions are named, so the molecular geometry is bent rather than trigonal planar.
+        prompt: 'What molecular geometry remains?'
+        choices: [{ id: a, text: Linear, issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }, { id: b, text: Bent, issueSignals: [] }, { id: c, text: Trigonal planar, issueSignals: [{ id: chemistry-vsepr-geometry-name-confusion }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: The molecular geometry is bent. Why it works: Molecular geometry names the two oxygen positions and omits the lone pair. Why the other choices fail: Linear ignores the third domain; trigonal planar is the electron-domain name.'
       - id: so2-angle-start
         title: State the ideal starting angle
+        instruction: 'Use the electron-domain family to select the ideal angle.'
         type: numericResponse
-        prompt: 'Before accounting for the lone pair, what ideal angle in degrees belongs to a trigonal-planar electron-domain geometry?'
-        answer:
-          value: 120
-          tolerance: 0
-        instruction: The ideal angle is determined by the electron-domain geometry, not by the final molecular-geometry label.
+        prompt: 'What ideal angle in degrees belongs to a trigonal-planar domain geometry?'
+        answer: { value: 120, tolerance: 0 }
+        explanation: 'Solution: The ideal starting angle is 120 degrees. Why it works: Three equal planar directions divide a full circle into three equal separations.'
       - id: so2-angle-refine
-        title: Refine the prediction qualitatively
+        title: Refine the prediction
+        instruction: 'Compare lone-pair and bonding-domain repulsions before stating a trend.'
         type: multipleChoice
-        prompt: 'Relative to 120°, what does VSEPR predict for the O–S–O angle when a sulfur lone pair is present?'
-        choices:
-          - id: a
-            text: Exactly 120°
-          - id: b
-            text: Slightly less than 120°
-          - id: c
-            text: Exactly 109.5°
-          - id: d
-            text: Greater than 180°
-        answer:
-          choiceId: b
-        instruction: A lone-pair domain repels adjacent bonding domains strongly and compresses the bond angle below the trigonal-planar ideal.
+        prompt: 'Relative to 120 degrees, what trend does the sulfur lone pair predict?'
+        choices: [{ id: a, text: Exactly 120 degrees, issueSignals: [{ id: chemistry-vsepr-angle-distortion-error }] }, { id: b, text: Slightly less than 120 degrees, issueSignals: [] }, { id: c, text: Exactly 109.5 degrees, issueSignals: [{ id: chemistry-vsepr-angle-distortion-error }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: Predict slightly less than 120 degrees. Why it works: The lone-pair domain repels adjacent bond domains strongly and compresses their included angle. Why the other choices fail: a ignores distortion; c substitutes a different domain family''s ideal.'
       - id: so2-check
-        title: Check that resonance did not change the count
+        title: Check resonance invariance
+        instruction: 'Compare the spatial domain inventory across resonance contributors.'
         type: freeResponse
-        answer:
-          gradingMode: selfCheck
-        prompt: 'Explain in one or two sentences why changing the placement of a double bond in an $SO_2$ resonance contributor does not change the VSEPR geometry prediction.'
-        instruction: A double bond and a single bond each occupy one direction around sulfur. Every resonance contributor has two S–O bonding directions and one sulfur lone pair, so the domain count and geometry label stay the same.
-
+        prompt: 'Explain why moving the double bond between resonance contributors does not change this VSEPR prediction.'
+        answer: { gradingMode: selfCheck, keyPoints: ['Both contributors retain two S-O bond directions.', 'Sulfur retains one lone pair.', 'The total remains three domains.'] }
+        explanation: 'Solution: Every contributor has two S-O directions and one sulfur lone pair, so the total remains three domains. Why it works: VSEPR counts regions of electron density, and changing which bond is drawn double does not add a new spatial direction.'
   - id: we-clf3-positioning
     title: 'Use positional reasoning: chlorine trifluoride'
-    problem: |
-      Analyze $ClF_3$. Its central chlorine has three Cl–F bonding domains and two lone pairs. Determine both geometry names and use the axial/equatorial distinction to justify the molecular shape.
-    media:
-      - type: image
-        src: /media/chemistry/vsepr-five-six-domain-map.svg
-        alt: Diagram showing axial and equatorial positions in a trigonal bipyramid and why lone pairs occupy equatorial positions.
-        caption: Positioning the lone pairs is the essential extra decision for a five-domain molecule.
+    problem: 'Analyze $ClF_3$, whose central chlorine has three bonds and two lone pairs. Use axial-equatorial reasoning to justify its shape.'
+    media: [{ type: image, src: /media/chemistry/vsepr-five-domain-family.svg, alt: Trigonal-bipyramidal family with lone pairs placed in equatorial sites., caption: The positions of the lone pairs determine which atom directions remain. }]
     steps:
       - id: clf3-domains
         title: Count all chlorine domains
+        instruction: 'Add the three bond directions and two chlorine lone pairs.'
         type: numericResponse
-        prompt: 'How many electron domains are around the central chlorine in $ClF_3$?'
-        answer:
-          value: 5
-          tolerance: 0
-        instruction: Three Cl–F bonds plus two lone pairs make five domains.
+        prompt: 'How many electron domains surround chlorine?'
+        answer: { value: 5, tolerance: 0 }
+        explanation: 'Solution: Chlorine has 5 domains. Why it works: Three Cl-F bonds plus two lone pairs give five regions around the center.'
       - id: clf3-ede
         title: Choose the starting arrangement
+        instruction: 'Map five total domains to the corresponding electron geometry.'
         type: multipleChoice
-        prompt: 'What electron-domain geometry does chlorine have?'
-        choices:
-          - id: a
-            text: Tetrahedral
-          - id: b
-            text: Trigonal bipyramidal
-          - id: c
-            text: Octahedral
-          - id: d
-            text: Square planar
-        answer:
-          choiceId: b
-        instruction: Five electron domains begin in a trigonal-bipyramidal arrangement.
+        prompt: 'What is the electron-domain geometry?'
+        choices: [{ id: a, text: Tetrahedral, issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }, { id: b, text: Trigonal bipyramidal, issueSignals: [] }, { id: c, text: Octahedral, issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: Five domains are trigonal bipyramidal. Why it works: This arrangement supplies two axial and three equatorial sites. Why the other choices fail: Tetrahedral and octahedral require four and six domains.'
       - id: clf3-axe
         title: Identify the occupancy pattern
+        instruction: 'Translate bonded atoms and lone pairs into AXE notation.'
         type: multipleChoice
-        prompt: 'Which AXE description matches $ClF_3$ at chlorine?'
-        choices:
-          - id: a
-            text: AX$_5$
-          - id: b
-            text: AX$_4$E
-          - id: c
-            text: AX$_3$E$_2$
-          - id: d
-            text: AX$_2$E$_3$
-        answer:
-          choiceId: c
-        instruction: Three bonded fluorines and two chlorine lone pairs give AX$_3$E$_2$.
+        prompt: 'Which AXE description matches $ClF_3$?'
+        choices: [{ id: a, text: 'AX$_5$', issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }, { id: b, text: 'AX$_4$E', issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }, { id: c, text: 'AX$_3$E$_2$', issueSignals: [] }]
+        answer: { choiceId: c }
+        explanation: 'Solution: $ClF_3$ is AX$_3$E$_2$. Why it works: Three atom directions and two lone-pair domains sum to five. Why the other choices fail: AX$_5$ omits lone pairs; AX$_4$E assigns the wrong atom-to-lone-pair split.'
       - id: clf3-positions
-        title: Place lone pairs where repulsion is lower
+        title: Place lone pairs
+        instruction: 'Choose sites that minimize 90-degree interactions.'
         type: multipleChoice
-        prompt: 'Where should the two lone pairs be placed in the trigonal-bipyramidal arrangement?'
-        choices:
-          - id: a
-            text: Both axial
-          - id: b
-            text: Both equatorial
-          - id: c
-            text: One axial and one equatorial
-          - id: d
-            text: 'Neither: lone pairs do not occupy VSEPR positions'
-        answer:
-          choiceId: b
-        instruction: Each equatorial site has two 90° interactions, fewer than an axial site's three, so the larger lone-pair domains occupy equatorial sites.
+        prompt: 'Where do the two lone pairs go first?'
+        choices: [{ id: a, text: Both axial, issueSignals: [{ id: chemistry-vsepr-lone-pair-position-error }] }, { id: b, text: Both equatorial, issueSignals: [] }, { id: c, text: One axial and one equatorial, issueSignals: [{ id: chemistry-vsepr-lone-pair-position-error }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: Both lone pairs occupy equatorial sites. Why it works: Each equatorial site has fewer 90-degree interactions. Why the other choices fail: Axial placement creates unnecessary close interactions.'
       - id: clf3-atom-sites
         title: Locate the fluorine atoms
+        instruction: 'Identify which sites remain after the lone pairs are placed.'
         type: multipleChoice
-        prompt: 'After two equatorial sites are occupied by lone pairs, where do the three fluorine atoms lie?'
-        choices:
-          - id: a
-            text: Two axial sites and the remaining equatorial site
-          - id: b
-            text: Three equatorial sites
-          - id: c
-            text: One axial site and two octahedral sites
-          - id: d
-            text: Four tetrahedral sites
-        answer:
-          choiceId: a
-        instruction: The two axial positions and one equatorial position remain available for fluorine.
+        prompt: 'Which three sites remain for fluorine?'
+        choices: [{ id: a, text: 'Two axial and one equatorial', issueSignals: [] }, { id: b, text: 'All three equatorial', issueSignals: [{ id: chemistry-vsepr-lone-pair-position-error }] }, { id: c, text: 'One axial and two octahedral', issueSignals: [{ id: chemistry-vsepr-geometry-name-confusion }] }]
+        answer: { choiceId: a }
+        explanation: 'Solution: Two axial and one equatorial site remain. Why it works: The lone pairs occupy two of the three equatorial sites. Why the other choices fail: b occupies the sites already favored by lone pairs; c mixes two different geometry families.'
       - id: clf3-mg
-        title: Name the visible atom arrangement
+        title: Name the atom arrangement
+        instruction: 'Name the geometry traced by the remaining fluorine positions.'
         type: multipleChoice
-        prompt: 'What molecular geometry is formed by those three fluorine positions?'
-        choices:
-          - id: a
-            text: Trigonal planar
-          - id: b
-            text: T-shaped
-          - id: c
-            text: Seesaw
-          - id: d
-            text: Linear
-        answer:
-          choiceId: b
-        instruction: Two opposite axial atoms and one equatorial atom create a T-shaped molecular geometry.
+        prompt: 'What molecular geometry do those fluorine positions form?'
+        choices: [{ id: a, text: Trigonal planar, issueSignals: [{ id: chemistry-vsepr-geometry-name-confusion }] }, { id: b, text: T-shaped, issueSignals: [] }, { id: c, text: Seesaw, issueSignals: [{ id: chemistry-vsepr-geometry-name-confusion }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: The molecular geometry is T-shaped. Why it works: Two opposite axial atoms and one equatorial atom form a T. Why the other choices fail: Trigonal planar uses three equatorial atoms; seesaw is AX$_4$E.'
       - id: clf3-angle
         title: Identify the ideal axial-equatorial angle
+        instruction: 'Use the spatial relation between an axis and the equatorial plane.'
         type: numericResponse
-        prompt: 'In the undistorted trigonal-bipyramidal arrangement, what is the ideal angle in degrees between an axial and an equatorial position?'
-        answer:
-          value: 90
-          tolerance: 0
-        instruction: The two axial directions are each perpendicular to the equatorial plane, giving a 90° axial-equatorial starting angle.
+        prompt: 'What is the ideal axial-equatorial angle in degrees?'
+        answer: { value: 90, tolerance: 0 }
+        explanation: 'Solution: The ideal angle is 90 degrees. Why it works: Axial directions are perpendicular to the equatorial plane.'
       - id: clf3-refine
         title: State the expected distortion
+        instruction: 'Explain why unequal domain types prevent exact ideal angles.'
         type: freeResponse
-        answer:
-          gradingMode: selfCheck
-        prompt: 'Why should the F–Cl–F angles near the equatorial lone pairs be treated as close to, rather than exactly, their ideal VSEPR values?'
-        instruction: Lone pairs repel more strongly than bonding domains. They push the bonded fluorine directions away, so VSEPR predicts a distortion without requiring an unsupported exact numerical angle.
+        prompt: 'Why should actual F-Cl-F angles be described as near, rather than exactly, their ideal values?'
+        answer: { gradingMode: selfCheck, keyPoints: ['Lone pairs repel more strongly than bonding domains.', 'The remaining bond directions distort from ideal positions.'] }
+        explanation: 'Solution: The equatorial lone pairs repel bond domains strongly and distort the remaining fluorine directions. Why it works: Ideal angles assume equivalent domains, whereas $ClF_3$ contains unequal bond and lone-pair domains.'
+  - id: we-xef4-six-domain
+    title: 'Separate six domains from a square plane: xenon tetrafluoride'
+    problem: 'Analyze $XeF_4$, whose xenon has four bonding domains and two lone pairs.'
+    media: [{ type: image, src: /media/chemistry/vsepr-six-domain-family.svg, alt: Octahedral family showing opposite lone pairs and a square-planar XeF4 atom arrangement., caption: Six total domains can yield a four-atom square plane. }]
+    steps:
+      - id: xef4-domains
+        title: Count the domains
+        instruction: 'Add xenon bond directions and xenon lone pairs.'
+        type: numericResponse
+        prompt: 'How many total domains surround xenon?'
+        answer: { value: 6, tolerance: 0 }
+        explanation: 'Solution: Xenon has 6 domains. Why it works: Four Xe-F bonds plus two xenon lone pairs sum to six.'
+      - id: xef4-ede
+        title: Name the domain arrangement
+        instruction: 'Map six domains to the starting electron geometry.'
+        type: multipleChoice
+        prompt: 'What electron-domain geometry follows?'
+        choices: [{ id: a, text: Trigonal bipyramidal, issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }, { id: b, text: Octahedral, issueSignals: [] }, { id: c, text: Square planar, issueSignals: [{ id: chemistry-vsepr-geometry-name-confusion }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: The electron-domain geometry is octahedral. Why it works: Six domains occupy six directions with 90- and 180-degree relations. Why the other choices fail: Trigonal bipyramidal has five domains; square planar is the final atom geometry.'
+      - id: xef4-pairs
+        title: Minimize lone-pair repulsion
+        instruction: 'Place the two lone pairs at maximum separation.'
+        type: multipleChoice
+        prompt: 'Where should the two lone pairs be placed?'
+        choices: [{ id: a, text: Adjacent at 90 degrees, issueSignals: [{ id: chemistry-vsepr-lone-pair-position-error }] }, { id: b, text: Opposite at 180 degrees, issueSignals: [] }, { id: c, text: Both in one site, issueSignals: [{ id: chemistry-vsepr-domain-count-error }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: Place the lone pairs opposite at 180 degrees. Why it works: Maximum separation minimizes their strong mutual repulsion. Why the other choices fail: Adjacent placement increases repulsion; distinct lone pairs occupy distinct domains.'
+      - id: xef4-mg
+        title: Name the remaining atoms
+        instruction: 'Omit the lone-pair positions and name the four fluorine sites.'
+        type: multipleChoice
+        prompt: 'What molecular geometry do the four fluorines form?'
+        choices: [{ id: a, text: Tetrahedral, issueSignals: [{ id: chemistry-vsepr-geometry-name-confusion }] }, { id: b, text: Square planar, issueSignals: [] }, { id: c, text: Square pyramidal, issueSignals: [{ id: chemistry-vsepr-geometry-name-confusion }] }]
+        answer: { choiceId: b }
+        explanation: 'Solution: $XeF_4$ is square planar. Why it works: Removing two opposite octahedral positions leaves four coplanar sites at square corners. Why the other choices fail: Tetrahedral starts from four domains; square pyramidal is AX$_5$E.'
+      - id: xef4-check
+        title: Communicate both names
+        instruction: 'State the all-domain name and the atoms-only name explicitly.'
+        type: freeResponse
+        prompt: 'State both geometry names and explain why they differ.'
+        answer: { gradingMode: selfCheck, keyPoints: ['Octahedral electron-domain geometry.', 'Square-planar molecular geometry.', 'Molecular geometry omits the two opposite lone-pair positions.'] }
+        explanation: 'Solution: The electron-domain geometry is octahedral and the molecular geometry is square planar. Why it works: All six domains define the first name, while only the four fluorine positions define the second.'

@@ -4,10 +4,21 @@ public sealed record CodeRunnerStatus(
     string State,
     IReadOnlyList<string> Languages,
     string? Message,
-    DateTimeOffset UpdatedAt)
+    DateTimeOffset UpdatedAt,
+    CodeRunnerDiagnostics? Diagnostics = null)
 {
     public bool IsReady => string.Equals(State, "ready", StringComparison.OrdinalIgnoreCase);
 }
+
+public sealed record CodeRunnerDiagnostics(
+    string? ContainerState,
+    int? ContainerExitCode,
+    DateTimeOffset? ContainerStartedAt,
+    DateTimeOffset? ContainerFinishedAt,
+    string? ContainerImage,
+    string? PortBinding,
+    string? LastProbeError,
+    string? RecentContainerLogs);
 
 public interface IManagedCodeRunnerService
 {

@@ -514,13 +514,7 @@ const isDev = import.meta.env.DEV;
     )}
 
     <script>
-      import { unified } from "unified";
-      import remarkParse from "remark-parse";
-      import remarkMath from "remark-math";
-      import remarkRehype from "remark-rehype";
-      import rehypeKatex from "rehype-katex";
-      import "katex/dist/contrib/mhchem.mjs";
-      import rehypeStringify from "rehype-stringify";
+      import { renderMarkdown } from "../scripts/markdownRenderer";
       import { EditorView, basicSetup } from "codemirror";
       import { createCodeEditor } from "../scripts/codeEditor";
       import { keymap } from "@codemirror/view";
@@ -745,6 +739,7 @@ const isDev = import.meta.env.DEV;
           sqlitePath?: string;
           available?: boolean;
         };
+        codeRunner?: CodeRunnerStatus;
       }
 
       interface MediaAsset {
@@ -810,6 +805,16 @@ const isDev = import.meta.env.DEV;
         languages: string[];
         message: string | null;
         updatedAt: string;
+        diagnostics?: {
+          containerState?: string | null;
+          containerExitCode?: number | null;
+          containerStartedAt?: string | null;
+          containerFinishedAt?: string | null;
+          containerImage?: string | null;
+          portBinding?: string | null;
+          lastProbeError?: string | null;
+          recentContainerLogs?: string | null;
+        } | null;
       }
 
       interface GraphingQuestionDefinition {
@@ -1481,13 +1486,6 @@ const isDev = import.meta.env.DEV;
         controlValues: Record<string, unknown>;
       } | null = null;
       const explorationComputeEngine = new ComputeEngine();
-      const markdownProcessor = unified()
-        .use(remarkParse)
-        .use(remarkMath)
-        .use(remarkRehype)
-        .use(rehypeKatex, { strict: false })
-        .use(rehypeStringify);
-
       const state: {
         settings: AppSettings | null;
         categories: Category[];
@@ -2473,7 +2471,22 @@ const isDev = import.meta.env.DEV;
         if (question.type !== "code" || !codeRunnerStatus) return "";
         const ready = codeRunnerStatus.state === "ready";
         const message = escapeHtml(codeRunnerStatus.message ?? (ready ? "Code runner ready." : "Preparing code runner."));
-        return `<div class="feedback ${ready ? "correct" : "incorrect"} code-runner-status"><strong>${ready ? "Coding environment ready" : "Coding environment preparing"}</strong><br/>${message}${ready ? "" : ' <button type="button" id="refresh-code-runner">Retry</button>'}</div>`;
+        const diagnostics = renderCodeRunnerDiagnostics(codeRunnerStatus);
+        return `<div class="feedback ${ready ? "correct" : "incorrect"} code-runner-status"><strong>${ready ? "Coding environment ready" : "Coding environment preparing"}</strong><br/>${message}${ready ? "" : ' <button type="button" id="refresh-code-runner">Retry</button>'}${diagnostics}</div>`;
+      }
+
+      function renderCodeRunnerDiagnostics(runner: CodeRunnerStatus): string {
+        if (!IS_DEV || !runner.diagnostics) return "";
+        const details = runner.diagnostics;
+        const lines = [
+          details.containerState ? `Container state: ${details.containerState}${details.containerExitCode !== null && details.containerExitCode !== undefined ? ` (exit ${details.containerExitCode})` : ""}` : "",
+          details.containerImage ? `Image: ${details.containerImage}` : "",
+          details.portBinding ? `Port: 127.0.0.1:${details.portBinding}` : "",
+          details.lastProbeError ? `Readiness probe: ${details.lastProbeError}` : "",
+          details.recentContainerLogs ? `Container logs:\n${details.recentContainerLogs}` : ""
+        ].filter(Boolean);
+        if (lines.length === 0) return "";
+        return `<details class="code-runner-diagnostics"><summary>Developer diagnostics</summary><pre>${escapeHtml(lines.join("\n"))}</pre></details>`;
       }
 
       async function submitCurrentAnswer() {
@@ -2481,6 +2494,14 @@ const isDev = import.meta.env.DEV;
         const question = getCurrentQuestion();
         const payload = readAnswer(question);
         const submitButton = document.querySelector<HTMLButtonElement>("#submit-answer");
+
+        if (state.assessment.assessmentType === "workedExample"
+          && question.type === "freeResponse"
+          && !payload.freeResponseText?.trim()) {
+          codeSubmitError = "Enter your setup and answer before continuing to the next step.";
+          await renderCurrentQuestion();
+          return;
+        }
 
         if (submitButton) setBusy(submitButton, "Saving");
 
@@ -5298,7 +5319,7 @@ const isDev = import.meta.env.DEV;
               ${renderCodeFeedback(result.codeFeedback)}
               ${symbolicFeedbackHtml}
               ${renderCircuitFeedback(result.circuitFeedback)}
-              ${feedbackExplanation ? `<details open><summary>Feedback</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
+              ${result.isCorrect && feedbackExplanation ? `<details open><summary>Solution</summary><div class="markdown">${feedbackExplanation}</div></details>` : ""}
             </div>`;
 
         attemptContent.innerHTML = `
@@ -5329,7 +5350,7 @@ const isDev = import.meta.env.DEV;
               <article class="worked-card">
                 <h3>${escapeHtml(step.title)}</h3>
                 <div class="worked-instruction markdown">${instructionHtml}</div>
-                ${step.hint ? `<details class="hint-box"><summary>Hint</summary><div class="markdown">${await renderMarkdown(step.hint)}</div></details>` : ""}
+                ${result?.isCorrect === false && step.hint ? `<details class="hint-box" open><summary>Hint</summary><div class="markdown">${await renderMarkdown(step.hint)}</div></details>` : ""}
                 <div class="question-prompt markdown">${promptHtml}</div>
                 ${renderMedia(question.media ?? [])}
                 <form id="answer-form" class="answer-form">
@@ -7716,15 +7737,6 @@ const isDev = import.meta.env.DEV;
         button.classList.remove("is-busy");
       }
 
-      async function renderMarkdown(value: string | null | undefined) {
-        const normalized = (value ?? "").replace(
-          /^((?:Solution|Why it works|Why the other choices fail):[^\r\n]*?)\s*\$\$([^\r\n]*?)\$\$\s*$/gm,
-          (_match, lead, math) => `${lead}\n\n$$${math}$$`
-        );
-        const processed = await markdownProcessor.process(normalized);
-        return String(processed);
-      }
-
       function renderMedia(media: MediaAsset[]) {
         return media
           .filter((item) => item.type === "image" && item.src)
@@ -7821,11 +7833,17 @@ const isDev = import.meta.env.DEV;
         const catalog = backendStatus?.catalog;
         const summary = catalog?.lastSummary;
         const diagnostics = catalog?.diagnostics;
+        const codeRunner = backendStatus?.codeRunner;
+        const runnerDiagnostics = codeRunner?.diagnostics;
         const detailLines = [
           `Process: ${processState}${processBackend?.pid ? `, PID ${processBackend.pid}` : ""}${processBackend?.alive === false ? ", not alive" : ""}`,
           backendStatus?.backend?.processId ? `Backend: online, PID ${backendStatus.backend.processId}, uptime ${formatDuration(backendStatus.backend.uptimeSeconds ?? 0)}` : "Backend: unreachable",
           catalog ? `Catalog: ${catalog.state ?? "unknown"}${summary ? `, ${summary.totalFiles} scanned, ${summary.skippedUnchanged} skipped, ${summary.imported} imported, ${summary.reindexed} reindexed, ${summary.elapsedMilliseconds} ms` : ""}` : "Catalog: unavailable",
           diagnostics ? `Diagnostics: ${diagnostics.errors ?? 0} errors, ${diagnostics.warnings ?? 0} warnings` : "",
+          codeRunner ? `Code runner: ${codeRunner.state}${codeRunner.message ? `, ${codeRunner.message}` : ""}` : "",
+          runnerDiagnostics?.containerState ? `Runner container: ${runnerDiagnostics.containerState}${runnerDiagnostics.containerExitCode !== null && runnerDiagnostics.containerExitCode !== undefined ? `, exit ${runnerDiagnostics.containerExitCode}` : ""}` : "",
+          runnerDiagnostics?.lastProbeError ? `Runner probe: ${runnerDiagnostics.lastProbeError}` : "",
+          runnerDiagnostics?.recentContainerLogs ? `Runner logs: ${runnerDiagnostics.recentContainerLogs.slice(-600)}` : "",
           processBackend?.lastMessage ? `Message: ${processBackend.lastMessage}` : ""
         ].filter(Boolean);
 

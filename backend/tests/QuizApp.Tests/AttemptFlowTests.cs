@@ -439,6 +439,55 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
+    public async Task Worked_example_auto_graded_steps_retry_with_hint_until_correct()
+    {
+        var assessment = TestData.WorkedExampleAssessment() with
+        {
+            WorkedExamples = new[]
+            {
+                new WorkedExampleDefinition(
+                    "we001", "Auto-graded chemistry flow", "Solve each conversion.", new[]
+                    {
+                        new WorkedExampleStepDefinition("numeric", "Numeric conversion", "Convert the quantity.", "Use the stated conversion factor.", TestData.NumericResponseQuestion("numeric")),
+                        new WorkedExampleStepDefinition("symbolic", "Symbolic relationship", "Enter the relationship.", "Use equivalent algebraic notation.", TestData.SymbolicResponseQuestion("symbolic")),
+                        new WorkedExampleStepDefinition("choice", "Chemical decision", "Choose the limiting reactant.", "Compare product amounts.", TestData.MultipleChoiceQuestion("choice"))
+                    })
+            }
+        };
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("numeric", null, Array.Empty<string>(), null, null, 4m));
+        var afterWrong = await service.GetResultsAsync(attempt.Id);
+
+        Assert.False(afterWrong.Questions[0].IsCorrect);
+        Assert.Equal("Use the stated conversion factor.", afterWrong.Questions[0].Hint);
+        Assert.False(afterWrong.IsComplete);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("symbolic", null, Array.Empty<string>(), null, null, null)));
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("numeric", null, Array.Empty<string>(), null, null, 8.38m));
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("symbolic", null, Array.Empty<string>(), null, null, null) { SymbolicLatex = "(x+1)^2" });
+        var completed = await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("choice", "a", Array.Empty<string>(), null, null, null));
+
+        Assert.Equal(AttemptStatus.Completed, completed.Status);
+    }
+
+    [Fact]
+    public async Task Worked_example_free_response_rejects_blank_submission()
+    {
+        var assessment = TestData.WorkedExampleAssessment();
+        var service = CreateAttemptService(assessment);
+        var attempt = await service.StartAsync(assessment.Id, AssessmentMode.Practice);
+
+        await service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s001", "no", Array.Empty<string>(), null, null, null));
+
+        var exception = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            service.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("s002", null, Array.Empty<string>(), "   ", null, null)));
+
+        Assert.Equal("Worked example free-response steps require a response before continuing.", exception.Message);
+    }
+
+    [Fact]
     public async Task Worked_example_correct_answers_unlock_and_complete()
     {
         var assessment = TestData.WorkedExampleAssessment();

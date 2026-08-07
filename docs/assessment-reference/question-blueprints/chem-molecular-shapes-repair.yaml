@@ -1,161 +1,153 @@
 schemaVersion: 1
 id: chem-molecular-shapes-repair
 sourceId: src-20260720035703-91ea51b0d8
+packetId: packet-chem-molecular-shapes-v1
 reviewState: approved
+templates:
+  count: &count
+    objectiveId: chem-vsepr-count-domains
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-0995, src-20260720035703-91ea51b0d8:chunk-0997]
+    reviewState: approved
+    givens: 'A Lewis environment, formula, or explicit bond/lone-pair inventory.'
+    unknown: 'The local electron-domain count or corresponding starting arrangement.'
+    representationRequirement: required
+    governingPrinciple: 'Each bond direction and each central lone pair counts as one electron domain.'
+    methodSteps: [select center, count bond directions, count central lone pairs, total domains, verify local inventory]
+    likelyMisconception: 'Counting bond order or terminal lone pairs as additional central domains.'
+    difficultyEvidence: 'Requires local structural parsing rather than formula-name recall.'
+    answerVerificationMethod: 'independent Lewis-environment and domain-count audit'
+    variationAxes: [molecule, representation, unknown, bond-order pattern, lone-pair count]
+  names: &names
+    objectiveId: chem-vsepr-distinguish-geometries
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-0996, src-20260720035703-91ea51b0d8:chunk-0998, src-20260720035703-91ea51b0d8:chunk-0999]
+    reviewState: approved
+    givens: 'A domain count or AXE environment.'
+    unknown: 'Electron-domain geometry, molecular geometry, or both.'
+    representationRequirement: required
+    governingPrinciple: 'Electron geometry includes every domain; molecular geometry names bonded-atom positions only.'
+    methodSteps: [count domains, name electron geometry, omit lone-pair positions, name molecular geometry, cross-check AXE]
+    likelyMisconception: 'Using the electron-domain name as the molecular-geometry answer.'
+    difficultyEvidence: 'Coordinates two related but nonidentical geometry labels.'
+    answerVerificationMethod: 'AXE-to-geometry table and atom-position check'
+    variationAxes: [AXE family, requested label, representation, lone-pair count]
+  angles: &angles
+    objectiveId: chem-vsepr-refine-angles
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1002, src-20260720035703-91ea51b0d8:chunk-1011]
+    reviewState: approved
+    givens: 'A local geometry and any lone-pair or multiple-bond asymmetry.'
+    unknown: 'Ideal angle, distortion direction, or defensible precision.'
+    representationRequirement: required
+    governingPrinciple: 'Ideal angles follow the domain family; unequal domain repulsions produce qualitative distortions.'
+    methodSteps: [select angle vertex, determine domain family, state ideal, compare repulsions, qualify prediction]
+    likelyMisconception: 'Assigning an unsupported exact angle or reversing compression and expansion.'
+    difficultyEvidence: 'Separates ideal geometry from molecule-specific refinement.'
+    answerVerificationMethod: 'ideal-angle table and qualitative repulsion audit'
+    variationAxes: [domain family, angle requested, repulsion source, precision]
+  positions: &positions
+    objectiveId: chem-vsepr-position-five-six
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1004, src-20260720035703-91ea51b0d8:chunk-1005, src-20260720035703-91ea51b0d8:chunk-1006]
+    reviewState: approved
+    givens: 'A five- or six-domain AXE inventory.'
+    unknown: 'Preferred lone-pair positions and resulting molecular geometry.'
+    representationRequirement: required
+    governingPrinciple: 'Lone pairs minimize close interactions; equatorial sites are favored in five domains and opposite sites in AX4E2.'
+    methodSteps: [identify family, compare positions, place lone pairs, identify remaining atom sites, name geometry]
+    likelyMisconception: 'Treating axial/equatorial positions as equivalent or failing to separate domain and molecular names.'
+    difficultyEvidence: 'Requires spatial optimization before naming the atoms.'
+    answerVerificationMethod: '90-degree interaction count and spatial site audit'
+    variationAxes: [domain family, X/E split, position unknown, requested shape]
+  local: &local
+    objectiveId: chem-vsepr-local-centers
+    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1008, src-20260720035703-91ea51b0d8:chunk-1010]
+    reviewState: approved
+    givens: 'A molecule with multiple potential local centers.'
+    unknown: 'The geometry at one or more selected centers.'
+    representationRequirement: required
+    governingPrinciple: 'VSEPR geometry is defined locally around one selected atom at a time.'
+    methodSteps: [select center, inventory local domains, name local geometries, repeat, communicate sequence]
+    likelyMisconception: 'Assigning one global VSEPR geometry to a multicenter molecule.'
+    difficultyEvidence: 'Decomposes one structure into several independent local analyses.'
+    answerVerificationMethod: 'center-by-center domain audit'
+    variationAxes: [molecule, centers, bond-order pattern, output sequence]
 blueprints:
-  - id: vsepr-co2-two-domains
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q001
-    objectiveId: chem-vsepr-count-domains
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-995, src-20260720035703-91ea51b0d8:chunk-996]
-    questionType: multipleChoice
-    governingPrinciple: A multiple bond counts as one electron domain.
-    methodSteps: [Select carbon, Count two bond directions, Name both geometries]
-    likelyMisconception: Counting a double bond as two domains.
-    difficultyEvidence: Direct application from a displayed Lewis structure.
-    answerVerificationMethod: independent VSEPR domain count
-    variationAxes: [central element, bond order pattern, requested geometry]
-    reasoningSignature: two-domains-linear
-  - id: vsepr-nh3-two-names
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q002
-    objectiveId: chem-vsepr-distinguish-geometries
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-996, src-20260720035703-91ea51b0d8:chunk-999]
-    questionType: multipleChoice
-    governingPrinciple: Electron-domain geometry includes lone pairs; molecular geometry does not.
-    methodSteps: [Count four domains, Remove lone-pair position, Name atoms-only shape]
-    likelyMisconception: Calling ammonia tetrahedral molecular geometry.
-    difficultyEvidence: Requires two separate labels.
-    answerVerificationMethod: AXE mapping check
-    variationAxes: [AXE family, molecule, requested label pair]
-    reasoningSignature: four-domain-one-lone-pair-two-names
-  - id: vsepr-ozone-bent
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q003
-    objectiveId: chem-vsepr-distinguish-geometries
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-995, src-20260720035703-91ea51b0d8:chunk-1000]
-    questionType: multipleChoice
-    governingPrinciple: AX2E has bent molecular geometry.
-    methodSteps: [Count two bonds and one lone pair, Identify trigonal-planar domains, Name two atom positions]
-    likelyMisconception: Calling a three-domain case trigonal planar molecular geometry.
-    difficultyEvidence: Resonance context plus geometry distinction.
-    answerVerificationMethod: domain-count and AXE check
-    variationAxes: [resonance context, central atom, requested geometry]
-    reasoningSignature: three-domain-one-lone-pair-bent
-  - id: vsepr-clf3-geometry-start
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q004
-    objectiveId: chem-vsepr-position-five-six
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1004, src-20260720035703-91ea51b0d8:chunk-1005]
-    questionType: multipleChoice
-    governingPrinciple: Five domains are trigonal bipyramidal.
-    methodSteps: [Count bonds and lone pairs, Name electron-domain geometry]
-    likelyMisconception: Naming the T-shaped molecular geometry before the starting arrangement.
-    difficultyEvidence: Separates a total-domain label from the atoms-only label.
-    answerVerificationMethod: five-domain lookup
-    variationAxes: [AXE pattern, requested label, molecular example]
-    reasoningSignature: five-domains-tbp
-  - id: vsepr-clf3-position
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q005
-    objectiveId: chem-vsepr-position-five-six
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1005]
-    questionType: multipleChoice
-    governingPrinciple: Lone pairs favor equatorial sites in a trigonal bipyramid.
-    methodSteps: [Compare 90-degree interactions, Place lone pairs, Name remaining atoms]
-    likelyMisconception: Treating axial and equatorial positions as equivalent.
-    difficultyEvidence: Requires positional reasoning and molecular-geometry conversion.
-    answerVerificationMethod: interaction count and AXE check
-    variationAxes: [lone-pair count, position type, output geometry]
-    reasoningSignature: tbp-equatorial-lone-pairs-t-shape
-  - id: vsepr-xef4-square-planar
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q006
-    objectiveId: chem-vsepr-position-five-six
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1006]
-    questionType: multipleChoice
-    governingPrinciple: Opposite lone pairs in an octahedral arrangement leave a square plane.
-    methodSteps: [Count six domains, Place opposite lone pairs, Name four atom positions]
-    likelyMisconception: Calling an AX4E2 molecule octahedral molecular geometry.
-    difficultyEvidence: Requires distinction between equivalent octahedral sites and final shape.
-    answerVerificationMethod: AXE mapping check
-    variationAxes: [central atom, lone-pair count, output geometry]
-    reasoningSignature: octahedral-two-opposite-lone-pairs-square-planar
-  - id: vsepr-four-domain-angle-order
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q007
-    objectiveId: chem-vsepr-refine-angles
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1002]
-    questionType: multipleChoice
-    governingPrinciple: Lone pairs compress tetrahedral bond angles more strongly than bonds.
-    methodSteps: [Count lone pairs in each molecule, Compare repulsion, Order angles]
-    likelyMisconception: Assuming every four-domain center has 109.5 degrees.
-    difficultyEvidence: Comparative inference across three molecules.
-    answerVerificationMethod: known VSEPR trend check
-    variationAxes: [molecule set, lone-pair sequence, requested comparison]
-    reasoningSignature: more-lone-pairs-smaller-tetrahedral-angle
-  - id: vsepr-multiple-bond-distortion
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q008
-    objectiveId: chem-vsepr-refine-angles
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1002]
-    questionType: multipleChoice
-    governingPrinciple: A multiple-bond domain has greater electron density and changes neighboring angles.
-    methodSteps: [Count three domains, Set 120-degree ideal, Identify double-bond repulsion, Infer compressed angle]
-    likelyMisconception: Counting a double bond as two domains or claiming an exact ideal angle.
-    difficultyEvidence: Combines domain count and qualitative angle refinement.
-    answerVerificationMethod: VSEPR distortion check
-    variationAxes: [double-bond placement, requested angle, terminal groups]
-    reasoningSignature: trigonal-planar-double-bond-compresses-opposite-single-angle
-  - id: vsepr-error-correction
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q009
-    objectiveId: chem-vsepr-distinguish-geometries
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-996, src-20260720035703-91ea51b0d8:chunk-1000]
-    questionType: multipleChoice
-    governingPrinciple: Electron-domain and molecular geometry must be reported separately when lone pairs exist.
-    methodSteps: [Inspect claim, Identify correct electron-domain label, Correct molecular label]
-    likelyMisconception: Treating an electron-domain name as the molecular-geometry answer.
-    difficultyEvidence: Diagnoses a realistic incorrect solution.
-    answerVerificationMethod: AXE mapping check
-    variationAxes: [incorrect claim, molecule, lone-pair count]
-    reasoningSignature: correct-electron-domain-wrong-molecular-name
-  - id: vsepr-xef2-domain-total
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q010
-    objectiveId: chem-vsepr-count-domains
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1004, src-20260720035703-91ea51b0d8:chunk-1005]
-    questionType: numericResponse
-    governingPrinciple: Total domains equal bonding directions plus central lone pairs.
-    methodSteps: [Add two bond domains and three lone pairs]
-    likelyMisconception: Ignoring lone pairs or counting terminal fluorine lone pairs.
-    difficultyEvidence: Exact numerical domain count.
-    answerVerificationMethod: arithmetic and Lewis-structure check
-    variationAxes: [bond count, lone-pair count, central element]
-    reasoningSignature: total-domains-bonds-plus-central-lone-pairs
-  - id: vsepr-workflow-rules
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q011
-    objectiveId: chem-vsepr-count-domains
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-995, src-20260720035703-91ea51b0d8:chunk-996, src-20260720035703-91ea51b0d8:chunk-1005]
-    questionType: selectAll
-    governingPrinciple: VSEPR uses center-local domains, atoms-only molecular naming, and positional minimization.
-    methodSteps: [Evaluate each workflow claim, Retain correct rules]
-    likelyMisconception: Including terminal lone pairs or calling lone pairs part of molecular geometry.
-    difficultyEvidence: Multiple independent checks must be evaluated.
-    answerVerificationMethod: rule-by-rule source-grounded check
-    variationAxes: [rule set, distractor type, selected principle]
-    reasoningSignature: multi-rule-vsepr-validation
-  - id: vsepr-multicenter-acetic-acid
-    assessmentId: chem-molecular-shapes-quiz
-    questionId: q012
-    objectiveId: chem-vsepr-distinguish-geometries
-    sourceChunkIds: [src-20260720035703-91ea51b0d8:chunk-1010]
-    questionType: multipleChoice
-    governingPrinciple: Each local center in a larger molecule has its own VSEPR geometry.
-    methodSteps: [Select each local center, Count domains, Name each molecular geometry]
-    likelyMisconception: Assigning one geometry to the whole molecule.
-    difficultyEvidence: Requires three separate local analyses.
-    answerVerificationMethod: independent domain count per center
-    variationAxes: [multi-center molecule, centers requested, bond-order pattern]
-    reasoningSignature: multicenter-local-geometry-sequence
+  - { <<: *count, id: vsepr-concept-domain, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-domain-count, questionType: numericResponse, reasoningSignature: lesson-co2-domain-direction }
+  - { <<: *names, id: vsepr-concept-electron, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-electron-domain, questionType: multipleChoice, reasoningSignature: lesson-five-domain-start }
+  - { <<: *names, id: vsepr-concept-name, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-geometry-name, questionType: multipleChoice, reasoningSignature: lesson-nh3-two-names }
+  - { <<: *names, id: vsepr-concept-three, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-three-domain, questionType: multipleChoice, reasoningSignature: lesson-ozone-bent }
+  - { <<: *names, id: vsepr-concept-four, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-four-domain, questionType: multipleChoice, reasoningSignature: lesson-axe2e2-bent }
+  - { <<: *positions, id: vsepr-concept-five, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-five-domain, questionType: multipleChoice, reasoningSignature: lesson-equatorial-interactions }
+  - { <<: *angles, id: vsepr-concept-angle, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-angle-reasoning, questionType: multipleChoice, reasoningSignature: lesson-middle-atom-angle }
+  - { <<: *local, id: vsepr-concept-local, assessmentId: chem-molecular-shapes-concept-lesson, questionId: chk-multicenter, questionType: selectAll, reasoningSignature: lesson-acetic-local-centers }
+  - { <<: *count, id: vsepr-glossary-d1, assessmentId: chem-molecular-shapes-glossary, questionId: d1, questionType: flashcard, reasoningSignature: define-electron-domain }
+  - { <<: *count, id: vsepr-glossary-d2, assessmentId: chem-molecular-shapes-glossary, questionId: d2, questionType: flashcard, reasoningSignature: define-bond-domain }
+  - { <<: *count, id: vsepr-glossary-d3, assessmentId: chem-molecular-shapes-glossary, questionId: d3, questionType: flashcard, reasoningSignature: define-lone-pair-domain }
+  - { <<: *names, id: vsepr-glossary-d4, assessmentId: chem-molecular-shapes-glossary, questionId: d4, questionType: flashcard, reasoningSignature: define-electron-geometry }
+  - { <<: *names, id: vsepr-glossary-d5, assessmentId: chem-molecular-shapes-glossary, questionId: d5, questionType: flashcard, reasoningSignature: define-molecular-geometry }
+  - { <<: *names, id: vsepr-glossary-d6, assessmentId: chem-molecular-shapes-glossary, questionId: d6, questionType: flashcard, reasoningSignature: define-axe }
+  - { <<: *names, id: vsepr-glossary-d7, assessmentId: chem-molecular-shapes-glossary, questionId: d7, questionType: flashcard, reasoningSignature: define-linear }
+  - { <<: *names, id: vsepr-glossary-d8, assessmentId: chem-molecular-shapes-glossary, questionId: d8, questionType: flashcard, reasoningSignature: define-trigonal-planar }
+  - { <<: *names, id: vsepr-glossary-d9, assessmentId: chem-molecular-shapes-glossary, questionId: d9, questionType: flashcard, reasoningSignature: define-tetrahedral }
+  - { <<: *positions, id: vsepr-glossary-d10, assessmentId: chem-molecular-shapes-glossary, questionId: d10, questionType: flashcard, reasoningSignature: define-tbp }
+  - { <<: *positions, id: vsepr-glossary-d11, assessmentId: chem-molecular-shapes-glossary, questionId: d11, questionType: flashcard, reasoningSignature: define-axial }
+  - { <<: *positions, id: vsepr-glossary-d12, assessmentId: chem-molecular-shapes-glossary, questionId: d12, questionType: flashcard, reasoningSignature: define-equatorial }
+  - { <<: *positions, id: vsepr-glossary-d13, assessmentId: chem-molecular-shapes-glossary, questionId: d13, questionType: flashcard, reasoningSignature: define-octahedral }
+  - { <<: *positions, id: vsepr-glossary-d14, assessmentId: chem-molecular-shapes-glossary, questionId: d14, questionType: flashcard, reasoningSignature: define-square-planar }
+  - { <<: *angles, id: vsepr-glossary-d15, assessmentId: chem-molecular-shapes-glossary, questionId: d15, questionType: flashcard, reasoningSignature: define-angle-distortion }
+  - { <<: *local, id: vsepr-glossary-d16, assessmentId: chem-molecular-shapes-glossary, questionId: d16, questionType: flashcard, reasoningSignature: define-local-geometry }
+  - { <<: *local, id: vsepr-worked-so2-center, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-center, questionType: multipleChoice, reasoningSignature: worked-so2-select-center }
+  - { <<: *count, id: vsepr-worked-so2-domains, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-domains, questionType: numericResponse, reasoningSignature: worked-so2-count-three }
+  - { <<: *names, id: vsepr-worked-so2-ede, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-ede, questionType: multipleChoice, reasoningSignature: worked-so2-domain-name }
+  - { <<: *names, id: vsepr-worked-so2-axe, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-axe, questionType: multipleChoice, reasoningSignature: worked-so2-axe }
+  - { <<: *names, id: vsepr-worked-so2-mg, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-mg, questionType: multipleChoice, reasoningSignature: worked-so2-bent }
+  - { <<: *angles, id: vsepr-worked-so2-start, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-angle-start, questionType: numericResponse, reasoningSignature: worked-so2-ideal-angle }
+  - { <<: *angles, id: vsepr-worked-so2-refine, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-angle-refine, questionType: multipleChoice, reasoningSignature: worked-so2-compress-angle }
+  - { <<: *count, id: vsepr-worked-so2-check, assessmentId: chem-molecular-shapes-worked-example, questionId: so2-check, questionType: freeResponse, reasoningSignature: worked-so2-resonance-invariance }
+  - { <<: *count, id: vsepr-worked-clf3-domains, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-domains, questionType: numericResponse, reasoningSignature: worked-clf3-five-domains }
+  - { <<: *positions, id: vsepr-worked-clf3-ede, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-ede, questionType: multipleChoice, reasoningSignature: worked-clf3-tbp }
+  - { <<: *positions, id: vsepr-worked-clf3-axe, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-axe, questionType: multipleChoice, reasoningSignature: worked-clf3-axe3e2 }
+  - { <<: *positions, id: vsepr-worked-clf3-positions, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-positions, questionType: multipleChoice, reasoningSignature: worked-clf3-equatorial-pairs }
+  - { <<: *positions, id: vsepr-worked-clf3-atoms, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-atom-sites, questionType: multipleChoice, reasoningSignature: worked-clf3-remaining-sites }
+  - { <<: *positions, id: vsepr-worked-clf3-mg, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-mg, questionType: multipleChoice, reasoningSignature: worked-clf3-t-shape }
+  - { <<: *angles, id: vsepr-worked-clf3-angle, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-angle, questionType: numericResponse, reasoningSignature: worked-clf3-axial-equatorial-angle }
+  - { <<: *angles, id: vsepr-worked-clf3-refine, assessmentId: chem-molecular-shapes-worked-example, questionId: clf3-refine, questionType: freeResponse, reasoningSignature: worked-clf3-distortion }
+  - { <<: *count, id: vsepr-worked-xef4-domains, assessmentId: chem-molecular-shapes-worked-example, questionId: xef4-domains, questionType: numericResponse, reasoningSignature: worked-xef4-six-domains }
+  - { <<: *positions, id: vsepr-worked-xef4-ede, assessmentId: chem-molecular-shapes-worked-example, questionId: xef4-ede, questionType: multipleChoice, reasoningSignature: worked-xef4-octahedral }
+  - { <<: *positions, id: vsepr-worked-xef4-pairs, assessmentId: chem-molecular-shapes-worked-example, questionId: xef4-pairs, questionType: multipleChoice, reasoningSignature: worked-xef4-opposite-pairs }
+  - { <<: *positions, id: vsepr-worked-xef4-mg, assessmentId: chem-molecular-shapes-worked-example, questionId: xef4-mg, questionType: multipleChoice, reasoningSignature: worked-xef4-square-planar }
+  - { <<: *names, id: vsepr-worked-xef4-check, assessmentId: chem-molecular-shapes-worked-example, questionId: xef4-check, questionType: freeResponse, reasoningSignature: worked-xef4-two-names }
+  - { <<: *count, id: vsepr-recall-r1, assessmentId: chem-molecular-shapes-recall-drill, questionId: r1, questionType: typedRecall, reasoningSignature: recall-multiple-bond-domain }
+  - { <<: *names, id: vsepr-recall-r2, assessmentId: chem-molecular-shapes-recall-drill, questionId: r2, questionType: typedRecall, reasoningSignature: recall-three-domain-name }
+  - { <<: *names, id: vsepr-recall-r3, assessmentId: chem-molecular-shapes-recall-drill, questionId: r3, questionType: typedRecall, reasoningSignature: recall-ax2e-shape }
+  - { <<: *names, id: vsepr-recall-r4, assessmentId: chem-molecular-shapes-recall-drill, questionId: r4, questionType: typedRecall, reasoningSignature: recall-ax3e-two-names }
+  - { <<: *angles, id: vsepr-recall-r5, assessmentId: chem-molecular-shapes-recall-drill, questionId: r5, questionType: typedRecall, reasoningSignature: recall-tetrahedral-angle }
+  - { <<: *angles, id: vsepr-recall-r6, assessmentId: chem-molecular-shapes-recall-drill, questionId: r6, questionType: typedRecall, reasoningSignature: recall-lone-pair-compression }
+  - { <<: *positions, id: vsepr-recall-r7, assessmentId: chem-molecular-shapes-recall-drill, questionId: r7, questionType: typedRecall, reasoningSignature: recall-five-domain-name }
+  - { <<: *positions, id: vsepr-recall-r8, assessmentId: chem-molecular-shapes-recall-drill, questionId: r8, questionType: typedRecall, reasoningSignature: recall-tbp-pair-site }
+  - { <<: *positions, id: vsepr-recall-r9, assessmentId: chem-molecular-shapes-recall-drill, questionId: r9, questionType: typedRecall, reasoningSignature: recall-ax3e2-shape }
+  - { <<: *positions, id: vsepr-recall-r10, assessmentId: chem-molecular-shapes-recall-drill, questionId: r10, questionType: typedRecall, reasoningSignature: recall-ax4e2-two-names }
+  - { <<: *angles, id: vsepr-recall-r11, assessmentId: chem-molecular-shapes-recall-drill, questionId: r11, questionType: typedRecall, reasoningSignature: recall-angle-vertex }
+  - { <<: *local, id: vsepr-recall-r12, assessmentId: chem-molecular-shapes-recall-drill, questionId: r12, questionType: typedRecall, reasoningSignature: recall-multicenter-rule }
+  - { <<: *count, id: vsepr-quiz-q001, assessmentId: chem-molecular-shapes-quiz, questionId: q001, questionType: multipleChoice, reasoningSignature: quiz-co2-two-names, difficultyDimensions: [domainCounting, dualGeometryNaming], subjectDifficultyTags: [multiple-bond, linear] }
+  - { <<: *names, id: vsepr-quiz-q002, assessmentId: chem-molecular-shapes-quiz, questionId: q002, questionType: multipleChoice, reasoningSignature: quiz-nh3-name-separation, difficultyDimensions: [lonePairAccounting, geometryDistinction], subjectDifficultyTags: [four-domain, ammonia] }
+  - { <<: *names, id: vsepr-quiz-q003, assessmentId: chem-molecular-shapes-quiz, questionId: q003, questionType: multipleChoice, reasoningSignature: quiz-ozone-resonance-shape, difficultyDimensions: [resonanceContext, atomsOnlyNaming], subjectDifficultyTags: [three-domain, bent] }
+  - { <<: *positions, id: vsepr-quiz-q004, assessmentId: chem-molecular-shapes-quiz, questionId: q004, questionType: multipleChoice, reasoningSignature: quiz-clf3-electron-family, difficultyDimensions: [domainArithmetic, fiveDomainRecognition], subjectDifficultyTags: [AX3E2, trigonal-bipyramidal] }
+  - { <<: *positions, id: vsepr-quiz-q005, assessmentId: chem-molecular-shapes-quiz, questionId: q005, questionType: multipleChoice, reasoningSignature: quiz-clf3-position-to-shape, difficultyDimensions: [positionSelection, derivedShape], subjectDifficultyTags: [equatorial, T-shaped] }
+  - { <<: *positions, id: vsepr-quiz-q006, assessmentId: chem-molecular-shapes-quiz, questionId: q006, questionType: multipleChoice, reasoningSignature: quiz-xef4-square-plane, difficultyDimensions: [oppositePairPlacement, molecularNaming], subjectDifficultyTags: [octahedral, square-planar] }
+  - { <<: *angles, id: vsepr-quiz-q007, assessmentId: chem-molecular-shapes-quiz, questionId: q007, questionType: multipleChoice, reasoningSignature: quiz-four-domain-angle-order, difficultyDimensions: [comparativeReasoning, lonePairTrend], subjectDifficultyTags: [angle-compression] }
+  - { <<: *angles, id: vsepr-quiz-q008, assessmentId: chem-molecular-shapes-quiz, questionId: q008, questionType: multipleChoice, reasoningSignature: quiz-phosgene-angle-refinement, difficultyDimensions: [multipleBondDensity, qualitativeAngleRefinement], subjectDifficultyTags: [trigonal-planar, distortion] }
+  - { <<: *names, id: vsepr-quiz-q009, assessmentId: chem-molecular-shapes-quiz, questionId: q009, questionType: multipleChoice, reasoningSignature: quiz-so2-error-diagnosis, difficultyDimensions: [errorDiagnosis, geometryVocabulary], subjectDifficultyTags: [electron-vs-molecular] }
+  - { <<: *count, id: vsepr-quiz-q010, assessmentId: chem-molecular-shapes-quiz, questionId: q010, questionType: numericResponse, reasoningSignature: quiz-xef2-domain-total, difficultyDimensions: [givenInventory, exactDomainCount], subjectDifficultyTags: [AX2E3] }
+  - { <<: *count, id: vsepr-quiz-q011, assessmentId: chem-molecular-shapes-quiz, questionId: q011, questionType: selectAll, reasoningSignature: quiz-workflow-rule-set, difficultyDimensions: [multiRuleEvaluation, workflowTransfer], subjectDifficultyTags: [VSEPR-workflow] }
+  - { <<: *local, id: vsepr-quiz-q012, assessmentId: chem-molecular-shapes-quiz, questionId: q012, questionType: multipleChoice, reasoningSignature: quiz-acetic-geometry-sequence, difficultyDimensions: [multicenterDecomposition, geometrySequence], subjectDifficultyTags: [local-centers] }
+  - { <<: *names, id: vsepr-test-q001, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q001, questionType: multipleChoice, reasoningSignature: test-nitrite-full-classification, difficultyDimensions: [LewisEnvironment, AXEClassification, dualGeometryNaming], subjectDifficultyTags: [nitrite, three-domain], prerequisiteObjectiveIds: [chem-vsepr-count-domains], extensionObjectiveIds: [chem-vsepr-refine-angles] }
+  - { <<: *names, id: vsepr-test-q002, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q002, questionType: selectAll, reasoningSignature: test-tetrahedral-nonmatching-shapes, difficultyDimensions: [multiAnswerClassification, lonePairInventory, geometryComparison], subjectDifficultyTags: [four-domain-family], prerequisiteObjectiveIds: [chem-vsepr-distinguish-geometries], extensionObjectiveIds: [chem-vsepr-refine-angles] }
+  - { <<: *positions, id: vsepr-test-q003, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q003, questionType: multipleChoice, reasoningSignature: test-sf4-seesaw-transfer, difficultyDimensions: [AXEInterpretation, positionalOptimization, shapeDerivation], subjectDifficultyTags: [AX4E, seesaw], prerequisiteObjectiveIds: [chem-vsepr-position-five-six], extensionObjectiveIds: [chem-vsepr-refine-angles] }
+  - { <<: *positions, id: vsepr-test-q004, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q004, questionType: multipleChoice, reasoningSignature: test-brf5-square-pyramid, difficultyDimensions: [domainTotal, sixDomainFamily, atomsOnlyNaming], subjectDifficultyTags: [AX5E, square-pyramidal], prerequisiteObjectiveIds: [chem-vsepr-position-five-six], extensionObjectiveIds: [chem-vsepr-local-centers] }
+  - { <<: *count, id: vsepr-test-q005, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q005, questionType: numericResponse, reasoningSignature: test-inventory-before-naming, difficultyDimensions: [inventoryTranslation, domainArithmetic, workflowOrdering], subjectDifficultyTags: [domain-count], prerequisiteObjectiveIds: [chem-vsepr-count-domains], extensionObjectiveIds: [chem-vsepr-position-five-six] }
+  - { <<: *angles, id: vsepr-test-q006, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q006, questionType: multipleChoice, reasoningSignature: test-equatorial-angle, difficultyDimensions: [positionIdentification, angleSelection, geometryFamily], subjectDifficultyTags: [PCl5, 120-degrees], prerequisiteObjectiveIds: [chem-vsepr-position-five-six], extensionObjectiveIds: [chem-vsepr-refine-angles] }
+  - { <<: *angles, id: vsepr-test-q007, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q007, questionType: multipleChoice, reasoningSignature: test-double-bond-angle-trend, difficultyDimensions: [idealReference, unequalDomainRepulsion, qualitativePrediction], subjectDifficultyTags: [multiple-bond, distortion], prerequisiteObjectiveIds: [chem-vsepr-refine-angles], extensionObjectiveIds: [chem-vsepr-local-centers] }
+  - { <<: *positions, id: vsepr-test-q008, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q008, questionType: selectAll, reasoningSignature: test-ax4e2-condition-set, difficultyDimensions: [multiConditionReasoning, lonePairSeparation, angleTopology], subjectDifficultyTags: [AX4E2, square-planar], prerequisiteObjectiveIds: [chem-vsepr-position-five-six], extensionObjectiveIds: [chem-vsepr-local-centers] }
+  - { <<: *angles, id: vsepr-test-q009, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q009, questionType: multipleChoice, reasoningSignature: test-formaldehyde-qualified-angle, difficultyDimensions: [structuralParsing, multipleBondCounting, precisionJudgment], subjectDifficultyTags: [formaldehyde, trigonal-planar], prerequisiteObjectiveIds: [chem-vsepr-count-domains], extensionObjectiveIds: [chem-vsepr-refine-angles] }
+  - { <<: *positions, id: vsepr-test-q010, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q010, questionType: multipleChoice, reasoningSignature: test-xef2-clf3-compare, difficultyDimensions: [crossMoleculeComparison, AXEOccupancy, derivedShape], subjectDifficultyTags: [five-domain-family], prerequisiteObjectiveIds: [chem-vsepr-position-five-six], extensionObjectiveIds: [chem-vsepr-distinguish-geometries] }
+  - { <<: *local, id: vsepr-test-q011, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q011, questionType: multipleChoice, reasoningSignature: test-methylamine-local-centers, difficultyDimensions: [multicenterRecognition, localInventory, communicationCorrection], subjectDifficultyTags: [methylamine, local-centers], prerequisiteObjectiveIds: [chem-vsepr-local-centers], extensionObjectiveIds: [chem-polar-bonds-molecules] }
+  - { <<: *angles, id: vsepr-test-q012, assessmentId: chem-molecular-shapes-vsepr-test, questionId: q012, questionType: selectAll, reasoningSignature: test-vsepr-model-scope, difficultyDimensions: [modelScope, evidenceQualification, multiAnswerEvaluation], subjectDifficultyTags: [model-limits], prerequisiteObjectiveIds: [chem-vsepr-refine-angles], extensionObjectiveIds: [chem-polar-bonds-molecules] }

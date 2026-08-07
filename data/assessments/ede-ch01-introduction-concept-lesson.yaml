@@ -1,0 +1,278 @@
+schemaVersion: 1
+id: ede-ch01-introduction-concept-lesson
+title: 'Chapter 1: Introduction: Concept Lesson'
+assessmentType: conceptLesson
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch01-introduction
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch01-introduction
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch01-introduction
+  - s2c-approved
+lesson:
+  introduction: Differential equations describe how a quantity changes. This lesson builds models, classifies equations
+    and solutions, verifies initial-value solutions, and reads qualitative behavior from direction fields.
+  sections:
+  - id: s1
+    title: From a changing quantity to a rate law
+    required: true
+    content: "Start by naming the changing quantity and its units. If $Q(t)$ is an amount, then $Q'(t)$ has amount-per-time\
+      \ units. A balance model has the form $Q'=\text{rate in}-\text{rate out}$; proportional change has the form\
+      \ $Q'=kQ$. For a 200-L tank with brine entering at 3 L/min and concentration 2 g/L, the salt input is $6$\
+      \ g/min before any outflow term is included."
+    media:
+    - type: image
+      src: /media/ede/ch01-rate-model-flow.svg
+      alt: Flowchart translating a changing quantity and its units into accumulation, proportional-rate, or balance
+        differential equations.
+      caption: Define the changing quantity before assembling its rate law.
+    check:
+      id: q001
+      type: numericResponse
+      prompt: Brine enters a tank at $4$ L/min with concentration $3$ g/L. What is the salt input rate in g/min?
+      skills:
+      - ede-ch01-introduction-model-rate-laws
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch01-introduction-model-rate-laws
+      difficultyEvidence: Requires forming the relevant expression and evaluating it accurately.
+      answer:
+        value: 12
+        tolerance: 0
+      explanation: |-
+        Solution: $4(3)=12$ g/min.
+
+        Why it works: Flow rate times concentration has units of amount per time, exactly the units of the derivative of salt amount.
+  - id: s2
+    title: Variables, notation, and order
+    required: true
+    content: 'The independent variable labels the input, often time $t$; the dependent variable is the unknown function.
+      The order is the highest derivative present, not the largest exponent. Thus $y''''+(y'')^3=\sin x$ is second
+      order even though a first derivative is cubed.'
+    media: []
+    check:
+      id: q002
+      type: multipleChoice
+      prompt: What is the order of $x^2y''' + (y')^5=y$?
+      skills:
+      - ede-ch01-introduction-classify-solutions
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch01-introduction-classify-solutions
+      difficultyEvidence: Requires selecting a governing relation, applying a stated condition, and diagnosing a
+        plausible error.
+      choices:
+      - id: a
+        text: third order
+      - id: b
+        text: fifth order
+        issueSignals:
+        - id: ede-order-classification-error
+          domains: &id001
+          - elementary-differential-equations-bvp
+      - id: c
+        text: second order
+        issueSignals:
+        - id: ede-order-classification-error
+          domains: *id001
+      - id: d
+        text: first order
+        issueSignals:
+        - id: ede-equation-structure-error
+          domains: *id001
+      answer:
+        choiceId: a
+      explanation: |-
+        Solution: The equation is third order.
+
+        Why it works: The highest derivative present is $y'''$; powers on lower derivatives do not change the order.
+
+        Why the other choices fail: The distractors reflect the registered structural, condition, or method errors rather than the stated equation.
+  - id: s3
+    title: Solution forms and constants
+    required: true
+    content: A solution makes the differential equation true after substitution. A general solution contains arbitrary
+      constants; an initial condition selects a particular solution. An explicit solution isolates the dependent
+      variable, such as $y=Ce^x$. An implicit solution, such as $x^2+y^2=C$, instead gives a relation that may define
+      several local branches.
+    media: []
+    check:
+      id: q003
+      type: selectAll
+      prompt: Select every correct classification of $x^2+y^2=9$ when it is used as a solution relation.
+      skills:
+      - ede-ch01-introduction-classify-solutions
+      media: []
+      difficultyDimensions:
+      - constraintTracking
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch01-introduction-classify-solutions
+      difficultyEvidence: Requires checking several statements independently against the differential equation and
+        its conditions.
+      choices:
+      - id: a
+        text: It is implicit as written.
+      - id: b
+        text: It can define more than one local branch $y(x)$.
+      - id: c
+        text: It is explicit because $y$ appears.
+        issueSignals:
+        - id: ede-equation-structure-error
+          domains: *id001
+      - id: d
+        text: It contains no dependent variable.
+        issueSignals:
+        - id: ede-equation-structure-error
+          domains: *id001
+      answer:
+        choiceIds:
+        - a
+        - b
+      explanation: |-
+        Solution: The first two statements are correct.
+
+        Why it works: The relation does not isolate $y$, and solving for $y$ gives the two branches $\pm\sqrt{9-x^2}$.
+
+        Why the other choices fail: Every unselected statement violates a stated equation, condition, or theorem hypothesis.
+  - id: s4
+    title: Initial-value problems and verification
+    required: true
+    content: 'An IVP pairs a differential equation with data at a specified input. Verification has two separate
+      checks: differentiate or substitute to verify the equation, then evaluate at the initial point. For $y''=2x$
+      and $y(1)=5$, integrating gives $y=x^2+C$ and the condition gives $C=4$.'
+    media: []
+    check:
+      id: q004
+      type: symbolicResponse
+      prompt: Solve $y'=4x$ subject to $y(1)=3$. Enter $y(x)$.
+      skills:
+      - ede-ch01-introduction-initial-value-validity
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - symbolicExecution
+      subjectDifficultyTags:
+      - ede-ch01-introduction-initial-value-validity
+      difficultyEvidence: Requires carrying out symbolic steps and checking the resulting expression.
+      answer:
+        expectedLatex: 2x^2+1
+        equivalenceMode: expression
+        variables:
+        - x
+        tolerance: 0.0001
+      explanation: |-
+        Solution: $y=2x^2+C$ and $3=2+C$, so $y=2x^2+1$.
+
+        Why it works: Differentiation gives $4x$, and evaluating at $x=1$ gives $3$.
+  - id: s5
+    title: Intervals of validity
+    required: true
+    content: 'A formula is a solution only where it is defined and differentiable and where the original equation
+      is defined. The interval for an IVP must contain its initial point. For $y''=1/(x-2)$ with $y(0)=0$, integration
+      gives $y=\ln|x-2|-\ln2$, but the maximal interval containing $0$ is $(-\infty,2)$.'
+    media: []
+    check:
+      id: q005
+      type: multipleChoice
+      prompt: For $y'=1/(x+3)$ with initial point $x=0$, which maximal interval can contain the IVP solution?
+      skills:
+      - ede-ch01-introduction-initial-value-validity
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch01-introduction-initial-value-validity
+      difficultyEvidence: Requires selecting a governing relation, applying a stated condition, and diagnosing a
+        plausible error.
+      choices:
+      - id: a
+        text: '$(-3,\infty)$'
+      - id: b
+        text: '$(-\infty,-3)$'
+        issueSignals:
+        - id: ede-validity-interval-error
+          domains: *id001
+      - id: c
+        text: '$(-\infty,\infty)$'
+        issueSignals:
+        - id: ede-validity-interval-error
+          domains: *id001
+      - id: d
+        text: '$(0,\infty)$'
+        issueSignals:
+        - id: ede-condition-ignored
+          domains: *id001
+      answer:
+        choiceId: a
+      explanation: |-
+        Solution: The maximal interval is $(-3,\infty)$.
+
+        Why it works: The differential equation is undefined at $x=-3$, and the selected interval must contain the initial point $0$.
+
+        Why the other choices fail: The distractors reflect the registered structural, condition, or method errors rather than the stated equation.
+  - id: s6
+    title: Direction fields and integral curves
+    required: true
+    content: A direction field draws a short segment with slope $f(x,y)$ at each point for $y'=f(x,y)$. Integral
+      curves follow those local directions. For $y'=y(1-y)$, the lines $y=0$ and $y=1$ are equilibria. Slopes are
+      positive between them and negative above $1$, so nearby curves move toward $y=1$ as $x$ increases.
+    media: &id002
+    - type: image
+      src: /media/ede/ch01-direction-field.svg
+      alt: Direction field for y prime equals y times one minus y with equilibria at zero and one and several integral
+        curves.
+      caption: Slope signs determine how integral curves move between equilibrium levels.
+    check:
+      id: q006
+      type: multipleChoice
+      prompt: For $y'=y(1-y)$, what happens initially to a solution with $y(0)=1.4$?
+      skills:
+      - ede-ch01-introduction-direction-fields
+      media: *id002
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch01-introduction-direction-fields
+      difficultyEvidence: Requires selecting a governing relation, applying a stated condition, and diagnosing a
+        plausible error.
+      choices:
+      - id: a
+        text: It decreases because $1.4(1-1.4)<0$.
+      - id: b
+        text: It increases because $y$ is positive.
+        issueSignals:
+        - id: ede-direction-field-sign-error
+          domains: *id001
+      - id: c
+        text: It remains constant because every positive value is an equilibrium.
+        issueSignals:
+        - id: ede-equilibrium-solution-missed
+          domains: *id001
+      - id: d
+        text: Its direction cannot be inferred from the equation.
+        issueSignals:
+        - id: ede-method-selection-error
+          domains: *id001
+      answer:
+        choiceId: a
+      explanation: |-
+        Solution: The solution initially decreases.
+
+        Why it works: At $y=1.4$, the derivative is negative, so the integral curve slopes downward.
+
+        Why the other choices fail: The distractors reflect the registered structural, condition, or method errors rather than the stated equation.

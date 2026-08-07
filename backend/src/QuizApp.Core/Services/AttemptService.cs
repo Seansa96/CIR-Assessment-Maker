@@ -126,6 +126,11 @@ public sealed class AttemptService
             {
                 throw new InvalidOperationException("Worked example steps must be completed in order.");
             }
+
+            if (question.Type is QuestionType.FreeResponse && string.IsNullOrWhiteSpace(submittedAnswer.FreeResponseText))
+            {
+                throw new InvalidOperationException("Worked example free-response steps require a response before continuing.");
+            }
         }
 
         if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration)

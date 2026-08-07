@@ -8,7 +8,7 @@ namespace QuizApp.Infrastructure.SymbolicMath;
 
 public sealed class CortexSymbolicMathEngine : ISymbolicMathEngine
 {
-    private const int TimeoutMs = 3000;
+    private const int TimeoutMs = 10000;
     private readonly FileStorageOptions storageOptions;
 
     public CortexSymbolicMathEngine(FileStorageOptions storageOptions)

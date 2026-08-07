@@ -1,0 +1,164 @@
+schemaVersion: 1
+id: chemistry-nuclear-test-s2c
+title: Nuclear Chemistry Test
+assessmentType: test
+categoryId: chemistry
+topicId: chemistry-nuclear
+modeDefault: exam
+randomizeQuestions: true
+attemptQuestionCount: 12
+navigation: { learningGoal: evaluate, activityType: formalTest, tags: [chemistry, nuclear-chemistry, test] }
+authoring: { visualRequirement: required, visualRationale: 'Decay-coordinate and penetration visuals support transfer between representations and safety decisions.', difficultyTier: mixed, sourceId: src-20260720035703-91ea51b0d8 }
+questions:
+  - id: q1
+    type: multipleChoice
+    prompt: 'Argon-37 undergoes electron capture. Which balanced equation is correct?'
+    choices:
+      - { id: a, text: '$^{37}_{18}Ar+{}^0_{-1}e\rightarrow{}^{37}_{17}Cl$', issueSignals: [] }
+      - { id: b, text: '$^{37}_{18}Ar\rightarrow{}^{37}_{19}K+{}^0_{-1}e$', issueSignals: [{ id: chemistry-nuclear-decay-daughter-error }] }
+      - { id: c, text: '$^{37}_{18}Ar+{}^0_{-1}e\rightarrow{}^{33}_{16}S+{}^4_2He$', issueSignals: [{ id: chemistry-nuclear-conservation-error }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: $^{37}_{18}Ar+{}^0_{-1}e\rightarrow{}^{37}_{17}Cl$. Why it works: Adding the captured electron gives total $A=37$ and $Z=17$ on the left, matching chlorine-37. Why the other choices fail: b is beta-minus emission and raises Z; c invents alpha emission and does not represent electron capture.'
+    difficultyDimensions: [particlePlacement, dualConservation, daughterIdentity]
+    difficultyEvidence: 'Balances a captured particle on the reactant side while identifying the lower-Z daughter.'
+    prerequisiteObjectiveIds: [chem-nuclear-equations]
+    extensionObjectiveIds: [chem-nuclear-stability-decay]
+    issueSignals: [{ id: chemistry-nuclear-decay-daughter-error }, { id: chemistry-nuclear-conservation-error }]
+  - id: q2
+    type: multipleChoice
+    prompt: 'A $^{238}_{92}U$ nucleus undergoes two consecutive alpha decays. What nuclide results?'
+    media: [{ type: image, src: /media/chemistry/nuclear-decay-daughter-map.svg, alt: Coordinate map showing an alpha step as mass number minus four and atomic number minus two., caption: Apply the alpha displacement twice. }]
+    choices:
+      - { id: a, text: '$^{230}_{88}Ra$', issueSignals: [] }
+      - { id: b, text: '$^{234}_{90}Th$', issueSignals: [{ id: chemistry-nuclear-decay-daughter-error }] }
+      - { id: c, text: '$^{230}_{90}Th$', issueSignals: [{ id: chemistry-nuclear-conservation-error }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: $^{230}_{88}Ra$. Why it works: Two alpha emissions change $A$ by $-8$ and $Z$ by $-4$, so $(238,92)\rightarrow(230,88)$. Why the other choices fail: b applies only one alpha step; c applies the mass change twice but the atomic-number change only once.'
+    difficultyDimensions: [multiEventSequence, nuclearConservation, elementIdentification]
+    difficultyEvidence: 'Composes two decay displacements and maps the final atomic number to radium.'
+    prerequisiteObjectiveIds: [chem-nuclear-equations]
+    extensionObjectiveIds: [chem-nuclear-stability-decay]
+    issueSignals: [{ id: chemistry-nuclear-decay-daughter-error }, { id: chemistry-nuclear-conservation-error }]
+  - id: q3
+    type: selectAll
+    prompt: 'A proton-rich nuclide must lower its proton-to-neutron ratio without changing mass number. Select every decay mode that can do this.'
+    choices:
+      - { id: a, text: positron emission, issueSignals: [] }
+      - { id: b, text: electron capture, issueSignals: [] }
+      - { id: c, text: beta-minus emission, issueSignals: [{ id: chemistry-nuclear-stability-pattern-error }] }
+      - { id: d, text: gamma emission alone, issueSignals: [{ id: chemistry-nuclear-stability-pattern-error }] }
+    answer: { choiceIds: [a, b] }
+    explanation: 'Solution: Select positron emission and electron capture. Why it works: Both convert a proton into a neutron, leaving $A$ fixed while decreasing $Z$ by one. Why the other choices fail: Beta-minus converts a neutron into a proton; gamma changes nuclear energy but not the proton-neutron inventory.'
+    difficultyDimensions: [stabilityDiagnosis, multiAnswerSelection, particleConversion]
+    difficultyEvidence: 'Diagnoses proton excess and selects two distinct mechanisms with the required inventory change.'
+    prerequisiteObjectiveIds: [chem-nuclear-equations]
+    extensionObjectiveIds: [chem-nuclear-stability-decay]
+    issueSignals: [{ id: chemistry-nuclear-stability-pattern-error }]
+  - id: q4
+    type: numericResponse
+    prompt: 'A radionuclide begins with $80.0\ \mathrm{mg}$ and follows $N=N_0e^{-kt}$ with $k=0.0231\ \mathrm{day^{-1}}$. Calculate the mass remaining after $30.0\ \mathrm{days}$.'
+    answer: { value: 40.01, tolerance: 0.05 }
+    explanation: 'Solution: $N=(80.0)e^{-(0.0231)(30.0)}=(80.0)e^{-0.693}=40.006\ \mathrm{mg}\approx40.01\ \mathrm{mg}$. Why it works: The supplied continuous first-order model uses the dimensionless product kt in the exponential.'
+    difficultyDimensions: [modelSelection, exponentialEvaluation, unitInterpretation]
+    difficultyEvidence: 'Substitutes a continuous decay constant, evaluates an exponential, and interprets the resulting mass.'
+    prerequisiteObjectiveIds: [chem-nuclear-half-life]
+    extensionObjectiveIds: [chem-nuclear-radiation]
+    issueSignals: [{ id: chemistry-nuclear-decay-model-error }]
+  - id: q5
+    type: numericResponse
+    prompt: 'Only 12.5% of an original radionuclide remains. If its half-life is $5.27\ \mathrm{years}$, calculate the elapsed time in years.'
+    answer: { value: 15.81, tolerance: 0.03 }
+    explanation: 'Solution: $12.5\%=0.125=1/8=(1/2)^3$, so three half-lives elapsed and $t=3(5.27)=15.81\ \mathrm{years}$. Why it works: The remaining fraction determines the interval count before the half-life converts that count to time.'
+    difficultyDimensions: [fractionToIntervals, inverseReasoning, timeScaling]
+    difficultyEvidence: 'Works backward from a percentage through a power of one-half to elapsed time.'
+    prerequisiteObjectiveIds: [chem-nuclear-half-life]
+    extensionObjectiveIds: [chem-nuclear-stability-decay]
+    issueSignals: [{ id: chemistry-nuclear-half-life-fraction-error }]
+  - id: q6
+    type: numericResponse
+    prompt: 'A radionuclide has half-life $8.00\ \mathrm{days}$. Using $k=\ln 2/t_{1/2}$, calculate its first-order decay constant in $\mathrm{day^{-1}}$.'
+    answer: { value: 0.08664, tolerance: 0.00005 }
+    explanation: 'Solution: $k=0.693147/8.00=0.086643\ \mathrm{day^{-1}}\approx0.08664\ \mathrm{day^{-1}}$. Why it works: The decay constant is inversely related to half-life and therefore carries inverse-time units.'
+    difficultyDimensions: [relationRearrangement, logarithmicConstant, inverseTimeUnits]
+    difficultyEvidence: 'Converts a characteristic time into a rate constant while retaining reciprocal units.'
+    prerequisiteObjectiveIds: [chem-nuclear-half-life]
+    extensionObjectiveIds: [chem-nuclear-radiation]
+    issueSignals: [{ id: chemistry-nuclear-decay-model-error }]
+  - id: q7
+    type: numericResponse
+    prompt: 'A fission event has a positive mass defect of $0.215\ \mathrm{u}$. Use $1\ \mathrm{u}c^2=931.5\ \mathrm{MeV}$ to calculate the released energy in MeV.'
+    answer: { value: 200.27, tolerance: 0.10 }
+    explanation: 'Solution: $E=(0.215\ \mathrm{u})(931.5\ \mathrm{MeV/u})=200.2725\ \mathrm{MeV}\approx200.27\ \mathrm{MeV}$. Why it works: The positive difference between initial and product mass is converted to released energy through $E=\Delta mc^2$.'
+    difficultyDimensions: [massDefectInterpretation, energyConversion, processContext]
+    difficultyEvidence: 'Interprets a fission mass defect, uses the supplied conversion, and reports released energy.'
+    prerequisiteObjectiveIds: [chem-nuclear-energy]
+    extensionObjectiveIds: [chem-nuclear-radiation]
+    issueSignals: [{ id: chemistry-nuclear-mass-energy-error }]
+  - id: q8
+    type: numericResponse
+    prompt: 'A helium-4 nucleus has total binding energy $28.30\ \mathrm{MeV}$. Calculate its binding energy per nucleon in MeV per nucleon.'
+    answer: { value: 7.075, tolerance: 0.005 }
+    explanation: 'Solution: $28.30\ \mathrm{MeV}/4=7.075\ \mathrm{MeV\,nucleon^{-1}}$. Why it works: Mass number 4 counts the four nucleons sharing the total binding energy, so division produces the intensive comparison quantity.'
+    difficultyDimensions: [totalToIntensive, nucleonCount, stabilityInterpretation]
+    difficultyEvidence: 'Transforms total binding energy into a per-particle measure used for stability comparison.'
+    prerequisiteObjectiveIds: [chem-nuclear-energy]
+    extensionObjectiveIds: [chem-nuclear-stability-decay]
+    issueSignals: [{ id: chemistry-nuclear-mass-energy-error }]
+  - id: q9
+    type: multipleChoice
+    prompt: 'In a controlled fission reactor, why do neutron-absorbing control rods reduce the reaction rate?'
+    choices:
+      - { id: a, text: 'They remove neutrons that could trigger additional fissions.', issueSignals: [] }
+      - { id: b, text: 'They convert every fission event into fusion.', issueSignals: [{ id: chemistry-nuclear-fission-fusion-confusion }] }
+      - { id: c, text: 'They increase the number of free neutrons available for the chain reaction.', issueSignals: [{ id: chemistry-nuclear-fission-fusion-confusion }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: Control rods absorb neutrons that could initiate further fissions. Why it works: Reducing the reproducing neutron population lowers the number of subsequent chain-reaction events. Why the other choices fail: b confuses two different nuclear processes; c describes the opposite effect of neutron absorption.'
+    difficultyDimensions: [processModel, neutronPopulation, controlStrategy]
+    difficultyEvidence: 'Connects a reactor component to neutron population and then to chain-reaction rate.'
+    prerequisiteObjectiveIds: [chem-nuclear-energy]
+    extensionObjectiveIds: [chem-nuclear-radiation]
+    issueSignals: [{ id: chemistry-nuclear-fission-fusion-confusion }]
+  - id: q10
+    type: selectAll
+    prompt: 'Select every statement that helps explain why fusion of light nuclei can release energy but is difficult to initiate.'
+    choices:
+      - { id: a, text: 'The positively charged nuclei must approach closely despite electrostatic repulsion.', issueSignals: [] }
+      - { id: b, text: 'Very high temperature can provide particles with greater kinetic energy.', issueSignals: [] }
+      - { id: c, text: 'Products can have greater binding energy per nucleon than the light reactants.', issueSignals: [] }
+      - { id: d, text: 'Fusion is simply spontaneous gamma emission from one unchanged nucleus.', issueSignals: [{ id: chemistry-nuclear-fission-fusion-confusion }] }
+    answer: { choiceIds: [a, b, c] }
+    explanation: 'Solution: Select a, b, and c. Why it works: Fusion requires close approach against charge repulsion, high temperature helps supply collision energy, and more tightly bound products account for energy release. Why the other choices fail: d neither joins nuclei nor changes their composition and therefore is not fusion.'
+    difficultyDimensions: [multiConditionReasoning, electrostaticBarrier, bindingTrend]
+    difficultyEvidence: 'Integrates initiation conditions, microscopic forces, and the energetic product trend.'
+    prerequisiteObjectiveIds: [chem-nuclear-energy]
+    extensionObjectiveIds: [chem-nuclear-stability-decay]
+    issueSignals: [{ id: chemistry-nuclear-fission-fusion-confusion }]
+  - id: q11
+    type: multipleChoice
+    prompt: 'A laboratory needs to track one worker''s accumulated exposure and separately locate radioactive contamination on a bench. Which pairing is most appropriate?'
+    choices:
+      - { id: a, text: 'personal dosimeter for the worker; survey detector for the bench', issueSignals: [] }
+      - { id: b, text: 'survey detector for accumulated personal dose; no instrument for the bench', issueSignals: [{ id: chemistry-nuclear-detection-dose-confusion }] }
+      - { id: c, text: 'thick shielding as the only measurement device for both tasks', issueSignals: [{ id: chemistry-nuclear-detection-dose-confusion }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: Use a personal dosimeter for accumulated worker exposure and a survey detector to locate bench contamination. Why it works: The first task integrates exposure associated with a person, while the second searches spatially for radiation from material. Why the other choices fail: b swaps measurement purposes and leaves contamination unchecked; c treats protection material as an instrument.'
+    difficultyDimensions: [measurementGoal, detectorSelection, exposureInterpretation]
+    difficultyEvidence: 'Distinguishes accumulated personal monitoring from spatial contamination detection.'
+    prerequisiteObjectiveIds: [chem-nuclear-radiation]
+    extensionObjectiveIds: [chem-nuclear-half-life]
+    issueSignals: [{ id: chemistry-nuclear-detection-dose-confusion }]
+  - id: q12
+    type: multipleChoice
+    prompt: 'A response team faces possible inhalable alpha-emitting dust and an external gamma source in a closed container. Which plan addresses both hazards most directly?'
+    media: [{ type: image, src: /media/chemistry/nuclear-radiation-penetration.svg, alt: Penetration diagram comparing paper-stopped alpha, metal-reduced beta, and dense-shield-reduced gamma radiation., caption: Match controls to radiation type and source location. }]
+    choices:
+      - { id: a, text: 'Prevent inhalation and spread of the dust; maximize distance and use dense shielding for the gamma source.', issueSignals: [] }
+      - { id: b, text: 'Ignore the dust because alpha cannot penetrate skin; use paper as the only gamma shield.', issueSignals: [{ id: chemistry-nuclear-penetration-hazard-confusion }] }
+      - { id: c, text: 'Use dense shielding for the dust but open the gamma container to reduce its activity.', issueSignals: [{ id: chemistry-nuclear-penetration-hazard-confusion }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: Prevent internal alpha contamination and use distance plus dense shielding for external gamma. Why it works: Alpha dust is dangerous when inhaled because it deposits energy locally, whereas penetrating gamma is reduced by distance and substantial shielding. Why the other choices fail: b ignores internal exposure and undershields gamma; c mismatches the controls and opening the source can worsen exposure without changing activity.'
+    difficultyDimensions: [sourceLocation, radiationType, mitigationChoice]
+    difficultyEvidence: 'Coordinates two simultaneous radiation types, different exposure geometries, and distinct controls.'
+    prerequisiteObjectiveIds: [chem-nuclear-radiation]
+    extensionObjectiveIds: [chem-nuclear-stability-decay]
+    issueSignals: [{ id: chemistry-nuclear-penetration-hazard-confusion }]

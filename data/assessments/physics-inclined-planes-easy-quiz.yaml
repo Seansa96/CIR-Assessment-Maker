@@ -10,7 +10,7 @@ skills:
 - inclined-plane
 - normal-force
 - coordinate-axes
-attemptQuestionCount: 3
+attemptQuestionCount: 10
 randomizeQuestions: true
 navigation:
   activityType: focusedPractice
@@ -20,23 +20,34 @@ navigation:
   - physics-newton-laws
   - inclined-plane
 modeDefault: practice
+authoring:
+  visualRequirement: notApplicable
+  visualRationale: Each introductory item gives the complete force model in text and assesses a single component or scalar calculation.
+  difficultyTier: easy
 questions:
   - id: ip-easy-q01
     title: Parallel Component of Gravity
     type: multipleChoice
     difficultyDimensions:
-      - conceptual
-      - representation
+      - modelOrDerivation
+      - representationTransfer
+    difficultyEvidence: Learners must align axes with the incline and choose the matching trigonometric component of gravity.
     prompt: |
       A block of mass $m$ rests on a frictionless inclined plane that makes an angle $\theta$ with the horizontal. Which expression represents the component of gravity pulling the block **down the incline**?
     choices:
       - id: a
+        issueSignals:
+          - id: vector-component-resolution-error
         text: '$mg \cos(\theta)$'
       - id: b
         text: '$mg \sin(\theta)$'
       - id: c
+        issueSignals:
+          - id: vector-component-resolution-error
         text: '$mg \tan(\theta)$'
       - id: d
+        issueSignals:
+          - id: vector-component-resolution-error
         text: '$mg$'
     answer:
       choiceId: b
@@ -56,8 +67,9 @@ questions:
     title: Calculating Normal Force
     type: numericResponse
     difficultyDimensions:
-      - computational
-      - conceptual
+      - modelOrDerivation
+      - simplification
+    difficultyEvidence: Learners resolve gravity perpendicular to a tilted surface and evaluate the resulting numerical normal force with units.
     prompt: |
       A $10.0\text{ kg}$ box sits on a ramp angled at $30^\circ$ to the horizontal. Using $g = 9.8\text{ m/s}^2$ and assuming no other forces act perpendicular to the ramp, calculate the magnitude of the normal force on the box in Newtons. Round to one decimal place.
     answer:
@@ -76,8 +88,9 @@ questions:
     title: Acceleration on a Frictionless Incline
     type: numericResponse
     difficultyDimensions:
-      - computational
-      - synthesis
+      - modelOrDerivation
+      - representationTransfer
+    difficultyEvidence: Learners translate a frictionless free-body model into Newton's second law and calculate the along-slope acceleration.
     prompt: |
       A sled slides down a frictionless, snow-covered hill angled at $15^\circ$. Using $g = 9.8\text{ m/s}^2$, calculate its acceleration down the hill in $\text{m/s}^2$. Round to two decimal places.
     answer:
@@ -91,3 +104,171 @@ questions:
       
       Why it works:
       Applying Newton's Second Law to the axis parallel to the incline allows us to divide out the mass, revealing that the acceleration solely depends on gravity and the angle of the hill.
+
+  - id: ip-easy-q04
+    title: Perpendicular Force Balance
+    type: multipleChoice
+    difficultyDimensions: [modelOrDerivation, representationTransfer]
+    difficultyEvidence: Learners translate an incline-aligned free-body diagram into the perpendicular force-balance equation.
+    prompt: 'A block remains in contact with a ramp and has no acceleration perpendicular to it. Taking positive perpendicular to the ramp outward, which equation is correct?'
+    choices:
+      - id: a
+        text: '$F_N-mg\cos(\theta)=0$'
+      - id: b
+        issueSignals: [{ id: vector-component-resolution-error }]
+        text: '$F_N-mg\sin(\theta)=0$'
+      - id: c
+        issueSignals: [{ id: newtons-second-law-sign-error }]
+        text: '$F_N+mg\cos(\theta)=0$'
+      - id: d
+        issueSignals: [{ id: normal-force-miscalculated }]
+        text: '$F_N-mg=0$'
+    answer: { choiceId: a }
+    explanation: |
+      Solution: The outward normal force is positive and the perpendicular component of gravity points into the ramp, so $F_N-mg\cos(\theta)=0$.
+
+      Why it works: The block cannot accelerate through the surface, so Newton's second law gives $\Sigma F_\perp=0$.
+
+      Why the other choices fail: Using sine swaps the gravity components; adding both forces assigns gravity the wrong sign; using $mg$ ignores the incline angle.
+
+  - id: ip-easy-q05
+    title: Steeper Frictionless Ramp
+    type: multipleChoice
+    difficultyDimensions: [parameterThreshold, modelOrDerivation]
+    difficultyEvidence: Learners reason from the angle dependence in $a=g\sin\theta$ rather than from the object's mass.
+    prompt: 'Two identical sleds slide on frictionless ramps. Ramp A is at $20^\circ$ and ramp B is at $40^\circ$. Which sled has the greater downhill acceleration?'
+    choices:
+      - id: a
+        text: Sled B on the $40^\circ$ ramp.
+      - id: b
+        issueSignals: [{ id: vector-component-resolution-error }]
+        text: Sled A on the $20^\circ$ ramp.
+      - id: c
+        issueSignals: [{ id: newtons-second-law-sign-error }]
+        text: They have equal acceleration because both have the same mass.
+      - id: d
+        issueSignals: [{ id: vector-component-resolution-error }]
+        text: Neither sled accelerates because the normal force cancels gravity.
+    answer: { choiceId: a }
+    explanation: |
+      Solution: On a frictionless ramp, $a=g\sin\theta$. Since $\sin40^\circ>\sin20^\circ$, sled B accelerates faster downhill.
+
+      Why it works: Only the component of gravity parallel to the ramp produces downhill acceleration, and that component increases with the angle over this range.
+
+      Why the other choices fail: Mass cancels from $ma=mg\sin\theta$; the normal force cancels only the perpendicular component, not the parallel one.
+
+  - id: ip-easy-q06
+    title: Direction of Kinetic Friction
+    type: multipleChoice
+    difficultyDimensions: [representationTransfer, domainCondition]
+    difficultyEvidence: Learners identify the direction of a contact force from the stated sliding motion on a tilted surface.
+    prompt: 'A crate is sliding **down** a rough ramp. In which direction does kinetic friction on the crate point?'
+    choices:
+      - id: a
+        text: Up the ramp.
+      - id: b
+        issueSignals: [{ id: static-vs-kinetic-friction-error }]
+        text: Down the ramp.
+      - id: c
+        issueSignals: [{ id: free-body-diagram-missing-force }]
+        text: Perpendicular away from the ramp.
+      - id: d
+        issueSignals: [{ id: static-vs-kinetic-friction-error }]
+        text: There is no friction because the crate is already moving.
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Kinetic friction points up the ramp, opposite the crate's downhill sliding motion.
+
+      Why it works: Kinetic friction opposes relative motion between contacting surfaces, while the normal force acts perpendicular to the surface.
+
+      Why the other choices fail: Downhill friction would aid slipping; a perpendicular force is the normal force; motion does not eliminate kinetic friction.
+
+  - id: ip-easy-q07
+    title: Mass and Frictionless Acceleration
+    type: multipleChoice
+    difficultyDimensions: [simplification, modelOrDerivation]
+    difficultyEvidence: Learners simplify Newton's second-law equation and distinguish acceleration from force magnitude.
+    prompt: 'On the same frictionless $25^\circ$ ramp, a $2.0\text{ kg}$ block and an $8.0\text{ kg}$ block are released together. Which statement is correct?'
+    choices:
+      - id: a
+        text: They have the same downhill acceleration.
+      - id: b
+        issueSignals: [{ id: newtons-second-law-sign-error }]
+        text: The $8.0\text{ kg}$ block has four times the acceleration.
+      - id: c
+        issueSignals: [{ id: newtons-second-law-sign-error }]
+        text: The $2.0\text{ kg}$ block has four times the acceleration.
+      - id: d
+        issueSignals: [{ id: vector-component-resolution-error }]
+        text: Neither accelerates because each normal force equals its weight.
+    answer: { choiceId: a }
+    explanation: |
+      Solution: $ma=mg\sin25^\circ$, so dividing by $m$ gives $a=g\sin25^\circ$ for both blocks.
+
+      Why it works: The parallel gravitational force is larger for the heavier block, but its inertia is larger by the same factor.
+
+      Why the other choices fail: Mass does not remain in the final acceleration expression, and the normal force does not cancel the parallel gravity component.
+
+  - id: ip-easy-q08
+    title: Static-Friction Condition
+    type: multipleChoice
+    difficultyDimensions: [parameterThreshold, modelOrDerivation]
+    difficultyEvidence: Learners compare the required uphill static friction to its maximum value using an incline force model.
+    prompt: 'A block rests on a $30^\circ$ ramp with no other applied forces. Which condition is sufficient for it to remain at rest?'
+    choices:
+      - id: a
+        text: '$\mu_s\ge\tan30^\circ$'
+      - id: b
+        issueSignals: [{ id: static-vs-kinetic-friction-error }]
+        text: '$\mu_s=mg\sin30^\circ$'
+      - id: c
+        issueSignals: [{ id: normal-force-miscalculated }]
+        text: '$\mu_s\ge1$ for every ramp angle.'
+      - id: d
+        issueSignals: [{ id: static-vs-kinetic-friction-error }]
+        text: Static friction must equal $\mu_sF_N$ even when the block is at rest.
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Rest requires $mg\sin\theta\le f_s^{max}=\mu_smg\cos\theta$, so $\mu_s\ge\tan\theta$; at $30^\circ$, $\mu_s\ge\tan30^\circ$.
+
+      Why it works: Static friction adjusts up to a maximum value, and it must be able to balance the downhill component of gravity.
+
+      Why the other choices fail: Coefficients are dimensionless; $\mu_sF_N$ is a maximum rather than an automatic equality; the needed coefficient depends on angle.
+
+  - id: ip-easy-q09
+    title: Pulling Up a Frictionless Ramp
+    type: multipleChoice
+    difficultyDimensions: [modelOrDerivation, representationTransfer]
+    difficultyEvidence: Learners assign signs along an incline and combine an applied force with the resolved weight component.
+    prompt: 'A force $F$ pulls a block of mass $m$ up a frictionless incline of angle $\theta$. Taking uphill as positive, what is the block''s acceleration?'
+    choices:
+      - id: a
+        text: '$a=\frac{F-mg\sin\theta}{m}$'
+      - id: b
+        issueSignals: [{ id: vector-component-resolution-error }]
+        text: '$a=\frac{F-mg\cos\theta}{m}$'
+      - id: c
+        issueSignals: [{ id: newtons-second-law-sign-error }]
+        text: '$a=\frac{F+mg\sin\theta}{m}$'
+      - id: d
+        issueSignals: [{ id: normal-force-miscalculated }]
+        text: '$a=\frac{F-mg}{m}$'
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Along the ramp, $\Sigma F=F-mg\sin\theta=ma$, so $a=(F-mg\sin\theta)/m$.
+
+      Why it works: The applied pull is uphill and positive; the parallel component of gravity is downhill and negative.
+
+      Why the other choices fail: Cosine is the perpendicular component, adding gravity reverses its direction, and using full weight ignores the tilted axis.
+
+  - id: ip-easy-q10
+    title: Frictionless Downhill Force
+    type: numericResponse
+    difficultyDimensions: [modelOrDerivation, simplification]
+    difficultyEvidence: Learners resolve a force along the ramp and evaluate a single numerical component with units.
+    prompt: 'A $5.0\text{ kg}$ toolbox rests on a frictionless $37^\circ$ ramp. Use $g=9.8\text{ m/s}^2$ and $\sin37^\circ=0.602$ to find the magnitude of the net force down the ramp in newtons. Round to one decimal place.'
+    answer: { value: 29.5, tolerance: 0.2 }
+    explanation: |
+      Solution: $F_{net}=mg\sin\theta=(5.0)(9.8)(0.602)=29.498\text{ N}\approx29.5\text{ N}$ down the ramp.
+
+      Why it works: On a frictionless ramp, the normal force cancels the perpendicular weight component, leaving $mg\sin\theta$ as the net parallel force.
