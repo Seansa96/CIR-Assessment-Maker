@@ -66,6 +66,7 @@ public sealed class HeuristicAssessmentAnalyzer : ILocalAssessmentAnalyzer
             var qText = (q.Prompt + " " + q.Explanation + " " + string.Join(" ", q.Choices.Select(c => c.Text))).ToLowerInvariant();
             var qSkills = new HashSet<string>(q.Skills, StringComparer.OrdinalIgnoreCase);
             var qSignals = new List<IssueSignal>(q.IssueSignals);
+            var newChoices = new List<ChoiceOption>(q.Choices);
 
             if (dictionary is not null)
             {
@@ -77,15 +78,50 @@ public sealed class HeuristicAssessmentAnalyzer : ILocalAssessmentAnalyzer
                     }
                 }
                 
-                var existingSignalIds = new HashSet<string>(q.IssueSignals.Select(s => s.Id), StringComparer.OrdinalIgnoreCase);
-                foreach (var signal in dictionary.IssueSignals)
+                if (q.Type == QuestionType.MultipleChoice || q.Type == QuestionType.SelectAll)
                 {
-                    if (existingSignalIds.Contains(signal.SignalId)) continue;
-                    
-                    if (signal.Keywords.Any(k => qText.Contains(k.ToLowerInvariant())))
+                    newChoices.Clear();
+                    foreach (var choice in q.Choices)
                     {
-                        qSignals.Add(new IssueSignal(signal.SignalId, Array.Empty<string>()));
-                        existingSignalIds.Add(signal.SignalId);
+                        var isCorrect = (q.Answer.ChoiceId != null && string.Equals(choice.Id, q.Answer.ChoiceId, StringComparison.OrdinalIgnoreCase))
+                            || (q.Answer.ChoiceIds != null && q.Answer.ChoiceIds.Contains(choice.Id, StringComparer.OrdinalIgnoreCase));
+                            
+                        if (isCorrect) 
+                        {
+                            newChoices.Add(choice);
+                            continue;
+                        }
+                        
+                        var choiceSignals = new List<IssueSignal>(choice.IssueSignals);
+                        var existingSignalIds = new HashSet<string>(choice.IssueSignals.Select(s => s.Id), StringComparer.OrdinalIgnoreCase);
+                        
+                        foreach (var signal in dictionary.IssueSignals)
+                        {
+                            if (existingSignalIds.Contains(signal.SignalId)) continue;
+                            
+                            var choiceText = choice.Text.ToLowerInvariant();
+                            if (signal.Keywords.Any(k => choiceText.Contains(k.ToLowerInvariant())))
+                            {
+                                choiceSignals.Add(new IssueSignal(signal.SignalId, Array.Empty<string>()));
+                                existingSignalIds.Add(signal.SignalId);
+                            }
+                        }
+                        
+                        newChoices.Add(choice with { IssueSignals = choiceSignals });
+                    }
+                }
+                else
+                {
+                    var existingSignalIds = new HashSet<string>(q.IssueSignals.Select(s => s.Id), StringComparer.OrdinalIgnoreCase);
+                    foreach (var signal in dictionary.IssueSignals)
+                    {
+                        if (existingSignalIds.Contains(signal.SignalId)) continue;
+                        
+                        if (signal.Keywords.Any(k => qText.Contains(k.ToLowerInvariant())))
+                        {
+                            qSignals.Add(new IssueSignal(signal.SignalId, Array.Empty<string>()));
+                            existingSignalIds.Add(signal.SignalId);
+                        }
                     }
                 }
             }
@@ -93,7 +129,8 @@ public sealed class HeuristicAssessmentAnalyzer : ILocalAssessmentAnalyzer
             newQuestions.Add(q with 
             { 
                 Skills = qSkills.OrderBy(s => s).ToList(),
-                IssueSignals = qSignals
+                IssueSignals = qSignals,
+                Choices = newChoices
             });
         }
 

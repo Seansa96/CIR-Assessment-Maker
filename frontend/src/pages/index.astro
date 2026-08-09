@@ -528,6 +528,7 @@ const isDev = import.meta.env.DEV;
       import { GraphingCanvas } from "../scripts/GraphingCanvas";
       import type { SubmittedGraphAnswer, GraphPoint } from "../scripts/GraphingCanvas";
       import { SandboxTerminal } from "../scripts/sandboxTerminal";
+      import { renderScoresOverTimeChart, renderCategoryMasteryChart, renderTopIssueSignalsChart, renderQuestionTypeChart } from "../scripts/analyticsCharts";
 
       type AssessmentMode = "practice" | "scored";
       type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "glossary" | "conceptLesson" | "interactiveExploration" | "directedProject" | "sandbox";
@@ -3163,7 +3164,7 @@ const isDev = import.meta.env.DEV;
           if (!currentAttemptIds.has(attemptId)) state.selectedAttemptIds.delete(attemptId);
         });
 
-        gradeSummary.innerHTML = renderAnalyticsDashboard(analytics, summary.entries);
+        updateAnalyticsDashboard();
         renderAttemptHistory();
         setupGradeLogInteractions();
       }
@@ -3238,11 +3239,36 @@ const isDev = import.meta.env.DEV;
                     <div><span>${analytics.overallCommittedAverage ?? 0}%</span><small>Overall GPA</small></div>
                     <div><span>${analytics.attempts.length}</span><small>Attempt sessions</small></div>
                   </div>
-                  <div class="analytics-table-grid">
-                    ${renderCategoryAnalyticsTable(analytics.categories)}
-                    ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
+                  <div class="analytics-charts-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+                    <div class="chart-container" style="position: relative; height: 250px; background: var(--surface); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <canvas id="chart-scores-over-time"></canvas>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 250px; background: var(--surface); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <canvas id="chart-category-mastery"></canvas>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 250px; background: var(--surface); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <canvas id="chart-issue-signals"></canvas>
+                    </div>
+                    <div class="chart-container" style="position: relative; height: 250px; background: var(--surface); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                        <canvas id="chart-question-types"></canvas>
+                    </div>
                   </div>
+
                   <details class="grade-ledger-details" style="margin-top: 2rem;">
+                    <summary>View Category Data</summary>
+                    <div class="analytics-table-grid">
+                      ${renderCategoryAnalyticsTable(analytics.categories)}
+                    </div>
+                  </details>
+                  
+                  <details class="grade-ledger-details" style="margin-top: 1rem;">
+                    <summary>View Question Type Data</summary>
+                    <div class="analytics-table-grid">
+                      ${renderQuestionTypeAnalyticsTable(analytics.questionTypes)}
+                    </div>
+                  </details>
+
+                  <details class="grade-ledger-details" style="margin-top: 1rem;">
                     <summary>View Raw Grade Ledger</summary>
                     ${renderCommittedEntries(entries)}
                   </details>
@@ -3286,6 +3312,18 @@ const isDev = import.meta.env.DEV;
             </section>
           `;
         }
+
+      function updateAnalyticsDashboard() {
+        if (!state.analytics) return;
+        gradeSummary.innerHTML = renderAnalyticsDashboard(state.analytics, state.gradeLogEntries);
+        
+        if (state.activeAnalyticsCategory === null) {
+          renderScoresOverTimeChart("chart-scores-over-time", state.gradeLogEntries);
+          renderCategoryMasteryChart("chart-category-mastery", state.analytics.categories);
+          renderTopIssueSignalsChart("chart-issue-signals", state.analytics.issueSignals || []);
+          renderQuestionTypeChart("chart-question-types", state.analytics.questionTypes);
+        }
+      }
 
         return `
           <div class="grade-log-full-width">
@@ -3507,7 +3545,7 @@ const isDev = import.meta.env.DEV;
             const categoryId = button.dataset.categoryId;
             state.activeAnalyticsCategory = categoryId ? categoryId : null;
             if (state.analytics) {
-              gradeSummary.innerHTML = renderAnalyticsDashboard(state.analytics, state.gradeLogEntries);
+              updateAnalyticsDashboard();
               setupGradeLogInteractions();
             }
           });

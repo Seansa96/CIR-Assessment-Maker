@@ -1,0 +1,175 @@
+schemaVersion: 1
+id: ede-ch03-rk4-backward-depth-worked-examples
+title: 'RK4 and Backward Integration: Worked Examples'
+assessmentType: workedExample
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch03-numerical-methods
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch03-numerical-methods
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch03-numerical-methods
+  - s2c-approved
+  - supplemental
+workedExamples:
+- id: we01
+  title: A nonlinear RK4 step
+  problem: Use RK4 on $y'=x+y$, $y(0)=1$, with $h=0.2$.
+  steps:
+  - id: we01-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Compute the four slopes.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - four stages
+      - updated states
+    explanation: |-
+      Solution: $k_1=1$, $k_2=1.2$, $k_3=1.22$, and $k_4=1.444$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we01-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Apply the weighted update.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - weights
+      - value
+    explanation: |-
+      Solution: $Y_1=1+\frac{0.2}{6}(1+2(1.2)+2(1.22)+1.444)=1.2428$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we01-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Compare with the exact solution.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - exact check
+      - error
+    explanation: |-
+      Solution: $y=2e^x-x-1$ gives $1.242805516$ at $0.2$, so the absolute error is about $5.52\times10^{-6}$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+- id: we02
+  title: Two RK4 rows
+  problem: Apply two RK4 steps of size $0.2$ to $y'=y$, $y(0)=1$.
+  steps:
+  - id: we02-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Form the RK4 multiplier.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - stability polynomial
+      - h=0.2
+    explanation: |-
+      Solution: For this linear equation the step multiplier is $R=1+h+h^2/2+h^3/6+h^4/24=1.2214$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we02-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Advance two rows.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - row one
+      - row two
+    explanation: |-
+      Solution: $Y_1=1.2214$ and $Y_2=1.2214^2=1.49181796$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we02-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Check the endpoint.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - endpoint
+      - reference error
+    explanation: |-
+      Solution: $e^{0.4}=1.491824698$, giving absolute error about $6.74\times10^{-6}$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+- id: we03
+  title: Right-to-left integration
+  problem: Approximate $y(0.5)$ for $y'=y$, given $y(1)=e$, using one RK4 step $h=-0.5$.
+  steps:
+  - id: we03-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Respect the negative step in all stages.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - negative h
+      - four states
+    explanation: |-
+      Solution: $k_1=e$, $k_2=0.75e$, $k_3=0.8125e$, and $k_4=0.59375e$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we03-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Combine the slopes.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - weighted sum
+      - backward value
+    explanation: |-
+      Solution: $Y= e-\frac{0.5e}{6}[1+2(0.75)+2(0.8125)+0.59375]=0.606770833e\approx1.649374$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we03-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Verify direction and accuracy.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - left endpoint
+      - exact check
+    explanation: |-
+      Solution: The endpoint is $0.5$ and the exact value $e^{0.5}\approx1.648721$, so the method moved left and erred by about $6.53\times10^{-4}$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []

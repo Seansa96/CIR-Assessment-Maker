@@ -1,0 +1,274 @@
+schemaVersion: 1
+id: ede-ch03-semilinear-methods-depth-concept-lesson
+title: Semilinear Numerical Methods
+assessmentType: conceptLesson
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch03-numerical-methods
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch03-numerical-methods
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch03-numerical-methods
+  - s2c-approved
+  - supplemental
+lesson:
+  introduction: A known complementary solution can absorb the linear part before a numerical method advances the
+    remaining nonlinear factor.
+  sections:
+  - id: s1
+    title: Recognize semilinear structure
+    required: true
+    content: A semilinear first-order equation has the form $y'+p(x)y=h(x,y)$. The coefficient term is linear in
+      $y$ even though the right side may be nonlinear.
+    media: []
+    check:
+      id: q001
+      type: multipleChoice
+      prompt: Which equation is in semilinear form?
+      skills:
+      - ede-ch03-numerical-methods-semilinear-methods
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-semilinear-methods
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: The first equation explicitly separates the linear term $xy$ from the nonlinear term $y^2$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $y'+xy=y^2$
+      - id: b
+        text: $yy'=x$
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $y''+y=0$
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $y'=\sin x$ with no identified linear part
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s2
+    title: Use a complementary solution
+    required: true
+    content: Choose a nonzero $y_1$ satisfying $y_1'+p(x)y_1=0$. This factor captures the homogeneous linear behavior
+      on an interval where it does not vanish.
+    media: []
+    check:
+      id: q002
+      type: symbolicResponse
+      prompt: Give a nonzero complementary solution of $y'+2y=0$.
+      skills:
+      - ede-ch03-numerical-methods-semilinear-methods
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-semilinear-methods
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $y_1=e^{-2x}$ satisfies $y_1'+2y_1=0$.
+
+        Why it works: Differentiation and the supplied data verify the expression.
+      answer:
+        expectedLatex: e^{-2x}
+        equivalenceMode: expression
+        variables:
+        - x
+        tolerance: 0.0001
+  - id: s3
+    title: Transform with $y=u y_1$
+    required: true
+    content: Substitution gives $y'+py=u'y_1$ because the terms involving $y_1'+py_1$ cancel. The transformed equation
+      is $u'=h(x,u y_1)/y_1$.
+    media:
+    - type: image
+      src: /media/ede/ch03-semilinear-transform.svg
+      alt: A semilinear equation factored into complementary linear behavior and a transformed numerical state.
+      caption: Use the relationships in the diagram to organize the calculation and verification.
+    check:
+      id: q003
+      type: multipleChoice
+      prompt: For $y'+y=y^2$ and $y=u e^{-x}$, what equation does $u$ satisfy?
+      skills:
+      - ede-ch03-numerical-methods-semilinear-methods
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-semilinear-methods
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $u'e^{-x}=u^2e^{-2x}$, so $u'=u^2e^{-x}$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $u'=u^2e^{-x}$
+      - id: b
+        text: $u'=u^2e^x$
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $u'=-u$
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $u'=e^{-x}$
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s4
+    title: Advance the transformed state
+    required: true
+    content: Apply Euler or a two-stage rule to $u'=H(x,u)$, then reconstruct $y_n=u_n y_1(x_n)$. Comparing only
+      $u$ values with direct $y$ values is meaningless; both must be expressed in the original variable.
+    media: []
+    check:
+      id: q004
+      type: numericResponse
+      prompt: For $u'=u^2e^{-x}$, $u(0)=0.5$, one Euler step with $h=0.2$ gives $u_1=0.55$. Find reconstructed $y_1=0.55e^{-0.2}$.
+      skills:
+      - ede-ch03-numerical-methods-semilinear-methods
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-semilinear-methods
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $0.55e^{-0.2}\approx0.450302$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 0.450302
+        tolerance: 0.0001
+  - id: s5
+    title: Extend the method to RK4
+    required: true
+    content: The same transformation can be combined with RK4. All four stages evaluate the transformed right side
+      $H(x,u)$, and reconstruction occurs at the updated mesh point.
+    media: []
+    check:
+      id: q005
+      type: multipleChoice
+      prompt: In semilinear RK4, which function should the four stages evaluate?
+      skills:
+      - ede-ch03-numerical-methods-semilinear-methods
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-semilinear-methods
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: RK4 advances the transformed IVP, so its stages use $H(x,u)$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: The transformed right side $H(x,u)$
+      - id: b
+        text: Only $p(x)$
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: The exact solution $y(x)$
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: The initial condition repeatedly
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s6
+    title: Equivalence and domain warnings
+    required: true
+    content: The transformation is valid only where the chosen $y_1$ is nonzero and all terms are defined. A transformed
+      method may improve accuracy when it captures dominant linear behavior, but it is not automatically superior
+      on every equation or interval.
+    media: []
+    check:
+      id: q006
+      type: multipleChoice
+      prompt: What must be checked before claiming the transformed and original IVPs are equivalent?
+      skills:
+      - ede-ch03-numerical-methods-semilinear-methods
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-semilinear-methods
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: Division by $y_1$ and every transformed evaluation require a common valid interval.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $y_1$ is nonzero and both right sides are defined on the interval
+      - id: b
+        text: The step size is an integer
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: The nonlinear term vanishes
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: Euler is exact
+        issueSignals:
+        - id: ede-numerical-semilinear-transform-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a

@@ -26,36 +26,39 @@ lesson:
   - id: sec-procedure
     title: Follow the electron-accounting algorithm
     required: true
-    content: Count valence electrons, choose connectivity, place single bonds, complete terminal shells, place leftovers centrally,
-      and form multiple bonds if needed.
+    content: |-
+      Treat a Lewis structure as an electron budget, not a picture to guess. First total the valence electrons and adjust for charge. Next choose a plausible skeleton, join bonded atoms with single bonds, and subtract two electrons per bond. Complete terminal-atom duets or octets before placing any remainder on the central atom. If the central atom still lacks an octet and no electrons remain, convert an adjacent lone pair into a multiple bond. Finish by recounting every dot and bond and checking formal charges.
+
+      For $\mathrm{CO_2}$, the budget is $4+2(6)=16$ electrons. The single-bond skeleton $\mathrm{O-C-O}$ uses four; completing both oxygen octets uses the remaining twelve but leaves carbon with only four electrons around it. Converting one lone pair from each oxygen into a bonding pair gives $\mathrm{O=C=O}$ without changing the 16-electron total.
     check:
       id: chk-sec-procedure
       type: multipleChoice
-      prompt: Which statement correctly applies the idea of follow the electron-accounting algorithm?
+      prompt: After drawing single bonds in $\mathrm{O-C-O}$ and completing both oxygen octets, all 16 valence electrons have been placed but carbon has only four electrons around it. What is the correct next step?
       choices:
       - id: a
-        text: A valid procedure ends with an electron-total and charge check.
+        text: Convert one lone pair from each oxygen into a bonding pair, producing $\mathrm{O=C=O}$ without adding electrons.
         issueSignals: []
       - id: b
-        text: Start by guessing double bonds before counting electrons.
+        text: Add four new electrons to carbon so every atom has an octet.
         issueSignals:
-        - id: chemistry-bonding-covalent-pair-error
+        - id: chemistry-bonding-valence-count-error
       - id: c
-        text: The conclusion follows from counting element symbols rather than applying the required electron, charge, or
-          vector check.
+        text: Remove a lone pair from each oxygen and discard those four electrons.
         issueSignals:
-        - id: chemistry-bonding-covalent-pair-error
+        - id: chemistry-bonding-valence-count-error
       answer:
         choiceId: a
-      explanation: 'Solution: A valid procedure ends with an electron-total and charge check. Why it works: Count valence
-        electrons, choose connectivity, place single bonds, complete terminal shells, place leftovers centrally, and form
-        multiple bonds if needed. Why the other choices fail: The other statements either reverse the relevant electron or
-        charge accounting or apply a structural model outside its stated scope.'
+      explanation: |-
+        Solution: Convert one lone pair from each oxygen into a bonding pair, producing $\mathrm{O=C=O}$. The electron budget remains 16, carbon reaches an octet, and every atom has formal charge zero.
+
+        Why it works: A multiple bond redistributes already-counted electrons from lone pairs into shared pairs. It does not create or destroy electrons.
+
+        Why the other choices fail: Adding electrons violates the neutral molecule's 16-electron budget. Discarding oxygen lone pairs also violates the budget and leaves an invalid representation.
     media:
     - type: image
       src: /media/chemistry/bonding-lewis-structure-algorithm.svg
-      alt: Instructional workflow for lewis dot structures in depth showing the central particle-level decisions.
-      caption: Use the representation to connect observable evidence with electron and particle accounting.
+      alt: Worked carbon-dioxide Lewis-structure workflow showing the 16-electron budget, single-bond skeleton, completed oxygen octets, carbon deficiency, double-bond correction, and final formal-charge check.
+      caption: Track the same 16 electrons through every stage; multiple bonds redistribute electrons rather than adding them.
   - id: sec-polyatomic
     title: Adjust for ion charge
     required: true
@@ -114,7 +117,8 @@ lesson:
   - id: sec-incomplete-octets
     title: Recognize incomplete octets
     required: true
-    content: Hydrogen needs two electrons, while compounds such as BF3 can leave boron with six without inventing extra electrons.
+    content: |-
+      The octet rule has defined exceptions. Hydrogen fills its only valence shell with a duet. Electron-deficient central atoms can also remain below eight electrons: beryllium commonly has four electrons around it in $\mathrm{BeCl_2}$, and boron commonly has six in $\mathrm{BF_3}$. These are valid electron counts, not invitations to invent lone pairs. Always verify the total valence-electron budget first: $\mathrm{BF_3}$ has $3+3(7)=24$ electrons, all accounted for by three B–F bonds and three lone pairs on each fluorine.
     check:
       id: chk-sec-incomplete-octets
       type: multipleChoice
@@ -138,34 +142,51 @@ lesson:
         while compounds such as BF3 can leave boron with six without inventing extra electrons. Why the other choices fail:
         The other statements either reverse the relevant electron or charge accounting or apply a structural model outside
         its stated scope.'
+    media:
+    - type: image
+      src: /media/chemistry/bonding-incomplete-octet-examples.svg
+      alt: Lewis structures for hydrogen, beryllium chloride, and boron trifluoride with valence-electron totals and the duet, four-electron, and six-electron central-shell counts labeled.
+      caption: A correct exception still conserves the complete valence-electron budget.
   - id: sec-expanded-octets
     title: Recognize expanded valence shells
     required: true
-    content: Period-three and heavier centers can be represented with more than eight electrons in common Lewis structures;
-      second-period centers cannot.
+    content: |-
+      Period-three and heavier central atoms can be represented with more than eight electrons in common Lewis structures; second-period centers cannot. An expanded shell does not replace electron accounting. Recount the total electrons and review formal charge on every atom:
+
+      $$
+      \mathrm{FC}=V-N-\frac{B}{2},
+      $$
+
+      where $V$ is the isolated atom's valence-electron count, $N$ is the number of nonbonding electrons assigned to that atom, and $B$ is the number of bonding electrons shared around it. Formal charges must sum to the species' overall charge. In $\mathrm{SF_6}$, sulfur has $V=6$, $N=0$, and $B=12$, so $\mathrm{FC(S)}=6-0-12/2=0$. Each fluorine has $V=7$, $N=6$, and $B=2$, so each also has formal charge zero.
     check:
       id: chk-sec-expanded-octets
       type: multipleChoice
-      prompt: Which statement correctly applies the idea of recognize expanded valence shells?
+      prompt: In the usual Lewis structure of $\mathrm{SF_6}$, sulfur has six single bonds and no lone electrons. Using $\mathrm{FC}=V-N-B/2$, what is sulfur's formal charge?
       choices:
       - id: a
-        text: SF6 is commonly drawn with twelve electrons around sulfur.
+        text: '$6-0-12/2=0$'
         issueSignals: []
       - id: b
-        text: Carbon routinely expands to twelve electrons in CO2.
+        text: '$6-0-6/2=+3$ because each bond counts as only one bonding electron.'
         issueSignals:
-        - id: chemistry-bonding-covalent-pair-error
+        - id: chemistry-bonding-formal-charge-error
       - id: c
-        text: The conclusion follows from counting element symbols rather than applying the required electron, charge, or
-          vector check.
+        text: '$6-12-0/2=-6$ because all shared electrons are nonbonding electrons on sulfur.'
         issueSignals:
-        - id: chemistry-bonding-covalent-pair-error
+        - id: chemistry-bonding-formal-charge-error
       answer:
         choiceId: a
-      explanation: 'Solution: SF6 is commonly drawn with twelve electrons around sulfur. Why it works: Period-three and heavier
-        centers can be represented with more than eight electrons in common Lewis structures; second-period centers cannot.
-        Why the other choices fail: The other statements either reverse the relevant electron or charge accounting or apply
-        a structural model outside its stated scope.'
+      explanation: |-
+        Solution: Sulfur has $V=6$, $N=0$, and $B=12$, so $\mathrm{FC(S)}=6-0-12/2=0$. As a second check, each fluorine has $7-6-2/2=0$, and the atomic formal charges sum to the neutral molecule's charge.
+
+        Why it works: Formal charge assigns all lone electrons and half of the shared bonding electrons to the atom. Six S–F bonds contain twelve bonding electrons around sulfur.
+
+        Why the other choices fail: Counting six bonds as only six bonding electrons applies the $1/2$ factor twice. Treating shared electrons as sulfur lone electrons swaps $N$ and $B$ and does not describe the Lewis structure.
+    media:
+    - type: image
+      src: /media/chemistry/bonding-expanded-octet-formal-charge.svg
+      alt: Sulfur hexafluoride Lewis-structure audit showing six sulfur-fluorine bonds, twelve bonding electrons around sulfur, the formal-charge formula, and zero formal charge calculations for sulfur and fluorine.
+      caption: Expanded-shell structures still require an electron-total and formal-charge audit.
   - id: sec-radicals
     title: Handle odd-electron species
     required: true

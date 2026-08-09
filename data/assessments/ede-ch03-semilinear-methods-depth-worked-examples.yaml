@@ -1,0 +1,176 @@
+schemaVersion: 1
+id: ede-ch03-semilinear-methods-depth-worked-examples
+title: 'Semilinear Numerical Methods: Worked Examples'
+assessmentType: workedExample
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch03-numerical-methods
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch03-numerical-methods
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch03-numerical-methods
+  - s2c-approved
+  - supplemental
+workedExamples:
+- id: we01
+  title: Direct versus semilinear Euler
+  problem: For $y'+y=y^2$, $y(0)=0.5$, compare one direct and transformed Euler step with $h=0.2$.
+  steps:
+  - id: we01-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Build both update equations.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - direct RHS
+      - transformed RHS
+    explanation: |-
+      Solution: Directly, $y'=-y+y^2$; with $y=u e^{-x}$, $u'=u^2e^{-x}$ and $u(0)=0.5$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we01-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Advance and reconstruct.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - two updates
+      - reconstruction
+    explanation: |-
+      Solution: Direct Euler gives $0.45$. Transformed Euler gives $u_1=0.55$ and $y_1=0.55e^{-0.2}\approx0.450302$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we01-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Compare to the exact value.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - reference
+      - qualified comparison
+    explanation: |-
+      Solution: The separable exact solution gives $y(0.2)\approx0.450166$; transformed Euler is closer in this step, without proving universal superiority.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+- id: we02
+  title: Transformed Improved Euler
+  problem: Use endpoint-average Improved Euler on the transformed IVP $u'=u^2e^{-x}$, $u(0)=0.5$, $h=0.2$.
+  steps:
+  - id: we02-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Predict the endpoint.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - first slope
+      - predictor
+    explanation: |-
+      Solution: $H(0,0.5)=0.25$, so $u^*=0.55$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we02-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Correct and reconstruct.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - endpoint slope
+      - corrected u
+      - reconstructed y
+    explanation: |-
+      Solution: $H(0.2,0.55)\approx0.247642$; hence $u_1\approx0.549764$ and $y_1=u_1e^{-0.2}\approx0.450111$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we02-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Check the gain and domain.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - error
+      - nonzero factor
+    explanation: |-
+      Solution: The exact value is about $0.450166$, so the error is about $5.5\times10^{-5}$; $e^{-x}$ is nonzero on the step.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+- id: we03
+  title: Semilinear RK4 as quadrature
+  problem: For $y'+2y=\sin x$, $y(0)=0$, transform and take one RK4 step of size $0.2$.
+  steps:
+  - id: we03-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Remove the linear part.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - complementary factor
+      - transformed equation
+    explanation: |-
+      Solution: With $y=u e^{-2x}$, $u'=e^{2x}\sin x$ and $u(0)=0$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we03-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Apply RK4 to $u$.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - four transformed stages
+      - u update
+    explanation: |-
+      Solution: Using the four values of $e^{2x}\sin x$ at $0,0.1,0.1,0.2$ gives $u(0.2)\approx0.0261376$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we03-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Reconstruct and verify scale.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - reconstruction
+      - integral check
+    explanation: |-
+      Solution: $y(0.2)\approx0.0261376e^{-0.4}=0.0175205$; the integral formula $e^{-2x}\int_0^xe^{2s}\sin s\,ds$ gives about $0.0175184$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []

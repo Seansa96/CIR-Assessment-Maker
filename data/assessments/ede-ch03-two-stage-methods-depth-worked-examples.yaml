@@ -1,0 +1,175 @@
+schemaVersion: 1
+id: ede-ch03-two-stage-methods-depth-worked-examples
+title: 'Two-Stage Methods and Quadrature: Worked Examples'
+assessmentType: workedExample
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch03-numerical-methods
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch03-numerical-methods
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch03-numerical-methods
+  - s2c-approved
+  - supplemental
+workedExamples:
+- id: we01
+  title: Three second-order updates
+  problem: For $y'=y^2$, $y(0)=1$, take one step with $h=0.2$ using three two-stage rules.
+  steps:
+  - id: we01-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Compute the common first slope.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - three stage states
+      - common k1
+    explanation: |-
+      Solution: $k_1=1$. Endpoint-average predicts $1.2$; source-Heun predicts $1+\frac23(0.2)=1.133333$; midpoint predicts $1.1$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we01-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Evaluate and weight the second slopes.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - correct locations
+      - correct weights
+    explanation: |-
+      Solution: The results are $1.244$ (endpoint-average), $1.242667$ (source-Heun), and $1.242$ (midpoint).
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we01-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Compare with the exact value.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - reference
+      - distinct errors
+    explanation: |-
+      Solution: The exact solution $1/(1-x)$ gives $1.25$ at $x=0.2$; all three undershoot, with different errors despite sharing second order.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+- id: we02
+  title: The trapezoid connection
+  problem: Interpret endpoint-average Improved Euler for $y'=x^2$, $y(0)=0$ on $[0,1]$ with $h=0.5$.
+  steps:
+  - id: we02-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Identify the quadrature data.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - mesh
+      - slope values
+    explanation: |-
+      Solution: The slopes are $g(0)=0$, $g(0.5)=0.25$, and $g(1)=1$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we02-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Add two trapezoids.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - composite trapezoid
+      - value
+    explanation: |-
+      Solution: $Y_2=\frac{0.5}{2}[0+2(0.25)+1]=0.375$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we02-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Check against integration.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - exact integral
+      - error sign
+    explanation: |-
+      Solution: $\int_0^1x^2dx=1/3$, so the error is $0.041667$ and is positive because the function is convex.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+- id: we03
+  title: Equal evaluation budgets
+  problem: Compare Euler and midpoint with a budget of four evaluations on $[0,1]$.
+  steps:
+  - id: we03-s1
+    title: Model or transform
+    instruction: Identify the governing relation and preserve its assumptions.
+    type: freeResponse
+    prompt: Translate budget into step sizes.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - evaluation count
+      - step sizes
+    explanation: |-
+      Solution: Euler can take four steps, $h=0.25$; midpoint can take two steps, $h=0.5$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we03-s2
+    title: Compute
+    instruction: Carry out the indicated recurrence, integration, or algebra in an auditable order.
+    type: freeResponse
+    prompt: Apply both to the stated IVP.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - Euler sum
+      - midpoint sum
+    explanation: |-
+      Solution: For $y'=x$, $y(0)=0$, Euler gives $0.375$ while midpoint gives $0.5$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []
+  - id: we03-s3
+    title: Verify and interpret
+    instruction: Check the result against the equation, data, units, direction, or domain.
+    type: freeResponse
+    prompt: Use the exact reference.
+    choices: []
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - exact value
+      - fair comparison
+    explanation: |-
+      Solution: $y(1)=1/2$, so midpoint is exact for this linear integrand while Euler has error $0.125$.
+
+      Why it works: The calculation preserves the original equation, data, and domain conditions.
+    media: []

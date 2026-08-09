@@ -1,0 +1,254 @@
+schemaVersion: 1
+id: ede-ch03-two-stage-methods-depth-concept-lesson
+title: Two-Stage Methods and Quadrature
+assessmentType: conceptLesson
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch03-numerical-methods
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch03-numerical-methods
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch03-numerical-methods
+  - s2c-approved
+  - supplemental
+lesson:
+  introduction: Second-order two-stage rules differ in stage location and weighting even when they share the same
+    formal order.
+  sections:
+  - id: s1
+    title: A general two-stage rule
+    required: true
+    content: Let $k_1=f(x_n,y_n)$, $k_2=f(x_n+\theta h,y_n+\theta h k_1)$, and update $y_{n+1}=y_n+h(\sigma k_1+\rho
+      k_2)$. The parameters specify both where the second slope is sampled and how the slopes are combined.
+    media:
+    - type: image
+      src: /media/ede/ch03-two-stage-family.svg
+      alt: Stage locations and weights for endpoint-average, source-defined Heun, and midpoint methods.
+      caption: Use the relationships in the diagram to organize the calculation and verification.
+    check:
+      id: q001
+      type: multipleChoice
+      prompt: In the general two-stage rule, what does $\theta$ control?
+      skills:
+      - ede-ch03-numerical-methods-two-stage-family
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-two-stage-family
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $\theta$ places the second stage at $x_n+\theta h$ and advances its predicted state by the same fraction.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: The second stage's location and predicted state
+      - id: b
+        text: The number of unknown functions
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: The exact solution
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: The initial condition
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s2
+    title: Second-order conditions
+    required: true
+    content: Matching the Taylor expansion through terms of order $h^2$ requires $\sigma+\rho=1$ and $\rho\theta=1/2$.
+      These conditions create a family rather than one unique method.
+    media: []
+    check:
+      id: q002
+      type: multipleChoice
+      prompt: Which parameter choice satisfies both second-order conditions?
+      skills:
+      - ede-ch03-numerical-methods-two-stage-family
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-two-stage-family
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $0+1=1$ and $1(1/2)=1/2$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $\rho=1$, $\theta=1/2$, $\sigma=0$
+      - id: b
+        text: $\rho=1$, $\theta=1$, $\sigma=1$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $\rho=0$, $\theta=1/2$, $\sigma=1$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $\rho=1/2$, $\theta=1/2$, $\sigma=1/2$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s3
+    title: Endpoint-average Improved Euler
+    required: true
+    content: The endpoint-average rule uses $\theta=1$ and $\sigma=\rho=1/2$. It predicts an endpoint with Euler,
+      evaluates the endpoint slope there, and averages the two slopes. It is also called explicit trapezoid and
+      is often called Heun's method outside this source.
+    media: []
+    check:
+      id: q003
+      type: numericResponse
+      prompt: For $y'=y^2$, $y_0=1$, $h=0.2$, endpoint-average Improved Euler uses slopes $1$ and $1.44$. Find $y_1$.
+      skills:
+      - ede-ch03-numerical-methods-two-stage-family
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-two-stage-family
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $y_1=1+0.2(1+1.44)/2=1.244$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 1.244
+        tolerance: 0.0001
+  - id: s4
+    title: Source-defined Heun and midpoint
+    required: true
+    content: The source calls $\theta=2/3$, $\sigma=1/4$, $\rho=3/4$ Heun's method. Midpoint uses $\theta=1/2$,
+      $\sigma=0$, $\rho=1$. Naming conventions vary, so formulas—not labels—must determine the stages.
+    media: []
+    check:
+      id: q004
+      type: multipleChoice
+      prompt: Which description matches the source-defined Heun rule?
+      skills:
+      - ede-ch03-numerical-methods-two-stage-family
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-two-stage-family
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: The source-defined Heun parameters are $\theta=2/3$, $\sigma=1/4$, and $\rho=3/4$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: Sample at $2h/3$ and weight slopes $1/4,3/4$
+      - id: b
+        text: Sample only at the start
+        issueSignals:
+        - id: ede-numerical-method-naming-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: Sample at $h/2$ and discard that slope
+        issueSignals:
+        - id: ede-numerical-method-naming-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: Average exact endpoint values
+        issueSignals:
+        - id: ede-numerical-method-naming-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s5
+    title: Geometry and evaluation cost
+    required: true
+    content: Every explicit two-stage rule uses two evaluations per step. A fair comparison therefore distinguishes
+      step count from evaluation count and plots the actual stage location rather than treating the second slope
+      as an endpoint slope in every method.
+    media: []
+    check:
+      id: q005
+      type: numericResponse
+      prompt: How many evaluations of $f$ are used by 12 steps of an explicit two-stage method?
+      skills:
+      - ede-ch03-numerical-methods-method-comparison
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-method-comparison
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $12\times2=24$ evaluations.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 24
+        tolerance: 0.0001
+  - id: s6
+    title: Quadrature as a special IVP
+    required: true
+    content: When $y'=g(x)$, Euler accumulates left rectangles. Endpoint-average Improved Euler accumulates trapezoids
+      because its two slopes are $g(x_n)$ and $g(x_{n+1})$.
+    media:
+    - type: image
+      src: /media/ede/ch03-ode-quadrature-connection.svg
+      alt: Euler rectangles and endpoint-average trapezoids viewed as numerical IVP updates.
+      caption: Use the relationships in the diagram to organize the calculation and verification.
+    check:
+      id: q006
+      type: numericResponse
+      prompt: Apply one endpoint-average step to $y'=x^2$, $y(0)=0$, with $h=0.5$.
+      skills:
+      - ede-ch03-numerical-methods-two-stage-family
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-two-stage-family
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $y_1=0+0.5[0^2+0.5^2]/2=0.0625$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 0.0625
+        tolerance: 0.0001

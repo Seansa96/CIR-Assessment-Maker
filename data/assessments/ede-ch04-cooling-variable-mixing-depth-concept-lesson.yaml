@@ -1,0 +1,248 @@
+schemaVersion: 1
+id: ede-ch04-cooling-variable-mixing-depth-concept-lesson
+title: Cooling and Variable-Volume Mixing
+assessmentType: conceptLesson
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch04-first-order-applications
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch04-first-order-applications
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch04-first-order-applications
+  - s2c-approved
+  - supplemental
+lesson:
+  introduction: Cooling and mixing are both balance models, but their parameters, state variables, and validity
+    intervals differ.
+  sections:
+  - id: s1
+    title: Infer a cooling constant
+    required: true
+    content: For constant ambient temperature $T_a$, $T-T_a=(T_0-T_a)e^{-kt}$. A measurement of excess-temperature
+      ratio determines $k$.
+    media: []
+    check:
+      id: q001
+      type: numericResponse
+      prompt: A body cools from $90$ to $55$ C in a $20$ C room in 10 min. Find $k$.
+      skills:
+      - ede-ch04-first-order-applications-parameter-inference
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch04-first-order-applications-parameter-inference
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: The excess halves: $35/70=1/2=e^{-10k}$, so $k=\ln2/10$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 0.0693147
+        tolerance: 0.0001
+  - id: s2
+    title: Infer an event time
+    required: true
+    content: Once $k$ is known, a measured temperature can be solved backward for elapsed time. The ambient shift
+      must occur before taking logarithms.
+    media: []
+    check:
+      id: q002
+      type: numericResponse
+      prompt: With $T=20+70e^{-0.0693147t}$, when is $T=37.5$ C?
+      skills:
+      - ede-ch04-first-order-applications-parameter-inference
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch04-first-order-applications-parameter-inference
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: The excess ratio is $17.5/70=1/4$, which takes two half-lives of 10 min.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 20
+        tolerance: 0.001
+  - id: s3
+    title: Amount versus concentration
+    required: true
+    content: If $Q(t)$ is solute amount and $V(t)$ is volume, the well-mixed concentration is $Q/V$. Outflow amount
+      rate is volumetric flow times this concentration.
+    media:
+    - type: image
+      src: /media/ede/ch04-variable-volume-tank.svg
+      alt: A changing-volume tank with separate amount, concentration, inflow, outflow, and capacity labels.
+      caption: Use the relationships in the diagram to organize the calculation and verification.
+    check:
+      id: q003
+      type: multipleChoice
+      prompt: A tank contains $Q$ grams in $V$ liters and drains at 3 L/min. What is the solute outflow rate?
+      skills:
+      - ede-ch04-first-order-applications-cooling-mixing
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch04-first-order-applications-cooling-mixing
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: Flow times concentration is $3(Q/V)$ grams per minute.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $3Q/V$ grams/min
+      - id: b
+        text: $Q/3V$ grams/min
+        issueSignals:
+        - id: ede-mixing-amount-concentration-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $3Q$ liters/min
+        issueSignals:
+        - id: ede-mixing-amount-concentration-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $V/3Q$ grams/min
+        issueSignals:
+        - id: ede-mixing-amount-concentration-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s4
+    title: Build the signed balance
+    required: true
+    content: The governing equation is $Q'=$ solute inflow rate minus solute outflow rate. Every term must have
+      amount-per-time units and the outflow concentration is the current tank concentration.
+    media: []
+    check:
+      id: q004
+      type: multipleChoice
+      prompt: Brine enters at 4 L/min and 1 g/L; mixture leaves at 2 L/min. Which input term belongs in $Q'$?
+      skills:
+      - ede-ch04-first-order-applications-cooling-mixing
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch04-first-order-applications-cooling-mixing
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: The incoming amount rate is $(4\text{ L/min})(1\text{ g/L})=4$ g/min.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $4$ g/min
+      - id: b
+        text: $1/4$ g/min
+        issueSignals:
+        - id: ede-model-rate-unit-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $2Q/V$ g/min
+        issueSignals:
+        - id: ede-model-rate-unit-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $4V$ g/min
+        issueSignals:
+        - id: ede-model-rate-unit-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s5
+    title: Changing volume
+    required: true
+    content: Unequal volumetric rates give $V(t)=V_0+(r_{in}-r_{out})t$. This expression must replace a frozen initial
+      volume in the outflow term.
+    media: []
+    check:
+      id: q005
+      type: multipleChoice
+      prompt: A 50-L tank has 4 L/min entering and 2 L/min leaving. What is $V(t)$?
+      skills:
+      - ede-ch04-first-order-applications-variable-volume-mixing
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch04-first-order-applications-variable-volume-mixing
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: The net volume rate is $4-2=2$ L/min.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $50+2t$
+      - id: b
+        text: $50-2t$
+        issueSignals:
+        - id: ede-mixing-changing-volume-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $50+6t$
+        issueSignals:
+        - id: ede-mixing-changing-volume-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $50$
+        issueSignals:
+        - id: ede-mixing-changing-volume-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s6
+    title: Capacity and validity
+    required: true
+    content: A mathematical solution may continue after a physical tank overflows or empties. The maximal model
+      interval ends at the first capacity, emptying, or assumption failure.
+    media: []
+    check:
+      id: q006
+      type: numericResponse
+      prompt: The tank volume is $50+2t$ L and capacity is 100 L. Find the first overflow time in minutes.
+      skills:
+      - ede-ch04-first-order-applications-variable-volume-mixing
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch04-first-order-applications-variable-volume-mixing
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: Solve $50+2t=100$ to get $t=25$ min.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 25
+        tolerance: 0.0001

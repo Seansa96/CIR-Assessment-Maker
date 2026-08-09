@@ -1,0 +1,273 @@
+schemaVersion: 1
+id: ede-ch03-error-convergence-depth-concept-lesson
+title: Numerical Error and Convergence in Depth
+assessmentType: conceptLesson
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch03-numerical-methods
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch03-numerical-methods
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch03-numerical-methods
+  - s2c-approved
+  - supplemental
+lesson:
+  introduction: Error analysis separates the defect made in one idealized step from the error accumulated along
+    a computed trajectory.
+  sections:
+  - id: s1
+    title: Local truncation error
+    required: true
+    content: For a one-step rule $y_{n+1}=\Phi_h(x_n,y_n)$, local truncation error compares one step started at
+      the exact value with $y(x_n+h)$. It does not include errors inherited from earlier rows.
+    media: []
+    check:
+      id: q001
+      type: multipleChoice
+      prompt: Which comparison defines a one-step local truncation error at $x_n$?
+      skills:
+      - ede-ch03-numerical-methods-error-step-size
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-error-step-size
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: Begin the numerical rule with exact current data and compare its next value with the exact next value.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: Exact $y(x_n+h)$ versus one update begun at exact $y(x_n)$
+      - id: b
+        text: Exact $y(x_n)$ versus the initial datum
+        issueSignals:
+        - id: ede-numerical-local-global-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: Two numerical values from different endpoints
+        issueSignals:
+        - id: ede-numerical-local-global-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: The slope versus the step size
+        issueSignals:
+        - id: ede-numerical-local-global-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s2
+    title: Taylor expansion for Euler
+    required: true
+    content: Taylor's formula gives $y(x+h)=y(x)+hy'(x)+\frac12h^2y''(\xi)$. Euler retains the first two terms,
+      so its one-step defect is proportional to $h^2$ when $y''$ is bounded.
+    media:
+    - type: image
+      src: /media/ede/ch03-error-propagation.svg
+      alt: One-step defects feeding an accumulated endpoint error along a numerical mesh.
+      caption: Use the relationships in the diagram to organize the calculation and verification.
+    check:
+      id: q002
+      type: numericResponse
+      prompt: For $y'=y$, $y(0)=1$, Euler with $h=0.1$ gives $1.1$. Using $e^{0.1}=1.105170186$, find the absolute
+        one-step defect.
+      skills:
+      - ede-ch03-numerical-methods-error-step-size
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-error-step-size
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $|1.105170186-1.1|=0.005170186$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 0.005170186
+        tolerance: 0.0001
+  - id: s3
+    title: From local to global error
+    required: true
+    content: Over a fixed interval, roughly $1/h$ steps accumulate and propagate local defects. Under stability
+      and smoothness assumptions, Euler's $O(h^2)$ local error therefore produces $O(h)$ global error.
+    media: []
+    check:
+      id: q003
+      type: multipleChoice
+      prompt: If Euler's global error is in its asymptotic range, what should halving $h$ approximately do?
+      skills:
+      - ede-ch03-numerical-methods-error-step-size
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-error-step-size
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: First-order global error has the form $C h$, so replacing $h$ by $h/2$ halves it.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: Halve the error
+      - id: b
+        text: Quarter the error
+        issueSignals:
+        - id: ede-numerical-convergence-order-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: Leave it unchanged
+        issueSignals:
+        - id: ede-numerical-convergence-order-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: Double the error
+        issueSignals:
+        - id: ede-numerical-convergence-order-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s4
+    title: Assumptions behind an order claim
+    required: true
+    content: An order statement needs more than a named method. The exact solution and required derivatives must
+      remain bounded on the interval, stage evaluations must stay in the model domain, and the update must be stable
+      enough not to amplify defects uncontrollably.
+    media: []
+    check:
+      id: q004
+      type: multipleChoice
+      prompt: Which fact most directly supports the Taylor estimate for Euler's local error?
+      skills:
+      - ede-ch03-numerical-methods-error-step-size
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-error-step-size
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: A bound on the omitted second-derivative term controls the Taylor remainder.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $y''$ is bounded on the step
+      - id: b
+        text: $y$ is positive at one point
+        issueSignals:
+        - id: ede-numerical-convergence-order-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: The interval contains an integer
+        issueSignals:
+        - id: ede-numerical-convergence-order-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: The step count is even
+        issueSignals:
+        - id: ede-numerical-convergence-order-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s5
+    title: Step halving and empirical order
+    required: true
+    content: For errors $E_h\approx C h^p$, the ratio $E_h/E_{h/2}\approx2^p$. Thus $p\approx\log_2(E_h/E_{h/2})$
+      when both computations are in the asymptotic regime and use the same endpoint and reference.
+    media: []
+    check:
+      id: q005
+      type: numericResponse
+      prompt: Errors are $0.032$ for $h$ and $0.008$ for $h/2$. Estimate the observed order $p$.
+      skills:
+      - ede-ch03-numerical-methods-error-step-size
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-error-step-size
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $E_h/E_{h/2}=4=2^2$, so $p=2$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 2
+        tolerance: 0.0001
+  - id: s6
+    title: Accuracy, roundoff, and cost
+    required: true
+    content: Smaller steps reduce truncation error but require more evaluations and more floating-point operations.
+      Eventually roundoff and cancellation may dominate, so a defensible comparison reports endpoint error, evaluation
+      count, and arithmetic precision.
+    media: []
+    check:
+      id: q006
+      type: multipleChoice
+      prompt: Which report supports the fairest method comparison?
+      skills:
+      - ede-ch03-numerical-methods-method-comparison
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-method-comparison
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: Accuracy and work must be measured on the same task with the same numerical precision.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: Same IVP and endpoint, reference error, evaluations, and precision
+      - id: b
+        text: Only the number of steps
+        issueSignals:
+        - id: ede-numerical-evaluation-cost-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: Errors at different endpoints
+        issueSignals:
+        - id: ede-numerical-evaluation-cost-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: Only the method names
+        issueSignals:
+        - id: ede-numerical-evaluation-cost-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a

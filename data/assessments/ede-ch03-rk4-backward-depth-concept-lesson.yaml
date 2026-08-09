@@ -1,0 +1,254 @@
+schemaVersion: 1
+id: ede-ch03-rk4-backward-depth-concept-lesson
+title: RK4 and Backward Integration
+assessmentType: conceptLesson
+categoryId: elementary-differential-equations-bvp
+topicId: ede-ch03-numerical-methods
+modeDefault: practice
+randomizeQuestions: false
+skills:
+- ede-ch03-numerical-methods
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - elementary-differential-equations-bvp
+  - ede-ch03-numerical-methods
+  - s2c-approved
+  - supplemental
+lesson:
+  introduction: RK4 accuracy depends on evaluating each intermediate state correctly and respecting the direction
+    of integration.
+  sections:
+  - id: s1
+    title: Four linked RK stages
+    required: true
+    content: Classical RK4 uses $k_1$ at the start, $k_2$ and $k_3$ at successively predicted midpoint states, and
+      $k_4$ at the predicted endpoint. Reusing $y_n$ at a later stage destroys the method.
+    media:
+    - type: image
+      src: /media/ede/ch03-rk4-stage-geometry.svg
+      alt: The four RK4 stage states and their weighted combination.
+      caption: Use the relationships in the diagram to organize the calculation and verification.
+    check:
+      id: q001
+      type: multipleChoice
+      prompt: Which state is used for $k_3$?
+      skills:
+      - ede-ch03-numerical-methods-runge-kutta
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-runge-kutta
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $k_3=f(x_n+h/2,y_n+h k_2/2)$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $y_n+h k_2/2$
+      - id: b
+        text: $y_n$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $y_n+h k_1$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $y_n+h k_4$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s2
+    title: State dependence matters
+    required: true
+    content: For $f(x,y)$, each stage changes both the evaluation point and the provisional state. Only for $f(x)$
+      alone do the state predictions disappear from the slope evaluations.
+    media: []
+    check:
+      id: q002
+      type: multipleChoice
+      prompt: For which equation do RK4 stage states not affect slope values?
+      skills:
+      - ede-ch03-numerical-methods-runge-kutta
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-runge-kutta
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $f(x)=\sin x$ does not depend on the provisional value of $y$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $y'=\sin x$
+      - id: b
+        text: $y'=x+y$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $y'=y^2$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $y'=xy$
+        issueSignals:
+        - id: ede-numerical-stage-location-weight-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
+  - id: s3
+    title: Multi-step RK4 tables
+    required: true
+    content: After each weighted update, the new $(x_{n+1},y_{n+1})$ becomes the start of the next four-stage calculation.
+      A table should store stages separately and must not round them prematurely.
+    media: []
+    check:
+      id: q003
+      type: numericResponse
+      prompt: For $y'=y$, one RK4 step of size $0.2$ multiplies the state by $1.2214$. Starting from $1$, what is
+        the two-step value using this rounded multiplier?
+      skills:
+      - ede-ch03-numerical-methods-runge-kutta
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-runge-kutta
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $1.2214^2=1.49181796$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 1.49181796
+        tolerance: 0.0001
+  - id: s4
+    title: Fourth-order refinement
+    required: true
+    content: For a fixed endpoint in the asymptotic regime, RK4 global error behaves like $C h^4$. Halving $h$ should
+      reduce the error by about $2^4=16$.
+    media: []
+    check:
+      id: q004
+      type: numericResponse
+      prompt: An RK4 endpoint error is $0.0016$ for $h$. Predict its asymptotic error for $h/2$.
+      skills:
+      - ede-ch03-numerical-methods-runge-kutta
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-runge-kutta
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $0.0016/16=0.0001$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 0.0001
+        tolerance: 0.0001
+  - id: s5
+    title: Backward steps
+    required: true
+    content: A one-step method can integrate from right to left by using $h<0$. The stage formulas are unchanged;
+      the negative step moves every stage and the final update in the decreasing-$x$ direction.
+    media: []
+    check:
+      id: q005
+      type: numericResponse
+      prompt: Use one backward Euler step for $y'=y$ from $(1,e)$ with $h=-0.1$. Using $e=2.7182818$, find the estimate
+        at $0.9$.
+      skills:
+      - ede-ch03-numerical-methods-backward-integration
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - calculation
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-backward-integration
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $e+(-0.1)e=0.9e=2.44645362$.
+
+        Why it works: Direct substitution verifies the numerical result and its units or sign.
+      answer:
+        value: 2.44645362
+        tolerance: 0.0001
+  - id: s6
+    title: A forward-time transformation
+    required: true
+    content: With a reflected independent variable, a right-end IVP can be rewritten for forward stepping. If $z(s)=y(-s)$,
+      then $z'(s)=-f(-s,z)$; both the reflected input and the minus sign must be retained.
+    media:
+    - type: image
+      src: /media/ede/ch03-backward-integration.svg
+      alt: A right-end initial value reflected into a forward-stepping transformed problem.
+      caption: Use the relationships in the diagram to organize the calculation and verification.
+    check:
+      id: q006
+      type: multipleChoice
+      prompt: If $y'=x+y$ and $z(s)=y(-s)$, which equation does $z$ satisfy?
+      skills:
+      - ede-ch03-numerical-methods-backward-integration
+      media: []
+      difficultyDimensions:
+      - modelOrDerivation
+      - errorDiagnosis
+      subjectDifficultyTags:
+      - ede-ch03-numerical-methods-backward-integration
+      difficultyEvidence: Requires choosing the governing relation and checking the result against the stated conditions.
+      explanation: |-
+        Solution: $z'=-f(-s,z)=-(-s+z)=s-z$.
+
+        Why it works: The stated structure and conditions determine the result.
+
+        Why the other choices fail: The other choices misuse a rule, omit a condition, or reverse the relevant relationship.
+      choices:
+      - id: a
+        text: $z'=s-z$
+      - id: b
+        text: $z'=-s-z$
+        issueSignals:
+        - id: ede-numerical-backward-time-sign-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: c
+        text: $z'=s+z$
+        issueSignals:
+        - id: ede-numerical-backward-time-sign-error
+          domains:
+          - elementary-differential-equations-bvp
+      - id: d
+        text: $z'=-s+z$
+        issueSignals:
+        - id: ede-numerical-backward-time-sign-error
+          domains:
+          - elementary-differential-equations-bvp
+      answer:
+        choiceId: a
