@@ -12,235 +12,253 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-polygons
-  - aops-volume-1
   - geometry
-  - polygon-types
-  - angle-sums
-  - regular-polygons
-  - regular-hexagons
+  - diagonals
+  - tiling
 skills:
-- Apply aops-polygons
-- aops-polygons
+- Calculate the number of diagonals in a polygon.
+- Solve complex equations involving interior angle sums.
+- Determine if a regular polygon can tile the plane.
 questions:
 - id: q001
   type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **polygon types**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'How many diagonals does a regular decagon (10-sided polygon) have?'
+  difficultyDimensions:
+  - Identify $n = 10$.
+  - Recall the diagonal formula: $D = \frac{n(n-3)}{2}$.
+  - Calculate: $10 \times 7 / 2 = 70 / 2 = 35$.
   choices:
   - id: a
-    text: Use triangulate polygons after checking the relevant constraints.
+    text: '$35$'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$70$'
+    issueSignals:
+    - division-omission
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$45$'
+    issueSignals:
+    - combination-formula-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$20$'
+    issueSignals:
+    - formula-confusion
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize polygon types, choose triangulate polygons, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
+  explanation: |
+    Solution:
+    The formula for the number of diagonals in an $n$-sided polygon is $D = \frac{n(n-3)}{2}$.
+    For a decagon, $n = 10$.
+    $D = \frac{10(10-3)}{2} = \frac{10(7)}{2} = \frac{70}{2} = 35$.
+
+    Why it works:
+    From each of the 10 vertices, you can draw a diagonal to every other vertex EXCEPT itself and its two immediate neighbors. That gives $10 - 3 = 7$ diagonals per vertex. Multiplying $10 \times 7$ gives 70, but this counts every diagonal twice (once from each end), so we must divide by 2.
+
+    Why the other choices fail:
+    - $70$ forgets to divide by 2, double-counting all diagonals.
+    - $45$ is $\binom{10}{2}$, which is the total number of lines connecting the vertices (including the 10 outer sides, $45 - 10 = 35$).
+    - $20$ is just $10 \times 2$.
+
 - id: q002
   type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **angle sums**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A convex polygon has exactly 54 diagonals. How many sides does it have?'
+  difficultyDimensions:
+  - Set up equation: $n(n-3)/2 = 54$.
+  - Convert to quadratic: $n^2 - 3n - 108 = 0$.
+  - Factor: $(n-12)(n+9) = 0$.
+  - Select positive root: $n = 12$.
   choices:
   - id: a
-    text: Use use exterior angles after checking the relevant constraints.
+    text: '$9$'
+    issueSignals:
+    - root-sign-error
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$12$'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$10$'
+    issueSignals:
+    - guess-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$14$'
+    issueSignals:
+    - arithmetic-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize angle sums, choose use exterior angles, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
+    choiceId: b
+  explanation: |
+    Solution:
+    Use the diagonal formula: $\frac{n(n-3)}{2} = 54$.
+    Multiply by 2:
+    $n(n-3) = 108$.
+    $n^2 - 3n - 108 = 0$.
+    Factor the quadratic equation:
+    $(n - 12)(n + 9) = 0$.
+    Since the number of sides must be positive, $n = 12$.
+
+    Why it works:
+    You can also solve this by testing the answers or by estimation. You know $10 \times 7 = 70$, which is too small for 108. Try $12 \times 9 = 108$, which works perfectly.
+
+    Why the other choices fail:
+    - $9$ is the absolute value of the negative root. If $n=9$, the number of diagonals is $9(6)/2 = 27$.
+    - $10$ yields 35 diagonals.
+    - $14$ yields 77 diagonals.
+
 - id: q003
   type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **regular polygons**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'Which of the following regular polygons CANNOT tessellate (tile) a flat plane by itself without leaving any gaps?'
+  difficultyDimensions:
+  - Recall the condition for tessellation: the interior angle must perfectly divide $360^\circ$.
+  - Calculate interior angle of pentagon: $108^\circ$.
+  - Check divisibility: $360 / 108 = 3.33$ (Not an integer).
+  - Verify others: Triangle ($60^\circ$), Square ($90^\circ$), Hexagon ($120^\circ$) all divide $360^\circ$.
   choices:
   - id: a
-    text: Use use symmetry after checking the relevant constraints.
+    text: 'Equilateral Triangle'
+    issueSignals:
+    - valid-tessellation-confusion
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: 'Square'
+    issueSignals:
+    - valid-tessellation-confusion
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: 'Regular Hexagon'
+    issueSignals:
+    - valid-tessellation-confusion
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: 'Regular Pentagon'
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize regular polygons, choose use symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
+    choiceId: d
+  explanation: |
+    Solution:
+    To tile a flat plane with a single regular polygon, multiple copies of the polygon must meet at a single vertex without overlapping and without leaving empty space.
+    This means the interior angle of the polygon must be a perfect factor of $360^\circ$.
+    - Triangle: $60^\circ$ ($360 / 60 = 6$ fit).
+    - Square: $90^\circ$ ($360 / 90 = 4$ fit).
+    - Hexagon: $120^\circ$ ($360 / 120 = 3$ fit).
+    - Pentagon: $108^\circ$. ($360 / 108 = 3 \text{ with a remainder of } 36^\circ$). It leaves a gap!
+
+    Why it works:
+    There are only three regular polygons that can tile the Euclidean plane: the triangle, the square, and the hexagon. Any polygon with more than 6 sides has an interior angle greater than $120^\circ$, meaning you can't even fit 3 of them around a point ($3 \times 135^\circ = 405^\circ$, which overflows).
+
+    Why the other choices fail:
+    - Triangles, squares, and hexagons all tile the plane perfectly. The question asked which one CANNOT.
+
 - id: q004
   type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **regular hexagons**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'Five angles of a hexagon measure $100^\circ$, $110^\circ$, $120^\circ$, $130^\circ$, and $140^\circ$. What is the measure of the sixth angle?'
+  difficultyDimensions:
+  - Recall interior angle sum for a hexagon: $(6-2) \times 180 = 720^\circ$.
+  - Add the 5 known angles: $100 + 110 + 120 + 130 + 140 = 600^\circ$.
+  - Subtract from 720: $720 - 600 = 120^\circ$.
   choices:
   - id: a
-    text: Use triangulate polygons after checking the relevant constraints.
+    text: '$120^\circ$'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$100^\circ$'
+    issueSignals:
+    - arithmetic-error
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$150^\circ$'
+    issueSignals:
+    - pattern-guess-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$60^\circ$'
+    issueSignals:
+    - exterior-angle-confusion
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize regular hexagons, choose triangulate polygons, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
+  explanation: |
+    Solution:
+    The sum of the interior angles of a hexagon ($n=6$) is:
+    $(6 - 2) \times 180^\circ = 4 \times 180^\circ = 720^\circ$.
+    The sum of the five given angles is:
+    $100 + 110 + 120 + 130 + 140 = 600^\circ$.
+    The sixth angle is $720^\circ - 600^\circ = 120^\circ$.
+
+    Why it works:
+    This is a straightforward application of the interior sum formula. Note that the angles do not have to be equal for the sum formula to work.
+
+    Why the other choices fail:
+    - $150^\circ$ is a guess assuming the angles form an arithmetic sequence continuing upwards ($100, 110, 120, 130, 140, \dots 150$). But if the 6th angle was 150, the sum would be 750, which is impossible for a hexagon.
+    - $100^\circ$ is an arithmetic error.
+    - $60^\circ$ is the exterior angle of a regular hexagon, or the difference $180 - 120$.
+
 - id: q005
-  type: freeResponse
-  prompt: |-
-    A Polygons problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **use exterior angles** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
+  type: multipleChoice
+  prompt: 'In a regular nonagon (9 sides), what is the measure of the angle formed by two diagonals drawn from the same vertex to the two adjacent vertices (e.g., in nonagon $A_1A_2\dots A_9$, the angle $\angle A_2 A_1 A_9$ is just the interior angle. The question asks for the angle between the first two diagonals: $\angle A_3 A_1 A_8$)? Wait, let us use a standard question: What is the measure of the angle formed by extending two non-adjacent sides of a regular hexagon until they meet?'
+  difficultyDimensions:
+  - Visualize extending sides $AB$ and $CD$ of regular hexagon $ABCDEF$.
+  - Identify the triangle formed by the extensions and side $BC$.
+  - The exterior angles of the hexagon form the base angles of this triangle: $60^\circ$ and $60^\circ$.
+  - The third angle is $180 - (60+60) = 60^\circ$.
+  choices:
+  - id: a
+    text: '$60^\circ$'
+  - id: b
+    text: '$120^\circ$'
+    issueSignals:
+    - interior-angle-confusion
+  - id: c
+    text: '$90^\circ$'
+    issueSignals:
+    - square-assumption-error
+  - id: d
+    text: '$30^\circ$'
+    issueSignals:
+    - half-angle-error
   answer:
-    expected: |-
-      Check whether the structure still contains polygon types and whether the constraints needed for use exterior angles remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions polygon types.
-    - Mentions use exterior angles.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Polygons; specific technique: use exterior angles. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
+    choiceId: a
+  explanation: |
+    Solution:
+    Let the hexagon be $ABCDEF$. We extend sides $AB$ (past $B$) and $DC$ (past $C$) until they meet at point $P$, forming $\triangle BCP$.
+    The angle at $B$ inside this triangle is the exterior angle of the hexagon, which is $360^\circ / 6 = 60^\circ$.
+    The angle at $C$ inside this triangle is also an exterior angle, so it is $60^\circ$.
+    The sum of the angles in $\triangle BCP$ is $180^\circ$:
+    $m\angle P + 60^\circ + 60^\circ = 180^\circ \implies m\angle P = 60^\circ$.
+
+    Why it works:
+    Extending the sides of a regular hexagon creates six equilateral triangles around the outside, forming a 6-pointed star.
+
+    Why the other choices fail:
+    - $120^\circ$ is the interior angle of the hexagon itself.
+    - $90^\circ$ assumes the lines meet at a right angle.
+    - $30^\circ$ is half of 60.
+
 - id: q006
   type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **angle sums**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'The sum of the interior angles of a polygon is $2700^\circ$. How many sides does the polygon have?'
+  difficultyDimensions:
+  - Set up equation: $(n - 2) \times 180 = 2700$.
+  - Divide by 180: $n - 2 = 15$.
+  - Add 2: $n = 17$.
   choices:
   - id: a
-    text: Use use symmetry after checking the relevant constraints.
+    text: '$15$'
+    issueSignals:
+    - formula-n-error
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$17$'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$19$'
+    issueSignals:
+    - addition-sign-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$13$'
+    issueSignals:
+    - subtraction-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize angle sums, choose use symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
-- id: q007
-  type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **regular polygons**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use triangulate polygons after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize regular polygons, choose triangulate polygons, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
-- id: q008
-  type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **regular hexagons**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use exterior angles after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize regular hexagons, choose use exterior angles, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
-- id: q009
-  type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **polygon types**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use symmetry after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize polygon types, choose use symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
-- id: q010
-  type: freeResponse
-  prompt: |-
-    A Polygons problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **triangulate polygons** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
-  answer:
-    expected: |-
-      Check whether the structure still contains angle sums and whether the constraints needed for triangulate polygons remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions angle sums.
-    - Mentions triangulate polygons.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Polygons; specific technique: triangulate polygons. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
-- id: q011
-  type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **regular polygons**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use exterior angles after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize regular polygons, choose use exterior angles, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
-- id: q012
-  type: multipleChoice
-  prompt: |-
-    An original Polygons problem variant is designed to test **regular hexagons**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use symmetry after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize regular hexagons, choose use symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-polygons
+    choiceId: b
+  explanation: |
+    Solution:
+    Use the interior angle sum formula:
+    $(n - 2) \times 180^\circ = 2700^\circ$
+    Divide both sides by 180:
+    $n - 2 = \frac{2700}{180}$
+    $n - 2 = 15$
+    $n = 17$.
+
+    Why it works:
+    The number 15 represents the number of triangles the polygon can be divided into. Since the number of triangles is always 2 less than the number of sides, we add 2 to get 17 sides.
+
+    Why the other choices fail:
+    - $15$ is the number of triangles ($n-2$), forgetting to add 2 at the end.
+    - $19$ might come from an error like $(n+2) \times 180$.
+    - $13$ is a subtraction error $15 - 2$.

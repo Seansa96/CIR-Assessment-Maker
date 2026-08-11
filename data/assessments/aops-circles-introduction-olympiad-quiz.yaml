@@ -17,158 +17,502 @@ skills:
 questions:
 - id: olympiad-quiz-q131
   type: multipleChoice
-  prompt: Tangents $PA,PB$ are drawn to a circle with center $O$. If $OP=2r$, where $r$ is the radius, find $\angle APB$.
+  prompt: Tangents $PA$ and $PB$ are drawn to a circle with center $O$. If $OP = 2r$, where $r$ is the radius, find $\angle APB$.
   media:
   - {type: image, src: /assessments/aops/aops-circles-tangent.svg, alt: Radius to a tangent point forming a right triangle with the center and external point.}
   choices:
-  - {id: a, text: '$30^\circ$'}
-  - {id: b, text: '$60^\circ$'}
-  - {id: c, text: '$90^\circ$'}
-  - {id: d, text: '$120^\circ$'}
+  - id: a
+    text: '$30^\circ$'
+    issueSignals: [angle-measure-error]
+  - id: b
+    text: '$60^\circ$'
+  - id: c
+    text: '$90^\circ$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$120^\circ$'
+    issueSignals: [angle-measure-error]
   answer: {choiceId: b}
-  explanation: In right triangle $OAP$, $OA/OP=1/2$, so $\angle OPA=30^\circ$. Congruence makes $OP$ bisect $\angle APB$, giving $60^\circ$.
+  difficultyDimensions:
+  - Construct right triangles by drawing radii to the tangent points.
+  - Identify a 30-60-90 right triangle from the 1:2 ratio of leg to hypotenuse.
+  - Double the angle to find the full tangent angle.
+  explanation: |
+    Solution:
+    Draw radius $OA$ to the point of tangency $A$. By the tangent theorem, $\angle OAP = 90^\circ$.
+    In right $\triangle OAP$, the leg $OA = r$ and the hypotenuse $OP = 2r$.
+    The ratio of opposite to hypotenuse is $r / 2r = 1/2$. This means $\sin(\angle OPA) = 1/2$, so $\angle OPA = 30^\circ$.
+    By symmetry, $\triangle OBP \cong \triangle OAP$, so $\angle OPB = 30^\circ$.
+    The total angle $\angle APB = 30^\circ + 30^\circ = 60^\circ$.
+
+    Why it works:
+    The two-tangent configuration always forms two congruent right triangles sharing a hypotenuse. The specific $r$ to $2r$ ratio locks the triangle into a standard $30^\circ$-$60^\circ$-$90^\circ$ shape.
+
+    Why the other choices fail:
+    - **(A)** $30^\circ$ is half the angle ($\angle OPA$).
+    - **(C)** $90^\circ$ is a guess.
+    - **(D)** $120^\circ$ is the central angle $\angle AOB$, not the tangent angle.
+
 - id: olympiad-quiz-q111
   type: multipleChoice
-  prompt: A radius-10 circle contains parallel chords of lengths $12$ and $16$ on opposite sides of the center. Find the distance between the chords.
+  prompt: A circle of radius 10 contains two parallel chords of lengths 12 and 16, situated on opposite sides of the center. Find the distance between the two chords.
   choices:
-  - {id: a, text: '$2$'}
-  - {id: b, text: '$8$'}
-  - {id: c, text: '$14$'}
-  - {id: d, text: '$20$'}
+  - id: a
+    text: '$2$'
+    issueSignals: [formula-error]
+  - id: b
+    text: '$8$'
+    issueSignals: [wrong-segment]
+  - id: c
+    text: '$14$'
+  - id: d
+    text: '$20$'
+    issueSignals: [wrong-concept]
   answer: {choiceId: c}
-  explanation: Their center distances are $\sqrt{100-6^2}=8$ and $\sqrt{100-8^2}=6$; opposite sides make the separation $14$.
+  difficultyDimensions:
+  - Apply the Pythagorean theorem twice to find the distance from the center to each chord.
+  - Add the distances because the chords are on opposite sides of the center.
+  explanation: |
+    Solution:
+    The perpendicular from the center bisects each chord into half-chords of $6$ and $8$.
+    Draw radii to the endpoints of the chords to form two right triangles with hypotenuse $10$.
+    Distance to chord 12: $d_1 = \sqrt{10^2 - 6^2} = \sqrt{100 - 36} = 8$.
+    Distance to chord 16: $d_2 = \sqrt{10^2 - 8^2} = \sqrt{100 - 64} = 6$.
+    Since the chords are on opposite sides of the center, the total distance between them is the sum of these distances.
+    Distance $= d_1 + d_2 = 8 + 6 = 14$.
+
+    Why it works:
+    The perpendicular bisector of two parallel chords passes through the center. The distances from the center to the chords form two $3$-$4$-$5$ scaled right triangles ($6$-$8$-$10$).
+
+    Why the other choices fail:
+    - **(A)** 2 is the distance if they were on the *same* side of the center ($8-6$).
+    - **(B)** 8 is the distance to just one chord.
+    - **(D)** 20 is the diameter of the circle.
+
 - id: olympiad-quiz-q141
   type: multipleChoice
-  prompt: A square of side $10$ is inscribed in a circle. Find the circle's area.
+  prompt: A square of side length 10 is inscribed in a circle. Find the circle's area.
   choices:
-  - {id: a, text: '$25\pi$'}
-  - {id: b, text: '$50\pi$'}
-  - {id: c, text: '$100\pi$'}
-  - {id: d, text: '$200\pi$'}
+  - id: a
+    text: '$25\pi$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$50\pi$'
+  - id: c
+    text: '$100\pi$'
+    issueSignals: [wrong-concept]
+  - id: d
+    text: '$200\pi$'
+    issueSignals: [wrong-concept]
   answer: {choiceId: b}
-  explanation: The square diagonal $10\sqrt2$ is the diameter, so $r=5\sqrt2$ and area is $50\pi$.
+  difficultyDimensions:
+  - Recognize that the square's diagonal is the circle's diameter.
+  - Compute the diagonal using the Pythagorean theorem or $s\sqrt{2}$.
+  - Calculate area from the radius.
+  explanation: |
+    Solution:
+    The diagonal of the inscribed square passes through the center, so it is the diameter.
+    Diagonal $= 10\sqrt{2}$.
+    Radius $r = 5\sqrt{2}$.
+    Area $= \pi r^2 = \pi(5\sqrt{2})^2 = \pi(25 \times 2) = 50\pi$.
+
+    Why it works:
+    An inscribed square's corners are $90^\circ$. By Thales' theorem, a $90^\circ$ inscribed angle subtends a $180^\circ$ arc (a semicircle), meaning the diagonal must be a diameter.
+
+    Why the other choices fail:
+    - **(A)** $25\pi$ would be the area if the side length was the diameter (which applies to a *circumscribed* square, not inscribed).
+    - **(C)** $100\pi$ uses the side length 10 as the radius.
+    - **(D)** $200\pi$ uses the diameter $10\sqrt{2}$ as the radius.
+
 - id: olympiad-quiz-q121
   type: multipleChoice
-  prompt: A circle is inscribed in a square of side $10$. What fraction of the square's area lies inside the circle?
+  prompt: A circle is inscribed in a square of side 10. What fraction of the square's area lies inside the circle?
   choices:
-  - {id: a, text: '$\pi/8$'}
-  - {id: b, text: '$\pi/4$'}
-  - {id: c, text: '$\pi/2$'}
-  - {id: d, text: '$4/\pi$'}
+  - id: a
+    text: '$\pi/8$'
+    issueSignals: [ratio-error]
+  - id: b
+    text: '$\pi/4$'
+  - id: c
+    text: '$\pi/2$'
+    issueSignals: [ratio-error]
+  - id: d
+    text: '$4/\pi$'
+    issueSignals: [ratio-error]
   answer: {choiceId: b}
-  explanation: The radius is $5$, so the area ratio is $25\pi/100=\pi/4$.
+  difficultyDimensions:
+  - Determine that the circle's diameter equals the square's side.
+  - Form the ratio of the circle's area to the square's area.
+  explanation: |
+    Solution:
+    The side of the circumscribed square is exactly the diameter of the circle, so $d = 10 \implies r = 5$.
+    Circle Area $= \pi(5^2) = 25\pi$.
+    Square Area $= 10^2 = 100$.
+    Fraction $= \frac{25\pi}{100} = \frac{\pi}{4}$.
+
+    Why it works:
+    Notice that the side length (10) doesn't actually matter. For any inscribed circle in a square, $A_{\text{circle}} = \pi r^2$ and $A_{\text{square}} = (2r)^2 = 4r^2$. The ratio is always $\frac{\pi}{4}$.
+
+    Why the other choices fail:
+    - **(A)** $\pi/8$ is half the correct ratio.
+    - **(C)** $\pi/2$ is double the correct ratio.
+    - **(D)** $4/\pi$ is the reciprocal (the ratio of the square to the circle).
+
 - id: olympiad-quiz-q101
   type: multipleChoice
-  prompt: Two radius-6 circles have centers $6$ units apart. Find the length of their common chord.
+  prompt: Two circles of radius 6 have their centers exactly 6 units apart. Find the length of their common chord.
   choices:
-  - {id: a, text: '$3\sqrt3$'}
-  - {id: b, text: '$6$'}
-  - {id: c, text: '$6\sqrt3$'}
-  - {id: d, text: '$12$'}
+  - id: a
+    text: '$3\sqrt3$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$6$'
+    issueSignals: [wrong-concept]
+  - id: c
+    text: '$6\sqrt3$'
+  - id: d
+    text: '$12$'
+    issueSignals: [wrong-concept]
   answer: {choiceId: c}
-  explanation: The common chord is perpendicular to and bisects the center segment. Its half-length is $\sqrt{6^2-3^2}=3\sqrt3$.
+  difficultyDimensions:
+  - Set up the geometry of two intersecting circles (two equilateral triangles).
+  - Compute the altitude of the equilateral triangle and double it.
+  explanation: |
+    Solution:
+    Let the centers be $O_1$ and $O_2$, and the intersections be $A$ and $B$.
+    The distance $O_1O_2 = 6$. The radii $O_1A = O_2A = 6$. Thus, $\triangle O_1AO_2$ is equilateral with side 6.
+    The common chord $AB$ is perpendicular to the segment $O_1O_2$ and is bisected by it.
+    The half-chord is the altitude of this equilateral triangle: $h = \frac{6\sqrt{3}}{2} = 3\sqrt{3}$.
+    The full chord is $2 \times 3\sqrt{3} = 6\sqrt{3}$.
+
+    Why it works:
+    The centers and intersection points form two equilateral triangles sharing the center-line base. The common chord is the other diagonal of the resulting rhombus.
+
+    Why the other choices fail:
+    - **(A)** $3\sqrt{3}$ is the half-chord length.
+    - **(B)** 6 is the side length of the equilateral triangle, not the altitude.
+    - **(D)** 12 is the sum of the two radii.
+
 - id: olympiad-quiz-q132
   type: multipleChoice
   prompt: For a nonzero central angle, a sector's numerical area equals its arc length when measured in compatible units. What is the circle's radius?
   choices:
-  - {id: a, text: '$1$'}
-  - {id: b, text: '$2$'}
-  - {id: c, text: '$\pi$'}
-  - {id: d, text: '$4$'}
+  - id: a
+    text: '$1$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$2$'
+  - id: c
+    text: '$\pi$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$4$'
+    issueSignals: [algebra-error]
   answer: {choiceId: b}
-  explanation: Cancelling the common angular fraction from $\pi r^2$ and $2\pi r$ gives $r=2$ for positive radius.
+  difficultyDimensions:
+  - Write formulas for sector area and arc length using a variable angle.
+  - Equate the formulas and solve for the radius.
+  explanation: |
+    Solution:
+    Let the central angle be $\theta$ degrees.
+    Sector Area $= \frac{\theta}{360} \pi r^2$.
+    Arc Length $= \frac{\theta}{360} 2\pi r$.
+    Equating them: $\frac{\theta}{360} \pi r^2 = \frac{\theta}{360} 2\pi r$.
+    Since $\theta > 0$, we can cancel the angular fraction and $\pi$:
+    $r^2 = 2r \implies r(r-2) = 0$.
+    Since a circle must have $r > 0$, $r = 2$.
+
+    Why it works:
+    The geometric ratio of area to circumference for a full circle is $\pi r^2 / 2\pi r = r/2$. Setting this ratio to 1 gives $r=2$. The proportion holds for any sector slice.
+
+    Why the other choices fail:
+    - **(A)** 1 makes circumference equal $2\pi$ and area equal $\pi$.
+    - **(C)** $\pi$ is an algebraic error combining constants.
+
 - id: olympiad-quiz-q112
   type: multipleChoice
-  prompt: An annulus has the same area as its inner disk. If the inner radius is $r$, what is the outer radius?
+  prompt: An annulus has the exact same area as its inner disk. If the inner radius is $r$, what is the outer radius?
   choices:
-  - {id: a, text: '$\sqrt2r$'}
-  - {id: b, text: '$2r$'}
-  - {id: c, text: '$3r/2$'}
-  - {id: d, text: '$r^2$'}
+  - id: a
+    text: '$\sqrt2r$'
+  - id: b
+    text: '$2r$'
+    issueSignals: [formula-error]
+  - id: c
+    text: '$3r/2$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$r^2$'
+    issueSignals: [dimension-error]
   answer: {choiceId: a}
-  explanation: $\pi(R^2-r^2)=\pi r^2$ gives $R^2=2r^2$.
+  difficultyDimensions:
+  - Set the annulus area formula equal to the inner disk area formula.
+  - Solve for the outer radius $R$ in terms of $r$.
+  explanation: |
+    Solution:
+    Annulus area $= \pi(R^2 - r^2)$. Inner disk area $= \pi r^2$.
+    Equating them:
+    $$\pi(R^2 - r^2) = \pi r^2$$
+    $$R^2 - r^2 = r^2$$
+    $$R^2 = 2r^2 \implies R = r\sqrt{2}$$
+
+    Why it works:
+    If the annulus and the inner disk have the same area, then the outer disk (which contains both) has exactly twice the area of the inner disk. Since area scales with the square of the radius, the radius must scale by $\sqrt{2}$.
+
+    Why the other choices fail:
+    - **(B)** $2r$ would make the total area $4\times$, so the annulus would be $3\times$ the inner disk.
+    - **(D)** $r^2$ has incorrect geometric units (squaring a length).
+
 - id: olympiad-quiz-q142
   type: multipleChoice
-  prompt: A chord of a radius-10 circle has length $10$. Find the area of the minor circular segment cut off by the chord.
+  prompt: A chord of a radius-10 circle has a length of exactly 10. Find the area of the minor circular segment cut off by the chord.
   choices:
-  - {id: a, text: '$50\pi/3-25\sqrt3$'}
-  - {id: b, text: '$50\pi/3+25\sqrt3$'}
-  - {id: c, text: '$25\pi-50$'}
-  - {id: d, text: '$100\pi/3$'}
+  - id: a
+    text: '$50\pi/3 - 25\sqrt3$'
+  - id: b
+    text: '$50\pi/3 + 25\sqrt3$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$25\pi - 50$'
+    issueSignals: [formula-error]
+  - id: d
+    text: '$100\pi/3$'
+    issueSignals: [formula-error]
   answer: {choiceId: a}
-  explanation: The radii and chord form an equilateral triangle, so subtract triangle area $25\sqrt3$ from the $60^\circ$ sector area $50\pi/3$.
+  difficultyDimensions:
+  - Recognize that the chord and two radii form an equilateral triangle.
+  - Compute the area of the $60^\circ$ sector.
+  - Subtract the area of the equilateral triangle from the sector area.
+  explanation: |
+    Solution:
+    The chord length (10) equals the radius (10), so the triangle formed by the chord and two radii is equilateral.
+    This means the central angle is $60^\circ$.
+    Area of the $60^\circ$ sector $= \frac{60}{360}\pi(10^2) = \frac{100\pi}{6} = \frac{50\pi}{3}$.
+    Area of the equilateral triangle $= \frac{s^2\sqrt{3}}{4} = \frac{100\sqrt{3}}{4} = 25\sqrt{3}$.
+    Area of the segment $=$ Sector Area $-$ Triangle Area $= \frac{50\pi}{3} - 25\sqrt{3}$.
+
+    Why it works:
+    A circular segment is defined as the region bounded by a chord and its arc. Its area is always the sector area minus the central triangle's area.
+
+    Why the other choices fail:
+    - **(B)** Adds the areas instead of subtracting (computing a non-standard shape).
+    - **(C)** Uses a $90^\circ$ sector and a right triangle instead of $60^\circ$ and equilateral.
+    - **(D)** Is just the sector area, forgetting to subtract the triangle.
+
 - id: olympiad-quiz-q122
   type: multipleChoice
-  prompt: In right triangle $OPT$, $PT$ is tangent to a radius-5 circle and $OP=13$. Find the triangle's perimeter.
+  prompt: In right triangle $OPT$, $PT$ is tangent to a radius-5 circle at $T$, and the hypotenuse $OP = 13$. Find the triangle's perimeter.
   choices:
-  - {id: a, text: '$25$'}
-  - {id: b, text: '$30$'}
-  - {id: c, text: '$36$'}
-  - {id: d, text: '$42$'}
+  - id: a
+    text: '$25$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$30$'
+  - id: c
+    text: '$36$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$42$'
+    issueSignals: [algebra-error]
   answer: {choiceId: b}
-  explanation: $PT=12$ by the $5$-$12$-$13$ triangle, so perimeter is $5+12+13=30$.
+  difficultyDimensions:
+  - Apply the Pythagorean theorem to find the tangent length.
+  - Add all three sides.
+  explanation: |
+    Solution:
+    Since $PT$ is tangent to the circle, radius $OT$ is perpendicular to $PT$, forming right $\triangle OTP$.
+    The leg $OT$ is the radius, 5. The hypotenuse $OP$ is 13.
+    By Pythagorean theorem, $PT^2 = 13^2 - 5^2 = 169 - 25 = 144 \implies PT = 12$.
+    The perimeter is $OT + PT + OP = 5 + 12 + 13 = 30$.
+
+    Why it works:
+    This is a direct application of the tangent-radius theorem forming a classic $5$-$12$-$13$ Pythagorean triple.
+
+    Why the other choices fail:
+    - **(A)** 25 is $12+13$.
+    - **(C)** 36 is an arithmetic error.
+
 - id: olympiad-quiz-q102
   type: multipleChoice
-  prompt: Tangents $PA,PB$ have length $6$ and form $\angle APB=60^\circ$. Find the circle's radius.
+  prompt: Tangents $PA$ and $PB$ have length 6 and form an angle $\angle APB = 60^\circ$. Find the circle's radius.
   choices:
-  - {id: a, text: '$2\sqrt3$'}
-  - {id: b, text: '$3$'}
-  - {id: c, text: '$3\sqrt3$'}
-  - {id: d, text: '$6\sqrt3$'}
+  - id: a
+    text: '$2\sqrt3$'
+  - id: b
+    text: '$3$'
+    issueSignals: [formula-error]
+  - id: c
+    text: '$3\sqrt3$'
+    issueSignals: [formula-error]
+  - id: d
+    text: '$6\sqrt3$'
+    issueSignals: [formula-error]
   answer: {choiceId: a}
-  explanation: $OP$ bisects the tangent angle, so right triangle $OAP$ is $30$-$60$-$90$. Since $AP=r\sqrt3=6$, $r=2\sqrt3$.
+  difficultyDimensions:
+  - Split the tangent configuration into a right triangle.
+  - Use $30^\circ$-$60^\circ$-$90^\circ$ triangle ratios to find the radius.
+  explanation: |
+    Solution:
+    The line $OP$ bisects $\angle APB$, so in right $\triangle OAP$, $\angle OPA = 30^\circ$.
+    This is a $30^\circ$-$60^\circ$-$90^\circ$ triangle. The leg adjacent to the $30^\circ$ angle is $AP = 6$.
+    The leg opposite the $30^\circ$ angle is the radius $r$.
+    The relationship is $r = \frac{AP}{\sqrt{3}} = \frac{6}{\sqrt{3}} = 2\sqrt{3}$.
+
+    Why it works:
+    The two-tangent theorem always creates congruent right triangles. Knowing one angle and one side fully determines the triangle.
+
+    Why the other choices fail:
+    - **(B)** 3 assumes a $45^\circ$-$45^\circ$-$90^\circ$ relationship or halves the length.
+    - **(C)** $3\sqrt{3}$ computes $6\sin(60^\circ)$.
+    - **(D)** $6\sqrt{3}$ multiplies by $\sqrt{3}$ instead of dividing.
+
 - id: olympiad-quiz-q133
   type: multipleChoice
-  prompt: A circle centered at the origin passes through $A=(3,4)$. Which equation is the tangent line at $A$?
+  prompt: A circle centered at the origin passes through point $A = (3,4)$. Which equation represents the tangent line at $A$?
   choices:
-  - {id: a, text: '$3x+4y=25$'}
-  - {id: b, text: '$4x+3y=25$'}
-  - {id: c, text: '$3x-4y=0$'}
-  - {id: d, text: '$x+y=7$'}
+  - id: a
+    text: '$3x + 4y = 25$'
+  - id: b
+    text: '$4x + 3y = 25$'
+    issueSignals: [formula-error]
+  - id: c
+    text: '$3x - 4y = 0$'
+    issueSignals: [formula-error]
+  - id: d
+    text: '$x + y = 7$'
+    issueSignals: [formula-error]
   answer: {choiceId: a}
-  explanation: Radius vector $(3,4)$ is normal to the tangent, and the line through $(3,4)$ is $3x+4y=25$.
+  difficultyDimensions:
+  - Use the radius vector as the normal vector for the tangent line.
+  - Substitute the point $A$ to find the constant term.
+  explanation: |
+    Solution:
+    The radius vector from $(0,0)$ to $(3,4)$ is $\langle 3, 4 \rangle$.
+    Because the tangent line is perpendicular to the radius at the point of tangency, the normal vector to the tangent line is $\langle 3, 4 \rangle$.
+    The equation of a line with normal vector $\langle A, B \rangle$ is $Ax + By = C$.
+    $$3x + 4y = C$$
+    Plug in the point $(3,4)$ to find $C$:
+    $$3(3) + 4(4) = 9 + 16 = 25$$
+    The line is $3x + 4y = 25$.
+
+    Why it works:
+    In coordinate geometry, the dot product form $r \cdot p = r \cdot r$ elegantly generates the tangent line equation for any circle centered at the origin.
+
+    Why the other choices fail:
+    - **(B)** Swaps the $x$ and $y$ coefficients.
+    - **(C)** This is the equation of a line passing through the origin, not the tangent line.
+    - **(D)** Just adds $x$ and $y$ to get 7.
+
 - id: olympiad-quiz-q113
   type: multipleChoice
   prompt: A circle of radius $r$ is inscribed in a square. What is the square's perimeter?
   choices:
-  - {id: a, text: '$2r$'}
-  - {id: b, text: '$4r$'}
-  - {id: c, text: '$8r$'}
-  - {id: d, text: '$4\pi r$'}
+  - id: a
+    text: '$2r$'
+    issueSignals: [dimension-error]
+  - id: b
+    text: '$4r$'
+    issueSignals: [formula-error]
+  - id: c
+    text: '$8r$'
+  - id: d
+    text: '$4\pi r$'
+    issueSignals: [formula-error]
   answer: {choiceId: c}
-  explanation: The square side equals the circle diameter $2r$, so perimeter is $8r$.
+  difficultyDimensions:
+  - Express the square's side length in terms of $r$.
+  - Multiply by 4.
+  explanation: |
+    Solution:
+    The side length of the circumscribed square is exactly equal to the circle's diameter.
+    Side $s = 2r$.
+    Perimeter $= 4s = 4(2r) = 8r$.
+
+    Why it works:
+    The square "bounds" the circle tightly, so its width and height are precisely the circle's diameter.
+
+    Why the other choices fail:
+    - **(A)** $2r$ is just one side length.
+    - **(B)** $4r$ would be the perimeter if the side was $r$.
+    - **(D)** $4\pi r$ mixes the perimeter of the square with the circumference formula.
+
 - id: olympiad-quiz-q143
   type: selectAll
-  prompt: Which conclusions follow when two distinct circles of equal radius intersect at $A$ and $B$?
+  prompt: Which conclusions necessarily follow when two distinct circles of EQUAL radius intersect at points $A$ and $B$?
   choices:
-  - {id: a, text: The line joining the centers is perpendicular to $AB$.}
-  - {id: b, text: The line joining the centers bisects $AB$.}
-  - {id: c, text: '$A$ and $B$ are equidistant from both centers.'}
-  - {id: d, text: The center distance must equal the radius.}
+  - id: a
+    text: The line joining the centers is perpendicular to $AB$.
+  - id: b
+    text: The line joining the centers bisects $AB$.
+  - id: c
+    text: '$A$ and $B$ are equidistant from both centers.'
+  - id: d
+    text: The distance between the centers must exactly equal the radius.
+    issueSignals: [logic-error]
   answer:
     choiceIds: [a, b, c]
-  explanation: The four equal radii form a kite; the center distance can vary from above zero to below twice the radius.
+  difficultyDimensions:
+  - Apply the perpendicular bisector locus property to two intersecting circles.
+  - Recognize that the distance between centers is independent of the radii equality.
+  explanation: |
+    Solution:
+    (A), (B), and (C) are all true.
+
+    Why it works:
+    Because the radii are all equal ($r$), the distance from center $O_1$ to $A$ and $B$ is $r$, and from $O_2$ to $A$ and $B$ is also $r$.
+    This means $A$ and $B$ are equidistant from the centers (C). The centers $O_1$ and $O_2$ are therefore on the perpendicular bisector of $AB$ (A, B). The four radii form a rhombus.
+
+    (D) is false: the distance between centers can be anything from nearly 0 to nearly $2r$ while still intersecting. It only equals $r$ if they intersect such that the centers and intersections form equilateral triangles.
+
 - id: olympiad-quiz-q123
   type: selectAll
-  prompt: Which statements can be proved using only the triangle inequality and equal radii?
+  prompt: Which statements about a circle can be rigorously proved using only the triangle inequality and the fact that all radii are equal?
   choices:
-  - {id: a, text: Every chord has length at most the diameter.}
-  - {id: b, text: A chord reaches diameter length exactly when it passes through the center.}
-  - {id: c, text: Every chord is perpendicular to a radius.}
-  - {id: d, text: A diameter is a longest chord.}
+  - id: a
+    text: Every chord has length at most the diameter.
+  - id: b
+    text: A chord reaches diameter length exactly when it passes through the center.
+  - id: c
+    text: Every chord is perpendicular to a radius.
+    issueSignals: [theorem-error]
+  - id: d
+    text: A diameter is the longest possible chord.
   answer:
     choiceIds: [a, b, d]
-  explanation: For chord $AB$, $AB\le AO+OB=2r$, with equality exactly when $O$ lies on $AB$.
+  difficultyDimensions:
+  - Apply the triangle inequality to the triangle formed by a chord and two radii.
+  - Deduce the extremal properties of the diameter from the equality case.
+  explanation: |
+    Solution:
+    (A), (B), and (D) are true statements provable via the triangle inequality.
+
+    Why it works:
+    Let $AB$ be a chord and $O$ be the center. In $\triangle AOB$, the triangle inequality states $AB \le AO + OB$. Since $AO = OB = r$, $AB \le 2r$ (A, D). Equality $AB = 2r$ holds exactly when $O$ lies on the line segment $AB$, which is the definition of a diameter (B).
+
+    (C) is false: most chords are not perpendicular to any drawn radius unless the radius is specifically chosen to bisect the chord.
+
 - id: olympiad-quiz-q103
   type: freeResponse
   prompt: Prove that the common chord of two intersecting circles is perpendicular to the line joining their centers and is bisected by that line.
+  difficultyDimensions:
+  - Identify that the centers of the circles are equidistant from the intersection points.
+  - Apply the locus definition of a perpendicular bisector.
   answer:
     gradingMode: selfCheck
-    expected: |-
-      Let the circles have centers $O_1,O_2$ and common points $A,B$. Since $O_1A=O_1B$ and $O_2A=O_2B$, both centers are equidistant from $A,B$. Therefore both lie on the perpendicular bisector of $AB$. The line $O_1O_2$ is that perpendicular bisector, so it is perpendicular to $AB$ and passes through its midpoint.
     keyPoints:
-    - Uses equal radii from each center to $A,B$.
-    - Recognizes the locus of points equidistant from $A,B$.
-    - Places both centers on the perpendicular bisector.
-    - Concludes perpendicularity and bisection.
-  explanation: The proof converts equal-radius facts into a perpendicular-bisector locus.
+    - Let circles have centers $O_1, O_2$ and intersect at $A, B$.
+    - Note $O_1A = O_1B = r_1$ (radii of circle 1).
+    - Note $O_2A = O_2B = r_2$ (radii of circle 2).
+    - Conclude both $O_1$ and $O_2$ lie on the perpendicular bisector of $AB$.
+    - Thus the line $O_1O_2$ is exactly the perpendicular bisector.
+  explanation: |
+    Solution:
+    Let the circles have centers $O_1, O_2$ and common intersection points $A, B$.
+    By the definition of a circle, the distance from $O_1$ to $A$ and from $O_1$ to $B$ is equal to its radius $r_1$. Thus $O_1A = O_1B$.
+    Similarly, the distance from $O_2$ to $A$ and to $B$ is its radius $r_2$. Thus $O_2A = O_2B$.
+    The set of all points equidistant from two points $A$ and $B$ is the perpendicular bisector of segment $AB$.
+    Because both $O_1$ and $O_2$ are equidistant from $A$ and $B$, they both lie on the perpendicular bisector of $AB$.
+    Therefore, the line connecting the centers $O_1O_2$ is the perpendicular bisector of the common chord $AB$.
+
+    Why it works:
+    This elegant proof relies purely on the locus definition of the perpendicular bisector, avoiding complex triangle congruence arguments entirely.

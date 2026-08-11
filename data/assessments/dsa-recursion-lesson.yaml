@@ -1,0 +1,53 @@
+schemaVersion: 1
+id: dsa-recursion-lesson
+categoryId: dsa
+topicId: dsa-recursion-backtracking
+learningGoal: learn
+activityType: conceptLesson
+title: "Understanding Recursion"
+description: "Learn how to define problems in terms of themselves using recursion."
+navigation:
+  tags: [recursion, backtracking, functions]
+skills:
+  - id: obj-dsa-recursion-01
+    level: foundation
+blueprintId: bp-dsa-recursion-lesson-01
+sourceChunkIds: ["src-20260810144616-0dc6e2835b:page-28-37"]
+
+questions:
+  - id: intro-to-recursion
+    type: freeResponse
+    prompt: |
+      **The Anatomy of Recursion**
+
+      In mathematics and computer science, some problems can be easily defined in terms of themselves. This is called **recursion**. Rather than using a loop (like `while` or `for`), a recursive function calls *itself* with a modified version of the original input.
+
+      Every recursive procedure must be divided into two main cases:
+      1. **Base Case:** This is the stopping condition. It defines the explicit output for a simple, minimal input. Without it, the function would call itself infinitely (causing a Stack Overflow).
+      2. **Recursive Case:** This is where the function calls itself on a smaller or simpler sub-problem.
+
+      Consider calculating the factorial of $n$, denoted as $n!$.
+      $n! = n \times (n - 1) \times (n - 2) \dots \times 1$
+
+      In Python, this looks like:
+      ```python
+      def factorial(n):
+          # Base Case
+          if n == 0 or n == 1:
+              return 1
+          # Recursive Case
+          else:
+              return n * factorial(n - 1)
+      ```
+
+      When we call `factorial(3)`, it evaluates to `3 * factorial(2)`. The computer pauses the execution of `factorial(3)` on a **call stack**, and starts evaluating `factorial(2)`. This continues down to the base case, and then the returns "bubble up".
+
+      What would happen in the above Python snippet if the base case `if n == 0 or n == 1:` was accidentally removed or commented out? Explain in terms of the function calls.
+    answer:
+      gradingMode: selfCheck
+    explanation: |
+      Solution:
+      If the base case is removed, calling `factorial(3)` would result in `3 * factorial(2)`, which would result in `2 * factorial(1)`, which would result in `1 * factorial(0)`, which would result in `0 * factorial(-1)`, and so on infinitely. 
+
+      Why it works:
+      A recursive function relies on the base case to terminate the chain of self-referential calls. Without it, the recursive case `n * factorial(n - 1)` will evaluate indefinitely into negative numbers until the computer runs out of memory on the call stack (a Stack Overflow error).

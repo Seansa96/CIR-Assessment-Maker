@@ -12,235 +12,253 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-counting
-  - aops-volume-1
+  - discrete-math
   - combinatorics
-  - multiplication-principle
-  - number-of-divisors
-  - permutations
-  - arrangements
 skills:
-- Apply aops-counting
-- aops-counting
+- Apply casework to solve complex counting problems.
+- Correct for overcounting when elements are identical.
+- Apply the Principle of Inclusion-Exclusion (PIE).
 questions:
 - id: q001
   type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **multiplication principle**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'How many distinct ways can the letters of the word "BANANA" be arranged?'
+  difficultyDimensions:
+  - Identify the total number of letters: 6.
+  - Identify the repeated letters: 3 A's, 2 N's.
+  - Divide $6!$ by $(3! \times 2!)$ to correct for overcounting.
   choices:
   - id: a
-    text: Use choose distinguishable vs identical after checking the relevant constraints.
+    text: '720'
+    issueSignals:
+    - distinct-assumption-error
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '60'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '120'
+    issueSignals:
+    - incomplete-overcount-correction
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '12'
+    issueSignals:
+    - overcount-division-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize multiplication principle, choose choose distinguishable vs identical, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
+    choiceId: b
+  explanation: |
+    Solution:
+    The word "BANANA" has 6 letters, so if all letters were distinct, there would be $6! = 720$ arrangements.
+    However, the letter 'A' is repeated 3 times, and the letter 'N' is repeated 2 times. We must divide out the internal permutations of these identical letters.
+    $\frac{6!}{3! \times 2!} = \frac{720}{6 \times 2} = \frac{720}{12} = 60$.
+
+    Why it works:
+    This is the standard anagram formula. Treating identical letters as distinct creates artificial "copies" of every word. Since there are 3 'A's, every unique word is generated $3! = 6$ times just by shuffling the 'A's amongst themselves. Dividing by the factorial of each repetition count perfectly groups these duplicates back into single unique words.
+
+    Why the other choices fail:
+    - 720 is $6!$, which assumes all 6 letters are completely distinct (e.g., "B A1 N1 A2 N2 A3").
+    - 120 is $6! / 3!$, which only corrects for the repeated 'A's but forgets to correct for the repeated 'N's.
+    - 12 is $\frac{720}{60}$ (dividing by $3! \times 10$?), a calculation error.
+
 - id: q002
   type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **number of divisors**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A committee of 4 is to be chosen from 5 men and 6 women. How many committees contain exactly 2 men and 2 women?'
+  difficultyDimensions:
+  - Break the problem into two independent selections: choose 2 men from 5, choose 2 women from 6.
+  - Calculate combinations $\binom{5}{2}$ and $\binom{6}{2}$.
+  - Multiply the results.
   choices:
   - id: a
-    text: Use count the complement after checking the relevant constraints.
+    text: '150'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '330'
+    issueSignals:
+    - unconstrained-selection-error
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '25'
+    issueSignals:
+    - sum-instead-of-product
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '3000'
+    issueSignals:
+    - permutation-instead-of-combination
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize number of divisors, choose count the complement, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
+  explanation: |
+    Solution:
+    We select the men and women independently.
+    Number of ways to choose 2 men from 5: $\binom{5}{2} = \frac{5 \times 4}{2} = 10$.
+    Number of ways to choose 2 women from 6: $\binom{6}{2} = \frac{6 \times 5}{2} = 15$.
+    Multiply the independent choices: $10 \times 15 = 150$.
+
+    Why it works:
+    The selections are independent events. For every one of the 10 groups of men, you could pair them with any of the 15 groups of women. The Fundamental Counting Principle dictates that we multiply them.
+
+    Why the other choices fail:
+    - 330 is $\binom{11}{4}$, which is the number of ways to pick ANY 4 people from the 11, ignoring the "exactly 2 men and 2 women" constraint.
+    - 25 is $10 + 15$, erroneously adding the choices instead of multiplying them.
+    - 3000 is ${}_5P_2 \times {}_6P_2 = 20 \times 30 \times \dots$, treating the committee roles as distinct (order matters).
+
 - id: q003
   type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **permutations**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'In a class of 30 students, 18 play soccer and 15 play basketball. If 5 students play neither sport, how many students play both sports?'
+  difficultyDimensions:
+  - Identify the number of students who play at least one sport: $30 - 5 = 25$.
+  - Apply PIE: $|S \cup B| = |S| + |B| - |S \cap B|$.
+  - Solve for the intersection: $25 = 18 + 15 - x$.
   choices:
   - id: a
-    text: Use divide by symmetry after checking the relevant constraints.
+    text: '3'
+    issueSignals:
+    - pie-calculation-error
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '8'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '12'
+    issueSignals:
+    - complement-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '33'
+    issueSignals:
+    - disjoint-assumption-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize permutations, choose divide by symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
+    choiceId: b
+  explanation: |
+    Solution:
+    First, find the number of students who play at least one sport (the union $S \cup B$).
+    Total = (At least one) + (Neither)
+    $30 = |S \cup B| + 5 \implies |S \cup B| = 25$.
+    Now apply the Principle of Inclusion-Exclusion for two sets:
+    $|S \cup B| = |S| + |B| - |S \cap B|$
+    $25 = 18 + 15 - |S \cap B|$
+    $25 = 33 - |S \cap B|$
+    $|S \cap B| = 8$.
+
+    Why it works:
+    Adding the soccer players and basketball players gives 33, but we know only 25 students actually play sports. The "extra" 8 students represent the people who were counted twice because they play both sports.
+
+    Why the other choices fail:
+    - 3 is $33 - 30$, forgetting to subtract the 5 students who play neither. This assumes all 30 students play a sport.
+    - 12 is a miscalculation, possibly from $30 - 18 = 12$.
+    - 33 is just $18 + 15$, which assumes the two sets are entirely disjoint (which is impossible since the sum is greater than the total number of students).
+
 - id: q004
   type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **arrangements**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'How many passwords can be created using 4 characters, if the first character must be a letter (A-Z) and the remaining three characters must be digits (0-9)? (Repetition is allowed).'
+  difficultyDimensions:
+  - Identify the number of choices for each slot (26, 10, 10, 10).
+  - Apply the multiplication principle.
   choices:
   - id: a
-    text: Use choose distinguishable vs identical after checking the relevant constraints.
+    text: '26,000'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '18,720'
+    issueSignals:
+    - no-replacement-assumption
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '260'
+    issueSignals:
+    - sum-instead-of-product
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '10,000'
+    issueSignals:
+    - constraint-ignored
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize arrangements, choose choose distinguishable vs identical, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
+  explanation: |
+    Solution:
+    - Slot 1 (letter): 26 options.
+    - Slot 2 (digit): 10 options.
+    - Slot 3 (digit): 10 options.
+    - Slot 4 (digit): 10 options.
+    $26 \times 10 \times 10 \times 10 = 26,000$.
+
+    Why it works:
+    Because repetition is allowed, the pool of choices does not shrink for the digits. We simply multiply the independent options for each slot.
+
+    Why the other choices fail:
+    - 18,720 is $26 \times 10 \times 9 \times 8$, which assumes repetition of digits is NOT allowed.
+    - 260 is $26 \times 10$, ignoring two of the digit slots.
+    - 10,000 is $10^4$, ignoring the constraint that the first character must be a letter.
+
 - id: q005
-  type: freeResponse
-  prompt: |-
-    A Learning to Count problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **count the complement** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
+  type: multipleChoice
+  prompt: 'You have 4 distinct pairs of socks (8 socks total) loose in a drawer. If you blindly grab 2 socks, what is the probability you get a matching pair?'
+  difficultyDimensions:
+  - Calculate total ways to pick 2 socks: $\binom{8}{2} = 28$.
+  - Identify the number of successful outcomes: 4 matching pairs.
+  - Calculate probability: $4 / 28 = 1/7$.
+  - (Alternate method): Grab 1 sock, then calculate the probability the second sock matches it ($1/7$).
+  choices:
+  - id: a
+    text: '1/4'
+    issueSignals:
+    - pairwise-grouping-error
+  - id: b
+    text: '1/7'
+  - id: c
+    text: '1/8'
+    issueSignals:
+    - denominator-error
+  - id: d
+    text: '1/14'
+    issueSignals:
+    - multiplication-error
   answer:
-    expected: |-
-      Check whether the structure still contains overcounting and whether the constraints needed for count the complement remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions overcounting.
-    - Mentions count the complement.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Learning to Count; specific technique: count the complement. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
+    choiceId: b
+  explanation: |
+    Solution:
+    **Method 1 (Combinations):**
+    Total ways to choose any 2 socks: $\binom{8}{2} = \frac{8 \times 7}{2} = 28$.
+    Number of successful pairs: 4 (there are 4 specific matching pairs).
+    Probability: $\frac{4}{28} = \frac{1}{7}$.
+
+    **Method 2 (Sequential):**
+    Grab the first sock. It doesn't matter which one you get.
+    Now look in the drawer. There are 7 socks remaining.
+    Exactly 1 of those remaining 7 socks matches the one in your hand.
+    Probability: $\frac{1}{7}$.
+
+    Why it works:
+    The sequential method is often vastly faster for matching problems because it sidesteps computing the total number of combinations. The first choice just establishes a "target" that the second choice must hit.
+
+    Why the other choices fail:
+    - 1/4 assumes you are picking from 4 items, ignoring that there are 7 *other* socks that could be drawn.
+    - 1/8 incorrectly uses the total number of socks as the denominator for the second draw.
+    - 1/14 might come from $\frac{1}{2} \times \frac{1}{7}$.
+
 - id: q006
   type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **complements**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A pizzeria offers 3 crust types, 2 sauces, and 4 toppings. A "Basic Pizza" consists of 1 crust, 1 sauce, and exactly 2 distinct toppings. How many different Basic Pizzas can be ordered?'
+  difficultyDimensions:
+  - Multiply the independent crust and sauce choices ($3 \times 2 = 6$).
+  - Calculate the combinations of 2 toppings from 4 ($\binom{4}{2} = 6$).
+  - Multiply all components: $6 \times 6 = 36$.
   choices:
   - id: a
-    text: Use divide by symmetry after checking the relevant constraints.
+    text: '24'
+    issueSignals:
+    - single-topping-assumption
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '72'
+    issueSignals:
+    - order-confusion
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '36'
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '15'
+    issueSignals:
+    - sum-instead-of-product
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize complements, choose divide by symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
-- id: q007
-  type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **binomial theorem**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use choose distinguishable vs identical after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize binomial theorem, choose choose distinguishable vs identical, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
-- id: q008
-  type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **multiplication principle**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use count the complement after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize multiplication principle, choose count the complement, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
-- id: q009
-  type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **number of divisors**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use divide by symmetry after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize number of divisors, choose divide by symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
-- id: q010
-  type: freeResponse
-  prompt: |-
-    A Learning to Count problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **choose distinguishable vs identical** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
-  answer:
-    expected: |-
-      Check whether the structure still contains permutations and whether the constraints needed for choose distinguishable vs identical remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions permutations.
-    - Mentions choose distinguishable vs identical.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Learning to Count; specific technique: choose distinguishable vs identical. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
-- id: q011
-  type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **arrangements**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use count the complement after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize arrangements, choose count the complement, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
-- id: q012
-  type: multipleChoice
-  prompt: |-
-    An original Learning to Count problem variant is designed to test **overcounting**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use divide by symmetry after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize overcounting, choose divide by symmetry, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-counting
+    choiceId: c
+  explanation: |
+    Solution:
+    - Crust options: 3
+    - Sauce options: 2
+    - Topping options: We must choose 2 distinct toppings from 4. Order doesn't matter (Pepperoni & Mushroom is the same pizza as Mushroom & Pepperoni), so we use combinations: $\binom{4}{2} = \frac{4 \times 3}{2} = 6$.
+    Total combinations: $3 \times 2 \times 6 = 36$.
+
+    Why it works:
+    We break the pizza into three independent sub-tasks: picking a crust, picking a sauce, and picking the topping pair. We find the number of options for each sub-task independently, then multiply them together using the Fundamental Counting Principle.
+
+    Why the other choices fail:
+    - 24 is $3 \times 2 \times 4$, which is the number of pizzas with exactly ONE topping.
+    - 72 is $3 \times 2 \times (4 \times 3) = 3 \times 2 \times 12$. This treats the two toppings as an ordered sequence (permutations instead of combinations).
+    - 15 is $3 + 2 + \binom{4}{2}$, erroneously adding the sub-tasks instead of multiplying.

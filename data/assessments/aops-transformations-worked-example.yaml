@@ -1,250 +1,233 @@
 schemaVersion: 1
 id: aops-transformations-worked-example
-title: Shifts, Turns, Flips, Stretches, and Squeezes Worked Examples
+title: 'Transformations Worked Examples'
 assessmentType: workedExample
 categoryId: art-of-problem-solving
 topicId: aops-transformations
-modeDefault: practice
-randomizeQuestions: false
+modeDefault: learn
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
   - art-of-problem-solving
   - aops-transformations
-  - aops
+  - geometry
+  - olympiad
 skills:
-- Apply aops-transformations
-- aops-transformations
+- Apply translations, rotations, reflections, and dilations to points and shapes.
+- Identify isometries (rigid motions) and distinguish them from similarities.
+- Use compositions of transformations to simplify geometric proofs.
 workedExamples:
-- id: aops-transformations-problem-1
-  title: 'Direct application: Shifts, Turns, Flips, Stretches, and Squeezes'
-  problem: 'Original Shifts, Turns, Flips, Stretches, and Squeezes problem 1: use the givens to identify translation, rotation, reflection, distortion, dilation, transformation proofs, then solve without assuming unstated facts.'
+- id: aops-trans-we-1
+  title: 'Rotation Around an Arbitrary Center'
+  prompt: 'Point $P(5, 2)$ is rotated $90^\circ$ counter-clockwise around the center point $C(1, -1)$. Find the coordinates of the resulting point $P''$.'
   steps:
-  - id: aops-transformations-p1-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+  - id: step-1
+    title: Translate the center to the origin
+    prompt: We only have a simple rule for rotating around the origin. Translate both points so that $C$ becomes $(0,0)$. What are the new translated coordinates of $P$?
+    difficultyDimensions:
+    - Determine the translation vector required to move $(1, -1)$ to $(0,0)$.
+    - Apply this vector to $P(5, 2)$.
     answer:
-      choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    media:
-    - type: image
-      src: /assessments/aops/aops-transformations-problem-1.svg
-      alt: Original labeled Shifts, Turns, Flips, Stretches, and Squeezes diagram for problem 1; labels identify the givens used in the solution.
-      caption: Diagram for the stated Shifts, Turns, Flips, Stretches, and Squeezes relationships.
-  - id: aops-transformations-p1-s2
-    title: Select the tool
-    instruction: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - The translation vector is $\langle -1, 1 \rangle$.
+      - $P_{\text{shifted}} = (5 - 1, 2 + 1) = (4, 3)$.
+    explanation: |
+      Solution:
+      To use the standard rotation rules, we must pretend the center of rotation $C(1, -1)$ is the origin $(0,0)$.
+      To move $(1, -1)$ to $(0,0)$, we must subtract 1 from the $x$-coordinate and add 1 to the $y$-coordinate.
+      We apply this exact same translation to our point $P(5, 2)$:
+      $$x_{\text{shifted}} = 5 - 1 = 4$$
+      $$y_{\text{shifted}} = 2 + 1 = 3$$
+      The shifted point is $P_{\text{shifted}}(4, 3)$.
+
+      Why it works:
+      Isometries preserve relative distances and angles. By shifting the entire coordinate system, we can use our simple origin-based formulas without changing the underlying geometry.
+  - id: step-2
+    title: Perform the rotation
+    prompt: Rotate the shifted point $P_{\text{shifted}}$ by $90^\circ$ counter-clockwise around the origin.
+    difficultyDimensions:
+    - Apply the rule $(x, y) \to (-y, x)$ to $(4, 3)$.
     answer:
-      choiceId: a
-    explanation: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-  - id: aops-transformations-p1-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - The rule is $(x, y) \to (-y, x)$.
+      - $P_{\text{rotated}} = (-3, 4)$.
+    explanation: |
+      Solution:
+      Now we rotate $P_{\text{shifted}}(4, 3)$ around the origin by $90^\circ$ counter-clockwise.
+      The rule is $(x, y) \to (-y, x)$.
+      Swapping the coordinates and negating the new $x$-coordinate gives:
+      $$P_{\text{rotated}} = (-3, 4)$$
+
+      Why it works:
+      This intermediate point is exactly where the rotated point *would* be if the center of rotation were the origin.
+  - id: step-3
+    title: Translate back
+    prompt: Reverse the original translation to move the center back to $C(1, -1)$ and find the final coordinates of $P'$.
+    difficultyDimensions:
+    - Add the original center components $\langle 1, -1 \rangle$ back to the rotated point.
+    - Calculate $-3 + 1$ and $4 - 1$.
     answer:
-      choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-  - id: aops-transformations-p1-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-- id: aops-transformations-problem-2
-  title: 'Changed condition: Shifts, Turns, Flips, Stretches, and Squeezes'
-  problem: 'Original Shifts, Turns, Flips, Stretches, and Squeezes problem 2: use the givens to identify translation, rotation, reflection, distortion, dilation, transformation proofs, then solve without assuming unstated facts.'
+      gradingMode: selfCheck
+      keyPoints:
+      - $x' = -3 + 1 = -2$.
+      - $y' = 4 - 1 = 3$.
+      - Final point $P' = (-2, 3)$.
+    explanation: |
+      Solution:
+      Finally, we must undo our initial coordinate shift to return to the real coordinate plane.
+      We originally subtracted 1 from $x$ and added 1 to $y$. Now we do the reverse: add 1 to $x$ and subtract 1 from $y$. (Equivalently, just add the original center $C(1, -1)$ back).
+      $$x' = -3 + 1 = -2$$
+      $$y' = 4 - 1 = 3$$
+      The final, rotated point is $P'(-2, 3)$.
+
+      Why it works:
+      This three-step process (Translate $\to$ Rotate $\to$ Translate Back) is a classic example of mathematical conjugation, written abstractly as $T \circ R \circ T^{-1}$.
+
+- id: aops-trans-we-2
+  title: 'The Shortest Path (Reflection)'
+  prompt: 'Two towns, $A(2, 5)$ and $B(9, 3)$, are located on the same side of a straight river running along the $x$-axis. A bridge must be built over the river at some point $P(x, 0)$ to connect the towns. Find the coordinate $x$ that minimizes the total length of the road $AP + PB$.'
   steps:
-  - id: aops-transformations-p2-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+  - id: step-1
+    title: Use a reflection to make a straight line
+    prompt: Finding the minimum of a "bouncing" path is hard. Reflect one of the points across the river to turn this into a straight-line problem. Find the reflected point $A'$.
+    difficultyDimensions:
+    - Reflect $A(2, 5)$ across the $x$-axis.
+    - Apply the rule $(x, y) \to (x, -y)$.
     answer:
-      choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    media:
-    - type: image
-      src: /assessments/aops/aops-transformations-problem-2.svg
-      alt: Original labeled Shifts, Turns, Flips, Stretches, and Squeezes diagram for problem 2; labels identify the givens used in the solution.
-      caption: Diagram for the stated Shifts, Turns, Flips, Stretches, and Squeezes relationships.
-  - id: aops-transformations-p2-s2
-    title: Select the tool
-    instruction: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - The river is the $x$-axis ($y = 0$).
+      - Reflected point $A' = (2, -5)$.
+    explanation: |
+      Solution:
+      Because $P$ is on the $x$-axis, reflecting point $A$ across the $x$-axis does not change the distance from $A$ to $P$. In other words, $AP = A'P$.
+      Therefore, minimizing $AP + PB$ is exactly the same as minimizing $A'P + PB$.
+      The reflected point is $A'(2, -5)$.
+
+      Why it works:
+      The shortest distance between two points is a straight line. By reflecting $A$ to the other side of the river, the shortest path from $A'$ to $B$ is simply the straight line segment $A'B$.
+  - id: step-2
+    title: Find the equation of the line
+    prompt: Find the equation of the straight line connecting $A'(2, -5)$ and $B(9, 3)$.
+    difficultyDimensions:
+    - Calculate the slope $m = \frac{3 - (-5)}{9 - 2}$.
+    - Write the line equation in point-slope or slope-intercept form.
     answer:
-      choiceId: a
-    explanation: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-  - id: aops-transformations-p2-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - Slope $m = \frac{8}{7}$.
+      - Equation: $y - 3 = \frac{8}{7}(x - 9)$.
+    explanation: |
+      Solution:
+      We need the line passing through $A'(2, -5)$ and $B(9, 3)$.
+      First, find the slope:
+      $$m = \frac{3 - (-5)}{9 - 2} = \frac{8}{7}$$
+      Using point-slope form with point $B(9, 3)$:
+      $$y - 3 = \frac{8}{7}(x - 9)$$
+
+      Why it works:
+      This line represents the absolute shortest possible path from $A'$ to $B$. Where this line crosses the river will be the optimal location for the bridge.
+  - id: step-3
+    title: Find the optimal point P
+    prompt: Find where this line intersects the river (the $x$-axis) to find the coordinate $x$ for the bridge.
+    difficultyDimensions:
+    - Set $y = 0$ in the line equation.
+    - Solve for $x$.
     answer:
-      choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-  - id: aops-transformations-p2-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-- id: aops-transformations-problem-3
-  title: 'Synthesis: Shifts, Turns, Flips, Stretches, and Squeezes'
-  problem: 'Original Shifts, Turns, Flips, Stretches, and Squeezes problem 3: use the givens to identify translation, rotation, reflection, distortion, dilation, transformation proofs, then solve without assuming unstated facts.'
+      gradingMode: selfCheck
+      keyPoints:
+      - Set $y = 0$: $0 - 3 = \frac{8}{7}(x - 9)$.
+      - $-21 = 8(x - 9)$.
+      - $x - 9 = -\frac{21}{8}$.
+      - $x = 9 - 2.625 = 6.375$.
+    explanation: |
+      Solution:
+      The river is the $x$-axis, where $y = 0$.
+      Substitute $y = 0$ into our line equation:
+      $$0 - 3 = \frac{8}{7}(x - 9)$$
+      $$-3 = \frac{8}{7}(x - 9)$$
+      Multiply both sides by $\frac{7}{8}$:
+      $$-\frac{21}{8} = x - 9$$
+      $$x = 9 - \frac{21}{8} = \frac{72}{8} - \frac{21}{8} = \frac{51}{8}$$
+      The optimal location for the bridge is at $x = \frac{51}{8}$ (or $6.375$).
+
+      Why it works:
+      This is known as Heron's Shortest Distance Problem. By using a reflection, we transformed a calculus optimization problem into a simple algebra 1 problem!
+
+- id: aops-trans-we-3
+  title: 'Centers of Dilation'
+  prompt: 'Circle $C_1$ has center $(0,0)$ and radius 3. Circle $C_2$ has center $(10,0)$ and radius 2. Find the coordinates of the external center of dilation that maps $C_1$ onto $C_2$.'
   steps:
-  - id: aops-transformations-p3-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+  - id: step-1
+    title: Determine the scale factor
+    prompt: Find the scale factor $k$ that dilates the radius of $C_1$ to the radius of $C_2$.
+    difficultyDimensions:
+    - Divide the new radius by the old radius.
+    - $k = 2 / 3$.
     answer:
-      choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Shifts, Turns, Flips, Stretches, and Squeezes problem.
-    media:
-    - type: image
-      src: /assessments/aops/aops-transformations-problem-3.svg
-      alt: Original labeled Shifts, Turns, Flips, Stretches, and Squeezes diagram for problem 3; labels identify the givens used in the solution.
-      caption: Diagram for the stated Shifts, Turns, Flips, Stretches, and Squeezes relationships.
-  - id: aops-transformations-p3-s2
-    title: Select the tool
-    instruction: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - $k = \frac{\text{Radius of } C_2}{\text{Radius of } C_1}$.
+      - $k = \frac{2}{3}$.
+    explanation: |
+      Solution:
+      A dilation maps the first circle onto the second circle. Therefore, it must scale the radius.
+      The radius of $C_1$ is 3, and the radius of $C_2$ is 2.
+      The scale factor is:
+      $$k = \frac{2}{3}$$
+      
+      Why it works:
+      Because $k < 1$, the transformation shrinks the shape. The external center of dilation is the point from which you are "looking" at the circles such that they perfectly eclipse each other.
+  - id: step-2
+    title: Set up the dilation equation
+    prompt: Let the center of dilation be $P(x,0)$. The distance from $P$ to the center of $C_2$ must be $k$ times the distance from $P$ to the center of $C_1$. Set up this algebraic equation.
+    difficultyDimensions:
+    - Distance to $C_1$ center is $x - 0 = x$.
+    - Distance to $C_2$ center is $x - 10$ (Wait, if it's external, $x$ is larger than 10. Let's use coordinates directly).
+    - Dilation equation for centers: Center$_2$ - Center$_P$ = $k$ (Center$_1$ - Center$_P$).
     answer:
-      choiceId: a
-    explanation: Choose a method from track invariant quantities, map coordinates under a rule, use transformations to prove congruence and state the exact condition that permits it.
-  - id: aops-transformations-p3-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - Coordinate of $C_2 = P + k(C_1 - P)$.
+      - $10 = x + \frac{2}{3}(0 - x)$.
+    explanation: |
+      Solution:
+      A dilation centered at $P(x,y)$ by factor $k$ maps any point $A$ to $A'$, such that vector $\vec{PA'} = k \cdot \vec{PA}$.
+      Applying this to the centers of the circles:
+      $\vec{P \text{ to } C_2} = \frac{2}{3} \vec{P \text{ to } C_1}$.
+      Since everything is on the $x$-axis, the $y$-coordinate is 0.
+      Let the center be $x$.
+      $$10 - x = \frac{2}{3}(0 - x)$$
+
+      Why it works:
+      This vector equation guarantees the relative distances from the perspective point are perfectly proportional to the radii of the circles.
+  - id: step-3
+    title: Solve for the center
+    prompt: Solve the algebraic equation to find $x$.
+    difficultyDimensions:
+    - $10 - x = -\frac{2}{3}x$.
+    - $10 = \frac{1}{3}x$.
+    - $x = 30$.
     answer:
-      choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-  - id: aops-transformations-p3-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+      gradingMode: selfCheck
+      keyPoints:
+      - $10 - x = -\frac{2}{3}x$.
+      - $10 = \frac{1}{3}x$.
+      - $x = 30$.
+      - The center of dilation is $(30, 0)$.
+    explanation: |
+      Solution:
+      Solve the equation:
+      $$10 - x = -\frac{2}{3}x$$
+      Add $x$ to both sides:
+      $$10 = x - \frac{2}{3}x$$
+      $$10 = \frac{1}{3}x$$
+      Multiply by 3:
+      $$x = 30$$
+      The external center of dilation is $(30, 0)$.
+
+      Why it works:
+      If you stand at $(30,0)$, the center of $C_2$ is 20 units away, and the center of $C_1$ is 30 units away. The ratio of distances is $20/30 = 2/3$, which perfectly matches the ratio of their radii! This point is where the common external tangents of the two circles intersect.

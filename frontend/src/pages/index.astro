@@ -2191,10 +2191,17 @@ const isDev = import.meta.env.DEV;
           </button>
         `}).join("");
         assessmentList.querySelectorAll<HTMLButtonElement>("[data-navigation-assessment]").forEach((button) => {
-          button.addEventListener("click", () => selectNavigationStage("assessment", button.dataset.navigationAssessment ?? ""));
-          button.addEventListener("dblclick", () => {
-            selectNavigationStage("assessment", button.dataset.navigationAssessment ?? "");
-            startNavigationAttempt();
+          button.addEventListener("click", () => {
+            const id = button.dataset.navigationAssessment ?? "";
+            const now = Date.now();
+            if ((window as any).__lastNavClickId === id && now - ((window as any).__lastNavClickTime || 0) < 400) {
+              selectNavigationStage("assessment", id);
+              startNavigationAttempt();
+            } else {
+              (window as any).__lastNavClickId = id;
+              (window as any).__lastNavClickTime = now;
+              selectNavigationStage("assessment", id);
+            }
           });
         });
 
@@ -3313,6 +3320,18 @@ const isDev = import.meta.env.DEV;
           `;
         }
 
+
+
+        return `
+          <div class="grade-log-full-width">
+            <div class="nav-tile-grid" style="margin-bottom: 2rem;">
+              ${navTilesHtml}
+            </div>
+            ${content}
+          </div>
+        `;
+      }
+
       function updateAnalyticsDashboard() {
         if (!state.analytics) return;
         gradeSummary.innerHTML = renderAnalyticsDashboard(state.analytics, state.gradeLogEntries);
@@ -3323,16 +3342,6 @@ const isDev = import.meta.env.DEV;
           renderTopIssueSignalsChart("chart-issue-signals", state.analytics.issueSignals || []);
           renderQuestionTypeChart("chart-question-types", state.analytics.questionTypes);
         }
-      }
-
-        return `
-          <div class="grade-log-full-width">
-            <div class="nav-tile-grid" style="margin-bottom: 2rem;">
-              ${navTilesHtml}
-            </div>
-            ${content}
-          </div>
-        `;
       }
 
       function renderCommittedEntries(entries: GradeLogEntry[]) {

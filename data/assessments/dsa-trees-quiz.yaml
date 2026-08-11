@@ -1,0 +1,78 @@
+schemaVersion: 1
+id: dsa-trees-quiz
+categoryId: dsa
+topicId: dsa-trees
+learningGoal: evaluate
+activityType: quiz
+title: "BST Search Implementation"
+description: "Implement a recursive search for a Binary Search Tree."
+navigation:
+  tags: [trees, code, evaluate, bst]
+skills:
+  - id: obj-dsa-trees-04
+    level: foundation
+blueprintId: bp-dsa-trees-quiz-01
+sourceChunkIds: ["src-20260810144616-0dc6e2835b:page-201-250"]
+
+questions:
+  - id: implement-bst-search
+    type: code
+    difficultyDimensions: ["Recursive state management", "Pointer manipulation"]
+    subjectDifficultyTags: ["Algorithm-Implementation"]
+    prerequisiteObjectiveIds: ["obj-dsa-trees-03", "obj-dsa-recursion-01"]
+    prompt: |
+      **Searching a BST**
+
+      You are given the root of a Binary Search Tree (BST). The node class is:
+      
+      ```python
+      class TreeNode:
+          def __init__(self, value):
+              self.value = value
+              self.left = None
+              self.right = None
+      ```
+
+      Write a Python function `search_bst(node, target)` that returns `True` if the `target` value exists in the tree, and `False` otherwise. You must use the BST property to achieve $O(\log N)$ average time complexity. Do not search both branches unconditionally.
+
+      ```python
+      def search_bst(node, target):
+          # Write your recursive logic here
+          pass
+      ```
+    answer:
+      gradingMode: automatic
+      codeLanguage: python
+      testCases:
+        - input: |
+            root = TreeNode(10)
+            root.left = TreeNode(5)
+            root.right = TreeNode(15)
+            search_bst(root, 15)
+          expectedOutput: "True"
+        - input: |
+            root = TreeNode(10)
+            root.left = TreeNode(5)
+            root.right = TreeNode(15)
+            search_bst(root, 99)
+          expectedOutput: "False"
+        - input: "search_bst(None, 10)"
+          expectedOutput: "False"
+    explanation: |
+      Solution:
+      ```python
+      def search_bst(node, target):
+          if node is None:
+              return False
+          if node.value == target:
+              return True
+          
+          if target < node.value:
+              return search_bst(node.left, target)
+          else:
+              return search_bst(node.right, target)
+      ```
+
+      Why it works:
+      The function first checks the base cases: if the node is empty, it returns `False`. If it matches the target, it returns `True`. 
+      Then, it uses the BST property. If the target is smaller, we know it *must* be in the left subtree, so we recursively search only the left. If it's larger, we search only the right. This halves the search space at each step, yielding $O(\log N)$ time.

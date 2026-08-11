@@ -12,235 +12,251 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-statistics-probability
-  - aops-volume-1
-  - probability
-  - mean
-  - median
-  - mode
-  - range
+  - discrete-math
+  - combinatorics
+  - expected-value
+  - dependent-events
 skills:
-- Apply aops-statistics-probability
-- aops-statistics-probability
+- Calculate probability using combinations.
+- Compute probabilities of dependent and independent sequential events.
+- Calculate expected value.
+- Use complementary counting for "at least one" scenarios.
 questions:
 - id: q001
   type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **mean**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A committee of 3 is chosen at random from a group of 5 men and 4 women. What is the probability that the committee consists of exactly 2 men and 1 woman?'
+  difficultyDimensions:
+  - Calculate total ways to choose 3 people from 9: $\binom{9}{3} = 84$.
+  - Calculate successful ways: choose 2 men ($\binom{5}{2} = 10$) and 1 woman ($\binom{4}{1} = 4$).
+  - Multiply successful ways: $10 \times 4 = 40$.
+  - Divide: $40 / 84 = 10 / 21$.
   choices:
   - id: a
-    text: Use define sample space after checking the relevant constraints.
+    text: '10/21'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '2/9'
+    issueSignals:
+    - single-draw-assumption
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '5/42'
+    issueSignals:
+    - combination-omission
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '1/3'
+    issueSignals:
+    - ratio-error
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize mean, choose define sample space, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
+  explanation: |
+    Solution:
+    The total number of possible committees is picking 3 people from 9: $\binom{9}{3} = \frac{9 \times 8 \times 7}{3 \times 2 \times 1} = 84$.
+    The number of successful committees involves picking 2 men from 5, AND 1 woman from 4:
+    $\binom{5}{2} = 10$ ways for the men.
+    $\binom{4}{1} = 4$ ways for the women.
+    Total successful committees = $10 \times 4 = 40$.
+    The probability is $\frac{40}{84} = \frac{10}{21}$.
+
+    Why it works:
+    Probability is $\frac{\text{successful outcomes}}{\text{total outcomes}}$. Both numerator and denominator must be calculated using combinations because the order in which committee members are chosen does not matter.
+
+    Why the other choices fail:
+    - 2/9 is picking exactly 1 man and 1 woman in 2 draws.
+    - 5/42 fails to account for combinations properly, perhaps just $10 / 84$ (forgetting to multiply by the women choices).
+    - 1/3 is a guess based on 3 people on the committee.
+
 - id: q002
   type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **median**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A jar contains 6 red jelly beans and 4 green jelly beans. You draw two jelly beans sequentially without replacing the first one. What is the probability that both jelly beans are red?'
+  difficultyDimensions:
+  - Probability of first red: $6/10$.
+  - Probability of second red (dependent): $5/9$.
+  - Multiply: $(6/10) \times (5/9) = 30/90 = 1/3$.
   choices:
   - id: a
-    text: Use multiply independent choices after checking the relevant constraints.
+    text: '9/25'
+    issueSignals:
+    - replacement-confusion
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '1/3'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '3/5'
+    issueSignals:
+    - single-draw-probability
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '5/18'
+    issueSignals:
+    - numerator-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize median, choose multiply independent choices, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
+    choiceId: b
+  explanation: |
+    Solution:
+    The first draw has 6 red jelly beans out of 10 total, so $P(\text{Red}_1) = \frac{6}{10}$.
+    Because you do not replace the jelly bean, the jar now has 5 red jelly beans out of 9 total.
+    The second draw has $P(\text{Red}_2) = \frac{5}{9}$.
+    Multiply the dependent probabilities: $\frac{6}{10} \times \frac{5}{9} = \frac{30}{90} = \frac{1}{3}$.
+
+    Why it works:
+    This is drawing without replacement. The denominator drops by 1 for the second draw, and because we wanted the same color, the numerator drops by 1 as well.
+
+    Why the other choices fail:
+    - 9/25 is $\frac{6}{10} \times \frac{6}{10} = \frac{36}{100}$. This assumes drawing WITH replacement.
+    - 3/5 is just the probability of the first draw.
+    - 5/18 comes from $\frac{6}{10} \times \frac{5}{10}$, erroneously keeping the denominator as 10 for the second draw.
+
 - id: q003
   type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **mode**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A player rolls a fair 6-sided die. If they roll a 6, they win $10. If they roll a 1, they win $4. For any other roll, they lose $3. What is the expected value of one roll?'
+  difficultyDimensions:
+  - Outcome 1 (Win 10): $P = 1/6$.
+  - Outcome 2 (Win 4): $P = 1/6$.
+  - Outcome 3 (Lose 3): $P = 4/6$.
+  - Multiply and sum: $(10)(1/6) + (4)(1/6) + (-3)(4/6)$.
+  - Evaluate: $10/6 + 4/6 - 12/6 = 2/6 = 1/3 \approx 0.33$.
   choices:
   - id: a
-    text: Use split into cases after checking the relevant constraints.
+    text: '$\frac{1}{3}$'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$2$'
+    issueSignals:
+    - addition-error
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$-\frac{1}{2}$'
+    issueSignals:
+    - probability-weighting-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$\frac{11}{6}$'
+    issueSignals:
+    - sign-error
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize mode, choose split into cases, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
+  explanation: |
+    Solution:
+    The expected value is the sum of each payout multiplied by its probability:
+    $E = (10)\left(\frac{1}{6}\right) + (4)\left(\frac{1}{6}\right) + (-3)\left(\frac{4}{6}\right)$
+    $E = \frac{10}{6} + \frac{4}{6} - \frac{12}{6}$
+    $E = \frac{2}{6} = \frac{1}{3}$ (or about $\$0.33$).
+
+    Why it works:
+    Losses must be treated as negative numbers in the expected value sum. The "any other roll" category includes 4 distinct outcomes (2, 3, 4, 5), so its probability is $\frac{4}{6}$.
+
+    Why the other choices fail:
+    - $2$ might come from averaging $10, 4, -3$ without weighting by their probabilities, or some other arithmetic error.
+    - $-1/2$ comes from weighting the loss too heavily or a sign error.
+    - $11/6$ treats the loss as a win: $\frac{10}{6} + \frac{4}{6} + \frac{12}{6} = \frac{26}{6}$, wait no, $11/6$ is just a random fraction error. But treating the $-3$ as $+3$ gives $26/6 = 13/3$.
+
 - id: q004
   type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **range**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A coin is flipped 5 times. What is the probability of getting at least one Heads?'
+  difficultyDimensions:
+  - Recognize "at least one" indicates complementary counting is faster.
+  - Find the probability of getting ZERO heads (all tails): $(1/2)^5 = 1/32$.
+  - Subtract from 1: $1 - 1/32 = 31/32$.
   choices:
   - id: a
-    text: Use define sample space after checking the relevant constraints.
+    text: '31/32'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '1/32'
+    issueSignals:
+    - complement-omission
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '5/32'
+    issueSignals:
+    - single-flip-confusion
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '1/2'
+    issueSignals:
+    - expected-value-confusion
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize range, choose define sample space, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
+  explanation: |
+    Solution:
+    The phrase "at least one" is a strong hint to use complementary counting.
+    The complement of "at least one Heads" is "exactly zero Heads" (which means all Tails).
+    The probability of getting a Tail on one flip is $\frac{1}{2}$. The probability of getting 5 Tails in a row is $\left(\frac{1}{2}\right)^5 = \frac{1}{32}$.
+    Since the probabilities must sum to 1, the probability of getting at least one Heads is:
+    $1 - \frac{1}{32} = \frac{31}{32}$.
+
+    Why it works:
+    You *could* calculate the probability of getting exactly 1 Head, exactly 2, 3, 4, and 5 Heads, and add them all up. But using the complement requires only one calculation (all Tails) and a subtraction.
+
+    Why the other choices fail:
+    - 1/32 is the probability of getting NO heads (the complement).
+    - 5/32 is the probability of getting EXACTLY one head $\binom{5}{1} (1/2)^5$.
+    - 1/2 is the probability of getting a head on a single flip.
+
 - id: q005
-  type: freeResponse
-  prompt: |-
-    A Statistics and Probability problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **multiply independent choices** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
+  type: multipleChoice
+  prompt: 'A dart is thrown randomly at a circular target with a radius of 10 cm. The target has an inner "bullseye" circle with a radius of 2 cm. What is the probability that the dart lands in the bullseye? (Assume the dart always hits the target).'
+  difficultyDimensions:
+  - Calculate area of the whole target: $\pi(10)^2 = 100\pi$.
+  - Calculate area of the bullseye: $\pi(2)^2 = 4\pi$.
+  - Find ratio: $4\pi / 100\pi = 4/100 = 1/25$.
+  choices:
+  - id: a
+    text: '1/5'
+    issueSignals:
+    - linear-ratio-error
+  - id: b
+    text: '1/25'
+  - id: c
+    text: '1/100'
+    issueSignals:
+    - area-calculation-error
+  - id: d
+    text: '2/5'
+    issueSignals:
+    - diameter-confusion
   answer:
-    expected: |-
-      Check whether the structure still contains probability and whether the constraints needed for multiply independent choices remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions probability.
-    - Mentions multiply independent choices.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Statistics and Probability; specific technique: multiply independent choices. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
+    choiceId: b
+  explanation: |
+    Solution:
+    This is geometric probability. The probability is the ratio of the successful area to the total area.
+    Area of bullseye = $\pi(2)^2 = 4\pi$.
+    Area of whole target = $\pi(10)^2 = 100\pi$.
+    Probability = $\frac{4\pi}{100\pi} = \frac{4}{100} = \frac{1}{25}$.
+
+    Why it works:
+    Probability scales with area ($r^2$), not length ($r$). Even though the radius of the bullseye is $1/5$ the radius of the whole target, its area is $(1/5)^2 = 1/25$ of the total area.
+
+    Why the other choices fail:
+    - 1/5 is the ratio of the radii ($2/10$). This is the most common error in geometric probability.
+    - 1/100 would be correct if the bullseye had a radius of 1 cm.
+    - 2/5 might be a ratio involving diameters incorrectly applied.
+
 - id: q006
   type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **casework**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A factory has two machines, A and B. Machine A produces a defective item 5% of the time, and Machine B produces a defective item 2% of the time. The machines operate completely independently. If an item is taken from Machine A and an item is taken from Machine B, what is the probability that BOTH items are defective?'
+  difficultyDimensions:
+  - Identify $P(A \text{ defective}) = 0.05$.
+  - Identify $P(B \text{ defective}) = 0.02$.
+  - Multiply independent probabilities: $0.05 \times 0.02 = 0.001$.
   choices:
   - id: a
-    text: Use split into cases after checking the relevant constraints.
+    text: '0.07'
+    issueSignals:
+    - addition-instead-of-multiplication
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '0.001'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '0.1'
+    issueSignals:
+    - decimal-multiplication-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '0.03'
+    issueSignals:
+    - subtraction-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize casework, choose split into cases, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
-- id: q007
-  type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **odds**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use define sample space after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize odds, choose define sample space, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
-- id: q008
-  type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **expected value**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use multiply independent choices after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize expected value, choose multiply independent choices, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
-- id: q009
-  type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **mean**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use split into cases after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize mean, choose split into cases, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
-- id: q010
-  type: freeResponse
-  prompt: |-
-    A Statistics and Probability problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **define sample space** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
-  answer:
-    expected: |-
-      Check whether the structure still contains median and whether the constraints needed for define sample space remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions median.
-    - Mentions define sample space.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Statistics and Probability; specific technique: define sample space. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
-- id: q011
-  type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **mode**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use multiply independent choices after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize mode, choose multiply independent choices, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
-- id: q012
-  type: multipleChoice
-  prompt: |-
-    An original Statistics and Probability problem variant is designed to test **range**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use split into cases after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize range, choose split into cases, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-statistics-probability
+    choiceId: b
+  explanation: |
+    Solution:
+    Because the machines operate independently, the probability that both events happen is the product of their individual probabilities.
+    $P(\text{Both Defective}) = P(A \text{ Defective}) \times P(B \text{ Defective})$
+    $0.05 \times 0.02 = 0.001$.
+
+    Why it works:
+    The Multiplication Rule states that for independent events $X$ and $Y$, $P(X \cap Y) = P(X) \times P(Y)$.
+
+    Why the other choices fail:
+    - 0.07 is $0.05 + 0.02$. Adding the probabilities is for mutually exclusive "OR" events, not independent "AND" events.
+    - 0.1 is a decimal placement error when multiplying $5 \times 2 = 10$.
+    - 0.03 is a random subtraction $0.05 - 0.02$.

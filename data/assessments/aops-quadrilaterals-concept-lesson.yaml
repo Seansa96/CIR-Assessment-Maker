@@ -1,12 +1,10 @@
 schemaVersion: 1
 id: aops-quadrilaterals-concept-lesson
-title: Quadrilaterals Concept Lesson
-description: Build quadrilateral results from definitions, diagonals, and sufficient classification tests instead of trusting appearance.
+title: 'Quadrilaterals'
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
 topicId: aops-quadrilaterals
 modeDefault: learn
-randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -14,163 +12,327 @@ navigation:
   - art-of-problem-solving
   - aops-quadrilaterals
   - geometry
-  - parallelograms
-  - trapezoids
-  - quadrilateral-classification
+  - olympiad
 skills:
-- Derive and apply the quadrilateral interior-angle sum
-- Distinguish definitions, consequences, converses, and sufficient classification tests
-- Prove and use parallelogram side, angle, and diagonal properties
-- Classify rectangles, rhombi, squares, trapezoids, and kites from stated evidence
-- Select and verify quadrilateral area methods
+- Identify and prove the properties of parallelograms, rhombi, and trapezoids.
+- Apply Varignon's theorem to midpoint quadrilaterals.
+- Calculate areas using standard formulas and Brahmagupta's formula.
 lesson:
-  introduction: |
-    Quadrilateral problems reward careful classification. A picture may resemble a rectangle or rhombus, but only stated or proved conditions authorize those properties. The central workflow is to translate markings into facts, choose a definition or theorem in the correct direction, use a diagonal when a triangle argument is useful, and verify that the conclusion is no stronger than the evidence.
   sections:
-  - id: aops-quadrilaterals-motivation
-    title: Four angles become two triangle sums
-    required: true
+  - id: section-parallelograms
+    title: 'Parallelograms'
     content: |
-      Draw a diagonal in a convex quadrilateral. It divides the figure into two triangles without changing the four corner angles: each endpoint angle may be split, but its pieces recombine to the original angle. Because the two triangle sums total $180^\circ+180^\circ$, every convex quadrilateral has interior-angle sum $360^\circ$. This explains the formula and makes it reusable: if three angles are known, the fourth is $360^\circ$ minus their sum. In a concave quadrilateral the same total holds, although the interior reflex angle must be interpreted correctly.
-    media:
-    - type: image
-      src: /assessments/aops/aops-quadrilaterals-angle-sum.svg
-      alt: Convex quadrilateral ABCD divided by diagonal AC into triangles ABC and ACD.
-      caption: The diagonal partitions the four interior angles into two complete triangle-angle sums.
+      A parallelogram is a quadrilateral with both pairs of opposite sides parallel. This definition generates a cascade of equivalent properties:
+      1. Opposite sides are equal in length.
+      2. Opposite angles are equal in measure.
+      3. Consecutive angles are supplementary (add to $180^\circ$).
+      4. The diagonals bisect each other.
+
+      In a geometry proof, establishing *any one* of these properties is sufficient to prove the quadrilateral is a parallelogram. The area of a parallelogram is simply $A = \text{base} \times \text{height}$, because it can be cut and rearranged into a rectangle.
     check:
-      id: aops-quadrilaterals-motivation-check
       type: multipleChoice
-      prompt: Three angles of a convex quadrilateral are $72^\circ$, $91^\circ$, and $104^\circ$. What is the fourth angle?
+      prompt: 'In quadrilateral $ABCD$, diagonals $AC$ and $BD$ intersect at $M$. If $AM = 5, MC = 5, BM = 7, MD = 7$, and $\angle AMB = 60^\circ$, what kind of quadrilateral is $ABCD$?'
       choices:
-      - {id: a, text: '$83^\circ$'}
-      - {id: b, text: '$87^\circ$'}
-      - {id: c, text: '$93^\circ$'}
-      - {id: d, text: '$97^\circ$'}
-      answer: {choiceId: c}
-      explanation: The missing angle is $360-(72+91+104)=93$ degrees.
-  - id: aops-quadrilaterals-definitions
-    title: Definitions form a hierarchy, not separate boxes
-    required: true
+      - id: a
+        text: 'A parallelogram'
+      - id: b
+        text: 'A rectangle'
+        issueSignals: [wrong-concept]
+      - id: c
+        text: 'A rhombus'
+        issueSignals: [wrong-concept]
+      - id: d
+        text: 'A square'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Recognize that the diagonals bisect each other.
+      - Rule out special parallelograms since diagonals are neither equal nor perpendicular.
+      explanation: |
+        Solution:
+        Since $AM = MC = 5$, diagonal $AC$ is bisected at $M$.
+        Since $BM = MD = 7$, diagonal $BD$ is bisected at $M$.
+        Because the diagonals bisect each other, $ABCD$ is a parallelogram.
+        It is not a rectangle (diagonals $10$ and $14$ are not equal).
+        It is not a rhombus (diagonals do not intersect at $90^\circ$).
+
+        Why it works:
+        The bisection of diagonals forces the opposite triangles ($\triangle AMB$ and $\triangle CMD$) to be congruent by SAS, which in turn forces opposite sides to be equal and parallel.
+
+  - id: section-special-parallelograms
+    title: 'Rectangles, Rhombi, and Squares'
     content: |
-      A parallelogram has two pairs of opposite parallel sides. A rectangle is a parallelogram with four right angles; a rhombus is a parallelogram with four congruent sides; a square satisfies both extra conditions. Therefore every square is both a rectangle and a rhombus, and all three are parallelograms. A kite has two pairs of adjacent congruent sides. For trapezoids, conventions differ: this curriculum uses the inclusive definition, at least one designated pair of opposite sides parallel, so parallelograms are special trapezoids. To keep the familiar base-angle and diagonal theorems unambiguous, “isosceles trapezoid” here means a non-parallelogram trapezoid with congruent legs. A source using another convention must state it. Definitions tell you what is guaranteed; drawings do not.
-    media:
-    - type: image
-      src: /assessments/aops/aops-quadrilaterals-special-types.svg
-      alt: Rectangle, rhombus, and square with right-angle, equal-side, and diagonal markings.
-      caption: A square combines the defining restrictions of a rectangle and a rhombus.
+      Parallelograms with extra constraints become highly symmetric:
+      
+      **Rectangles** have four $90^\circ$ angles. This forces their diagonals to be equal in length. A rectangle is a cyclic quadrilateral because its opposite angles sum to $180^\circ$.
+      
+      **Rhombi** (plural of rhombus) have four equal sides. This forces their diagonals to be strictly perpendicular ($90^\circ$ intersection) and to bisect the interior angles. The area of a rhombus is $\frac{1}{2}d_1 d_2$.
+      
+      **Squares** possess the properties of both rectangles and rhombi: four equal sides, four right angles, equal diagonals, and perpendicular diagonals.
     check:
-      id: aops-quadrilaterals-definitions-check
       type: multipleChoice
-      prompt: Which statement follows from the definitions used in this lesson?
+      prompt: 'A parallelogram has diagonals of lengths 10 and 24 that intersect at a right angle. What is its perimeter?'
       choices:
-      - {id: a, text: Every rhombus is a rectangle.}
-      - {id: b, text: Every rectangle has four congruent sides.}
-      - {id: c, text: Every square is both a rectangle and a rhombus.}
-      - {id: d, text: Every kite is a parallelogram.}
-      answer: {choiceId: c}
-      explanation: A square has both four right angles and four congruent sides, in addition to being a parallelogram.
-  - id: aops-quadrilaterals-parallelogram-properties
-    title: Why parallelogram properties hold
-    required: true
+      - id: a
+        text: '52'
+      - id: b
+        text: '68'
+        issueSignals: [algebra-error]
+      - id: c
+        text: '120'
+        issueSignals: [wrong-formula]
+      - id: d
+        text: '26'
+        issueSignals: [formula-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify the shape as a rhombus.
+      - Use Pythagorean theorem on the half-diagonals to find the side length.
+      - Multiply by 4.
+      explanation: |
+        Solution:
+        A parallelogram with perpendicular diagonals is a rhombus, so all four sides are equal.
+        The diagonals bisect each other, creating four right triangles with legs $10/2 = 5$ and $24/2 = 12$.
+        By the Pythagorean theorem, the hypotenuse (the side of the rhombus) is $\sqrt{5^2 + 12^2} = \sqrt{25 + 144} = 13$.
+        The perimeter is $4 \times 13 = 52$.
+
+        Why it works:
+        The perpendicular intersection of the diagonals is the defining feature that locks a parallelogram's sides into equal lengths.
+
+  - id: section-trapezoids
+    title: 'Trapezoids'
     content: |
-      In parallelogram $ABCD$, opposite sides are parallel. Diagonal $AC$ creates alternate-interior angle pairs, so triangles $ABC$ and $CDA$ are congruent by ASA using their shared diagonal. That triangle proof yields opposite sides congruent and opposite angles congruent. Consecutive angles are supplementary because a transversal crosses parallel sides. Drawing both diagonals and applying the same parallel-line angle logic shows that they bisect one another: if they meet at $O$, then $AO=OC$ and $BO=OD$. Notice what is not guaranteed: the diagonals need not be congruent or perpendicular.
-    media:
-    - type: image
-      src: /assessments/aops/aops-quadrilaterals-parallelogram.svg
-      alt: Parallelogram ABCD with parallel-side arrows and diagonals AC and BD intersecting at O with matching half-diagonal tick marks.
-      caption: Parallel sides support triangle congruence; the tick marks summarize the resulting diagonal bisection.
+      A trapezoid (or trapezium) is a quadrilateral with *at least one* pair of parallel sides (the bases). 
+      The median (midline) connects the midpoints of the non-parallel sides. Its length is the average of the two bases: $m = \frac{b_1 + b_2}{2}$.
+      The area of a trapezoid is the median times the height: $A = mh$.
+
+      An **isosceles trapezoid** has non-parallel sides of equal length. This forces the base angles to be equal, the diagonals to be equal, and makes the quadrilateral cyclic (inscribable in a circle).
     check:
-      id: aops-quadrilaterals-parallelogram-properties-check
       type: multipleChoice
-      prompt: In parallelogram $ABCD$, diagonals meet at $O$, $AO=3x+2$, and $OC=5x-10$. What is $x$?
+      prompt: 'In trapezoid $ABCD$ with parallel bases $AB$ and $CD$, the diagonals $AC$ and $BD$ intersect at $E$. If $AB = 4$ and $CD = 10$, what is the ratio of the area of $\triangle ABE$ to the area of $\triangle CDE$?'
       choices:
-      - {id: a, text: '$4$'}
-      - {id: b, text: '$6$'}
-      - {id: c, text: '$8$'}
-      - {id: d, text: '$12$'}
-      answer: {choiceId: b}
-      explanation: Diagonals of a parallelogram bisect each other, so $3x+2=5x-10$ and $x=6$.
-  - id: aops-quadrilaterals-parallelogram-tests
-    title: Proving that a quadrilateral is a parallelogram
-    required: true
+      - id: a
+        text: '4:25'
+      - id: b
+        text: '2:5'
+        issueSignals: [wrong-concept]
+      - id: c
+        text: '16:100'
+        issueSignals: [algebra-error]
+      - id: d
+        text: '4:10'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Prove $\triangle ABE \sim \triangle CDE$ due to parallel lines.
+      - Square the linear ratio to find the area ratio.
+      explanation: |
+        Solution:
+        Because $AB \parallel CD$, the alternate interior angles are equal: $\angle BAE = \angle DCE$ and $\angle ABE = \angle CDE$.
+        Thus, $\triangle ABE \sim \triangle CDE$ by AA similarity.
+        The ratio of their corresponding sides is $AB:CD = 4:10 = 2:5$.
+        The ratio of the areas of similar triangles is the square of the side ratio:
+        $(2/5)^2 = 4/25$.
+        The area ratio is $4:25$.
+
+        Why it works:
+        Trapezoids naturally generate similar triangles when their diagonals are drawn, making them excellent candidates for proportional area problems.
+
+  - id: section-kites
+    title: 'Kites'
     content: |
-      A property and its converse are different claims, so classification needs a known sufficient test. Any one of these conditions proves a quadrilateral is a parallelogram: both pairs of opposite sides are parallel; both pairs are congruent; one opposite pair is both parallel and congruent; both pairs of opposite angles are congruent; or the diagonals bisect each other. Each test can be proved by congruent triangles and parallel-line converses. Weaker facts do not suffice: one pair of parallel sides describes many trapezoids, and congruent diagonals occur in isosceles trapezoids as well as rectangles.
-    media:
-    - type: image
-      src: /assessments/aops/aops-quadrilaterals-counterexamples.svg
-      alt: A non-rhombus kite with perpendicular diagonals and a non-rectangle isosceles trapezoid with congruent diagonals.
-      caption: A single attractive diagonal property may be necessary in a special family without being sufficient for classification.
+      A kite is a quadrilateral with two distinct pairs of equal-length sides that are adjacent to each other.
+      
+      This symmetry guarantees that:
+      1. The diagonals are perpendicular.
+      2. The main diagonal (connecting the vertices between the equal sides) bisects the other diagonal.
+      3. The main diagonal bisects the angles at its vertices.
+      4. The area is half the product of the diagonals: $A = \frac{1}{2}d_1 d_2$.
+
+      A rhombus is a special type of kite where all four sides are equal.
     check:
-      id: aops-quadrilaterals-parallelogram-tests-check
       type: multipleChoice
-      prompt: Which fact alone is sufficient to prove that a quadrilateral is a parallelogram?
+      prompt: 'A kite has side lengths 10 and 17. The main diagonal has length 21. What is the area of the kite?'
       choices:
-      - {id: a, text: Its diagonals are congruent.}
-      - {id: b, text: Its diagonals bisect each other.}
-      - {id: c, text: One pair of opposite sides is congruent.}
-      - {id: d, text: Its diagonals are perpendicular.}
-      answer: {choiceId: b}
-      explanation: Mutual diagonal bisection is a parallelogram test; each other option occurs in non-parallelograms.
-  - id: aops-quadrilaterals-specialization
-    title: Rectangle, rhombus, and square evidence
-    required: true
+      - id: a
+        text: '168'
+      - id: b
+        text: '84'
+        issueSignals: [wrong-formula]
+      - id: c
+        text: '336'
+        issueSignals: [formula-error]
+      - id: d
+        text: '170'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - View the kite as two congruent triangles, or apply Heron's formula to the upper half.
+      - Calculate the area.
+      explanation: |
+        Solution:
+        The main diagonal of length 21 splits the kite into two congruent triangles, each with sides 10, 17, and 21.
+        We can find the area of one triangle using Heron's Formula.
+        Semiperimeter $s = \frac{10 + 17 + 21}{2} = 24$.
+        Area $= \sqrt{24(24-10)(24-17)(24-21)} = \sqrt{24(14)(7)(3)}$.
+        $24 \times 3 = 72$, $72 \times 98 \dots$ wait. Let's factor: $24=8 \times 3$, $14=2 \times 7$.
+        $\sqrt{(8 \times 3)(2 \times 7)(7)(3)} = \sqrt{16 \times 9 \times 49} = 4 \times 3 \times 7 = 84$.
+        One triangle has area 84.
+        The kite has two such triangles, so its total area is $2 \times 84 = 168$.
+
+        Why it works:
+        The main diagonal acts as a line of symmetry, cutting the quadrilateral into two identical triangles, making Heron's formula highly effective.
+
+  - id: section-cyclic-quadrilaterals
+    title: 'Cyclic Quadrilaterals'
     content: |
-      Start by proving a parallelogram unless that status is given. Within the parallelogram family, congruent diagonals are sufficient for a rectangle, while perpendicular diagonals or a diagonal that bisects an angle are sufficient for a rhombus. A square needs evidence for both families, such as a parallelogram with congruent and perpendicular diagonals. These statements require the parallelogram hypothesis: an isosceles trapezoid can have congruent diagonals, and a kite can have perpendicular diagonals. A rhombus with diagonals $p,q$ consists of four right triangles with legs $p/2,q/2$, so its area is $pq/2$ and its side can be found with Pythagoras.
-    media:
-    - type: image
-      src: /assessments/aops/aops-quadrilaterals-special-types.svg
-      alt: Comparison of a rectangle with congruent diagonals, a rhombus with perpendicular diagonals, and a square with both structures.
-      caption: The diagonal markings distinguish additional properties after the parallelogram foundation is established.
+      A quadrilateral is cyclic if its four vertices lie on a single circle. This imposes rigid angle constraints:
+      1. Opposite angles are supplementary (sum to $180^\circ$).
+      2. The angle between a side and a diagonal equals the angle between the opposite side and the other diagonal (because they subtend the same arc).
+      3. An exterior angle equals the opposite interior angle.
+
+      Ptolemy's Theorem ($AB \cdot CD + BC \cdot DA = AC \cdot BD$) applies exclusively to cyclic quadrilaterals. Proving a quadrilateral is cyclic is often the critical "aha!" moment in Olympiad geometry problems.
     check:
-      id: aops-quadrilaterals-specialization-check
       type: multipleChoice
-      prompt: A parallelogram has diagonals that are both congruent and perpendicular. What classification is forced?
+      prompt: 'In quadrilateral $WXYZ$, $\angle W = 100^\circ$ and $\angle Y = 80^\circ$. If $WX = 4, XY = 5, YZ = 6,$ and $ZW = 7$, can you use Ptolemy''s theorem to find the diagonals?'
       choices:
-      - {id: a, text: Kite only}
-      - {id: b, text: Rectangle but not rhombus}
-      - {id: c, text: Rhombus but not rectangle}
-      - {id: d, text: Square}
-      answer: {choiceId: d}
-      explanation: Congruent diagonals make the parallelogram a rectangle; perpendicular diagonals make it a rhombus, so it is a square.
-  - id: aops-quadrilaterals-trapezoids
-    title: Trapezoids, kites, and area structure
-    required: true
+      - id: a
+        text: 'Yes, because the opposite angles sum to $180^\circ$, making it cyclic.'
+      - id: b
+        text: 'No, because the sides are not equal.'
+        issueSignals: [wrong-concept]
+      - id: c
+        text: 'No, because Ptolemy only applies to rectangles.'
+        issueSignals: [wrong-concept]
+      - id: d
+        text: 'Yes, because all quadrilaterals are cyclic.'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Check the sum of the opposite angles.
+      - Connect the supplementary property to the cyclic property.
+      explanation: |
+        Solution:
+        We are given opposite angles $\angle W = 100^\circ$ and $\angle Y = 80^\circ$.
+        Their sum is $100^\circ + 80^\circ = 180^\circ$.
+        Because the opposite angles are supplementary, $WXYZ$ is a cyclic quadrilateral.
+        Since it is cyclic, Ptolemy's Theorem is valid and can be applied.
+
+        Why it works:
+        The inscribed angle theorem dictates that opposite angles of a cyclic quad subtend arcs that add up to the entire $360^\circ$ circle, meaning the angles themselves must add to $180^\circ$.
+
+  - id: section-brahmaguptas-formula
+    title: 'Brahmagupta''s Formula'
     content: |
-      In a trapezoid, the designated parallel sides are bases and the remaining sides are legs. A segment joining the leg midpoints is parallel to both bases and has length $(b_1+b_2)/2$. This average also explains the area formula $K=\tfrac12(b_1+b_2)h$: area is average width times perpendicular height. In a non-parallelogram isosceles trapezoid the legs are congruent, each pair of base angles is congruent, and the diagonals are congruent. Dropping two altitudes often produces matching right triangles. For a kite, one diagonal is the perpendicular bisector of the other, but the reverse diagonal need not bisect the first.
-    media:
-    - type: image
-      src: /assessments/aops/aops-quadrilaterals-trapezoid.svg
-      alt: Isosceles trapezoid with bases 10 and 18, legs 5, height 3, and midsegment 14.
-      caption: The base difference splits equally, creating 3-4-5 corner triangles and a midsegment equal to the average base length.
+      Just as Heron's Formula finds the area of a triangle given its sides, **Brahmagupta's Formula** finds the area of a *cyclic* quadrilateral given its four sides $a, b, c, d$.
+
+      First, calculate the semiperimeter:
+      $$s = \frac{a + b + c + d}{2}$$
+      Then the area is:
+      $$A = \sqrt{(s-a)(s-b)(s-c)(s-d)}$$
+
+      If you let $d = 0$, the quadrilateral collapses into a triangle and the formula perfectly reduces to Heron's Formula. Note that this formula *only* works if the quadrilateral can be inscribed in a circle!
     check:
-      id: aops-quadrilaterals-trapezoids-check
       type: multipleChoice
-      prompt: A trapezoid has bases 9 and 17 and height 6. What is its area?
+      prompt: 'A cyclic quadrilateral has side lengths 1, 4, 5, and 8. What is its area?'
       choices:
-      - {id: a, text: '$52$'}
-      - {id: b, text: '$72$'}
-      - {id: c, text: '$78$'}
-      - {id: d, text: '$156$'}
-      answer: {choiceId: c}
-      explanation: $K=\tfrac12(9+17)(6)=13\cdot6=78$.
-  - id: aops-quadrilaterals-synthesis
-    title: Contest workflow and counterexample safeguards
-    required: true
+      - id: a
+        text: '12'
+      - id: b
+        text: '144'
+        issueSignals: [formula-error]
+      - id: c
+        text: '10'
+        issueSignals: [algebra-error]
+      - id: d
+        text: '$\sqrt{140}$'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Calculate the semiperimeter $s$.
+      - Apply Brahmagupta's Formula.
+      explanation: |
+        Solution:
+        The perimeter is $1 + 4 + 5 + 8 = 18$.
+        The semiperimeter is $s = 9$.
+        Applying Brahmagupta's Formula:
+        $$A = \sqrt{(9-1)(9-4)(9-5)(9-8)}$$
+        $$A = \sqrt{(8)(5)(4)(1)}$$
+        $$A = \sqrt{160}$$
+        Wait, I set the answer to 12 ($\sqrt{144}$). Let me fix the sides.
+        If the sides are 1, 2, 4, 5: $s=6$. $A = \sqrt{5 \cdot 4 \cdot 2 \cdot 1} = \sqrt{40}$.
+        Let's pick sides to make a perfect square.
+        Try $s=10$. We need four numbers that multiply to a square.
+        Say, $9 \times 4 \times 1 \times 4 = 144$.
+        So $s-a=9 \implies a=1$.
+        $s-b=4 \implies b=6$.
+        $s-c=1 \implies c=9$.
+        $s-d=4 \implies d=6$.
+        $1+6+9+6 = 22 \implies s=11$. But I needed $s=10$.
+        Let's try $a=3, b=3, c=4, d=4$. $s=7$. $(4)(4)(3)(3) = 144$. Area = 12!
+      prompt: 'A cyclic quadrilateral has side lengths 3, 3, 4, and 4. What is its area?'
+      choices:
+      - id: a
+        text: '12'
+      - id: b
+        text: '144'
+        issueSignals: [formula-error]
+      - id: c
+        text: '10'
+        issueSignals: [algebra-error]
+      - id: d
+        text: '24'
+        issueSignals: [wrong-formula]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Calculate the semiperimeter $s$.
+      - Apply Brahmagupta's Formula.
+      explanation: |
+        Solution:
+        The perimeter is $3 + 3 + 4 + 4 = 14$.
+        The semiperimeter is $s = 7$.
+        Applying Brahmagupta's Formula:
+        $$A = \sqrt{(7-3)(7-3)(7-4)(7-4)}$$
+        $$A = \sqrt{(4)(4)(3)(3)} = \sqrt{144} = 12$$
+
+        Why it works:
+        A cyclic quadrilateral with sides 3,3,4,4 is actually a kite inscribed in a circle. Brahmagupta's formula provides a beautiful, altitude-free path to its area.
+
+  - id: section-varignons-theorem
+    title: 'Varignon''s Theorem'
     content: |
-      A reliable solution separates four tasks. First, inventory only marked or stated facts. Second, decide whether the target is a measurement or a classification. Third, choose a theorem in the correct direction: use a property after classification, or use a sufficient test to establish classification. Fourth, verify units, angle totals, positivity, and whether the conclusion is stronger than the premises. When uncertain about a proposed converse, try to draw a counterexample from another family. Kites defeat the claim that perpendicular diagonals force a rhombus; isosceles trapezoids defeat the claim that congruent diagonals force a rectangle.
-    media:
-    - type: image
-      src: /assessments/aops/aops-quadrilaterals-counterexamples.svg
-      alt: Two labeled counterexamples showing perpendicular and congruent diagonals without the stronger claimed classifications.
-      caption: Counterexamples are structural tests for whether a proposed converse is genuinely sufficient.
+      If you connect the midpoints of the adjacent sides of *any* quadrilateral, the resulting shape is always a parallelogram, known as the Varignon parallelogram.
+
+      Furthermore:
+      1. The perimeter of the Varignon parallelogram equals the sum of the diagonals of the original quadrilateral.
+      2. The area of the Varignon parallelogram is exactly half the area of the original quadrilateral.
+
+      This theorem is true for convex, concave, and even self-intersecting quadrilaterals! It relies purely on the midline theorem for triangles.
     check:
-      id: aops-quadrilaterals-synthesis-check
       type: multipleChoice
-      prompt: A quadrilateral has perpendicular diagonals. What is the strongest universally valid conclusion from that fact alone?
+      prompt: 'The diagonals of a quadrilateral are 14 and 18. If you connect the midpoints of its four sides, what is the perimeter of the resulting shape?'
       choices:
-      - {id: a, text: It is a rhombus.}
-      - {id: b, text: It is a kite.}
-      - {id: c, text: It is a square.}
-      - {id: d, text: No one of those classifications is forced.}
-      answer: {choiceId: d}
-      explanation: Perpendicular diagonals occur in several families and in irregular orthodiagonal quadrilaterals, so more evidence is required.
+      - id: a
+        text: '32'
+      - id: b
+        text: '64'
+        issueSignals: [formula-error]
+      - id: c
+        text: '16'
+        issueSignals: [algebra-error]
+      - id: d
+        text: '252'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Recognize the shape as the Varignon parallelogram.
+      - Apply the property that its perimeter equals the sum of the original diagonals.
+      explanation: |
+        Solution:
+        Connecting the midpoints creates the Varignon parallelogram.
+        Its sides are parallel to the original diagonals, and by the triangle midline theorem, each side of the parallelogram is exactly half the length of the diagonal it parallels.
+        Since there are two sides parallel to the 14-diagonal (each length 7) and two sides parallel to the 18-diagonal (each length 9), the perimeter is:
+        $$2(7) + 2(9) = 14 + 18 = 32$$
+        
+        Why it works:
+        The sum of the diagonals of the original quadrilateral directly gives the perimeter of the inscribed midpoint parallelogram.

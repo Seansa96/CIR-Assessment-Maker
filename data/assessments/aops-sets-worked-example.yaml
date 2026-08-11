@@ -1,235 +1,178 @@
 schemaVersion: 1
 id: aops-sets-worked-example
-title: Sets Worked Examples
+title: 'Sets Worked Examples'
 assessmentType: workedExample
 categoryId: art-of-problem-solving
 topicId: aops-sets
-modeDefault: practice
-randomizeQuestions: false
+modeDefault: learn
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
   - art-of-problem-solving
   - aops-sets
-  - aops
+  - discrete-math
+  - olympiad
 skills:
-- Apply aops-sets
-- aops-sets
+- Define sets, subsets, and the power set.
+- Apply set operations including union, intersection, and difference.
+- Use Venn diagrams and De Morgan's Laws to evaluate complex set expressions.
 workedExamples:
-- id: aops-sets-problem-1
-  title: 'Direct application: Sets'
-  problem: 'Original Sets problem 1: use the givens to identify set notation, union, intersection, Venn diagrams, subsets, then solve without assuming unstated facts.'
+- id: aops-sets-we-1
+  title: 'Principle of Inclusion-Exclusion for 3 Sets'
+  prompt: 'In a survey of 100 people: 50 like apples, 40 like bananas, and 30 like cherries. 15 like both apples and bananas, 10 like both bananas and cherries, and 12 like both apples and cherries. If 5 people like all three fruits, how many people do not like any of these fruits?'
   steps:
-  - id: aops-sets-p1-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Sets problem.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: List the quantities, relationships, and restrictions that control this Sets problem.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+  - id: step-1
+    title: Apply the PIE formula
+    prompt: Use the Principle of Inclusion-Exclusion for 3 sets to find the number of people who like at least one fruit ($|A \cup B \cup C|$).
+    difficultyDimensions:
+    - Add the individual set sizes (50, 40, 30).
+    - Subtract the two-way intersections (15, 10, 12).
+    - Add back the three-way intersection (5).
     answer:
-      choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Sets problem.
-  - id: aops-sets-p1-s2
-    title: Select the tool
-    instruction: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - $|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$.
+      - $|A \cup B \cup C| = 50 + 40 + 30 - 15 - 10 - 12 + 5$.
+      - $120 - 37 + 5 = 88$.
+    explanation: |
+      Solution:
+      We use the 3-set PIE formula to find the size of the union (people who like at least one fruit):
+      $$|A \cup B \cup C| = |A| + |B| + |C| - |A \cap B| - |A \cap C| - |B \cap C| + |A \cap B \cap C|$$
+      Substitute the given numbers:
+      $$|A \cup B \cup C| = 50 + 40 + 30 - 15 - 12 - 10 + 5$$
+      $$= 120 - 37 + 5 = 88$$
+      So, 88 people like at least one of the fruits.
+
+      Why it works:
+      When we added $A+B+C$, we counted the people who like all three fruits exactly 3 times. Then, we subtracted the three 2-way intersections. People who like all three fruits were in all three intersections, so we just subtracted them 3 times. Currently, they have been counted $3-3=0$ times! We must add them back once at the end to correct the count.
+  - id: step-2
+    title: Find the complement
+    prompt: Find the number of people who do not like any of the three fruits.
+    difficultyDimensions:
+    - Subtract $|A \cup B \cup C|$ from the total survey size (100).
     answer:
-      choiceId: a
-    explanation: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-  - id: aops-sets-p1-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-  - id: aops-sets-p1-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the direct application problem?
-    choices:
-    - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-- id: aops-sets-problem-2
-  title: 'Changed condition: Sets'
-  problem: 'Original Sets problem 2: use the givens to identify set notation, union, intersection, Venn diagrams, subsets, then solve without assuming unstated facts.'
+      gradingMode: selfCheck
+      keyPoints:
+      - $|(A \cup B \cup C)^c| = 100 - 88$.
+      - $100 - 88 = 12$.
+    explanation: |
+      Solution:
+      The total number of surveyed people is 100.
+      The number of people who like at least one fruit is 88.
+      The people who like *none* of the fruits are the complement of the union.
+      $$100 - 88 = 12$$
+      Therefore, 12 people do not like any of these fruits.
+
+      Why it works:
+      PIE calculates the union. The word "neither" or "none" in these problems always signals taking the complement of that union relative to the universal set (the 100 people).
+
+- id: aops-sets-we-2
+  title: 'Set Difference and Venn Diagrams'
+  prompt: 'Let $A = \{x \mid x \text{ is an integer and } 1 \le x \le 10\}$. Let $B$ be the set of primes in $A$, and $C$ be the set of odd numbers in $A$. What are the elements of the set $(B \cup C) - (B \cap C)$?'
   steps:
-  - id: aops-sets-p2-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Sets problem.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: List the quantities, relationships, and restrictions that control this Sets problem.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+  - id: step-1
+    title: List the elements of B and C
+    prompt: Explicitly list the elements in sets $B$ (primes) and $C$ (odds) from the universal set $A$.
+    difficultyDimensions:
+    - Identify primes between 1 and 10.
+    - Identify odds between 1 and 10.
     answer:
-      choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Sets problem.
-  - id: aops-sets-p2-s2
-    title: Select the tool
-    instruction: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - $B = \{2, 3, 5, 7\}$. (1 is not prime).
+      - $C = \{1, 3, 5, 7, 9\}$.
+    explanation: |
+      Solution:
+      The universal set is $A = \{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\}$.
+      Set $B$ contains the prime numbers in $A$. Remember that 1 is NOT prime.
+      $$B = \{2, 3, 5, 7\}$$
+      Set $C$ contains the odd numbers in $A$.
+      $$C = \{1, 3, 5, 7, 9\}$$
+
+      Why it works:
+      Listing the elements is the safest way to evaluate complex discrete sets before applying operations.
+  - id: step-2
+    title: Evaluate the union and intersection
+    prompt: Find the union $B \cup C$ and the intersection $B \cap C$.
+    difficultyDimensions:
+    - Combine elements for the union.
+    - Find common elements for the intersection.
     answer:
-      choiceId: a
-    explanation: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-  - id: aops-sets-p2-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - $B \cup C = \{1, 2, 3, 5, 7, 9\}$.
+      - $B \cap C = \{3, 5, 7\}$.
+    explanation: |
+      Solution:
+      The union $B \cup C$ contains all elements that are in $B$, in $C$, or in both.
+      $$B \cup C = \{1, 2, 3, 5, 7, 9\}$$
+      The intersection $B \cap C$ contains elements that are in both (odd primes).
+      $$B \cap C = \{3, 5, 7\}$$
+
+      Why it works:
+      The union combines the lists, ignoring duplicates. The intersection filters only the items that appear on both lists.
+  - id: step-3
+    title: Calculate the set difference
+    prompt: Find the final set $(B \cup C) - (B \cap C)$.
+    difficultyDimensions:
+    - Remove the elements of the intersection from the union.
     answer:
-      choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-  - id: aops-sets-p2-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the changed condition problem?
-    choices:
-    - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-- id: aops-sets-problem-3
-  title: 'Synthesis: Sets'
-  problem: 'Original Sets problem 3: use the givens to identify set notation, union, intersection, Venn diagrams, subsets, then solve without assuming unstated facts.'
+      gradingMode: selfCheck
+      keyPoints:
+      - $(B \cup C) - (B \cap C) = \{1, 2, 9\}$.
+    explanation: |
+      Solution:
+      We need to subtract the intersection from the union. This means we take the set $B \cup C$ and remove any elements that appear in $B \cap C$.
+      Start with $\{1, 2, 3, 5, 7, 9\}$.
+      Remove $3, 5, 7$.
+      We are left with:
+      $$(B \cup C) - (B \cap C) = \{1, 2, 9\}$$
+
+      Why it works:
+      This specific set operation, $(B \cup C) - (B \cap C)$, is known as the **symmetric difference** (often written $B \oplus C$). It represents all elements that are in exactly one of the sets, but not both. (In this context: primes that aren't odd (2), and odds that aren't prime (1, 9)).
+
+- id: aops-sets-we-3
+  title: 'Power Sets and Proper Subsets'
+  prompt: 'A set $S$ has 64 different subsets. How many of those subsets contain exactly 2 elements?'
   steps:
-  - id: aops-sets-p3-s1
-    title: Read the givens
-    instruction: List the quantities, relationships, and restrictions that control this Sets problem.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: List the quantities, relationships, and restrictions that control this Sets problem.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+  - id: step-1
+    title: Find the cardinality of S
+    prompt: Use the given number of total subsets to find how many elements are in $S$.
+    difficultyDimensions:
+    - Use the power set formula $2^n = 64$.
+    - Solve for $n$.
     answer:
-      choiceId: a
-    explanation: List the quantities, relationships, and restrictions that control this Sets problem.
-  - id: aops-sets-p3-s2
-    title: Select the tool
-    instruction: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
+      gradingMode: selfCheck
+      keyPoints:
+      - $2^n = 64$.
+      - $n = 6$.
+    explanation: |
+      Solution:
+      The total number of subsets for a set with $n$ elements is given by $2^n$.
+      We are told this set has 64 subsets.
+      $$2^n = 64$$
+      Since $2^6 = 64$, the set $S$ must have exactly $n = 6$ elements.
+
+      Why it works:
+      The size of the power set is a direct logarithmic map to the cardinality of the original set.
+  - id: step-2
+    title: Count the 2-element subsets
+    prompt: Using combinations, calculate how many 2-element subsets can be formed from a 6-element set.
+    difficultyDimensions:
+    - Set up $\binom{6}{2}$.
+    - Calculate $\frac{6 \times 5}{2}$.
     answer:
-      choiceId: a
-    explanation: Choose a method from translate notation, use inclusion-exclusion, count subsets by size and state the exact condition that permits it.
-  - id: aops-sets-p3-s3
-    title: Carry out the argument
-    instruction: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Apply the chosen relationship carefully; preserve equality, direction, and domain restrictions.
-  - id: aops-sets-p3-s4
-    title: Verify the conclusion
-    instruction: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    type: multipleChoice
-    prompt: Which action is required at this stage of the synthesis problem?
-    choices:
-    - id: a
-      text: Check the original question, test any boundary or exceptional case, and state the final conclusion.
-    - id: b
-      text: Assume the diagram is to scale.
-    - id: c
-      text: Discard inconvenient cases.
-    - id: d
-      text: Choose an answer before reasoning.
-    answer:
-      choiceId: a
-    explanation: Check the original question, test any boundary or exceptional case, and state the final conclusion.
+      gradingMode: selfCheck
+      keyPoints:
+      - $\binom{6}{2} = 15$.
+    explanation: |
+      Solution:
+      We have a set of 6 distinct elements.
+      We want to find the number of subsets that contain exactly 2 elements.
+      Since the order of elements inside a set does not matter ($\{A, B\}$ is the same subset as $\{B, A\}$), we use combinations.
+      $$\binom{6}{2} = \frac{6 \times 5}{2 \times 1} = 15$$
+      There are exactly 15 subsets that contain exactly 2 elements.
+
+      Why it works:
+      This reveals a deep connection between combinations and power sets. If you sum all combinations $\binom{n}{0} + \binom{n}{1} + \dots + \binom{n}{n}$, the sum is exactly $2^n$. This is known as Pascal's Identity!

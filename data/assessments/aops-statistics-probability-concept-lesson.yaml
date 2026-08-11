@@ -1,161 +1,225 @@
 schemaVersion: 1
 id: aops-statistics-probability-concept-lesson
-title: Statistics and Probability Concept Lesson
+title: 'Statistics and Probability'
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
 topicId: aops-statistics-probability
 modeDefault: learn
-randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
   - art-of-problem-solving
   - aops-statistics-probability
-  - aops
+  - discrete-math
+  - olympiad
 skills:
-- Apply aops-statistics-probability
-- aops-statistics-probability
+- Calculate measures of central tendency (mean, median, mode).
+- Compute theoretical probability using combinatorics.
+- Determine expected value and apply geometric probability to continuous spaces.
 lesson:
-  introduction: Learn to solve Statistics and Probability problems by recognizing mean, median, mode, range, probability, casework, odds, expected value and justifying each theorem or transformation.
   sections:
-  - id: aops-statistics-probability-motivation
-    title: What the topic helps you notice
-    required: true
-    content: Statistics and Probability is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are mean, median, mode, range, probability, casework, odds, expected value.
+  - id: section-central-tendency
+    title: 'Measures of Central Tendency'
+    content: |
+      Statistics often seeks to summarize a large dataset with a single representative number. The three most common measures are:
+      
+      1. **Mean (Average):** The sum of all values divided by the number of values. It is highly sensitive to outliers.
+      2. **Median:** The middle value when the data is sorted in ascending order. (If there is an even number of values, it's the average of the two middle values). It is resistant to outliers.
+      3. **Mode:** The value that appears most frequently. A dataset can have one mode, multiple modes, or no mode.
     check:
-      id: aops-statistics-probability-motivation-check
       type: multipleChoice
-      prompt: In Statistics and Probability, what should be checked before applying a method?
+      prompt: 'Consider the dataset: $\{3, 7, 7, 10, 18\}$. What is the difference between the mean and the median?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '2'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '9'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '7'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-statistics-probability-definitions
-    title: Definitions and theorem conditions
-    required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+        text: '0'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Calculate the mean: $(3+7+7+10+18)/5$.
+      - Identify the median: 7.
+      - Subtract the median from the mean.
+      explanation: |
+        Solution:
+        First, calculate the mean. The sum is $3 + 7 + 7 + 10 + 18 = 45$.
+        Since there are 5 numbers, the mean is $45 / 5 = 9$.
+        Next, find the median. The dataset is already sorted: $3, 7, 7, 10, 18$. The middle (3rd) value is 7.
+        The difference between the mean and the median is $9 - 7 = 2$.
+
+        Why it works:
+        The large outlier (18) pulls the mean significantly higher than the median, which remains anchored to the physical center of the data points.
+
+  - id: section-theoretical-probability
+    title: 'Theoretical Probability'
+    content: |
+      If all outcomes in a sample space are equally likely, the probability of an event $E$ occurring is:
+      $$P(E) = \frac{\text{Number of Favorable Outcomes}}{\text{Total Number of Possible Outcomes}}$$
+
+      Because of this definition, probability problems are almost always just two counting problems stacked on top of each other. You must count the total universe of possibilities (the denominator), and then count the specific scenarios you want (the numerator).
+
+      Probabilities are always between 0 (impossible) and 1 (certain).
     check:
-      id: aops-statistics-probability-definitions-check
       type: multipleChoice
-      prompt: In Statistics and Probability, what should be checked before applying a method?
+      prompt: 'A bag contains 5 red marbles and 3 blue marbles. If you draw two marbles at random without replacement, what is the probability that both are red?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '5/14'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '25/64'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '5/8'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-statistics-probability-recognition
-    title: Recognition cues
-    required: true
-    content: 'Look for these triggers: define sample space, multiply independent choices, split into cases. Record the givens, unknown, and any restriction before selecting a method.'
+        text: '10/28'
+        issueSignals: [formula-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify the total number of ways to draw 2 marbles from 8.
+      - Identify the number of ways to draw 2 red marbles from 5.
+      - Divide and simplify the fraction.
+      explanation: |
+        Solution:
+        Method 1 (Combinatorics):
+        Total outcomes: $\binom{8}{2} = \frac{8 \times 7}{2} = 28$.
+        Favorable outcomes (choosing 2 reds from the 5 available): $\binom{5}{2} = \frac{5 \times 4}{2} = 10$.
+        Probability = $\frac{10}{28} = \frac{5}{14}$.
+
+        Method 2 (Sequential Probability):
+        Probability of first being red: $\frac{5}{8}$.
+        Probability of second being red (given the first was red): $\frac{4}{7}$.
+        Total Probability = $\frac{5}{8} \times \frac{4}{7} = \frac{20}{56} = \frac{5}{14}$.
+
+        Why it works:
+        Both methods are perfectly equivalent. Sequential probability is often faster for simple draws, but combinatorics is far safer when order doesn't matter and draws are complex.
+
+  - id: section-independent-dependent
+    title: 'Independent and Dependent Events'
+    content: |
+      Two events $A$ and $B$ are **independent** if the outcome of $A$ has no effect on the probability of $B$. For independent events:
+      $$P(A \text{ and } B) = P(A) \times P(B)$$
+
+      If the outcome of $A$ *does* affect the probability of $B$ (like drawing marbles without replacement), they are **dependent**. We must use conditional probability, denoted $P(B|A)$, which reads "the probability of $B$ given that $A$ has occurred":
+      $$P(A \text{ and } B) = P(A) \times P(B|A)$$
     check:
-      id: aops-statistics-probability-recognition-check
       type: multipleChoice
-      prompt: In Statistics and Probability, what should be checked before applying a method?
+      prompt: 'You roll a standard 6-sided die and flip a fair coin. What is the probability of rolling a prime number AND flipping Heads?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '1/4'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '1/2'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '1/3'
+        issueSignals: [algebra-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-statistics-probability-method
-    title: Choose a method
-    required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+        text: '1/6'
+        issueSignals: [formula-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Recognize the events are independent.
+      - Calculate the probability of a prime (2, 3, 5).
+      - Calculate the probability of Heads.
+      - Multiply the probabilities.
+      explanation: |
+        Solution:
+        Rolling a die and flipping a coin are completely independent events.
+        The primes on a 6-sided die are 2, 3, and 5. So $P(\text{Prime}) = \frac{3}{6} = \frac{1}{2}$.
+        The probability of getting Heads is $P(\text{Heads}) = \frac{1}{2}$.
+        Since they are independent, we multiply:
+        $$P(\text{Prime and Heads}) = \frac{1}{2} \times \frac{1}{2} = \frac{1}{4}$$
+
+        Why it works:
+        If you listed all 12 possible outcomes (1H, 1T, 2H, 2T, etc.), exactly 3 of them satisfy the condition (2H, 3H, 5H). $3/12 = 1/4$.
+
+  - id: section-expected-value
+    title: 'Expected Value'
+    content: |
+      The **expected value** $E(X)$ of a random variable is the long-run average value of its outcomes. It is the probability-weighted sum of all possible values.
+
+      If a game has outcomes $x_1, x_2, \dots, x_n$ with probabilities $p_1, p_2, \dots, p_n$, then:
+      $$E(X) = (x_1 \cdot p_1) + (x_2 \cdot p_2) + \dots + (x_n \cdot p_n)$$
+
+      If a casino game costs $\$5$ to play, and the expected value of your winnings is $\$4$, your net expected value is $-\$1$. Over thousands of games, you will average a loss of $\$1$ per game.
     check:
-      id: aops-statistics-probability-method-check
       type: multipleChoice
-      prompt: In Statistics and Probability, what should be checked before applying a method?
+      prompt: 'You play a game where you roll a 6-sided die. If you roll a 6, you win $\$12$. If you roll an odd number, you win $\$2$. Otherwise (if you roll a 2 or 4), you win nothing. What is your expected winnings?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$\$3.00$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$\$4.67$'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$\$2.50$'
+        issueSignals: [formula-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-statistics-probability-mini-example
-    title: A small original example
-    required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+        text: '$\$14.00$'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - List the outcomes and their probabilities.
+      - Calculate $(12 \times 1/6) + (2 \times 3/6) + (0 \times 2/6)$.
+      explanation: |
+        Solution:
+        Let's list the outcomes and probabilities:
+        - Roll a 6 (Probability $\frac{1}{6}$): Win $\$12$.
+        - Roll 1, 3, or 5 (Probability $\frac{3}{6}$): Win $\$2$.
+        - Roll 2 or 4 (Probability $\frac{2}{6}$): Win $\$0$.
+        
+        The expected value is:
+        $$E(X) = \left(12 \times \frac{1}{6}\right) + \left(2 \times \frac{3}{6}\right) + \left(0 \times \frac{2}{6}\right)$$
+        $$E(X) = 2 + 1 + 0 = 3$$
+        Your expected winnings are $\$3.00$.
+
+        Why it works:
+        If you played 6 times, you would statistically roll one 6 (winning $\$12$) and three odds (winning $\$6$ total), for a total of $\$18$. Averaged over the 6 games, you win $18/6 = \$3$ per game.
+
+  - id: section-geometric-probability
+    title: 'Geometric Probability'
+    content: |
+      Not all sample spaces are discrete lists of items. If a random point is chosen in a continuous region, the probability that it falls into a specific sub-region is the ratio of their geometric measures (length, area, or volume).
+
+      $$P = \frac{\text{Area of Favorable Region}}{\text{Total Area of Region}}$$
+
+      This often requires graphing equations on the coordinate plane to visualize the favorable area.
     check:
-      id: aops-statistics-probability-mini-example-check
       type: multipleChoice
-      prompt: In Statistics and Probability, what should be checked before applying a method?
+      prompt: 'A point $(x, y)$ is randomly chosen inside a square with vertices $(0,0), (4,0), (4,4), \text{and } (0,4)$. What is the probability that $y < x$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '1/2'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '1/4'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '1/3'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-statistics-probability-trap
-    title: Common misconception
-    required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
-    check:
-      id: aops-statistics-probability-trap-check
-      type: multipleChoice
-      prompt: In Statistics and Probability, what should be checked before applying a method?
-      choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-statistics-probability-synthesis
-    title: Contest synthesis
-    required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
-    check:
-      id: aops-statistics-probability-synthesis-check
-      type: multipleChoice
-      prompt: In Statistics and Probability, what should be checked before applying a method?
-      choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+        text: '3/4'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Graph the square (Area = 16).
+      - Graph the line $y = x$ and shade the region $y < x$.
+      - Calculate the area of the shaded triangle (Area = 8).
+      - Divide the areas.
+      explanation: |
+        Solution:
+        The total region is a $4 \times 4$ square, so the Total Area = 16.
+        The condition is $y < x$. If we draw the line $y = x$, it is the main diagonal of the square, perfectly cutting it in half.
+        The region $y < x$ represents the area *below* the diagonal. This is a right triangle with a base of 4 and height of 4.
+        Favorable Area = $\frac{1}{2}(4)(4) = 8$.
+        Probability = $\frac{8}{16} = \frac{1}{2}$.
+
+        Why it works:
+        Because the diagonal acts as a line of symmetry, exactly half the points in the square have $y < x$ and the other half have $y > x$ (the points strictly on $y=x$ have an area of 0, so they don't affect continuous probability).

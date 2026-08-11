@@ -17,158 +17,501 @@ skills:
 questions:
 - id: olympiad-test-q134
   type: multipleChoice
-  prompt: A tangent from $P$ to a radius-9 circle has $OP=15$. Find the tangent length.
+  prompt: A tangent from external point $P$ to a circle of radius 9 has $OP = 15$, where $O$ is the center. Find the length of the tangent segment.
   choices:
-  - {id: a, text: '$6$'}
-  - {id: b, text: '$9$'}
-  - {id: c, text: '$12$'}
-  - {id: d, text: '$24$'}
+  - id: a
+    text: '$6$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$9$'
+    issueSignals: [wrong-segment]
+  - id: c
+    text: '$12$'
+  - id: d
+    text: '$24$'
+    issueSignals: [sign-error]
   answer: {choiceId: c}
-  explanation: Radius and tangent are perpendicular, so $PT=\sqrt{15^2-9^2}=12$.
+  difficultyDimensions:
+  - Construct a right triangle using the radius and tangent.
+  - Apply the Pythagorean theorem to find the tangent length.
+  explanation: |
+    Solution:
+    Let the point of tangency be $T$. Radius $OT$ is perpendicular to tangent $PT$, forming right $\triangle OTP$.
+    $OT = 9$, $OP = 15$.
+    $$PT^2 + 9^2 = 15^2 \implies PT^2 + 81 = 225 \implies PT^2 = 144 \implies PT = 12$$
+
+    Why it works:
+    This is a $9$-$12$-$15$ right triangle, which is a scaled version of the $3$-$4$-$5$ Pythagorean triple.
+
+    Why the other choices fail:
+    - **(A)** 6 is the distance from $P$ to the closest point on the circle ($15-9$), not the tangent length.
+    - **(D)** 24 is $15+9$, an arithmetic error or using the wrong operation.
+
 - id: olympiad-test-q114
   type: multipleChoice
-  prompt: A radius-13 circle has parallel chords of lengths $10$ and $24$ on the same side of the center. Find the distance between the chords.
+  prompt: A circle of radius 13 has parallel chords of lengths 10 and 24 located on the same side of the center. Find the distance between the chords.
   choices:
-  - {id: a, text: '$5$'}
-  - {id: b, text: '$7$'}
-  - {id: c, text: '$12$'}
-  - {id: d, text: '$17$'}
+  - id: a
+    text: '$5$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$7$'
+  - id: c
+    text: '$12$'
+    issueSignals: [wrong-segment]
+  - id: d
+    text: '$17$'
+    issueSignals: [wrong-concept]
   answer: {choiceId: b}
-  explanation: Their center distances are $12$ and $5$, so same-side separation is $7$.
+  difficultyDimensions:
+  - Use the Pythagorean theorem to find the center-to-chord distances.
+  - Subtract the distances because the chords are on the same side.
+  explanation: |
+    Solution:
+    The half-chords are 5 and 12. The radius is 13.
+    Distance to the chord of length 10: $d_1 = \sqrt{13^2 - 5^2} = \sqrt{169 - 25} = \sqrt{144} = 12$.
+    Distance to the chord of length 24: $d_2 = \sqrt{13^2 - 12^2} = \sqrt{169 - 144} = \sqrt{25} = 5$.
+    Since they are on the *same side* of the center, the distance between them is the difference of their distances from the center.
+    Distance $= 12 - 5 = 7$.
+
+    Why it works:
+    The perpendicular from the center bisects parallel chords and forms two $5$-$12$-$13$ right triangles. The distance between parallel lines is the difference of their perpendicular distances from a common reference point on one side.
+
+    Why the other choices fail:
+    - **(A)** 5 is the distance to one chord.
+    - **(C)** 12 is the distance to the other chord.
+    - **(D)** 17 would be the distance if they were on *opposite* sides of the center ($12+5$).
+
 - id: olympiad-test-q144
   type: multipleChoice
-  prompt: A $6$-by-$8$ rectangle is inscribed in a circle. Find the circle's area.
+  prompt: A 6-by-8 rectangle is inscribed in a circle. Find the circle's area.
   choices:
-  - {id: a, text: '$13\pi$'}
-  - {id: b, text: '$25\pi$'}
-  - {id: c, text: '$50\pi$'}
-  - {id: d, text: '$100\pi$'}
+  - id: a
+    text: '$13\pi$'
+    issueSignals: [formula-error]
+  - id: b
+    text: '$25\pi$'
+  - id: c
+    text: '$50\pi$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$100\pi$'
+    issueSignals: [wrong-concept]
   answer: {choiceId: b}
-  explanation: The rectangle diagonal $10$ is a diameter, so radius is $5$.
+  difficultyDimensions:
+  - Recognize that the rectangle's diagonal is the circle's diameter.
+  - Calculate the diagonal and radius.
+  explanation: |
+    Solution:
+    The diagonal of the inscribed rectangle is the diameter of the circle.
+    Diagonal $= \sqrt{6^2 + 8^2} = \sqrt{36+64} = \sqrt{100} = 10$.
+    Diameter is 10, so radius $r = 5$.
+    Area $= \pi r^2 = \pi(5^2) = 25\pi$.
+
+    Why it works:
+    Because the rectangle has $90^\circ$ corners, the inscribed angle theorem dictates that its diagonals must subtend $180^\circ$ arcs, making them diameters.
+
+    Why the other choices fail:
+    - **(C)** $50\pi$ is twice the area, perhaps by using the diameter in the formula incorrectly.
+    - **(D)** $100\pi$ uses the diameter (10) as the radius.
+
 - id: olympiad-test-q124
   type: multipleChoice
   prompt: An equilateral triangle of side $6\sqrt3$ is inscribed in a circle. Find the circle's area.
   choices:
-  - {id: a, text: '$12\pi$'}
-  - {id: b, text: '$18\pi$'}
-  - {id: c, text: '$36\pi$'}
-  - {id: d, text: '$108\pi$'}
+  - id: a
+    text: '$12\pi$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$18\pi$'
+    issueSignals: [formula-error]
+  - id: c
+    text: '$36\pi$'
+  - id: d
+    text: '$108\pi$'
+    issueSignals: [wrong-concept]
   answer: {choiceId: c}
-  explanation: An equilateral triangle has circumradius $s/\sqrt3=6$.
+  difficultyDimensions:
+  - Find the altitude of the equilateral triangle.
+  - Find the circumradius using the 2:1 centroid ratio.
+  - Calculate area from circumradius.
+  explanation: |
+    Solution:
+    The side is $s = 6\sqrt{3}$. The altitude is $h = \frac{s\sqrt{3}}{2} = \frac{(6\sqrt{3})(\sqrt{3})}{2} = \frac{18}{2} = 9$.
+    In an equilateral triangle, the circumcenter divides the altitude in a 2:1 ratio. The circumradius $R$ is the longer part ($2/3$ of the altitude).
+    $R = \frac{2}{3}(9) = 6$.
+    Area $= \pi R^2 = 36\pi$.
+
+    Why it works:
+    Alternatively, using the Law of Sines: $\frac{s}{\sin(60^\circ)} = 2R \implies \frac{6\sqrt{3}}{\sqrt{3}/2} = 12 \implies 2R = 12 \implies R=6$.
+
+    Why the other choices fail:
+    - **(A)** $12\pi$ computes circumference, not area.
+    - **(B)** $18\pi$ uses a wrong fraction of the altitude.
+    - **(D)** $108\pi$ computes the area of the equilateral triangle ($s^2\sqrt{3}/4$).
+
 - id: olympiad-test-q104
   type: multipleChoice
-  prompt: Two circles of radius $10$ have centers $12$ units apart. Find their common chord length.
+  prompt: Two circles of radius 10 have their centers 12 units apart. Find the length of their common chord.
   choices:
-  - {id: a, text: '$8$'}
-  - {id: b, text: '$12$'}
-  - {id: c, text: '$16$'}
-  - {id: d, text: '$20$'}
+  - id: a
+    text: '$8$'
+    issueSignals: [wrong-segment]
+  - id: b
+    text: '$12$'
+    issueSignals: [wrong-concept]
+  - id: c
+    text: '$16$'
+  - id: d
+    text: '$20$'
+    issueSignals: [wrong-concept]
   answer: {choiceId: c}
-  explanation: Half the chord is $\sqrt{10^2-6^2}=8$.
+  difficultyDimensions:
+  - Set up the kite formed by the two centers and the two intersection points.
+  - Recognize the diagonals of a kite are perpendicular.
+  - Use the Pythagorean theorem on the right triangles formed.
+  explanation: |
+    Solution:
+    The centers and the intersection points form a rhombus with side length 10 (the radius).
+    The distance between centers is one diagonal, length 12. The diagonals of a rhombus bisect each other at right angles, creating right triangles.
+    Half of the center distance is 6. The hypotenuse is 10.
+    The half-chord is $\sqrt{10^2 - 6^2} = 8$.
+    The full common chord is $2 \times 8 = 16$.
+
+    Why it works:
+    The geometry of intersecting equal circles fundamentally relies on the rhombus they form, breaking the problem into simple right triangles.
+
+    Why the other choices fail:
+    - **(A)** 8 is the half-chord length.
+    - **(B)** 12 is the distance between centers.
+    - **(D)** 20 is the diameter.
+
 - id: olympiad-test-q135
   type: multipleChoice
-  prompt: A chord in a radius-6 circle subtends a $90^\circ$ central angle. Find the area of the minor circular segment.
+  prompt: A chord in a circle of radius 6 subtends a $90^\circ$ central angle. Find the area of the minor circular segment cut off by the chord.
   choices:
-  - {id: a, text: '$9\pi-18$'}
-  - {id: b, text: '$9\pi+18$'}
-  - {id: c, text: '$18\pi-9$'}
-  - {id: d, text: '$36\pi-18$'}
+  - id: a
+    text: '$9\pi - 18$'
+  - id: b
+    text: '$9\pi + 18$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$18\pi - 9$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$36\pi - 18$'
+    issueSignals: [formula-error]
   answer: {choiceId: a}
-  explanation: Subtract right-triangle area $18$ from quarter-sector area $9\pi$.
+  difficultyDimensions:
+  - Compute the area of a $90^\circ$ sector.
+  - Compute the area of the right triangle formed by the chord and radii.
+  - Subtract the triangle from the sector.
+  explanation: |
+    Solution:
+    A $90^\circ$ central angle forms a quarter-circle sector.
+    Sector area $= \frac{90}{360}\pi(6^2) = \frac{1}{4}(36\pi) = 9\pi$.
+    The triangle formed by the two radii and the chord is a right triangle with legs of length 6.
+    Triangle area $= \frac{1}{2}(6)(6) = 18$.
+    Segment area $=$ Sector Area $-$ Triangle Area $= 9\pi - 18$.
+
+    Why it works:
+    The circular segment is precisely the sector area with the central triangle removed.
+
+    Why the other choices fail:
+    - **(B)** Adds the areas instead of subtracting.
+    - **(C)** Swaps the coefficients.
+    - **(D)** Uses the full circle area instead of the quarter sector.
+
 - id: olympiad-test-q115
   type: multipleChoice
-  prompt: An annulus has constant width $2$ and area $20\pi$. Find its inner radius.
+  prompt: An annulus has a constant width of 2 and an area of $20\pi$. Find its inner radius.
   choices:
-  - {id: a, text: '$2$'}
-  - {id: b, text: '$4$'}
-  - {id: c, text: '$5$'}
-  - {id: d, text: '$8$'}
+  - id: a
+    text: '$2$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$4$'
+  - id: c
+    text: '$5$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$8$'
+    issueSignals: [algebra-error]
   answer: {choiceId: b}
-  explanation: $\pi[(r+2)^2-r^2]=20\pi$ gives $4r+4=20$, so $r=4$.
+  difficultyDimensions:
+  - Set up the annulus area equation using $r$ and $r+w$.
+  - Solve the resulting linear equation after the $r^2$ terms cancel.
+  explanation: |
+    Solution:
+    Let the inner radius be $r$. The outer radius is $R = r + 2$.
+    Annulus Area $= \pi(R^2 - r^2) = 20\pi$.
+    Divide by $\pi$: $(r+2)^2 - r^2 = 20$.
+    Expand: $(r^2 + 4r + 4) - r^2 = 20$.
+    $4r + 4 = 20 \implies 4r = 16 \implies r = 4$.
+
+    Why it works:
+    The area of an annulus expands elegantly as a difference of squares. The quadratic $r^2$ terms cancel out precisely because of this structure, leaving a simple linear equation.
+
+    Why the other choices fail:
+    - **(C)** 5 comes from $4r=20$ (forgetting to subtract 4).
+
 - id: olympiad-test-q145
   type: multipleChoice
-  prompt: Tangents $PA,PB$ form $\angle APB=120^\circ$ to a radius-6 circle. Find $PA$.
+  prompt: Tangents $PA$ and $PB$ form an angle $\angle APB = 120^\circ$ to a circle of radius 6. Find $PA$.
   choices:
-  - {id: a, text: '$2\sqrt3$'}
-  - {id: b, text: '$3\sqrt3$'}
-  - {id: c, text: '$6$'}
-  - {id: d, text: '$6\sqrt3$'}
+  - id: a
+    text: '$2\sqrt3$'
+  - id: b
+    text: '$3\sqrt3$'
+    issueSignals: [formula-error]
+  - id: c
+    text: '$6$'
+    issueSignals: [formula-error]
+  - id: d
+    text: '$6\sqrt3$'
+    issueSignals: [formula-error]
   answer: {choiceId: a}
-  explanation: Half the tangent angle is $60^\circ$, so right triangle $OAP$ is $30$-$60$-$90$ with $OA=6$ opposite $60^\circ$ and $PA=2\sqrt3$.
+  difficultyDimensions:
+  - Form the right triangle with the radius and tangent.
+  - Apply $30^\circ$-$60^\circ$-$90^\circ$ ratios based on half the tangent angle.
+  explanation: |
+    Solution:
+    The line segment from the center $O$ to $P$ bisects $\angle APB$, so $\angle OPA = 60^\circ$.
+    This forms a $30^\circ$-$60^\circ$-$90^\circ$ triangle at $OAP$.
+    The radius $OA = 6$ is the leg opposite the $60^\circ$ angle.
+    The tangent $PA$ is the leg adjacent to the $60^\circ$ angle.
+    In a $30^\circ$-$60^\circ$-$90^\circ$ triangle, the leg opposite $60^\circ$ is $\sqrt{3}$ times the leg adjacent to $60^\circ$.
+    $$OA = PA\sqrt{3} \implies 6 = PA\sqrt{3} \implies PA = \frac{6}{\sqrt{3}} = 2\sqrt{3}.$$
+
+    Why it works:
+    The tangent-radius intersection provides a right angle. The bisected external angle provides the $60^\circ$ angle. The rest is standard right triangle trigonometry.
+
+    Why the other choices fail:
+    - **(B)** $3\sqrt{3}$ is the tangent length if the angle was $60^\circ$ (so half angle is $30^\circ$).
+    - **(D)** $6\sqrt{3}$ multiplies by $\sqrt{3}$ instead of dividing.
+
 - id: olympiad-test-q125
   type: multipleChoice
-  prompt: A circle centered at the origin passes through $(5,12)$. Which line is tangent at that point?
+  prompt: A circle centered at the origin passes through $(5,12)$. Which line is tangent to the circle at that point?
   choices:
-  - {id: a, text: '$5x+12y=169$'}
-  - {id: b, text: '$12x+5y=169$'}
-  - {id: c, text: '$5x-12y=0$'}
-  - {id: d, text: '$x+y=17$'}
+  - id: a
+    text: '$5x + 12y = 169$'
+  - id: b
+    text: '$12x + 5y = 169$'
+    issueSignals: [formula-error]
+  - id: c
+    text: '$5x - 12y = 0$'
+    issueSignals: [formula-error]
+  - id: d
+    text: '$x + y = 17$'
+    issueSignals: [formula-error]
   answer: {choiceId: a}
-  explanation: Radius vector $(5,12)$ is a normal, and $5(5)+12(12)=169$.
+  difficultyDimensions:
+  - Derive the normal vector from the radius to the point.
+  - Write the tangent line equation using the normal vector and the point.
+  explanation: |
+    Solution:
+    The radius vector from $(0,0)$ to $(5,12)$ is $\langle 5, 12 \rangle$. This is the normal vector for the tangent line.
+    The tangent line equation is $5x + 12y = C$.
+    Plug in $(5,12)$ to find $C$:
+    $$5(5) + 12(12) = 25 + 144 = 169$$
+    The equation is $5x + 12y = 169$.
+
+    Why it works:
+    The tangent line is perfectly perpendicular to the radius vector at the point of contact, making the radius vector its normal.
+
+    Why the other choices fail:
+    - **(B)** Swaps the $x$ and $y$ components.
+    - **(C)** This is a line through the origin, not the tangent line.
+
 - id: olympiad-test-q105
   type: multipleChoice
-  prompt: A circle passes through $(0,0),(4,0),(0,6)$. Find its area.
+  prompt: A circle passes through the points $(0,0)$, $(4,0)$, and $(0,6)$. Find its area.
   choices:
-  - {id: a, text: '$10\pi$'}
-  - {id: b, text: '$13\pi$'}
-  - {id: c, text: '$26\pi$'}
-  - {id: d, text: '$52\pi$'}
+  - id: a
+    text: '$10\pi$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$13\pi$'
+  - id: c
+    text: '$26\pi$'
+    issueSignals: [formula-error]
+  - id: d
+    text: '$52\pi$'
+    issueSignals: [formula-error]
   answer: {choiceId: b}
-  explanation: The three points form a right triangle whose hypotenuse has squared length $52$; the circumradius is half the hypotenuse, so $r^2=13$.
+  difficultyDimensions:
+  - Recognize that the three points form a right triangle.
+  - Determine that the hypotenuse is the diameter of the circumcircle.
+  - Calculate area from the diameter.
+  explanation: |
+    Solution:
+    The triangle formed by $(0,0)$, $(4,0)$, and $(0,6)$ is a right triangle with legs of length 4 and 6, and the right angle at the origin.
+    The circumcircle of a right triangle has the hypotenuse as its diameter.
+    Diameter squared $= 4^2 + 6^2 = 16 + 36 = 52$.
+    The radius squared is $r^2 = (d/2)^2 = d^2/4 = 52/4 = 13$.
+    Area $= \pi r^2 = 13\pi$.
+
+    Why it works:
+    Thales' theorem applied in reverse: a right triangle's hypotenuse must be a diameter of its circumcircle.
+
+    Why the other choices fail:
+    - **(C)** $26\pi$ divides $d^2$ by 2 instead of 4.
+    - **(D)** $52\pi$ uses the squared diameter instead of squared radius.
+
 - id: olympiad-test-q136
   type: multipleChoice
-  prompt: A square is circumscribed about a circle of area $16\pi$. Find the area outside the circle but inside the square.
+  prompt: A square is circumscribed around a circle of area $16\pi$. Find the area that is outside the circle but inside the square.
   choices:
-  - {id: a, text: '$16-4\pi$'}
-  - {id: b, text: '$32-16\pi$'}
-  - {id: c, text: '$64-16\pi$'}
-  - {id: d, text: '$64-4\pi$'}
+  - id: a
+    text: '$16 - 4\pi$'
+    issueSignals: [formula-error]
+  - id: b
+    text: '$32 - 16\pi$'
+    issueSignals: [algebra-error]
+  - id: c
+    text: '$64 - 16\pi$'
+  - id: d
+    text: '$64 - 4\pi$'
+    issueSignals: [algebra-error]
   answer: {choiceId: c}
-  explanation: Radius is $4$, square side is diameter $8$, and subtracting gives $64-16\pi$.
+  difficultyDimensions:
+  - Extract the radius from the circle area.
+  - Find the side length of the circumscribed square (which equals the diameter).
+  - Subtract the areas.
+  explanation: |
+    Solution:
+    Circle Area $= \pi r^2 = 16\pi \implies r^2 = 16 \implies r = 4$.
+    The circumscribed square has a side length equal to the circle's diameter, so side $= 8$.
+    Square Area $= 8^2 = 64$.
+    Area between them $= 64 - 16\pi$.
+
+    Why it works:
+    The square bounds the circle completely, so its dimensions match the largest width and height of the circle.
+
+    Why the other choices fail:
+    - **(A)** $16 - 4\pi$ is the result if the side was 4 and radius was 2.
+    - **(B)** $32 - 16\pi$ computes the square area incorrectly.
+    - **(D)** $64 - 4\pi$ uses the wrong circle area to subtract.
+
 - id: olympiad-test-q116
   type: multipleChoice
-  prompt: A chord of length $16$ in a radius-10 circle subtends a minor sector. What is the cosine of half the central angle?
+  prompt: A chord of length 16 in a circle of radius 10 subtends a minor sector. What is the cosine of half the central angle?
   choices:
-  - {id: a, text: '$3/5$'}
-  - {id: b, text: '$4/5$'}
-  - {id: c, text: '$5/4$'}
-  - {id: d, text: '$8/5$'}
+  - id: a
+    text: '$3/5$'
+  - id: b
+    text: '$4/5$'
+    issueSignals: [wrong-concept]
+  - id: c
+    text: '$5/4$'
+    issueSignals: [formula-error]
+  - id: d
+    text: '$8/5$'
+    issueSignals: [formula-error]
   answer: {choiceId: a}
-  explanation: The half-chord is $8$ and center distance is $6$; in the half-triangle, cosine of the half-angle is $6/10=3/5$.
+  difficultyDimensions:
+  - Break the isosceles triangle into two right triangles.
+  - Find the adjacent side (center distance) using the Pythagorean theorem.
+  - Compute cosine as adjacent over hypotenuse.
+  explanation: |
+    Solution:
+    The perpendicular from the center to the chord creates a right triangle with hypotenuse 10 (radius) and opposite leg 8 (half-chord).
+    This right triangle contains half the central angle ($\theta/2$).
+    The adjacent leg (distance from center to chord) is $\sqrt{10^2 - 8^2} = 6$.
+    The cosine of this half-angle is $\frac{\text{adjacent}}{\text{hypotenuse}} = \frac{6}{10} = \frac{3}{5}$.
+
+    Why it works:
+    The central angle is bisected by the altitude to the chord. Basic SOH CAH TOA on the resulting $6$-$8$-$10$ right triangle gives the trigonometric ratios.
+
+    Why the other choices fail:
+    - **(B)** $4/5$ is the sine of the half-angle (opposite/hypotenuse).
+    - **(C)** $5/4$ is the cosecant of the half-angle.
+    - **(D)** $8/5$ is a nonsense ratio.
+
 - id: olympiad-test-q146
   type: selectAll
   prompt: Which configurations force a right angle?
   choices:
-  - {id: a, text: A radius and tangent at their common circle point.}
-  - {id: b, text: A center segment to the midpoint of a non-diameter chord.}
-  - {id: c, text: Any radius and any chord.}
-  - {id: d, text: The line of centers and common chord of two intersecting circles.}
+  - id: a
+    text: A radius and a tangent line meeting at their common circle point.
+  - id: b
+    text: A line segment from the center to the midpoint of a non-diameter chord.
+  - id: c
+    text: Any radius intersecting any chord.
+    issueSignals: [logic-error]
+  - id: d
+    text: The line connecting the centers of two intersecting circles and their common chord.
   answer:
     choiceIds: [a, b, d]
-  explanation: Each selected configuration follows from a tangent or perpendicular-bisector theorem.
+  difficultyDimensions:
+  - Recall theorems generating perpendicularity (tangent-radius, chord bisection, intersecting circles).
+  - Reject false generalizations.
+  explanation: |
+    Solution:
+    (A), (B), and (D) are all classical right-angle generating configurations.
+
+    Why it works:
+    - (A) is the Tangent-Radius theorem.
+    - (B) is the Chord Bisection theorem (the perpendicular bisector of a chord passes through the center).
+    - (D) relies on the fact that the line of centers is the perpendicular bisector of the common chord.
+
+    (C) is false: a randomly drawn radius will intersect a chord at some random, non-$90^\circ$ angle.
+
 - id: olympiad-test-q126
   type: selectAll
-  prompt: Which quantities are invariant under rotating a chord around the center while keeping its length fixed?
+  prompt: Which quantities are strictly invariant under rotating a chord around the center of a circle while keeping its length fixed?
   choices:
-  - {id: a, text: Its distance from the center.}
-  - {id: b, text: The minor central angle it subtends.}
-  - {id: c, text: Its endpoints' coordinate values.}
-  - {id: d, text: The area of its minor circular segment.}
+  - id: a
+    text: Its perpendicular distance from the center.
+  - id: b
+    text: The minor central angle it subtends.
+  - id: c
+    text: The coordinate values of its endpoints.
+    issueSignals: [logic-error]
+  - id: d
+    text: The area of its minor circular segment.
   answer:
     choiceIds: [a, b, d]
-  explanation: Rotation changes coordinates but preserves all distances, angles, and areas.
+  difficultyDimensions:
+  - Identify rotational invariants (distance, angle, area).
+  - Recognize that coordinate values change under rotation.
+  explanation: |
+    Solution:
+    (A), (B), and (D) are true invariants under rotation.
+
+    Why it works:
+    Rotation is an isometry. It preserves all lengths, angles, and areas. Thus the distance from the center, the central angle, and the segment area are preserved.
+
+    (C) is false: rotation explicitly changes the $(x,y)$ coordinates of the endpoints as they move along the circle.
+
 - id: olympiad-test-q106
   type: freeResponse
-  prompt: Prove that every chord of a radius-$r$ circle has length at most $2r$, with equality exactly for a diameter.
+  prompt: Prove that every chord of a circle of radius $r$ has a length of at most $2r$, with equality exactly when it is a diameter.
   media:
   - {type: image, src: /assessments/aops/aops-circles-structure.svg, alt: Circle centered at O showing a diameter and a chord not through the center.}
+  difficultyDimensions:
+  - Form a triangle using the chord and two radii.
+  - Apply the triangle inequality $AB \le AO + OB$.
+  - Analyze the equality case of the triangle inequality to prove it corresponds to a diameter.
   answer:
     gradingMode: selfCheck
-    expected: |-
-      For chord endpoints $A,B$, triangle inequality in $\triangle AOB$ gives $AB\le AO+OB=2r$. Equality in the triangle inequality occurs exactly when $A,O,B$ are collinear with $O$ between $A$ and $B$. In that case $AB$ passes through the center and is a diameter. Conversely, every diameter has length $2r$.
     keyPoints:
-    - Forms triangle $AOB$ from the chord and two radii.
-    - Applies $AB\le AO+OB$.
-    - Uses $AO=OB=r$.
-    - Characterizes equality as the diameter case.
-  explanation: The extremal chord result is an equality case of the triangle inequality.
+    - Let $AB$ be a chord and $O$ be the center.
+    - Form $\triangle AOB$.
+    - Apply the triangle inequality: $AB \le AO + OB$.
+    - Substitute $AO = r$ and $OB = r$ to get $AB \le 2r$.
+    - State that equality $AB = 2r$ occurs if and only if $A, O, B$ are collinear (a straight line), which means $AB$ passes through the center (is a diameter).
+  explanation: |
+    Solution:
+    Let $AB$ be an arbitrary chord in a circle with center $O$ and radius $r$.
+    Consider the triangle $\triangle AOB$ formed by the chord and the two radii $AO$ and $OB$.
+    By the triangle inequality, the length of any side of a triangle must be less than or equal to the sum of the other two sides. Thus:
+    $$AB \le AO + OB$$
+    Since $AO$ and $OB$ are radii, $AO = r$ and $OB = r$.
+    $$AB \le r + r = 2r$$
+    This proves the length is at most $2r$.
+    Equality ($AB = 2r$) holds if and only if the triangle is degenerate, meaning $O$ lies exactly on the line segment $AB$. A chord that passes through the center is by definition a diameter. Conversely, every diameter clearly has length $2r$.
+
+    Why it works:
+    The triangle inequality elegantly handles both the strict bound and the extremal case (the diameter) simultaneously.

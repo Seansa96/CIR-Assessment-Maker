@@ -1,0 +1,41 @@
+schemaVersion: 1
+id: dsa-linked-structures-lesson
+categoryId: dsa
+topicId: dsa-linked-structures
+learningGoal: learn
+activityType: conceptLesson
+title: "Introduction to Linked Lists"
+description: "Learn how data can be chained together in non-contiguous memory."
+navigation:
+  tags: [linked-list, pointers, memory]
+skills:
+  - id: obj-dsa-linked-01
+    level: foundation
+blueprintId: bp-dsa-linked-lesson-01
+sourceChunkIds: ["src-20260810144616-0dc6e2835b:page-138-157"]
+
+questions:
+  - id: intro-linked-list
+    type: freeResponse
+    prompt: |
+      **Escaping Contiguous Memory**
+
+      We saw that arrays are powerful because they allow $O(1)$ access, but they suffer from $O(N)$ resizing and $O(N)$ insertions/deletions in the middle (because everything must shift). 
+
+      **Linked Lists** take a different approach. Instead of a single block of contiguous memory, a linked list is made up of individual, scattered objects called **Nodes**. Each Node contains:
+      1. The data (value).
+      2. A **pointer** (or reference) to the *next* Node in memory.
+
+      The list is defined simply by a `head` pointer that points to the first Node. By following the pointers from one Node to the next, we can traverse the entire list.
+
+      Because the memory isn't contiguous, we can't use a math formula to jump instantly to the 5th element. We have to start at the head and follow 4 pointers.
+
+      If we already have a pointer directly to a specific Node in the middle of a linked list, why is inserting a new Node right after it an $O(1)$ operation, whereas inserting into the middle of an array is $O(N)$?
+    answer:
+      gradingMode: selfCheck
+    explanation: |
+      Solution:
+      In a linked list, you only need to change a couple of pointers (the current node points to the new node, and the new node points to the next node). You don't have to move or shift any other data.
+
+      Why it works:
+      Because the nodes can be anywhere in memory, the physical order doesn't matter. Only the logical order (defined by the pointers) matters. Arrays require physical order, forcing an $O(N)$ shift of all subsequent elements to make room.

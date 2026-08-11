@@ -1,0 +1,61 @@
+schemaVersion: 1
+id: dsa-hashmaps-quiz
+categoryId: dsa
+topicId: dsa-hashmaps
+learningGoal: evaluate
+activityType: quiz
+title: "Linear Probing Trace"
+description: "Trace collision resolution using open addressing."
+navigation:
+  tags: [hash, evaluate, collisions]
+skills:
+  - id: obj-dsa-hash-03
+    level: foundation
+blueprintId: bp-dsa-hash-quiz-01
+sourceChunkIds: ["src-20260810144616-0dc6e2835b:page-171-200"]
+
+questions:
+  - id: trace-linear-probing
+    type: multipleChoice
+    difficultyDimensions: ["Algorithm tracing", "Collision resolution"]
+    subjectDifficultyTags: ["Data-Structures-Hash"]
+    prerequisiteObjectiveIds: ["obj-dsa-hash-01"]
+    prompt: |
+      You are inserting keys into a Hash Table with an array of size 5 (indices 0 through 4). 
+      The collision resolution strategy is **Linear Probing** (if an index is occupied, check the next index, wrapping around to 0 if necessary).
+
+      You insert the following keys in order, with their calculated hash values shown:
+      1. Key A (Hash = 10). `10 % 5 = 0` -> Placed at index 0.
+      2. Key B (Hash = 12). `12 % 5 = 2` -> Placed at index 2.
+      3. Key C (Hash = 15). `15 % 5 = 0` -> Collision!
+      4. Key D (Hash = 17). `17 % 5 = 2` -> Collision!
+
+      After inserting Key D, at what index will Key D be located in the array?
+    choiceOptions:
+      - id: "opt-0"
+        text: "Index 0"
+      - id: "opt-2"
+        text: "Index 2"
+        issueSignals: ["ignores-collisions"]
+      - id: "opt-3"
+        text: "Index 3"
+      - id: "opt-4"
+        text: "Index 4"
+        issueSignals: ["incorrect-wrap"]
+    answer:
+      gradingMode: automatic
+      correctChoiceId: "opt-3"
+    explanation: |
+      Solution:
+      Key D will be placed at index 3.
+
+      Why it works:
+      Let's trace the insertions step-by-step:
+      1. Insert A at index 0. (Array state: `[A, _, _, _, _]`)
+      2. Insert B at index 2. (Array state: `[A, _, B, _, _]`)
+      3. Insert C at index 0. Index 0 is full (A), so we probe to index 1. Index 1 is empty, so C goes there. (Array state: `[A, C, B, _, _]`)
+      4. Insert D at index 2. Index 2 is full (B), so we probe to index 3. Index 3 is empty, so D goes there. (Array state: `[A, C, B, D, _]`)
+
+      Why the other choices fail:
+      - Key D originally hashes to index 2, but it cannot overwrite Key B. It must probe forward.
+      - Index 3 is the first available slot after index 2.

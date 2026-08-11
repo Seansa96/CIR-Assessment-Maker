@@ -1,0 +1,198 @@
+schemaVersion: 1
+id: aops-counting-extra-worked-example
+title: 'Counting Extra Practice: PIE, Stars and Bars, and Circular Permutations'
+assessmentType: workedExample
+categoryId: art-of-problem-solving
+topicId: aops-counting
+modeDefault: learn
+navigation:
+  learningGoal: practice
+  activityType: focusedPractice
+  tags:
+  - art-of-problem-solving
+  - aops-counting
+  - combinatorics
+  - pie
+  - stars-and-bars
+  - circular-permutations
+skills:
+- Apply the Principle of Inclusion-Exclusion (PIE) to three sets.
+- Solve distribution problems using Stars and Bars with lower bounds.
+- Calculate circular permutations with restricted elements.
+workedExamples:
+- id: aops-count-ext-1
+  title: Principle of Inclusion-Exclusion (3 Sets)
+  prompt: 'A club has 50 members. 25 play chess, 20 play Go, and 15 play Shogi. 10 play both chess and Go, 8 play both chess and Shogi, and 5 play both Go and Shogi. If 3 members play all three games, how many members do not play any of the three games?'
+  steps:
+  - id: aops-count-ext-1-s1
+    title: Apply PIE to find the number of members playing at least one game
+    prompt: 'Use the Principle of Inclusion-Exclusion for three sets to find the total number of members who play chess, Go, or Shogi.'
+    difficultyDimensions:
+    - Sum the individual set sizes: $25 + 20 + 15 = 60$.
+    - Subtract the pairwise intersections: $60 - 10 - 8 - 5 = 37$.
+    - Add back the three-way intersection: $37 + 3 = 40$.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - $|C \cup G \cup S| = |C| + |G| + |S| - |C \cap G| - |C \cap S| - |G \cap S| + |C \cap G \cap S|$.
+      - $|C \cup G \cup S| = 25 + 20 + 15 - 10 - 8 - 5 + 3 = 40$.
+    explanation: |
+      Solution:
+      Let $C$, $G$, and $S$ be the sets of members playing chess, Go, and Shogi.
+      The Principle of Inclusion-Exclusion states:
+      $$|C \cup G \cup S| = |C| + |G| + |S| - |C \cap G| - |C \cap S| - |G \cap S| + |C \cap G \cap S|$$
+      Substituting the given values:
+      $$|C \cup G \cup S| = 25 + 20 + 15 - 10 - 8 - 5 + 3$$
+      $$|C \cup G \cup S| = 60 - 23 + 3 = 40$$
+      There are 40 members who play at least one of the three games.
+
+      Why it works:
+      When we add the single sets ($25+20+15$), we double-count the people who play two games, and triple-count the people who play three games. Subtracting the pairwise intersections corrects the double-counting, but it also subtracts the three-game players three times. Since they were added 3 times and subtracted 3 times, they are currently counted 0 times. We must add them back once at the end.
+  - id: aops-count-ext-1-s2
+    title: Find the complement
+    prompt: 'Use the total club membership to find how many members play none of the games.'
+    difficultyDimensions:
+    - Total members = 50.
+    - Members playing at least one game = 40.
+    - Subtract to find the complement: $50 - 40$.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - None $= \text{Total} - \text{At least one}$.
+      - $50 - 40 = 10$.
+    explanation: |
+      Solution:
+      The total number of club members is 50. The number of members who play at least one game is 40.
+      The number of members who play none of the games is:
+      $$50 - 40 = 10$$
+
+      Why it works:
+      This is an application of complementary counting. The set of people who play *no* games is the complement of the set of people who play *at least one* game. 
+
+- id: aops-count-ext-2
+  title: Stars and Bars with a Lower Bound
+  prompt: 'How many ways are there to distribute 15 identical candies among 4 children if each child must receive at least 2 candies?'
+  steps:
+  - id: aops-count-ext-2-s1
+    title: Fulfill the minimum requirements
+    prompt: 'Give each child their required minimum number of candies first, and determine how many candies remain to be freely distributed.'
+    difficultyDimensions:
+    - Multiply 4 children $\times$ 2 candies = 8 candies allocated.
+    - Subtract from total: $15 - 8 = 7$ candies remaining.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - Minimum candies required $= 4 \times 2 = 8$.
+      - Remaining candies to distribute freely $= 15 - 8 = 7$.
+    explanation: |
+      Solution:
+      To ensure each child gets at least 2 candies, we first hand out exactly 2 candies to each of the 4 children.
+      This uses up $4 \times 2 = 8$ candies.
+      We have $15 - 8 = 7$ candies left over.
+
+      Why it works:
+      Stars and bars naturally solves the problem $x_1 + x_2 + x_3 + x_4 = n$ where each $x_i \geq 0$. Our original problem was $x_1 + x_2 + x_3 + x_4 = 15$ with $x_i \geq 2$. By pre-distributing the minimums, we shift the variables to $y_i = x_i - 2 \geq 0$, reducing the problem to the standard $y_1 + y_2 + y_3 + y_4 = 7$ with $y_i \geq 0$.
+  - id: aops-count-ext-2-s2
+    title: Set up the Stars and Bars equation
+    prompt: 'Identify the number of "stars" (items to distribute) and "bars" (dividers needed for the recipients).'
+    difficultyDimensions:
+    - Identify items $n = 7$ (stars).
+    - Identify bins $k = 4$, requiring $k-1 = 3$ dividers (bars).
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - Stars (candies) $= 7$.
+      - Bars (dividers for 4 children) $= 4 - 1 = 3$.
+      - Total slots $= 7 + 3 = 10$.
+    explanation: |
+      Solution:
+      We need to distribute the remaining 7 identical candies (stars) among the 4 children.
+      To separate items into 4 groups, we need $4 - 1 = 3$ dividers (bars).
+      Any arrangement of these 7 stars and 3 bars represents a valid distribution.
+
+      Why it works:
+      Imagine the 7 stars and 3 bars in a row, like `**|*||****`. This corresponds to child 1 getting 2 extra candies, child 2 getting 1, child 3 getting 0, and child 4 getting 4. Every possible arrangement of stars and bars gives a unique distribution.
+  - id: aops-count-ext-2-s3
+    title: Compute the combinations
+    prompt: 'Calculate the total number of arrangements by choosing the positions for the bars (or stars).'
+    difficultyDimensions:
+    - Apply the formula $\binom{n + k - 1}{k - 1} = \binom{10}{3}$.
+    - Compute $\binom{10}{3} = \frac{10 \times 9 \times 8}{3 \times 2 \times 1} = 120$.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - Formula: $\binom{10}{3}$ or $\binom{10}{7}$.
+      - Calculation: $\frac{10 \cdot 9 \cdot 8}{3 \cdot 2 \cdot 1} = 120$.
+    explanation: |
+      Solution:
+      We have $7 + 3 = 10$ total positions. We must choose 3 of these positions to place the bars (the remaining 7 positions will be filled with stars).
+      $$\binom{10}{3} = \frac{10 \times 9 \times 8}{3 \times 2 \times 1} = \frac{720}{6} = 120$$
+      There are 120 ways to distribute the candies.
+
+      Why it works:
+      The number of ways to arrange $n$ identical stars and $k-1$ identical bars is simply choosing which of the $n + k - 1$ slots hold the bars. The formula $\binom{n + k - 1}{k - 1}$ handles identical items distributed into distinct bins seamlessly.
+
+- id: aops-count-ext-3
+  title: Circular vs. Linear Permutations
+  prompt: 'A family of 6 people (2 parents and 4 children) are sitting around a circular dining table. How many seating arrangements are possible if the two parents insist on sitting directly across from each other?'
+  steps:
+  - id: aops-count-ext-3-s1
+    title: Fix the first parent to remove circular symmetry
+    prompt: 'Place one parent at the table. How many distinct ways can this be done, and why?'
+    difficultyDimensions:
+    - Recognize that in a circular arrangement, placing the very first person fixes the frame of reference.
+    - Assign 1 way to place the first parent.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - There is exactly $1$ distinct way to seat the first parent.
+    explanation: |
+      Solution:
+      In a circular arrangement where seats are identical, rotations of the same seating order are considered the same.
+      We place the first parent at the table. Because all seats are identical relative to each other before anyone sits down, placing the first person anywhere produces the exact same arrangement up to rotation.
+      There is exactly $1$ distinct way to seat the first parent.
+
+      Why it works:
+      Fixing one person effectively "breaks the circle" and turns the remaining seats into a linear arrangement relative to that fixed person. Standard circular permutation formulas like $(n-1)!$ are derived entirely from this logic: 1 way to seat the first person, and $(n-1)!$ ways to seat the rest linearly.
+  - id: aops-count-ext-3-s2
+    title: Place the second parent
+    prompt: 'Given the constraint that the parents must sit opposite each other, how many ways can the second parent be seated?'
+    difficultyDimensions:
+    - The seat opposite the first parent is uniquely determined.
+    - Assign 1 way to seat the second parent.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - The second parent must sit directly opposite the first parent.
+      - There is exactly $1$ way to place the second parent.
+    explanation: |
+      Solution:
+      The second parent insists on sitting directly across from the first parent.
+      Since the first parent is already seated, the seat opposite them is completely determined.
+      There is exactly $1$ way to place the second parent.
+
+      Why it works:
+      Constraints severely limit choices. If the problem simply said "the two parents sit anywhere", there would be 5 available seats for the second parent. But the structural constraint "opposite" leaves zero freedom.
+  - id: aops-count-ext-3-s3
+    title: Arrange the children in the remaining seats
+    prompt: 'How many seats remain, and how many ways can the 4 children be seated in them?'
+    difficultyDimensions:
+    - 4 distinct children to be placed in 4 distinct remaining seats.
+    - Calculate $4! = 24$.
+    - Multiply the independent steps: $1 \times 1 \times 24 = 24$.
+    answer:
+      gradingMode: selfCheck
+      keyPoints:
+      - There are 4 children and 4 distinct seats remaining.
+      - The number of arrangements is $4! = 24$.
+      - Total arrangements $= 1 \times 1 \times 24 = 24$.
+    explanation: |
+      Solution:
+      There are 4 children left to seat, and 4 empty chairs remaining at the table.
+      Because the parents are already seated, these 4 chairs are distinct (e.g., "to the right of Parent 1", "to the left of Parent 2", etc.).
+      The number of ways to arrange 4 distinct people in 4 distinct chairs is $4!$.
+      $$4! = 4 \times 3 \times 2 \times 1 = 24$$
+      By the multiplication principle, the total number of arrangements is $1 \times 1 \times 24 = 24$.
+
+      Why it works:
+      Once the circle is "anchored" by the first person, the problem collapses into standard linear permutations for the remaining open spots. We don't divide by anything at the end because the rotational symmetry was already handled in step 1.

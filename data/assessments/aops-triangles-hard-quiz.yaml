@@ -18,47 +18,208 @@ questions:
 - id: hard-quiz-q001
   type: multipleChoice
   prompt: A primitive integer right triangle has perimeter 30. What is its hypotenuse?
-  choices: [{id: a, text: '$10$'}, {id: b, text: '$12$'}, {id: c, text: '$13$'}, {id: d, text: '$15$'}]
+  choices:
+  - id: a
+    text: '$10$'
+    issueSignals: [primitive-triple-unrecognized]
+  - id: b
+    text: '$12$'
+    issueSignals: [primitive-triple-unrecognized]
+  - id: c
+    text: '$13$'
+  - id: d
+    text: '$15$'
+    issueSignals: [sign-error]
   answer: {choiceId: c}
-  explanation: The primitive 5-12-13 triangle has perimeter 30, so its hypotenuse is 13.
+  difficultyDimensions:
+  - Enumerate common primitive Pythagorean triples.
+  - Sum the sides of the 5-12-13 triple to match the perimeter constraint.
+  explanation: |
+    Solution:
+    A primitive integer right triangle has side lengths forming a Pythagorean triple with no common factor.
+    Checking the first few:
+    $3$-$4$-$5$: Perimeter $= 12$
+    $5$-$12$-$13$: Perimeter $= 30$.
+    The hypotenuse is $13$.
+
+    Why it works:
+    The side lengths must satisfy $a^2+b^2=c^2$, $a+b+c=30$, and $\gcd(a,b,c)=1$. The known 5-12-13 triple fits exactly.
+
+    Why the other choices fail:
+    - **(A)** $10$ is the hypotenuse of a 6-8-10 triangle (perimeter 24), which is not primitive.
+    - **(B)** $12$ is one of the legs, not the hypotenuse.
+    - **(D)** $15$ would imply a perimeter sum matching an invalid combination or guessing half the perimeter.
+
 - id: hard-quiz-q002
   type: multipleChoice
   prompt: A triangle has integer side lengths $x$, $x+2$, and 15. What is the least possible $x$?
-  choices: [{id: a, text: '$6$'}, {id: b, text: '$7$'}, {id: c, text: '$8$'}, {id: d, text: '$13$'}]
+  choices:
+  - id: a
+    text: '$6$'
+    issueSignals: [inequality-direction]
+  - id: b
+    text: '$7$'
+  - id: c
+    text: '$8$'
+    issueSignals: [inequality-direction]
+  - id: d
+    text: '$13$'
+    issueSignals: [inequality-direction]
   answer: {choiceId: b}
-  explanation: The binding inequality is $x+(x+2)>15$, so $x>6.5$ and the least integer is 7.
+  difficultyDimensions:
+  - Formulate the binding triangle inequality $x + (x+2) > 15$.
+  - Solve for $x$ and identify the smallest integer strictly greater than the bound.
+  explanation: |
+    Solution:
+    To minimize $x$, the sum of the two shortest sides must strictly exceed the longest side.
+    Assume $x$ and $x+2$ are the short sides, so $x + (x+2) > 15$.
+    $$2x + 2 > 15 \implies 2x > 13 \implies x > 6.5.$$
+    The least integer $x$ is $7$.
+
+    Why it works:
+    The strict triangle inequality states that the sum of any two side lengths must be strictly greater than the third. 15 is the longest side for small $x$, so the condition on the sum of the two $x$-based sides acts as the lower bound.
+
+    Why the other choices fail:
+    - **(A)** $6$ yields $6+8=14 < 15$, which fails to form a triangle.
+    - **(C)** $8$ is a valid $x$, yielding $8, 10, 15$ ($18 > 15$), but is not the *least* possible.
+    - **(D)** $13$ is the value of $2x$ at the equality bound $2x=13$, not the integer value of $x$.
+
 - id: hard-quiz-q003
   type: multipleChoice
   prompt: A triangle has side lengths 8, 15, and 17. Which conclusion is justified?
-  choices: [{id: a, text: It is acute.}, {id: b, text: It is right.}, {id: c, text: It is obtuse.}, {id: d, text: It is degenerate.}]
+  choices:
+  - id: a
+    text: It is acute.
+    issueSignals: [congruence-criterion-misapplied]
+  - id: b
+    text: It is right.
+  - id: c
+    text: It is obtuse.
+    issueSignals: [congruence-criterion-misapplied]
+  - id: d
+    text: It is degenerate.
+    issueSignals: [inequality-direction]
   answer: {choiceId: b}
-  explanation: $8^2+15^2=64+225=289=17^2$, so the Pythagorean converse applies.
+  difficultyDimensions:
+  - Recall the Pythagorean converse classification rule.
+  - Identify that 8-15-17 is an exact Pythagorean triple.
+  explanation: |
+    Solution:
+    Compare $c^2$ with $a^2+b^2$:
+    $$17^2 = 289$$
+    $$8^2 + 15^2 = 64 + 225 = 289$$
+    Since $17^2 = 8^2 + 15^2$, the triangle is right.
+
+    Why it works:
+    By the Pythagorean converse, when the square of the longest side equals the sum of the squares of the other two sides, the angle opposite the longest side is exactly $90^\circ$.
+
+    Why the other choices fail:
+    - **(A)** Acute requires $17^2 < 8^2+15^2$.
+    - **(C)** Obtuse requires $17^2 > 8^2+15^2$.
+    - **(D)** Degenerate requires $8+15=17$, but $23>17$.
+
 - id: hard-quiz-q004
   type: multipleChoice
   prompt: Two triangles share a side. Their other two corresponding side pairs are marked equal. Which proof route is complete?
   choices:
-  - {id: a, text: Use the shared side reflexively, then SSS congruence.}
-  - {id: b, text: Use SSA because any three facts prove congruence.}
-  - {id: c, text: Use AAA congruence.}
-  - {id: d, text: Assume the unmarked angles are equal.}
+  - id: a
+    text: Use the shared side reflexively, then SSS congruence.
+  - id: b
+    text: Use SSA because any three facts prove congruence.
+    issueSignals: [congruence-criterion-misapplied]
+  - id: c
+    text: Use AAA congruence.
+    issueSignals: [congruence-criterion-misapplied]
+  - id: d
+    text: Assume the unmarked angles are equal.
+    issueSignals: [congruence-criterion-misapplied]
   answer: {choiceId: a}
-  explanation: The common side supplies the third corresponding side equality required by SSS.
+  difficultyDimensions:
+  - Identify that a shared side provides a reflexive equality (the third side).
+  - Apply the SSS congruence criterion.
+  explanation: |
+    Solution:
+    The two triangles share one side, which is congruent to itself (reflexive property).
+    Combined with the two marked pairs, all three corresponding sides are congruent, satisfying SSS congruence.
+
+    Why it works:
+    SSS requires three side equalities. The explicit markings provide two, and the shared segment (reflexive property) provides the third without requiring any angle information.
+
+    Why the other choices fail:
+    - **(B)** SSA is generally not a valid congruence criterion, and no angle information is given anyway.
+    - **(C)** AAA proves similarity, not congruence, and no angles are marked.
+    - **(D)** Unmarked angles cannot be assumed equal; congruence must be proved from the given side data first.
+
 - id: hard-quiz-q005
   type: multipleChoice
   prompt: Similar triangles have area ratio $49:64$. If the smaller perimeter is 42, find the larger perimeter.
-  choices: [{id: a, text: '$48$'}, {id: b, text: '$54$'}, {id: c, text: '$56$'}, {id: d, text: '$384/7$'}]
+  choices:
+  - id: a
+    text: '$48$'
+  - id: b
+    text: '$54$'
+    issueSignals: [ratio-vs-area-ratio]
+  - id: c
+    text: '$56$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$384/7$'
+    issueSignals: [ratio-vs-area-ratio]
   answer: {choiceId: a}
-  explanation: The length ratio is $7:8$, so the larger perimeter is $42(8/7)=48$.
+  difficultyDimensions:
+  - Extract the linear scale factor from the square root of the area ratio.
+  - Set up and solve the perimeter proportion.
+  explanation: |
+    Solution:
+    Linear ratio $= \sqrt{49} : \sqrt{64} = 7 : 8$.
+    Let the larger perimeter be $P$. Then:
+    $$\frac{42}{P} = \frac{7}{8} \implies P = \frac{42 \times 8}{7} = 6 \times 8 = 48.$$
+
+    Why it works:
+    Perimeter is a one-dimensional measure, so its ratio equals the linear scale factor. Area is two-dimensional, so its ratio is the square of the linear scale factor. Taking the square root recovers the correct perimeter ratio.
+
+    Why the other choices fail:
+    - **(B)** $54 = 42(9/7)$ uses a random ratio or arithmetic error.
+    - **(C)** $56 = 42 \times (4/3)$ uses wrong root extraction or arithmetic.
+    - **(D)** $384/7 = 42 \times (64/49)$ erroneously applies the *area* ratio to the perimeter.
+
 - id: hard-quiz-q006
   type: multipleChoice
-  prompt: 'A line through $D$ on $AB$ is parallel to $BC$, with $AD:DB=2:1$. Find $[ADE]:[ABC]$.'
+  prompt: 'A line through $D$ on $AB$ is parallel to $BC$, with $AD:DB=2:1$. Find the area ratio $[ADE]:[ABC]$.'
   media:
   - type: image
     src: /assessments/aops/aops-triangles-similarity.svg
     alt: Triangle ABC with DE parallel to BC and smaller triangle ADE at the top.
-  choices: [{id: a, text: '$2:3$'}, {id: b, text: '$4:9$'}, {id: c, text: '$4:5$'}, {id: d, text: '$8:27$'}]
+  choices:
+  - id: a
+    text: '$2:3$'
+    issueSignals: [ratio-vs-area-ratio]
+  - id: b
+    text: '$4:9$'
+  - id: c
+    text: '$4:5$'
+    issueSignals: [ratio-vs-area-ratio]
+  - id: d
+    text: '$8:27$'
+    issueSignals: [ratio-vs-area-ratio]
   answer: {choiceId: b}
-  explanation: $AD/AB=2/(2+1)=2/3$, so the area ratio is $(2/3)^2=4/9$.
+  difficultyDimensions:
+  - Convert a split-side ratio ($AD:DB$) to a whole-side similarity ratio ($AD:AB$).
+  - Square the linear ratio to find the area ratio.
+  explanation: |
+    Solution:
+    The segment ratio is $AD:DB = 2:1$. The whole side $AB = AD+DB$, so the similarity ratio is $AD:AB = 2:3$.
+    The area ratio is the square of the similarity ratio:
+    $$[ADE] : [ABC] = 2^2 : 3^2 = 4:9.$$
+
+    Why it works:
+    Parallel lines create similar triangles ($\triangle ADE \sim \triangle ABC$). The scale factor is the ratio of corresponding full sides ($AD/AB$), not the piece-to-piece ratio ($AD/DB$). Areas scale as the square of that factor.
+
+    Why the other choices fail:
+    - **(A)** $2:3$ is the linear similarity ratio, not squared.
+    - **(C)** $4:5$ uses $2^2 : (2^2+1^2)$ or similar invalid squaring of the pieces.
+    - **(D)** $8:27$ cubes the ratio, which gives a volume ratio for 3D solids.
+
 - id: hard-quiz-q007
   type: multipleChoice
   prompt: An altitude to a right triangle's hypotenuse has length 12, and the two hypotenuse segments have ratio $4:9$. Find the hypotenuse.
@@ -66,59 +227,256 @@ questions:
   - type: image
     src: /assessments/aops/aops-triangles-altitude-hypotenuse.svg
     alt: Right triangle with altitude h to the hypotenuse, splitting it into p and q.
-  choices: [{id: a, text: '$13$'}, {id: b, text: '$20$'}, {id: c, text: '$26$'}, {id: d, text: '$52$'}]
+  choices:
+  - id: a
+    text: '$13$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$20$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$26$'
+  - id: d
+    text: '$52$'
+    issueSignals: [sign-error]
   answer: {choiceId: c}
-  explanation: Let the pieces be $4k,9k$. Then $144=h^2=36k^2$, so $k=2$ and the hypotenuse is $8+18=26$.
+  difficultyDimensions:
+  - Set up the geometric mean theorem $h^2 = pq$ with segments $4x$ and $9x$.
+  - Solve for $x$, evaluate the segments, and sum them to find the full hypotenuse.
+  explanation: |
+    Solution:
+    Let the segments be $p = 4x$ and $q = 9x$.
+    $$h^2 = pq \implies 12^2 = (4x)(9x) \implies 144 = 36x^2 \implies x^2 = 4 \implies x = 2.$$
+    The segments are $p = 4(2) = 8$ and $q = 9(2) = 18$.
+    Hypotenuse $= p + q = 8 + 18 = 26$.
+
+    Why it works:
+    The altitude to the hypotenuse is the geometric mean of the two segments it creates on the hypotenuse. Using a scale variable $x$ for the ratio allows isolating the exact lengths.
+
+    Why the other choices fail:
+    - **(A)** $13 = 4+9$ is the sum of the ratio numbers directly, ignoring the altitude scaling.
+    - **(B)** $20 = 2 \times 10$; a miscalculation of $x$ or side combinations.
+    - **(D)** $52 = 2 \times 26$ incorrectly doubles the hypotenuse.
+
 - id: hard-quiz-q008
   type: multipleChoice
   prompt: A right triangle has legs 9 and 40. Find its inradius.
-  choices: [{id: a, text: '$4$'}, {id: b, text: '$5$'}, {id: c, text: '$9$'}, {id: d, text: '$20$'}]
+  choices:
+  - id: a
+    text: '$4$'
+  - id: b
+    text: '$5$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$9$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$20$'
+    issueSignals: [ratio-vs-area-ratio]
   answer: {choiceId: a}
-  explanation: The hypotenuse is 41, area is 180, and semiperimeter is 45, so $r=180/45=4$.
+  difficultyDimensions:
+  - Calculate hypotenuse using the Pythagorean theorem, then area and semiperimeter.
+  - Apply $r = K/s$ or the right-triangle specific formula $r = (a+b-c)/2$.
+  explanation: |
+    Solution:
+    Method 1: Hypotenuse $c = \sqrt{9^2+40^2} = \sqrt{81+1600} = \sqrt{1681} = 41$.
+    Using the right-triangle inradius shortcut:
+    $$r = \frac{a+b-c}{2} = \frac{9+40-41}{2} = \frac{8}{2} = 4.$$
+    Method 2: Area $K = \tfrac12(9)(40) = 180$. Semiperimeter $s = (9+40+41)/2 = 45$.
+    $$r = \frac{K}{s} = \frac{180}{45} = 4.$$
+
+    Why it works:
+    Both $K=rs$ and $r=(a+b-c)/2$ derive from equating area partition sums. The latter is a rapid shortcut for right triangles.
+
+    Why the other choices fail:
+    - **(B)** $5$ is an arithmetic error, e.g., computing $45/9$ instead of $180/45$.
+    - **(C)** $9$ is the length of the short leg, not the inradius.
+    - **(D)** $20$ is the circumradius $41/2 \approx 20.5$ incorrectly rounded, or $\tfrac12$ of $40$.
+
 - id: hard-quiz-q009
   type: multipleChoice
   prompt: In $\triangle ABC$, the angle bisector from $A$ meets $BC$ at $D$. If $AB:AC=5:7$ and $BD=15$, find $DC$.
-  choices: [{id: a, text: '$18$'}, {id: b, text: '$20$'}, {id: c, text: '$21$'}, {id: d, text: '$25$'}]
+  choices:
+  - id: a
+    text: '$18$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$20$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$21$'
+  - id: d
+    text: '$25$'
+    issueSignals: [sign-error]
   answer: {choiceId: c}
-  explanation: The angle-bisector theorem gives $BD:DC=5:7$, so $DC=15(7/5)=21$.
+  difficultyDimensions:
+  - State the angle-bisector theorem proportion.
+  - Solve the proportion correctly.
+  explanation: |
+    Solution:
+    By the angle-bisector theorem, the segments of the base are in the same ratio as the adjacent sides:
+    $$\frac{BD}{DC} = \frac{AB}{AC} = \frac{5}{7}.$$
+    $$\frac{15}{DC} = \frac{5}{7} \implies DC = \frac{15 \times 7}{5} = 21.$$
+
+    Why it works:
+    An interior angle bisector divides the opposite side into segments proportional to the adjacent sides of the triangle.
+
+    Why the other choices fail:
+    - **(A)** $18$ arises from adding a constant difference (e.g. $15+3$ because $7-5=2$). Proportions multiply.
+    - **(B)** $20 = 15 \times (4/3)$, no geometric basis here.
+    - **(D)** $25 = 15 + 10$; random arithmetic.
+
 - id: hard-quiz-q010
   type: multipleChoice
   prompt: A median divides a triangle of area 72 into two subtriangles. What is the area of either subtriangle?
-  choices: [{id: a, text: '$24$'}, {id: b, text: '$32$'}, {id: c, text: '$36$'}, {id: d, text: '$48$'}]
+  choices:
+  - id: a
+    text: '$24$'
+    issueSignals: [ratio-vs-area-ratio]
+  - id: b
+    text: '$32$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$36$'
+  - id: d
+    text: '$48$'
+    issueSignals: [ratio-vs-area-ratio]
   answer: {choiceId: c}
-  explanation: The two subtriangles have equal bases and a common altitude, so they have equal area 36.
+  difficultyDimensions:
+  - Conclude that a median splits the base in half.
+  - Deduce that equal bases and identical altitude yield equal areas.
+  explanation: |
+    Solution:
+    A median splits the side it intersects into two equal halves. Both resulting triangles share this split base and the same altitude from the opposite vertex.
+    Therefore, they have exactly the same area: $72 / 2 = 36$.
+
+    Why it works:
+    Area is $\tfrac12 b h$. The median ensures $b_1 = b_2$. The altitude $h$ is identical for both. Thus $K_1 = K_2$.
+
+    Why the other choices fail:
+    - **(A)** $24 = 72/3$ applies a $2:1$ split, confusing the base split with the centroid's location on the median itself.
+    - **(B)** $32$ is arithmetic error.
+    - **(D)** $48 = \tfrac{2}{3}(72)$, again misapplying the $2:1$ centroid ratio to the triangle's area partition.
+
 - id: hard-quiz-q011
   type: multipleChoice
   prompt: A ladder makes a $60^\circ$ angle with the ground and reaches $8\sqrt3$ feet high. Find its length.
-  choices: [{id: a, text: '$8$'}, {id: b, text: '$12$'}, {id: c, text: '$16$'}, {id: d, text: '$24$'}]
+  choices:
+  - id: a
+    text: '$8$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$12$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$16$'
+  - id: d
+    text: '$24$'
+    issueSignals: [sign-error]
   answer: {choiceId: c}
-  explanation: $L\sin60^\circ=8\sqrt3$ gives $L(\sqrt3/2)=8\sqrt3$, so $L=16$.
+  difficultyDimensions:
+  - Model the problem as a right triangle and identify the correct trig ratio ($\sin 60^\circ$).
+  - Solve for the hypotenuse.
+  explanation: |
+    Solution:
+    Let $L$ be the ladder length (hypotenuse). The height is the opposite side to the $60^\circ$ angle.
+    $$L \sin 60^\circ = 8\sqrt{3} \implies L \left(\frac{\sqrt{3}}{2}\right) = 8\sqrt{3}.$$
+    Dividing by $\sqrt{3}/2$ gives $L = 8 \times 2 = 16$.
+
+    Why it works:
+    The ground, wall, and ladder form a $30^\circ$-$60^\circ$-$90^\circ$ right triangle. The side opposite $60^\circ$ is $L\sqrt{3}/2$.
+
+    Why the other choices fail:
+    - **(A)** $8$ is the length of the base (adjacent side: $16 \cos 60^\circ = 8$).
+    - **(B)** $12$ comes from multiplying $8\sqrt{3}$ by $\sqrt{3}/2$ instead of dividing.
+    - **(D)** $24$ comes from an incorrect tangent or $1.5$ scale factor.
+
 - id: hard-quiz-q012
   type: multipleChoice
   prompt: A triangle has area 48 and two sides 12 and 10 surrounding angle $C$. Find $\sin C$.
-  choices: [{id: a, text: '$2/5$'}, {id: b, text: '$3/5$'}, {id: c, text: '$4/5$'}, {id: d, text: '$5/4$'}]
+  choices:
+  - id: a
+    text: '$2/5$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$3/5$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$4/5$'
+  - id: d
+    text: '$5/4$'
+    issueSignals: [congruence-criterion-misapplied]
   answer: {choiceId: c}
-  explanation: $48=\tfrac12(12)(10)\sin C=60\sin C$, so $\sin C=4/5$.
+  difficultyDimensions:
+  - Apply the SAS area formula $K = \tfrac12 ab \sin C$.
+  - Substitute values and isolate $\sin C$.
+  explanation: |
+    Solution:
+    $$K = \tfrac12 ab \sin C \implies 48 = \tfrac12(12)(10) \sin C.$$
+    $$48 = 60 \sin C \implies \sin C = \frac{48}{60} = \frac{4}{5}.$$
+
+    Why it works:
+    The formula uses the two sides and the included angle. The height to base $a$ is $b \sin C$, so area is $\tfrac12 a (b \sin C)$.
+
+    Why the other choices fail:
+    - **(A)** $2/5$ is half of $4/5$, arising from omitting the $\tfrac12$ in the area formula.
+    - **(B)** $3/5$ is the complementary $\cos C$ value for a $3$-$4$-$5$ right triangle, but the question asks for $\sin C$.
+    - **(D)** $5/4 = 60/48$ computes the reciprocal, $\csc C$.
+
 - id: hard-quiz-q013
   type: selectAll
   prompt: Which center-location statements are valid?
   choices:
-  - {id: a, text: The incenter lies inside every nondegenerate triangle.}
-  - {id: b, text: The circumcenter of an obtuse triangle lies outside.}
-  - {id: c, text: The orthocenter of a right triangle is the right-angle vertex.}
-  - {id: d, text: The centroid of an obtuse triangle lies outside.}
+  - id: a
+    text: The incenter lies inside every nondegenerate triangle.
+  - id: b
+    text: The circumcenter of an obtuse triangle lies outside.
+  - id: c
+    text: The orthocenter of a right triangle is the right-angle vertex.
+  - id: d
+    text: The centroid of an obtuse triangle lies outside.
+    issueSignals: [wrong-center]
   answer: {choiceIds: [a, b, c]}
-  explanation: The centroid lies inside every nondegenerate triangle.
+  difficultyDimensions:
+  - Classify the location rules for the four classical centers based on triangle angles.
+  - Identify that centroid and incenter are universally interior.
+  explanation: |
+    Solution:
+    (A), (B), and (C) are true.
+
+    Why it works:
+    - The incenter is the center of the inscribed circle, always inside.
+    - The circumcenter (perpendicular bisectors) and orthocenter (altitudes) move outside for obtuse triangles and onto the boundary for right triangles.
+    - The centroid is a physical center of mass and always inside.
+
+    (D) is false: the centroid never lies outside a nondegenerate triangle.
+
 - id: hard-quiz-q014
   type: selectAll
   prompt: Which conclusions are justified by valid theorem hypotheses?
   choices:
-  - {id: a, text: Two matching angle pairs prove AA similarity.}
-  - {id: b, text: Three proportional side pairs prove SSS similarity.}
-  - {id: c, text: Two sides and any angle prove SAS congruence.}
-  - {id: d, text: Equal hypotenuse and one leg prove congruence for right triangles.}
+  - id: a
+    text: Two matching angle pairs prove AA similarity.
+  - id: b
+    text: Three proportional side pairs prove SSS similarity.
+  - id: c
+    text: Two sides and any angle prove SAS congruence.
+    issueSignals: [congruence-criterion-misapplied]
+  - id: d
+    text: Equal hypotenuse and one leg prove congruence for right triangles.
   answer: {choiceIds: [a, b, d]}
-  explanation: SAS requires the included angle; an arbitrary angle produces SSA data.
+  difficultyDimensions:
+  - Distinguish valid congruence/similarity criteria from false ones.
+  - Recognize that the angle in SAS must strictly be the *included* angle.
+  explanation: |
+    Solution:
+    (A), (B), and (D) correctly state the AA, SSS similarity, and HL congruence theorems respectively.
+
+    Why it works:
+    These are standard rigorously proven sufficient conditions.
+
+    (C) is false: "any angle" includes non-included angles, which leads to SSA, the ambiguous case that does not guarantee congruence.
+
 - id: hard-quiz-q015
   type: freeResponse
   prompt: Prove that the altitude $h$ to a right triangle's hypotenuse satisfies $h^2=pq$, where $p$ and $q$ are the two hypotenuse segments.
@@ -126,12 +484,26 @@ questions:
   - type: image
     src: /assessments/aops/aops-triangles-altitude-hypotenuse.svg
     alt: Right triangle with altitude h to the hypotenuse and segments p and q.
+  difficultyDimensions:
+  - Prove AA similarity between the two smaller right triangles created by the altitude.
+  - Extract the corresponding side proportion and cross-multiply.
   answer:
     gradingMode: selfCheck
-    expected: 'The altitude creates two smaller right triangles. Each has a right angle at the altitude foot, and their remaining acute angles match because both come from the original right triangle. Thus the two small triangles are similar by AA. Matching the altitude as one leg in opposite positions gives $h/p=q/h$, so $h^2=pq$. Since $h$ is a length, $h=\sqrt{pq}$.'
     keyPoints:
     - Establishes AA similarity of the two smaller triangles.
     - Writes a correctly oriented proportion.
     - Cross-multiplies to $h^2=pq$.
     - Uses the positive root for a length.
-  explanation: The geometric-mean identity is a consequence of similarity created by the perpendicular altitude.
+  explanation: |
+    Solution:
+    Let the original right triangle have legs $a,b$, hypotenuse $c$, and right angle at $C$. Altitude $h$ from $C$ meets $c$ at $D$, splitting it into $p$ (adjacent to $a$) and $q$ (adjacent to $b$).
+    The two smaller triangles are right triangles (because of the altitude).
+    In the first small triangle, the acute angles are $\angle A$ and $90^\circ-\angle A$.
+    In the second small triangle, the acute angles are $\angle B = 90^\circ-\angle A$ and $90^\circ-\angle B = \angle A$.
+    Thus the two small triangles are similar by AA similarity.
+    Matching corresponding legs: the short leg of one over the long leg of the same equals the short leg of the other over the long leg of the other.
+    $$ \frac{p}{h} = \frac{h}{q} $$
+    Cross-multiplying gives $h^2 = pq$.
+
+    Why it works:
+    Dropping the altitude creates three similar right triangles. The geometric-mean identity extracts the specific side ratios linking the two smaller inner triangles.

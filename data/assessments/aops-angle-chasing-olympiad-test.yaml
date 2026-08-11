@@ -15,7 +15,6 @@ navigation:
   - aops-volume-1
   - chapter-14
   - olympiad
-  - test
   - geometry
 skills:
 - Propagate angle measures with a reason ledger.
@@ -24,226 +23,509 @@ skills:
 questions:
 - id: olympiad-test-q068
   type: multipleChoice
-  prompt: A circle problem has a chord and center but no useful angles. What first construction is natural?
+  prompt: 'In a circle, two chords $AB$ and $CD$ intersect at right angles at $P$. If arc $AC = 50^\circ$, what is the measure of arc $BD$?'
   choices:
   - id: a
-    text: Draw a random parallel
+    text: '$40^\circ$'
+    issueSignals: [algebra-error]
   - id: b
-    text: The stated facts are insufficient.
+    text: '$50^\circ$'
+    issueSignals: [theorem-error]
   - id: c
-    text: Use the diagram scale to estimate the result.
+    text: '$90^\circ$'
+    issueSignals: [theorem-error]
   - id: d
-    text: Connect center to chord endpoints
-  answer:
-    choiceId: d
-  explanation: It produces equal radii and isosceles triangle. A common error is draw a random parallel.
+    text: '$130^\circ$'
+  answer: {choiceId: d}
+  difficultyDimensions:
+  - Apply the interior intersection angle formula for chords.
+  - Set the intersection angle to $90^\circ$.
+  - Solve for the unknown arc.
+  explanation: |
+    Solution:
+    The angle of intersection of two chords is half the sum of the intercepted arcs.
+    $$\angle APC = \frac{\text{arc } AC + \text{arc } BD}{2}$$
+    Since the chords intersect at right angles, $\angle APC = 90^\circ$.
+    $$90^\circ = \frac{50^\circ + \text{arc } BD}{2}$$
+    $$180^\circ = 50^\circ + \text{arc } BD \implies \text{arc } BD = 130^\circ$$
+
+    Why it works:
+    Drawing a chord $AD$ creates a right triangle at $P$. The two acute angles of this triangle are inscribed angles that sum to $90^\circ$, meaning their intercepted arcs must sum to $180^\circ$.
+
+    Why the other choices fail:
+    - **(A)** $40^\circ$ is $90-50$.
+    - **(B)** $50^\circ$ assumes the arcs are equal.
+    - **(C)** $90^\circ$ is the intersection angle, not the arc.
+
 - id: olympiad-test-q035
   type: multipleChoice
-  prompt: Two tangent segments from one exterior point meet circle. What length relation holds?
+  prompt: 'Secants $PAB$ and $PCD$ are drawn from external point $P$. If $\angle P = 20^\circ$ and minor arc $AC = 30^\circ$, find the measure of the major arc $BD$.'
   choices:
   - id: a
-    text: The stated facts are insufficient.
+    text: '$10^\circ$'
+    issueSignals: [algebra-error]
   - id: b
-    text: Use the diagram scale to estimate the result.
+    text: '$50^\circ$'
+    issueSignals: [formula-error]
   - id: c
-    text: They are equal
+    text: '$70^\circ$'
   - id: d
-    text: They are perpendicular
-  answer:
-    choiceId: c
-  explanation: Use tangent-segment theorem. A common error is they are perpendicular.
+    text: '$80^\circ$'
+    issueSignals: [formula-error]
+  answer: {choiceId: c}
+  difficultyDimensions:
+  - Apply the exterior intersection angle formula for secants.
+  - Setup the equation and solve for the unknown major arc.
+  explanation: |
+    Solution:
+    The angle between two secants from an external point is half the difference of the intercepted arcs.
+    $$\angle P = \frac{\text{arc } BD - \text{arc } AC}{2}$$
+    $$20^\circ = \frac{\text{arc } BD - 30^\circ}{2}$$
+    $$40^\circ = \text{arc } BD - 30^\circ \implies \text{arc } BD = 70^\circ$$
+
+    Why it works:
+    This is derived from drawing chord $AD$ and using the exterior angle theorem on the resulting triangle.
+
+    Why the other choices fail:
+    - **(A)** $10^\circ$ is $30-20$.
+    - **(B)** $50^\circ$ is $20+30$.
+    - **(D)** $80^\circ$ is $2(40)$.
+
 - id: olympiad-test-q075
   type: multipleChoice
-  prompt: How can an auxiliary parallel line transfer an angle to a remote vertex?
+  prompt: 'A regular nonagon (9 sides) is inscribed in a circle. What is the measure of the angle between two adjacent diagonals drawn from a single vertex?'
   choices:
   - id: a
-    text: Apply the converse without checking its hypothesis.
+    text: '$10^\circ$'
+    issueSignals: [wrong-angle]
   - id: b
-    text: Draw through target vertex a line parallel to the reference side and use corresponding angles
+    text: '$20^\circ$'
   - id: c
-    text: The stated facts are insufficient.
+    text: '$40^\circ$'
+    issueSignals: [formula-error]
   - id: d
-    text: Use the diagram scale to estimate the result.
-  answer:
-    choiceId: b
-  explanation: Extend the angle arbitrarily.
+    text: '$140^\circ$'
+    issueSignals: [wrong-angle]
+  answer: {choiceId: b}
+  difficultyDimensions:
+  - Calculate the arc length for one side of a regular nonagon.
+  - Apply the inscribed angle theorem to a single arc.
+  explanation: |
+    Solution:
+    A regular nonagon divides the circle into 9 equal arcs.
+    Each arc measures $360^\circ / 9 = 40^\circ$.
+    Two adjacent diagonals (or a side and an adjacent diagonal) from the same vertex intercept exactly one of these arcs on the circle.
+    The angle is an inscribed angle, so it is half the intercepted arc:
+    $$\text{Angle} = \frac{40^\circ}{2} = 20^\circ$$
+
+    Why it works:
+    From any vertex, drawing all diagonals splits the interior angle into $n-2$ equal pieces. The interior angle is $140^\circ$, and $140 / 7 = 20^\circ$.
+
+    Why the other choices fail:
+    - **(A)** $10^\circ$ divides by 4 instead of 2.
+    - **(C)** $40^\circ$ is the central angle / arc measure.
+    - **(D)** $140^\circ$ is the total interior angle of the nonagon.
+
 - id: olympiad-test-q067
   type: multipleChoice
-  prompt: Prove a quadrilateral with supplementary opposite angles is cyclic.
+  prompt: 'In a circle, tangent $PT$ and secant $PAB$ are drawn from point $P$. If $PT = 12$ and $PA = 8$, what is the length of chord $AB$?'
   choices:
   - id: a
-    text: Use the converse inscribed-angle relation to show one vertex lies on circle through other three
+    text: '$4$'
+    issueSignals: [algebra-error]
   - id: b
-    text: The stated facts are insufficient.
+    text: '$10$'
   - id: c
-    text: Use the diagram scale to estimate the result.
+    text: '$14$'
+    issueSignals: [wrong-segment]
   - id: d
-    text: Apply the converse without checking its hypothesis.
-  answer:
-    choiceId: a
-  explanation: Use forward cyclic theorem only.
+    text: '$18$'
+    issueSignals: [wrong-segment]
+  answer: {choiceId: b}
+  difficultyDimensions:
+  - Apply the tangent-secant power theorem ($PT^2 = PA \times PB$).
+  - Solve for the full secant length $PB$.
+  - Subtract the external segment $PA$ to find the chord length $AB$.
+  explanation: |
+    Solution:
+    The tangent-secant theorem states:
+    $$PT^2 = PA \times PB$$
+    $$12^2 = 8 \times PB$$
+    $$144 = 8 \times PB \implies PB = 18$$
+    The segment $PB$ is composed of $PA + AB$.
+    $$18 = 8 + AB \implies AB = 10$$
+
+    Why it works:
+    This theorem is a direct consequence of the similarity between $\triangle PTA$ and $\triangle PBT$, which share $\angle P$ and have equal angles $\angle PTA$ and $\angle PBT$.
+
+    Why the other choices fail:
+    - **(A)** 4 is $12-8$.
+    - **(C)** 14 is a random arithmetic error.
+    - **(D)** 18 is the full secant length $PB$, not the chord $AB$.
+
 - id: olympiad-test-q074
   type: multipleChoice
-  prompt: Why does a point drawn on a circle require incidence marking?
+  prompt: 'A cyclic quadrilateral $ABCD$ has diagonals $AC$ and $BD$ intersecting at $E$. If $\angle BAC = 40^\circ$ and $\angle CAD = 30^\circ$, what is the measure of $\angle BDC$?'
   choices:
   - id: a
-    text: The stated facts are insufficient.
+    text: '$30^\circ$'
+    issueSignals: [wrong-angle]
   - id: b
-    text: Use the diagram scale to estimate the result.
+    text: '$40^\circ$'
   - id: c
-    text: Apply the converse without checking its hypothesis.
+    text: '$70^\circ$'
+    issueSignals: [wrong-angle]
   - id: d
-    text: A diagram alone cannot certify exact membership
-  answer:
-    choiceId: d
-  explanation: Circles contain every nearby point.
+    text: '$110^\circ$'
+    issueSignals: [formula-error]
+  answer: {choiceId: b}
+  difficultyDimensions:
+  - Trace angles to their intercepted arcs.
+  - Transfer the arc to a different inscribed angle.
+  explanation: |
+    Solution:
+    $\angle BAC = 40^\circ$ is an inscribed angle that intercepts arc $BC$.
+    Therefore, any other inscribed angle that intercepts arc $BC$ must also be $40^\circ$.
+    $\angle BDC$ intercepts arc $BC$.
+    Thus, $\angle BDC = 40^\circ$.
+
+    Why it works:
+    "Angles subtended by the same arc at the circumference are equal." This is the foundational rule of angle chasing in cyclic quadrilaterals.
+
+    Why the other choices fail:
+    - **(A)** $30^\circ$ is $\angle CAD$, which intercepts arc $CD$. It would equal $\angle CBD$.
+    - **(C)** $70^\circ$ is the sum of the two angles ($\angle BAD$).
+
 - id: olympiad-test-q077
   type: multipleChoice
-  prompt: What distinguishes a proof chase from a calculation chase?
+  prompt: 'In a circle, chords $AB$ and $CD$ are parallel. If arc $AC = 50^\circ$, what is the measure of arc $BD$?'
   choices:
   - id: a
-    text: Use the diagram scale to estimate the result.
+    text: '$25^\circ$'
+    issueSignals: [formula-error]
   - id: b
-    text: Apply the converse without checking its hypothesis.
+    text: '$50^\circ$'
   - id: c
-    text: A proof establishes a general relation from givens; a calculation finds a specified measure with reasons
+    text: '$100^\circ$'
+    issueSignals: [formula-error]
   - id: d
-    text: The stated facts are insufficient.
-  answer:
-    choiceId: c
-  explanation: A proof uses no equations.
+    text: '$130^\circ$'
+    issueSignals: [wrong-angle]
+  answer: {choiceId: b}
+  difficultyDimensions:
+  - Recall the parallel chords theorem.
+  - Apply the theorem to identify congruent arcs between the parallel chords.
+  explanation: |
+    Solution:
+    Parallel chords intercept congruent arcs between them.
+    Since $AB \parallel CD$, the arcs trapped between them are equal.
+    $\text{arc } AC = \text{arc } BD = 50^\circ$.
+
+    Why it works:
+    Drawing transversal $AD$ creates alternate interior angles $\angle DAB$ and $\angle ADC$. These equal inscribed angles must subtend equal arcs.
+
+    Why the other choices fail:
+    - **(A)** $25^\circ$ is the inscribed angle, not the arc.
+    - **(C)** $100^\circ$ doubles the arc.
+    - **(D)** $130^\circ$ is $180-50$.
+
 - id: olympiad-test-q033
   type: multipleChoice
-  prompt: An isosceles triangle has vertex angle 20. A line from vertex bisects it. Find each new vertex angle.
+  prompt: 'A tangent and a secant are drawn to a circle from point $P$. The tangent touches at $T$, and the secant passes through $A$ and $B$. If arc $TA = 60^\circ$ and arc $TB = 140^\circ$, what is $\angle P$?'
   choices:
   - id: a
-    text: 5 degrees
+    text: '$40^\circ$'
   - id: b
-    text: 10 degrees
+    text: '$80^\circ$'
+    issueSignals: [formula-error]
   - id: c
-    text: 80 degrees
+    text: '$100^\circ$'
+    issueSignals: [formula-error]
   - id: d
-    text: 170 degrees
-  answer:
-    choiceId: b
-  explanation: Angle bisector halves the angle. A common error is 80 degrees.
+    text: '$200^\circ$'
+    issueSignals: [formula-error]
+  answer: {choiceId: a}
+  difficultyDimensions:
+  - Identify the intercepted arcs for the tangent-secant angle.
+  - Apply the exterior intersection angle formula.
+  explanation: |
+    Solution:
+    The angle formed by a tangent and a secant is half the difference of the intercepted arcs.
+    The intercepted arcs are the major arc $TB$ and the minor arc $TA$.
+    $$\angle P = \frac{\text{arc } TB - \text{arc } TA}{2}$$
+    $$\angle P = \frac{140^\circ - 60^\circ}{2} = \frac{80^\circ}{2} = 40^\circ$$
+
+    Why it works:
+    This is the standard exterior angle formula, which applies identically to two secants, two tangents, or one of each.
+
+    Why the other choices fail:
+    - **(B)** $80^\circ$ is the difference of the arcs (forgot to divide by 2).
+    - **(C)** $100^\circ$ is the sum divided by 2 (interior angle formula).
+
 - id: olympiad-test-q108
   type: multipleChoice
-  prompt: A transversal makes equal alternate interior angles. What conclusion is licensed?
+  prompt: 'In $\triangle ABC$, the altitude from $A$ to $BC$ meets the circumcircle at $D$. If $\angle B = 70^\circ$, find the measure of the minor arc $CD$.'
   choices:
   - id: a
-    text: The lines are parallel
+    text: '$20^\circ$'
+    issueSignals: [wrong-arc]
   - id: b
-    text: The transversal is perpendicular
+    text: '$40^\circ$'
+    issueSignals: [wrong-arc]
   - id: c
-    text: The stated facts are insufficient.
+    text: '$140^\circ$'
+    issueSignals: [wrong-arc]
   - id: d
-    text: Use the diagram scale to estimate the result.
-  answer:
-    choiceId: a
-  explanation: Use the converse theorem. A common error is the transversal is perpendicular.
+    text: 'Cannot be determined without $\angle C$'
+  answer: {choiceId: d}
+  difficultyDimensions:
+  - Trace the angle relationships for the altitude in the circumcircle.
+  - Recognize missing constraints.
+  explanation: |
+    Solution:
+    Let the altitude meet $BC$ at $H$. In right $\triangle ABH$, $\angle BAH = 90^\circ - 70^\circ = 20^\circ$.
+    Since ray $AH$ extends to $D$ on the circle, $\angle BAD = 20^\circ$.
+    The inscribed angle $\angle BAD$ intercepts arc $BD$. Thus, arc $BD = 2(20^\circ) = 40^\circ$.
+    However, the question asks for arc $CD$.
+    To find arc $CD$, we would need $\angle CAD$, which requires knowing $\angle C$. Without $\angle C$, the position of $C$ on the circle is completely arbitrary relative to $A$ and $B$, so arc $CD$ cannot be determined.
+
+    Why it works:
+    A triangle is not uniquely determined by one angle and its circumcircle. The third vertex has a degree of freedom.
+
+    Why the other choices fail:
+    - **(A)** $20^\circ$ is $\angle BAD$.
+    - **(B)** $40^\circ$ is arc $BD$, not $CD$.
+    - **(C)** $140^\circ$ is arc $AC$.
+
 - id: olympiad-test-q079
   type: multipleChoice
-  prompt: Why are same-side interior angles supplementary for parallel lines?
+  prompt: 'Two circles intersect at points $A$ and $B$. A line through $A$ intersects the circles at $C$ and $D$. A line through $B$ intersects the circles at $E$ and $F$. What must be true about lines $CE$ and $DF$?'
   choices:
   - id: a
-    text: The stated facts are insufficient.
+    text: 'They are parallel'
   - id: b
-    text: Use the diagram scale to estimate the result.
+    text: 'They are perpendicular'
+    issueSignals: [theorem-error]
   - id: c
-    text: Apply the converse without checking its hypothesis.
+    text: 'They are equal in length'
+    issueSignals: [theorem-error]
   - id: d
-    text: They combine with a corresponding/linear-pair relation under the parallel condition
-  answer:
-    choiceId: d
-  explanation: They are vertical angles.
+    text: 'They bisect each other'
+    issueSignals: [theorem-error]
+  answer: {choiceId: a}
+  difficultyDimensions:
+  - Use cyclic quadrilaterals $AECB$ and $ADFB$.
+  - Chase angles to prove alternate interior or consecutive interior angles are supplementary.
+  explanation: |
+    Solution:
+    Quadrilateral $ABEC$ is cyclic in the first circle, and $ABFD$ is cyclic in the second.
+    In $ABEC$, $\angle E$ and $\angle CAB$ are opposite angles, so $\angle E + \angle CAB = 180^\circ$.
+    Since $C, A, D$ form a straight line, $\angle CAB + \angle DAB = 180^\circ$.
+    Therefore, $\angle E = \angle DAB$.
+    In cyclic quadrilateral $ABFD$, the exterior angle at $A$ (which is $\angle DAB$) equals the interior opposite angle, which is $\angle F$.
+    So $\angle E = \angle DAB = \angle F$?
+    Wait, let's re-verify. In $ABFD$, opposite angles $\angle DAB + \angle F = 180^\circ$.
+    If $\angle E = \angle DAB$, then $\angle E + \angle F = 180^\circ$.
+    Since $\angle E$ and $\angle F$ are consecutive interior angles between lines $CE$ and $DF$ cut by transversal $EF$, their supplementary sum means $CE \parallel DF$.
+
+    Why it works:
+    This is a classic Olympiad configuration. The common chord $AB$ transfers the angle from one circle to the other, proving parallelism.
+
+    Why the other choices fail:
+    - **(B)** Perpendicularity only happens if the angles are $90^\circ$.
+    - **(C)** They are only equal if the circles are congruent.
+
 - id: olympiad-test-q073
   type: multipleChoice
-  prompt: Why must an outside-secant angle use arc difference, not sum?
+  prompt: 'A circle is inscribed in a quadrilateral $ABCD$. If $AB = 7$, $BC = 8$, and $CD = 9$, find $DA$.'
   choices:
   - id: a
-    text: Use the diagram scale to estimate the result.
+    text: '$6$'
+    issueSignals: [algebra-error]
   - id: b
-    text: Apply the converse without checking its hypothesis.
+    text: '$8$'
   - id: c
-    text: Its rays intercept nested arcs and the external turning compares far minus near
+    text: '$10$'
+    issueSignals: [algebra-error]
   - id: d
-    text: The stated facts are insufficient.
-  answer:
-    choiceId: c
-  explanation: All circle angles average arcs the same way.
+    text: '$24$'
+    issueSignals: [wrong-concept]
+  answer: {choiceId: b}
+  difficultyDimensions:
+  - Apply Pitot's Theorem (sums of opposite sides of a tangential quadrilateral are equal).
+  - Solve the linear equation.
+  explanation: |
+    Solution:
+    By Pitot's Theorem, for any quadrilateral circumscribed about a circle, the sums of the lengths of opposite sides are equal.
+    $$AB + CD = BC + DA$$
+    $$7 + 9 = 8 + DA$$
+    $$16 = 8 + DA \implies DA = 8$$
+
+    Why it works:
+    This theorem is derived directly from the two-tangent theorem. The tangents from each vertex to the circle are equal, and summing opposite sides pairs up all eight tangent segments perfectly.
+
+    Why the other choices fail:
+    - **(A)** 6 assumes an arithmetic sequence $6, 7, 8, 9$.
+    - **(C)** 10 is $7+8-9$.
+    - **(D)** 24 is the sum of all other sides.
+
 - id: olympiad-test-q110
   type: multipleChoice
-  prompt: Why does a tangent touch a circle once?
+  prompt: 'In a circle, a chord of length 12 is at a distance of 8 from the center. What is the length of a chord that is at a distance of 6 from the center?'
   choices:
   - id: a
-    text: Apply the converse without checking its hypothesis.
+    text: '$14$'
+    issueSignals: [algebra-error]
   - id: b
-    text: A line at distance exactly radius from center has one intersection; smaller distance gives two
+    text: '$16$'
   - id: c
-    text: The stated facts are insufficient.
+    text: '$18$'
+    issueSignals: [algebra-error]
   - id: d
-    text: Use the diagram scale to estimate the result.
-  answer:
-    choiceId: b
-  explanation: Tangency is visual.
+    text: '$20$'
+    issueSignals: [algebra-error]
+  answer: {choiceId: b}
+  difficultyDimensions:
+  - Use the first chord to find the radius of the circle via the Pythagorean theorem.
+  - Use the radius and the second distance to find the half-length of the second chord.
+  - Double it for the full length.
+  explanation: |
+    Solution:
+    First chord: length is 12, so the half-chord is 6. The distance to the center is 8.
+    Radius $r^2 = 6^2 + 8^2 = 36 + 64 = 100 \implies r = 10$.
+    Second chord: distance to the center is 6. Let the half-chord be $x$.
+    $x^2 + 6^2 = 10^2 \implies x^2 + 36 = 100 \implies x^2 = 64 \implies x = 8$.
+    The full chord length is $2x = 16$.
+
+    Why it works:
+    The radius is an invariant for the circle, allowing you to transfer information from one right triangle to another.
+
+    Why the other choices fail:
+    - **(A)** 14 is just a guess.
+    - **(D)** 20 is the diameter.
+
 - id: olympiad-test-q069
   type: multipleChoice
-  prompt: Why is substituting labels into a triangle sum safer than chasing by appearance?
+  prompt: 'A cyclic pentagon $ABCDE$ has $\angle A = 100^\circ$ and $\angle C = 120^\circ$. Find the measure of arc $AE$.'
   choices:
   - id: a
-    text: The equation records a complete invariant and exposes arithmetic errors
+    text: '$40^\circ$'
+    issueSignals: [wrong-concept]
   - id: b
-    text: The stated facts are insufficient.
+    text: '$80^\circ$'
+    issueSignals: [wrong-concept]
   - id: c
-    text: Use the diagram scale to estimate the result.
+    text: '$140^\circ$'
+    issueSignals: [wrong-concept]
   - id: d
-    text: Apply the converse without checking its hypothesis.
-  answer:
-    choiceId: a
-  explanation: It makes the diagram to scale.
+    text: 'Cannot be determined'
+  answer: {choiceId: d}
+  difficultyDimensions:
+  - Trace angles to arcs for a cyclic pentagon.
+  - Identify that insufficient information is provided to isolate a single arc.
+  explanation: |
+    Solution:
+    $\angle A = 100^\circ$ intercepts arc $CDE$. So arc $CDE = 200^\circ$.
+    $\angle C = 120^\circ$ intercepts arc $EAB$. So arc $EAB = 240^\circ$.
+    The whole circle is $360^\circ$.
+    We want arc $AE$. We know arc $EAB = \text{arc } EA + \text{arc } AB = 240^\circ$.
+    We don't have enough information to isolate arc $AE$ by itself. We need at least one more angle to break the arcs down further.
+
+    Why it works:
+    A cyclic pentagon has 5 degrees of freedom (its 5 vertices on the circle). Two angles only remove two degrees of freedom, leaving the shape fluid.
+
+    Why the other choices fail:
+    - **(A), (B), (C)** None of these can be rigorously deduced.
+
 - id: olympiad-test-q111
   type: multipleChoice
-  prompt: What construction often proves two chord-related angles equal?
+  prompt: 'Two tangents from $P$ to a circle meet at $A$ and $B$. If $\angle APB = 50^\circ$, what is the measure of the minor arc $AB$?'
   choices:
   - id: a
-    text: The stated facts are insufficient.
+    text: '$50^\circ$'
+    issueSignals: [formula-error]
   - id: b
-    text: Use the diagram scale to estimate the result.
+    text: '$65^\circ$'
+    issueSignals: [formula-error]
   - id: c
-    text: Apply the converse without checking its hypothesis.
+    text: '$130^\circ$'
   - id: d
-    text: Connect endpoints to center and use equal radii/isosceles angles
-  answer:
-    choiceId: d
-  explanation: Draw an unrelated diameter.
+    text: '$230^\circ$'
+    issueSignals: [wrong-arc]
+  answer: {choiceId: c}
+  difficultyDimensions:
+  - Use the theorem that the tangent angle and minor intercepted arc are supplementary.
+  - Relate the central angle to the minor arc measure.
+  explanation: |
+    Solution:
+    The angle between two tangents is supplementary to the central angle that subtends the minor arc between the tangent points.
+    Since the central angle equals the minor arc:
+    $$\text{arc } AB = 180^\circ - \angle P = 180^\circ - 50^\circ = 130^\circ$$
+
+    Why it works:
+    The quadrilateral $OAPB$ has two right angles at the tangent points $A$ and $B$. Since the sum of angles is $360^\circ$, the remaining two angles ($\angle P$ and central $\angle O$) must sum to $180^\circ$.
+
+    Why the other choices fail:
+    - **(A)** $50^\circ$ assumes the arc equals the angle.
+    - **(D)** $230^\circ$ is the major arc.
+
 - id: olympiad-test-q066
-  type: multipleChoice
-  prompt: Prove an angle in a semicircle is right.
+  type: selectAll
+  prompt: 'Which of the following always produce an angle of exactly $90^\circ$?'
   choices:
   - id: a
-    text: It intercepts 90-degree arc, and inscribed angle is half arc
+    text: 'An angle inscribed in a semicircle.'
   - id: b
-    text: It intercepts 190-degree arc, and inscribed angle is half arc
+    text: 'The angle between a tangent and the radius drawn to the point of tangency.'
   - id: c
-    text: It intercepts 180-degree arc, and inscribed angle is half arc
+    text: 'The angle between two intersecting secants.'
+    issueSignals: [theorem-error]
   - id: d
-    text: It intercepts 360-degree arc, and inscribed angle is half arc
+    text: 'The angle between the diagonals of a kite.'
   answer:
-    choiceId: c
-  explanation: Assume every chord is diameter.
+    choiceIds: [a, b, d]
+  difficultyDimensions:
+  - Identify Thales' Theorem.
+  - Identify the tangent-radius theorem.
+  - Recall properties of a kite.
+  explanation: |
+    Solution:
+    (A), (B), and (D) always produce right angles.
+
+    Why it works:
+    - (A) Thales' Theorem: an angle inscribed in a semicircle intercepts a $180^\circ$ arc, so it is $90^\circ$.
+    - (B) Tangent-Radius theorem defines the tangency relationship.
+    - (D) The diagonals of a kite (and thus a rhombus or square) are always perpendicular.
+
+    (C) Secants can intersect at any angle from $0^\circ$ to $180^\circ$.
+
 - id: olympiad-test-q109
-  type: multipleChoice
-  prompt: A quadrilateral has opposite angles 88 and 92. What circle conclusion can be drawn?
-  choices:
-  - id: a
-    text: Use the diagram scale to estimate the result.
-  - id: b
-    text: It is cyclic, provided it is a simple quadrilateral
-  - id: c
-    text: It is a rectangle
-  - id: d
-    text: The stated facts are insufficient.
+  type: freeResponse
+  prompt: Prove that if a quadrilateral is inscribed in a circle, its opposite angles are supplementary.
+  difficultyDimensions:
+  - Use the inscribed angle theorem for two opposite angles.
+  - Show that their intercepted arcs add up to the entire circle ($360^\circ$).
+  - Sum the angles and divide by 2 to get $180^\circ$.
   answer:
-    choiceId: b
-  explanation: Use supplementary-opposite-angle converse. A common error is it is a rectangle.
+    gradingMode: selfCheck
+    keyPoints:
+    - Let $ABCD$ be a cyclic quadrilateral.
+    - $\angle A$ intercepts arc $BCD$.
+    - $\angle C$ intercepts arc $DAB$.
+    - Arc $BCD$ + arc $DAB$ = $360^\circ$.
+    - $\angle A + \angle C = \frac{1}{2}(\text{arc } BCD) + \frac{1}{2}(\text{arc } DAB) = \frac{1}{2}(360^\circ) = 180^\circ$.
+  explanation: |
+    Solution:
+    Let $ABCD$ be a cyclic quadrilateral.
+    Consider the opposite angles $\angle DAB$ and $\angle BCD$.
+    By the inscribed angle theorem, the measure of an inscribed angle is half the measure of its intercepted arc.
+    $\angle DAB = \frac{1}{2} \text{arc } BCD$.
+    $\angle BCD = \frac{1}{2} \text{arc } DAB$.
+    Notice that arc $BCD$ and arc $DAB$ together make up the entire circle perfectly without overlapping.
+    Therefore, $\text{arc } BCD + \text{arc } DAB = 360^\circ$.
+    Summing the two angles:
+    $\angle DAB + \angle BCD = \frac{1}{2}(\text{arc } BCD + \text{arc } DAB) = \frac{1}{2}(360^\circ) = 180^\circ$.
+    Because they sum to $180^\circ$, the opposite angles are supplementary. By symmetry, the same holds for $\angle B$ and $\angle D$.
+
+    Why it works:
+    This proof elegantly transforms the problem of interior angles into a statement about the perimeter of the circle, which is fixed at $360^\circ$.

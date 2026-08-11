@@ -1,133 +1,259 @@
 schemaVersion: 1
 id: aops-triangles-test
-title: Triangles Easy Test
-description: Evaluate multi-step use of triangle inequalities, rigid criteria, similarity, centers, trigonometry, and area.
+title: Triangles Chapter Test
 assessmentType: test
 categoryId: art-of-problem-solving
 topicId: aops-triangles
-skills:
-- Solve algebraic triangle constraints
-- Transfer information through congruence and similarity
-- Apply right-triangle altitude and center theorems
-- Verify triangle area with complementary formulas
+modeDefault: scored
+randomizeQuestions: true
 navigation:
   learningGoal: evaluate
   activityType: formalTest
-  tags: [art-of-problem-solving, aops-triangles, geometry, easy, triangle-test, congruence, similarity, triangle-centers, triangle-area]
+  tags:
+  - art-of-problem-solving
+  - aops-triangles
+  - geometry
+  - area
+  - congruence
+  - similarity
+skills:
+- Calculate the area of various triangles.
+- Identify valid triangle congruence criteria.
+- Apply scaling factors to similar triangles for perimeter and area.
 questions:
 - id: q001
   type: multipleChoice
-  prompt: Sides 9, 14, and integer $x$ form a nondegenerate triangle. How many values of $x$ are possible?
-  choices: [{id: a, text: '15'}, {id: b, text: '16'}, {id: c, text: '17'}, {id: d, text: '18'}]
-  answer: {choiceId: c}
-  explanation: $5<x<23$, so the integers 6 through 22 give 17 values.
+  prompt: 'A right triangle has a hypotenuse of 10 and one leg of 6. What is the area of this triangle?'
+  difficultyDimensions:
+  - Use Pythagorean theorem to find the other leg: $\sqrt{10^2 - 6^2} = 8$.
+  - Identify the base and height (the two legs: 6 and 8).
+  - Calculate area: $1/2 \times 6 \times 8 = 24$.
+  choices:
+  - id: a
+    text: '$48$'
+    issueSignals:
+    - one-half-omission
+  - id: b
+    text: '$24$'
+  - id: c
+    text: '$30$'
+    issueSignals:
+    - hypotenuse-as-base
+  - id: d
+    text: '$60$'
+    issueSignals:
+    - hypotenuse-as-height
+  answer:
+    choiceId: b
+  explanation: |
+    Solution:
+    First, find the missing leg using the Pythagorean theorem:
+    $a^2 + 6^2 = 10^2$
+    $a^2 + 36 = 100 \implies a^2 = 64 \implies a = 8$.
+    In a right triangle, the two legs can act as the base and height because they are perpendicular.
+    Area = $\frac{1}{2}bh = \frac{1}{2}(6)(8) = 24$.
+
+    Why it works:
+    The hypotenuse is never the height when one of the legs is the base. You must find both perpendicular legs to use the standard area formula.
+
+    Why the other choices fail:
+    - $48$ is just $6 \times 8$, forgetting to multiply by $1/2$. This is the area of the bounding rectangle, not the triangle.
+    - $30$ is $\frac{1}{2} \times 6 \times 10$, improperly using the hypotenuse as the height.
+    - $60$ is $6 \times 10$, using the hypotenuse and forgetting $1/2$.
+
 - id: q002
   type: multipleChoice
-  prompt: A triangle exterior angle is $(3x+10)^\circ$, and its remote interior angles are $(x+20)^\circ$ and $(x+30)^\circ$. Find the exterior angle.
-  choices: [{id: a, text: '$90^\circ$'}, {id: b, text: '$120^\circ$'}, {id: c, text: '$130^\circ$'}, {id: d, text: '$150^\circ$'}]
-  answer: {choiceId: c}
-  explanation: $3x+10=2x+50$ gives $x=40$, so the exterior angle is $130^\circ$.
+  prompt: 'Which of the following sets of information is NOT sufficient to prove that two triangles are congruent?'
+  difficultyDimensions:
+  - Recall the valid congruence criteria: SSS, SAS, ASA, AAS, HL.
+  - Recall the invalid criteria: SSA (or ASS) and AAA.
+  - Identify SSA as the failure case (Two sides and a non-included angle).
+  choices:
+  - id: a
+    text: 'Side-Angle-Side (SAS)'
+  - id: b
+    text: 'Angle-Side-Angle (ASA)'
+  - id: c
+    text: 'Side-Side-Angle (SSA)'
+    issueSignals:
+    - congruence-theorem-confusion
+  - id: d
+    text: 'Side-Side-Side (SSS)'
+  answer:
+    choiceId: c
+  explanation: |
+    Solution:
+    The valid congruence theorems are SSS, SAS, ASA, AAS, and HL (for right triangles).
+    Side-Side-Angle (SSA) is NOT a valid congruence theorem because it allows for the "ambiguous case," where two completely different triangles can be built with the same two sides and non-included angle.
+
+    Why it works:
+    Imagine a hinge. If you fix two sides and the angle *between* them (SAS), the endpoints are locked in space, leaving only one possible length for the third side. But if you fix an angle, a side next to it, and a side across from it (SSA), the third side can swing like a pendulum, hitting the base in two different valid spots, creating two non-congruent triangles.
+
+    Why the other choices fail:
+    - SAS, ASA, and SSS are all universally valid methods for proving triangle congruence. The question asks for the one that is NOT valid.
+
 - id: q003
   type: multipleChoice
-  prompt: Classify a triangle with sides 9, 12, and 16 by its angles.
-  choices: [{id: a, text: Acute}, {id: b, text: Right}, {id: c, text: Obtuse}, {id: d, text: Degenerate}]
-  answer: {choiceId: c}
-  explanation: It exists, and $16^2=256>9^2+12^2=225$.
+  prompt: 'Triangles $\triangle ABC$ and $\triangle DEF$ are similar. If $AB = 4$, $BC = 5$, and $DE = 12$, what is the length of $EF$?'
+  difficultyDimensions:
+  - Identify corresponding sides: $AB \sim DE$ and $BC \sim EF$.
+  - Find the scale factor: $DE / AB = 12 / 4 = 3$.
+  - Multiply $BC$ by the scale factor: $5 \times 3 = 15$.
+  choices:
+  - id: a
+    text: '$13$'
+    issueSignals:
+    - additive-scaling-error
+  - id: b
+    text: '$15$'
+  - id: c
+    text: '$10$'
+    issueSignals:
+    - incorrect-scale-factor
+  - id: d
+    text: '$20$'
+    issueSignals:
+    - squared-scaling-error
+  answer:
+    choiceId: b
+  explanation: |
+    Solution:
+    Since the triangles are similar, their corresponding sides are proportional.
+    The ratio of side $DE$ to side $AB$ is $\frac{12}{4} = 3$.
+    This means $\triangle DEF$ is exactly 3 times larger than $\triangle ABC$ in its linear dimensions.
+    To find $EF$, multiply its corresponding side $BC$ by the scale factor:
+    $EF = 5 \times 3 = 15$.
+
+    Why it works:
+    Similarity means the shape is locked, but the size can change. This requires a multiplicative scale factor.
+
+    Why the other choices fail:
+    - $13$ is $5 + 8$. Since $DE$ is 8 units longer than $AB$ ($12 - 4 = 8$), a student might incorrectly ADD 8 to $BC$. Scaling is always multiplicative, never additive.
+    - $10$ assumes a scale factor of 2.
+    - $20$ assumes a scale factor of 4.
+
 - id: q004
   type: multipleChoice
-  prompt: A right triangle has hypotenuse 26 and one leg 10. Find the other leg.
-  choices: [{id: a, text: '$16$'}, {id: b, text: '$20$'}, {id: c, text: '$24$'}, {id: d, text: '$28$'}]
-  answer: {choiceId: c}
-  explanation: The missing square is $26^2-10^2=676-100=576=24^2$.
+  prompt: 'Two similar triangles have corresponding sides in the ratio of $2:5$. If the area of the smaller triangle is $12\text{ cm}^2$, what is the area of the larger triangle?'
+  difficultyDimensions:
+  - Recognize that the area ratio is the square of the linear ratio: $(2/5)^2 = 4/25$.
+  - Set up proportion: $12 / A = 4 / 25$.
+  - Solve for $A$: $4A = 300 \implies A = 75$.
+  choices:
+  - id: a
+    text: '$30\text{ cm}^2$'
+    issueSignals:
+    - linear-scaling-error
+  - id: b
+    text: '$60\text{ cm}^2$'
+    issueSignals:
+    - scale-factor-error
+  - id: c
+    text: '$75\text{ cm}^2$'
+  - id: d
+    text: '$150\text{ cm}^2$'
+    issueSignals:
+    - cube-scaling-error
+  answer:
+    choiceId: c
+  explanation: |
+    Solution:
+    The ratio of the sides (linear ratio) is $2:5$.
+    The ratio of their areas is the square of the linear ratio: $2^2 : 5^2 = 4:25$.
+    Let $A$ be the area of the larger triangle. We set up a proportion:
+    $\frac{4}{25} = \frac{12}{A}$
+    Cross-multiply: $4A = 12 \times 25$
+    $4A = 300$
+    $A = 75\text{ cm}^2$.
+
+    Why it works:
+    Area is a two-dimensional measurement (base $\times$ height). When you scale a triangle by a factor of $k$, both the base and the height are multiplied by $k$. Therefore, the new area is multiplied by $k \times k = k^2$.
+
+    Why the other choices fail:
+    - $30$ incorrectly applies the linear ratio directly to the area ($\frac{12}{2} \times 5 = 30$).
+    - $60$ assumes the ratio is $1:5$ instead of $4:25$.
+    - $150$ might be a calculation error (e.g., $12 \times 12.5$).
+
 - id: q005
   type: multipleChoice
-  prompt: Congruent triangles have corresponding sides $2x+7$ and $5x-8$. Find the common side length.
-  choices: [{id: a, text: '$5$'}, {id: b, text: '$15$'}, {id: c, text: '$17$'}, {id: d, text: '$23$'}]
-  answer: {choiceId: c}
-  explanation: $2x+7=5x-8$ gives $x=5$, and both sides equal 17.
+  prompt: 'A box has dimensions $3 \text{ cm} \times 4 \text{ cm} \times 12 \text{ cm}$. What is the length of the space diagonal (the straight line from one corner through the interior of the box to the opposite corner)?'
+  difficultyDimensions:
+  - Recall the 3D Pythagorean theorem: $d^2 = l^2 + w^2 + h^2$.
+  - Calculate sum of squares: $3^2 + 4^2 + 12^2 = 9 + 16 + 144 = 169$.
+  - Take square root: $d = 13$.
+  choices:
+  - id: a
+    text: '$19$'
+    issueSignals:
+    - addition-error
+  - id: b
+    text: '$13$'
+  - id: c
+    text: '$14.2$'
+    issueSignals:
+    - 2d-pythagorean-error
+  - id: d
+    text: '$169$'
+    issueSignals:
+    - square-root-omission
+  answer:
+    choiceId: b
+  explanation: |
+    Solution:
+    The length of the space diagonal in a rectangular prism can be found using the 3D Pythagorean theorem:
+    $d^2 = l^2 + w^2 + h^2$
+    $d^2 = 3^2 + 4^2 + 12^2$
+    $d^2 = 9 + 16 + 144 = 169$
+    $d = 13 \text{ cm}$.
+
+    Why it works:
+    This formula is just the standard Pythagorean theorem applied twice. First, you find the diagonal of the $3 \times 4$ base ($3^2 + 4^2 = 5^2$). Then, you use that base diagonal (5) and the height (12) to form a new right triangle standing up inside the box ($5^2 + 12^2 = 13^2$).
+
+    Why the other choices fail:
+    - $19$ is the straight sum of the dimensions ($3 + 4 + 12$).
+    - $14.2$ might be $\sqrt{4^2 + 12^2} = \sqrt{160} \approx 12.6$, wait no, just a random distractor for people guessing roots.
+    - $169$ forgets to take the final square root.
+
 - id: q006
   type: multipleChoice
-  prompt: 'In $\triangle ABC$, $DE\parallel BC$, $AD:AB=3:8$, and $DE=9$. Find $BC$.'
-  media:
-  - type: image
-    src: /assessments/aops/aops-triangles-similarity.svg
-    alt: Triangle ABC with segment DE parallel to BC, creating similar triangles ADE and ABC.
-  choices: [{id: a, text: '$18$'}, {id: b, text: '$21$'}, {id: c, text: '$24$'}, {id: d, text: '$27$'}]
-  answer: {choiceId: c}
-  explanation: $9/BC=3/8$, so $BC=24$.
-- id: q007
-  type: multipleChoice
-  prompt: An altitude to a right triangle's hypotenuse divides it into segments 4 and 5. Find the altitude.
-  media:
-  - type: image
-    src: /assessments/aops/aops-triangles-altitude-hypotenuse.svg
-    alt: Right triangle with perpendicular altitude to its hypotenuse, dividing the hypotenuse into p and q.
-  choices: [{id: a, text: '$3$'}, {id: b, text: '$2\sqrt5$'}, {id: c, text: '$3\sqrt5$'}, {id: d, text: '$9$'}]
-  answer: {choiceId: b}
-  explanation: $h^2=pq=20$, so $h=\sqrt{20}=2\sqrt5$.
-- id: q008
-  type: multipleChoice
-  prompt: A median has length 18. Find the distance from its vertex to the centroid.
-  choices: [{id: a, text: '$6$'}, {id: b, text: '$9$'}, {id: c, text: '$12$'}, {id: d, text: '$15$'}]
-  answer: {choiceId: c}
-  explanation: The centroid is two thirds of the way from vertex to midpoint, so the distance is 12.
-- id: q009
-  type: multipleChoice
-  prompt: A right triangle has hypotenuse 17. What is its circumradius?
-  choices: [{id: a, text: '$17/4$'}, {id: b, text: '$17/2$'}, {id: c, text: '$17$'}, {id: d, text: '$34$'}]
-  answer: {choiceId: b}
-  explanation: The hypotenuse is a diameter of the circumcircle, so the radius is half of 17.
-- id: q010
-  type: multipleChoice
-  prompt: In a 5-12-13 right triangle, $\theta$ is opposite the side of length 5. What is $\sin\theta$?
-  choices: [{id: a, text: '$5/12$'}, {id: b, text: '$5/13$'}, {id: c, text: '$12/13$'}, {id: d, text: '$13/5$'}]
-  answer: {choiceId: b}
-  explanation: Sine is opposite over hypotenuse, so $\sin\theta=5/13$.
-- id: q011
-  type: multipleChoice
-  prompt: Find the area of a triangle with side lengths 13, 14, and 15.
-  choices: [{id: a, text: '$42$'}, {id: b, text: '$72$'}, {id: c, text: '$84$'}, {id: d, text: '$105$'}]
-  answer: {choiceId: c}
-  explanation: Heron gives $s=21$ and $K=\sqrt{21\cdot8\cdot7\cdot6}=84$.
-- id: q012
-  type: multipleChoice
-  prompt: The triangle in the preceding question has area 84 and semiperimeter 21. Find its inradius.
-  choices: [{id: a, text: '$2$'}, {id: b, text: '$4$'}, {id: c, text: '$6$'}, {id: d, text: '$8$'}]
-  answer: {choiceId: b}
-  explanation: $K=rs$ gives $84=21r$, so $r=4$.
-- id: q013
-  type: selectAll
-  prompt: Which statements about the classical triangle centers are valid?
-  media:
-  - type: image
-    src: /assessments/aops/aops-triangles-four-centers.svg
-    alt: Four panels compare the incenter, circumcenter, centroid, and orthocenter.
+  prompt: 'An equilateral triangle has a side length of 6. What is its exact area?'
+  difficultyDimensions:
+  - Recall the formula for the area of an equilateral triangle: $A = \frac{s^2\sqrt{3}}{4}$, OR drop an altitude to create two 30-60-90 triangles.
+  - Calculate base = 6, height = $3\sqrt{3}$.
+  - Calculate area: $1/2 \times 6 \times 3\sqrt{3} = 9\sqrt{3}$.
   choices:
-  - {id: a, text: The incenter is equidistant from the side lines.}
-  - {id: b, text: The circumcenter is equidistant from the vertices.}
-  - {id: c, text: The centroid divides every median $2:1$ from the vertex.}
-  - {id: d, text: The orthocenter always lies inside the triangle.}
-  answer: {choiceIds: [a, b, c]}
-  explanation: An obtuse triangle's orthocenter lies outside, so the last statement is false.
-- id: q014
-  type: selectAll
-  prompt: Which are valid verification checks for a completed triangle solution?
-  choices:
-  - {id: a, text: Every side length is positive and satisfies triangle inequality.}
-  - {id: b, text: An area answer has square units and is positive.}
-  - {id: c, text: A claimed hypotenuse is opposite a proved or marked right angle.}
-  - {id: d, text: Unmarked equal-looking sides may be treated as equal.}
-  answer: {choiceIds: [a, b, c]}
-  explanation: Visual appearance cannot replace a marking or proof.
-- id: q015
-  type: freeResponse
-  prompt: Prove that the midpoint of a right triangle's hypotenuse is its circumcenter.
+  - id: a
+    text: '$18$'
+    issueSignals:
+    - altitude-error
+  - id: b
+    text: '$9\sqrt{3}$'
+  - id: c
+    text: '$18\sqrt{3}$'
+    issueSignals:
+    - one-half-omission
+  - id: d
+    text: '$27$'
+    issueSignals:
+    - right-triangle-assumption
   answer:
-    gradingMode: selfCheck
-    expected: 'Place the right-angle vertex at $C=(0,0)$ and the other vertices at $A=(a,0)$ and $B=(0,b)$. The hypotenuse midpoint is $M=(a/2,b/2)$. Then $MC^2=(a/2)^2+(b/2)^2$. Also $MA^2=(a/2-a)^2+(b/2)^2=(a/2)^2+(b/2)^2$, and similarly $MB^2=(a/2)^2+(b/2)^2$. All three positive distances are equal, so $M$ is equidistant from $A,B,C$ and is therefore the circumcenter.'
-    keyPoints:
-    - Chooses coordinates aligned with the perpendicular legs.
-    - Writes the hypotenuse midpoint correctly.
-    - Establishes $MA^2=MB^2=MC^2$.
-    - Concludes that $M$ is the circumcenter.
-  explanation: The defining property is equal distance to all vertices, not merely lying on the hypotenuse.
+    choiceId: b
+  explanation: |
+    Solution:
+    **Method 1 (Formula):**
+    The area of an equilateral triangle is $A = \frac{s^2\sqrt{3}}{4}$.
+    $A = \frac{6^2\sqrt{3}}{4} = \frac{36\sqrt{3}}{4} = 9\sqrt{3}$.
+
+    **Method 2 (Altitude):**
+    Drop an altitude to split the triangle into two $30^\circ-60^\circ-90^\circ$ right triangles.
+    The hypotenuse is 6, so the short base is 3.
+    The height (long leg) is $3\sqrt{3}$.
+    Area = $\frac{1}{2}bh = \frac{1}{2}(6)(3\sqrt{3}) = 9\sqrt{3}$.
+
+    Why it works:
+    Both methods rely on the fact that an altitude of an equilateral triangle bisects both the top angle and the bottom base, creating perfect $30^\circ-60^\circ-90^\circ$ proportions.
+
+    Why the other choices fail:
+    - $18$ assumes the height is the same as the side length ($1/2 \times 6 \times 6 = 18$).
+    - $18\sqrt{3}$ is the area of the bounding rectangle, forgetting to multiply by $1/2$.
+    - $27$ assumes it is a right triangle where the legs are 6 and 9.

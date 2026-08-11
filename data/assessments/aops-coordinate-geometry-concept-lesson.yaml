@@ -1,161 +1,293 @@
 schemaVersion: 1
 id: aops-coordinate-geometry-concept-lesson
-title: The Power of Coordinates Concept Lesson
+title: 'The Power of Coordinates'
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
 topicId: aops-coordinate-geometry
 modeDefault: learn
-randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
   - art-of-problem-solving
   - aops-coordinate-geometry
-  - aops
+  - geometry
+  - olympiad
 skills:
-- Apply aops-coordinate-geometry
-- aops-coordinate-geometry
+- Place geometric figures on a Cartesian grid to simplify algebraic proofs.
+- Compute distance, slope, and midpoints.
+- Leverage linear equations and circle equations to find intersections.
 lesson:
-  introduction: Learn to solve The Power of Coordinates problems by recognizing coordinate plane, line equations, plotting lines, distance formula, circle equations, intersections and justifying each theorem or transformation.
   sections:
-  - id: aops-coordinate-geometry-motivation
-    title: What the topic helps you notice
-    required: true
-    content: The Power of Coordinates is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are coordinate plane, line equations, plotting lines, distance formula, circle equations, intersections.
+  - id: section-distance-formula
+    title: 'The Distance Formula'
+    content: |
+      The Cartesian plane allows us to translate purely geometric problems into algebra. The foundation of this is the **Distance Formula**, which is just the Pythagorean Theorem applied to the grid.
+
+      The distance $d$ between two points $(x_1, y_1)$ and $(x_2, y_2)$ is:
+      $$d = \sqrt{(x_2 - x_1)^2 + (y_2 - y_1)^2}$$
+
+      Whenever you need to verify if a triangle is isosceles, or if a point lies on a circle, you compute distances. Squaring the distance formula ($d^2 = \Delta x^2 + \Delta y^2$) is often preferred when comparing lengths to avoid messy square roots.
     check:
-      id: aops-coordinate-geometry-motivation-check
       type: multipleChoice
-      prompt: In The Power of Coordinates, what should be checked before applying a method?
+      prompt: 'What is the square of the distance between the points $(-3, 4)$ and $(5, -2)$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '10'
+        issueSignals: [wrong-concept]
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '100'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '14'
+        issueSignals: [algebra-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-coordinate-geometry-definitions
-    title: Definitions and theorem conditions
-    required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+        text: '40'
+        issueSignals: [algebra-error]
+      answer: {choiceId: b}
+      difficultyDimensions:
+      - Calculate the horizontal and vertical differences.
+      - Apply the squared distance formula.
+      explanation: |
+        Solution:
+        The difference in $x$ is $5 - (-3) = 8$.
+        The difference in $y$ is $-2 - 4 = -6$.
+        The squared distance is $d^2 = (8)^2 + (-6)^2 = 64 + 36 = 100$.
+        
+        Why it works:
+        Squaring the distance avoids calculating $\sqrt{100} = 10$. In many proofs (like checking if $AB^2 + BC^2 = AC^2$), we only care about the squared distances anyway.
+
+  - id: section-midpoint-formula
+    title: 'The Midpoint Formula'
+    content: |
+      To find the point exactly halfway between two points $(x_1, y_1)$ and $(x_2, y_2)$, you simply average their coordinates.
+      
+      $$\text{Midpoint} = \left( \frac{x_1 + x_2}{2}, \frac{y_1 + y_2}{2} \right)$$
+
+      This is incredibly useful for finding the center of a circle given its diameter, or for verifying the properties of quadrilaterals (e.g., proving that a quadrilateral is a parallelogram by showing its diagonals share the exact same midpoint).
     check:
-      id: aops-coordinate-geometry-definitions-check
       type: multipleChoice
-      prompt: In The Power of Coordinates, what should be checked before applying a method?
+      prompt: 'The midpoint of segment $AB$ is $(4, 1)$. If $A$ is $(1, 5)$, what are the coordinates of $B$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$(7, -3)$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$(2.5, 3)$'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$(3, -4)$'
+        issueSignals: [algebra-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-coordinate-geometry-recognition
-    title: Recognition cues
-    required: true
-    content: 'Look for these triggers: translate geometry into algebra, use slope/intercept, solve intersections cleanly. Record the givens, unknown, and any restriction before selecting a method.'
+        text: '$(7, 7)$'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Set up equations for the average of the coordinates.
+      - Solve for the unknown endpoint.
+      explanation: |
+        Solution:
+        Let $B$ be $(x, y)$.
+        The average of the $x$-coordinates is 4: $\frac{1 + x}{2} = 4 \implies 1 + x = 8 \implies x = 7$.
+        The average of the $y$-coordinates is 1: $\frac{5 + y}{2} = 1 \implies 5 + y = 2 \implies y = -3$.
+        Therefore, $B$ is $(7, -3)$.
+        
+        Why it works:
+        Alternatively, use vectors. To get from $A(1,5)$ to the midpoint $M(4,1)$, you move $+3$ in $x$ and $-4$ in $y$. Move that exact same amount again from $M$ to get $B$: $(4+3, 1-4) = (7, -3)$.
+
+  - id: section-slope-collinearity
+    title: 'Slope and Collinearity'
+    content: |
+      The **slope** $m$ of a line passing through $(x_1, y_1)$ and $(x_2, y_2)$ measures its steepness:
+      $$m = \frac{y_2 - y_1}{x_2 - x_1}$$
+
+      Three points $A$, $B$, and $C$ are **collinear** (they lie on the same straight line) if and only if the slope of $AB$ equals the slope of $BC$. This is the primary method for proving that three points in a coordinate geometry setup form a straight line.
     check:
-      id: aops-coordinate-geometry-recognition-check
       type: multipleChoice
-      prompt: In The Power of Coordinates, what should be checked before applying a method?
+      prompt: 'For what value of $k$ are the points $(1, 2)$, $(3, 8)$, and $(4, k)$ collinear?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '10'
+        issueSignals: [algebra-error]
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '11'
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '14'
+        issueSignals: [algebra-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-coordinate-geometry-method
-    title: Choose a method
-    required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+        text: '12'
+        issueSignals: [algebra-error]
+      answer: {choiceId: b}
+      difficultyDimensions:
+      - Calculate the slope between the first two points.
+      - Set it equal to the slope between the second and third points.
+      - Solve for $k$.
+      explanation: |
+        Solution:
+        The slope between $(1, 2)$ and $(3, 8)$ is:
+        $$m = \frac{8 - 2}{3 - 1} = \frac{6}{2} = 3$$
+        For the three points to be collinear, the slope between $(3, 8)$ and $(4, k)$ must also be 3.
+        $$3 = \frac{k - 8}{4 - 3} = \frac{k - 8}{1} = k - 8$$
+        $$k = 11$$
+        
+        Why it works:
+        Collinearity requires a constant rate of change. Since $x$ increased by 1 (from 3 to 4), $y$ must increase by exactly the slope (3), taking it from 8 to 11.
+
+  - id: section-linear-equations
+    title: 'Forms of Linear Equations'
+    content: |
+      Once you have points and slopes, you can define lines. The two most useful forms are:
+      
+      1. **Slope-Intercept Form:** $y = mx + b$. Excellent for graphing and quick slope reading, but struggles with vertical lines.
+      2. **Point-Slope Form:** $y - y_1 = m(x - x_1)$. The most efficient way to build an equation when you know a point and a slope.
+
+      To find the intersection of two lines, treat their equations as a system and solve for $x$ and $y$. This algebraically finds the point where the geometric lines cross.
     check:
-      id: aops-coordinate-geometry-method-check
       type: multipleChoice
-      prompt: In The Power of Coordinates, what should be checked before applying a method?
+      prompt: 'What is the intersection point of the lines $y = 2x - 3$ and $x + 2y = 14$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$(4, 5)$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$(5, 4)$'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$(3, 3)$'
+        issueSignals: [algebra-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-coordinate-geometry-mini-example
-    title: A small original example
-    required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+        text: '$(4.5, 6)$'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Substitute the expression for $y$ from the first equation into the second.
+      - Solve for $x$, then plug back in for $y$.
+      explanation: |
+        Solution:
+        Substitute $y = 2x - 3$ into the second equation:
+        $$x + 2(2x - 3) = 14$$
+        $$x + 4x - 6 = 14$$
+        $$5x = 20 \implies x = 4$$
+        Plug $x = 4$ back into the first equation:
+        $$y = 2(4) - 3 = 8 - 3 = 5$$
+        The intersection is $(4, 5)$.
+        
+        Why it works:
+        The intersection is the unique coordinate pair $(x,y)$ that satisfies the constraints of both lines simultaneously.
+
+  - id: section-parallel-perpendicular
+    title: 'Parallel and Perpendicular Lines'
+    content: |
+      The slope of a line instantly reveals its relationship to other lines.
+      - **Parallel lines** never intersect; they have the exact same slope ($m_1 = m_2$).
+      - **Perpendicular lines** intersect at $90^\circ$ angles; their slopes are negative reciprocals ($m_1 \cdot m_2 = -1$).
+
+      For example, if an altitude is dropped to a base with slope $\frac{3}{4}$, the equation of the line containing the altitude must have a slope of $-\frac{4}{3}$.
     check:
-      id: aops-coordinate-geometry-mini-example-check
       type: multipleChoice
-      prompt: In The Power of Coordinates, what should be checked before applying a method?
+      prompt: 'A line passes through $(2, 5)$ and is perpendicular to the line $3x - 4y = 12$. What is its equation in slope-intercept form?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$y = -\frac{4}{3}x + \frac{23}{3}$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$y = \frac{3}{4}x + \frac{7}{2}$'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$y = -\frac{3}{4}x + \frac{13}{2}$'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-coordinate-geometry-trap
-    title: Common misconception
-    required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+        text: '$y = -\frac{4}{3}x + 5$'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Determine the slope of the original line.
+      - Find the negative reciprocal for the perpendicular slope.
+      - Apply point-slope form and convert.
+      explanation: |
+        Solution:
+        First, find the slope of $3x - 4y = 12$ by converting to slope-intercept form:
+        $$-4y = -3x + 12 \implies y = \frac{3}{4}x - 3$$
+        The slope is $\frac{3}{4}$. 
+        The perpendicular slope is the negative reciprocal: $-\frac{4}{3}$.
+        Now use point-slope form with $(2, 5)$:
+        $$y - 5 = -\frac{4}{3}(x - 2)$$
+        $$y = -\frac{4}{3}x + \frac{8}{3} + \frac{15}{3}$$
+        $$y = -\frac{4}{3}x + \frac{23}{3}$$
+        
+        Why it works:
+        The negative reciprocal rotates the line exactly $90^\circ$ on the grid. Point-slope form cleanly anchors the rotated line to the specified point.
+
+  - id: section-equation-of-circle
+    title: 'Equation of a Circle'
+    content: |
+      A circle is the set of all points $(x,y)$ that are a fixed distance (the radius, $r$) from a center point $(h,k)$. 
+      By the distance formula, the standard equation of a circle is:
+      $$(x - h)^2 + (y - k)^2 = r^2$$
+
+      To find the intersection of a line and a circle, substitute the line's equation ($y = mx+b$) into the circle's equation. This produces a quadratic in $x$. The number of real roots tells you if the line is a secant (2 roots), a tangent (1 root), or misses the circle entirely (0 roots).
     check:
-      id: aops-coordinate-geometry-trap-check
       type: multipleChoice
-      prompt: In The Power of Coordinates, what should be checked before applying a method?
+      prompt: 'What are the center and radius of the circle given by $x^2 + y^2 - 6x + 8y = 0$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: 'Center $(3, -4)$, radius $5$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: 'Center $(-3, 4)$, radius $5$'
+        issueSignals: [sign-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: 'Center $(3, -4)$, radius $25$'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-coordinate-geometry-synthesis
-    title: Contest synthesis
-    required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+        text: 'Center $(-6, 8)$, radius $0$'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Group the $x$ and $y$ terms.
+      - Complete the square for both variables.
+      - Identify $(h,k)$ and $\sqrt{r^2}$.
+      explanation: |
+        Solution:
+        Group terms and complete the square:
+        $(x^2 - 6x + 9) + (y^2 + 8y + 16) = 9 + 16$
+        $(x - 3)^2 + (y + 4)^2 = 25$
+        This matches the standard form $(x-h)^2 + (y-k)^2 = r^2$.
+        The center is $(h, k) = (3, -4)$ and the radius is $r = \sqrt{25} = 5$.
+        
+        Why it works:
+        Completing the square forces the polynomial into the exact shape of the Pythagorean distance formula, making the geometric properties instantly readable.
+
+  - id: section-strategic-placement
+    title: 'Strategic Grid Placement'
+    content: |
+      The true "Power of Coordinates" in Olympiad geometry is that you get to choose where the $x$ and $y$ axes go. A clever choice of origin $(0,0)$ makes the algebra vastly simpler.
+
+      - For a **rectangle**, place the bottom-left corner at $(0,0)$ and the sides along the axes.
+      - For a **triangle**, place one vertex at the origin and one side along the positive $x$-axis. If it's an isosceles or equilateral triangle, place the origin at the midpoint of the base to exploit left/right symmetry.
+      - For a **circle**, place the center at the origin so its equation becomes just $x^2 + y^2 = r^2$.
+
+      Once the figure is placed, assign variables (like $a$ and $b$) to the unknown coordinates and use the distance/midpoint/slope formulas to prove the desired property.
     check:
-      id: aops-coordinate-geometry-synthesis-check
       type: multipleChoice
-      prompt: In The Power of Coordinates, what should be checked before applying a method?
+      prompt: 'To prove that the diagonals of a parallelogram bisect each other using coordinates, what is the most efficient placement for the vertices?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$(0,0), (a,0), (b,c), (a+b,c)$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$(x_1, y_1), (x_2, y_2), (x_3, y_3), (x_4, y_4)$'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$(0,0), (a,0), (0,a), (a,a)$'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+        text: '$(a,b), (-a,b), (-a,-b), (a,-b)$'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify the shape properties (parallel sides).
+      - Select a placement that zeroes out as many coordinates as possible while keeping the shape general.
+      explanation: |
+        Solution:
+        To place a general parallelogram, put one vertex at the origin $(0,0)$.
+        Place the adjacent vertex on the $x$-axis at $(a,0)$.
+        Place a third vertex at some general point $(b,c)$.
+        Because the opposite sides are parallel and equal in length, the fourth vertex must be shifted horizontally by $a$, placing it at $(a+b, c)$.
+        
+        Why it works:
+        Option A uses only three variables $(a,b,c)$ and zero-aligns an entire side, making calculations trivial. Option B has 8 variables and is unworkable. Option C forces it to be a square. Option D forces it to be a rectangle centered at the origin.

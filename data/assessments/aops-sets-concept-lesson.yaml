@@ -1,161 +1,236 @@
 schemaVersion: 1
 id: aops-sets-concept-lesson
-title: Sets Concept Lesson
+title: 'Sets'
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
 topicId: aops-sets
 modeDefault: learn
-randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
   - art-of-problem-solving
   - aops-sets
-  - aops
+  - discrete-math
+  - olympiad
 skills:
-- Apply aops-sets
-- aops-sets
+- Define sets, subsets, and the power set.
+- Apply set operations including union, intersection, and difference.
+- Use Venn diagrams and De Morgan's Laws to evaluate complex set expressions.
 lesson:
-  introduction: Learn to solve Sets problems by recognizing set notation, union, intersection, Venn diagrams, subsets and justifying each theorem or transformation.
   sections:
-  - id: aops-sets-motivation
-    title: What the topic helps you notice
-    required: true
-    content: Sets is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are set notation, union, intersection, Venn diagrams, subsets.
+  - id: section-sets-elements-subsets
+    title: 'Sets, Elements, and Subsets'
+    content: |
+      A **set** is a well-defined collection of distinct objects, called **elements** or members. We use curly braces to list the elements: $A = \{1, 2, 3\}$.
+      - The symbol $\in$ means "is an element of" (e.g., $2 \in A$).
+      - The symbol $\notin$ means "is not an element of" (e.g., $4 \notin A$).
+      - The **cardinality** $|A|$ is the number of elements in the set (here, $|A| = 3$).
+
+      A set $B$ is a **subset** of $A$ (written $B \subseteq A$) if *every* element of $B$ is also an element of $A$. 
+      For example, $\{1, 3\} \subseteq \{1, 2, 3\}$.
+
+      Two special sets exist in every context: the **empty set** $\emptyset = \{\}$, which contains no elements and is a subset of *every* set, and the **universal set** $U$, which contains all possible elements under consideration.
     check:
-      id: aops-sets-motivation-check
       type: multipleChoice
-      prompt: In Sets, what should be checked before applying a method?
+      prompt: 'Let $S = \{2, 4, 6\}$. Which of the following statements is FALSE?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$\emptyset \in S$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$4 \in S$'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$\{6\} \subseteq S$'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-sets-definitions
-    title: Definitions and theorem conditions
-    required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+        text: '$\emptyset \subseteq S$'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Distinguish between elements ($\in$) and subsets ($\subseteq$).
+      - Recognize the properties of the empty set.
+      explanation: |
+        Solution:
+        Let's evaluate each statement:
+        - $4 \in S$ is TRUE, because 4 is directly in the list of elements.
+        - $\{6\} \subseteq S$ is TRUE, because every element in $\{6\}$ (which is just 6) is in $S$.
+        - $\emptyset \subseteq S$ is TRUE, because the empty set is a subset of all sets.
+        - $\emptyset \in S$ is FALSE. The empty set is not one of the literal objects inside the curly braces of $S$.
+
+        Why it works:
+        A subset is a "box" containing elements. An element is the item itself. The empty box is a valid sub-box ($\subseteq$), but the empty box is not one of the physical items inside $S$ ($\in$).
+
+  - id: section-set-operations
+    title: 'Set Operations'
+    content: |
+      We can combine sets using operations analogous to arithmetic:
+
+      1. **Union ($A \cup B$):** The set of all elements in $A$, or in $B$, or in both. (Logical OR)
+      2. **Intersection ($A \cap B$):** The set of all elements that are in *both* $A$ and $B$. (Logical AND)
+         - If $A \cap B = \emptyset$, the sets are called **disjoint**.
+      3. **Difference ($A - B$ or $A \setminus B$):** The set of all elements in $A$ that are *not* in $B$.
+      4. **Complement ($A'$ or $A^c$):** The set of all elements in the universal set $U$ that are *not* in $A$. It is equivalent to $U - A$.
     check:
-      id: aops-sets-definitions-check
       type: multipleChoice
-      prompt: In Sets, what should be checked before applying a method?
+      prompt: 'Let $A = \{1, 3, 5, 7\}$ and $B = \{3, 4, 5, 6\}$. What is $A \cap (A \cup B)$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '$\{1, 3, 5, 7\}$'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$\{3, 5\}$'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '$\{1, 3, 4, 5, 6, 7\}$'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-sets-recognition
-    title: Recognition cues
-    required: true
-    content: 'Look for these triggers: translate notation, use inclusion-exclusion, count subsets by size. Record the givens, unknown, and any restriction before selecting a method.'
+        text: '$\{1, 7\}$'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Calculate the union $A \cup B$.
+      - Calculate the intersection of $A$ with the union.
+      - Alternatively, use the Absorption Law.
+      explanation: |
+        Solution:
+        Method 1 (Direct evaluation):
+        $A \cup B = \{1, 3, 4, 5, 6, 7\}$.
+        Now find the intersection of $A$ with this new set:
+        $A \cap \{1, 3, 4, 5, 6, 7\} = \{1, 3, 5, 7\} = A$.
+
+        Method 2 (Absorption Law):
+        Since $A$ is a subset of $A \cup B$, the intersection of $A$ with anything larger that contains it is simply $A$ itself.
+        Therefore, $A \cap (A \cup B) = A = \{1, 3, 5, 7\}$.
+
+        Why it works:
+        Set operations obey boolean algebra rules, which allow us to simplify expressions logically without writing out all the numbers.
+
+  - id: section-venn-diagrams
+    title: 'Venn Diagrams'
+    content: |
+      Venn diagrams use overlapping circles to visually represent the relationships between sets.
+      - A 2-set Venn diagram has 4 regions: $A$ only, $B$ only, Both ($A \cap B$), and Neither.
+      - A 3-set Venn diagram has 8 regions, including a central region where all three overlap ($A \cap B \cap C$).
+
+      Venn diagrams are incredibly useful for word problems. The standard strategy is to work from the **inside out**: start by filling in the central intersection, then subtract that number from the 2-way intersections, and finally subtract those from the total set sizes to find the "only" regions.
     check:
-      id: aops-sets-recognition-check
       type: multipleChoice
-      prompt: In Sets, what should be checked before applying a method?
+      prompt: 'In a group of 50 students, 30 study French, 25 study Spanish, and 10 study both. How many students study NEITHER language?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '5'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '15'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '0'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-sets-method
-    title: Choose a method
-    required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+        text: '10'
+        issueSignals: [wrong-formula]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Find the number of students who study "French only" and "Spanish only".
+      - Sum the three regions (F only, S only, Both) to find the total language students.
+      - Subtract from 50.
+      explanation: |
+        Solution:
+        Let's work inside out:
+        1. Both languages ($F \cap S$) = 10.
+        2. French only = Total French - Both = $30 - 10 = 20$.
+        3. Spanish only = Total Spanish - Both = $25 - 10 = 15$.
+        
+        The number of students taking at least one language is the sum of these non-overlapping regions:
+        $20 + 15 + 10 = 45$.
+        
+        Since there are 50 students in total, the number studying neither is:
+        $50 - 45 = 5$.
+
+        Why it works:
+        This visually implements the Principle of Inclusion-Exclusion: $|F \cup S| = 30 + 25 - 10 = 45$. The "neither" region is the complement of the union.
+
+  - id: section-power-sets
+    title: 'The Power Set'
+    content: |
+      The **power set** of $A$, denoted $\mathcal{P}(A)$, is the set of *all possible subsets* of $A$.
+
+      For example, if $A = \{1, 2\}$, its subsets are:
+      1. The empty set: $\emptyset$
+      2. The 1-element subsets: $\{1\}$ and $\{2\}$
+      3. The 2-element subset (the set itself): $\{1, 2\}$
+      So, $\mathcal{P}(A) = \{\emptyset, \{1\}, \{2\}, \{1, 2\}\}$.
+
+      If a set $A$ has $n$ elements, its power set $\mathcal{P}(A)$ will always have **$2^n$** elements.
+      This happens because when forming a subset, you make an independent "yes/no" choice for each of the $n$ elements in $A$.
     check:
-      id: aops-sets-method-check
       type: multipleChoice
-      prompt: In Sets, what should be checked before applying a method?
+      prompt: 'A pizza parlor offers 8 different toppings. A customer can order a pizza with any combination of toppings (including plain cheese with no toppings, or a "works" pizza with all 8). How many different pizzas can be ordered?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '256'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '64'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '8'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-sets-mini-example
-    title: A small original example
-    required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+        text: '255'
+        issueSignals: [wrong-formula]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Recognize this as asking for the number of all possible subsets.
+      - Apply the formula $2^n$.
+      explanation: |
+        Solution:
+        Choosing a combination of toppings is equivalent to forming a subset of the 8 available toppings.
+        The empty set corresponds to a plain cheese pizza. The full set corresponds to a pizza with everything.
+        The total number of possible subsets of an 8-element set is:
+        $$2^8 = 256$$
+        There are 256 different pizzas possible.
+
+        Why it works:
+        For each of the 8 toppings, you make a binary choice: yes (put it on the pizza) or no (leave it off). By the Multiplication Principle, $2 \times 2 \dots \times 2$ (8 times) gives 256.
+
+  - id: section-de-morgans-laws
+    title: 'De Morgan''s Laws'
+    content: |
+      Augustus De Morgan formalized two powerful rules for distributing complements (the "NOT" operator) over unions and intersections. 
+
+      When you take the complement of a grouped set operation, you flip the sets to their complements, and you flip the union/intersection operator:
+      1. $(A \cup B)^c = A^c \cap B^c$ (The complement of a union is the intersection of the complements).
+      2. $(A \cap B)^c = A^c \cup B^c$ (The complement of an intersection is the union of the complements).
+
+      In English: "NOT (A or B)" is the same as "(NOT A) and (NOT B)".
     check:
-      id: aops-sets-mini-example-check
       type: multipleChoice
-      prompt: In Sets, what should be checked before applying a method?
+      prompt: 'Let $U$ be the set of all integers. Let $E$ be the set of even integers, and $P$ be the set of positive integers. What is the English translation of the set $(E \cap P)^c$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: 'The set of all integers that are either odd OR not positive (zero and negative).'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: 'The set of all integers that are odd AND negative.'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: 'The set of all even integers that are not positive.'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-sets-trap
-    title: Common misconception
-    required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
-    check:
-      id: aops-sets-trap-check
-      type: multipleChoice
-      prompt: In Sets, what should be checked before applying a method?
-      choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-sets-synthesis
-    title: Contest synthesis
-    required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
-    check:
-      id: aops-sets-synthesis-check
-      type: multipleChoice
-      prompt: In Sets, what should be checked before applying a method?
-      choices:
-      - id: a
-        text: The theorem or strategy conditions in the stated givens.
-      - id: b
-        text: Whether the diagram looks proportional.
-      - id: c
-        text: Whether a familiar answer choice appears.
-      - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+        text: 'The set of all integers that are either odd OR positive.'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Apply De Morgan's Law to $(E \cap P)^c$.
+      - Translate $E^c \cup P^c$ into English.
+      explanation: |
+        Solution:
+        First, apply De Morgan's Law to distribute the complement:
+        $$(E \cap P)^c = E^c \cup P^c$$
+        Now let's define the parts:
+        - $E$ is even integers, so $E^c$ is odd integers.
+        - $P$ is positive integers, so $P^c$ is non-positive integers (zero and negatives).
+        - The $\cup$ (union) symbol means "OR".
+        
+        So the set is: all integers that are odd OR non-positive.
+
+        Why it works:
+        Without De Morgan's Law, we would say "all integers that are NOT (even AND positive)". De Morgan gives us a direct, active description of those elements.

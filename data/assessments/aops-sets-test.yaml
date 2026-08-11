@@ -12,235 +12,257 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-sets
-  - aops-volume-1
-  - sets
-  - set-notation
-  - union
-  - intersection
+  - discrete-math
+  - set-theory
   - venn-diagrams
+  - cartesian-product
 skills:
-- Apply aops-sets
-- aops-sets
+- Solve complex word problems using Venn diagrams and PIE.
+- Apply De Morgan's laws and set complements.
+- Calculate the cardinality of Cartesian products.
 questions:
 - id: q001
   type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **set notation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'In a group of 50 students, 30 study French, 25 study German, and 10 study neither. How many students study BOTH French and German?'
+  difficultyDimensions:
+  - Use the complement to find the union: $50 - 10 = 40$ study at least one.
+  - Apply PIE for two sets: $|F \cup G| = |F| + |G| - |F \cap G|$.
+  - Solve for the intersection: $40 = 30 + 25 - x$.
   choices:
   - id: a
-    text: Use translate notation after checking the relevant constraints.
+    text: '15'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '5'
+    issueSignals:
+    - complement-omission
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '20'
+    issueSignals:
+    - disjoint-assumption-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '40'
+    issueSignals:
+    - union-instead-of-intersection
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize set notation, choose translate notation, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
+  explanation: |
+    Solution:
+    First, find how many students study at least one language. Since there are 50 total students and 10 study neither, the union $|F \cup G|$ is $50 - 10 = 40$.
+    Now apply the Principle of Inclusion-Exclusion:
+    $|F \cup G| = |F| + |G| - |F \cap G|$
+    $40 = 30 + 25 - |F \cap G|$
+    $40 = 55 - |F \cap G|$
+    $|F \cap G| = 15$.
+    15 students study both French and German.
+
+    Why it works:
+    Adding the French students (30) and German students (25) gives 55. But only 40 students actually take languages. The difference ($55 - 40 = 15$) is exactly the number of students who were counted twice because they take both.
+
+    Why the other choices fail:
+    - 5 is $55 - 50$. This forgets to subtract the 10 students who study neither, incorrectly assuming all 50 students take a language.
+    - 20 is just a guess, perhaps confusing the numbers.
+    - 40 is $|F \cup G|$, the number of students who study at least one language, not both.
+
 - id: q002
   type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **union**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'Let $A = \{1, 2, 3\}$ and $B = \{a, b\}$. What is the cardinality of the Cartesian product $A \times B$?'
+  difficultyDimensions:
+  - Recall the definition of a Cartesian product (ordered pairs).
+  - Apply the cardinality rule: $|A \times B| = |A| \cdot |B|$.
+  - Calculate $3 \times 2 = 6$.
   choices:
   - id: a
-    text: Use use inclusion-exclusion after checking the relevant constraints.
+    text: '5'
+    issueSignals:
+    - sum-instead-of-product
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '6'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '9'
+    issueSignals:
+    - square-instead-of-product
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '8'
+    issueSignals:
+    - power-set-confusion
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize union, choose use inclusion-exclusion, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
+    choiceId: b
+  explanation: |
+    Solution:
+    The Cartesian product $A \times B$ is the set of all possible ordered pairs where the first element is from $A$ and the second is from $B$.
+    The cardinality of the Cartesian product is the product of the cardinalities of the individual sets:
+    $|A \times B| = |A| \times |B|$
+    $|A| = 3$ and $|B| = 2$.
+    $3 \times 2 = 6$.
+
+    Why it works:
+    If you list them out, you pair every element of $A$ with every element of $B$: $\{(1,a), (1,b), (2,a), (2,b), (3,a), (3,b)\}$. This forms a 3-by-2 grid, giving 6 pairs.
+
+    Why the other choices fail:
+    - 5 is $3 + 2$, adding the cardinalities instead of multiplying them.
+    - 9 is $3^2$, the cardinality of $A \times A$.
+    - 8 is $2^3$, the number of subsets of $A$ (the power set).
+
 - id: q003
   type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **intersection**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'Let $A$ and $B$ be subsets of a universal set $U$. Which of the following expressions is always equivalent to $(A \cap B)^c$?'
+  difficultyDimensions:
+  - Recall De Morgan's Laws for sets.
+  - Apply the rule that the complement of an intersection is the union of the complements.
   choices:
   - id: a
-    text: Use count subsets by size after checking the relevant constraints.
+    text: '$A^c \cup B^c$'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$A^c \cap B^c$'
+    issueSignals:
+    - demorgans-law-sign-error
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$A \cup B$'
+    issueSignals:
+    - complement-omission
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$(A \cup B)^c$'
+    issueSignals:
+    - intersection-union-swap
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize intersection, choose count subsets by size, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
+  explanation: |
+    Solution:
+    This is a direct application of De Morgan's Laws.
+    The complement of an intersection is the union of the complements:
+    $(A \cap B)^c = A^c \cup B^c$
+
+    Why it works:
+    Logically, if an element is NOT in the intersection (it is NOT in both $A$ and $B$), then it must be missing from $A$, OR missing from $B$, or missing from both. Therefore, it is in $A^c$ OR $B^c$ (which is $A^c \cup B^c$).
+
+    Why the other choices fail:
+    - $A^c \cap B^c$ fails to flip the intersection symbol to a union symbol when applying the complement. This expression actually equals $(A \cup B)^c$.
+    - $A \cup B$ drops the complements entirely.
+    - $(A \cup B)^c$ is the complement of the union, which means "neither A nor B".
+
 - id: q004
   type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **Venn diagrams**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A set $S$ contains 5 elements. How many proper subsets does $S$ have?'
+  difficultyDimensions:
+  - Recall the formula for total subsets: $2^n$.
+  - Recall the definition of a "proper subset" (a subset that is not equal to the original set itself).
+  - Subtract 1 from the total number of subsets: $2^5 - 1$.
   choices:
   - id: a
-    text: Use translate notation after checking the relevant constraints.
+    text: '31'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '32'
+    issueSignals:
+    - proper-subset-confusion
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '30'
+    issueSignals:
+    - empty-set-omission
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '24'
+    issueSignals:
+    - factorial-instead-of-power
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize Venn diagrams, choose translate notation, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
+  explanation: |
+    Solution:
+    The total number of subsets for a set with $n=5$ elements is $2^5 = 32$.
+    A "proper subset" is any subset that is strictly smaller than the original set (i.e., it cannot be the original set itself).
+    Since exactly 1 subset is equal to the original set, we subtract 1:
+    $32 - 1 = 31$.
+
+    Why it works:
+    The notation $A \subset B$ means $A$ is a proper subset of $B$, while $A \subseteq B$ allows for $A = B$. The empty set $\emptyset$ is considered a proper subset (so we don't subtract it), but the set $S$ itself must be excluded.
+
+    Why the other choices fail:
+    - 32 is the total number of subsets, failing to exclude the set itself.
+    - 30 might come from subtracting 2, possibly excluding the empty set as well as the full set.
+    - 24 is $4!$ or $5!-something$, entirely the wrong formula.
+
 - id: q005
-  type: freeResponse
-  prompt: |-
-    A Sets problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **use inclusion-exclusion** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
+  type: multipleChoice
+  prompt: 'If sets $A$ and $B$ are mutually exclusive, what is the value of $|A \cup B|$?'
+  difficultyDimensions:
+  - Understand the definition of "mutually exclusive" (disjoint, intersection is empty).
+  - Recognize that if $A \cap B = \emptyset$, then $|A \cap B| = 0$.
+  - Apply PIE to see $|A \cup B| = |A| + |B|$.
+  choices:
+  - id: a
+    text: '$|A| + |B|$'
+  - id: b
+    text: '$|A| \cdot |B|$'
+    issueSignals:
+    - cartesian-product-confusion
+  - id: c
+    text: '$0$'
+    issueSignals:
+    - intersection-union-swap
+  - id: d
+    text: '$|A| - |B|$'
+    issueSignals:
+    - difference-confusion
   answer:
-    expected: |-
-      Check whether the structure still contains subsets and whether the constraints needed for use inclusion-exclusion remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions subsets.
-    - Mentions use inclusion-exclusion.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Sets; specific technique: use inclusion-exclusion. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
+    choiceId: a
+  explanation: |
+    Solution:
+    "Mutually exclusive" means the sets are disjoint; they share no elements. Therefore, $|A \cap B| = 0$.
+    According to the Principle of Inclusion-Exclusion:
+    $|A \cup B| = |A| + |B| - |A \cap B|$
+    Since the intersection is 0, this simplifies to:
+    $|A \cup B| = |A| + |B|$.
+
+    Why it works:
+    If two groups have no overlap, you simply add their sizes together to find the total size.
+
+    Why the other choices fail:
+    - $|A| \cdot |B|$ is the cardinality of the Cartesian product $A \times B$, not the union.
+    - $0$ is the cardinality of the intersection ($|A \cap B|$), not the union.
+    - $|A| - |B|$ is the formula for the relative complement $|A \setminus B|$ ONLY IF $B$ is a subset of $A$.
+
 - id: q006
   type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **set notation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'Let $U = \{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\}$. Let $A = \{2, 4, 6, 8, 10\}$ and $B = \{1, 2, 3, 4, 5\}$. What is the cardinality of $A^c \cap B^c$?'
+  difficultyDimensions:
+  - Find $A^c = \{1, 3, 5, 7, 9\}$.
+  - Find $B^c = \{6, 7, 8, 9, 10\}$.
+  - Find the intersection of the two complements: $\{7, 9\}$.
+  - (Alternatively): Use De Morgan's to find $(A \cup B)^c$. $A \cup B = \{1, 2, 3, 4, 5, 6, 8, 10\}$. The complement is $\{7, 9\}$.
   choices:
   - id: a
-    text: Use count subsets by size after checking the relevant constraints.
+    text: '2'
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '8'
+    issueSignals:
+    - union-instead-of-intersection
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '0'
+    issueSignals:
+    - disjoint-assumption-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '5'
+    issueSignals:
+    - single-complement-error
   answer:
     choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize set notation, choose count subsets by size, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
-- id: q007
-  type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **union**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use translate notation after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize union, choose translate notation, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
-- id: q008
-  type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **intersection**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use inclusion-exclusion after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize intersection, choose use inclusion-exclusion, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
-- id: q009
-  type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **Venn diagrams**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use count subsets by size after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize Venn diagrams, choose count subsets by size, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
-- id: q010
-  type: freeResponse
-  prompt: |-
-    A Sets problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **translate notation** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
-  answer:
-    expected: |-
-      Check whether the structure still contains subsets and whether the constraints needed for translate notation remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions subsets.
-    - Mentions translate notation.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Sets; specific technique: translate notation. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
-- id: q011
-  type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **set notation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use inclusion-exclusion after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize set notation, choose use inclusion-exclusion, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
-- id: q012
-  type: multipleChoice
-  prompt: |-
-    An original Sets problem variant is designed to test **union**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use count subsets by size after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize union, choose count subsets by size, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-sets
+  explanation: |
+    Solution:
+    We can solve this directly or via De Morgan's Laws.
+    **Method 1 (Direct):**
+    $A^c$ (everything not in A): $\{1, 3, 5, 7, 9\}$
+    $B^c$ (everything not in B): $\{6, 7, 8, 9, 10\}$
+    The intersection of $A^c$ and $B^c$ is the numbers that appear in both lists: $\{7, 9\}$.
+    The cardinality (size) of this set is 2.
+
+    **Method 2 (De Morgan's):**
+    $A^c \cap B^c = (A \cup B)^c$.
+    First find $A \cup B = \{1, 2, 3, 4, 5, 6, 8, 10\}$.
+    The numbers missing from this union (its complement in $U$) are $\{7, 9\}$.
+    The cardinality is 2.
+
+    Why it works:
+    De Morgan's laws often provide a faster route by allowing you to operate on the "inside" sets first before taking a single complement at the end, saving you from having to write out multiple complement sets.
+
+    Why the other choices fail:
+    - 8 is the cardinality of the union $A \cup B$. The question asked for the complement.
+    - 0 assumes the sets cover everything.
+    - 5 is the cardinality of $A^c$ or $B^c$ individually.

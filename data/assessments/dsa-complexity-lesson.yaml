@@ -1,0 +1,65 @@
+schemaVersion: 1
+id: dsa-complexity-lesson
+categoryId: dsa
+topicId: dsa-complexity
+learningGoal: learn
+activityType: conceptLesson
+title: "Understanding Algorithm Complexity and Big-O"
+description: "An introduction to algorithm analysis and asymptotic notation bounds."
+navigation:
+  tags: [big-o, complexity, analysis]
+skills:
+  - id: obj-dsa-complexity-03
+    level: foundation
+blueprintId: bp-dsa-complexity-lesson-01
+sourceChunkIds: ["src-20260810144616-0dc6e2835b:page-9-27"]
+
+questions:
+  - id: intro-to-complexity
+    type: freeResponse
+    prompt: |
+      **Algorithms and Scalability**
+
+      An algorithm is a precise sequence of instructions to accomplish a task. As we move from simple programming exercises to engineering large-scale software, the primary concern shifts from *how* to write the code to *how well* the code performs as the input size grows. This is known as **scalability**.
+
+      Consider searching for a specific card in a deck. If you have 52 cards, inspecting each card one-by-one is fast enough. But what if you have 1,000 decks? Measuring performance by actual run-time on a specific machine is unreliable. Instead, we use an abstraction called the **uniform cost model**, where we assume every basic operation (like a comparison or assignment) takes a constant amount of time.
+
+      We typically evaluate the cost of an algorithm as a function of the input size, $n$. 
+      
+      The most common evaluation is the **worst-case scenario**: what is the maximum number of operations the algorithm might perform?
+
+      In your own words, why do computer scientists generally focus on the worst-case scenario rather than the best-case scenario when analyzing algorithms?
+    answer:
+      gradingMode: selfCheck
+    explanation: |
+      Solution:
+      The best-case scenario often happens rarely and finishes extremely quickly (e.g., finding the item on the very first try), so it provides little useful information about how the algorithm scales.
+
+      Why it works:
+      By focusing on the worst-case scenario, we establish an upper bound. This guarantees that the algorithm will *never* take longer than our estimate, which is crucial for building reliable systems that don't unexpectedly hang or time out on large inputs.
+
+  - id: big-o-definition
+    type: freeResponse
+    prompt: |
+      **Asymptotic Notation: Big-O**
+
+      As our input size $n$ grows toward infinity, the lower-degree terms and constant coefficients in our cost function matter less and less. The highest-degree term dominates the growth. **Big-O notation** captures this asymptotic scaling behavior.
+
+      Formally, a function $f(n)$ is in the set $O(g(n))$ if:
+      $f(n) \le c \cdot g(n)$ for some constant $c > 0$ and all $n > n_0$.
+
+      This simply means that past a certain point, $f(n)$ will never grow faster than $g(n)$ multiplied by some constant.
+
+      Other notations include:
+      - **Big-Omega ($\Omega$)**: The lower bound ($f(n) \ge c \cdot g(n)$).
+      - **Big-Theta ($\Theta$)**: The tight bound, meaning $f(n)$ is bounded from both above and below by the same function $g(n)$.
+
+      If an algorithm's worst-case cost is exactly $3n^2 + 2n + 1$, we say its time complexity is $O(n^2)$. Why don't we include the $+ 2n + 1$ or the constant $3$ in the Big-O expression?
+    answer:
+      gradingMode: selfCheck
+    explanation: |
+      Solution:
+      Constants and lower-degree terms are dropped in Big-O notation because they do not significantly affect the growth rate of the function as $n$ becomes very large.
+
+      Why it works:
+      Big-O describes the *shape* of the curve as $n \to \infty$. A $3n^2$ curve and an $n^2$ curve both scale quadratically. The $2n + 1$ part becomes mathematically insignificant compared to the $n^2$ part for large values of $n$.

@@ -1,161 +1,343 @@
 schemaVersion: 1
 id: aops-areas-concept-lesson
-title: Areas Concept Lesson
+title: 'Areas'
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
 topicId: aops-areas
 modeDefault: learn
-randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
   - art-of-problem-solving
   - aops-areas
-  - aops
+  - geometry
+  - olympiad
 skills:
-- Apply aops-areas
-- aops-areas
+- Compute areas of polygons using standard formulas, decomposition, and subtraction.
+- Relate side lengths to area ratios for triangles sharing an altitude or base.
+- Apply advanced area theorems such as Heron's Formula and Pick's Theorem.
 lesson:
-  introduction: Learn to solve Areas problems by recognizing similar figures, same base same altitude, decomposition, complicated figures and justifying each theorem or transformation.
   sections:
-  - id: aops-areas-motivation
-    title: What the topic helps you notice
-    required: true
-    content: Areas is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are similar figures, same base same altitude, decomposition, complicated figures.
+  - id: section-basic-formulas
+    title: 'Basic Area Formulas'
+    content: |
+      Area is a measure of the two-dimensional space enclosed by a figure. At the most fundamental level, the area of a rectangle is $\text{base} \times \text{height}$. All other basic polygon area formulas are derived from this.
+
+      - **Parallelogram:** $A = bh$. A parallelogram can be cut and rearranged into a rectangle.
+      - **Triangle:** $A = \frac{1}{2}bh$. Any triangle is exactly half of a parallelogram.
+      - **Trapezoid:** $A = \frac{b_1 + b_2}{2}h$. A trapezoid's area is its average width times its height.
+      - **Rhombus/Kite:** $A = \frac{1}{2}d_1 d_2$. Any quadrilateral with perpendicular diagonals has an area equal to half the product of its diagonals.
+
+      When computing area, the "base" does not have to be the bottom side; any side can be the base, provided the height is the perpendicular distance to the opposite vertex or line.
     check:
-      id: aops-areas-motivation-check
       type: multipleChoice
-      prompt: In Areas, what should be checked before applying a method?
+      prompt: 'A rhombus has side length 10 and one diagonal of length 12. What is its area?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '96'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '120'
+        issueSignals: [wrong-formula]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '48'
+        issueSignals: [wrong-formula]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-areas-definitions
-    title: Definitions and theorem conditions
-    required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+        text: '192'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Apply the Pythagorean theorem to find the other diagonal.
+      - Use the kite/rhombus area formula.
+      explanation: |
+        Solution:
+        The diagonals of a rhombus are perpendicular and bisect each other.
+        The half-diagonal is $12/2 = 6$.
+        By the Pythagorean theorem, the other half-diagonal $x$ satisfies $6^2 + x^2 = 10^2$, so $x = 8$.
+        The full second diagonal is 16.
+        Area $= \frac{1}{2}d_1 d_2 = \frac{1}{2}(12)(16) = 96$.
+        
+        Why it works:
+        A rhombus is composed of four congruent right triangles. You can also view it as half of the bounding rectangle formed by its diagonals.
+
+  - id: section-same-base-altitude
+    title: 'Same Base, Same Altitude'
+    content: |
+      One of the most powerful tools in Olympiad geometry is comparing the areas of triangles without computing them directly. Since the area of a triangle is $\frac{1}{2}bh$, triangles that share a base and have the same height have the same area, even if their shapes are completely different.
+
+      More generally, if two triangles share an altitude, the ratio of their areas equals the ratio of their bases. If point $D$ lies on segment $BC$ of $\triangle ABC$, then $\triangle ABD$ and $\triangle ADC$ share an altitude from $A$. Therefore:
+      $$\frac{\text{Area}(\triangle ABD)}{\text{Area}(\triangle ADC)} = \frac{BD}{DC}$$
+
+      This principle allows you to translate length ratios into area ratios, and vice versa. It is the foundation for proving Ceva's Theorem and many other proportional properties.
     check:
-      id: aops-areas-definitions-check
       type: multipleChoice
-      prompt: In Areas, what should be checked before applying a method?
+      prompt: 'In $\triangle ABC$, point $D$ is on $BC$ such that $BD:DC = 2:3$. If the area of $\triangle ABC$ is 40, what is the area of $\triangle ABD$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '16'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '24'
+        issueSignals: [ratio-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '20'
+        issueSignals: [ratio-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-areas-recognition
-    title: Recognition cues
-    required: true
-    content: 'Look for these triggers: compare areas by ratios, subtract from a container, choose a useful base. Record the givens, unknown, and any restriction before selecting a method.'
+        text: '80'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Recognize that the triangles share an altitude.
+      - Apply proportional sharing to the total area.
+      explanation: |
+        Solution:
+        $\triangle ABD$ and $\triangle ADC$ share the altitude from $A$, so their areas are in the ratio of their bases, $2:3$.
+        The total area (5 parts) is 40.
+        One part is $40 / 5 = 8$.
+        The area of $\triangle ABD$ (2 parts) is $2 \times 8 = 16$.
+        
+        Why it works:
+        The height $h$ is exactly the same for both triangles. Factoring out $\frac{1}{2}h$ from the area formula shows that the area strictly scales with the base length along that line.
+
+  - id: section-decomposition-subtraction
+    title: 'Decomposition and Subtraction'
+    content: |
+      When a figure is irregular, you cannot use a single formula to find its area. Instead, you must use **decomposition** (cutting the figure into simpler shapes like triangles and rectangles) or **subtraction** (embedding the figure inside a larger, simpler shape and subtracting the extra pieces).
+
+      Subtraction is often much cleaner than decomposition because it avoids creating internal boundary lines that have messy irrational lengths. For instance, finding the area of an irregular triangle on a coordinate grid is most easily done by drawing a bounding box around it and subtracting the three outer right triangles.
     check:
-      id: aops-areas-recognition-check
       type: multipleChoice
-      prompt: In Areas, what should be checked before applying a method?
+      prompt: 'A rectangle $ABCD$ has $AB = 10$ and $BC = 8$. Point $E$ is on $AB$ such that $AE = 4$, and point $F$ is on $BC$ such that $BF = 3$. What is the area of $\triangle DEF$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '37'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '43'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '30'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-areas-method
-    title: Choose a method
-    required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
-    check:
-      id: aops-areas-method-check
-      type: multipleChoice
-      prompt: In Areas, what should be checked before applying a method?
+        text: '80'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Determine the side lengths of the three corner right triangles.
+      - Subtract their areas from the bounding rectangle.
+      explanation: |
+        Solution:
+        The total area of the rectangle is $10 \times 8 = 80$.
+        The triangle $\triangle DEF$ leaves three right triangles in the corners:
+        1. $\triangle DAE$: legs $DA = 8, AE = 4 \implies$ Area $= \frac{1}{2}(8)(4) = 16$.
+        2. $\triangle EBF$: legs $EB = 6, BF = 3 \implies$ Area $= \frac{1}{2}(6)(3) = 9$.
+        3. $\triangle FCD$: legs $FC = 5, CD = 10 \implies$ Area $= \frac{1}{2}(5)(10) = 25$.
+        Total area to subtract $= 16 + 9 + 25 = 50$.
+        Area of $\triangle DEF = 80 - 50 = 30$.
+        Wait! $DA = 8$, so $AE = 4$, $EB = 10-4=6$. $BC = 8$, so $BF = 3$, $FC = 8-3=5$. $CD = 10$.
+        Area of $FCD = \frac{1}{2}(5)(10) = 25$.
+        Total subtract $= 16 + 9 + 25 = 50$.
+        $80 - 50 = 30$. 
+        Wait, I put 37 as the answer! Let me recheck.
+        Oh, let me fix the choices in the yaml. (I will just make the correct answer 30 and change C to 37).
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '30'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '43'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '37'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-areas-mini-example
-    title: A small original example
-    required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+        text: '50'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Determine the side lengths of the three corner right triangles.
+      - Subtract their areas from the bounding rectangle.
+      explanation: |
+        Solution:
+        The total area of rectangle $ABCD$ is $10 \times 8 = 80$.
+        The three outer right triangles are:
+        1. $\triangle DAE$ with legs $8$ and $4$. Area $= 16$.
+        2. $\triangle EBF$ with legs $10 - 4 = 6$ and $3$. Area $= 9$.
+        3. $\triangle FCD$ with legs $8 - 3 = 5$ and $10$. Area $= 25$.
+        Subtracting these from the total:
+        Area of $\triangle DEF = 80 - (16 + 9 + 25) = 80 - 50 = 30$.
+        
+        Why it works:
+        The bounding box method transforms a difficult problem (finding a base and height for $\triangle DEF$) into computing the areas of three simple right triangles.
+
+  - id: section-herons-formula
+    title: 'Heron''s Formula'
+    content: |
+      When the three side lengths of a triangle are known, dropping an altitude and using the Pythagorean theorem twice can be tedious. Heron's Formula provides a direct way to compute the area solely from the side lengths $a, b, c$.
+
+      First, calculate the **semiperimeter**, $s$:
+      $$s = \frac{a + b + c}{2}$$
+
+      Then, the area $A$ is given by:
+      $$A = \sqrt{s(s-a)(s-b)(s-c)}$$
+
+      Heron's Formula is extremely efficient when the side lengths are integers. If the sides are irrational, it may be faster to use the Law of Cosines or a coordinate geometry approach, though Heron's Formula is always algebraically valid.
     check:
-      id: aops-areas-mini-example-check
       type: multipleChoice
-      prompt: In Areas, what should be checked before applying a method?
+      prompt: 'What is the area of a triangle with side lengths 13, 14, and 15?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '84'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '90'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '42'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-areas-trap
-    title: Common misconception
-    required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+        text: '168'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Calculate the semiperimeter.
+      - Apply Heron's Formula carefully.
+      explanation: |
+        Solution:
+        The semiperimeter is $s = \frac{13 + 14 + 15}{2} = 21$.
+        Applying Heron's Formula:
+        $$A = \sqrt{21(21-13)(21-14)(21-15)}$$
+        $$A = \sqrt{21(8)(7)(6)}$$
+        To simplify, prime factorize:
+        $21 = 3 \times 7$
+        $8 = 2^3$
+        $7 = 7$
+        $6 = 2 \times 3$
+        Multiplying these gives: $2^4 \times 3^2 \times 7^2$.
+        Taking the square root: $2^2 \times 3 \times 7 = 4 \times 21 = 84$.
+        
+        Why it works:
+        Heron's Formula inherently encodes the Law of Cosines and the sine area formula ($\frac{1}{2}ab \sin C$) into a symmetric, altitude-free algebraic expression.
+
+  - id: section-shoelace-theorem
+    title: 'The Shoelace Theorem'
+    content: |
+      If you know the coordinates of the vertices of a polygon, you can find its area using the Shoelace Theorem. 
+
+      For a polygon with vertices $(x_1, y_1), (x_2, y_2), \dots, (x_n, y_n)$ listed in order around the perimeter (clockwise or counterclockwise), the area is:
+      $$A = \frac{1}{2} | (x_1y_2 + x_2y_3 + \dots + x_ny_1) - (y_1x_2 + y_2x_3 + \dots + y_nx_1) |$$
+
+      To use it:
+      1. List the coordinates in a column.
+      2. Rewrite the first coordinate at the bottom.
+      3. Multiply diagonally down-and-right (the "shoelaces" in one direction) and add them.
+      4. Multiply diagonally up-and-right (the other direction) and add them.
+      5. Subtract the two sums, take the absolute value, and divide by 2.
     check:
-      id: aops-areas-trap-check
       type: multipleChoice
-      prompt: In Areas, what should be checked before applying a method?
+      prompt: 'A triangle has vertices at $(0, 0)$, $(4, 1)$, and $(1, 5)$. What is its area?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '9.5'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '19'
+        issueSignals: [wrong-formula]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '10'
+        issueSignals: [algebra-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-areas-synthesis
-    title: Contest synthesis
-    required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+        text: '20'
+        issueSignals: [wrong-formula]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Set up the Shoelace matrix.
+      - Perform the cross-multiplications and subtraction.
+      explanation: |
+        Solution:
+        List the coordinates:
+        (0, 0)
+        (4, 1)
+        (1, 5)
+        (0, 0)
+        Down-right sum: $(0)(1) + (4)(5) + (1)(0) = 0 + 20 + 0 = 20$.
+        Up-right sum: $(0)(4) + (1)(1) + (5)(0) = 0 + 1 + 0 = 1$.
+        Difference: $|20 - 1| = 19$.
+        Area $= \frac{1}{2}(19) = 9.5$.
+        
+        Why it works:
+        The Shoelace Theorem computes the area of a polygon by summing the signed areas of trapezoids dropped to the axes. The interior area is precisely the difference between the "top" trapezoids and "bottom" trapezoids.
+
+  - id: section-picks-theorem
+    title: 'Pick''s Theorem'
+    content: |
+      When a polygon's vertices lie exactly on lattice points (integer coordinates) on a grid, its area can be found simply by counting dots. This is Pick's Theorem.
+
+      Let $I$ be the number of lattice points strictly inside the polygon, and let $B$ be the number of lattice points on the boundary (including the vertices).
+      The area $A$ is:
+      $$A = I + \frac{B}{2} - 1$$
+
+      This theorem applies to any simple polygon (no self-intersections and no holes). It is an incredibly fast alternative to decomposition or the Shoelace Theorem when a grid is present.
     check:
-      id: aops-areas-synthesis-check
       type: multipleChoice
-      prompt: In Areas, what should be checked before applying a method?
+      prompt: 'A lattice polygon has 10 points on its boundary and 5 points inside it. What is its area?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '9'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '10'
+        issueSignals: [formula-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '14'
+        issueSignals: [formula-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+        text: '15'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify the values of $I$ and $B$.
+      - Apply Pick's Theorem correctly.
+      explanation: |
+        Solution:
+        We are given $I = 5$ (interior points) and $B = 10$ (boundary points).
+        Using Pick's Theorem:
+        $$A = I + \frac{B}{2} - 1$$
+        $$A = 5 + \frac{10}{2} - 1$$
+        $$A = 5 + 5 - 1 = 9$$
+        
+        Why it works:
+        Pick's Theorem works because every interior point contributes a full $1 \times 1$ square of area in a triangulation, while boundary points share their area with the outside. The $-1$ accounts for the polygon's overall topological "turn" of $360^\circ$.
+
+  - id: section-similar-figures
+    title: 'Area of Similar Figures'
+    content: |
+      When two figures are similar, all of their corresponding linear dimensions (sides, altitudes, medians, perimeters) are in the same ratio, $k$. 
+
+      Because area is a two-dimensional measurement (it requires multiplying two lengths, like base and height), the ratio of the areas of similar figures is the **square of the scale factor**:
+      $$\frac{\text{Area}_1}{\text{Area}_2} = k^2$$
+
+      For example, if you double the side length of a square, its area quadruples. If a triangle is dilated by a factor of $3$, its area increases by a factor of $9$. This rule applies to all similar 2D shapes, including circles (where $k$ is the ratio of their radii).
+    check:
+      type: multipleChoice
+      prompt: 'Two regular hexagons have perimeters in the ratio $2:5$. If the area of the smaller hexagon is 12, what is the area of the larger hexagon?'
+      choices:
+      - id: a
+        text: '30'
+        issueSignals: [wrong-concept]
+      - id: b
+        text: '75'
+      - id: c
+        text: '60'
+        issueSignals: [wrong-concept]
+      - id: d
+        text: '150'
+        issueSignals: [algebra-error]
+      answer: {choiceId: b}
+      difficultyDimensions:
+      - Recognize that regular hexagons are similar and relate perimeter ratio to length ratio.
+      - Square the linear ratio to find the area ratio.
+      explanation: |
+        Solution:
+        All regular hexagons are similar. The ratio of their perimeters is the linear scale factor $k = \frac{2}{5}$.
+        The ratio of their areas is $k^2 = \left(\frac{2}{5}\right)^2 = \frac{4}{25}$.
+        Let the area of the larger hexagon be $A$.
+        $\frac{12}{A} = \frac{4}{25}$
+        $4A = 300 \implies A = 75$.
+        
+        Why it works:
+        Area involves two dimensions. When both the "width" and the "height" of the hexagon are scaled by $\frac{5}{2}$, the total area is scaled by $\frac{5}{2} \times \frac{5}{2} = \frac{25}{4}$.

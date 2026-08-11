@@ -18,95 +18,481 @@ questions:
 - id: olympiad-test-q001
   type: multipleChoice
   prompt: How many unordered integer right triangles have perimeter 120?
-  choices: [{id: a, text: '1'}, {id: b, text: '2'}, {id: c, text: '3'}, {id: d, text: '4'}]
+  choices:
+  - id: a
+    text: '1'
+    issueSignals: [enumeration-error]
+  - id: b
+    text: '2'
+    issueSignals: [enumeration-error]
+  - id: c
+    text: '3'
+  - id: d
+    text: '4'
+    issueSignals: [enumeration-error]
   answer: {choiceId: c}
-  explanation: The triples are $(20,48,52)$, $(24,45,51)$, and $(30,40,50)$.
+  difficultyDimensions:
+  - Setup the perimeter and Pythagorean equations for integer right triangles.
+  - Test primitive Pythagorean triples and their multiples whose perimeters divide 120.
+  explanation: |
+    Solution:
+    A right triangle with integer sides must be a scaled version of a primitive Pythagorean triple $(a,b,c)$.
+    The perimeter is $p = k(a+b+c) = 120$. So the primitive perimeter $a+b+c$ must divide 120.
+    Known primitives and their perimeters:
+    - $(3, 4, 5)$, perimeter $12$. $120/12 = 10 \implies (30, 40, 50)$.
+    - $(5, 12, 13)$, perimeter $30$. $120/30 = 4 \implies (20, 48, 52)$.
+    - $(8, 15, 17)$, perimeter $40$. $120/40 = 3 \implies (24, 45, 51)$.
+    - $(7, 24, 25)$, perimeter $56$. Does not divide 120.
+    - $(20, 21, 29)$, perimeter $70$. Does not divide 120.
+    - $(9, 40, 41)$, perimeter $90$. Does not divide 120.
+    - $(11, 60, 61)$, perimeter $132 > 120$.
+    There are exactly 3 such triangles.
+
+    Why it works:
+    All Pythagorean triples are multiples of primitive triples, which provides an efficient finite search space.
+
+    Why the other choices fail:
+    - **(A)** 1 might only find $(30, 40, 50)$.
+    - **(B)** 2 misses one of the triples.
+    - **(D)** 4 overcounts or finds an invalid combination.
+
 - id: olympiad-test-q002
   type: multipleChoice
-  prompt: Consecutive integers $x-1,x,x+1$ are side lengths of a right triangle. Find its perimeter.
-  choices: [{id: a, text: '$9$'}, {id: b, text: '$12$'}, {id: c, text: '$15$'}, {id: d, text: '$18$'}]
+  prompt: Consecutive integers $x-1, x, x+1$ are the side lengths of a right triangle. Find its perimeter.
+  choices:
+  - id: a
+    text: '$9$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$12$'
+  - id: c
+    text: '$15$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$18$'
+    issueSignals: [algebra-error]
   answer: {choiceId: b}
-  explanation: $(x-1)^2+x^2=(x+1)^2$ reduces to $x(x-4)=0$, so the positive sides are 3, 4, 5 and perimeter 12.
+  difficultyDimensions:
+  - Set up the Pythagorean theorem for the three sides.
+  - Solve the resulting quadratic equation for $x$.
+  explanation: |
+    Solution:
+    The longest side is $x+1$, so it is the hypotenuse.
+    $$(x-1)^2 + x^2 = (x+1)^2$$
+    $$x^2 - 2x + 1 + x^2 = x^2 + 2x + 1$$
+    $$2x^2 - 2x + 1 = x^2 + 2x + 1$$
+    $$x^2 - 4x = 0 \implies x(x-4) = 0$$
+    Since side lengths must be positive, $x = 4$.
+    The sides are 3, 4, 5. The perimeter is $3 + 4 + 5 = 12$.
+
+    Why it works:
+    This proves that the 3-4-5 triangle is the *only* right triangle with consecutive integer sides.
+
+    Why the other choices fail:
+    - **(A)** 9 assumes sides 2, 3, 4 (not right).
+    - **(C)** 15 assumes sides 4, 5, 6 (not right).
+
 - id: olympiad-test-q003
   type: multipleChoice
   prompt: How many isosceles integer-sided nondegenerate triangles have perimeter 20?
-  choices: [{id: a, text: '2'}, {id: b, text: '3'}, {id: c, text: '4'}, {id: d, text: '5'}]
+  choices:
+  - id: a
+    text: '2'
+    issueSignals: [enumeration-error]
+  - id: b
+    text: '3'
+    issueSignals: [enumeration-error]
+  - id: c
+    text: '4'
+  - id: d
+    text: '5'
+    issueSignals: [triangle-inequality-error]
   answer: {choiceId: c}
-  explanation: With unordered sides, they are $(2,9,9)$, $(4,8,8)$, $(6,6,8)$, and $(6,7,7)$.
+  difficultyDimensions:
+  - Enumerate pairs $(a,b)$ where two sides are equal and sum to $20-c$.
+  - Enforce the triangle inequality.
+  explanation: |
+    Solution:
+    The sides are $a, a, b$ with $2a + b = 20$.
+    Triangle inequality: $2a > b \implies 2a > 20 - 2a \implies 4a > 20 \implies a > 5$.
+    Possible integer values for $a$:
+    $a = 6 \implies b = 8$. Sides: (6, 6, 8).
+    $a = 7 \implies b = 6$. Sides: (7, 7, 6).
+    $a = 8 \implies b = 4$. Sides: (8, 8, 4).
+    $a = 9 \implies b = 2$. Sides: (9, 9, 2).
+    $a = 10 \implies b = 0$. (Degenerate, not a triangle).
+    Total $= 4$.
+
+    Why it works:
+    The triangle inequality constraint $2a > b$ bounds the isosceles legs from below.
+
+    Why the other choices fail:
+    - **(B)** 3 misses one valid combination.
+    - **(D)** 5 might include the degenerate $(10, 10, 0)$.
+
 - id: olympiad-test-q004
   type: multipleChoice
   prompt: A triangle is cut by a segment parallel to its base. The small triangle has one fourth the area of the original. What fraction of each side from the shared vertex lies above the cut?
-  choices: [{id: a, text: '$1/4$'}, {id: b, text: '$1/2$'}, {id: c, text: '$2/3$'}, {id: d, text: '$3/4$'}]
+  choices:
+  - id: a
+    text: '$1/4$'
+    issueSignals: [linear-vs-area]
+  - id: b
+    text: '$1/2$'
+  - id: c
+    text: '$2/3$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$3/4$'
+    issueSignals: [algebra-error]
   answer: {choiceId: b}
-  explanation: The positive linear factor is the square root of the area factor, $\sqrt{1/4}=1/2$.
+  difficultyDimensions:
+  - Relate the area ratio of similar triangles to the linear ratio.
+  - Take the square root of the area fraction.
+  explanation: |
+    Solution:
+    The area ratio of the small triangle to the large triangle is $1/4$.
+    The linear ratio (ratio of corresponding side lengths) is the square root of the area ratio.
+    $$\sqrt{1/4} = 1/2$$
+    Therefore, the side lengths of the small triangle are $1/2$ the side lengths of the original.
+
+    Why it works:
+    For similar 2D figures, the area scales as the square of the linear dimensions.
+
+    Why the other choices fail:
+    - **(A)** 1/4 is the area ratio, incorrectly applied to linear dimensions.
+    - **(D)** 3/4 is the remaining fraction of the area (the trapezoid).
+
 - id: olympiad-test-q005
   type: multipleChoice
   prompt: An altitude to a right triangle's hypotenuse has length 10, and the whole hypotenuse is 25. What is the smaller hypotenuse segment?
-  choices: [{id: a, text: '$4$'}, {id: b, text: '$5$'}, {id: c, text: '$10$'}, {id: d, text: '$20$'}]
+  choices:
+  - id: a
+    text: '$4$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$5$'
+  - id: c
+    text: '$10$'
+    issueSignals: [wrong-concept]
+  - id: d
+    text: '$20$'
+    issueSignals: [wrong-segment]
   answer: {choiceId: b}
-  explanation: The segments satisfy $p+q=25$ and $pq=100$, so they are the roots of $t^2-25t+100=0$, namely 5 and 20.
+  difficultyDimensions:
+  - Set up a system of equations using the geometric mean theorem ($pq = h^2$) and the segment sum ($p+q = c$).
+  - Solve the resulting quadratic equation.
+  explanation: |
+    Solution:
+    Let the segments be $p$ and $q$.
+    We know $p + q = 25$ and $pq = 10^2 = 100$.
+    Substitute $q = 25 - p$ into the second equation:
+    $$p(25 - p) = 100 \implies 25p - p^2 = 100 \implies p^2 - 25p + 100 = 0$$
+    Factors to $(p - 5)(p - 20) = 0$.
+    The segments are 5 and 20. The smaller one is 5.
+
+    Why it works:
+    The altitude splits the hypotenuse into two segments whose product is strictly determined by the altitude squared.
+
+    Why the other choices fail:
+    - **(A)** 4 might come from $p = 100/25$.
+    - **(C)** 10 is the altitude itself.
+    - **(D)** 20 is the larger hypotenuse segment.
+
 - id: olympiad-test-q006
   type: multipleChoice
   prompt: 'A right triangle has inradius 4 and circumradius $\frac{41}{2}$. Find its area.'
-  choices: [{id: a, text: '$90$'}, {id: b, text: '$164$'}, {id: c, text: '$180$'}, {id: d, text: '$360$'}]
+  choices:
+  - id: a
+    text: '$90$'
+    issueSignals: [formula-error]
+  - id: b
+    text: '$164$'
+    issueSignals: [algebra-error]
+  - id: c
+    text: '$180$'
+  - id: d
+    text: '$360$'
+    issueSignals: [formula-error]
   answer: {choiceId: c}
-  explanation: The hypotenuse is 41. Since $r=(a+b-c)/2$, $a+b=49$. Then $49^2=41^2+2ab$ gives $ab=360$, so area is $ab/2=180$.
+  difficultyDimensions:
+  - Identify the hypotenuse from the circumradius (hypotenuse = 2R).
+  - Use the right triangle inradius formula $r = (a+b-c)/2$ to find $a+b$.
+  - Square $a+b$ and use Pythagorean theorem to find $ab$.
+  explanation: |
+    Solution:
+    In a right triangle, the circumradius $R$ is half the hypotenuse $c$. So $c = 2 \times \frac{41}{2} = 41$.
+    The inradius is $r = \frac{a+b-c}{2}$.
+    $$4 = \frac{a+b-41}{2} \implies 8 = a+b-41 \implies a+b = 49$$
+    Square this sum: $(a+b)^2 = 49^2 = 2401$.
+    Expand: $a^2 + b^2 + 2ab = 2401$.
+    Since $a^2 + b^2 = c^2 = 41^2 = 1681$, substitute:
+    $$1681 + 2ab = 2401 \implies 2ab = 720 \implies ab = 360$$
+    Area $= \frac{1}{2}ab = 180$.
+
+    Why it works:
+    This elegantly combines three fundamental right triangle theorems (Thales, inradius, and Pythagoras) to solve for area without explicitly finding the legs (which happen to be 9 and 40).
+
+    Why the other choices fail:
+    - **(D)** 360 is the value of $ab$ (missed the $1/2$ factor for area).
+
 - id: olympiad-test-q007
   type: multipleChoice
-  prompt: An equilateral triangle has inradius 6. What is its circumradius?
-  choices: [{id: a, text: '$6$'}, {id: b, text: '$6\sqrt3$'}, {id: c, text: '$12$'}, {id: d, text: '$12\sqrt3$'}]
+  prompt: An equilateral triangle has an inradius of 6. What is its circumradius?
+  choices:
+  - id: a
+    text: '$6$'
+    issueSignals: [wrong-concept]
+  - id: b
+    text: '$6\sqrt3$'
+    issueSignals: [algebra-error]
+  - id: c
+    text: '$12$'
+  - id: d
+    text: '$12\sqrt3$'
+    issueSignals: [algebra-error]
   answer: {choiceId: c}
-  explanation: In an equilateral triangle the common center divides the altitude $2:1$, so the circumradius is twice the inradius.
+  difficultyDimensions:
+  - Exploit the symmetry of the equilateral triangle (centroid = incenter = circumcenter).
+  - Recall the 2:1 division ratio of the centroid on the median/altitude.
+  explanation: |
+    Solution:
+    In an equilateral triangle, the circumcenter, incenter, and centroid are the exact same point.
+    The centroid divides the median (which is also the altitude) in a 2:1 ratio.
+    The shorter segment (center to edge) is the inradius $r=6$.
+    The longer segment (center to vertex) is the circumradius $R$.
+    Therefore, $R = 2r = 2(6) = 12$.
+
+    Why it works:
+    The perfect symmetry of the equilateral triangle aligns all its centers, making their distance relationships trivial.
+
+    Why the other choices fail:
+    - **(A)** 6 assumes circumradius equals inradius.
+    - **(B)** $6\sqrt{3}$ computes something related to the side length instead.
+
 - id: olympiad-test-q008
   type: multipleChoice
-  prompt: An internal angle bisector divides the opposite side in ratio $2:3$. The triangle's two adjacent sides have total length 35. Find the shorter adjacent side.
-  choices: [{id: a, text: '$12$'}, {id: b, text: '$14$'}, {id: c, text: '$15$'}, {id: d, text: '$21$'}]
+  prompt: An internal angle bisector divides the opposite side in a ratio of $2:3$. The triangle's two adjacent sides have a total length of 35. Find the length of the shorter adjacent side.
+  choices:
+  - id: a
+    text: '$12$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$14$'
+  - id: c
+    text: '$15$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$21$'
+    issueSignals: [wrong-segment]
   answer: {choiceId: b}
-  explanation: The angle-bisector theorem gives adjacent-side ratio $2:3$; five parts total 35, so the shorter side is 14.
+  difficultyDimensions:
+  - Apply the Angle Bisector Theorem to set up a ratio for the adjacent sides.
+  - Solve a proportional sharing problem ($2x+3x=35$).
+  explanation: |
+    Solution:
+    By the Angle Bisector Theorem, the ratio of the adjacent sides is equal to the ratio of the split opposite side.
+    Thus, the adjacent sides are in the ratio $2:3$. Let them be $2x$ and $3x$.
+    $$2x + 3x = 35 \implies 5x = 35 \implies x = 7$$
+    The shorter adjacent side is $2x = 2(7) = 14$.
+
+    Why it works:
+    The theorem $\frac{AB}{AC} = \frac{BD}{DC}$ directly links the proportions of the adjacent sides to the segments of the base.
+
+    Why the other choices fail:
+    - **(D)** 21 is the longer adjacent side ($3x$).
+
 - id: olympiad-test-q009
   type: multipleChoice
-  prompt: A cevian divides the opposite side in ratio $2:3$. If the whole triangle has area 75, what is the area of the subtriangle on the shorter base segment?
-  choices: [{id: a, text: '$25$'}, {id: b, text: '$30$'}, {id: c, text: '$45$'}, {id: d, text: '$50$'}]
+  prompt: A cevian divides the opposite side in the ratio $2:3$. If the whole triangle has an area of 75, what is the area of the subtriangle resting on the shorter base segment?
+  choices:
+  - id: a
+    text: '$25$'
+    issueSignals: [ratio-error]
+  - id: b
+    text: '$30$'
+  - id: c
+    text: '$45$'
+    issueSignals: [wrong-segment]
+  - id: d
+    text: '$50$'
+    issueSignals: [ratio-error]
   answer: {choiceId: b}
-  explanation: The subtriangles share an altitude, so their areas have ratio $2:3$; the shorter-base region has $2/5$ of 75, or 30.
+  difficultyDimensions:
+  - Recognize that subtriangles formed by a cevian share the same height.
+  - Divide the total area proportionally according to the bases.
+  explanation: |
+    Solution:
+    The two subtriangles share the same altitude from the shared vertex. Their areas are therefore directly proportional to their base lengths.
+    The ratio of their areas is $2:3$.
+    The subtriangle on the shorter base is $\frac{2}{2+3} = \frac{2}{5}$ of the total area.
+    Area $= \frac{2}{5}(75) = 30$.
+
+    Why it works:
+    Area $= \frac{1}{2}bh$. When $h$ is constant for both triangles, Area $\propto b$.
+
+    Why the other choices fail:
+    - **(C)** 45 is the area of the other subtriangle ($3/5$ of 75).
+
 - id: olympiad-test-q010
   type: multipleChoice
-  prompt: A triangle has vertices $(0,0)$, $(12,0)$, and $(0,9)$. What is its centroid?
-  choices: [{id: a, text: '$(3,4)$'}, {id: b, text: '$(4,3)$'}, {id: c, text: '$(6,9/2)$'}, {id: d, text: '$(4,4)$'}]
+  prompt: A triangle has vertices at $(0,0)$, $(12,0)$, and $(0,9)$. What are the coordinates of its centroid?
+  choices:
+  - id: a
+    text: '$(3,4)$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$(4,3)$'
+  - id: c
+    text: '$(6,9/2)$'
+    issueSignals: [wrong-concept]
+  - id: d
+    text: '$(4,4)$'
+    issueSignals: [algebra-error]
   answer: {choiceId: b}
-  explanation: Average the vertex coordinates to obtain $((0+12+0)/3,(0+0+9)/3)=(4,3)$.
+  difficultyDimensions:
+  - Apply the coordinate formula for the centroid.
+  - Average the $x$ and $y$ coordinates separately.
+  explanation: |
+    Solution:
+    The centroid coordinates are the average of the vertex coordinates.
+    $$x = \frac{0 + 12 + 0}{3} = \frac{12}{3} = 4$$
+    $$y = \frac{0 + 0 + 9}{3} = \frac{9}{3} = 3$$
+    Centroid is $(4,3)$.
+
+    Why it works:
+    The centroid represents the center of mass, which is the arithmetic mean of the vertices in affine space.
+
+    Why the other choices fail:
+    - **(A)** $(3,4)$ swaps the $x$ and $y$ coordinates.
+    - **(C)** $(6, 9/2)$ is the midpoint of the hypotenuse (the circumcenter for a right triangle).
+
 - id: olympiad-test-q011
   type: multipleChoice
-  prompt: An isosceles triangle has sides 25, 25, and 14. Find its inradius.
-  choices: [{id: a, text: '$4$'}, {id: b, text: '$21/4$'}, {id: c, text: '$6$'}, {id: d, text: '$24/5$'}]
+  prompt: An isosceles triangle has sides of 25, 25, and 14. Find its inradius.
+  choices:
+  - id: a
+    text: '$4$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$21/4$'
+  - id: c
+    text: '$6$'
+    issueSignals: [algebra-error]
+  - id: d
+    text: '$24/5$'
+    issueSignals: [formula-error]
   answer: {choiceId: b}
-  explanation: The altitude bisects the base into 7 and 7, so its height is 24 and area is 168. Semiperimeter is 32, hence $r=168/32=21/4$.
+  difficultyDimensions:
+  - Drop an altitude to find the height and calculate area.
+  - Calculate semiperimeter.
+  - Use $A = rs$ to find the inradius.
+  explanation: |
+    Solution:
+    The altitude to the base bisects it into segments of 7 and 7.
+    Height $= \sqrt{25^2 - 7^2} = \sqrt{625 - 49} = \sqrt{576} = 24$.
+    Area $= \frac{1}{2}(14)(24) = 168$.
+    Semiperimeter $s = \frac{25+25+14}{2} = \frac{64}{2} = 32$.
+    Using Area $= r \times s$:
+    $$168 = r(32) \implies r = \frac{168}{32} = \frac{21}{4}$$
+
+    Why it works:
+    The altitude provides the area. The standard formula $A = rs$ links the area and perimeter directly to the inradius.
+
+    Why the other choices fail:
+    - **(C)** 6 might be derived from a wrong formula.
+    - **(D)** $24/5$ is a similar-looking wrong fraction.
+
 - id: olympiad-test-q012
   type: multipleChoice
-  prompt: A triangle has base 10 and perimeter 30. What is its maximum possible area?
-  choices: [{id: a, text: '$25$'}, {id: b, text: '$25\sqrt2$'}, {id: c, text: '$25\sqrt3$'}, {id: d, text: '$50$'}]
+  prompt: A triangle has a base of 10 and a total perimeter of 30. What is its maximum possible area?
+  choices:
+  - id: a
+    text: '$25$'
+    issueSignals: [algebra-error]
+  - id: b
+    text: '$25\sqrt2$'
+    issueSignals: [algebra-error]
+  - id: c
+    text: '$25\sqrt3$'
+  - id: d
+    text: '$50$'
+    issueSignals: [formula-error]
   answer: {choiceId: c}
-  explanation: The other sides have fixed sum 20; symmetry maximizes altitude when they are both 10, giving an equilateral triangle of area $25\sqrt3$.
+  difficultyDimensions:
+  - Identify that for a fixed base and perimeter, an isosceles triangle maximizes area.
+  - Compute the area of that specific isosceles (equilateral) triangle.
+  explanation: |
+    Solution:
+    The sum of the other two sides is $30 - 10 = 20$.
+    To maximize the area (and thus the altitude) for a given sum of two sides, those two sides must be equal (an isosceles triangle).
+    The sides are 10, 10, and 10. The triangle is equilateral.
+    Area $= \frac{s^2\sqrt{3}}{4} = \frac{10^2\sqrt{3}}{4} = \frac{100\sqrt{3}}{4} = 25\sqrt{3}$.
+
+    Why it works:
+    By Heron's formula, the area is proportional to $\sqrt{(s-a)(s-b)(s-c)}$. Since $s-a$ is fixed, maximizing $(s-b)(s-c)$ subject to a constant sum $(s-b)+(s-c)$ requires $b=c$ by AM-GM.
+
+    Why the other choices fail:
+    - **(A)** 25 is the area of a right isosceles triangle with legs 5, 10 (which violates perimeter).
+    - **(D)** 50 is the area of a $10 \times 10$ square half.
+
 - id: olympiad-test-q013
   type: selectAll
-  prompt: Which statements are valid counterexample or safeguard principles?
+  prompt: Which statements are valid geometric counterexample or safeguard principles?
   choices:
-  - {id: a, text: Equal perimeters do not imply congruence.}
-  - {id: b, text: AAA does not imply congruence.}
-  - {id: c, text: SSA can produce two noncongruent triangles.}
-  - {id: d, text: Every visually symmetric drawing proves equal sides.}
-  answer: {choiceIds: [a, b, c]}
-  explanation: Diagram appearance alone supplies no equality theorem.
+  - id: a
+    text: Equal perimeters do not imply congruence.
+  - id: b
+    text: AAA (Angle-Angle-Angle) does not imply congruence.
+  - id: c
+    text: SSA (Side-Side-Angle) can produce two noncongruent triangles.
+  - id: d
+    text: Every visually symmetric drawing proves equal sides.
+    issueSignals: [methodology-error]
+  answer:
+    choiceIds: [a, b, c]
+  difficultyDimensions:
+  - Identify false congruence conditions (AAA, SSA).
+  - Reject visual assumptions.
+  explanation: |
+    Solution:
+    (A), (B), and (C) are all standard warnings against false assumptions in geometry.
+
+    Why it works:
+    - (A) Many different shapes share a perimeter (e.g., $3,4,5$ and $4,4,4$).
+    - (B) AAA only proves similarity (scale matters).
+    - (C) SSA is the "ambiguous case" in trigonometry, allowing two different valid triangles.
+
+    (D) is false: symmetry must be proven, not seen.
+
 - id: olympiad-test-q014
   type: selectAll
-  prompt: Which conditions are individually sufficient to prove that $AB=AC$?
+  prompt: Which conditions are individually sufficient to prove that a triangle has $AB=AC$?
   choices:
-  - {id: a, text: '$\angle B=\angle C$'}
-  - {id: b, text: The cevian from $A$ is both a median and angle bisector.}
-  - {id: c, text: The cevian from $A$ is both a median and altitude.}
-  - {id: d, text: A median is drawn from $A$.}
-  answer: {choiceIds: [a, b, c]}
-  explanation: The first is the converse isosceles theorem; the next two yield congruent half-triangles. A median alone exists in every triangle.
+  - id: a
+    text: '$\angle B = \angle C$'
+  - id: b
+    text: The cevian from $A$ is both a median and an angle bisector.
+  - id: c
+    text: The cevian from $A$ is both a median and an altitude.
+  - id: d
+    text: A median is drawn from $A$.
+    issueSignals: [logic-error]
+  answer:
+    choiceIds: [a, b, c]
+  difficultyDimensions:
+  - Identify conditions that guarantee an isosceles triangle (converse theorems, coincident cevians).
+  - Rule out properties that apply universally to all triangles (e.g. having a median).
+  explanation: |
+    Solution:
+    (A), (B), and (C) are all sufficient to prove $AB=AC$.
+
+    Why it works:
+    - (A) is the converse of the isosceles triangle theorem.
+    - (B) and (C) define cevians that split the triangle into two congruent halves (by AAS or SAS), proving the outer sides $AB$ and $AC$ are equal.
+
+    (D) is false: every triangle has a median from every vertex.
+
 - id: olympiad-test-q015
   type: freeResponse
   prompt: Prove that the three internal angle bisectors of a nondegenerate triangle are concurrent and that their intersection lies inside the triangle.
@@ -114,13 +500,26 @@ questions:
   - type: image
     src: /assessments/aops/aops-triangles-four-centers.svg
     alt: Incenter panel showing three internal angle bisectors meeting at I inside a triangle and an incircle tangent to all sides.
+  difficultyDimensions:
+  - Use the angle bisector locus theorem (equal distances to sides).
+  - Apply transitivity to prove the third bisector passes through the intersection of the first two.
+  - Reason about the interior constraints of internal bisectors.
   answer:
     gradingMode: selfCheck
-    expected: 'Let the internal bisectors of angles $A$ and $B$ meet at $I$. Each internal bisector lies within its angle, so their intersection is inside the triangle. Because $I$ lies on the bisector of $A$, its perpendicular distances to sides $AB$ and $AC$ are equal. Because it lies on the bisector of $B$, its distances to $BA$ and $BC$ are equal. Hence its distances to $AC$ and $BC$ are equal, so by the converse angle-bisector locus theorem $I$ lies on the internal bisector of angle $C$. Therefore all three internal angle bisectors are concurrent at the interior point $I$.'
     keyPoints:
-    - Intersects two internal angle bisectors.
-    - Uses equal perpendicular-distance locus facts twice.
-    - Transfers equality to the remaining two sides.
-    - Invokes the converse locus theorem for the third bisector.
-    - Explains why the point is interior.
-  explanation: Concurrency follows from transitive equality of distances to the three side lines.
+    - Let $I$ be the intersection of the internal bisectors of $\angle A$ and $\angle B$.
+    - Argue $I$ is interior because internal bisectors stay inside the triangle.
+    - Use the property that $I$ is equidistant from sides $AB$ and $AC$ (due to $\angle A$ bisector).
+    - Use the property that $I$ is equidistant from sides $BA$ and $BC$ (due to $\angle B$ bisector).
+    - Conclude $I$ is equidistant from $CA$ and $CB$, thus lying on the internal bisector of $\angle C$.
+  explanation: |
+    Solution:
+    Let the internal angle bisectors of $\angle A$ and $\angle B$ meet at point $I$. Because they are internal bisectors, they lie strictly within the interior of their respective angles, so their intersection $I$ must be inside the triangle.
+    By the angle bisector locus theorem, any point on the angle bisector of $\angle A$ is equidistant from the sides forming the angle. Thus, the perpendicular distance from $I$ to $AB$ equals the perpendicular distance from $I$ to $AC$.
+    Similarly, because $I$ is on the bisector of $\angle B$, the distance from $I$ to $BA$ equals the distance from $I$ to $BC$.
+    By transitivity, the distance from $I$ to $AC$ equals the distance from $I$ to $BC$.
+    By the converse of the angle bisector locus theorem, a point equidistant from two sides of an angle lies on the angle bisector. Thus, $I$ lies on the internal angle bisector of $\angle C$.
+    Therefore, all three internal angle bisectors are concurrent at $I$.
+
+    Why it works:
+    This proof transforms an angle property into a distance property, allowing a simple transitive logical chain ($D_1 = D_2$ and $D_2 = D_3 \implies D_1 = D_3$).

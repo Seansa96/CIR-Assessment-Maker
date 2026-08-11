@@ -1,170 +1,294 @@
 schemaVersion: 1
 id: aops-polygons-concept-lesson
-title: Polygons Concept Lesson
-description: Derive polygon angle, diagonal, and regular-area formulas from triangulation, turning, and center decompositions.
+title: 'Polygons'
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
 topicId: aops-polygons
 modeDefault: learn
-randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
-  tags: [art-of-problem-solving, aops-polygons, geometry, regular-polygons, polygon-angles]
+  tags:
+  - art-of-problem-solving
+  - aops-polygons
+  - geometry
+  - olympiad
 skills:
-- Distinguish simple, convex, concave, equilateral, equiangular, and regular polygons
-- Derive and apply interior- and exterior-angle relationships
-- Count diagonals without double counting
-- Derive regular-polygon area from apothem and perimeter
-- Use regular-hexagon symmetry and reject unsupported regularity assumptions
+- Calculate interior and exterior angles for regular and irregular polygons.
+- Count diagonals using combinatorics.
+- Use the apothem to compute the area of regular polygons.
 lesson:
-  introduction: |
-    Polygon formulas are compressed geometric arguments. Triangulation explains interior-angle sums, a complete walk explains exterior turns, endpoint counting explains the diagonal formula, and center triangles explain regular-polygon area. Reconstructing those arguments makes it easier to select the right relationship and harder to confuse a general polygon with a regular one.
   sections:
-  - id: aops-polygons-motivation
-    title: What counts as a polygon
-    required: true
+  - id: section-interior-angle-sum
+    title: 'Interior Angle Sum'
     content: |
-      A polygon is a simple closed chain of straight segments. “Simple” means nonadjacent sides do not cross. An $n$-gon has $n$ sides, $n$ vertices, and $n$ interior angles. A convex polygon contains every segment joining two of its points; equivalently, all interior angles are less than $180^\circ$. A concave polygon has at least one reflex interior angle. Convexity matters because every diagonal from a chosen vertex stays inside, allowing a clean triangulation. Equal side lengths make a polygon equilateral, equal angle measures make it equiangular, and regular means both.
-    media:
-    - type: image
-      src: /assessments/aops/aops-polygons-triangulation.svg
-      alt: Convex heptagon ABCDEFG with all usable diagonals from A drawn inside the polygon.
-      caption: Convexity keeps the fan of diagonals inside the boundary.
+      A polygon with $n$ sides (an $n$-gon) can always be divided into $n-2$ non-overlapping triangles by drawing all diagonals from a single chosen vertex.
+
+      Since the sum of the angles in each triangle is $180^\circ$, the sum of the interior angles of any convex $n$-gon is:
+      $$\text{Sum} = 180^\circ(n - 2)$$
+
+      For a regular polygon (where all sides and all angles are equal), a single interior angle is simply the sum divided by the number of vertices:
+      $$\text{Interior Angle} = \frac{180^\circ(n - 2)}{n}$$
     check:
-      id: aops-polygons-motivation-check
       type: multipleChoice
-      prompt: Which condition is included in the definition of a regular polygon?
+      prompt: 'What is the sum of the interior angles of a convex decagon (10 sides)?'
       choices:
-      - {id: a, text: All sides are congruent only.}
-      - {id: b, text: All angles are congruent only.}
-      - {id: c, text: All sides and all angles are congruent.}
-      - {id: d, text: All diagonals are congruent.}
-      answer: {choiceId: c}
-      explanation: Regular means both equilateral and equiangular; neither condition alone is enough in general.
-  - id: aops-polygons-definitions
-    title: Triangulation and the interior-angle sum
-    required: true
-    content: |
-      From one vertex of a convex $n$-gon, draw diagonals to every nonadjacent vertex. The fan contains $n-2$ nonoverlapping triangles. Their angles partition the original polygon's interior angles, so the total is $(n-2)180^\circ$. This is a total, not the measure of each angle. Only when the polygon is equiangular—especially regular—may it be divided by $n$ to obtain one interior angle. A heptagon, for example, has five triangles and total $900^\circ$; a regular heptagon has each angle $900^\circ/7$.
-    media:
-    - type: image
-      src: /assessments/aops/aops-polygons-triangulation.svg
-      alt: A convex seven-sided polygon partitioned from one vertex into five triangles labeled 1 through 5.
-      caption: The number of triangles is two less than the number of vertices.
-    check:
-      id: aops-polygons-definitions-check
-      type: multipleChoice
-      prompt: What is the interior-angle sum of a convex 11-gon?
-      choices:
-      - {id: a, text: '$1260^\circ$'}
-      - {id: b, text: '$1440^\circ$'}
-      - {id: c, text: '$1620^\circ$'}
-      - {id: d, text: '$1980^\circ$'}
-      answer: {choiceId: c}
-      explanation: An 11-gon triangulates into $11-2=9$ triangles, so the sum is $9(180)=1620$ degrees.
-  - id: aops-polygons-recognition
-    title: Exterior angles are a turning invariant
-    required: true
-    content: |
-      Walk once around a convex polygon without reversing direction. At each vertex, turn through the exterior angle between the extension of one side and the next side. When the walk returns to its original direction, the signed turns total one full revolution, $360^\circ$, regardless of the number or shape of the sides. Each interior angle and its adjacent exterior turn form a linear pair. In a regular $n$-gon every turn is therefore $360^\circ/n$, while every interior angle is $180^\circ-360^\circ/n$.
-    media:
-    - type: image
-      src: /assessments/aops/aops-polygons-exterior-turns.svg
-      alt: Regular pentagon traversed with five equal exterior turns of 72 degrees.
-      caption: Equal turns are a consequence of regularity; the total 360 degrees holds for every convex polygon.
-    check:
-      id: aops-polygons-recognition-check
-      type: multipleChoice
-      prompt: A regular polygon has exterior angle $24^\circ$. How many sides does it have?
-      choices:
-      - {id: a, text: '$12$'}
-      - {id: b, text: '$15$'}
-      - {id: c, text: '$18$'}
-      - {id: d, text: '$24$'}
-      answer: {choiceId: b}
-      explanation: Equal exterior turns total 360 degrees, so $n=360/24=15$.
-  - id: aops-polygons-method
-    title: Regular-polygon angles and inverse problems
-    required: true
-    content: |
-      In a regular polygon, the central angle between radii to consecutive vertices equals the exterior angle, $360^\circ/n$. This links boundary turning to center geometry. When an angle is given and $n$ is unknown, solve with the exterior angle whenever possible: if the interior angle is $I$, then $E=180^\circ-I$ and $n=360^\circ/E$. The result must be an integer at least 3. For example, $I=165^\circ$ gives $E=15^\circ$ and $n=24$. If the quotient is not an integer, no regular polygon has exactly that angle.
-    media:
-    - type: image
-      src: /assessments/aops/aops-polygons-exterior-turns.svg
-      alt: Regular pentagon whose equal exterior turns illustrate 360 degrees divided by the side count.
-      caption: Subtract an interior angle from 180 degrees before using the full-turn quotient.
-    check:
-      id: aops-polygons-method-check
-      type: multipleChoice
-      prompt: Can a regular polygon have each interior angle equal to $154^\circ$?
-      choices:
-      - {id: a, text: 'Yes, it has 12 sides.'}
-      - {id: b, text: 'Yes, it has 13 sides.'}
-      - {id: c, text: 'No, because $360/(180-154)$ is not an integer.'}
-      - {id: d, text: 'No, because every regular-polygon angle is acute.'}
-      answer: {choiceId: c}
-      explanation: The exterior angle would be 26 degrees, but $360/26=180/13$ is not an integer side count.
-  - id: aops-polygons-mini-example
-    title: Count diagonals by endpoint incidences
-    required: true
-    content: |
-      From any vertex of an $n$-gon, a diagonal may connect to every vertex except the starting vertex and its two neighbors, giving $n-3$ choices. Across all $n$ vertices this counts $n(n-3)$ endpoint incidences. Every diagonal has two endpoints and has therefore been counted twice, so the number of distinct diagonals is $n(n-3)/2$. Do not confuse this with the $n-3$ diagonals drawn from one fixed vertex or the $n-2$ triangles in a fan.
-    media:
-    - type: image
-      src: /assessments/aops/aops-polygons-diagonal-count.svg
-      alt: Regular pentagon with all five diagonals drawn as a star and a note dividing ten endpoint incidences by two.
-      caption: Each red segment appears once at each of its two endpoints.
-    check:
-      id: aops-polygons-mini-example-check
-      type: multipleChoice
-      prompt: How many diagonals does a decagon have?
-      choices:
-      - {id: a, text: '$27$'}
-      - {id: b, text: '$35$'}
-      - {id: c, text: '$40$'}
-      - {id: d, text: '$70$'}
-      answer: {choiceId: b}
-      explanation: $10(10-3)/2=35$ distinct diagonals.
-  - id: aops-polygons-trap
-    title: Apothem, perimeter, and regular-polygon area
-    required: true
-    content: |
-      The apothem of a regular polygon is the perpendicular distance from its center to a side. Radii to all vertices divide the polygon into $n$ congruent isosceles triangles. If each side has length $s$ and the apothem is $a$, each triangle has area $\tfrac12sa$. Summing gives $K=n(\tfrac12sa)=\tfrac12a(ns)=\tfrac12aP$. This formula requires a regular polygon with its center equally placed relative to all sides; it is not a general formula for an arbitrary equilateral polygon.
-    media:
-    - type: image
-      src: /assessments/aops/aops-polygons-apothem-area.svg
-      alt: Regular hexagon divided into six center triangles with a perpendicular apothem a to a side s.
-      caption: Adding the triangle bases produces the perimeter while every triangle shares height a.
-    check:
-      id: aops-polygons-trap-check
-      type: multipleChoice
-      prompt: A regular polygon has perimeter 54 and apothem 8. What is its area?
-      choices:
-      - {id: a, text: '$216$'}
-      - {id: b, text: '$324$'}
-      - {id: c, text: '$432$'}
-      - {id: d, text: '$864$'}
+      - id: a
+        text: '$1440^\circ$'
+      - id: b
+        text: '$1800^\circ$'
+        issueSignals: [wrong-formula]
+      - id: c
+        text: '$1620^\circ$'
+        issueSignals: [formula-error]
+      - id: d
+        text: '$144^\circ$'
+        issueSignals: [wrong-concept]
       answer: {choiceId: a}
-      explanation: $K=\tfrac12aP=\tfrac12(8)(54)=216$ square units.
-  - id: aops-polygons-synthesis
-    title: Symmetry, regular hexagons, and safeguards
-    required: true
+      difficultyDimensions:
+      - Identify $n=10$.
+      - Apply the formula $180(n-2)$.
+      explanation: |
+        Solution:
+        A decagon has $n = 10$ sides.
+        The sum of the interior angles is $180^\circ(10 - 2) = 180^\circ(8) = 1440^\circ$.
+
+        Why it works:
+        Selecting one vertex and drawing lines to the other 7 non-adjacent vertices slices the decagon into exactly 8 triangles, whose angles completely comprise the decagon's interior.
+
+  - id: section-exterior-angle-sum
+    title: 'Exterior Angle Sum'
     content: |
-      Regularity permits rotations and reflections that create congruent triangles and equal chords. A regular hexagon is especially efficient: its central angles are $60^\circ$, so each center triangle has two radii with included angle 60 degrees and is equilateral. Thus circumradius equals side length $s$, a diameter diagonal has length $2s$, a diagonal spanning two sides has length $\sqrt3s$, and the apothem is $\sqrt3s/2$. These facts fail for an arbitrary equilateral or equiangular hexagon. Before using symmetry, explicitly identify the regularity or congruence that creates it.
-    media:
-    - type: image
-      src: /assessments/aops/aops-polygons-regular-hexagon.svg
-      alt: Regular hexagon with equilateral center triangles, a diameter diagonal 2s, and a two-side diagonal square root of 3 times s.
-      caption: The 60-degree center decomposition explains every highlighted length.
+      An exterior angle is formed by extending one side of the polygon past the vertex. The interior and exterior angles at any vertex form a linear pair, so they add to $180^\circ$.
+
+      The most remarkable property of convex polygons is that **the sum of their exterior angles is always $360^\circ$**, regardless of how many sides the polygon has!
+      
+      For a regular $n$-gon, finding the exterior angle is often much faster than finding the interior angle:
+      $$\text{Exterior Angle} = \frac{360^\circ}{n}$$
+      Because the interior angle is supplementary to the exterior angle, you can find the interior angle by doing $180^\circ - \frac{360^\circ}{n}$. This perfectly matches $\frac{180(n-2)}{n}$ algebraically.
     check:
-      id: aops-polygons-synthesis-check
       type: multipleChoice
-      prompt: A regular hexagon has side length 9. What is the length of a diagonal joining opposite vertices?
+      prompt: 'If the interior angle of a regular polygon is $165^\circ$, how many sides does the polygon have?'
       choices:
-      - {id: a, text: '$9$'}
-      - {id: b, text: '$9\sqrt3$'}
-      - {id: c, text: '$18$'}
-      - {id: d, text: '$27$'}
-      answer: {choiceId: c}
-      explanation: The circumradius equals the side length, and an opposite-vertex diagonal is a diameter of length $2s=18$.
+      - id: a
+        text: '24'
+      - id: b
+        text: '15'
+        issueSignals: [algebra-error]
+      - id: c
+        text: '30'
+        issueSignals: [wrong-formula]
+      - id: d
+        text: '12'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Find the exterior angle using $180 - \text{interior}$.
+      - Set $\frac{360}{n} = \text{exterior}$ and solve for $n$.
+      explanation: |
+        Solution:
+        If the interior angle is $165^\circ$, the exterior angle is $180^\circ - 165^\circ = 15^\circ$.
+        We know the sum of the exterior angles is $360^\circ$, and there are $n$ of them.
+        $$15^\circ = \frac{360^\circ}{n}$$
+        $$n = \frac{360}{15} = 24$$
+        The polygon has 24 sides.
+
+        Why it works:
+        If you imagine walking the perimeter of a polygon, at each vertex you turn by the exterior angle. Once you complete the loop, you must have rotated exactly one full circle ($360^\circ$).
+
+  - id: section-regular-polygons
+    title: 'Regular Polygons'
+    content: |
+      A regular polygon is both **equilateral** (all sides equal) and **equiangular** (all angles equal). 
+      Because of this extreme symmetry, every regular polygon can be inscribed inside a circle (the circumcircle) and can circumscribe a smaller circle (the incircle).
+
+      The center of these circles is the "center" of the polygon. Connecting the center to the $n$ vertices divides the polygon into $n$ congruent isosceles triangles. The central angle of each of these triangles is precisely $\frac{360^\circ}{n}$. 
+
+      This means studying a regular polygon is equivalent to studying one of these isosceles slices and multiplying the results by $n$.
+    check:
+      type: multipleChoice
+      prompt: 'A regular octagon is divided into 8 congruent isosceles triangles by connecting its center to its vertices. What are the base angles of one of these isosceles triangles?'
+      choices:
+      - id: a
+        text: '$67.5^\circ$'
+      - id: b
+        text: '$45^\circ$'
+        issueSignals: [wrong-concept]
+      - id: c
+        text: '$135^\circ$'
+        issueSignals: [wrong-concept]
+      - id: d
+        text: '$22.5^\circ$'
+        issueSignals: [formula-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Calculate the central angle of the octagon.
+      - Use the isosceles property to find the base angles.
+      explanation: |
+        Solution:
+        The central angle of the regular octagon is $\frac{360^\circ}{8} = 45^\circ$.
+        The triangle formed by the center and two adjacent vertices is isosceles, with the two radii as the equal legs.
+        The sum of the base angles is $180^\circ - 45^\circ = 135^\circ$.
+        Each base angle is $\frac{135^\circ}{2} = 67.5^\circ$.
+
+        Why it works:
+        Notice that two adjacent base angles from two adjacent triangles combine to form the interior angle of the octagon: $67.5^\circ \times 2 = 135^\circ$. This matches the interior angle formula $\frac{180(8-2)}{8} = 135^\circ$.
+
+  - id: section-number-of-diagonals
+    title: 'Number of Diagonals'
+    content: |
+      A diagonal is a line segment connecting two non-adjacent vertices of a polygon.
+
+      To find the total number of diagonals in an $n$-gon, we can use combinatorics. There are $n$ total vertices, so there are $\binom{n}{2} = \frac{n(n-1)}{2}$ total pairs of vertices we could connect.
+      However, $n$ of those connections form the outer perimeter (the sides) of the polygon, not the diagonals.
+
+      Therefore, the number of diagonals is:
+      $$D = \frac{n(n-1)}{2} - n = \frac{n(n-3)}{2}$$
+    check:
+      type: multipleChoice
+      prompt: 'A polygon has exactly 54 diagonals. How many sides does it have?'
+      choices:
+      - id: a
+        text: '12'
+      - id: b
+        text: '9'
+        issueSignals: [algebra-error]
+      - id: c
+        text: '15'
+        issueSignals: [formula-error]
+      - id: d
+        text: '14'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Set up the equation $\frac{n(n-3)}{2} = 54$.
+      - Solve the resulting quadratic equation for $n$.
+      explanation: |
+        Solution:
+        Using the formula:
+        $$\frac{n(n-3)}{2} = 54$$
+        $$n^2 - 3n = 108$$
+        $$n^2 - 3n - 108 = 0$$
+        Factor the quadratic: $(n - 12)(n + 9) = 0$.
+        Since $n$ must be positive, $n = 12$. The polygon is a dodecagon.
+
+        Why it works:
+        Another way to derive the formula is to notice that from each of the $n$ vertices, you can draw a diagonal to exactly $n-3$ other vertices (you can't draw a diagonal to yourself, or to your 2 immediate neighbors). This gives $n(n-3)$ lines, but every diagonal was counted twice (once from each end), so we divide by 2.
+
+  - id: section-apothem-area
+    title: 'Area and the Apothem'
+    content: |
+      For a regular polygon, the **apothem** (labeled $a$) is the perpendicular distance from the center to a side. It is the radius of the inscribed circle.
+
+      If you split a regular $n$-gon with side length $s$ into $n$ isosceles triangles, the area of one triangle is $\frac{1}{2}sa$.
+      Since there are $n$ triangles, the total area is:
+      $$\text{Area} = n \left(\frac{1}{2}sa\right) = \frac{1}{2}(ns)a$$
+      
+      Notice that $ns$ is exactly the perimeter $P$ of the polygon! So the area formula for *any* regular polygon is simply:
+      $$\text{Area} = \frac{1}{2} a P$$
+    check:
+      type: multipleChoice
+      prompt: 'A regular hexagon has a side length of 4. What is its area?'
+      choices:
+      - id: a
+        text: '$24\sqrt{3}$'
+      - id: b
+        text: '$16\sqrt{3}$'
+        issueSignals: [wrong-formula]
+      - id: c
+        text: '$48\sqrt{3}$'
+        issueSignals: [formula-error]
+      - id: d
+        text: '$32\sqrt{3}$'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify that a regular hexagon is made of 6 equilateral triangles.
+      - Calculate the apothem using $30-60-90$ ratios.
+      - Apply the area formula.
+      explanation: |
+        Solution:
+        A regular hexagon is composed of 6 equilateral triangles. The side length is $s = 4$.
+        The perimeter is $P = 6 \times 4 = 24$.
+        The apothem is the height of one of these equilateral triangles. Dropping the altitude splits the base of 4 into 2. The height is $2\sqrt{3}$.
+        Area $= \frac{1}{2} a P = \frac{1}{2} (2\sqrt{3})(24) = 24\sqrt{3}$.
+
+        Why it works:
+        We could also compute the area of one equilateral triangle ($\frac{s^2\sqrt{3}}{4} = 4\sqrt{3}$) and multiply by 6 to get $24\sqrt{3}$. Both methods perfectly align.
+
+  - id: section-star-polygons
+    title: 'Star Polygons'
+    content: |
+      When you connect every second (or third, or $k$-th) vertex of a regular polygon rather than adjacent vertices, you create a star polygon. A classic example is a 5-pointed star (a pentagram), created by drawing the diagonals of a regular pentagon.
+
+      The angles at the points of these stars can be found using the intercepted arcs of the circumscribed circle. If the star is regular and has $n$ points connected by skipping $k-1$ vertices each time, the angle at each point of the star is:
+      $$\text{Point Angle} = \frac{180^\circ(n - 2k)}{n}$$
+      
+      For a standard 5-pointed star, $n=5$ and we connect every 2nd vertex ($k=2$). 
+      The point angle is $\frac{180(5 - 4)}{5} = \frac{180}{5} = 36^\circ$.
+    check:
+      type: multipleChoice
+      prompt: 'If you draw a 7-pointed star by connecting every 3rd vertex of a regular heptagon ($n=7, k=3$), what is the angle at each point of the star?'
+      choices:
+      - id: a
+        text: '$\frac{180^\circ}{7}$'
+      - id: b
+        text: '$\frac{540^\circ}{7}$'
+        issueSignals: [wrong-formula]
+      - id: c
+        text: '$\frac{360^\circ}{7}$'
+        issueSignals: [formula-error]
+      - id: d
+        text: '$36^\circ$'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify $n=7$ and $k=3$.
+      - Apply the point angle formula $\frac{180(n-2k)}{n}$.
+      explanation: |
+        Solution:
+        Using the formula with $n=7$ and $k=3$:
+        $$\text{Angle} = \frac{180^\circ(7 - 2(3))}{7}$$
+        $$\text{Angle} = \frac{180^\circ(7 - 6)}{7} = \frac{180^\circ}{7}$$
+
+        Why it works:
+        Alternatively, think of the circumcircle. The 7 vertices divide the $360^\circ$ circle into $360/7$ degree arcs. By connecting every 3rd vertex, the angle intercepts exactly one of these arcs. An inscribed angle is half its intercepted arc, so $\frac{1}{2} \left( \frac{360}{7} \right) = \frac{180}{7}$.
+
+  - id: section-tessellations
+    title: 'Tessellations'
+    content: |
+      A tessellation (or tiling) is a pattern of polygons that completely covers a flat plane without any gaps or overlaps.
+
+      For a single type of regular polygon to tile the plane, its interior angle must perfectly divide $360^\circ$.
+      Since the interior angle is $\frac{180(n-2)}{n}$, we require:
+      $$\frac{360}{\frac{180(n-2)}{n}} = \text{integer}$$
+      $$\frac{2n}{n-2} = \text{integer}$$
+
+      The only values of $n \ge 3$ that make this an integer are $n=3$ (equilateral triangles, angle $60^\circ$), $n=4$ (squares, angle $90^\circ$), and $n=6$ (regular hexagons, angle $120^\circ$). These are the only three regular polygons that can tile the plane by themselves.
+    check:
+      type: multipleChoice
+      prompt: 'Can a regular pentagon tile the plane by itself? Why or why not?'
+      choices:
+      - id: a
+        text: 'No, because $108^\circ$ does not divide $360^\circ$ evenly.'
+      - id: b
+        text: 'Yes, because $360^\circ - 108^\circ = 252^\circ$, which is positive.'
+        issueSignals: [wrong-concept]
+      - id: c
+        text: 'No, because 5 is an odd number.'
+        issueSignals: [wrong-concept]
+      - id: d
+        text: 'Yes, because pentagons can be arranged in a star pattern.'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Calculate the interior angle of a regular pentagon.
+      - Test if it is a divisor of $360^\circ$.
+      explanation: |
+        Solution:
+        The interior angle of a regular pentagon ($n=5$) is $\frac{180(3)}{5} = 108^\circ$.
+        If you try to put pentagons together at a vertex, three pentagons take up $3 \times 108^\circ = 324^\circ$.
+        This leaves a gap of $360^\circ - 324^\circ = 36^\circ$, which is too small for a fourth pentagon. Thus, they cannot tile without gaps or overlaps.
+        
+        Why it works:
+        The sum of the angles surrounding any vertex in a valid tessellation must be exactly $360^\circ$.

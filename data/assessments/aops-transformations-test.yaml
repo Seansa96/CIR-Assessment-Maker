@@ -1,6 +1,6 @@
 schemaVersion: 1
 id: aops-transformations-test
-title: Shifts, Turns, Flips, Stretches, and Squeezes Chapter Test
+title: Transformations Chapter Test
 assessmentType: test
 categoryId: art-of-problem-solving
 topicId: aops-transformations
@@ -12,235 +12,257 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-transformations
-  - aops-volume-1
   - geometry
-  - translation
-  - rotation
-  - reflection
-  - distortion
+  - composite-transformations
+  - dilations
+  - symmetry
 skills:
-- Apply aops-transformations
-- aops-transformations
+- Perform composite transformations on the coordinate plane.
+- Determine the angle of rotational symmetry for regular polygons.
+- Apply dilations with a given scale factor.
+- Reflect points across arbitrary horizontal and vertical lines.
 questions:
 - id: q001
   type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **translation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A point $P(-2, 5)$ is first reflected across the $y$-axis, and then translated 3 units down. What are the final coordinates of the point?'
+  difficultyDimensions:
+  - Step 1: Reflect across y-axis $(x, y) \to (-x, y)$. $P(-2, 5) \to (2, 5)$.
+  - Step 2: Translate 3 units down $(x, y) \to (x, y-3)$. $(2, 5) \to (2, 2)$.
+  - Evaluate final point: $(2, 2)$.
   choices:
   - id: a
-    text: Use track invariant quantities after checking the relevant constraints.
+    text: '$(-2, 2)$'
+    issueSignals:
+    - reflection-omission
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$(2, 2)$'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$(2, 8)$'
+    issueSignals:
+    - translation-direction-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$(-5, 5)$'
+    issueSignals:
+    - translation-axis-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize translation, choose track invariant quantities, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
+    choiceId: b
+  explanation: |
+    Solution:
+    This is a composite transformation. We must perform the steps in exact order.
+    Step 1: Reflect across the $y$-axis. The rule is $(x, y) \to (-x, y)$.
+    $(-2, 5) \to (2, 5)$.
+    Step 2: Translate 3 units down. This affects only the $y$-coordinate.
+    $(2, 5) \to (2, 5 - 3) = (2, 2)$.
+    The final coordinates are $(2, 2)$.
+
+    Why it works:
+    Composite transformations are like functions in algebra; the output of the first transformation becomes the input for the second transformation.
+
+    Why the other choices fail:
+    - $(-2, 2)$ translates the original point down but forgets to reflect it first.
+    - $(2, 8)$ reflects the point correctly but translates it UP instead of down.
+    - $(-5, 5)$ translates the point left instead of down.
+
 - id: q002
   type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **rotation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'What is the smallest angle of rotational symmetry for a regular octagon (8-sided polygon)?'
+  difficultyDimensions:
+  - Recall that a regular polygon with $n$ sides has $n$ lines of symmetry and $n$-fold rotational symmetry.
+  - Calculate smallest angle: $360^\circ / n$.
+  - Substitute $n = 8$: $360 / 8 = 45^\circ$.
   choices:
   - id: a
-    text: Use map coordinates under a rule after checking the relevant constraints.
+    text: '$60^\circ$'
+    issueSignals:
+    - hexagon-confusion
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$45^\circ$'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$90^\circ$'
+    issueSignals:
+    - square-confusion
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$30^\circ$'
+    issueSignals:
+    - dodecagon-confusion
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize rotation, choose map coordinates under a rule, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
+    choiceId: b
+  explanation: |
+    Solution:
+    A regular polygon has a center of rotation. A full circle is $360^\circ$.
+    For a regular polygon with $n$ sides, the smallest angle of rotational symmetry is found by dividing $360^\circ$ by $n$.
+    For an octagon, $n = 8$.
+    $360^\circ / 8 = 45^\circ$.
+    Rotating the octagon $45^\circ$ will map it perfectly onto itself.
+
+    Why it works:
+    Imagine connecting the center of the octagon to all 8 vertices. This creates 8 identical slices of a pie. Each slice takes up exactly $360^\circ / 8 = 45^\circ$. Rotating by one slice shifts every vertex to the next position.
+
+    Why the other choices fail:
+    - $60^\circ$ is for a regular hexagon (6 sides).
+    - $90^\circ$ is for a square (4 sides).
+    - $30^\circ$ is for a regular dodecagon (12 sides).
+
 - id: q003
   type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **reflection**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'A triangle has vertices $A(1, 2)$, $B(3, 2)$, and $C(2, 5)$. The triangle is dilated with the center of dilation at the origin $(0,0)$ and a scale factor of $k = 3$. What are the coordinates of the new vertex $C''$?'
+  difficultyDimensions:
+  - Recall the rule for dilation centered at the origin: $(x, y) \to (kx, ky)$.
+  - Identify the target vertex $C(2, 5)$.
+  - Multiply by scale factor $k=3$: $(3 \cdot 2, 3 \cdot 5)$.
+  - Evaluate: $(6, 15)$.
   choices:
   - id: a
-    text: Use use transformations to prove congruence after checking the relevant constraints.
+    text: '$(5, 8)$'
+    issueSignals:
+    - addition-instead-of-multiplication
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$(6, 15)$'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$(9, 6)$'
+    issueSignals:
+    - wrong-vertex-error
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$(6, 5)$'
+    issueSignals:
+    - one-axis-dilation-error
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize reflection, choose use transformations to prove congruence, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
+    choiceId: b
+  explanation: |
+    Solution:
+    A dilation centered at the origin scales the distance of every point from the origin by the scale factor $k$.
+    The rule is $(x, y) \to (kx, ky)$.
+    We only need to find the new coordinates for vertex $C(2, 5)$.
+    $C' = (3 \times 2, 3 \times 5) = (6, 15)$.
+
+    Why it works:
+    Dilation is the only standard transformation that changes the *size* of the shape (it is not a rigid motion). It stretches the shape proportionally away from the origin in all directions.
+
+    Why the other choices fail:
+    - $(5, 8)$ adds 3 to the coordinates instead of multiplying by 3 (acting like a translation).
+    - $(9, 6)$ dilates vertex $B(3, 2)$ instead of vertex $C$.
+    - $(6, 5)$ only multiplies the $x$-coordinate by 3 and leaves the $y$-coordinate unchanged.
+
 - id: q004
   type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **distortion**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'Point $Q(4, -1)$ is rotated $180^\circ$ about the origin. What are the coordinates of the new point $Q''$?'
+  difficultyDimensions:
+  - Recall the rule for a $180^\circ$ rotation: $(x, y) \to (-x, -y)$.
+  - Apply rule: change the signs of both coordinates.
+  - Evaluate: $(-4, 1)$.
   choices:
   - id: a
-    text: Use track invariant quantities after checking the relevant constraints.
+    text: '$(-4, -1)$'
+    issueSignals:
+    - reflection-y-axis-confusion
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: '$(-1, -4)$'
+    issueSignals:
+    - 90-rotation-confusion
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: '$(-4, 1)$'
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: '$(1, 4)$'
+    issueSignals:
+    - 90-rotation-confusion
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize distortion, choose track invariant quantities, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
+    choiceId: c
+  explanation: |
+    Solution:
+    A $180^\circ$ rotation (a half-turn) about the origin moves a point directly through the origin to the opposite side of the coordinate plane.
+    The rule is $(x, y) \to (-x, -y)$.
+    Applying this to $Q(4, -1)$, we flip the sign of both coordinates:
+    $Q'(-4, 1)$.
+
+    Why it works:
+    Rotating $180^\circ$ is mathematically identical to reflecting the point across the origin. Both transformations use the exact same rule: flip all signs.
+
+    Why the other choices fail:
+    - $(-4, -1)$ is a reflection across the $y$-axis.
+    - $(-1, -4)$ is a $90^\circ$ counter-clockwise rotation (or reflection across $y=-x$).
+    - $(1, 4)$ is a $90^\circ$ clockwise rotation.
+
 - id: q005
-  type: freeResponse
-  prompt: |-
-    A Shifts, Turns, Flips, Stretches, and Squeezes problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **map coordinates under a rule** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
+  type: multipleChoice
+  prompt: 'What are the coordinates of point $R(3, 5)$ after it is reflected across the vertical line $x = 1$?'
+  difficultyDimensions:
+  - Determine horizontal distance from point to the line of reflection: $3 - 1 = 2$ units.
+  - Point is to the right of the line, so reflection must move it to the left by the same distance.
+  - New x-coordinate: $1 - 2 = -1$.
+  - The y-coordinate is unchanged for a vertical reflection: 5.
+  - Combine: $(-1, 5)$.
+  choices:
+  - id: a
+    text: '$(-3, 5)$'
+    issueSignals:
+    - reflection-y-axis-confusion
+  - id: b
+    text: '$(3, -3)$'
+    issueSignals:
+    - axis-swap-reflection-error
+  - id: c
+    text: '$(-1, 5)$'
+  - id: d
+    text: '$(1, 5)$'
+    issueSignals:
+    - line-of-reflection-confusion
   answer:
-    expected: |-
-      Check whether the structure still contains dilation and whether the constraints needed for map coordinates under a rule remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions dilation.
-    - Mentions map coordinates under a rule.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Shifts, Turns, Flips, Stretches, and Squeezes; specific technique: map coordinates under a rule. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
+    choiceId: c
+  explanation: |
+    Solution:
+    Reflecting across the line $x = 1$ means the point will jump horizontally, keeping the same vertical $y$-height.
+    1. Find the horizontal distance from the point's $x$-coordinate (3) to the line ($x=1$).
+       Distance = $3 - 1 = 2$ units.
+    2. The point is 2 units to the *right* of the line, so its reflection must be 2 units to the *left* of the line.
+       New $x$-coordinate = $1 - 2 = -1$.
+    3. The $y$-coordinate stays the same.
+    The new point is $(-1, 5)$.
+
+    Why it works:
+    You can also use the general algebraic formula for reflecting a point $(x,y)$ across the vertical line $x = k$: $(2k - x, y)$.
+    Here, $k=1$, so $2(1) - 3 = -1$.
+
+    Why the other choices fail:
+    - $(-3, 5)$ reflects the point across the $y$-axis ($x=0$) instead of $x=1$.
+    - $(3, -3)$ reflects the point across a horizontal line ($y=1$).
+    - $(1, 5)$ just projects the point directly onto the line of reflection.
+
 - id: q006
   type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **transformation proofs**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
+  prompt: 'If you reflect a shape across the $x$-axis, and then immediately reflect it across the $y$-axis, the final result is exactly identical to which single transformation?'
+  difficultyDimensions:
+  - Follow the rules: $(x,y) \to (x, -y) \to (-x, -y)$.
+  - Identify what single transformation has the rule $(-x, -y)$.
+  - Result: $180^\circ$ rotation about the origin.
   choices:
   - id: a
-    text: Use use transformations to prove congruence after checking the relevant constraints.
+    text: 'A $90^\circ$ counter-clockwise rotation about the origin.'
+    issueSignals:
+    - 90-rotation-confusion
   - id: b
-    text: Assume the answer from a visually similar problem still applies.
+    text: 'A $180^\circ$ rotation about the origin.'
   - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
+    text: 'A reflection across the line $y = x$.'
+    issueSignals:
+    - diagonal-reflection-confusion
   - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
+    text: 'A translation 2 units left and 2 units down.'
+    issueSignals:
+    - translation-confusion
   answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize transformation proofs, choose use transformations to prove congruence, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
-- id: q007
-  type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **translation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use track invariant quantities after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize translation, choose track invariant quantities, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
-- id: q008
-  type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **rotation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use map coordinates under a rule after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize rotation, choose map coordinates under a rule, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
-- id: q009
-  type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **reflection**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use transformations to prove congruence after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize reflection, choose use transformations to prove congruence, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
-- id: q010
-  type: freeResponse
-  prompt: |-
-    A Shifts, Turns, Flips, Stretches, and Squeezes problem has been changed so that the obvious first method no longer applies directly. Explain how you would decide whether **track invariant quantities** is still legal, and name one condition you would check. The variant includes an extra condition, so be careful not to overgeneralize.
-  answer:
-    expected: |-
-      Check whether the structure still contains distortion and whether the constraints needed for track invariant quantities remain true.
-    gradingMode: selfCheck
-    keyPoints:
-    - Mentions distortion.
-    - Mentions track invariant quantities.
-    - Checks a condition or edge case.
-  explanation: |-
-    The purpose is to test method selection. Related topic: Shifts, Turns, Flips, Stretches, and Squeezes; specific technique: track invariant quantities. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
-- id: q011
-  type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **dilation**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use map coordinates under a rule after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize dilation, choose map coordinates under a rule, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
-- id: q012
-  type: multipleChoice
-  prompt: |-
-    An original Shifts, Turns, Flips, Stretches, and Squeezes problem variant is designed to test **transformation proofs**. Which solution strategy is most appropriate? The variant includes an extra condition, so be careful not to overgeneralize.
-  choices:
-  - id: a
-    text: Use use transformations to prove congruence after checking the relevant constraints.
-  - id: b
-    text: Assume the answer from a visually similar problem still applies.
-  - id: c
-    text: Ignore the distinction between necessary and sufficient conditions.
-  - id: d
-    text: Try arithmetic first and decide the structure only after the answer appears.
-  answer:
-    choiceId: a
-  explanation: |-
-    This mirrors the difficulty of a chapter problem archetype: recognize transformation proofs, choose use transformations to prove congruence, and verify the constraints before computing. The harder version adds a condition that must be tested, not ignored.
-  skills:
-  - aops-transformations
+    choiceId: b
+  explanation: |
+    Solution:
+    Let's trace a general point $(x, y)$ through the two transformations.
+    1. Reflection across the $x$-axis: $(x, y) \to (x, -y)$.
+    2. Reflection across the $y$-axis: $(x, -y) \to (-x, -y)$.
+    The final mapping is $(x, y) \to (-x, -y)$.
+    This rule (flipping both signs) is exactly the rule for a $180^\circ$ rotation about the origin.
+
+    Why it works:
+    This is a fundamental theorem of transformations: reflecting a shape across two intersecting lines is identical to rotating the shape around their point of intersection. The angle of rotation is twice the angle between the two lines. The $x$-axis and $y$-axis intersect at $90^\circ$, so the rotation is $2 \times 90^\circ = 180^\circ$.
+
+    Why the other choices fail:
+    - A $90^\circ$ rotation maps $(x,y) \to (-y, x)$.
+    - A reflection across $y = x$ maps $(x,y) \to (y, x)$.
+    - A translation maps $(x,y) \to (x+a, y+b)$, which cannot emulate a reflection or rotation.

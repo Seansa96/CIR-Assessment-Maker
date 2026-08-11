@@ -12,235 +12,199 @@ navigation:
   tags:
   - art-of-problem-solving
   - aops-statistics-probability
-  - aops
+  - discrete-math
+  - statistics
+  - basic-probability
 skills:
-- Apply aops-statistics-probability
-- aops-statistics-probability
+- Calculate basic statistical measures (mean, median, mode).
+- Compute single-event probabilities.
+- Apply the complement rule for probabilities.
 questions:
 - id: q001
   type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 1?'
+  prompt: 'A student receives scores of 85, 90, 85, 92, and 98 on five tests. What is the median score?'
+  difficultyDimensions:
+  - Sort the list: 85, 85, 90, 92, 98.
+  - Identify the middle value.
   choices:
   - id: a
-    text: Verify the relevant condition before using the method.
+    text: '85'
+    issueSignals:
+    - mode-instead-of-median
   - id: b
-    text: Trust visual appearance alone.
+    text: '90'
   - id: c
-    text: Use a theorem without its hypothesis.
+    text: '92'
+    issueSignals:
+    - unsorted-median
   - id: d
-    text: Ignore restrictions after simplifying.
+    text: '91'
+    issueSignals:
+    - mean-instead-of-median
   answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
+    choiceId: b
+  explanation: |
+    Solution:
+    To find the median, you must first sort the list of values in ascending order:
+    $85, 85, 90, 92, 98$.
+    The median is the middle value in the sorted list. Since there are 5 numbers, the 3rd number is the median.
+    The median is 90.
+
+    Why it works:
+    The median physically separates the upper half of the data from the lower half. This is why sorting is a mandatory first step.
+
+    Why the other choices fail:
+    - 85 is the *mode* (the most frequently occurring number).
+    - 92 is the middle number of the *unsorted* list (85, 90, 85, **92**, 98).
+    - 91 is the *mean* (the average: $450 / 5 = 90$ — wait, the mean is exactly 90 as well! But if a student calculated 91, they made an arithmetic error while trying to find the mean).
+
 - id: q002
   type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 2?'
+  prompt: 'If a fair 6-sided die is rolled, what is the probability of rolling a prime number?'
+  difficultyDimensions:
+  - Identify the sample space: $\{1, 2, 3, 4, 5, 6\}$.
+  - Identify the prime numbers in the space: $\{2, 3, 5\}$.
+  - Calculate probability: $3/6 = 1/2$.
   choices:
   - id: a
-    text: Verify the relevant condition before using the method.
+    text: '1/3'
+    issueSignals:
+    - prime-confusion
   - id: b
-    text: Trust visual appearance alone.
+    text: '1/2'
   - id: c
-    text: Use a theorem without its hypothesis.
+    text: '2/3'
+    issueSignals:
+    - prime-one-confusion
   - id: d
-    text: Ignore restrictions after simplifying.
+    text: '1/6'
   answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
+    choiceId: b
+  explanation: |
+    Solution:
+    The total number of possible outcomes is 6 (the numbers 1 through 6).
+    The prime numbers on a die are 2, 3, and 5.
+    There are 3 successful outcomes.
+    Probability = $\frac{3}{6} = \frac{1}{2}$.
+
+    Why it works:
+    Basic probability is defined as (Number of successful outcomes) / (Total possible outcomes). Note that 1 is NOT a prime number.
+
+    Why the other choices fail:
+    - 1/3 occurs if a student forgets that 2 is prime (only counting 3 and 5).
+    - 2/3 occurs if a student incorrectly counts 1 as a prime number (1, 2, 3, 5).
+    - 1/6 is the probability of rolling one specific number.
+
 - id: q003
   type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 3?'
+  prompt: 'The probability that it will rain tomorrow is 0.35. What is the probability that it will NOT rain tomorrow?'
+  difficultyDimensions:
+  - Recall the complement rule: $P(A^c) = 1 - P(A)$.
+  - Calculate $1 - 0.35$.
   choices:
   - id: a
-    text: Verify the relevant condition before using the method.
+    text: '0.35'
   - id: b
-    text: Trust visual appearance alone.
+    text: '0.65'
   - id: c
-    text: Use a theorem without its hypothesis.
+    text: '0.75'
+    issueSignals:
+    - subtraction-error
   - id: d
-    text: Ignore restrictions after simplifying.
+    text: '1.35'
+    issueSignals:
+    - addition-error
   answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
+    choiceId: b
+  explanation: |
+    Solution:
+    The sum of the probabilities of all possible mutually exclusive outcomes must equal 1.
+    If the probability of rain is 0.35, the probability of no rain is:
+    $1 - 0.35 = 0.65$.
+
+    Why it works:
+    This is the complement rule. An event either happens, or it doesn't. Together, those two possibilities cover $100\%$ of the sample space.
+
+    Why the other choices fail:
+    - 0.35 is the probability that it *will* rain.
+    - 0.75 is a subtraction error (from $1.10 - 0.35$).
+    - 1.35 is an addition error ($1 + 0.35$), which is impossible because probabilities cannot exceed 1.
+
 - id: q004
   type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 4?'
+  prompt: 'A bag contains 4 red marbles, 5 blue marbles, and 3 green marbles. If one marble is drawn at random, what is the probability it is either red OR green?'
+  difficultyDimensions:
+  - Find the total number of marbles: $4 + 5 + 3 = 12$.
+  - Identify the number of successful outcomes: $4 \text{ (red)} + 3 \text{ (green)} = 7$.
+  - Calculate probability: $7/12$.
   choices:
   - id: a
-    text: Verify the relevant condition before using the method.
+    text: '1/3'
+    issueSignals:
+    - single-color-probability
   - id: b
-    text: Trust visual appearance alone.
+    text: '7/12'
   - id: c
-    text: Use a theorem without its hypothesis.
+    text: '5/12'
+    issueSignals:
+    - complement-error
   - id: d
-    text: Ignore restrictions after simplifying.
+    text: '1/6'
+    issueSignals:
+    - multiplication-error
   answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
+    choiceId: b
+  explanation: |
+    Solution:
+    The total number of marbles is $4 + 5 + 3 = 12$.
+    The number of marbles that satisfy the condition (red OR green) is $4 + 3 = 7$.
+    The probability of drawing a red or green marble is $\frac{7}{12}$.
+
+    Why it works:
+    Because a marble cannot be both red and green simultaneously, the events are mutually exclusive. We can simply add the individual probabilities: $P(\text{Red}) + P(\text{Green}) = \frac{4}{12} + \frac{3}{12} = \frac{7}{12}$.
+
+    Why the other choices fail:
+    - 1/3 is $\frac{4}{12}$, the probability of drawing only red.
+    - 5/12 is the probability of drawing a *blue* marble (the complement of what was asked).
+    - 1/6 is a multiplication error $\frac{4}{12} \times \frac{3}{12}$ (this would only apply if drawing two marbles with replacement).
+
 - id: q005
   type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 5?'
+  prompt: 'A data set consists of the numbers: 2, 4, x, 10, 12. If the mean of the data set is 8, what is the value of x?'
+  difficultyDimensions:
+  - Apply the mean formula: $(2 + 4 + x + 10 + 12) / 5 = 8$.
+  - Simplify: $(28 + x) / 5 = 8$.
+  - Solve for x: $28 + x = 40 \implies x = 12$.
   choices:
   - id: a
-    text: Verify the relevant condition before using the method.
+    text: '8'
+    issueSignals:
+    - median-mean-confusion
   - id: b
-    text: Trust visual appearance alone.
+    text: '12'
   - id: c
-    text: Use a theorem without its hypothesis.
+    text: '28'
+    issueSignals:
+    - sum-error
   - id: d
-    text: Ignore restrictions after simplifying.
+    text: '40'
+    issueSignals:
+    - total-sum-error
   answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q006
-  type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 6?'
-  choices:
-  - id: a
-    text: Verify the relevant condition before using the method.
-  - id: b
-    text: Trust visual appearance alone.
-  - id: c
-    text: Use a theorem without its hypothesis.
-  - id: d
-    text: Ignore restrictions after simplifying.
-  answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q007
-  type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 7?'
-  choices:
-  - id: a
-    text: Verify the relevant condition before using the method.
-  - id: b
-    text: Trust visual appearance alone.
-  - id: c
-    text: Use a theorem without its hypothesis.
-  - id: d
-    text: Ignore restrictions after simplifying.
-  answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q008
-  type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 8?'
-  choices:
-  - id: a
-    text: Verify the relevant condition before using the method.
-  - id: b
-    text: Trust visual appearance alone.
-  - id: c
-    text: Use a theorem without its hypothesis.
-  - id: d
-    text: Ignore restrictions after simplifying.
-  answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q009
-  type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 9?'
-  choices:
-  - id: a
-    text: Verify the relevant condition before using the method.
-  - id: b
-    text: Trust visual appearance alone.
-  - id: c
-    text: Use a theorem without its hypothesis.
-  - id: d
-    text: Ignore restrictions after simplifying.
-  answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q010
-  type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 10?'
-  choices:
-  - id: a
-    text: Verify the relevant condition before using the method.
-  - id: b
-    text: Trust visual appearance alone.
-  - id: c
-    text: Use a theorem without its hypothesis.
-  - id: d
-    text: Ignore restrictions after simplifying.
-  answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q011
-  type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 11?'
-  choices:
-  - id: a
-    text: Verify the relevant condition before using the method.
-  - id: b
-    text: Trust visual appearance alone.
-  - id: c
-    text: Use a theorem without its hypothesis.
-  - id: d
-    text: Ignore restrictions after simplifying.
-  answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q012
-  type: multipleChoice
-  prompt: 'Statistics and Probability: which statement best protects a valid solution in problem pattern 12?'
-  choices:
-  - id: a
-    text: Verify the relevant condition before using the method.
-  - id: b
-    text: Trust visual appearance alone.
-  - id: c
-    text: Use a theorem without its hypothesis.
-  - id: d
-    text: Ignore restrictions after simplifying.
-  answer:
-    choiceId: a
-  explanation: Verify the relevant condition before using the method.
-- id: q013
-  type: selectAll
-  prompt: 'Statistics and Probability: select all sound habits for a changed-condition problem.'
-  choices:
-  - id: a
-    text: Restate the changed condition.
-  - id: b
-    text: Check the method still applies.
-  - id: c
-    text: Assume the old answer remains valid.
-  - id: d
-    text: Verify the final result.
-  answer:
-    choiceIds:
-    - a
-    - b
-    - d
-  explanation: Changed conditions require a fresh validity check.
-- id: q014
-  type: selectAll
-  prompt: 'Statistics and Probability: select all sound habits for a changed-condition problem.'
-  choices:
-  - id: a
-    text: Restate the changed condition.
-  - id: b
-    text: Check the method still applies.
-  - id: c
-    text: Assume the old answer remains valid.
-  - id: d
-    text: Verify the final result.
-  answer:
-    choiceIds:
-    - a
-    - b
-    - d
-  explanation: Changed conditions require a fresh validity check.
-- id: q015
-  type: freeResponse
-  prompt: Explain how you would choose and verify a method for a Statistics and Probability problem.
-  answer:
-    gradingMode: selfCheck
-    expected: Identify the givens, choose a method whose conditions hold, carry it out, and verify the original question.
-    keyPoints:
-    - Identifies givens or structure.
-    - Checks method conditions.
-    - Verifies the result.
-  explanation: A complete solution justifies the method and checks the conclusion.
+    choiceId: b
+  explanation: |
+    Solution:
+    The mean is the sum of the numbers divided by the count of numbers.
+    $\frac{2 + 4 + x + 10 + 12}{5} = 8$
+    Multiply both sides by 5:
+    $2 + 4 + x + 10 + 12 = 40$
+    $28 + x = 40$
+    $x = 12$.
+
+    Why it works:
+    You can also think about "total points". If 5 numbers average to 8, their total sum must be $5 \times 8 = 40$. The 4 known numbers sum to 28. The missing number must make up the difference: $40 - 28 = 12$.
+
+    Why the other choices fail:
+    - 8 sets $x$ equal to the mean itself, which is a guess.
+    - 28 is the sum of the known numbers.
+    - 40 is the total sum required, forgetting to subtract the 28.

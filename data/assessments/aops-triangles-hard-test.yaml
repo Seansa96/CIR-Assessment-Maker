@@ -18,95 +18,460 @@ questions:
 - id: hard-test-q001
   type: multipleChoice
   prompt: How many unordered integer-sided nondegenerate triangles have perimeter 12?
-  choices: [{id: a, text: '2'}, {id: b, text: '3'}, {id: c, text: '4'}, {id: d, text: '5'}]
+  choices:
+  - id: a
+    text: '2'
+    issueSignals: [inequality-direction]
+  - id: b
+    text: '3'
+  - id: c
+    text: '4'
+    issueSignals: [inequality-direction]
+  - id: d
+    text: '5'
+    issueSignals: [inequality-direction]
   answer: {choiceId: b}
-  explanation: With $a\le b\le c$, the possibilities are $(2,5,5)$, $(3,4,5)$, and $(4,4,4)$.
+  difficultyDimensions:
+  - List integer partitions of 12 into three parts $a \le b \le c$.
+  - Filter out partitions that fail the triangle inequality $a+b > c$.
+  explanation: |
+    Solution:
+    List the partitions of 12 into 3 integers $a \le b \le c$:
+    $(1, 1, 10)$ — fails $1+1 > 10$
+    $(1, 2, 9)$ — fails $1+2 > 9$
+    $(1, 3, 8)$ — fails $1+3 > 8$
+    $(1, 4, 7)$ — fails $1+4 > 7$
+    $(1, 5, 6)$ — fails $1+5 > 6$
+    $(2, 2, 8)$ — fails $2+2 > 8$
+    $(2, 3, 7)$ — fails $2+3 > 7$
+    $(2, 4, 6)$ — fails $2+4 > 6$
+    $(2, 5, 5)$ — passes $2+5 > 5$
+    $(3, 3, 6)$ — fails $3+3 > 6$
+    $(3, 4, 5)$ — passes $3+4 > 5$
+    $(4, 4, 4)$ — passes $4+4 > 4$
+    There are exactly **3** such triangles.
+
+    Why it works:
+    A valid non-degenerate triangle must satisfy the strict triangle inequality. By generating ordered partitions $a \le b \le c$, we systematically check all cases without duplication. The constraint $a+b>c$ (or $c < \text{perimeter}/2 = 6$) filters the list.
+
+    Why the other choices fail:
+    - **(A)** $2$ misses one valid case, perhaps overlooking the equilateral $(4,4,4)$ or the isosceles $(2,5,5)$.
+    - **(C)** $4$ counts the degenerate straight-line case $(3,3,6)$ which fails the strict inequality.
+    - **(D)** $5$ counts even more degenerate or invalid partitions.
+
 - id: hard-test-q002
   type: multipleChoice
   prompt: A right triangle is similar to a 5-12-13 triangle and has perimeter 60. Find its hypotenuse.
-  choices: [{id: a, text: '$20$'}, {id: b, text: '$24$'}, {id: c, text: '$26$'}, {id: d, text: '$30$'}]
+  choices:
+  - id: a
+    text: '$20$'
+    issueSignals: [ratio-vs-area-ratio]
+  - id: b
+    text: '$24$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$26$'
+  - id: d
+    text: '$30$'
+    issueSignals: [sign-error]
   answer: {choiceId: c}
-  explanation: The reference perimeter is 30, so the scale factor is 2 and the hypotenuse is 26.
+  difficultyDimensions:
+  - Compute the perimeter of the base similar figure.
+  - Scale the target dimension by the ratio of the perimeters.
+  explanation: |
+    Solution:
+    The perimeter of the reference $5$-$12$-$13$ triangle is $5 + 12 + 13 = 30$.
+    The scale factor is $\frac{60}{30} = 2$.
+    The scaled hypotenuse is $13 \times 2 = 26$.
+
+    Why it works:
+    All linear dimensions, including perimeter, scale by the same factor in similar triangles.
+
+    Why the other choices fail:
+    - **(A)** $20 = 60/3$ applies an arbitrary division.
+    - **(B)** $24 = 12 \times 2$ is the length of the long leg, not the hypotenuse.
+    - **(D)** $30$ is the perimeter of the base triangle.
+
 - id: hard-test-q003
   type: multipleChoice
   prompt: Triangles are congruent with corresponding sides $3x-2$ and $2x+7$. What is their common length?
-  choices: [{id: a, text: '$9$'}, {id: b, text: '$16$'}, {id: c, text: '$23$'}, {id: d, text: '$25$'}]
+  choices:
+  - id: a
+    text: '$9$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$16$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$23$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$25$'
   answer: {choiceId: d}
-  explanation: $3x-2=2x+7$ gives $x=9$, and the common side is 25.
+  difficultyDimensions:
+  - State the equality $3x-2 = 2x+7$ from CPCTC.
+  - Solve for $x$ and evaluate the length correctly.
+  explanation: |
+    Solution:
+    CPCTC: $3x - 2 = 2x + 7 \implies x = 9$.
+    Common length $= 3(9) - 2 = 27 - 2 = 25$.
+
+    Why it works:
+    Corresponding parts of congruent triangles are equal.
+
+    Why the other choices fail:
+    - **(A)** $9$ is the value of $x$, not the side length.
+    - **(B)** $16$ comes from $2x-2$ or $3x-11$ at $x=9$, or an arithmetic error.
+    - **(C)** $23 = 2(9)+5$ uses a slightly misread expression.
+
 - id: hard-test-q004
   type: multipleChoice
   prompt: Similar triangles have area ratio $25:81$. If the smaller perimeter is 30, find the larger perimeter.
-  choices: [{id: a, text: '$48$'}, {id: b, text: '$50$'}, {id: c, text: '$54$'}, {id: d, text: '$243/5$'}]
+  choices:
+  - id: a
+    text: '$48$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$50$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$54$'
+  - id: d
+    text: '$243/5$'
+    issueSignals: [ratio-vs-area-ratio]
   answer: {choiceId: c}
-  explanation: The length ratio is $5:9$, so the larger perimeter is $30(9/5)=54$.
+  difficultyDimensions:
+  - Take the square root of the area ratio to find the linear scale factor.
+  - Use the linear scale factor to find the larger perimeter.
+  explanation: |
+    Solution:
+    Linear ratio $= \sqrt{25} : \sqrt{81} = 5 : 9$.
+    $$\frac{30}{P_{large}} = \frac{5}{9} \implies P_{large} = \frac{30 \times 9}{5} = 6 \times 9 = 54.$$
+
+    Why it works:
+    Perimeter scales linearly, while area scales as the square of the linear factor. Taking the square root recovers the correct $5:9$ ratio for the perimeter.
+
+    Why the other choices fail:
+    - **(A)** $48$ is an arithmetic error (e.g. $6 \times 8$).
+    - **(B)** $50 = 30 + 20$ adds something unrelated.
+    - **(D)** $243/5 = 30 \times (81/25)$ applies the area ratio directly to the perimeter.
+
 - id: hard-test-q005
   type: multipleChoice
   prompt: An altitude to a right triangle's hypotenuse divides it into segments 5 and 20. Find the leg adjacent to the segment of length 5.
-  choices: [{id: a, text: '$5\sqrt5$'}, {id: b, text: '$10$'}, {id: c, text: '$10\sqrt5$'}, {id: d, text: '$25$'}]
+  choices:
+  - id: a
+    text: '$5\sqrt5$'
+  - id: b
+    text: '$10$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$10\sqrt5$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$25$'
+    issueSignals: [sign-error]
   answer: {choiceId: a}
-  explanation: The hypotenuse is 25 and the leg satisfies $a^2=25\cdot5=125$, so $a=5\sqrt5$.
+  difficultyDimensions:
+  - Apply the leg geometric-mean theorem: $a^2 = p c$.
+  - Compute the full hypotenuse $c = 25$ first.
+  explanation: |
+    Solution:
+    The full hypotenuse is $c = 5 + 20 = 25$.
+    The geometric mean theorem for a leg states $a^2 = \text{adjacent segment} \times \text{hypotenuse}$:
+    $$a^2 = 5 \times 25 = 125 \implies a = \sqrt{125} = 5\sqrt{5}.$$
+
+    Why it works:
+    The smaller right triangle adjacent to the leg is similar to the large right triangle. The ratio of their hypotenuses ($a/c$) equals the ratio of their corresponding legs ($p/a$), leading to $a^2 = pc$.
+
+    Why the other choices fail:
+    - **(B)** $10 = \sqrt{5 \times 20}$ is the altitude $h = \sqrt{pq}$, not the leg.
+    - **(C)** $10\sqrt{5} = \sqrt{20 \times 25}$ is the *other* leg, adjacent to the segment of length 20.
+    - **(D)** $25$ is the full hypotenuse $c$.
+
 - id: hard-test-q006
   type: multipleChoice
   prompt: An equilateral triangle has side 6. Find its circumradius.
-  choices: [{id: a, text: '$\sqrt3$'}, {id: b, text: '$2\sqrt3$'}, {id: c, text: '$3\sqrt3$'}, {id: d, text: '$6$'}]
+  choices:
+  - id: a
+    text: '$\sqrt{3}$'
+    issueSignals: [wrong-center]
+  - id: b
+    text: '$2\sqrt{3}$'
+  - id: c
+    text: '$3\sqrt{3}$'
+    issueSignals: [wrong-center]
+  - id: d
+    text: '$6$'
+    issueSignals: [sign-error]
   answer: {choiceId: b}
-  explanation: The altitude is $3\sqrt3$, and the common centroid/circumcenter is two thirds of the way from a vertex, giving $2\sqrt3$.
+  difficultyDimensions:
+  - Find the altitude of an equilateral triangle.
+  - Recall that the circumcenter coincides with the centroid, dividing the altitude $2:1$.
+  explanation: |
+    Solution:
+    Altitude $h = 6 \frac{\sqrt{3}}{2} = 3\sqrt{3}$.
+    In an equilateral triangle, all centers coincide. The circumradius is the distance from the vertex to the centroid, which is $\frac{2}{3}$ of the altitude:
+    $$R = \frac{2}{3}(3\sqrt{3}) = 2\sqrt{3}.$$
+
+    Why it works:
+    The equilateral symmetry merges the median, altitude, and perpendicular bisector. The centroid's $2:1$ split applies directly to the circumradius.
+
+    Why the other choices fail:
+    - **(A)** $\sqrt{3} = \frac{1}{3}(3\sqrt{3})$ is the inradius.
+    - **(C)** $3\sqrt{3}$ is the full altitude.
+    - **(D)** $6$ is the side length.
+
 - id: hard-test-q007
   type: multipleChoice
   prompt: A right triangle has legs 9 and 40. Find its inradius.
-  choices: [{id: a, text: '$4$'}, {id: b, text: '$9/2$'}, {id: c, text: '$5$'}, {id: d, text: '$9$'}]
+  choices:
+  - id: a
+    text: '$4$'
+  - id: b
+    text: '$9/2$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$5$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$9$'
+    issueSignals: [sign-error]
   answer: {choiceId: a}
-  explanation: The hypotenuse is 41, so $K=180$, $s=45$, and $r=K/s=4$.
+  difficultyDimensions:
+  - Calculate hypotenuse using the Pythagorean theorem, then area and semiperimeter.
+  - Apply $r = K/s$ or the right-triangle specific formula $r = (a+b-c)/2$.
+  explanation: |
+    Solution:
+    Hypotenuse $c = \sqrt{9^2+40^2} = 41$.
+    Using $r = \frac{a+b-c}{2}$:
+    $$r = \frac{9+40-41}{2} = \frac{8}{2} = 4.$$
+
+    Why it works:
+    The formula $r = (a+b-c)/2$ works for all right triangles because the tangents from the vertices to the incircle split the perimeter in a way that isolates the radius at the right angle.
+
+    Why the other choices fail:
+    - **(B)** $9/2 = 4.5$ is half the short leg.
+    - **(C)** $5$ is an arithmetic error.
+    - **(D)** $9$ is the full short leg.
+
 - id: hard-test-q008
   type: multipleChoice
   prompt: An angle bisector divides the opposite side into segments 12 and 18. If the adjacent side corresponding to 12 has length 10, find the other adjacent side.
-  choices: [{id: a, text: '$12$'}, {id: b, text: '$15$'}, {id: c, text: '$18$'}, {id: d, text: '$20$'}]
+  choices:
+  - id: a
+    text: '$12$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$15$'
+  - id: c
+    text: '$18$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$20$'
+    issueSignals: [sign-error]
   answer: {choiceId: b}
-  explanation: The angle-bisector theorem gives $10/x=12/18=2/3$, so $x=15$.
+  difficultyDimensions:
+  - Apply the angle-bisector theorem correctly matching adjacent sides to segments.
+  - Solve the proportion.
+  explanation: |
+    Solution:
+    Let $x$ be the unknown side corresponding to the segment 18.
+    By the angle-bisector theorem:
+    $$\frac{10}{x} = \frac{12}{18} = \frac{2}{3} \implies 2x = 30 \implies x = 15.$$
+
+    Why it works:
+    The angle bisector of a triangle divides the opposite side into segments proportional to the adjacent sides.
+
+    Why the other choices fail:
+    - **(A)** $12$ would mean the ratio was $10:12 = 5:6$, which does not match $12:18$.
+    - **(C)** $18$ applies no scaling (assuming $10 \to 12$, maybe $x \to 18$ somehow additively).
+    - **(D)** $20 = 10 \times 2$; arbitrary factor.
+
 - id: hard-test-q009
   type: multipleChoice
   prompt: A median divides a triangle of area 90. What is the area ratio of the two resulting triangles?
-  choices: [{id: a, text: '$1:1$'}, {id: b, text: '$1:2$'}, {id: c, text: '$2:3$'}, {id: d, text: '$2:1$'}]
+  choices:
+  - id: a
+    text: '$1:1$'
+  - id: b
+    text: '$1:2$'
+    issueSignals: [ratio-vs-area-ratio]
+  - id: c
+    text: '$2:3$'
+    issueSignals: [ratio-vs-area-ratio]
+  - id: d
+    text: '$2:1$'
+    issueSignals: [ratio-vs-area-ratio]
   answer: {choiceId: a}
-  explanation: Equal bases on the bisected side and a shared altitude give equal areas.
+  difficultyDimensions:
+  - Understand the area implication of a median bisecting a side.
+  - Conclude that equal base and equal height mean equal area (ratio 1:1).
+  explanation: |
+    Solution:
+    The median splits the base in half. The two new triangles share this base line and the opposite vertex, so their altitudes are identical. Equal base and equal height mean equal area: $45$ and $45$. The ratio is $1:1$.
+
+    Why it works:
+    Area $= \tfrac12 b h$. Since $b_1 = b_2$ and $h_1 = h_2$, the areas are equal.
+
+    Why the other choices fail:
+    - **(B)** $1:2$ confuses the area split with the centroid's $1:2$ location on the median.
+    - **(C)** $2:3$ has no basis.
+    - **(D)** $2:1$ is the reverse of $1:2$.
+
 - id: hard-test-q010
   type: multipleChoice
   prompt: A right triangle has $\tan\theta=3/4$ and hypotenuse 20. Find the side opposite $\theta$.
-  choices: [{id: a, text: '$9$'}, {id: b, text: '$12$'}, {id: c, text: '$15$'}, {id: d, text: '$16$'}]
+  choices:
+  - id: a
+    text: '$9$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$12$'
+  - id: c
+    text: '$15$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$16$'
+    issueSignals: [sign-error]
   answer: {choiceId: b}
-  explanation: The side ratio is 3-4-5 scaled by 4, so the opposite side is 12.
+  difficultyDimensions:
+  - Map the tangent ratio to the legs of a 3-4-5 similar triangle.
+  - Scale up to the actual hypotenuse of 20.
+  explanation: |
+    Solution:
+    The ratio $\tan \theta = 3/4$ means the legs are in ratio $3k$ and $4k$.
+    The hypotenuse is $5k$. We are given $5k = 20$, so $k = 4$.
+    The side opposite $\theta$ corresponds to the numerator of the tangent, which is $3k$:
+    $$\text{Opposite} = 3(4) = 12.$$
+
+    Why it works:
+    Tangent gives the ratio of opposite to adjacent. Using a scaled Pythagorean triple $3k$-$4k$-$5k$ immediately fits the right triangle constraint and allows solving for the scale factor $k$.
+
+    Why the other choices fail:
+    - **(A)** $9$ would be the opposite side if $k=3$ (hypotenuse 15).
+    - **(C)** $15 = 3 \times 5$, using the reference hypotenuse as $k$, or $20 \times (3/4)$.
+    - **(D)** $16 = 4(4)$ is the adjacent leg, not the opposite leg.
+
 - id: hard-test-q011
   type: multipleChoice
   prompt: Find the area of a triangle with side lengths 10, 10, and 12.
-  choices: [{id: a, text: '$36$'}, {id: b, text: '$40$'}, {id: c, text: '$48$'}, {id: d, text: '$60$'}]
+  choices:
+  - id: a
+    text: '$36$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$40$'
+    issueSignals: [sign-error]
+  - id: c
+    text: '$48$'
+  - id: d
+    text: '$60$'
+    issueSignals: [sign-error]
   answer: {choiceId: c}
-  explanation: Heron gives $s=16$ and $K=\sqrt{16\cdot6\cdot6\cdot4}=48$.
+  difficultyDimensions:
+  - Drop an altitude to bisect the base of an isosceles triangle to find height.
+  - Compute area from the found height.
+  explanation: |
+    Solution:
+    This is an isosceles triangle. Drop an altitude to the base of $12$, splitting it into two segments of $6$.
+    The altitude $h$ satisfies $6^2 + h^2 = 10^2$, so $h = 8$ (a $6$-$8$-$10$ triangle).
+    Area $K = \tfrac12 (12)(8) = 48$.
+    (Heron's formula also works: $s=16$, $K = \sqrt{16 \cdot 6 \cdot 6 \cdot 4} = \sqrt{2304} = 48$.)
+
+    Why it works:
+    The altitude of an isosceles triangle bisects the base, forming two congruent right triangles.
+
+    Why the other choices fail:
+    - **(A)** $36 = \tfrac12(12)(6)$ uses the half-base as the height.
+    - **(B)** $40 = \tfrac12(10)(8)$ uses the wrong base for the computed height.
+    - **(D)** $60 = \tfrac12(10)(12)$ treats the triangle as right-angled with legs 10 and 12.
+
 - id: hard-test-q012
   type: multipleChoice
   prompt: Two sides of a triangle are fixed at 8 and 15. What is the largest possible area?
-  choices: [{id: a, text: '$30$'}, {id: b, text: '$60$'}, {id: c, text: '$92$'}, {id: d, text: '$120$'}]
+  choices:
+  - id: a
+    text: '$30$'
+    issueSignals: [sign-error]
+  - id: b
+    text: '$60$'
+  - id: c
+    text: '$92$'
+    issueSignals: [sign-error]
+  - id: d
+    text: '$120$'
+    issueSignals: [sign-error]
   answer: {choiceId: b}
-  explanation: $K=\tfrac12(8)(15)\sin C\le60$, with equality when the included angle is $90^\circ$.
+  difficultyDimensions:
+  - Write area as a function of the included angle: $K = \tfrac12 a b \sin C$.
+  - Maximize the sine function.
+  explanation: |
+    Solution:
+    Area $K = \tfrac12 (8)(15) \sin C = 60 \sin C$.
+    The maximum value of $\sin C$ is $1$, which occurs when $C = 90^\circ$.
+    Largest possible area $= 60(1) = 60$.
+
+    Why it works:
+    The area depends on the sine of the included angle. Sine is bounded by $[-1, 1]$, and for triangle angles $(0, 180^\circ)$, the maximum is exactly $1$ at $90^\circ$.
+
+    Why the other choices fail:
+    - **(A)** $30 = 60 \times (1/2)$, perhaps using a $30^\circ$ angle instead of maximizing.
+    - **(C)** $92$ has no clear derivation; maybe guessing based on bounding third side lengths.
+    - **(D)** $120 = 8 \times 15$ omits the $\tfrac12$ factor in the area formula.
+
 - id: hard-test-q013
   type: selectAll
   prompt: Which line-family and center matches are correct?
   choices:
-  - {id: a, text: Angle bisectors meet at the incenter.}
-  - {id: b, text: Perpendicular bisectors meet at the circumcenter.}
-  - {id: c, text: Medians meet at the centroid.}
-  - {id: d, text: Altitudes meet at the incenter.}
+  - id: a
+    text: Angle bisectors meet at the incenter.
+  - id: b
+    text: Perpendicular bisectors meet at the circumcenter.
+  - id: c
+    text: Medians meet at the centroid.
+  - id: d
+    text: Altitudes meet at the incenter.
+    issueSignals: [wrong-center]
   answer: {choiceIds: [a, b, c]}
-  explanation: Altitudes meet at the orthocenter.
+  difficultyDimensions:
+  - Accurately pair classical triangle centers with their generating lines.
+  - Reject altitudes for incenter (altitudes meet at the orthocenter).
+  explanation: |
+    Solution:
+    (A), (B), and (C) correctly match the definitions of the incenter, circumcenter, and centroid.
+
+    Why it works:
+    These are the definitional identities of these triangle centers.
+
+    (D) is false: altitudes meet at the *orthocenter*, not the incenter.
+
 - id: hard-test-q014
   type: selectAll
   prompt: If two triangles are similar with small-to-large scale factor $k$, which statements are valid?
   choices:
-  - {id: a, text: Corresponding angle measures are equal.}
-  - {id: b, text: Every corresponding length ratio is $k$.}
-  - {id: c, text: The area ratio is $k^2$.}
-  - {id: d, text: The triangles are necessarily congruent.}
+  - id: a
+    text: Corresponding angle measures are equal.
+  - id: b
+    text: Every corresponding length ratio is $k$.
+  - id: c
+    text: The area ratio is $k^2$.
+  - id: d
+    text: The triangles are necessarily congruent.
+    issueSignals: [congruence-criterion-misapplied]
   answer: {choiceIds: [a, b, c]}
-  explanation: Congruence follows only in the special case $k=1$.
+  difficultyDimensions:
+  - Recall all geometric consequences of triangle similarity.
+  - Differentiate between similarity (scale $k$) and congruence (scale $1$).
+  explanation: |
+    Solution:
+    (A), (B), and (C) are fundamental properties of similar triangles.
+
+    Why it works:
+    Similarity means same shape (equal angles) but potentially different size. The size difference scales all lengths by $k$ and all areas by $k^2$.
+
+    (D) is false: congruence requires $k=1$. Similar triangles are generally not congruent.
+
 - id: hard-test-q015
   type: freeResponse
   prompt: Prove that a segment through two sides of a triangle and parallel to the third side divides those two sides proportionally.
@@ -114,12 +479,29 @@ questions:
   - type: image
     src: /assessments/aops/aops-triangles-similarity.svg
     alt: Triangle ABC with D on AB, E on AC, and DE parallel to BC.
+  difficultyDimensions:
+  - Prove AA similarity from the parallel lines creating corresponding angles.
+  - Algebraically convert the whole-side similarity ratio into a divided-side segment proportion.
   answer:
     gradingMode: selfCheck
-    expected: 'Because $DE\parallel BC$, corresponding angles at $D,B$ and $E,C$ are congruent, while angle $A$ is shared. Thus $\triangle ADE\sim\triangle ABC$ by AA. Therefore $AD/AB=AE/AC$. Writing $AB=AD+DB$ and $AC=AE+EC$ and simplifying gives $AD/DB=AE/EC$, so the two sides are divided proportionally.'
     keyPoints:
     - Uses parallel-line angle equalities.
     - Proves AA similarity.
     - Writes a consistent correspondence proportion.
     - Converts whole-side ratios to split-side ratios.
-  explanation: Proportional division is a consequence of proved similarity, not a visual assumption.
+  explanation: |
+    Solution:
+    Let $\triangle ABC$ be cut by line $DE \parallel BC$, with $D$ on $AB$ and $E$ on $AC$.
+    Because $DE \parallel BC$, corresponding angles are equal: $\angle ADE = \angle ABC$ and $\angle AED = \angle ACB$.
+    Therefore, $\triangle ADE \sim \triangle ABC$ by AA similarity.
+    The ratio of corresponding sides is equal: $\frac{AD}{AB} = \frac{AE}{AC}$.
+    Substitute $AB = AD + DB$ and $AC = AE + EC$:
+    $$\frac{AD}{AD + DB} = \frac{AE}{AE + EC}$$
+    Invert both sides:
+    $$\frac{AD + DB}{AD} = \frac{AE + EC}{AE} \implies 1 + \frac{DB}{AD} = 1 + \frac{EC}{AE}$$
+    Subtract 1:
+    $$\frac{DB}{AD} = \frac{EC}{AE} \implies \frac{AD}{DB} = \frac{AE}{EC}.$$
+    Thus the two sides are divided proportionally.
+
+    Why it works:
+    The parallel line creates similar triangles, yielding a ratio of the small part to the whole. Simple algebraic manipulation of fractions transforms this into a ratio of the small part to the remaining part.

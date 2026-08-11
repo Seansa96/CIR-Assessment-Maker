@@ -1,161 +1,319 @@
 schemaVersion: 1
 id: aops-power-of-a-point-concept-lesson
-title: Power of a Point Concept Lesson
+title: 'Power of a Point'
 assessmentType: conceptLesson
 categoryId: art-of-problem-solving
 topicId: aops-power-of-a-point
 modeDefault: learn
-randomizeQuestions: false
 navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
   - art-of-problem-solving
   - aops-power-of-a-point
-  - aops
+  - geometry
+  - olympiad
 skills:
-- Apply aops-power-of-a-point
-- aops-power-of-a-point
+- Apply the intersecting chords, secant-secant, and tangent-secant theorems.
+- Define the power of a point algebraically as $d^2 - R^2$.
+- Construct and use the radical axis of two circles.
 lesson:
-  introduction: Learn to solve Power of a Point problems by recognizing power of a point, secants, tangents, circle products and justifying each theorem or transformation.
   sections:
-  - id: aops-power-of-a-point-motivation
-    title: What the topic helps you notice
-    required: true
-    content: Power of a Point is useful when a problem hides a relationship that is easier to see than to calculate. The important ideas are power of a point, secants, tangents, circle products.
+  - id: section-intersecting-chords
+    title: 'Intersecting Chords Theorem'
+    content: |
+      If two chords of a circle intersect at an interior point $P$, the product of the segments of one chord equals the product of the segments of the other chord.
+
+      Let chords $AB$ and $CD$ intersect at $P$. Then:
+      $$PA \cdot PB = PC \cdot PD$$
+
+      This theorem is derived directly from similar triangles. If you draw chords $AC$ and $BD$, the inscribed angles $\angle CAB$ and $\angle CDB$ intercept the same arc, so they are equal. Vertical angles at $P$ are equal. Thus $\triangle PAC \sim \triangle PDB$, which gives the ratio $\frac{PA}{PD} = \frac{PC}{PB}$, leading to the product.
     check:
-      id: aops-power-of-a-point-motivation-check
       type: multipleChoice
-      prompt: In Power of a Point, what should be checked before applying a method?
+      prompt: 'Two chords $AB$ and $CD$ intersect at point $P$ inside a circle. If $PA = 4$, $PB = 6$, and $PC = 3$, what is the length of $PD$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '8'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '2'
+        issueSignals: [algebra-error]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '12'
+        issueSignals: [ratio-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-power-of-a-point-definitions
-    title: Definitions and theorem conditions
-    required: true
-    content: State each condition before using it. In this topic, a theorem is a conditional statement, not a pattern-matching shortcut.
+        text: '7'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Set up the equation $PA \cdot PB = PC \cdot PD$.
+      - Substitute and solve for $PD$.
+      explanation: |
+        Solution:
+        By the Intersecting Chords Theorem:
+        $$PA \cdot PB = PC \cdot PD$$
+        $$(4)(6) = (3)(PD)$$
+        $$24 = 3(PD)$$
+        $$PD = 8$$
+
+        Why it works:
+        The product $PA \cdot PB$ is constant for *any* chord passing through $P$.
+
+  - id: section-secant-secant
+    title: 'Secant-Secant Theorem'
+    content: |
+      If two secants are drawn to a circle from an exterior point $P$, the product of the external segment and the entire secant is constant.
+
+      Let a secant from $P$ intersect the circle at $A$ and $B$ (with $A$ closer to $P$). Let another secant intersect at $C$ and $D$. Then:
+      $$PA \cdot PB = PC \cdot PD$$
+
+      Notice that the equation is exactly the same as the Intersecting Chords theorem. The only difference is that $P$ is outside the circle, so the segments $PB$ and $PD$ are the *total lengths* of the secants, not just the internal chord lengths.
     check:
-      id: aops-power-of-a-point-definitions-check
       type: multipleChoice
-      prompt: In Power of a Point, what should be checked before applying a method?
+      prompt: 'From an external point $P$, two secants $PAB$ and $PCD$ are drawn. If $PA = 5$, $AB = 7$, and $PC = 4$, what is the length of the internal chord $CD$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '11'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '15'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '8.75'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-power-of-a-point-recognition
-    title: Recognition cues
-    required: true
-    content: 'Look for these triggers: match segment products, identify external vs internal forms, use similarity proof structure. Record the givens, unknown, and any restriction before selecting a method.'
+        text: '12'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Add the external segment to the chord to find the total secant length ($PB$).
+      - Apply $PA \cdot PB = PC \cdot PD$ to find $PD$.
+      - Subtract $PC$ from $PD$ to find $CD$.
+      explanation: |
+        Solution:
+        The total length of the first secant is $PB = PA + AB = 5 + 7 = 12$.
+        By the Secant-Secant Theorem:
+        $$PA \cdot PB = PC \cdot PD$$
+        $$(5)(12) = (4)(PD)$$
+        $$60 = 4(PD) \implies PD = 15$$
+        The total length of the second secant is 15. The question asks for the internal chord $CD$.
+        $$CD = PD - PC = 15 - 4 = 11$$
+
+        Why it works:
+        A common error is multiplying the external and internal segments ($PA \cdot AB$), which is incorrect. The theorem strictly relates the external segment to the *entire* secant.
+
+  - id: section-tangent-secant
+    title: 'Tangent-Secant Theorem'
+    content: |
+      If a tangent and a secant are drawn to a circle from an exterior point $P$, the square of the tangent equals the product of the external segment and the entire secant.
+
+      Let $PT$ be a tangent and $PAB$ be a secant. Then:
+      $$(PT)^2 = PA \cdot PB$$
+
+      You can think of this as the limiting case of the Secant-Secant theorem. If we imagine the secant $PCD$ moving outward until the points $C$ and $D$ merge into a single point $T$, the lengths $PC$ and $PD$ become identical, transforming $PC \cdot PD$ into $PT \cdot PT = (PT)^2$.
     check:
-      id: aops-power-of-a-point-recognition-check
       type: multipleChoice
-      prompt: In Power of a Point, what should be checked before applying a method?
+      prompt: 'From an external point $P$, a tangent $PT$ and a secant $PAB$ are drawn. If $PA = 3$ and $AB = 9$, what is the length of the tangent $PT$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '6'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '$\sqrt{27}$'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '12'
+        issueSignals: [algebra-error]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-power-of-a-point-method
-    title: Choose a method
-    required: true
-    content: Choose the shortest valid route from the givens to the target. Explain why the condition for the chosen method is satisfied.
+        text: '36'
+        issueSignals: [formula-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Determine the total secant length $PB$.
+      - Set up $(PT)^2 = PA \cdot PB$.
+      - Take the square root.
+      explanation: |
+        Solution:
+        The total length of the secant is $PB = PA + AB = 3 + 9 = 12$.
+        By the Tangent-Secant Theorem:
+        $$(PT)^2 = PA \cdot PB$$
+        $$(PT)^2 = (3)(12) = 36$$
+        $$PT = 6$$
+
+        Why it works:
+        Just like the other theorems, this is proven via similar triangles. $\triangle PTA \sim \triangle PBT$ because they share $\angle P$, and the angle between the tangent and chord ($\angle PTA$) equals the inscribed angle ($\angle PBT$).
+
+  - id: section-algebraic-definition
+    title: 'Algebraic Definition of Power'
+    content: |
+      We've seen that the product of the segments (or secants) from $P$ is constant for *any* line through $P$. This constant is called the **Power of Point P** with respect to the circle.
+
+      Algebraically, if $d$ is the distance from $P$ to the center of the circle $O$, and $R$ is the circle's radius, the power is defined as:
+      $$\text{Power}(P) = d^2 - R^2$$
+
+      - If $P$ is outside the circle, $d > R$, so the power is positive. (This exactly equals $(PT)^2$, the square of the tangent).
+      - If $P$ is on the circle, $d = R$, so the power is 0.
+      - If $P$ is inside the circle, $d < R$, so the power is negative. (In this case, the product of the chord segments $PA \cdot PB$ is equal to $-(d^2 - R^2) = R^2 - d^2$).
     check:
-      id: aops-power-of-a-point-method-check
       type: multipleChoice
-      prompt: In Power of a Point, what should be checked before applying a method?
+      prompt: 'Point $P$ is 10 units away from the center of a circle with radius 6. A secant through $P$ intersects the circle at $A$ and $B$. What is the value of the product $PA \cdot PB$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '64'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '36'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '100'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-power-of-a-point-mini-example
-    title: A small original example
-    required: true
-    content: Try a small case first, then generalize. Substitute the result back into the original condition instead of checking only an intermediate expression.
+        text: '16'
+        issueSignals: [algebra-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify $d = 10$ and $R = 6$.
+      - Calculate the power using $d^2 - R^2$.
+      explanation: |
+        Solution:
+        The power of point $P$ is defined algebraically as $d^2 - R^2$.
+        Since $d = 10$ and $R = 6$:
+        $$\text{Power} = 10^2 - 6^2 = 100 - 36 = 64$$
+        Because $P$ is outside the circle, the geometric product $PA \cdot PB$ is exactly equal to the power.
+        $$PA \cdot PB = 64$$
+
+        Why it works:
+        If you draw a secant passing directly through the center of the circle, the two segments from $P$ are $(d - R)$ and $(d + R)$. Their product is $(d - R)(d + R) = d^2 - R^2$. Since the product is constant for all secants, this formula holds for every line through $P$.
+
+  - id: section-radical-axis
+    title: 'The Radical Axis'
+    content: |
+      Suppose you have two different circles. The set of all points that have the *same power* with respect to both circles forms a straight line called the **radical axis**.
+
+      If circles have equations $C_1 = 0$ and $C_2 = 0$ (in $x^2 + y^2 + \dots$ form), their radical axis is simply the line $C_1 - C_2 = 0$.
+
+      If the two circles intersect at two points, the radical axis is exactly the line passing through those two intersection points (the common chord). If they are tangent, the radical axis is their common tangent line. If they don't intersect, it's a line between them perpendicular to the segment connecting their centers.
     check:
-      id: aops-power-of-a-point-mini-example-check
       type: multipleChoice
-      prompt: In Power of a Point, what should be checked before applying a method?
+      prompt: 'Two intersecting circles have a common chord $AB$. Point $P$ lies on the extension of $AB$ outside the circles. If a tangent from $P$ to the first circle has length 8, what is the length of a tangent from $P$ to the second circle?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: '8'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '4'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '16'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-power-of-a-point-trap
-    title: Common misconception
-    required: true
-    content: A common error is using a converse, diagram appearance, or familiar formula without its hypothesis. Name the missing hypothesis and test it.
+        text: '64'
+        issueSignals: [formula-error]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Recognize that the extension of the common chord is the radical axis.
+      - Apply the property that points on the radical axis have equal power.
+      explanation: |
+        Solution:
+        The line passing through the intersection points $A$ and $B$ is the radical axis of the two circles.
+        Because $P$ lies on this axis, its power with respect to both circles is identical.
+        For an external point, the power equals the square of the tangent.
+        Since $(PT_1)^2 = (PT_2)^2$, the lengths of the tangents must be equal.
+        Therefore, the tangent to the second circle is also 8.
+
+        Why it works:
+        Geometrically, $PAB$ is a secant to both circles. By the tangent-secant theorem, $(PT_1)^2 = PA \cdot PB$ and $(PT_2)^2 = PA \cdot PB$. Therefore, the tangents must be equal.
+
+  - id: section-radical-center
+    title: 'The Radical Center'
+    content: |
+      If you have three circles (whose centers are not collinear), you can draw three radical axes: one for each pair of circles.
+      A beautiful theorem states that **all three radical axes intersect at a single point**, called the **radical center**.
+
+      At the radical center, the power with respect to all three circles is exactly the same. Consequently, if you draw tangents from the radical center to all three circles, those tangent segments will be equal in length.
     check:
-      id: aops-power-of-a-point-trap-check
       type: multipleChoice
-      prompt: In Power of a Point, what should be checked before applying a method?
+      prompt: 'Three circles mutually intersect each other in pairs, creating three common chords. How many points are collinear with all three common chords?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: 'Exactly 1 point'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: '0 points'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: '3 points'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
-  - id: aops-power-of-a-point-synthesis
-    title: Contest synthesis
-    required: true
-    content: Classify the structure, make one justified move at a time, and finish by checking that the result answers the exact question asked.
+        text: 'Infinitely many'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Identify the common chords as the radical axes.
+      - Recall that the three radical axes meet at exactly one point (the radical center).
+      explanation: |
+        Solution:
+        The common chord of two intersecting circles is their radical axis.
+        For three circles, there are three pairs, generating three common chords.
+        By the Radical Center theorem, these three lines must intersect at exactly one single point.
+        Therefore, there is exactly 1 point that lies on (is collinear with) all three common chords.
+
+        Why it works:
+        If a point $P$ is on the axis of $C_1$ and $C_2$, it has equal power to both. If it is also on the axis of $C_2$ and $C_3$, it has equal power to both. By transitivity, it has equal power to $C_1$ and $C_3$, so it *must* lie on the third radical axis as well.
+
+  - id: section-converse-concyclic
+    title: 'The Converse: Proving Concyclic Points'
+    content: |
+      Olympiad problems often ask you to prove that four points lie on a circle (are concyclic). While you can do this by showing opposite angles sum to $180^\circ$, Power of a Point offers a purely length-based method.
+
+      - If segments $AB$ and $CD$ intersect at $P$, and $PA \cdot PB = PC \cdot PD$, then $A, B, C, D$ are concyclic.
+      - If lines $AB$ and $CD$ intersect outside at $P$, and $PA \cdot PB = PC \cdot PD$, then $A, B, C, D$ are concyclic.
+
+      This is one of the most reliable ways to "discover" hidden circles in complex diagrams, opening up new inscribed angle relationships to finish the proof.
     check:
-      id: aops-power-of-a-point-synthesis-check
       type: multipleChoice
-      prompt: In Power of a Point, what should be checked before applying a method?
+      prompt: 'In a quadrilateral $WXYZ$, the diagonals intersect at $P$. You calculate $PW = 2, PX = 6, PY = 3, PZ = 4$. What can you conclude about $WXYZ$?'
       choices:
       - id: a
-        text: The theorem or strategy conditions in the stated givens.
+        text: 'The vertices $W, X, Y, Z$ lie on a common circle.'
       - id: b
-        text: Whether the diagram looks proportional.
+        text: 'The quadrilateral is a parallelogram.'
+        issueSignals: [wrong-concept]
       - id: c
-        text: Whether a familiar answer choice appears.
+        text: 'The diagonals are perpendicular.'
+        issueSignals: [wrong-concept]
       - id: d
-        text: Whether a decimal estimate is convenient.
-      answer:
-        choiceId: a
-      explanation: The theorem or strategy conditions in the stated givens.
+        text: 'Nothing can be concluded.'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Test the products of the diagonal segments.
+      - Recognize the Converse of the Intersecting Chords Theorem.
+      explanation: |
+        Solution:
+        The diagonals of the quadrilateral are the segments $WY$ and $XZ$.
+        Let's check the products of their segments:
+        For $WY$: $PW \cdot PY = 2 \cdot 3 = 6$.
+        For $XZ$: $PX \cdot PZ = 6 \cdot 4 = 24$.
+        Wait, $2 \cdot 3 \neq 6 \cdot 4$. Let me fix the prompt in the yaml to make it work!
+      prompt: 'In a quadrilateral $WXYZ$, the diagonals $WY$ and $XZ$ intersect at $P$. You calculate $PW = 6, PX = 4, PY = 2, PZ = 3$. What can you conclude about $WXYZ$?'
+      choices:
+      - id: a
+        text: 'The vertices $W, X, Y, Z$ lie on a common circle.'
+      - id: b
+        text: 'The quadrilateral is a parallelogram.'
+        issueSignals: [wrong-concept]
+      - id: c
+        text: 'The diagonals are perpendicular.'
+        issueSignals: [wrong-concept]
+      - id: d
+        text: 'Nothing can be concluded.'
+        issueSignals: [wrong-concept]
+      answer: {choiceId: a}
+      difficultyDimensions:
+      - Test the products of the diagonal segments.
+      - Recognize the Converse of the Intersecting Chords Theorem.
+      explanation: |
+        Solution:
+        The diagonals are $WY$ and $XZ$. Let's test the products of their segments at the intersection $P$:
+        For $WY$: $PW \cdot PY = 6 \cdot 2 = 12$.
+        For $XZ$: $PX \cdot PZ = 4 \cdot 3 = 12$.
+        Because $PW \cdot PY = PX \cdot PZ$, the Converse of the Intersecting Chords Theorem is satisfied.
+        Therefore, $W, X, Y, Z$ are concyclic (they lie on a common circle).
+
+        Why it works:
+        If the products match, the geometric constraints perfectly recreate the similar triangles needed to force the inscribed angles to be equal, locking the points onto a circle.
