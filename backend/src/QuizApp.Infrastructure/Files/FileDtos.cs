@@ -302,6 +302,7 @@ public sealed class RecallItemFileDto
     public string? Explanation { get; set; }
     public List<string>? Tags { get; set; }
     public List<string>? Skills { get; set; }
+    public List<IssueSignalFileDto>? IssueSignals { get; set; }
     public List<ChoiceFileDto>? Choices { get; set; }
 }
 

@@ -371,7 +371,10 @@ const isDev = import.meta.env.DEV;
         <section class="panel">
           <div class="section-header">
             <h2 id="diagnostics-title">Catalog Diagnostics</h2>
-            <button id="refresh-diagnostics">Refresh</button>
+            <div class="button-row">
+              <button type="button" id="copy-catalog-diagnostics" disabled>Copy All</button>
+              <button id="refresh-diagnostics">Refresh</button>
+            </div>
           </div>
           <p class="quiet-hint">View import errors for assessments that failed to load into the catalog.</p>
           <div id="diagnostics-run-info" style="margin-bottom: 1rem; font-size: 0.9em; color: var(--text-muted);"></div>
@@ -1487,6 +1490,7 @@ const isDev = import.meta.env.DEV;
         controlValues: Record<string, unknown>;
       } | null = null;
       const explorationComputeEngine = new ComputeEngine();
+      let catalogDiagnostics: any[] = [];
       const state: {
         settings: AppSettings | null;
         categories: Category[];
@@ -1628,6 +1632,7 @@ const isDev = import.meta.env.DEV;
       document.querySelector<HTMLButtonElement>("#refresh-grades")!.addEventListener("click", loadGrades);
       document.querySelector<HTMLButtonElement>("#refresh-sessions")!.addEventListener("click", loadGrades);
       document.querySelector<HTMLButtonElement>("#refresh-diagnostics")?.addEventListener("click", loadDiagnostics);
+      document.querySelector<HTMLButtonElement>("#copy-catalog-diagnostics")?.addEventListener("click", copyCatalogDiagnostics);
       if (IS_DEV) {
         document.querySelector<HTMLButtonElement>("#refresh-assessment-reports")?.addEventListener("click", () => void loadAssessmentReports());
         document.querySelector<HTMLButtonElement>("#copy-assessment-reports-markdown")?.addEventListener("click", copyAssessmentReportsMarkdown);
@@ -2071,7 +2076,7 @@ const isDev = import.meta.env.DEV;
             subject,
             count: catalog.assessments.filter((assessment) => assessment.subjectId === subject.id).length
           }))
-          .filter((entry) => entry.count > 0);
+          .filter((entry) => entry.count > 0 || entry.subject.id === "calculus-3");
 
         renderNavigationTiles("nav-subject-tiles", subjects.map(({ subject, count }) => ({
           id: subject.id,
@@ -2089,7 +2094,7 @@ const isDev = import.meta.env.DEV;
             area,
             count: subjectAssessments.filter((assessment) => assessment.areaId === area.id).length
           }))
-          .filter((entry) => entry.count > 0);
+          .filter((entry) => entry.count > 0 || selection.subjectId === "calculus-3");
         renderNavigationTiles("nav-area-tiles", areas.map(({ area, count }) => {
           const areaRecs = recommendations.filter(r => r.areaIds.includes(area.id) && r.state === "review");
           const reviewCount = areaRecs.length;
@@ -2108,7 +2113,10 @@ const isDev = import.meta.env.DEV;
         }), (id) => selectNavigationStage("area", id));
 
         const areaAssessments = subjectAssessments.filter((assessment) => assessment.areaId === selection.areaId);
-        const availableTopicIds = new Set(areaAssessments.map((assessment) => assessment.topicId));
+        const selectedArea = catalog.areas.find((area) => area.id === selection.areaId);
+        const availableTopicIds = new Set(selection.subjectId === "calculus-3"
+          ? (selectedArea?.topicIds ?? [])
+          : areaAssessments.map((assessment) => assessment.topicId));
         const topics = catalog.topics
           .filter((topic) => topic.subjectId === selection.subjectId && availableTopicIds.has(topic.id))
           .map((topic) => ({
@@ -2118,7 +2126,9 @@ const isDev = import.meta.env.DEV;
         renderNavigationTiles("nav-topic-tiles", topics.map(({ topic, count }) => {
           const rec = topicRecommendations.get(topic.id);
           let badgeHtml = "";
-          if (rec) {
+          if (count === 0) {
+            badgeHtml = `<span class="badge review" style="background: #6b7280; color: #fff;">Planned</span>`;
+          } else if (rec) {
             if (rec.isNextRecommended) badgeHtml = `<span class="badge evaluate" style="background: #1565c0; color: #fff;">Next</span>`;
             else if (rec.isEligible === false) badgeHtml = `<span class="badge review" style="background: #6b7280; color: #fff;">Prerequisites</span>`;
             else if (rec.state === "review") badgeHtml = `<span class="badge review" style="background: #ffd600; color: #000;">Review</span>`;
@@ -2888,10 +2898,13 @@ const isDev = import.meta.env.DEV;
         const table = document.getElementById("diagnostics-table");
         const tbody = document.getElementById("diagnostics-tbody");
         const emptyState = document.getElementById("diagnostics-empty");
+        const copyButton = document.querySelector<HTMLButtonElement>("#copy-catalog-diagnostics");
 
         if (!runInfo || !table || !tbody || !emptyState) return;
 
         if (!result.run) {
+          catalogDiagnostics = [];
+          if (copyButton) copyButton.disabled = true;
           runInfo.textContent = "No import runs have occurred.";
           table.hidden = true;
           emptyState.hidden = false;
@@ -2899,6 +2912,8 @@ const isDev = import.meta.env.DEV;
         }
 
         const date = result.run.startedAt ? new Date(result.run.startedAt).toLocaleString() : "Unknown";
+        catalogDiagnostics = result.diagnostics;
+        if (copyButton) copyButton.disabled = catalogDiagnostics.length === 0;
         runInfo.textContent = `Last run: ${date} (${result.run.status}). ${result.diagnostics.length} diagnostic(s) found.`;
 
         if (result.diagnostics.length === 0) {
@@ -2924,6 +2939,34 @@ const isDev = import.meta.env.DEV;
               </td>
             </tr>
           `).join("");
+        }
+      }
+
+      async function copyCatalogDiagnostics() {
+        const button = document.querySelector<HTMLButtonElement>("#copy-catalog-diagnostics");
+        if (!button || catalogDiagnostics.length === 0) return;
+
+        setBusy(button, "Copying");
+        try {
+          const text = catalogDiagnostics.map((diagnostic: any) => {
+            const location = diagnostic.path || diagnostic.assessmentId || "-";
+            const line = diagnostic.line
+              ? `Line ${diagnostic.line}${diagnostic.column ? ` Col ${diagnostic.column}` : ""}`
+              : "";
+            return [
+              `${diagnostic.severity || "Unknown"}\t${diagnostic.code || "-"}`,
+              location,
+              line,
+              diagnostic.message || "-",
+              diagnostic.suggestedKey ? `Found: ${diagnostic.actualKey || ""} -> Try: ${diagnostic.suggestedKey}` : ""
+            ].filter(Boolean).join("\n");
+          }).join("\n\n");
+          await copyPlainText(text);
+          button.textContent = "Copied";
+          window.setTimeout(() => clearBusy(button, "Copy All"), 1000);
+        } catch (error) {
+          clearBusy(button, "Copy All");
+          alert(`Unable to copy catalog diagnostics: ${readableError(error)}`);
         }
       }
 

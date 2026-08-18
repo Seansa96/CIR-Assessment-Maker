@@ -1,4 +1,4 @@
-$ProjectRoot = "C:\Users\SeanS\Downloads\cir_app"
+$ProjectRoot = Split-Path -Parent $PSScriptRoot
 $StatusPath = "$ProjectRoot\.cir-processes.json"
 
 function Write-CirStatus {

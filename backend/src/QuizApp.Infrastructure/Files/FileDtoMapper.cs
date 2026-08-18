@@ -401,6 +401,7 @@ public static class FileDtoMapper
             dto.Tags ?? new List<string>())
         {
             Skills = dto.Skills ?? new List<string>(),
+            IssueSignals = ToDomain(dto.IssueSignals),
             Choices = (dto.Choices ?? new List<ChoiceFileDto>())
                 .Select(choice => new ChoiceOption(
                     choice.Id ?? string.Empty,
@@ -429,6 +430,7 @@ public static class FileDtoMapper
             Explanation = item.Explanation,
             Tags = item.Tags.ToList(),
             Skills = item.Skills.ToList(),
+            IssueSignals = ToDto(item.IssueSignals),
             Choices = item.Choices.Select(choice => new ChoiceFileDto
             {
                 Id = choice.Id,

@@ -46,6 +46,8 @@ public sealed class IssueSignalCatalog
     {
         foreach (var question in assessment.Questions)
             foreach (var result in EnumerateQuestionSignals(question.Id, question)) yield return result;
+        foreach (var item in assessment.Items)
+            foreach (var signal in item.IssueSignals) yield return (item.Id, signal);
         foreach (var example in assessment.WorkedExamples)
             foreach (var step in example.Steps)
                 foreach (var result in EnumerateQuestionSignals(step.Id, step.Question)) yield return result;

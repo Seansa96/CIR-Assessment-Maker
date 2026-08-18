@@ -858,6 +858,22 @@ public sealed class FileAssessmentRepositoryTests
     [InlineData("calc2-area-between-curves-hard-quiz-s2c")]
     [InlineData("calc2-cylindrical-shells-easy-quiz-s2c")]
     [InlineData("calc2-cylindrical-shells-hard-quiz-s2c")]
+    [InlineData("mathematical-literacy-notation-concept-lesson")]
+    [InlineData("mathematical-literacy-notation-glossary")]
+    [InlineData("mathematical-literacy-notation-recall")]
+    [InlineData("mathematical-literacy-notation-focused-practice")]
+    [InlineData("mathematical-literacy-logic-concept-lesson")]
+    [InlineData("mathematical-literacy-logic-glossary")]
+    [InlineData("mathematical-literacy-logic-recall")]
+    [InlineData("mathematical-literacy-logic-focused-practice")]
+    [InlineData("mathematical-literacy-definitions-concept-lesson")]
+    [InlineData("mathematical-literacy-definitions-glossary")]
+    [InlineData("mathematical-literacy-definitions-recall")]
+    [InlineData("mathematical-literacy-definitions-focused-practice")]
+    [InlineData("mathematical-literacy-proofs-concept-lesson")]
+    [InlineData("mathematical-literacy-proofs-glossary")]
+    [InlineData("mathematical-literacy-proofs-recall")]
+    [InlineData("mathematical-literacy-proofs-focused-practice")]
     public async Task Repository_loads_and_validates_new_assessment_content(string assessmentId)
     {
         var repository = new FileAssessmentRepository(
@@ -869,6 +885,33 @@ public sealed class FileAssessmentRepositoryTests
 
         Assert.NotNull(loaded);
         Assert.True(validation.IsValid, string.Join("; ", validation.Issues.Select(issue => issue.Message)));
+    }
+
+    [Fact]
+    public async Task Repository_loads_and_validates_mathematical_literacy_college_bridge_expansion()
+    {
+        var dataRoot = FindRepositoryDataRoot();
+        var assessmentIds = Directory.GetFiles(Path.Combine(dataRoot, "assessments"), "mathematical-literacy-*.yaml")
+            .Select(path => Path.GetFileNameWithoutExtension(path)!)
+            .OrderBy(id => id)
+            .ToArray();
+
+        Assert.Equal(80, assessmentIds.Length);
+
+        var repository = new FileAssessmentRepository(
+            new FileStorageOptions { DataRoot = dataRoot },
+            new AssessmentValidator());
+
+        foreach (var assessmentId in assessmentIds)
+        {
+            var loaded = await repository.GetByIdAsync(assessmentId);
+            var validation = await repository.ValidateFileAsync($"{assessmentId}.yaml");
+
+            Assert.NotNull(loaded);
+            Assert.Equal("mathematical-literacy", loaded!.CategoryId);
+            Assert.False(string.IsNullOrWhiteSpace(loaded.TopicId));
+            Assert.True(validation.IsValid, $"{assessmentId}: {string.Join("; ", validation.Issues.Select(issue => issue.Message))}");
+        }
     }
 
     [Fact]

@@ -337,6 +337,7 @@ public sealed record RecallItemDefinition(
     IReadOnlyList<string> Tags)
 {
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<IssueSignal> IssueSignals { get; init; } = Array.Empty<IssueSignal>();
     public IReadOnlyList<ChoiceOption> Choices { get; init; } = Array.Empty<ChoiceOption>();
     public string? ChoiceId { get; init; }
 }

@@ -2,36 +2,58 @@ schemaVersion: 1
 id: dsa-hashmaps-lesson
 categoryId: dsa
 topicId: dsa-hashmaps
-learningGoal: learn
-activityType: conceptLesson
-title: "Understanding Hash Tables"
-description: "Learn how hash functions map keys to array indices for O(1) lookups."
+title: Understanding Hash Tables
+description: Learn how hash functions map keys to array indices for O(1) lookups.
 navigation:
-  tags: [hash-table, map, hashing]
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - hash-table
+  - map
+  - hashing
 skills:
-  - id: obj-dsa-hash-01
-    level: foundation
+- 'id: obj-dsa-hash-01: level: foundation'
 blueprintId: bp-dsa-hash-lesson-01
-sourceChunkIds: ["src-20260810144616-0dc6e2835b:page-171-200"]
-
+sourceChunkIds:
+- src-20260810144616-0dc6e2835b:page-171-200
 questions:
-  - id: intro-hash-functions
-    type: freeResponse
-    prompt: |
-      **Mapping Keys to Indices**
+- id: intro-hash-functions
+  type: freeResponse
+  prompt: '**Mapping Keys to Indices**
 
-      We know arrays give us $O(1)$ access *if we know the integer index*. But what if we want to look up a value using a string, like looking up a phone number using someone's name?
-      
-      A **Hash Table** solves this by using a **Hash Function**. The hash function takes a key (like the string "Alice") and deterministically scrambles it into a mathematical integer. We then use the modulo operator (`%`) with the size of our underlying array to map that integer to a valid array index.
-      
-      For example, if `hash("Alice") = 84729`, and our array size is 10, then `84729 % 10 = 9`. We store Alice's phone number at index 9. To look up Alice later, we just re-run the hash function.
 
-      What happens if we try to insert "Bob", and `hash("Bob") = 14329` into that same array of size 10? What is this situation called, and why does it happen?
-    answer:
-      gradingMode: selfCheck
-    explanation: |
-      Solution:
-      `14329 % 10` is also `9`. This means "Bob" maps to the exact same index as "Alice". This situation is called a **Collision**.
+    We know arrays give us $O(1)$ access *if we know the integer index*. But what if we want to look up
+    a value using a string, like looking up a phone number using someone''s name?
 
-      Why it works:
-      Collisions happen because the number of possible string keys (infinite) is much larger than the fixed size of the underlying array (10). It is mathematically guaranteed (by the Pigeonhole Principle) that multiple distinct keys will eventually hash to the same index.
+
+    A **Hash Table** solves this by using a **Hash Function**. The hash function takes a key (like the
+    string "Alice") and deterministically scrambles it into a mathematical integer. We then use the modulo
+    operator (`%`) with the size of our underlying array to map that integer to a valid array index.
+
+
+    ![Hashmap Linear Probing Diagram](/media/dsa/hashmap-linear-probing.svg)
+
+
+    For example, if `hash("Alice") = 84729`, and our array size is 10, then `84729 % 10 = 9`. We store
+    Alice''s phone number at index 9. To look up Alice later, we just re-run the hash function.
+
+
+    What happens if we try to insert "Bob", and `hash("Bob") = 14329` into that same array of size 10?
+    What is this situation called, and why does it happen?
+
+    '
+  answer:
+    gradingMode: selfCheck
+  explanation: 'Solution:
+
+    `14329 % 10` is also `9`. This means "Bob" maps to the exact same index as "Alice". This situation
+    is called a **Collision**.
+
+
+    Why it works:
+
+    Collisions happen because the number of possible string keys (infinite) is much larger than the fixed
+    size of the underlying array (10). It is mathematically guaranteed (by the Pigeonhole Principle) that
+    multiple distinct keys will eventually hash to the same index.
+
+    '

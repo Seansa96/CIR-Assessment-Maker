@@ -55,7 +55,8 @@ public sealed class AssessmentContentAudit
     public IEnumerable<string> EnumerateAssessmentFiles()
     {
         if (!Directory.Exists(options.AssessmentsPath)) return Enumerable.Empty<string>();
-        return Directory.EnumerateFiles(options.AssessmentsPath, "*.yaml", SearchOption.AllDirectories);
+        return Directory.EnumerateFiles(options.AssessmentsPath, "*.yaml", SearchOption.AllDirectories)
+            .Where(f => !f.Replace('\\', '/').Contains("/retired/"));
     }
 
     public async Task<List<string>> ValidateAllAssessmentsAsync(CancellationToken cancellationToken = default)

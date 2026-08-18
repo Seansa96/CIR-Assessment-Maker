@@ -21,187 +21,265 @@ skills:
 questions:
 - id: q001
   type: multipleChoice
-  prompt: 'Let $A = \{1, 2, \{3, 4\}, 5\}$. Which of the following statements is FALSE?'
+  prompt: Let $A = \{1, 2, \{3, 4\}, 5\}$. Which of the following statements is FALSE?
   difficultyDimensions:
   - Identify that $\{3, 4\}$ is a single element of $A$.
   - Distinguish between the element relation ($\in$) and subset relation ($\subseteq$).
   choices:
   - id: a
-    text: '$2 \in A$'
+    text: $2 \in A$
   - id: b
-    text: '$\{3, 4\} \in A$'
+    text: $\{3, 4\} \in A$
   - id: c
-    text: '$3 \in A$'
+    text: $3 \in A$
     issueSignals:
-    - nested-element-confusion
+    - id: nested-element-confusion
+      domains: []
   - id: d
-    text: '$\{1, 5\} \subseteq A$'
+    text: $\{1, 5\} \subseteq A$
   answer:
     choiceId: c
-  explanation: |
-    Solution:
-    Let's check each statement:
+  explanation: 'Solution:
+
+    Let''s check each statement:
+
     - $2 \in A$: True. $2$ is explicitly listed as a member of $A$.
+
     - $\{3, 4\} \in A$: True. The entire set $\{3, 4\}$ acts as a single element inside $A$.
-    - $3 \in A$: **False**. The number $3$ is buried inside the element $\{3, 4\}$. It is not a direct element of $A$ itself.
+
+    - $3 \in A$: **False**. The number $3$ is buried inside the element $\{3, 4\}$. It is not a direct
+    element of $A$ itself.
+
     - $\{1, 5\} \subseteq A$: True. Both $1$ and $5$ are elements of $A$, so this is a valid subset.
 
+
     Why it works:
-    A set only "sees" its top-level members. If a box contains an apple, a banana, and a sealed bag of grapes, the grapes are inside the bag, not loose in the box. Therefore, "bag of grapes" $\in$ Box is true, but "grape" $\in$ Box is false.
+
+    A set only "sees" its top-level members. If a box contains an apple, a banana, and a sealed bag of
+    grapes, the grapes are inside the bag, not loose in the box. Therefore, "bag of grapes" $\in$ Box
+    is true, but "grape" $\in$ Box is false.
+
 
     Why the other choices fail:
+
     - The other choices are true statements. The question asks for the FALSE statement.
 
+    '
 - id: q002
   type: multipleChoice
-  prompt: 'Set $X$ has exactly 64 distinct subsets. What is the cardinality (number of elements) of set $X$?'
+  prompt: Set $X$ has exactly 64 distinct subsets. What is the cardinality (number of elements) of set
+    $X$?
   difficultyDimensions:
-  - Recall the formula for the number of subsets: $2^n$.
+  - 'Recall the formula for the number of subsets: $2^n$.'
   - Solve $2^n = 64$.
   choices:
   - id: a
     text: '32'
     issueSignals:
-    - division-instead-of-logarithm
+    - id: division-instead-of-logarithm
+      domains: []
   - id: b
     text: '6'
   - id: c
     text: '8'
     issueSignals:
-    - square-root-error
+    - id: square-root-error
+      domains: []
   - id: d
     text: '64'
     issueSignals:
-    - subset-element-confusion
+    - id: subset-element-confusion
+      domains: []
   answer:
     choiceId: b
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     The formula for the total number of subsets of a set with $n$ elements is $2^n$.
+
     We are given that $2^n = 64$.
+
     Since $2^6 = 64$, the set $X$ must have exactly 6 elements.
+
     $|X| = 6$.
 
+
     Why it works:
-    To build a subset, we look at every element in the original set and make a binary choice: IN or OUT (2 choices). For $n$ elements, the number of combinations of these choices is $2 \times 2 \times \dots = 2^n$.
+
+    To build a subset, we look at every element in the original set and make a binary choice: IN or OUT
+    (2 choices). For $n$ elements, the number of combinations of these choices is $2 \times 2 \times \dots
+    = 2^n$.
+
 
     Why the other choices fail:
+
     - 32 is $64 / 2$. This confuses an exponential relationship with a linear one.
+
     - 8 is $\sqrt{64}$. This confuses base-2 exponentiation ($2^n$) with squaring ($n^2$).
+
     - 64 assumes the number of elements equals the number of subsets.
 
+    '
 - id: q003
   type: multipleChoice
-  prompt: 'Let $A = \{a, b, c, d\}$ and $B = \{c, d, e, f\}$. What is the cardinality of $A \cup B$?'
+  prompt: Let $A = \{a, b, c, d\}$ and $B = \{c, d, e, f\}$. What is the cardinality of $A \cup B$?
   difficultyDimensions:
-  - Find the union of the two sets: $\{a, b, c, d, e, f\}$.
+  - 'Find the union of the two sets: $\{a, b, c, d, e, f\}$.'
   - Count the elements in the union without double-counting the intersection.
   choices:
   - id: a
     text: '8'
     issueSignals:
-    - double-counting
+    - id: double-counting
+      domains: []
   - id: b
     text: '2'
     issueSignals:
-    - intersection-instead-of-union
+    - id: intersection-instead-of-union
+      domains: []
   - id: c
     text: '6'
   - id: d
     text: '4'
     issueSignals:
-    - average-error
+    - id: average-error
+      domains: []
   answer:
     choiceId: c
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     The union $A \cup B$ contains all elements that are in $A$, in $B$, or in both.
+
     $A \cup B = \{a, b, c, d, e, f\}$.
+
     Counting these elements gives a cardinality of 6.
 
+
     Why it works:
+
     We can also use the Principle of Inclusion-Exclusion: $|A \cup B| = |A| + |B| - |A \cap B|$.
+
     $|A| = 4$. $|B| = 4$. The intersection is $\{c, d\}$, so $|A \cap B| = 2$.
+
     $|A \cup B| = 4 + 4 - 2 = 6$.
 
+
     Why the other choices fail:
+
     - 8 is $|A| + |B|$, which double-counts the elements $c$ and $d$ that appear in both sets.
+
     - 2 is $|A \cap B|$, the cardinality of the *intersection*, not the union.
+
     - 4 is just the size of one of the original sets.
 
+    '
 - id: q004
   type: multipleChoice
-  prompt: 'If $A \cap B = \emptyset$, which of the following terms describes the relationship between sets $A$ and $B$?'
+  prompt: If $A \cap B = \emptyset$, which of the following terms describes the relationship between sets
+    $A$ and $B$?
   difficultyDimensions:
   - Recognize that $\emptyset$ means the empty set (no elements).
   - Recall the terminology for sets with no intersection.
   choices:
   - id: a
-    text: 'Disjoint'
+    text: Disjoint
   - id: b
-    text: 'Subsets'
+    text: Subsets
     issueSignals:
-    - subset-confusion
+    - id: subset-confusion
+      domains: []
   - id: c
-    text: 'Equivalent'
+    text: Equivalent
     issueSignals:
-    - equivalent-confusion
+    - id: equivalent-confusion
+      domains: []
   - id: d
-    text: 'Universal'
+    text: Universal
     issueSignals:
-    - universal-confusion
+    - id: universal-confusion
+      domains: []
   answer:
     choiceId: a
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     The intersection $A \cap B$ represents the elements that sets $A$ and $B$ share in common.
+
     If the intersection is the empty set ($\emptyset$), it means they share zero elements.
+
     Sets that share no elements are called **disjoint**.
 
+
     Why it works:
-    This is a direct definition. On a Venn diagram, disjoint sets are drawn as two separate circles that do not overlap.
+
+    This is a direct definition. On a Venn diagram, disjoint sets are drawn as two separate circles that
+    do not overlap.
+
 
     Why the other choices fail:
-    - Subsets occur when one set is completely contained within another (meaning their intersection would just be the smaller set, not empty).
-    - Equivalent sets have the same number of elements (same cardinality), but this doesn't mean they are empty or share nothing.
+
+    - Subsets occur when one set is completely contained within another (meaning their intersection would
+    just be the smaller set, not empty).
+
+    - Equivalent sets have the same number of elements (same cardinality), but this doesn''t mean they
+    are empty or share nothing.
+
     - The universal set contains everything under consideration.
 
+    '
 - id: q005
   type: multipleChoice
-  prompt: 'Let the universal set $U = \{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\}$. Let $E$ be the set of even numbers in $U$, and let $P$ be the set of prime numbers in $U$. What is $E \cap P$?'
+  prompt: Let the universal set $U = \{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\}$. Let $E$ be the set of even numbers
+    in $U$, and let $P$ be the set of prime numbers in $U$. What is $E \cap P$?
   difficultyDimensions:
-  - Identify the elements of $E$: $\{2, 4, 6, 8, 10\}$.
-  - Identify the elements of $P$: $\{2, 3, 5, 7\}$.
+  - 'Identify the elements of $E$: $\{2, 4, 6, 8, 10\}$.'
+  - 'Identify the elements of $P$: $\{2, 3, 5, 7\}$.'
   - Find the intersection of these two sets.
   choices:
   - id: a
-    text: '$\emptyset$'
+    text: $\emptyset$
     issueSignals:
-    - prime-even-confusion
+    - id: prime-even-confusion
+      domains: []
   - id: b
-    text: '$\{2\}$'
+    text: $\{2\}$
   - id: c
-    text: '$\{2, 4, 6, 8, 10\}$'
+    text: $\{2, 4, 6, 8, 10\}$
     issueSignals:
-    - intersection-instead-of-subset
+    - id: intersection-instead-of-subset
+      domains: []
   - id: d
-    text: '$\{3, 5, 7\}$'
+    text: $\{3, 5, 7\}$
     issueSignals:
-    - complement-confusion
+    - id: complement-confusion
+      domains: []
   answer:
     choiceId: b
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     First, list the elements of each set based on the universal set $U$:
+
     $E = \{2, 4, 6, 8, 10\}$
+
     $P = \{2, 3, 5, 7\}$ (Note: 1 is not prime, and 9 is not prime).
-    The intersection $E \cap P$ asks for numbers that are in BOTH sets. The only number that is both even and prime is 2.
+
+    The intersection $E \cap P$ asks for numbers that are in BOTH sets. The only number that is both even
+    and prime is 2.
+
     $E \cap P = \{2\}$.
 
+
     Why it works:
-    2 is the only even prime number. All other even numbers are divisible by 2 (and thus composite). All other prime numbers must be odd.
+
+    2 is the only even prime number. All other even numbers are divisible by 2 (and thus composite). All
+    other prime numbers must be odd.
+
 
     Why the other choices fail:
-    - $\emptyset$ assumes there are no even prime numbers. This is a common misconception (forgetting that 2 is prime).
+
+    - $\emptyset$ assumes there are no even prime numbers. This is a common misconception (forgetting
+    that 2 is prime).
+
     - $\{2, 4, 6, 8, 10\}$ is just set $E$.
+
     - $\{3, 5, 7\}$ is the set of *odd* primes, which is $P \setminus E$ (or $P \cap E^c$).
+
+    '

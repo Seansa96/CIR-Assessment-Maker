@@ -1,0 +1,155 @@
+schemaVersion: 1
+id: dsa-graphs-worked-example
+categoryId: dsa
+topicId: dsa-graphs
+title: Implementing Breadth-First Search
+description: Step-by-step guide to writing BFS in Python.
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - graphs
+  - bfs
+  - queue
+  - worked-example
+skills:
+- 'id: obj-dsa-graphs-03: level: applied'
+blueprintId: bp-dsa-graphs-example-01
+sourceChunkIds:
+- src-20260810144616-0dc6e2835b:page-281-350
+workedExamples:
+- id: implement-bfs
+  title: Writing Breadth-First Search (BFS)
+  problemStatement: "We want to write a Python function `bfs(graph, start)` that returns a list of vertices\
+    \ in the exact order they are visited using Breadth-First Search.\n\nThe `graph` is represented as\
+    \ an Adjacency List dictionary, for example:\n```python\ngraph = {\n    'A': ['B', 'C'],\n    'B':\
+    \ ['D'],\n    'C': [],\n    'D': []\n}\n```\n"
+  steps:
+  - id: step-bfs-1
+    title: 'Step 1: The Queue and Visited Set'
+    instruction: 'BFS requires two data structures:
+
+      1. A **Queue** (FIFO) to track which nodes to explore next. We''ll use a simple Python list and
+      `pop(0)` for simplicity (though `collections.deque` is better for performance).
+
+      2. A **Set** to track which nodes we have already visited, so we don''t get stuck in an infinite
+      loop if the graph has cycles.
+
+
+      We initialize both with the `start` node.
+
+
+      ```python
+
+      visited = set([start])
+
+      queue = [start]
+
+      result = []
+
+      ```
+
+      '
+    prompt: Why must we use a Queue (FIFO) instead of a Stack (LIFO) for Breadth-First Search?
+    type: multipleChoice
+    choiceOptions:
+    - id: opt-1
+      text: A Queue ensures we process nodes in the order they were discovered (layer by layer).
+    - id: opt-2
+      text: A Queue prevents infinite loops.
+    - id: opt-3
+      text: A Stack is only for Trees, not Graphs.
+    answer:
+      gradingMode: automatic
+      correctChoiceId: opt-1
+    explanation: 'Solution:
+
+      A Queue ensures we process nodes in the order they were discovered.
+
+
+      Why it works:
+
+      A Queue processes the oldest discovered nodes first (FIFO). This ensures we finish looking at all
+      nodes 1 step away before we start looking at nodes 2 steps away.
+
+
+      Why the other choices fail:
+
+      - The `visited` set prevents infinite loops, not the Queue.
+
+      - A Stack can be used on Graphs; that algorithm is called Depth-First Search (DFS).
+
+      '
+  - id: step-bfs-2
+    title: 'Step 2: Processing the Queue'
+    instruction: "We loop as long as there is something in the queue. In each iteration, we remove (dequeue)\
+      \ the front element and add it to our `result` list to record that we processed it.\n\n```python\n\
+      while queue:\n    vertex = queue.pop(0)\n    result.append(vertex)\n```\n"
+    prompt: If `queue` is `['A', 'B', 'C']`, what is the value of `vertex` after `vertex = queue.pop(0)`?
+    type: multipleChoice
+    choiceOptions:
+    - id: opt-a
+      text: '''A'''
+    - id: opt-b
+      text: '''B'''
+    - id: opt-c
+      text: '''C'''
+    answer:
+      gradingMode: automatic
+      correctChoiceId: opt-a
+    explanation: 'Solution:
+
+      The value is ''A''.
+
+
+      Why it works:
+
+      `pop(0)` removes and returns the element at index 0 (the front of the queue), which is `''A''`.
+
+
+      Why the other choices fail:
+
+      - ''B'' is at index 1.
+
+      - ''C'' is at index 2 (the back of the queue).
+
+      '
+  - id: step-bfs-3
+    title: 'Step 3: Queuing the Neighbors'
+    instruction: "For the `vertex` we just popped, we look up its neighbors in the `graph` dictionary.\n\
+      For each neighbor, if it has *not* been visited yet, we mark it as visited and add it to the back\
+      \ of the queue.\n\n```python\n    for neighbor in graph[vertex]:\n        if neighbor not in visited:\n\
+      \            visited.add(neighbor)\n            queue.append(neighbor)\nreturn result\n```\n"
+    prompt: Why is it critical to add the neighbor to the `visited` set *immediately* before adding it
+      to the queue, rather than waiting until we pop it later?
+    type: multipleChoice
+    choiceOptions:
+    - id: opt-dup
+      text: To prevent adding the same neighbor to the queue multiple times if it's reachable from different
+        nodes in the current layer.
+    - id: opt-speed
+      text: Because Python sets are faster than lists.
+    - id: opt-req
+      text: It is just a style preference; both work identically.
+    answer:
+      gradingMode: automatic
+      correctChoiceId: opt-dup
+    explanation: 'Solution:
+
+      To prevent adding the same neighbor to the queue multiple times.
+
+
+      Why it works:
+
+      If you wait to mark it visited until it''s popped, multiple nodes in the current layer might share
+      that neighbor, and they will *all* add it to the queue. Marking it immediately prevents duplicates
+      from flooding the queue.
+
+
+      Why the other choices fail:
+
+      - While sets are faster for lookups, speed isn''t the primary logic error here; queue flooding is.
+
+      - It is absolutely not a style preference; failing to do this causes exponential queue growth.
+
+      '

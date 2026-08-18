@@ -1,7 +1,8 @@
 schemaVersion: 1
 id: aops-triangles-olympiad-quiz
 title: Triangles Olympiad Quiz
-description: Contest-transfer problems combining enumeration, nested similarity, right-triangle projections, centers, and extremal area.
+description: Contest-transfer problems combining enumeration, nested similarity, right-triangle projections,
+  centers, and extremal area.
 assessmentType: quiz
 categoryId: art-of-problem-solving
 topicId: aops-triangles
@@ -13,7 +14,14 @@ skills:
 navigation:
   learningGoal: practice
   activityType: mixedPractice
-  tags: [art-of-problem-solving, aops-triangles, geometry, olympiad, contest-transfer, triangle-proof, extremal-area]
+  tags:
+  - art-of-problem-solving
+  - aops-triangles
+  - geometry
+  - olympiad
+  - contest-transfer
+  - triangle-proof
+  - extremal-area
 questions:
 - id: olympiad-quiz-q001
   type: multipleChoice
@@ -21,426 +29,662 @@ questions:
   choices:
   - id: a
     text: '6'
-    issueSignals: [enumeration-error]
+    issueSignals:
+    - id: enumeration-error
+      domains: []
   - id: b
     text: '7'
-    issueSignals: [enumeration-error]
+    issueSignals:
+    - id: enumeration-error
+      domains: []
   - id: c
     text: '8'
   - id: d
     text: '9'
-    issueSignals: [triangle-inequality-error]
-  answer: {choiceId: c}
+    issueSignals:
+    - id: triangle-inequality-error
+      domains: []
+  answer:
+    choiceId: c
   difficultyDimensions:
   - Formulate bounds for the sides using the triangle inequality.
   - Systematically enumerate unordered integer partitions of 20 without double-counting.
   - Exclude degenerate or impossible cases.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     Let the sides be $a \le b \le c$. The perimeter is $a+b+c=20$.
+
     By the triangle inequality, $c < a+b$, so $c < 20-c \implies 2c < 20 \implies c \le 9$.
+
     Also, $c \ge 20/3 \implies c \ge 7$.
+
     If $c=9$, $a+b=11$. Pairs $(a,b)$ are $(2,9), (3,8), (4,7), (5,6)$. (4 triangles)
+
     If $c=8$, $a+b=12$. Pairs $(a,b)$ are $(4,8), (5,7), (6,6)$. (3 triangles)
+
     If $c=7$, $a+b=13$. Pair $(a,b)$ is $(6,7)$. (1 triangle)
+
     Total $= 4 + 3 + 1 = 8$.
 
+
     Why it works:
-    The triangle inequality tightly bounds the longest side $c$ such that it must be strictly less than half the perimeter.
+
+    The triangle inequality tightly bounds the longest side $c$ such that it must be strictly less than
+    half the perimeter.
+
 
     Why the other choices fail:
+
     - **(A)** 6 misses some legitimate combinations.
+
     - **(B)** 7 misses one combination.
+
     - **(D)** 9 includes a degenerate case like $(1,9,10)$ where $1+9=10$.
 
+    '
 - id: olympiad-quiz-q002
   type: multipleChoice
   prompt: A triangle has side lengths $x$, $x+1$, and $2x-1$ and perimeter 40. Classify it by angles.
   choices:
   - id: a
     text: Acute
-    issueSignals: [classification-error]
+    issueSignals:
+    - id: classification-error
+      domains: []
   - id: b
     text: Right
-    issueSignals: [classification-error]
+    issueSignals:
+    - id: classification-error
+      domains: []
   - id: c
     text: Obtuse
   - id: d
     text: Degenerate
-    issueSignals: [triangle-inequality-error]
-  answer: {choiceId: c}
+    issueSignals:
+    - id: triangle-inequality-error
+      domains: []
+  answer:
+    choiceId: c
   difficultyDimensions:
   - Solve for $x$ using the perimeter.
   - Apply the Pythagorean inequality theorem ($c^2$ vs $a^2+b^2$).
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     The perimeter is $x + (x+1) + (2x-1) = 4x$.
+
     $$4x = 40 \implies x = 10$$
+
     The sides are $10, 11,$ and $19$.
+
     To classify, compare the square of the longest side to the sum of the squares of the other two:
+
     $19^2 = 361$
+
     $10^2 + 11^2 = 100 + 121 = 221$
+
     Since $361 > 221$, the triangle is obtuse.
 
+
     Why it works:
-    The law of cosines states $c^2 = a^2 + b^2 - 2ab\cos(C)$. If $c^2 > a^2+b^2$, then $-2ab\cos(C)$ is positive, meaning $\cos(C)$ is negative, so angle $C$ is obtuse ($>90^\circ$).
+
+    The law of cosines states $c^2 = a^2 + b^2 - 2ab\cos(C)$. If $c^2 > a^2+b^2$, then $-2ab\cos(C)$ is
+    positive, meaning $\cos(C)$ is negative, so angle $C$ is obtuse ($>90^\circ$).
+
 
     Why the other choices fail:
+
     - **(A)** It would be acute if $c^2 < a^2+b^2$.
+
     - **(B)** It would be right if $c^2 = a^2+b^2$.
+
     - **(D)** It would be degenerate if $10+11 = 19$, but $21 > 19$.
 
+    '
 - id: olympiad-quiz-q003
   type: multipleChoice
-  prompt: From vertex $A$, the same cevian is both a median and an internal angle bisector. What must follow?
+  prompt: From vertex $A$, the same cevian is both a median and an internal angle bisector. What must
+    follow?
   choices:
   - id: a
-    text: '$AB=AC$'
+    text: $AB=AC$
   - id: b
-    text: '$AB=BC$'
-    issueSignals: [symmetry-error]
+    text: $AB=BC$
+    issueSignals:
+    - id: symmetry-error
+      domains: []
   - id: c
     text: The triangle is right at $A$.
-    issueSignals: [theorem-error]
+    issueSignals:
+    - id: theorem-error
+      domains: []
   - id: d
     text: The triangle is equilateral.
-    issueSignals: [overgeneralization]
-  answer: {choiceId: a}
+    issueSignals:
+    - id: overgeneralization
+      domains: []
+  answer:
+    choiceId: a
   difficultyDimensions:
   - Recall the Angle Bisector Theorem.
   - Apply the property of a median.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     Let the cevian meet $BC$ at $D$. Because it is a median, $BD = DC$.
+
     Because it is an angle bisector, the Angle Bisector Theorem states that $\frac{AB}{AC} = \frac{BD}{DC}$.
+
     Substituting $BD = DC$ gives $\frac{AB}{AC} = 1 \implies AB = AC$.
 
+
     Why it works:
-    The coincidence of a median and angle bisector is a defining property of the vertex of an isosceles triangle.
+
+    The coincidence of a median and angle bisector is a defining property of the vertex of an isosceles
+    triangle.
+
 
     Why the other choices fail:
+
     - **(B)** $AB=BC$ only follows if the cevian from $C$ is also a median and angle bisector.
+
     - **(C)** Right triangles do not have this property inherently unless they are right isosceles.
+
     - **(D)** Equilateral is too strong; it only guarantees isosceles with vertex $A$.
 
+    '
 - id: olympiad-quiz-q004
   type: multipleChoice
-  prompt: 'In $\triangle ABC$, $DE\parallel BC$ and $AD:DB=2:1$. Find the ratio of the area of $\triangle ADE$ to the area of trapezoid $DBCE$.'
+  prompt: In $\triangle ABC$, $DE\parallel BC$ and $AD:DB=2:1$. Find the ratio of the area of $\triangle
+    ADE$ to the area of trapezoid $DBCE$.
   media:
   - type: image
     src: /assessments/aops/aops-triangles-similarity.svg
     alt: Triangle ABC with DE parallel to BC and a top triangle ADE above trapezoid DBCE.
   choices:
   - id: a
-    text: '$2/3$'
-    issueSignals: [linear-vs-area]
+    text: $2/3$
+    issueSignals:
+    - id: linear-vs-area
+      domains: []
   - id: b
-    text: '$4/5$'
+    text: $4/5$
   - id: c
-    text: '$4/9$'
-    issueSignals: [ratio-error]
+    text: $4/9$
+    issueSignals:
+    - id: ratio-error
+      domains: []
   - id: d
-    text: '$5/4$'
-    issueSignals: [ratio-error]
-  answer: {choiceId: b}
+    text: $5/4$
+    issueSignals:
+    - id: ratio-error
+      domains: []
+  answer:
+    choiceId: b
   difficultyDimensions:
   - Find the similarity ratio between $\triangle ADE$ and $\triangle ABC$.
   - Square the linear ratio to find the area ratio.
   - Subtract the smaller triangle's area fraction to find the trapezoid's fraction.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     Since $DE \parallel BC$, $\triangle ADE \sim \triangle ABC$.
+
     The ratio of their sides is $\frac{AD}{AB} = \frac{2}{2+1} = \frac{2}{3}$.
+
     The ratio of their areas is the square of the side ratio: $\left(\frac{2}{3}\right)^2 = \frac{4}{9}$.
+
     This means Area$(\triangle ADE) = \frac{4}{9}$ Area$(\triangle ABC)$.
+
     The trapezoid $DBCE$ makes up the rest of the area: $1 - \frac{4}{9} = \frac{5}{9}$.
+
     The ratio of $\triangle ADE$ to trapezoid $DBCE$ is $\frac{4/9}{5/9} = \frac{4}{5}$.
 
+
     Why it works:
+
     Areas of similar figures scale by the square of their linear scale factor.
 
+
     Why the other choices fail:
+
     - **(A)** 2/3 is the linear ratio.
+
     - **(C)** 4/9 is the ratio of $\triangle ADE$ to the whole $\triangle ABC$.
+
     - **(D)** 5/4 is the reciprocal ratio (trapezoid to top triangle).
 
+    '
 - id: olympiad-quiz-q005
   type: multipleChoice
-  prompt: A midpoint-parallel construction produces a medial triangle with linear scale $1/2$ of the original. This construction is repeated inside the medial triangle. What fraction of the original area is the second nested triangle?
+  prompt: A midpoint-parallel construction produces a medial triangle with linear scale $1/2$ of the original.
+    This construction is repeated inside the medial triangle. What fraction of the original area is the
+    second nested triangle?
   choices:
   - id: a
-    text: '$1/4$'
-    issueSignals: [iteration-error]
+    text: $1/4$
+    issueSignals:
+    - id: iteration-error
+      domains: []
   - id: b
-    text: '$1/8$'
-    issueSignals: [linear-vs-area]
+    text: $1/8$
+    issueSignals:
+    - id: linear-vs-area
+      domains: []
   - id: c
-    text: '$1/16$'
+    text: $1/16$
   - id: d
-    text: '$1/32$'
-    issueSignals: [iteration-error]
-  answer: {choiceId: c}
+    text: $1/32$
+    issueSignals:
+    - id: iteration-error
+      domains: []
+  answer:
+    choiceId: c
   difficultyDimensions:
   - Multiply the successive linear scale factors.
   - Square the final linear scale factor to find the area factor.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     First nesting: linear scale factor is $1/2$.
+
     Second nesting: linear scale factor is $1/2$ of the first, so $(1/2) \times (1/2) = 1/4$ of the original.
+
     The ratio of areas is the square of the linear ratio: $(1/4)^2 = 1/16$.
 
+
     Why it works:
-    Similarity is transitive and multiplicative. Area scaling is always quadratic with respect to linear scaling.
+
+    Similarity is transitive and multiplicative. Area scaling is always quadratic with respect to linear
+    scaling.
+
 
     Why the other choices fail:
+
     - **(A)** 1/4 is the area of the first medial triangle, not the second.
+
     - **(B)** 1/8 might come from $(1/2)^3$ instead of squaring $1/4$.
+
     - **(D)** 1/32 is a math error.
 
+    '
 - id: olympiad-quiz-q006
   type: multipleChoice
-  prompt: An altitude of length 12 divides a right triangle's hypotenuse in the ratio $4:9$. Find the area of the entire triangle.
+  prompt: An altitude of length 12 divides a right triangle's hypotenuse in the ratio $4:9$. Find the
+    area of the entire triangle.
   media:
   - type: image
     src: /assessments/aops/aops-triangles-altitude-hypotenuse.svg
     alt: Right triangle with altitude 12 to a hypotenuse split in ratio 4 to 9.
   choices:
   - id: a
-    text: '$78$'
-    issueSignals: [algebra-error]
+    text: $78$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: b
-    text: '$144$'
-    issueSignals: [algebra-error]
+    text: $144$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: c
-    text: '$156$'
+    text: $156$
   - id: d
-    text: '$312$'
-    issueSignals: [formula-error]
-  answer: {choiceId: c}
+    text: $312$
+    issueSignals:
+    - id: formula-error
+      domains: []
+  answer:
+    choiceId: c
   difficultyDimensions:
   - Use the geometric mean theorem (altitude rule) to solve for the segment lengths.
   - Compute the area of the whole triangle using the full hypotenuse and altitude.
-  explanation: |
-    Solution:
-    Let the segments be $4k$ and $9k$. By the geometric mean theorem, the altitude squared equals the product of the hypotenuse segments.
+  explanation: 'Solution:
+
+    Let the segments be $4k$ and $9k$. By the geometric mean theorem, the altitude squared equals the
+    product of the hypotenuse segments.
+
     $$12^2 = (4k)(9k)$$
+
     $$144 = 36k^2 \implies k^2 = 4 \implies k = 2$$
+
     The segments are $4(2)=8$ and $9(2)=18$.
+
     The total hypotenuse is $8 + 18 = 26$.
+
     Area $= \frac{1}{2}(\text{base})(\text{height}) = \frac{1}{2}(26)(12) = 156$.
 
+
     Why it works:
-    The altitude to the hypotenuse of a right triangle divides it into two smaller triangles that are similar to each other and to the original triangle, producing the geometric mean relationship $h^2 = pq$.
+
+    The altitude to the hypotenuse of a right triangle divides it into two smaller triangles that are
+    similar to each other and to the original triangle, producing the geometric mean relationship $h^2
+    = pq$.
+
 
     Why the other choices fail:
+
     - **(A)** 78 is half the area (forgot to multiply by height fully).
+
     - **(B)** 144 is the square of the altitude.
+
     - **(D)** 312 is the base times height without the $\frac{1}{2}$ factor.
 
+    '
 - id: olympiad-quiz-q007
   type: multipleChoice
-  prompt: In the preceding configuration (altitude 12, hypotenuse segments 8 and 18), what is the length of the longer leg of the right triangle?
+  prompt: In the preceding configuration (altitude 12, hypotenuse segments 8 and 18), what is the length
+    of the longer leg of the right triangle?
   choices:
   - id: a
-    text: '$3\sqrt{13}$'
-    issueSignals: [algebra-error]
+    text: $3\sqrt{13}$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: b
-    text: '$4\sqrt{13}$'
-    issueSignals: [wrong-segment]
+    text: $4\sqrt{13}$
+    issueSignals:
+    - id: wrong-segment
+      domains: []
   - id: c
-    text: '$6\sqrt{13}$'
+    text: $6\sqrt{13}$
   - id: d
-    text: '$9\sqrt{13}$'
-    issueSignals: [algebra-error]
-  answer: {choiceId: c}
+    text: $9\sqrt{13}$
+    issueSignals:
+    - id: algebra-error
+      domains: []
+  answer:
+    choiceId: c
   difficultyDimensions:
   - Apply the geometric mean theorem for the legs (leg squared equals adjacent segment times whole hypotenuse).
   - Simplify the radical.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     The longer leg is adjacent to the longer hypotenuse segment (18).
+
     Let the longer leg be $b$.
+
     $$b^2 = (\text{adjacent segment})(\text{whole hypotenuse})$$
+
     $$b^2 = 18 \times 26 = 468$$
+
     $$b = \sqrt{468} = \sqrt{36 \times 13} = 6\sqrt{13}$$
 
+
     Why it works:
+
     The leg rule is another consequence of the similarity between the sub-triangles and the large triangle.
 
+
     Why the other choices fail:
+
     - **(A)** $3\sqrt{13}$ is half the correct leg.
+
     - **(B)** $4\sqrt{13}$ is the shorter leg ($\sqrt{8 \times 26} = \sqrt{208} = 4\sqrt{13}$).
+
     - **(D)** $9\sqrt{13}$ is an arithmetic error.
 
+    '
 - id: olympiad-quiz-q008
   type: multipleChoice
   prompt: An equilateral triangle has an inradius of 6. Find its area.
   choices:
   - id: a
-    text: '$36\sqrt3$'
-    issueSignals: [formula-error]
+    text: $36\sqrt3$
+    issueSignals:
+    - id: formula-error
+      domains: []
   - id: b
-    text: '$72\sqrt3$'
-    issueSignals: [algebra-error]
+    text: $72\sqrt3$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: c
-    text: '$108\sqrt3$'
+    text: $108\sqrt3$
   - id: d
-    text: '$144\sqrt3$'
-    issueSignals: [algebra-error]
-  answer: {choiceId: c}
+    text: $144\sqrt3$
+    issueSignals:
+    - id: algebra-error
+      domains: []
+  answer:
+    choiceId: c
   difficultyDimensions:
   - Relate the inradius to the side length in an equilateral triangle.
   - Compute the area using the side length.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     In an equilateral triangle, the inradius is $r = \frac{s\sqrt{3}}{6}$.
+
     $$6 = \frac{s\sqrt{3}}{6} \implies 36 = s\sqrt{3} \implies s = \frac{36}{\sqrt{3}} = 12\sqrt{3}$$
-    Area $= \frac{s^2\sqrt{3}}{4} = \frac{(12\sqrt{3})^2\sqrt{3}}{4} = \frac{(144 \times 3)\sqrt{3}}{4} = \frac{432\sqrt{3}}{4} = 108\sqrt{3}$.
+
+    Area $= \frac{s^2\sqrt{3}}{4} = \frac{(12\sqrt{3})^2\sqrt{3}}{4} = \frac{(144 \times 3)\sqrt{3}}{4}
+    = \frac{432\sqrt{3}}{4} = 108\sqrt{3}$.
+
 
     Why it works:
-    The center of an equilateral triangle divides the altitude in a 2:1 ratio. The altitude is $3 \times 6 = 18$. The side length is $18 \times (2/\sqrt{3}) = 12\sqrt{3}$.
+
+    The center of an equilateral triangle divides the altitude in a 2:1 ratio. The altitude is $3 \times
+    6 = 18$. The side length is $18 \times (2/\sqrt{3}) = 12\sqrt{3}$.
+
 
     Why the other choices fail:
+
     - **(A)** $36\sqrt{3}$ is the area if the side length was 12.
+
     - **(B)** $72\sqrt{3}$ is an arithmetic error.
+
     - **(D)** $144\sqrt{3}$ is the area if the side length was 24.
 
+    '
 - id: olympiad-quiz-q009
   type: multipleChoice
-  prompt: A 9-40-41 right triangle has an incircle. How far from the right-angle vertex is either tangency point on the two legs?
+  prompt: A 9-40-41 right triangle has an incircle. How far from the right-angle vertex is either tangency
+    point on the two legs?
   choices:
   - id: a
-    text: '$4$'
+    text: $4$
   - id: b
-    text: '$9$'
-    issueSignals: [wrong-concept]
+    text: $9$
+    issueSignals:
+    - id: wrong-concept
+      domains: []
   - id: c
-    text: '$20$'
-    issueSignals: [wrong-concept]
+    text: $20$
+    issueSignals:
+    - id: wrong-concept
+      domains: []
   - id: d
-    text: '$41/2$'
-    issueSignals: [wrong-concept]
-  answer: {choiceId: a}
+    text: $41/2$
+    issueSignals:
+    - id: wrong-concept
+      domains: []
+  answer:
+    choiceId: a
   difficultyDimensions:
   - Calculate the inradius using $r = (a+b-c)/2$.
   - Recognize that the distance from the right angle to the tangency points is exactly the inradius.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     For a right triangle, the inradius is $r = \frac{a+b-c}{2}$.
+
     $$r = \frac{9 + 40 - 41}{2} = \frac{8}{2} = 4$$
-    The tangent segments from the right-angle vertex to the incircle form a small square with the two radii to those tangency points. Therefore, the distance is exactly $r = 4$.
+
+    The tangent segments from the right-angle vertex to the incircle form a small square with the two
+    radii to those tangency points. Therefore, the distance is exactly $r = 4$.
+
 
     Why it works:
-    The two radii drawn to the legs form right angles with the legs. The vertex angle is also a right angle. This forces the resulting quadrilateral to be a rectangle, and since adjacent sides (the radii) are equal, it's a square of side $r$.
+
+    The two radii drawn to the legs form right angles with the legs. The vertex angle is also a right
+    angle. This forces the resulting quadrilateral to be a rectangle, and since adjacent sides (the radii)
+    are equal, it''s a square of side $r$.
+
 
     Why the other choices fail:
+
     - **(B)** 9 is the shorter leg.
+
     - **(C)** 20 is half the longer leg.
+
     - **(D)** $41/2$ is the circumradius.
 
+    '
 - id: olympiad-quiz-q010
   type: multipleChoice
-  prompt: In a 13-14-15 triangle, the altitude to the side of length 14 splits that side into two pieces. What is the length of the shorter piece?
+  prompt: In a 13-14-15 triangle, the altitude to the side of length 14 splits that side into two pieces.
+    What is the length of the shorter piece?
   choices:
   - id: a
-    text: '$4$'
-    issueSignals: [algebra-error]
+    text: $4$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: b
-    text: '$5$'
+    text: $5$
   - id: c
-    text: '$6$'
-    issueSignals: [algebra-error]
+    text: $6$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: d
-    text: '$7$'
-    issueSignals: [wrong-concept]
-  answer: {choiceId: b}
+    text: $7$
+    issueSignals:
+    - id: wrong-concept
+      domains: []
+  answer:
+    choiceId: b
   difficultyDimensions:
   - Use Heron's formula to find the area, then the altitude.
   - Apply the Pythagorean theorem to find the projection (segment).
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     Semiperimeter $s = \frac{13+14+15}{2} = 21$.
+
     Area $= \sqrt{21(21-13)(21-14)(21-15)} = \sqrt{21 \times 8 \times 7 \times 6} = 84$.
+
     Area $= \frac{1}{2}(\text{base})(\text{height}) \implies 84 = \frac{1}{2}(14)h \implies h = 12$.
+
     The altitude splits the triangle into two right triangles. For the side 13:
+
     $$\text{projection}^2 + 12^2 = 13^2 \implies \text{projection} = \sqrt{169-144} = 5$$
+
     The other segment is $14 - 5 = 9$. The shorter one is 5.
 
+
     Why it works:
-    The 13-14-15 triangle is formed by gluing a 5-12-13 right triangle and a 9-12-15 right triangle together along their common leg of 12.
+
+    The 13-14-15 triangle is formed by gluing a 5-12-13 right triangle and a 9-12-15 right triangle together
+    along their common leg of 12.
+
 
     Why the other choices fail:
+
     - **(A)** 4 is a random value.
+
     - **(C)** 6 is a random value.
+
     - **(D)** 7 assumes the altitude bisects the base (only true for isosceles triangles).
 
+    '
 - id: olympiad-quiz-q011
   type: multipleChoice
   prompt: Two sides of a triangle are 10 and 14. What is the greatest possible area?
   choices:
   - id: a
-    text: '$35$'
-    issueSignals: [formula-error]
+    text: $35$
+    issueSignals:
+    - id: formula-error
+      domains: []
   - id: b
-    text: '$60$'
-    issueSignals: [formula-error]
+    text: $60$
+    issueSignals:
+    - id: formula-error
+      domains: []
   - id: c
-    text: '$70$'
+    text: $70$
   - id: d
-    text: '$140$'
-    issueSignals: [formula-error]
-  answer: {choiceId: c}
+    text: $140$
+    issueSignals:
+    - id: formula-error
+      domains: []
+  answer:
+    choiceId: c
   difficultyDimensions:
   - Use the sine area formula Area $= \frac{1}{2}ab\sin(\theta)$.
   - Maximize the sine function.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     Area $= \frac{1}{2}(10)(14)\sin(\theta) = 70\sin(\theta)$.
+
     The maximum value of $\sin(\theta)$ is 1, which occurs when $\theta = 90^\circ$.
+
     Max Area $= 70(1) = 70$.
 
+
     Why it works:
-    Treating the side of 14 as the base, the height is $10\sin(\theta)$. The height is maximized when the side of 10 is perfectly perpendicular to the base.
+
+    Treating the side of 14 as the base, the height is $10\sin(\theta)$. The height is maximized when
+    the side of 10 is perfectly perpendicular to the base.
+
 
     Why the other choices fail:
+
     - **(A)** 35 is half the maximum area.
+
     - **(B)** 60 is the area if the third side was 12.
+
     - **(D)** 140 is $10 \times 14$ without the $1/2$ factor.
 
+    '
 - id: olympiad-quiz-q012
   type: multipleChoice
-  prompt: Similar triangles have areas of 144 and 225. A median in the smaller triangle has length 20. Find the corresponding median in the larger triangle.
+  prompt: Similar triangles have areas of 144 and 225. A median in the smaller triangle has length 20.
+    Find the corresponding median in the larger triangle.
   choices:
   - id: a
-    text: '$24$'
-    issueSignals: [algebra-error]
+    text: $24$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: b
-    text: '$25$'
+    text: $25$
   - id: c
-    text: '$30$'
-    issueSignals: [algebra-error]
+    text: $30$
+    issueSignals:
+    - id: algebra-error
+      domains: []
   - id: d
-    text: '$125/4$'
-    issueSignals: [ratio-error]
-  answer: {choiceId: b}
+    text: $125/4$
+    issueSignals:
+    - id: ratio-error
+      domains: []
+  answer:
+    choiceId: b
   difficultyDimensions:
   - Extract the linear scale factor from the area ratio.
   - Apply the linear scale factor to the median.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     The ratio of areas is $\frac{225}{144}$.
+
     The ratio of linear dimensions is the square root of the area ratio:
+
     $$\sqrt{\frac{225}{144}} = \frac{15}{12} = \frac{5}{4}$$
+
     The median of the larger triangle is $20 \times \frac{5}{4} = 25$.
 
+
     Why it works:
-    All corresponding linear dimensions (sides, altitudes, medians, perimeters) in similar figures scale by the exact same 1D factor.
+
+    All corresponding linear dimensions (sides, altitudes, medians, perimeters) in similar figures scale
+    by the exact same 1D factor.
+
 
     Why the other choices fail:
+
     - **(A)** 24 uses a wrong ratio.
+
     - **(C)** 30 assumes a 3:2 ratio.
+
     - **(D)** $125/4$ uses the area ratio ($225/144 = 25/16$) instead of the linear ratio.
 
+    '
 - id: olympiad-quiz-q013
   type: selectAll
   prompt: Which statements are sufficient to prove that a triangle is isosceles?
@@ -453,23 +697,35 @@ questions:
     text: An altitude from a vertex is also a median.
   - id: d
     text: The triangle has one median.
-    issueSignals: [logic-error]
+    issueSignals:
+    - id: logic-error
+      domains: []
   answer:
-    choiceIds: [a, b, c]
+    choiceIds:
+    - a
+    - b
+    - c
   difficultyDimensions:
   - Identify converse isosceles theorems.
   - Identify congruent half-triangle proofs.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     (A), (B), and (C) are all sufficient conditions.
 
+
     Why it works:
+
     - (A) is the base angles converse theorem.
+
     - (B) provides $\triangle ABD \cong \triangle ACD$ (if the cevian is $AD$).
-    - (C) provides SAS congruence for the two sub-triangles (altitude gives $90^\circ$, median gives equal bases, altitude is shared).
+
+    - (C) provides SAS congruence for the two sub-triangles (altitude gives $90^\circ$, median gives equal
+    bases, altitude is shared).
+
 
     (D) is false: every triangle has three medians, regardless of shape.
 
+    '
 - id: olympiad-quiz-q014
   type: selectAll
   prompt: Which geometric proof moves require an explicit hypothesis to be established before use?
@@ -482,24 +738,35 @@ questions:
     text: Using proportional side ratios (requires similarity).
   - id: d
     text: Inferring equal sides when a diagram looks symmetric.
-    issueSignals: [methodology-error]
+    issueSignals:
+    - id: methodology-error
+      domains: []
   answer:
-    choiceIds: [a, b, c]
+    choiceIds:
+    - a
+    - b
+    - c
   difficultyDimensions:
   - Understand the rigorous prerequisites for major geometric theorems.
   - Reject visual estimation.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     (A), (B), and (C) are valid statements about necessary hypotheses in proofs.
 
+
     Why it works:
-    Theorems are if-then statements. The "if" condition must be proven before the "then" result can be claimed.
+
+    Theorems are if-then statements. The "if" condition must be proven before the "then" result can be
+    claimed.
+
 
     (D) is false: visual symmetry is never a valid hypothesis in a formal proof.
 
+    '
 - id: olympiad-quiz-q015
   type: freeResponse
-  prompt: Prove that the three medians of a triangle are concurrent and that their intersection divides each median in a $2:1$ ratio from the vertex.
+  prompt: Prove that the three medians of a triangle are concurrent and that their intersection divides
+    each median in a $2:1$ ratio from the vertex.
   difficultyDimensions:
   - Set up a coordinate or vector geometry system for the triangle vertices.
   - Define the centroid algebraically as the average of the vertices.
@@ -512,15 +779,29 @@ questions:
     - Defines the midpoint of a side, e.g., $M = (B+C)/2$.
     - Shows $G$ lies on the segment $AM$ in a $2:1$ ratio.
     - Appeals to symmetry for the other two medians.
-  explanation: |
-    Solution:
+  explanation: 'Solution:
+
     Place the triangle at vectors $A, B, C$. The midpoint of side $BC$ is $M = \frac{B+C}{2}$.
+
     Consider the point $G = \frac{A+B+C}{3}$.
+
     We can rewrite $G$ as:
+
     $$G = \frac{1}{3}A + \frac{2}{3}\left(\frac{B+C}{2}\right) = \frac{1}{3}A + \frac{2}{3}M$$
-    This equation shows that $G$ is a weighted average of $A$ and $M$, meaning it lies on the line segment $AM$. Specifically, it is twice as close to $M$ as it is to $A$, dividing the median in a $2:1$ ratio from the vertex $A$.
-    Because the expression for $G$ is symmetric with respect to $A, B,$ and $C$, the exact same logic applies to the medians from $B$ and $C$.
+
+    This equation shows that $G$ is a weighted average of $A$ and $M$, meaning it lies on the line segment
+    $AM$. Specifically, it is twice as close to $M$ as it is to $A$, dividing the median in a $2:1$ ratio
+    from the vertex $A$.
+
+    Because the expression for $G$ is symmetric with respect to $A, B,$ and $C$, the exact same logic
+    applies to the medians from $B$ and $C$.
+
     Therefore, all three medians intersect at the same point $G$.
 
+
     Why it works:
-    Vector/affine geometry turns a complex classical concurrency proof into a few lines of basic algebra. The symmetry of the average $(A+B+C)/3$ instantly proves concurrency.
+
+    Vector/affine geometry turns a complex classical concurrency proof into a few lines of basic algebra.
+    The symmetry of the average $(A+B+C)/3$ instantly proves concurrency.
+
+    '

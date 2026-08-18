@@ -1,72 +1,209 @@
 schemaVersion: 1
 id: dsa-linked-structures-worked-example
-title: Linked Structures and Memory-Aware Containers Worked Example
-assessmentType: workedExample
 categoryId: dsa
 topicId: dsa-linked-structures
-skills:
-- Apply Linked Structures and Memory-Aware Containers
+title: Reversing a Linked List
+description: Step-by-step guide to reversing a Singly Linked List in-place.
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
   tags:
-  - dsa
-  - dsa-linked-structures
-modeDefault: practice
-randomizeQuestions: false
+  - linked-list
+  - reverse
+  - pointers
+  - worked-example
+skills:
+- 'id: obj-dsa-linked-02: level: applied'
+blueprintId: bp-dsa-linked-example-01
+sourceChunkIds:
+- src-20260810144616-0dc6e2835b:page-138-157
 workedExamples:
-- id: we001
-  title: Trace a Linked Structures and Memory-Aware Containers decision
-  problem: 'Work through a realistic case: an editor undo history with stable nodes. Select an approach, preserve its invariant, and explain the tradeoff.'
+- id: reverse-linked-list
+  title: Reversing a Singly Linked List
+  problemStatement: "You are given the `head` of a singly linked list. We need to write a function that\
+    \ reverses the list *in-place* (without creating new nodes) and returns the new head of the reversed\
+    \ list.\n\n```python\nclass ListNode:\n    def __init__(self, val=0, next=None):\n        self.val\
+    \ = val\n        self.next = next\n```\n"
   steps:
-  - title: Recognize the workload
-    instruction: Trace the decision before writing code.
+  - id: step-reverse-1
+    title: 'Step 1: Initialize Pointers'
+    instruction: 'To reverse the list in a single pass, we need to track three nodes at any given time:
+
+      1. The node we are currently processing (`curr`).
+
+      2. The node before it, which will become its new `next` (`prev`).
+
+      3. The node after it, so we don''t lose the rest of the list when we rewrite the `next` pointer
+      (`next_node`).
+
+
+      We initialize `prev = None` (since the new tail will point to `None`) and `curr = head`.
+
+      '
+    prompt: If our initial list is `1 -> 2 -> 3`, what is `curr.val` right after initialization?
     type: multipleChoice
-    prompt: 'Which requirement matters most in this scenario: an editor undo history with stable nodes?'
-    choices:
-    - id: a
-      text: The access pattern and bound
-    - id: b
-      text: The name of the structure
-    - id: c
-      text: Skip boundary tests
-    - id: d
-      text: Assume infinite memory
+    choiceOptions:
+    - id: opt-1
+      text: '1'
+    - id: opt-none
+      text: None
+    - id: opt-3
+      text: '3'
     answer:
-      choiceId: a
-    explanation: The access pattern and bound. The trace follows the module invariant and workload.
-    id: step-1
-  - title: Protect the invariant
-    instruction: Trace the decision before writing code.
+      gradingMode: automatic
+      correctChoiceId: opt-1
+    explanation: 'Solution:
+
+      The value is `1`.
+
+
+      Why it works:
+
+      `curr` is initialized to the `head`, which points to the first node in the list with a value of
+      `1`.
+
+
+      Why the other choices fail:
+
+      - `None` is what `prev` is initialized to, not `curr`.
+
+      - `3` is the tail of the list, which we haven''t reached yet.
+
+      '
+  - id: step-reverse-2
+    title: 'Step 2: Save the Next Node'
+    instruction: 'We enter a `while curr is not None:` loop.
+
+      The very first thing we must do inside the loop is save the rest of the list. If we immediately
+      change `curr.next`, we will sever the connection to the remaining nodes and lose them forever!
+
+
+      ```python
+
+      next_node = curr.next
+
+      ```
+
+      '
+    prompt: In the first iteration (where `curr` is 1), what does `next_node` point to?
     type: multipleChoice
-    prompt: What must the update preserve?
-    choices:
-    - id: a
-      text: every next and previous link preserves a reachable, non-cyclic structure
-    - id: b
-      text: Only the output formatting
-    - id: c
-      text: Skip boundary tests
-    - id: d
-      text: Assume infinite memory
+    choiceOptions:
+    - id: opt-2
+      text: The node with value 2
+    - id: opt-none
+      text: None
+    - id: opt-prev
+      text: The prev node
     answer:
-      choiceId: a
-    explanation: every next and previous link preserves a reachable, non-cyclic structure. The trace follows the module invariant and workload.
-    id: step-2
-  - title: Choose the implementation
-    instruction: Trace the decision before writing code.
+      gradingMode: automatic
+      correctChoiceId: opt-2
+    explanation: 'Solution:
+
+      It points to the node with value 2.
+
+
+      Why it works:
+
+      `curr.next` points to the node `2`, so `next_node` securely holds the reference to the rest of the
+      list (`2 -> 3`).
+
+
+      Why the other choices fail:
+
+      - It is not `None` because `1` is not the end of the list.
+
+      - It does not point to `prev`, that is what we are *about* to change `curr.next` to point to.
+
+      '
+  - id: step-reverse-3
+    title: 'Step 3: Reverse the Pointer'
+    instruction: 'Now that the rest of the list is safely stored in `next_node`, we can safely overwrite
+      the current node''s `next` pointer to face backwards toward `prev`.
+
+
+      ```python
+
+      curr.next = prev
+
+      ```
+
+      '
+    prompt: After this line executes in the first iteration, what does the node `1` point to?
     type: multipleChoice
-    prompt: Which implementation action fits Linked Structures and Memory-Aware Containers?
-    choices:
-    - id: a
-      text: inserting after a known node
-    - id: b
-      text: Scan unrelated data repeatedly
-    - id: c
-      text: Skip boundary tests
-    - id: d
-      text: Assume infinite memory
+    choiceOptions:
+    - id: opt-none
+      text: None
+    - id: opt-2
+      text: '2'
+    - id: opt-prev
+      text: prev (which is currently None)
     answer:
-      choiceId: a
-    explanation: inserting after a known node. The trace follows the module invariant and workload.
-    id: step-3
+      gradingMode: automatic
+      correctChoiceId: opt-prev
+    explanation: 'Solution:
+
+      It points to `prev` (which is currently None).
+
+
+      Why it works:
+
+      `prev` was initialized to `None`. So node `1` now points to `None`, successfully becoming the new
+      tail of the reversed list!
+
+
+      Why the other choices fail:
+
+      - Technically `None` is correct conceptually for this specific iteration, but `prev` is the actual
+      variable it points to.
+
+      - It no longer points to `2` because we just overwrote `curr.next`.
+
+      '
+  - id: step-reverse-4
+    title: 'Step 4: Advance the Pointers'
+    instruction: 'Finally, we must move both `prev` and `curr` forward one step to prepare for the next
+      iteration.
+
+      We move `prev` up to where `curr` is, and we move `curr` up to where `next_node` is.
+
+
+      ```python
+
+      prev = curr
+
+      curr = next_node
+
+      ```
+
+      '
+    prompt: At the very end of the loop, when `curr` finally becomes `None`, which variable holds the
+      new `head` of the reversed list?
+    type: multipleChoice
+    choiceOptions:
+    - id: opt-prev
+      text: prev
+    - id: opt-curr
+      text: curr
+    - id: opt-next
+      text: next_node
+    answer:
+      gradingMode: automatic
+      correctChoiceId: opt-prev
+    explanation: 'Solution:
+
+      `prev` holds the new head.
+
+
+      Why it works:
+
+      When `curr` falls off the end of the list and becomes `None`, `prev` is pointing to the last valid
+      node processed, which is the new `head`. We just `return prev`.
+
+
+      Why the other choices fail:
+
+      - `curr` is `None` at the end of the loop.
+
+      - `next_node` is also `None` at the end of the loop.
+
+      '

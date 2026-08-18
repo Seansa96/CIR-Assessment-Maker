@@ -2,52 +2,73 @@ schemaVersion: 1
 id: dsa-stacks-queues-quiz
 categoryId: dsa
 topicId: dsa-stacks-queues
-learningGoal: evaluate
-activityType: quiz
-title: "Data Structure Selection Quiz"
-description: "Apply the correct data structure to a problem pattern."
+title: Data Structure Selection Quiz
+description: Apply the correct data structure to a problem pattern.
 navigation:
-  tags: [stacks, algorithm, design, evaluate]
+  learningGoal: evaluate
+  activityType: quiz
+  tags:
+  - stacks
+  - algorithm
+  - design
+  - evaluate
 skills:
-  - id: obj-dsa-stacks-04
-    level: foundation
+- 'id: obj-dsa-stacks-04: level: foundation'
 blueprintId: bp-dsa-stacks-quiz-01
-sourceChunkIds: ["src-20260810144616-0dc6e2835b:page-158-170"]
-
+sourceChunkIds:
+- src-20260810144616-0dc6e2835b:page-158-170
 questions:
-  - id: problem-matching-brackets
-    type: multipleChoice
-    difficultyDimensions: ["Algorithm tracing", "Data structure selection"]
-    subjectDifficultyTags: ["Algorithm-Design"]
-    prerequisiteObjectiveIds: ["obj-dsa-stacks-01"]
-    prompt: |
-      You are writing a compiler feature that checks if a mathematical expression has correctly matched parentheses and brackets. 
-      
-      For example, `[ ( A + B ) * { C } ]` is valid, but `[ ( A + B ] )` is invalid because the `]` tries to close the `[` before the inner `(` has been closed.
-      
-      Which data structure is best suited to track the open brackets as you parse the string from left to right?
-    choiceOptions:
-      - id: "opt-stack"
-        text: "A Stack, because you must close the most recently opened bracket first."
-      - id: "opt-queue"
-        text: "A Queue, because you are reading the string from left to right in a FIFO manner."
-        issueSignals: ["confused-access-pattern"]
-      - id: "opt-array"
-        text: "An Array, because you need O(1) random access to all brackets simultaneously."
-        issueSignals: ["misunderstood-problem-constraint"]
-      - id: "opt-linked"
-        text: "A Singly Linked List, because you need to insert elements at the head quickly."
-    answer:
-      gradingMode: automatic
-      correctChoiceId: "opt-stack"
-    explanation: |
-      Solution:
-      A Stack is the best choice.
+- id: problem-matching-brackets
+  type: multipleChoice
+  difficultyDimensions:
+  - Algorithm tracing
+  - Data structure selection
+  subjectDifficultyTags:
+  - Algorithm-Design
+  prerequisiteObjectiveIds:
+  - obj-dsa-stacks-01
+  prompt: "You are writing a compiler feature that checks if a mathematical expression has correctly matched\
+    \ parentheses and brackets. \n\nFor example, `[ ( A + B ) * { C } ]` is valid, but `[ ( A + B ] )`\
+    \ is invalid because the `]` tries to close the `[` before the inner `(` has been closed.\n\nWhich\
+    \ data structure is best suited to track the open brackets as you parse the string from left to right?\n"
+  choiceOptions:
+  - id: opt-stack
+    text: A Stack, because you must close the most recently opened bracket first.
+  - id: opt-queue
+    text: A Queue, because you are reading the string from left to right in a FIFO manner.
+    issueSignals:
+    - id: confused-access-pattern
+      domains: []
+  - id: opt-array
+    text: An Array, because you need O(1) random access to all brackets simultaneously.
+    issueSignals:
+    - id: misunderstood-problem-constraint
+      domains: []
+  - id: opt-linked
+    text: A Singly Linked List, because you need to insert elements at the head quickly.
+  answer:
+    gradingMode: automatic
+    correctChoiceId: opt-stack
+  explanation: 'Solution:
 
-      Why it works:
-      The rule for nested brackets is that a closing bracket `}`, `]`, or `)` must match the *most recently* opened, unclosed bracket of the same type. This is exactly a LIFO (Last In, First Out) pattern. You push open brackets onto the stack as you see them, and when you encounter a closing bracket, you pop the top of the stack and check if they match.
+    A Stack is the best choice.
 
-      Why the other choices fail:
-      - A Queue (FIFO) would check the *oldest* open bracket, which fails for nested structures.
-      - A standard Array provides random access, which is unnecessary and doesn't enforce the LIFO constraint.
-      - A Linked List can implement a stack, but the defining conceptual structure needed is the Stack (LIFO behavior), not the memory layout itself.
+
+    Why it works:
+
+    The rule for nested brackets is that a closing bracket `}`, `]`, or `)` must match the *most recently*
+    opened, unclosed bracket of the same type. This is exactly a LIFO (Last In, First Out) pattern. You
+    push open brackets onto the stack as you see them, and when you encounter a closing bracket, you pop
+    the top of the stack and check if they match.
+
+
+    Why the other choices fail:
+
+    - A Queue (FIFO) would check the *oldest* open bracket, which fails for nested structures.
+
+    - A standard Array provides random access, which is unnecessary and doesn''t enforce the LIFO constraint.
+
+    - A Linked List can implement a stack, but the defining conceptual structure needed is the Stack (LIFO
+    behavior), not the memory layout itself.
+
+    '

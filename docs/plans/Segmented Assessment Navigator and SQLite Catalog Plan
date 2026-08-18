@@ -1,0 +1,209 @@
+# Segmented Assessment Navigator and SQLite Catalog Plan
+
+## Summary
+Replace the crowded category/assessment picker with a progressive navigation flow:
+
+**Subject → Area → Topic → Learning Goal → Activity Type → Assessment**
+
+Keep YAML/JSON as the authoring source and fallback. Import assessments into SQLite at startup, then use SQLite as the primary runtime catalog. Preserve the existing dropdown loader inside a compact “Classic picker” fallback until SQLite navigation is confirmed reliable.
+
+## Agent Execution Constraints
+- Prioritize implementation over exhaustive testing.
+- Build a working vertical slice; avoid a broad rewrite.
+- Do not implement assessment search yet.
+- Do not remove or disable file-backed assessment loading.
+- Keep migration idempotent, incremental, and non-destructive.
+- Avoid unrelated refactoring, content cleanup, and extensive test generation.
+- Do not run the full backend test suite, browser automation, performance tests, repeated manual UI checks, or exploratory testing.
+- Run each required check once. Rerun only a command that fails after fixing its failure.
+- Finish with changed files, commands run, results, and recommended manual checks.
+
+## Assessment Metadata
+Add optional navigation metadata to `AssessmentDefinition` and YAML/JSON DTOs:
+
+```yaml
+navigation:
+  learningGoal: recall
+  activityType: mixedRecallSet
+  tags:
+    - integration
+    - substitution
+```
+
+Use these learning-goal IDs:
+
+- `learn`
+- `recall`
+- `practice`
+- `apply`
+- `evaluate`
+- `reflect`
+
+Treat activity types as stable string IDs rather than a closed enum so later assessment types do not require database migrations.
+
+Initial activity catalog:
+
+- Learn: `guidedWorkedExample`
+- Recall: `recognitionDrill`, `clozeDrill`, `mixedRecallSet`
+- Practice: `focusedPractice`, `mixedPractice`
+- Apply: `guidedProject`, `codingApplication`, `circuitApplication`
+- Evaluate: `masteryCheck`, `formalTest`
+- Reflect: `selfReview`
+
+Infer metadata when explicit values are absent:
+
+- `workedExample` → Learn / Guided Worked Example
+- `recallDrill` containing only cloze items → Recall / Cloze Drill
+- `recallDrill` containing only flashcards → Recall / Recognition Drill
+- other `recallDrill` → Recall / Mixed Recall Set
+- `quiz` → Practice / Focused Practice
+- `guidedProject` → Apply / Guided Project
+- `test` → Evaluate / Formal Test
+- Reflect remains available in the navigation taxonomy but has no inferred assessments.
+
+Explicit YAML metadata always overrides inference.
+
+Add optional `description` to areas, categories, and subcategories. Populate concise descriptions for existing areas so hover/focus help is immediately useful.
+
+## SQLite Assessment Catalog
+Extend the existing retention database with:
+
+- `assessments`
+  - identity, title, type, category, learning goal, activity type
+  - complete serialized assessment definition
+  - source path and content hash
+  - active/source-missing status
+  - imported/updated timestamps
+- `assessment_subcategories`
+- `assessment_areas`
+- `assessment_tags`
+- indexes for category, goal, activity, area, and subcategory filters
+
+Create `SqliteAssessmentRepository` behind `IAssessmentRepository`.
+
+Create an idempotent startup importer that:
+
+1. Enumerates assessment YAML/JSON files in deterministic order.
+2. Hashes each file and skips unchanged content.
+3. Parses and validates changed/new assessments.
+4. Infers navigation metadata where necessary.
+5. Resolves areas primarily through subcategory membership.
+6. Uses category-level area membership only when an area has no subcategories.
+7. Upserts the definition and normalized navigation rows.
+8. Marks missing source assessments inactive rather than deleting them.
+9. Logs invalid files, duplicate IDs, and unknown category/subcategory references without destroying previously imported rows.
+
+Unknown or unmapped topics must remain accessible under a synthetic **Other / Unmapped** area and topic. Do not silently hide them.
+
+Implement a hybrid repository:
+
+- Read from SQLite when the catalog initialized successfully.
+- Fall back to `FileAssessmentRepository` when SQLite is unavailable, empty, or startup import failed.
+- `SaveAsync` writes the YAML file first, then upserts SQLite.
+- `ValidateFileAsync` remains file-backed.
+- Keep current assessment endpoints and attempt-loading behavior compatible.
+
+## Navigation API
+Add:
+
+```http
+GET /api/navigation/catalog
+```
+
+Return:
+
+- subjects/categories
+- areas and descriptions
+- topics/subcategories
+- learning goals and ordered activity types
+- assessment summaries containing:
+  - assessment ID and title
+  - assessment type
+  - category ID
+  - area IDs
+  - topic/subcategory IDs
+  - learning goal
+  - activity type
+  - tags
+  - effective/authored item counts
+
+Do not return full assessment definitions in this catalog.
+
+Keep these existing endpoints operational:
+
+```http
+GET /api/assessments?categoryId=...
+GET /api/assessments/{assessmentId}
+```
+
+Add nullable learning-goal/activity fields to analytics history records so future grading aggregation can use them. Do not build new grade calculations in this slice.
+
+## Frontend Flow
+Replace the primary loader with a progressive explorer:
+
+1. Subject/course selector
+2. Area choices with hover/focus descriptions
+3. Topic choices within the selected area
+4. Learning-goal choices
+5. Activity-type branch
+6. Matching assessment list
+7. Existing mode selector and Start button
+
+Interaction requirements:
+
+- Show the selected path as a compact breadcrumb/tree.
+- Reveal each stage only after the preceding stage is selected.
+- Use restrained tiles, segmented controls, or compact lists rather than a page of dropdowns.
+- Show a **Suggested next** marker on the first available activity in the configured order.
+- Do not lock users into the suggestion; any available activity remains selectable.
+- Display unavailable goals with zero counts in a muted state so the taxonomy remains understandable.
+- Show assessment type and item count in the final list.
+- Preserve the active assessment session when browsing another path.
+- Synchronize the selected assessment with the existing start-attempt flow.
+- Keep the old category/assessment dropdowns in a collapsed **Classic assessment picker**.
+- Automatically expose the classic picker with an error message if the navigation catalog fails.
+- Do not add a search box. Retain indexed tags and extensible filter models as future search hooks.
+- Keep the assessment-taking, creation, settings, and grade-log interfaces otherwise unchanged.
+
+## Minimal Verification Budget
+Add only narrowly focused tests if needed for confidence:
+
+- One SQLite importer test covering first import, changed-file upsert, and idempotency.
+- One repository/catalog test covering metadata inference and file fallback.
+
+Do not create broad frontend test coverage.
+
+Run only:
+
+```powershell
+dotnet build backend\QuizApp.sln --no-restore
+npm run build
+```
+
+Then perform one startup smoke pass:
+
+- Backend starts without an unhandled exception.
+- `GET /api/categories` returns successfully.
+- `GET /api/navigation/catalog` returns at least one subject and assessment.
+- `GET /api/assessments/{known-id}` loads from the SQLite-backed repository.
+- Frontend starts and `/` returns successfully.
+
+Do not perform repeated browser interaction testing. Leave detailed navigation, responsive-layout, classification, and content-placement review to the user.
+
+## Manual Testing to Report
+Ask the user to verify:
+
+- Calculus 2 → Integration area → topic → goal → activity navigation.
+- Recall decomposition into Recognition, Cloze, and Mixed Recall.
+- Correct placement of multi-topic assessments.
+- Other / Unmapped handling.
+- Classic picker fallback.
+- Starting and switching assessments without ending an active session.
+- Area descriptions and mobile layout.
+
+## Assumptions
+- YAML/JSON remains the portable authoring source.
+- SQLite is the primary runtime source after each successful import.
+- Categories and areas remain file-authored, while assessment-area relationships are indexed in SQLite.
+- Existing files are never deleted or rewritten by migration.
+- Search, recommendation scoring, learning-path completion, and expanded grade analytics are deferred.
