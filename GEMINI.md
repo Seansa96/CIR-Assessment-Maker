@@ -8,6 +8,7 @@
 
 - Treat the imported `AGENTS.md` as the shared repository contract.
 - For substantial changes, inspect `docs/agent-coexistence.md` before editing.
+- For cross-agent feature work, follow `docs/feature-development-workflow.md`; use the assigned worktree and do not work directly on `main`.
 - For assessment creation or review, load `skills/assessment-question-pipeline/SKILL.md` only when the task concerns assessment content.
 - For S2C imports, source-grounded curriculum generation, or authoring packets, load `skills/source-to-curriculum/SKILL.md` before creating content. Its extraction and provenance gates are mandatory.
 - Do not edit `.codex/`, Codex configuration, or Codex skill mirrors unless the user explicitly asks for agent-infrastructure maintenance.

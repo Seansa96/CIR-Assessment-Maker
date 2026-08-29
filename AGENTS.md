@@ -218,6 +218,8 @@ Changes spanning backend and frontend:
 
 ## Agent Collaboration
 
+For isolated worktrees, branch roles, feature handoffs, and release integration, read `docs/feature-development-workflow.md` before starting cross-agent feature work.
+
 - One agent should own a file at a time whenever possible.
 - Before editing, inspect the current file and recent working-tree changes.
 - After editing, report changed files, validation performed, warnings, and any skipped checks.
