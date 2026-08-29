@@ -41,6 +41,7 @@ public sealed record Attempt(
     DateTimeOffset? CompletedAt,
     DateTimeOffset? AbandonedAt)
 {
+    public string? CourseRunId { get; init; }
     public IReadOnlyList<RecallItemAttempt> RecallItems { get; init; } = Array.Empty<RecallItemAttempt>();
     public IReadOnlyList<LearningSectionAttempt> LearningSections { get; init; } = Array.Empty<LearningSectionAttempt>();
     public IReadOnlyList<DirectedProjectStepAttempt> DirectedProjectSteps { get; init; } = Array.Empty<DirectedProjectStepAttempt>();

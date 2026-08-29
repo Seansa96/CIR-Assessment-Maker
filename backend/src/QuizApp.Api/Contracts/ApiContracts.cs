@@ -16,7 +16,10 @@ public sealed record ExportAuthoringPacketRequest(
 public sealed record ImportAuthoringDraftRequest(string PacketId, string PayloadJson);
 public sealed record UpdateAuthoringDraftStateRequest(string State);
 
-public sealed record StartAttemptRequest(string AssessmentId, AssessmentMode? Mode);
+public sealed record StartAttemptRequest(string AssessmentId, AssessmentMode? Mode, string? CourseRunId = null);
+
+public sealed record SaveCourseRequest(CourseDefinition Course, bool ApplyToActiveRuns = false);
+public sealed record StartCourseRunRequest(DateOnly? StartDate = null);
 
 public sealed record AttemptSessionResponse(
     Attempt Attempt,

@@ -25,6 +25,7 @@ const isDev = import.meta.env.DEV;
       <nav class="tabs" aria-label="Primary">
         <button class="tab active" data-tab="load">Load Assessment</button>
         <button class="tab" data-tab="curriculums">Category Curriculums</button>
+        <button class="tab" data-tab="courses">Course Mode</button>
         <button class="tab" data-tab="create">Create Quiz/Test</button>
         <button class="tab" data-tab="authoring">Authoring Workspace</button>
         <button class="tab" data-tab="settings">Settings</button>
@@ -224,6 +225,28 @@ const isDev = import.meta.env.DEV;
             <!-- Rendered via JS -->
           </div>
         </section>
+      </section>
+
+      <section class="view" id="view-courses" aria-labelledby="courses-title">
+        <section class="panel">
+          <div class="section-header"><div><h2 id="courses-title">Course Mode</h2><p class="quiet-hint">Build a local course schedule, then start a snapshot-backed course run.</p></div><button id="course-refresh" type="button">Refresh</button></div>
+          <form id="course-editor-form" class="settings-grid">
+            <div class="field"><label for="course-title">Course title</label><input id="course-title" required placeholder="Calculus I — Fall" /></div>
+            <div class="field"><label for="course-category">Category</label><select id="course-category" required></select></div>
+            <div class="field"><label for="course-cap">Default graded attempts</label><input id="course-cap" type="number" min="1" value="3" /></div>
+            <div class="field"><label for="course-grace">Default grace days</label><input id="course-grace" type="number" min="0" value="0" /></div>
+            <div class="field"><label for="course-week-title">Week title</label><input id="course-week-title" value="Week 1" /></div>
+            <div class="field"><label for="course-week-due">Week due date</label><input id="course-week-due" type="date" /></div>
+            <div class="field"><label for="course-target-type">Schedule target</label><select id="course-target-type"><option value="topic">Topic</option><option value="area">Area</option><option value="assessment">Assessment</option><option value="category">Entire category</option></select></div>
+            <div class="field"><label for="course-target">Target ID</label><input id="course-target" required placeholder="Select from the curriculum IDs" /></div>
+            <div class="field"><label for="course-goal">Optional learning goal</label><select id="course-goal"><option value="">All goals</option><option value="learn">Learn</option><option value="recall">Recall</option><option value="practice">Practice</option><option value="apply">Apply</option><option value="evaluate">Evaluate</option></select></div>
+            <div class="field wide"><label for="course-schedule-json">Advanced schedule (optional JSON)</label><textarea id="course-schedule-json" placeholder='[{"id":"week-1","title":"Week 1","order":1,"dueDate":"2026-09-06","groups":[...]}]'></textarea></div>
+            <label class="checkbox-line"><input id="course-apply-active" type="checkbox" /> Apply this edit to active course runs</label>
+            <button class="primary" type="submit">Save Course</button><button id="course-start" type="button">Start New Run</button>
+          </form>
+          <p id="course-status" class="muted" role="status"></p>
+        </section>
+        <section class="panel" style="margin-top: 1rem;"><div id="course-view" class="empty-state">Create a course and start a run to see weekly work, grades, and review recommendations.</div></section>
       </section>
 
       <section class="view" id="view-create" aria-labelledby="create-title">
@@ -599,6 +622,9 @@ const isDev = import.meta.env.DEV;
         codeRunnerCompileTimeoutMs: number;
         codeRunnerRunTimeoutMs: number;
       }
+      interface CourseDefinition { id: string; title: string; categoryId: string; defaultGradedAttemptCap: number; defaultGraceDays: number; weeks: any[]; updatedAt: string; }
+      interface CourseRun { id: string; courseId: string; courseTitle: string; categoryId: string; archived: boolean; }
+      interface CourseRunView { run: CourseRun; requirements: any[]; reviewRecommendations: any[]; }
 
       interface Category {
         id: string;
@@ -1536,6 +1562,9 @@ const isDev = import.meta.env.DEV;
         authoringSource: any | null;
         authoringOutline: any | null;
         authoringSelectedChunkIds: Set<string>;
+        courses: CourseDefinition[];
+        courseRuns: CourseRun[];
+        activeCourseRun: CourseRunView | null;
       } = {
         settings: null,
         categories: [],
@@ -1580,7 +1609,10 @@ const isDev = import.meta.env.DEV;
         },
         authoringSource: null,
         authoringOutline: null,
-        authoringSelectedChunkIds: new Set()
+        authoringSelectedChunkIds: new Set(),
+        courses: [],
+        courseRuns: [],
+        activeCourseRun: null
       };
 
       const apiStatus = document.querySelector<HTMLDivElement>("#api-status")!;
@@ -1630,6 +1662,9 @@ const isDev = import.meta.env.DEV;
       document.querySelector<HTMLButtonElement>("#start-attempt")!.addEventListener("click", startAttempt);
       document.querySelector<HTMLButtonElement>("#nav-start-attempt")!.addEventListener("click", startNavigationAttempt);
       document.querySelector<HTMLButtonElement>("#refresh-grades")!.addEventListener("click", loadGrades);
+      document.querySelector<HTMLButtonElement>("#course-refresh")!.addEventListener("click", () => void loadCourses());
+      document.querySelector<HTMLFormElement>("#course-editor-form")!.addEventListener("submit", (event) => { event.preventDefault(); void saveCourse(); });
+      document.querySelector<HTMLButtonElement>("#course-start")!.addEventListener("click", () => void startCourseRun());
       document.querySelector<HTMLButtonElement>("#refresh-sessions")!.addEventListener("click", loadGrades);
       document.querySelector<HTMLButtonElement>("#refresh-diagnostics")?.addEventListener("click", loadDiagnostics);
       document.querySelector<HTMLButtonElement>("#copy-catalog-diagnostics")?.addEventListener("click", copyCatalogDiagnostics);
@@ -1687,6 +1722,7 @@ const isDev = import.meta.env.DEV;
           state.categories = await api<Category[]>("/categories");
           fillSettingsForm(state.settings);
           renderCategories();
+          renderCourseCategories();
           renderCreateCategories();
           addDraftQuestion();
           await loadAssessments(categorySelect.value);
@@ -2412,7 +2448,8 @@ const isDev = import.meta.env.DEV;
       async function startSelectedAssessment(
         assessmentId: string,
         mode: AssessmentMode,
-        startButton: HTMLButtonElement
+        startButton: HTMLButtonElement,
+        courseRunId?: string
       ) {
         if (state.attempt?.status === "inProgress") {
           if (!confirm("Starting this assessment will permanently delete your current unsaved attempt. Continue?")) return;
@@ -2432,7 +2469,7 @@ const isDev = import.meta.env.DEV;
           state.assessment = await api<Assessment>(`/assessments/${encodeURIComponent(assessmentId)}`);
           state.attempt = await api<Attempt>("/attempts", {
             method: "POST",
-            body: JSON.stringify({ assessmentId, mode })
+            body: JSON.stringify({ assessmentId, mode, courseRunId })
           });
           state.currentIndex = 0;
           state.latestResults = null;
@@ -3877,6 +3914,7 @@ const isDev = import.meta.env.DEV;
         if (tabName === "curriculums") {
           renderCurriculumSubjects();
         }
+        if (tabName === "courses") void loadCourses();
         if (tabName === "diagnostics" && IS_DEV) {
           void loadAssessmentReports();
         }
@@ -4018,6 +4056,61 @@ const isDev = import.meta.env.DEV;
         if (select.value) {
           renderCurriculumRoadmap(select.value);
         }
+      }
+
+      function renderCourseCategories() {
+        const select = document.querySelector<HTMLSelectElement>("#course-category");
+        if (!select) return;
+        select.innerHTML = state.categories.map(category => `<option value="${escapeHtml(category.id)}">${escapeHtml(category.title)}</option>`).join("");
+      }
+
+      async function loadCourses() {
+        try {
+          const [courses, runs] = await Promise.all([api<CourseDefinition[]>("/courses"), api<CourseRun[]>("/course-runs")]);
+          state.courses = courses; state.courseRuns = runs;
+          const active = runs.find(run => !run.archived);
+          state.activeCourseRun = active ? await api<CourseRunView>(`/course-runs/${encodeURIComponent(active.id)}`) : null;
+          renderCourseView();
+        } catch (error) { document.querySelector<HTMLParagraphElement>("#course-status")!.textContent = readableError(error); }
+      }
+
+      async function saveCourse() {
+        const status = document.querySelector<HTMLParagraphElement>("#course-status")!;
+        const title = document.querySelector<HTMLInputElement>("#course-title")!.value.trim();
+        const categoryId = document.querySelector<HTMLSelectElement>("#course-category")!.value;
+        const targetType = document.querySelector<HTMLSelectElement>("#course-target-type")!.value;
+        const targetId = document.querySelector<HTMLInputElement>("#course-target")!.value.trim() || categoryId;
+        if (!title || !categoryId) { status.textContent = "Enter a title and category."; return; }
+        const id = `course-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+        const due = document.querySelector<HTMLInputElement>("#course-week-due")!.value || null;
+        const weekId = "week-1";
+        let weeks: any[] = [{ id: weekId, title: document.querySelector<HTMLInputElement>("#course-week-title")!.value.trim() || "Week 1", order: 1, dueDate: due, groups: [{ id: "group-1", targetType, targetId, learningGoal: document.querySelector<HTMLSelectElement>("#course-goal")!.value || null }] }];
+        const advancedSchedule = document.querySelector<HTMLTextAreaElement>("#course-schedule-json")!.value.trim();
+        try { if (advancedSchedule) weeks = JSON.parse(advancedSchedule); } catch { status.textContent = "Advanced schedule must be valid JSON."; return; }
+        const course: CourseDefinition = { id, title, categoryId, defaultGradedAttemptCap: Number(document.querySelector<HTMLInputElement>("#course-cap")!.value) || 3, defaultGraceDays: Number(document.querySelector<HTMLInputElement>("#course-grace")!.value) || 0, updatedAt: new Date().toISOString(), weeks };
+        try {
+          await api(`/courses/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify({ course, applyToActiveRuns: document.querySelector<HTMLInputElement>("#course-apply-active")!.checked }) });
+          status.textContent = "Course saved. Start a run when the schedule is ready."; await loadCourses();
+        } catch (error) { status.textContent = readableError(error); }
+      }
+
+      async function startCourseRun() {
+        const status = document.querySelector<HTMLParagraphElement>("#course-status")!;
+        const title = document.querySelector<HTMLInputElement>("#course-title")!.value.trim();
+        const id = `course-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+        try { await api(`/courses/${encodeURIComponent(id)}/runs`, { method: "POST", body: JSON.stringify({}) }); status.textContent = "Course run started."; await loadCourses(); }
+        catch (error) { status.textContent = readableError(error); }
+      }
+
+      function renderCourseView() {
+        const container = document.querySelector<HTMLDivElement>("#course-view")!;
+        const view = state.activeCourseRun;
+        if (!view) { container.textContent = "Create a course and start a run to see weekly work, grades, and review recommendations."; return; }
+        const rows = view.requirements.map((status: any) => `<tr><td>${escapeHtml(status.requirement.weekId)}</td><td>${escapeHtml(status.requirement.assessmentTitle)}</td><td>${escapeHtml(status.requirement.learningGoal)}</td><td>${status.requirement.dueDate ?? "—"}</td><td>${status.progress.bestPercent == null ? "—" : `${status.progress.bestPercent}%`}</td><td>${status.isLocked ? "Locked" : `${status.attemptsRemaining} attempts left`}</td><td><button type="button" data-course-assessment="${escapeHtml(status.requirement.assessmentId)}">Open</button></td></tr>`).join("");
+        const review = view.reviewRecommendations.slice(0, 3).map((item: any) => `<li>${escapeHtml(item.message)}</li>`).join("") || "<li>No issue-signal review recommendations yet.</li>";
+        container.innerHTML = `<div class="section-header"><div><h3>${escapeHtml(view.run.courseTitle)}</h3><p class="muted">Snapshot course run. Course grades are separate from the global Grade Log.</p></div><button id="course-reset" type="button">Reset course</button></div><div class="table-container"><table class="data-table"><thead><tr><th>Week</th><th>Assessment</th><th>Goal</th><th>Due</th><th>Best course grade</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><h3>Recommended review</h3><ul>${review}</ul>`;
+        container.querySelector<HTMLButtonElement>("#course-reset")?.addEventListener("click", async () => { if (!confirm("Archive this course run and start a fresh one?")) return; await api(`/course-runs/${encodeURIComponent(view.run.id)}/reset`, { method: "POST" }); await loadCourses(); });
+        container.querySelectorAll<HTMLButtonElement>("[data-course-assessment]").forEach(button => button.addEventListener("click", () => { const id = button.dataset.courseAssessment; if (id) void startSelectedAssessment(id, "scored", button, view.run.id); }));
       }
 
       function renderCurriculumRoadmap(subjectId: string) {

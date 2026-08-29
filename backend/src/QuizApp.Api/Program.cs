@@ -54,6 +54,7 @@ builder.Services.AddSingleton<IManagedCodeRunnerService>(provider => provider.Ge
 builder.Services.AddSingleton<AttemptService>();
 builder.Services.AddSingleton<GradeLogService>();
 builder.Services.AddSingleton<GradeAnalyticsService>();
+builder.Services.AddSingleton<CourseService>();
 builder.Services.AddSingleton<AssessmentReportService>();
 builder.Services.AddSingleton<IDockerCommandRunner, QuizApp.Infrastructure.CodeRunner.DockerCommandRunner>();
 builder.Services.AddSingleton<IGuidedProjectRunner, LegacyHarnessGuidedProjectRunner>();
@@ -65,6 +66,7 @@ builder.Services.AddSingleton(new SqliteRetentionOptions { DatabasePath = sqlite
 builder.Services.AddSingleton<SqliteRetentionInitializer>();
 builder.Services.AddSingleton<SqliteAttemptRepository>();
 builder.Services.AddSingleton<SqliteGradeLogRepository>();
+builder.Services.AddSingleton<SqliteCourseRepository>();
 builder.Services.AddSingleton<SqliteAssessmentReportRepository>();
 builder.Services.AddSingleton<LegacyRetentionMigrationService>();
 builder.Services.AddSingleton<ISettingsRepository, FileSettingsRepository>();
@@ -79,6 +81,7 @@ builder.Services.AddSingleton<IAssessmentRepository>(provider => provider.GetReq
 builder.Services.AddSingleton<IAttemptRepository>(provider => provider.GetRequiredService<SqliteAttemptRepository>());
 builder.Services.AddSingleton<IAttemptSessionStore, InMemoryAttemptSessionStore>();
 builder.Services.AddSingleton<IGradeLogRepository>(provider => provider.GetRequiredService<SqliteGradeLogRepository>());
+builder.Services.AddSingleton<ICourseRepository>(provider => provider.GetRequiredService<SqliteCourseRepository>());
 builder.Services.AddSingleton<IAssessmentReportRepository>(provider => provider.GetRequiredService<SqliteAssessmentReportRepository>());
 builder.Services.AddSingleton<IAreaRepository, FileAreaRepository>();
 builder.Services.AddSingleton<IAuthoringWorkspaceService, FileAuthoringWorkspaceService>();
@@ -657,11 +660,34 @@ api.MapPost("/assessments/validate", async (ValidateAssessmentFileRequest reques
     return Results.Ok(await repository.ValidateFileAsync(request.FileName, cancellationToken));
 });
 
+api.MapGet("/courses", async (CourseService service, CancellationToken cancellationToken) => Results.Ok(await service.ListDefinitionsAsync(cancellationToken)));
+api.MapPut("/courses/{courseId}", async (string courseId, SaveCourseRequest request, CourseService service, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await service.SaveDefinitionAsync(request.Course with { Id = courseId }, request.ApplyToActiveRuns, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("COURSE_INVALID", ex.Message)); }
+});
+api.MapGet("/course-runs", async (CourseService service, CancellationToken cancellationToken) => Results.Ok(await service.ListRunsAsync(cancellationToken)));
+api.MapPost("/courses/{courseId}/runs", async (string courseId, StartCourseRunRequest request, CourseService service, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await service.StartRunAsync(courseId, request.StartDate, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("COURSE_RUN_START_FAILED", ex.Message)); }
+});
+api.MapGet("/course-runs/{runId}", async (string runId, CourseService service, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await service.GetRunViewAsync(runId, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.NotFound(ApiError("COURSE_RUN_NOT_FOUND", ex.Message)); }
+});
+api.MapPost("/course-runs/{runId}/reset", async (string runId, CourseService service, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await service.ResetRunAsync(runId, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.NotFound(ApiError("COURSE_RUN_NOT_FOUND", ex.Message)); }
+});
+
 api.MapPost("/attempts", async (StartAttemptRequest request, AttemptService attemptService, CancellationToken cancellationToken) =>
 {
     try
     {
-        var attempt = await attemptService.StartAsync(request.AssessmentId, request.Mode, cancellationToken);
+        var attempt = await attemptService.StartAsync(request.AssessmentId, request.Mode, request.CourseRunId, cancellationToken);
         return Results.Created($"/api/attempts/{attempt.Id}/results", attempt);
     }
     catch (InvalidOperationException ex)

@@ -14,6 +14,7 @@ public sealed class AttemptService
     private readonly ISettingsRepository settingsRepository;
     private readonly AssessmentValidator validator;
     private readonly ScoringService scoringService;
+    private readonly CourseService? courseService;
 
     public AttemptService(
         IAssessmentRepository assessmentRepository,
@@ -23,7 +24,8 @@ public sealed class AttemptService
         IGuidedProjectSessionRepository guidedProjectSessionRepository,
         ISettingsRepository settingsRepository,
         AssessmentValidator validator,
-        ScoringService scoringService)
+        ScoringService scoringService,
+        CourseService? courseService = null)
     {
         this.assessmentRepository = assessmentRepository;
         this.attemptRepository = attemptRepository;
@@ -33,15 +35,20 @@ public sealed class AttemptService
         this.settingsRepository = settingsRepository;
         this.validator = validator;
         this.scoringService = scoringService;
+        this.courseService = courseService;
     }
 
-    public async Task<Attempt> StartAsync(string assessmentId, AssessmentMode? mode, CancellationToken cancellationToken = default)
+    public async Task<Attempt> StartAsync(string assessmentId, AssessmentMode? mode, string? courseRunId = null, CancellationToken cancellationToken = default)
     {
         var assessment = await GetValidAssessmentAsync(assessmentId, cancellationToken);
         var settings = await settingsRepository.GetAsync(cancellationToken);
         var selectedMode = IsInstructionalAssessment(assessment.AssessmentType)
             ? AssessmentMode.Practice
             : mode ?? assessment.ModeDefault;
+        if (!string.IsNullOrWhiteSpace(courseRunId))
+        {
+            selectedMode = await (courseService ?? throw new InvalidOperationException("Course mode is unavailable.")).PrepareAttemptAsync(courseRunId, assessment.Id, mode, cancellationToken);
+        }
         var usesOrderedVariants = assessment.AssessmentType is AssessmentType.Quiz or AssessmentType.Test
             && assessment.QuestionSelection?.Mode is QuestionSelectionMode.OrderedVariants;
         var questionOrder = usesOrderedVariants
@@ -83,7 +90,7 @@ public sealed class AttemptService
             DateTimeOffset.UtcNow,
             null,
             null,
-            null);
+            null) { CourseRunId = courseRunId };
 
         await SaveAttemptAsync(attempt, cancellationToken);
         return attempt;
@@ -613,7 +620,12 @@ public sealed class AttemptService
             : attempt;
 
         await SaveAttemptAsync(completedAttempt, cancellationToken);
-        return await GetResultsAsync(completedAttempt.Id, cancellationToken);
+        var results = await GetResultsAsync(completedAttempt.Id, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(completedAttempt.CourseRunId))
+        {
+            await (courseService ?? throw new InvalidOperationException("Course mode is unavailable.")).RecordCompletionAsync(completedAttempt.CourseRunId, completedAttempt, results, cancellationToken);
+        }
+        return results;
     }
 
     public async Task DeleteAsync(string attemptId, CancellationToken cancellationToken = default)
@@ -742,6 +754,13 @@ public sealed class AttemptService
 
     private static void EnsureLearningSectionUnlocked(AssessmentDefinition assessment, Attempt attempt, string sectionId)
     {
+        // Concept lessons are reference material: learners may freely jump to any section.
+        // Interactive explorations and glossaries retain their ordered progression.
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson)
+        {
+            return;
+        }
+
         var sections = GetLearningSections(assessment);
         var index = sections.ToList().FindIndex(section => string.Equals(section.Id, sectionId, StringComparison.OrdinalIgnoreCase));
         if (index < 0)

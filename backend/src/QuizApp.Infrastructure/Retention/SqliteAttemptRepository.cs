@@ -27,7 +27,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         await connection.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, learning_sections_json, directed_project_steps_json, started_at, paused_at, completed_at, abandoned_at
+            SELECT id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, learning_sections_json, directed_project_steps_json, started_at, paused_at, completed_at, abandoned_at, course_run_id
             FROM attempts
             ORDER BY started_at DESC;
             """;
@@ -49,7 +49,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         await connection.OpenAsync(cancellationToken);
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, learning_sections_json, directed_project_steps_json, started_at, paused_at, completed_at, abandoned_at
+            SELECT id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, learning_sections_json, directed_project_steps_json, started_at, paused_at, completed_at, abandoned_at, course_run_id
             FROM attempts
             WHERE id = $id;
             """;
@@ -67,10 +67,10 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         await using var command = connection.CreateCommand();
         command.CommandText = """
             INSERT INTO attempts (
-                id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, learning_sections_json, directed_project_steps_json, started_at, paused_at, completed_at, abandoned_at
+                id, assessment_id, mode, status, question_order_json, answers_json, recall_items_json, learning_sections_json, directed_project_steps_json, started_at, paused_at, completed_at, abandoned_at, course_run_id
             )
             VALUES (
-                $id, $assessment_id, $mode, $status, $question_order_json, $answers_json, $recall_items_json, $learning_sections_json, $directed_project_steps_json, $started_at, $paused_at, $completed_at, $abandoned_at
+                $id, $assessment_id, $mode, $status, $question_order_json, $answers_json, $recall_items_json, $learning_sections_json, $directed_project_steps_json, $started_at, $paused_at, $completed_at, $abandoned_at, $course_run_id
             )
             ON CONFLICT(id) DO UPDATE SET
                 assessment_id = excluded.assessment_id,
@@ -84,7 +84,8 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
                 started_at = excluded.started_at,
                 paused_at = excluded.paused_at,
                 completed_at = excluded.completed_at,
-                abandoned_at = excluded.abandoned_at;
+                abandoned_at = excluded.abandoned_at,
+                course_run_id = excluded.course_run_id;
             """;
         AddAttemptParameters(command, attempt);
         await command.ExecuteNonQueryAsync(cancellationToken);
@@ -139,6 +140,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
         command.Parameters.AddWithValue("$paused_at", FormatNullableDate(attempt.PausedAt));
         command.Parameters.AddWithValue("$completed_at", FormatNullableDate(attempt.CompletedAt));
         command.Parameters.AddWithValue("$abandoned_at", FormatNullableDate(attempt.AbandonedAt));
+        command.Parameters.AddWithValue("$course_run_id", (object?)attempt.CourseRunId ?? DBNull.Value);
     }
 
     private static Attempt ReadAttempt(SqliteDataReader reader)
@@ -158,6 +160,7 @@ public sealed class SqliteAttemptRepository : IAttemptRepository
             RecallItems = RetentionJson.Deserialize<IReadOnlyList<RecallItemAttempt>>(reader.GetString(6)) ?? Array.Empty<RecallItemAttempt>(),
             LearningSections = RetentionJson.Deserialize<IReadOnlyList<LearningSectionAttempt>>(reader.GetString(7)) ?? Array.Empty<LearningSectionAttempt>(),
             DirectedProjectSteps = RetentionJson.Deserialize<IReadOnlyList<DirectedProjectStepAttempt>>(reader.GetString(8)) ?? Array.Empty<DirectedProjectStepAttempt>()
+            ,CourseRunId = reader.IsDBNull(13) ? null : reader.GetString(13)
         };
     }
 

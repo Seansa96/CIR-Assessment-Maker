@@ -79,6 +79,22 @@ public sealed class SqliteRetentionInitializer
         await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_grades_committed_at ON grade_log_entries(committed_at DESC);", cancellationToken);
 
         await ExecuteAsync(connection, """
+            CREATE TABLE IF NOT EXISTS course_definitions (
+                id TEXT PRIMARY KEY, category_id TEXT NOT NULL, payload_json TEXT NOT NULL, updated_at TEXT NOT NULL
+            );
+            """, cancellationToken);
+        await ExecuteAsync(connection, """
+            CREATE TABLE IF NOT EXISTS course_runs (
+                id TEXT PRIMARY KEY, category_id TEXT NOT NULL, payload_json TEXT NOT NULL, updated_at TEXT NOT NULL
+            );
+            """, cancellationToken);
+        await ExecuteAsync(connection, "CREATE INDEX IF NOT EXISTS idx_course_runs_category ON course_runs(category_id);", cancellationToken);
+        if (!await ColumnExistsAsync(connection, "attempts", "course_run_id", cancellationToken))
+        {
+            await ExecuteAsync(connection, "ALTER TABLE attempts ADD COLUMN course_run_id TEXT NULL;", cancellationToken);
+        }
+
+        await ExecuteAsync(connection, """
             CREATE TABLE IF NOT EXISTS assessment_reports (
                 id TEXT PRIMARY KEY,
                 assessment_id TEXT NOT NULL,
