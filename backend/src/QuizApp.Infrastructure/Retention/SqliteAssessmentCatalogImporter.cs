@@ -204,6 +204,75 @@ public sealed class SqliteAssessmentCatalogImporter
         }
     }
 
+    public async Task<(bool Success, string? AssessmentId, string? ErrorMessage)> TryHotReloadFileAsync(
+        string path,
+        CancellationToken cancellationToken = default)
+    {
+        if (!CatalogInitialized) return (false, null, "Catalog not initialized");
+
+        try
+        {
+            var categories = await categoryRepository.ListAsync(cancellationToken);
+            var areas = await areaRepository.ListAsync(cancellationToken);
+            var areasBySubcategory = BuildSubcategoryToAreaIndex(areas);
+
+            await using var connection = new SqliteConnectionFactory(retentionOptions).CreateConnection();
+            await connection.OpenAsync(cancellationToken);
+
+            var runId = "hotreload-" + Guid.NewGuid().ToString("N");
+            var seenIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            var outcome = await ImportFileAsync(
+                connection,
+                runId,
+                path,
+                categories,
+                areas,
+                areasBySubcategory,
+                seenIds,
+                forceFullReimport: true,
+                cancellationToken);
+
+            var existingId = await GetIdByPathAsync(connection, path, cancellationToken);
+            if (outcome == CatalogImportOutcome.Invalid)
+            {
+                return (false, existingId, "Validation or parsing failed. Check diagnostics.");
+            }
+
+            return (true, existingId, null);
+        }
+        catch (Exception ex)
+        {
+            return (false, null, ex.Message);
+        }
+    }
+
+    public async Task<bool> RemoveHotReloadedFileAsync(string path, CancellationToken cancellationToken = default)
+    {
+        if (!CatalogInitialized) return false;
+
+        try
+        {
+            await using var connection = new SqliteConnectionFactory(retentionOptions).CreateConnection();
+            await connection.OpenAsync(cancellationToken);
+            
+            var existingId = await GetIdByPathAsync(connection, path, cancellationToken);
+            if (existingId is not null)
+            {
+                await using var cmd = connection.CreateCommand();
+                cmd.CommandText = "UPDATE assessments SET is_active = 0 WHERE id = @id";
+                cmd.Parameters.AddWithValue("@id", existingId);
+                await cmd.ExecuteNonQueryAsync(cancellationToken);
+                return true;
+            }
+            return false;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<bool> TryImportAssessmentAsync(
         AssessmentDefinition assessment,
         CancellationToken cancellationToken = default)

@@ -94,6 +94,7 @@ builder.Services.AddSingleton<NavigationRecommendationService>();
 builder.Services.AddSingleton<SqliteAssessmentSearchService>();
 builder.Services.AddSingleton<ILocalAssessmentAnalyzer, QuizApp.Infrastructure.Analysis.HeuristicAssessmentAnalyzer>();
 builder.Services.AddHostedService<QuizApp.Api.Services.PassiveAnalyzerBackgroundService>();
+builder.Services.AddHostedService<QuizApp.Api.Services.AssessmentFileWatcherService>();
 
 builder.Services.AddCors(options =>
 {
