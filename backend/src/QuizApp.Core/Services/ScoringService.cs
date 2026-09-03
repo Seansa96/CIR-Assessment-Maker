@@ -371,7 +371,8 @@ public sealed class ScoringService
                 checkResult = BuildQuestionResult(section.Check, answer, true);
             }
 
-            var unlocked = previousRequiredComplete;
+            var unlocked = assessment.AssessmentType is AssessmentType.ConceptLesson
+                || previousRequiredComplete;
             sectionResults.Add(new LearningSectionResult(
                 section.Id,
                 section.Title,

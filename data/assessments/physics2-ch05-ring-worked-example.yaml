@@ -1,33 +1,211 @@
 schemaVersion: 1
 id: physics2-ch05-ring-worked-example
-title: Electric Field of a Charged Ring
+title: Electric Field of a Uniformly Charged Ring
 assessmentType: workedExample
 categoryId: physics-2
 topicId: physics2-electric-charges-fields
+modeDefault: practice
+randomizeQuestions: false
+attemptQuestionCount: null
+questionTimerSeconds: null
+assessmentTimerSeconds: null
+questionSelection: null
+questions: []
 workedExamples:
-- id: we2
-  title: Field on the axis of a charged ring
+- id: ring-axis
+  title: Derive the on-axis field
+  problem: Derive the field at a point z on the symmetry axis of a ring of radius R carrying total charge Q uniformly.
   steps:
-  - id: s1
-    prompt: Identify symmetry and integrate.
-    explanation: 'Solution:
-
-      1) Consider an element $dq$. Its distance to the point $z$ is $r = \sqrt{R^2 + z^2}$.
-
-      2) By symmetry, the radial components of $d\vec{E}$ cancel. Only the z-components add up.
-
-      3) $dE_z = dE \cos \theta = \left(k \frac{dq}{R^2 + z^2}\right) \left(\frac{z}{\sqrt{R^2 + z^2}}\right)$.
-
-      4) Integrate $dq$ to get $Q$: $E_z = k \frac{Q z}{(R^2 + z^2)^{3/2}}$.
-
-
-      Why it works:
-
-      Symmetry simplifies the vector integral to a scalar integral over the charge distribution.'
-    title: Identify symmetry and integrate.
-    instruction: 'Work through this step: Identify symmetry and integrate.'
-    type: freeResponse
+  - id: ring-axis-symmetry
+    title: Apply ring symmetry
+    instruction: Apply ring symmetry
+    hint: Draw the charge locations and the direction of each contribution before choosing.
+    type: multipleChoice
+    prompt: What happens to components perpendicular to the symmetry axis?
+    choices:
+    - id: a
+      text: They cancel pairwise, leaving only the axial component.
+    - id: b
+      text: They add to make the field radial.
+      issueSignals:
+      - id: physics2-sign-direction-error
+        domains:
+        - physics-2
+    - id: c
+      text: They make the field zero everywhere on the axis.
+      issueSignals:
+      - id: physics2-method-selection-error
+        domains:
+        - physics-2
+    - id: d
+      text: They must be integrated before symmetry can be used.
+      issueSignals:
+      - id: physics2-units-error
+        domains:
+        - physics-2
     answer:
-      gradingMode: selfCheck
-  problem: A thin ring of radius $R$ carries a uniform total charge $Q$. Find the electric field on the
-    central axis at distance $z$ from the center.
+      choiceId: a
+    explanation: 'Solution: Every charge element has an opposite partner with cancelling transverse component; their
+      axial components agree.
+
+
+      Why it works: Rotational symmetry identifies the field direction before the integral is evaluated.
+
+
+      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
+    skills:
+    - physics2-electric-charges-fields
+    media:
+    - type: image
+      src: /media/physics2/ch05-relationship-map.svg
+      alt: Charge-and-field model for Derive the on-axis field.
+      caption: Identify source charges, the observation point, and component directions before calculating.
+  - id: ring-axis-expression
+    title: Write the field expression
+    instruction: Write the field expression
+    hint: Use superposition and simplify only after the physical contributions are combined.
+    type: symbolicResponse
+    prompt: Enter the axial field magnitude in terms of k, Q, z, and R.
+    choices: []
+    answer:
+      expectedLatex: k*Q*z/(z^2+R^2)^(3/2)
+      equivalenceMode: simplify
+      variables:
+      - k
+      - Q
+      - z
+      - R
+      tolerance: '0.000001'
+    explanation: 'Solution: Each element is the same distance sqrt(z^2+R^2) away, so integrating dq gives E=kQz/(z^2+R^2)^(3/2).
+
+
+      Why it works: The common distance and symmetry reduce a charge-distribution integral to the total Q.'
+    skills:
+    - physics2-electric-charges-fields
+  - id: ring-axis-number
+    title: Calculate a ring field
+    instruction: Calculate a ring field
+    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
+    type: numericResponse
+    prompt: For Q=5.0e-9 C, R=0.10 m, and z=0.20 m, enter E in N/C.
+    choices: []
+    answer:
+      value: 804.1
+      tolerance: 2
+    explanation: 'Solution: E=(8.99e9)(5.0e-9)(0.20)/(0.20^2+0.10^2)^(3/2)=8.04e2 N/C.
+
+
+      Why it works: The numerator projects each element''s field onto the axis while the denominator retains the
+      full distance.'
+    skills:
+    - physics2-electric-charges-fields
+- id: ring-far-field
+  title: Check the far-field limit
+  problem: Derive the far-field behavior from the on-axis expression for a charged ring when z is much larger than
+    R.
+  steps:
+  - id: ring-far-field-model
+    title: Choose the approximation
+    instruction: Choose the approximation
+    hint: Draw the charge locations and the direction of each contribution before choosing.
+    type: multipleChoice
+    prompt: When z is much larger than R, which model should the ring approach?
+    choices:
+    - id: a
+      text: A point charge Q at the ring center.
+    - id: b
+      text: An infinite line charge.
+      issueSignals:
+      - id: physics2-sign-direction-error
+        domains:
+        - physics-2
+    - id: c
+      text: A dipole with moment QR.
+      issueSignals:
+      - id: physics2-method-selection-error
+        domains:
+        - physics-2
+    - id: d
+      text: A zero field because the ring is symmetric.
+      issueSignals:
+      - id: physics2-units-error
+        domains:
+        - physics-2
+    answer:
+      choiceId: a
+    explanation: 'Solution: Far away, the observer cannot resolve the ring''s radius, while the total charge remains
+      Q.
+
+
+      Why it works: A localized distribution with nonzero net charge has a point-charge far field.
+
+
+      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
+    skills:
+    - physics2-electric-charges-fields
+    media:
+    - type: image
+      src: /media/physics2/ch05-relationship-map.svg
+      alt: Charge-and-field model for Check the far-field limit.
+      caption: Identify source charges, the observation point, and component directions before calculating.
+  - id: ring-far-field-expression
+    title: Simplify the limit
+    instruction: Simplify the limit
+    hint: Use superposition and simplify only after the physical contributions are combined.
+    type: symbolicResponse
+    prompt: Enter the leading far-field expression in terms of k, Q, and z.
+    choices: []
+    answer:
+      expectedLatex: k*Q/z^2
+      equivalenceMode: simplify
+      variables:
+      - k
+      - Q
+      - z
+      tolerance: '0.000001'
+    explanation: 'Solution: For z much larger than R, (z^2+R^2)^(3/2) approaches z^3, leaving kQ/z^2.
+
+
+      Why it works: The exact distribution result passes a physical limit check by recovering Coulomb''s law.'
+    skills:
+    - physics2-electric-charges-fields
+  - id: ring-far-field-comparison
+    title: Compare exact and approximate fields
+    instruction: Compare exact and approximate fields
+    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
+    type: numericResponse
+    prompt: For the previous ring at z=2.0 m, enter the point-charge approximation in N/C.
+    choices: []
+    answer:
+      value: 11.2375
+      tolerance: 0.03
+    explanation: 'Solution: kQ/z^2=(8.99e9)(5.0e-9)/(2.0)^2=11.24 N/C.
+
+
+      Why it works: At twenty ring radii away, the point-charge approximation is appropriate.'
+    skills:
+    - physics2-electric-charges-fields
+guidedProject: null
+items: []
+glossary: null
+lesson: null
+exploration: null
+directedProject: null
+sandbox: null
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - physics-2
+  - physics2-electric-charges-fields
+  - s2c-reviewed
+skills:
+- physics2-ch05-modeling
+- physics2-electric-charges-fields
+authoring:
+  visualRequirement: required
+  visualRationale: An original relationship map supports the model, direction, and units used in this Physics 2
+    learning activity.
+  difficultyTier: unspecified
+  exceptionReason: null
+  physicsModel: null

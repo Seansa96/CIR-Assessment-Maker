@@ -651,7 +651,7 @@ public sealed class AttemptFlowTests
     }
 
     [Fact]
-    public async Task ConceptLesson_enforces_ordered_checks_and_rejects_grade_commit()
+    public async Task ConceptLesson_allows_sections_and_checks_in_any_order_and_rejects_grade_commit()
     {
         var assessment = TestData.ConceptLessonAssessment();
         var attemptService = CreateAttemptService(assessment);
@@ -660,16 +660,17 @@ public sealed class AttemptFlowTests
 
         Assert.Equal(AssessmentMode.Practice, attempt.Mode);
         Assert.Equal(new[] { "intro", "check-loop" }, attempt.QuestionOrder);
-        await Assert.ThrowsAsync<InvalidOperationException>(() =>
-            attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("check-loop-question", "a", Array.Empty<string>(), null, null, null)));
+        var initialResults = await attemptService.GetResultsAsync(attempt.Id);
+        Assert.All(initialResults.LearningSections, section => Assert.True(section.Unlocked));
 
-        await attemptService.CompleteLearningSectionAsync(attempt.Id, "intro");
         await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("check-loop-question", "b", Array.Empty<string>(), null, null, null));
         await Assert.ThrowsAsync<InvalidOperationException>(() =>
             attemptService.CompleteLearningSectionAsync(attempt.Id, "check-loop"));
 
         await attemptService.SubmitAnswerAsync(attempt.Id, new SubmittedAnswer("check-loop-question", "a", Array.Empty<string>(), null, null, null));
-        var completed = await attemptService.CompleteLearningSectionAsync(attempt.Id, "check-loop");
+        var afterSecondSection = await attemptService.CompleteLearningSectionAsync(attempt.Id, "check-loop");
+        Assert.Equal(AttemptStatus.InProgress, afterSecondSection.Status);
+        var completed = await attemptService.CompleteLearningSectionAsync(attempt.Id, "intro");
         var results = await attemptService.GetResultsAsync(attempt.Id);
 
         Assert.Equal(AttemptStatus.Completed, completed.Status);

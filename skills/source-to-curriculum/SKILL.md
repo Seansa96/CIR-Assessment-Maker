@@ -15,10 +15,10 @@ Proceed only when all are true:
 
 - manifest is nonempty and records source ID, SHA-256, format, extractor/version, status, and chunk count;
 - `chunks.json`/API chunk retrieval succeeds and selected chunks have nonempty text;
-- extraction warnings are reviewed; page-image/OCR chunks are selected if equations or exercises were not extracted faithfully;
+- extraction warnings are reviewed; when equations, diagrams, or exercises are not extracted faithfully, render the relevant private PDF pages and select only page-image chunks with nonempty, human-reviewed transcriptions in `approved` state;
 - duplicate import or stale hash status is understood.
 
-**Stop and report the failure** if a manifest is empty, chunk count is zero, chunks are absent, or extraction is partial in the target exercises. Do not create a test “from memory” or infer that an `original.pdf` is an adequate source record.
+**Stop and report the failure** if a manifest is empty, chunk count is zero, chunks are absent, extraction is partial in the target exercises, or needed page-image evidence has a blank or unapproved transcription. OCR may create a future draft, but it can never approve a transcription. Do not create a test “from memory” or infer that an `original.pdf` is an adequate source record.
 
 ## 2. Define the curriculum before drafting
 

@@ -56,9 +56,19 @@ TOPICS = [
 ]
 
 def signal(x): return [{"id": x}]
-def expl(solution, remediation, other=True):
-    base=f"Solution: {solution}\nWhy it works: This uses the defining relationship for the topic. Review path: {remediation}."
-    return base+("\nWhy the other choices fail: Each changes a sign, swaps a role, or applies a different relationship." if other else "")
+def expl(solution, remediation, prompt=None, correct_answer=None, distractors=None, other=True):
+    """Write feedback that names the actual competing results for this item."""
+    base = f"Solution: {solution}\nWhy it works: This uses the defining relationship for the topic. Review path: {remediation}."
+    if not other:
+        return base
+    if prompt and correct_answer is not None and distractors:
+        feedback = "\n".join(
+            f"Choice {choice_id}, '{choice}', does not give '{correct_answer}' for '{prompt}'. "
+            "It substitutes a different result, representation, or condition for the requested one."
+            for choice_id, choice in distractors
+        )
+        return base + f"\nWhy the other choices fail: {feedback}"
+    return base + "\nWhy the other choices fail: Compare each alternative with the stated variables, representation, and requested quantity."
 class LatexSafeDumper(yaml.SafeDumper):
     pass
 
@@ -95,18 +105,61 @@ def lesson(topic):
     check_pairs=topic["recall"] + [(topic["worked_steps"][0][1], topic["worked_steps"][0][2])]
     for i,(title,text) in enumerate(deep_lesson_sections(topic),1):
         prompt, answer = check_pairs[i-1]
-        check={"id":f"check-{i:02d}","type":"multipleChoice","prompt":prompt,"choices":[{"id":"a","text":answer},{"id":"b","text":"Use a relation from a different representation.","issueSignals":signal(topic['signal'])},{"id":"c","text":"Reverse a sign, direction, or role without justification.","issueSignals":signal("sign-error")},{"id":"d","text":"Ignore the stated geometric constraints.","issueSignals":signal(topic['signal'])}],"answer":{"choiceId":"a"},"issueSignals":signal(topic['signal']),"difficultyDimensions":["representationTransfer","auxiliaryTechnique"],"explanation":expl(f"The correct response is {answer}.",topic['remediation'])}
+        distractors = lesson_distractors(topic, i - 1, prompt, check_pairs)
+        choices = [{"id":"a","text":answer}]
+        choices.extend({"id":choice_id, "text":text, "issueSignals":signal(topic["signal"])} for choice_id, text, _ in distractors)
+        feedback = "\n".join(
+            f"Choice {choice_id} gives a response to the related question '{source_prompt}', rather than to '{prompt}'."
+            for choice_id, _, source_prompt in distractors)
+        explanation = (
+            f"Solution: The correct response is {answer}.\n"
+            f"Why it works: {topic['sections'][min(i - 1, len(topic['sections']) - 1)][1]}\n"
+            f"Why the other choices fail: {feedback}"
+        )
+        check={"id":f"check-{i:02d}","type":"multipleChoice","prompt":prompt,"choices":choices,"answer":{"choiceId":"a"},"issueSignals":signal(topic['signal']),"difficultyDimensions":["representationTransfer","auxiliaryTechnique"],"explanation":explanation}
         sections.append({"id":f"s{i:02d}","title":title,"content":text,"media":media(topic) if i==1 else [],"check":check})
     return {"schemaVersion":1,"id":f"{topic['slug']}-concept-lesson-s2c","title":f"{topic['title']}: Core Ideas","assessmentType":"conceptLesson","categoryId":"calculus-3","topicId":topic['id'],"modeDefault":"practice","randomizeQuestions":False,"skills":[topic['slug']],"navigation":{"learningGoal":"learn","activityType":"conceptLesson","tags":["calculus-3",topic['id'],topic['slug']]},"authoring":{"visualRequirement":"required","visualRationale":"Original spatial visual supports the core representation.","sourcePacketId":f"packet-calc3-{topic['slug']}-v1"},"lesson":{"introduction":f"This topic is part of a recommended Calc 3 route, not a gate. You may begin here directly; refresh {topic['remediation']} if the prerequisite representation is unfamiliar.","sections":sections}}
+
+def lesson_distractors(topic, check_index, current_prompt, check_pairs):
+    """Return contrastive, source-backed distractors without reusing template wording."""
+    candidates = [pair for index, pair in enumerate(check_pairs) if index != check_index]
+    selected = [candidates[(check_index + offset) % len(candidates)] for offset in range(3)]
+    return [
+        (choice_id, f"{candidate_answer} (answers '{candidate_prompt}', not '{current_prompt}')", candidate_prompt)
+        for choice_id, (candidate_prompt, candidate_answer) in zip(["b", "c", "d"], selected)
+    ]
 def recall(topic):
     items=[]
     for i,(prompt,answer) in enumerate(topic['recall'],1):
         items.append({"id":f"r{i:03d}","type":"typed","prompt":prompt,"answer":{"expected":answer,"aliases":[]},"issueSignals":signal(topic['signal']),"explanation":expl(f"The expected response is {answer}.",topic['remediation'],False)})
     return {"schemaVersion":1,"id":f"{topic['slug']}-recall-s2c","title":f"{topic['title']}: Mixed Recall","assessmentType":"recallDrill","categoryId":"calculus-3","topicId":topic['id'],"modeDefault":"practice","randomizeQuestions":True,"skills":[topic['slug']],"navigation":{"learningGoal":"recall","activityType":"mixedRecallSet","tags":["calculus-3",topic['id'],topic['slug'],"recall"]},"authoring":{"sourcePacketId":f"packet-calc3-{topic['slug']}-v1","visualRequirement":"required","visualRationale":"Recall is paired with the topic's original spatial visual."},"items":items}
+def worked_distractors(topic, step_index, prompt):
+    """Use related-but-wrong results instead of generic placeholder choices."""
+    candidates = list(topic["recall"]) + [(item[1], item[2]) for item in topic["worked_steps"]]
+    candidates = [candidate for candidate in candidates if candidate[0] != prompt]
+    start = step_index % len(candidates)
+    selected = [candidates[(start + offset) % len(candidates)] for offset in range(3)]
+    return [
+        (choice_id, f"{answer} (answers '{source_prompt}', not '{prompt}')", source_prompt)
+        for choice_id, (source_prompt, answer) in zip(["b", "c", "d"], selected)
+    ]
+
 def worked(topic):
     steps=[]
     for i,(title,prompt,answer) in enumerate(topic['worked_steps'],1):
-        steps.append({"id":f"s{i:03d}","title":title,"instruction":prompt,"type":"multipleChoice","prompt":prompt,"choices":[{"id":"a","text":answer},{"id":"b","text":"Use an unrelated formula.","issueSignals":signal(topic['signal'])},{"id":"c","text":"Reverse a required sign or role.","issueSignals":signal("sign-error")},{"id":"d","text":"Treat the quantity as a scalar when it is not.","issueSignals":signal(topic['signal'])}],"answer":{"choiceId":"a"},"issueSignals":signal(topic['signal']),"difficultyDimensions":["representationTransfer","auxiliaryTechnique"],"explanation":expl(answer,topic['remediation'])})
+        distractors = worked_distractors(topic, i - 1, prompt)
+        choices = [{"id":"a","text":answer}]
+        choices.extend({"id": choice_id, "text": text, "issueSignals":signal(topic['signal'])} for choice_id, text, _ in distractors)
+        feedback = "\n".join(
+            f"Choice {choice_id} answers '{source_prompt}', not '{prompt}'."
+            for choice_id, _, source_prompt in distractors
+        )
+        explanation = (
+            f"Solution: {answer}\n"
+            f"Why it works: {title} is the required stage of the stated problem. Review path: {topic['remediation']}.\n"
+            f"Why the other choices fail: {feedback}"
+        )
+        steps.append({"id":f"s{i:03d}","title":title,"instruction":prompt,"type":"multipleChoice","prompt":prompt,"choices":choices,"answer":{"choiceId":"a"},"issueSignals":signal(topic['signal']),"difficultyDimensions":["representationTransfer","auxiliaryTechnique"],"explanation":explanation})
     return {"schemaVersion":1,"id":f"{topic['slug']}-worked-example-s2c","title":f"{topic['title']}: Guided Worked Example","assessmentType":"workedExample","categoryId":"calculus-3","topicId":topic['id'],"modeDefault":"practice","randomizeQuestions":False,"skills":[topic['slug']],"navigation":{"learningGoal":"learn","activityType":"guidedWorkedExample","tags":["calculus-3",topic['id'],topic['slug'],"worked-example"]},"authoring":{"sourcePacketId":f"packet-calc3-{topic['slug']}-v1","difficultyTier":"easy","visualRequirement":"required","visualRationale":"The example depends on a spatial representation.","exceptionReason":"One tightly-scaffolded worked example is intentionally used for this focused introductory artifact."},"workedExamples":[{"id":"example-001","title":"Build the representation","problem":topic['worked'],"steps":steps}]}
 def mastery_questions(topic):
     first, second, third = topic["worked_steps"]
@@ -124,7 +177,7 @@ def quiz(topic, kind):
     bank=topic['questions'] if kind=="focused-practice" else mastery_questions(topic)
     for i,(prompt,choices,answer,solution) in enumerate(bank,1):
         opts=[{"id":"a","text":choices[0]}]+[{"id":chr(98+j),"text":c,"issueSignals":signal(topic['signal'] if j<2 else "sign-error")} for j,c in enumerate(choices[1:])]
-        questions.append({"id":f"q{i:03d}","type":"multipleChoice","prompt":prompt,"choices":opts,"answer":{"choiceId":"a"},"issueSignals":signal(topic['signal']),"difficultyDimensions":["representationTransfer","auxiliaryTechnique"] if kind=="focused-practice" else ["representationTransfer","modelOrDerivation","methodSelection"],"difficultyEvidence":"Connects a vector-calculus representation, its governing relation, and the required interpretation.","explanation":expl(solution,topic['remediation'])})
+        questions.append({"id":f"q{i:03d}","type":"multipleChoice","prompt":prompt,"choices":opts,"answer":{"choiceId":"a"},"issueSignals":signal(topic['signal']),"difficultyDimensions":["representationTransfer","auxiliaryTechnique"] if kind=="focused-practice" else ["representationTransfer","modelOrDerivation","methodSelection"],"difficultyEvidence":"Connects a vector-calculus representation, its governing relation, and the required interpretation.","explanation":expl(solution,topic['remediation'],prompt,answer,[(option["id"], option["text"]) for option in opts[1:]])})
     goal,activity=("practice","focusedPractice") if kind=="focused-practice" else ("evaluate","masteryCheck")
     return {"schemaVersion":1,"id":f"{topic['slug']}-{kind}-s2c","title":f"{topic['title']}: {'Focused Practice' if kind=='focused-practice' else 'Mastery Check'}","assessmentType":"quiz","categoryId":"calculus-3","topicId":topic['id'],"modeDefault":"practice","randomizeQuestions":True,"skills":[topic['slug']],"navigation":{"learningGoal":goal,"activityType":activity,"tags":["calculus-3",topic['id'],topic['slug'],kind]},"authoring":{"sourcePacketId":f"packet-calc3-{topic['slug']}-v1","difficultyTier":"easy" if kind=="focused-practice" else "hard","visualRequirement":"required","visualRationale":"Questions reinforce spatial representations.","exceptionReason":"The mastery bank uses six distinct cumulative and transfer items." if kind!="focused-practice" else "Four intentionally distinct focused-practice items are used in this introductory bank."},"questions":questions}
 def packet(topic):

@@ -408,6 +408,21 @@ authoringApi.MapPost("/sources/{sourceId}/retry", async (string sourceId, IAutho
     try { return Results.Ok(await workspace.RetryExtractionAsync(sourceId, cancellationToken)); }
     catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("SOURCE_RETRY_FAILED", ex.Message)); }
 });
+authoringApi.MapPost("/sources/{sourceId}/page-images", async (string sourceId, SourcePageRenderRequest request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await workspace.RenderPdfPagesAsync(sourceId, request, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("PAGE_RENDER_FAILED", ex.Message)); }
+});
+authoringApi.MapPut("/sources/{sourceId}/chunks/{chunkId}/transcription", async (string sourceId, string chunkId, SourceTranscriptionUpdate request, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    try { return Results.Ok(await workspace.UpdatePageTranscriptionAsync(sourceId, chunkId, request, cancellationToken)); }
+    catch (InvalidOperationException ex) { return Results.BadRequest(ApiError("PAGE_TRANSCRIPTION_INVALID", ex.Message)); }
+});
+authoringApi.MapGet("/sources/{sourceId}/chunks/{chunkId}/image", async (string sourceId, string chunkId, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
+{
+    var image = await workspace.GetPageImageAsync(sourceId, chunkId, cancellationToken);
+    return image is null ? Results.NotFound(ApiError("PAGE_IMAGE_NOT_FOUND", "Page image was not found.")) : Results.File(image.Value.Path, image.Value.ContentType);
+});
 authoringApi.MapGet("/sources/search", async (string q, int? limit, IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) =>
     Results.Ok(await workspace.SearchSourcesAsync(q, limit ?? 25, cancellationToken)));
 authoringApi.MapGet("/curriculums", async (IAuthoringWorkspaceService workspace, CancellationToken cancellationToken) => Results.Ok(await workspace.ListCurriculumsAsync(cancellationToken)));

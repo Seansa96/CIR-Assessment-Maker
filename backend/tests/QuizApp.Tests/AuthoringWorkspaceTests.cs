@@ -145,6 +145,53 @@ public sealed class AuthoringWorkspaceTests : IDisposable
         Assert.Equal(1, row.ApprovedContentCount);
     }
 
+    [Fact]
+    public async Task Page_image_chunks_require_reviewed_transcription_before_packet_export()
+    {
+        Directory.CreateDirectory(root);
+        var input = Path.Combine(root, "source.txt");
+        await File.WriteAllTextAsync(input, "Legacy text remains eligible.");
+        var service = CreateService();
+        var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
+        var sourceDirectory = Path.Combine(root, "data", "source-library", "sources", source.Manifest.Id);
+        Directory.CreateDirectory(Path.Combine(sourceDirectory, "page-images"));
+        await File.WriteAllBytesAsync(Path.Combine(sourceDirectory, "page-images", "page-0001.png"), [137, 80, 78, 71]);
+        var pageId = $"{source.Manifest.Id}:page-0001";
+        await File.WriteAllTextAsync(Path.Combine(sourceDirectory, "chunks.json"), $$"""
+            [{"id":"{{source.Chunks[0].Id}}","ordinal":1,"kind":"paragraph","locator":"chunk 1","text":"Legacy text remains eligible.","tokenCount":4,"transcriptionReviewState":"approved"},{"id":"{{pageId}}","ordinal":100001,"kind":"page-image","locator":"PDF page 1","text":"","tokenCount":0,"imagePath":"page-images/page-0001.png","pageNumber":1,"transcriptionReviewState":"draft"}]
+            """);
+
+        var rejected = await Assert.ThrowsAsync<InvalidOperationException>(() => service.ExportPacketAsync("physics-1", "traveling-waves", ["wave-speed"], [pageId]));
+        Assert.Contains("missing transcription", rejected.Message);
+
+        var updated = await service.UpdatePageTranscriptionAsync(source.Manifest.Id, pageId, new SourceTranscriptionUpdate("Vector u is perpendicular to vector v.", SourceReviewState.Approved));
+        Assert.Equal(SourceReviewState.Approved, Assert.Single(updated.Chunks, chunk => chunk.Id == pageId).TranscriptionReviewState);
+        Assert.Single((await service.ExportPacketAsync("physics-1", "traveling-waves", ["wave-speed"], [pageId])).Chunks);
+        Assert.NotNull(await service.GetPageImageAsync(source.Manifest.Id, pageId));
+    }
+
+    [Fact]
+    public async Task Page_image_approval_rejects_blank_transcription_and_keeps_legacy_text_chunks_compatible()
+    {
+        Directory.CreateDirectory(root);
+        var input = Path.Combine(root, "source.txt");
+        await File.WriteAllTextAsync(input, "Legacy content.");
+        var service = CreateService();
+        var source = await service.ImportSourceAsync(new SourceImportRequest(input, null, null));
+        var pageId = $"{source.Manifest.Id}:page-0002";
+        var sourceDirectory = Path.Combine(root, "data", "source-library", "sources", source.Manifest.Id);
+        Directory.CreateDirectory(Path.Combine(sourceDirectory, "page-images"));
+        await File.WriteAllBytesAsync(Path.Combine(sourceDirectory, "page-images", "page-0002.png"), [137, 80, 78, 71]);
+        await File.WriteAllTextAsync(Path.Combine(sourceDirectory, "chunks.json"), $$"""
+            [{"id":"{{source.Chunks[0].Id}}","ordinal":1,"kind":"paragraph","locator":"chunk 1","text":"Legacy content.","tokenCount":2},{"id":"{{pageId}}","ordinal":100002,"kind":"page-image","locator":"PDF page 2","text":"draft","tokenCount":1,"imagePath":"page-images/page-0002.png","pageNumber":2,"transcriptionReviewState":"needsReview"}]
+            """);
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => service.UpdatePageTranscriptionAsync(source.Manifest.Id, pageId, new SourceTranscriptionUpdate(" ", SourceReviewState.Approved)));
+        Assert.Single((await service.ExportPacketAsync("physics-1", "traveling-waves", ["wave-speed"], [source.Chunks[0].Id])).Chunks);
+        var rejected = await Assert.ThrowsAsync<InvalidOperationException>(() => service.ExportPacketAsync("physics-1", "traveling-waves", ["wave-speed"], [pageId]));
+        Assert.Contains("not approved", rejected.Message);
+    }
+
 
 
     private FileAuthoringWorkspaceService CreateService() => new(new FileStorageOptions { DataRoot = Path.Combine(root, "data") });

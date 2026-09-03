@@ -64,6 +64,8 @@ public sealed class AssessmentAuthoringContractAudit
             WarnRatio("CONCEPT_CHECK_MIX", sections.Where(section => section.Check is not null).Select(section => section.Check!.Type), [QuestionType.MultipleChoice], "Concept lessons should use at least 70% multiple-choice checks.", diagnostics);
             foreach (var section in sections.Where(section => section.Check is not null))
                 EvaluateExplanation($"Concept section '{section.Id}'", section.Check!.Explanation, section.Check.Type == QuestionType.MultipleChoice, false, diagnostics, strict);
+            EvaluateConceptLessonSpecificity(sections, diagnostics, strict);
+            EvaluateMultipleChoiceDistractors(assessment, diagnostics, strict);
         }
 
         if (assessment.AssessmentType is AssessmentType.WorkedExample)
@@ -74,6 +76,7 @@ public sealed class AssessmentAuthoringContractAudit
             WarnRatio("WORKED_EXAMPLE_MIX", assessment.WorkedExamples.SelectMany(example => example.Steps).Select(step => step.Question.Type), preferred, "Worked-example steps should use the profile's preferred response types at least 70% of the time.", diagnostics);
             foreach (var step in assessment.WorkedExamples.SelectMany(example => example.Steps))
                 EvaluateExplanation($"Worked-example step '{step.Id}'", step.Question.Explanation, step.Question.Type == QuestionType.MultipleChoice, false, diagnostics, strict);
+            EvaluatePhysicsTwoWorkedExampleQuality(assessment, diagnostics, strict);
         }
 
         if (assessment.AssessmentType is AssessmentType.RecallDrill)
@@ -87,6 +90,34 @@ public sealed class AssessmentAuthoringContractAudit
                 EvaluateExplanation($"Glossary drill '{drill.Id}'", drill.Explanation, drill.Choices.Count > 1, false, diagnostics, strict);
         return diagnostics;
     }
+
+    private static void EvaluatePhysicsTwoWorkedExampleQuality(AssessmentDefinition assessment, List<AuthoringContractDiagnostic> diagnostics, bool strict)
+    {
+        if (!string.Equals(assessment.CategoryId, "physics-2", StringComparison.OrdinalIgnoreCase)) return;
+        var enforce = string.Equals(assessment.TopicId, "physics2-electric-charges-fields", StringComparison.OrdinalIgnoreCase);
+        void Add(string code, string message) => diagnostics.Add(new AuthoringContractDiagnostic(code, message, strict && enforce));
+        var examples = assessment.WorkedExamples;
+        var steps = examples.SelectMany(example => example.Steps).ToList();
+        var autoTypes = new[] { QuestionType.MultipleChoice, QuestionType.SelectAll, QuestionType.NumericResponse, QuestionType.SymbolicResponse };
+        if (examples.Any(example => example.Steps.Count is < 3 or > 6)) Add("WORKED_EXAMPLE_STEP_COUNT", "Physics 2 worked-example problems require three to six checkpoints.");
+        if (steps.Count == 0 || (decimal)steps.Count(step => autoTypes.Contains(step.Question.Type)) / steps.Count < .75m) Add("WORKED_EXAMPLE_AUTO_CHECK_RATIO", "At least 75% of Physics 2 worked-example checkpoints must be auto-checkable.");
+        if (enforce && steps.Any(step => step.Question.Type is QuestionType.FreeResponse)) Add("WORKED_EXAMPLE_SELF_CHECK_NOT_ALLOWED", "Electric Charges and Fields worked examples may not use self-check free-response checkpoints.");
+        if (steps.Any(step => autoTypes.Contains(step.Question.Type) && !HasObjectiveAnswer(step.Question))) Add("WORKED_EXAMPLE_MISSING_OBJECTIVE_ANSWER", "Auto-checkable worked-example checkpoints require an answer key.");
+        if (examples.Any(example => !example.Problem.Any(char.IsDigit) && !example.Problem.Contains("derive", StringComparison.OrdinalIgnoreCase))) Add("WORKED_EXAMPLE_MISSING_GIVENS_OR_TARGET", "Each Physics 2 worked problem needs numerical givens or an explicit derivation target.");
+        if (steps.Any(step => step.Question.Prompt.Contains("Explain how this step advances", StringComparison.OrdinalIgnoreCase))) Add("WORKED_EXAMPLE_GENERIC_PROMPT", "Worked-example prompts must ask the learner to perform a concrete step.");
+        if (HasRepeated(steps.Select(step => step.Question.Prompt)) || HasRepeated(steps.Select(step => step.Instruction)) || HasRepeated(steps.Select(step => step.Question.Explanation ?? string.Empty))) Add("WORKED_EXAMPLE_REPEATED_SCAFFOLD", "Worked-example prompts, instructions, and explanations must be specific to each checkpoint.");
+    }
+
+    private static bool HasObjectiveAnswer(QuestionDefinition question) => question.Type switch
+    {
+        QuestionType.MultipleChoice => !string.IsNullOrWhiteSpace(question.Answer.ChoiceId),
+        QuestionType.SelectAll => question.Answer.ChoiceIds.Count > 0,
+        QuestionType.NumericResponse => question.Answer.NumericValue is not null && question.Answer.NumericTolerance is not null,
+        QuestionType.SymbolicResponse => !string.IsNullOrWhiteSpace(question.Answer.ExpectedLatex),
+        _ => true
+    };
+
+    private static bool HasRepeated(IEnumerable<string> values) => values.Select(NormalizeChoiceText).Where(value => value.Length > 0).GroupBy(value => value, StringComparer.Ordinal).Any(group => group.Count() > 1);
 
     public static int MinimumDifficultyDimensions(AssessmentDifficultyTier tier) => tier switch
     {
@@ -144,6 +175,87 @@ public sealed class AssessmentAuthoringContractAudit
             EvaluateExplanation($"Question '{question.Id}'", question.Explanation, question.Type == QuestionType.MultipleChoice, assessment.Authoring?.DifficultyTier == AssessmentDifficultyTier.Olympiad, diagnostics, strict);
     }
 
+    private static void EvaluateMultipleChoiceDistractors(AssessmentDefinition assessment, List<AuthoringContractDiagnostic> diagnostics, bool strict)
+    {
+        var questions = assessment.Questions
+            .Concat(assessment.Lesson?.Sections.Where(section => section.Check is not null).Select(section => section.Check!) ?? [])
+            .Concat(assessment.Exploration?.Sections.Where(section => section.Check is not null).Select(section => section.Check!) ?? [])
+            .Concat(assessment.WorkedExamples.SelectMany(example => example.Steps).Select(step => step.Question))
+            .Where(question => question.Type is QuestionType.MultipleChoice)
+            .ToList();
+
+        var repeatedDistractors = questions
+            .SelectMany(question => question.Choices
+                .Where(choice => !string.Equals(choice.Id, question.Answer.ChoiceId, StringComparison.OrdinalIgnoreCase))
+                .Select(choice => new { QuestionId = question.Id, Text = NormalizeChoiceText(choice.Text) }))
+            .Where(choice => choice.Text.Length > 0)
+            .GroupBy(choice => choice.Text, StringComparer.Ordinal)
+            .Where(group => group.Select(choice => choice.QuestionId).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1);
+
+        foreach (var repeated in repeatedDistractors)
+        {
+            diagnostics.Add(new AuthoringContractDiagnostic(
+                "REPEATED_MULTIPLE_CHOICE_DISTRACTOR",
+                $"Distractor '{repeated.First().Text}' is reused in {repeated.Select(choice => choice.QuestionId).Distinct(StringComparer.OrdinalIgnoreCase).Count()} questions. Write a misconception-specific alternative for each prompt.",
+                strict));
+        }
+
+        foreach (var question in questions)
+        foreach (var choice in question.Choices.Where(choice => !string.Equals(choice.Id, question.Answer.ChoiceId, StringComparison.OrdinalIgnoreCase)))
+        {
+            if (IsGenericTemplateDistractor(choice.Text))
+            {
+                diagnostics.Add(new AuthoringContractDiagnostic(
+                    "GENERIC_MULTIPLE_CHOICE_DISTRACTOR",
+                    $"Question '{question.Id}' has a generic template distractor. Distractors must name a plausible, prompt-specific misconception or competing result.",
+                    strict));
+            }
+        }
+    }
+
+    private static void EvaluateConceptLessonSpecificity(
+        IReadOnlyList<LearningSectionDefinition> sections,
+        List<AuthoringContractDiagnostic> diagnostics,
+        bool strict)
+    {
+        void Add(string code, string message) => diagnostics.Add(new AuthoringContractDiagnostic(code, message, strict));
+        static bool Repeated(IEnumerable<string> values) => values
+            .Select(NormalizeChoiceText)
+            .Where(value => value.Length > 0)
+            .GroupBy(value => value, StringComparer.Ordinal)
+            .Any(group => group.Count() > 1);
+
+        if (Repeated(sections.Select(section => section.Content)))
+            Add("DUPLICATE_CONCEPT_SECTION_CONTENT", "Concept-lesson sections must have distinct instructional prose.");
+        if (Repeated(sections.Where(section => section.Check is not null).Select(section => section.Check!.Prompt)))
+            Add("DUPLICATE_CONCEPT_CHECK_PROMPT", "Concept-lesson checks must ask distinct, section-specific questions.");
+        if (Repeated(sections.Where(section => section.Check is not null).Select(section => section.Check!.Explanation ?? string.Empty)))
+            Add("DUPLICATE_CONCEPT_CHECK_EXPLANATION", "Concept-lesson checks must have distinct explanations tied to their prompt.");
+
+        var reusedChoice = sections.Where(section => section.Check?.Type is QuestionType.MultipleChoice)
+            .SelectMany(section => section.Check!.Choices.Select(choice => new { section.Check.Id, Text = NormalizeChoiceText(choice.Text) }))
+            // A repeated exact numerical result such as "zero" can be valid in
+            // unrelated calculation checks; the guardrail targets reused prose.
+            .Where(choice => choice.Text.Length > 0 && choice.Text is not "zero")
+            .GroupBy(choice => choice.Text, StringComparer.Ordinal)
+            .FirstOrDefault(group => group.Select(choice => choice.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1);
+        if (reusedChoice is not null)
+            Add("REPEATED_CONCEPT_LESSON_CHOICE", $"Answer choice '{reusedChoice.Key}' is reused across concept-lesson checks. Write a section-specific choice instead.");
+    }
+
+    private static string NormalizeChoiceText(string text) => string.Join(' ', text.Trim().ToLowerInvariant().Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+
+    private static bool IsGenericTemplateDistractor(string text)
+    {
+        var normalized = NormalizeChoiceText(text);
+        return normalized is "use a relation from a different representation."
+            or "reverse a sign, direction, or role without justification."
+            or "ignore the stated geometric constraints.";
+    }
+
+    private static bool IsGenericDistractorFeedback(string explanation) =>
+        explanation.Contains("Why the other choices fail: Each changes a sign, swaps a role, or applies a different relationship.", StringComparison.OrdinalIgnoreCase);
+
     private static void EvaluateExplanation(string item, string? raw, bool multipleChoice, bool olympiad, List<AuthoringContractDiagnostic> diagnostics, bool strict)
     {
         void Add(string code, string message, bool blocking = true) => diagnostics.Add(new(code, $"{item} {message}", blocking && strict));
@@ -153,6 +265,7 @@ public sealed class AssessmentAuthoringContractAudit
         if (!HasLabel(explanation, "Solution")) Add("MISSING_EXPLANATION_SOLUTION", "must include `Solution:` with ordered reasoning from givens to conclusion.");
         if (!HasLabel(explanation, "Why it works")) Add("MISSING_EXPLANATION_REASONING", "must include `Why it works:` naming and applying the governing rule, definition, or technique.");
         if (multipleChoice && !HasLabel(explanation, "Why the other choices fail")) Add("MISSING_DISTRACTOR_FEEDBACK", "must include `Why the other choices fail:` for its distractors.");
+        if (multipleChoice && IsGenericDistractorFeedback(explanation)) Add("GENERIC_DISTRACTOR_FEEDBACK", "uses generic distractor feedback. Explain why each competing choice fails for this prompt.");
         if (olympiad && !HasLabel(explanation, "Prerequisites")) Add("MISSING_OLYMPIAD_PREREQUISITES", "must include `Prerequisites:` naming required concepts or theorems.");
         if (olympiad && !HasLabel(explanation, "Further study")) Add("MISSING_OLYMPIAD_FURTHER_STUDY", "must include `Further study:` with targeted preparation resources or concepts.");
         if (explanation.Length < 160) diagnostics.Add(new("THIN_EXPLANATION", $"{item} has a brief explanation; review whether it fully shows the solution path, conditions, and relevant trap.", false));

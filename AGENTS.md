@@ -121,6 +121,7 @@ Always assign the correct `learningGoal` and `activityType` to new assessments s
 - For chemistry questions requiring students to construct Lewis structures or diagrams, use `multipleChoice` with distinct structural options.
 - Image media must include a stable public path and meaningful alt text.
 - **Issue Signals**: When authoring `multipleChoice` items, provide `issueSignals` on incorrect `choiceOptions` to capture specific misconceptions or mechanical errors (e.g., `sign-error`, `chain-rule-missed`).
+- **Distractor quality**: Every multiple-choice distractor must be a prompt-specific, plausible misconception or competing result. Do not reuse distractor text or generic catch-all templates across questions; explain each competing choice's specific failure.
 
 ### Remediation Engine and CIR Intelligence
 

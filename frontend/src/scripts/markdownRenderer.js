@@ -51,3 +51,13 @@ export async function renderMarkdown(value) {
   const processed = await markdownProcessor.process(normalized);
   return String(processed);
 }
+
+/**
+ * Renders authored inline Markdown/LaTeX for labels, headings, and short values.
+ * Full Markdown produces a paragraph wrapper; strip only that single wrapper so
+ * the result can be safely placed inside an existing inline or heading element.
+ */
+export async function renderInlineMarkdown(value) {
+  const rendered = await renderMarkdown(String(value ?? "").replace(/\r?\n+/g, " "));
+  return rendered.replace(/^<p>([\s\S]*)<\/p>\n?$/, "$1");
+}

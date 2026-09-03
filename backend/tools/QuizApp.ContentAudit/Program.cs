@@ -124,9 +124,15 @@ public static class Program
 
                     var domain = dto.ToDomain();
                     var category = categories.FirstOrDefault(item => item.Id.Equals(domain.CategoryId, StringComparison.OrdinalIgnoreCase));
-                    foreach (var diagnostic in authoringContractAudit.Evaluate(category, domain, strict: false))
+                    var strictPhysicsTwo = string.Equals(domain.CategoryId, "physics-2", StringComparison.OrdinalIgnoreCase);
+                    var strictCalc3Readiness = string.Equals(domain.CategoryId, "calculus-3", StringComparison.OrdinalIgnoreCase)
+                        && domain.Id.StartsWith("calc3-readiness-", StringComparison.Ordinal);
+                    var strictAuthoring = strictPhysicsTwo || strictCalc3Readiness;
+                    foreach (var diagnostic in authoringContractAudit.Evaluate(category, domain, strict: strictAuthoring))
                     {
-                        Console.WriteLine($"[WARN] [AUTHORING_{diagnostic.Code}] {path}: {diagnostic.Message}");
+                        var isError = strictAuthoring && diagnostic.IsBlocking;
+                        Console.WriteLine($"{(isError ? "[ERROR]" : "[WARN]")} [AUTHORING_{diagnostic.Code}] {path}: {diagnostic.Message}");
+                        if (isError) errors++;
                     }
                     if (auditByCategory.TryGetValue(domain.CategoryId, out var categoryAudit))
                     {

@@ -54,6 +54,40 @@ public sealed class AssessmentAuthoringContractAuditTests
     }
 
     [Fact]
+    public void Repeated_or_generic_multiple_choice_distractors_block_new_content()
+    {
+        var first = EasyQuestion("q001") with
+        {
+            Explanation = "Solution: Identify the requested result.\n\nWhy it works: The relevant definition determines the result.\n\nWhy the other choices fail: Each changes a sign, swaps a role, or applies a different relationship."
+        };
+        var second = EasyQuestion("q002") with
+        {
+            Choices =
+            [
+                new ChoiceOption("a", "The correct conclusion for q001", Array.Empty<MediaAsset>()),
+                new ChoiceOption("b", "A plausible but incorrect conclusion for q001", Array.Empty<MediaAsset>()),
+                new ChoiceOption("c", "Use a relation from a different representation.", Array.Empty<MediaAsset>())
+            ]
+        };
+        var assessment = TestData.Assessment(AssessmentType.ConceptLesson, Array.Empty<QuestionDefinition>()) with
+        {
+            Lesson = new ConceptLessonDefinition("A distinct introduction.",
+            [
+                new LearningSectionDefinition("s1", "First check", true, "First distinct section.", Array.Empty<MediaAsset>(), first),
+                new LearningSectionDefinition("s2", "Second check", true, "Second distinct section.", Array.Empty<MediaAsset>(), second)
+            ]),
+            Authoring = new AssessmentAuthoringMetadata(VisualRequirement.NotApplicable, "Distractor-quality test.")
+        };
+
+        var diagnostics = audit.Evaluate(Stem, assessment, strict: true);
+
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "REPEATED_MULTIPLE_CHOICE_DISTRACTOR" && diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "REPEATED_CONCEPT_LESSON_CHOICE" && diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "GENERIC_MULTIPLE_CHOICE_DISTRACTOR" && diagnostic.IsBlocking);
+        Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "GENERIC_DISTRACTOR_FEEDBACK" && diagnostic.IsBlocking);
+    }
+
+    [Fact]
     public void Missing_structured_explanation_components_block_new_content()
     {
         var question = EasyQuestion("q001") with { Explanation = "TODO: explain." };
@@ -183,6 +217,11 @@ public sealed class AssessmentAuthoringContractAuditTests
 
     private static QuestionDefinition EasyQuestion(string id) => TestData.MultipleChoiceQuestion(id) with
     {
+        Choices =
+        [
+            new ChoiceOption("a", $"The correct conclusion for {id}", Array.Empty<MediaAsset>()),
+            new ChoiceOption("b", $"A plausible but incorrect conclusion for {id}", Array.Empty<MediaAsset>())
+        ],
         Explanation = "Solution: Select the stated result after evaluating the given relationship.\n\nWhy it works: The governing rule maps the given representation to the correct conclusion.\n\nWhy the other choices fail: They apply a different rule or omit the stated condition.",
         DifficultyDimensions = [DifficultyDimension.Simplification, DifficultyDimension.RepresentationTransfer],
         DifficultyEvidence = "Rewrites the stated expression and transfers it into the target representation."

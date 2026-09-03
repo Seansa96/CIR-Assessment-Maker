@@ -6,84 +6,46 @@ categoryId: calculus-3
 topicId: calc3-dot-cross-products
 modeDefault: practice
 randomizeQuestions: true
-skills:
-- dot-cross-products
-navigation:
-  learningGoal: recall
-  activityType: mixedRecallSet
-  tags:
-  - calculus-3
-  - calc3-dot-cross-products
-  - dot-cross-products
-  - recall
-authoring:
-  sourcePacketId: packet-calc3-dot-cross-products-v1
-  visualRequirement: required
-  visualRationale: Recall is paired with the topic's original spatial visual.
+skills: [dot-cross-products]
+navigation: { learningGoal: recall, activityType: mixedRecallSet, tags: [calculus-3, calc3-dot-cross-products, dot-cross-products, recall] }
+authoring: { sourcePacketId: packet-calc3-dot-cross-products-v1, visualRequirement: required, visualRationale: Recognition and retrieval reinforce the scalar/vector distinction and cross-product orientation. }
 items:
 - id: r001
-  type: typed
-  prompt: 'Compute $\langle1,2,3\rangle\cdot\langle2,0,1\rangle$.'
-  answer:
-    expected: '5'
-    aliases: []
-  issueSignals:
-  - id: trigonometric-identity-misapplied
-  explanation: 'Solution: The expected response is 5.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.'
+  type: cloze
+  prompt: 'For nonzero vectors, $\mathbf u\cdot\mathbf v=0$ means the vectors are ____.'
+  answer: { expected: perpendicular, aliases: [orthogonal] }
+  issueSignals: [{ id: dot-product-geometry-error }]
+  explanation: 'Solution: Fill in perpendicular. Why it works: A zero dot product makes the angle between nonzero vectors $90^\circ$.'
 - id: r002
   type: typed
-  prompt: 'What does $\mathbf u\cdot\mathbf v=0$ mean for nonzero vectors?'
-  answer:
-    expected: perpendicular
-    aliases: []
-  issueSignals:
-  - id: trigonometric-identity-misapplied
-  explanation: 'Solution: The expected response is perpendicular.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.'
+  prompt: 'State the magnitude formula for a cross product in terms of the angle $\theta$.'
+  answer: { expected: '|u||v| sin(theta)', aliases: ['|u| |v| sin theta', 'magnitude u times magnitude v times sin theta'] }
+  issueSignals: [{ id: cross-product-area-error }]
+  explanation: 'Solution: $|\mathbf u\times\mathbf v|=|\mathbf u||\mathbf v|\sin\theta$. Why it works: The sine factor supplies the perpendicular height for the spanned parallelogram.'
 - id: r003
-  type: typed
-  prompt: 'What is $\mathbf i\times\mathbf j$?'
-  answer:
-    expected: k
-    aliases: []
-  issueSignals:
-  - id: trigonometric-identity-misapplied
-  explanation: 'Solution: The expected response is k.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.'
+  type: recognition
+  prompt: Which operation returns a scalar that measures directional alignment?
+  choices: [{ id: a, text: dot product }, { id: b, text: cross product }, { id: c, text: vector addition }, { id: d, text: componentwise division }]
+  answer: { choiceId: a }
+  issueSignals: [{ id: scalar-vector-confusion }]
+  explanation: 'Solution: Choose dot product. Why it works: A dot product returns one scalar. Why the other choices fail: b returns a normal vector; c returns a vector in the input plane; d is not the dot-product operation.'
 - id: r004
-  type: typed
+  type: recognition
   prompt: 'What is $\mathbf j\times\mathbf i$?'
-  answer:
-    expected: -k
-    aliases: []
-  issueSignals:
-  - id: trigonometric-identity-misapplied
-  explanation: 'Solution: The expected response is -k.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.'
+  choices: [{ id: a, text: '$-\mathbf k$' }, { id: b, text: '$\mathbf k$' }, { id: c, text: '$\mathbf j$' }, { id: d, text: '0' }]
+  answer: { choiceId: a }
+  issueSignals: [{ id: cross-product-order-error }]
+  explanation: 'Solution: Choose $-\mathbf k$. Why it works: Reversing $\mathbf i\times\mathbf j=\mathbf k$ negates the result. Why the other choices fail: b ignores order; c is an input direction; d applies the parallel-vector case.'
 - id: r005
-  type: typed
-  prompt: 'What geometric quantity is $|\mathbf u\times\mathbf v|$?'
-  answer:
-    expected: parallelogram area
-    aliases: []
-  issueSignals:
-  - id: trigonometric-identity-misapplied
-  explanation: 'Solution: The expected response is parallelogram area.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.'
+  type: recognition
+  prompt: Which operation produces a normal vector to the plane spanned by two nonparallel vectors?
+  choices: [{ id: a, text: cross product }, { id: b, text: dot product }, { id: c, text: vector subtraction }, { id: d, text: normalization }]
+  answer: { choiceId: a }
+  issueSignals: [{ id: normal-vector-method-error }]
+  explanation: 'Solution: Choose cross product. Why it works: The cross product is perpendicular to both inputs. Why the other choices fail: b is scalar; c stays in the input plane; d only changes length.'
 - id: r006
-  type: typed
-  prompt: What type of quantity is a dot product?
-  answer:
-    expected: scalar
-    aliases: []
-  issueSignals:
-  - id: trigonometric-identity-misapplied
-  explanation: 'Solution: The expected response is scalar.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.'
+  type: symbolic
+  prompt: 'Compute $\langle1,0,1\rangle\times\langle0,2,1\rangle$.'
+  answer: { expectedLatex: '\langle-2,-1,2\rangle', aliases: ['$\langle-2,-1,2\rangle$'] }
+  issueSignals: [{ id: cross-product-computation-error }]
+  explanation: 'Solution: $\langle-2,-1,2\rangle$. Why it works: Expand the determinant and keep the minus sign on the middle cofactor.'
