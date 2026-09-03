@@ -102,12 +102,65 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         var original = Directory.EnumerateFiles(SourcePath(sourceId), "original.*").SingleOrDefault() ?? throw new InvalidOperationException("Original source file is missing.");
         var extraction = await ExtractAsync(original, current.Manifest.Format, cancellationToken);
         var chunks = Chunk(sourceId, extraction.Text, extraction.Confidence);
+        // A low-fidelity text retry must not discard separately reviewed page-image evidence.
+        chunks.AddRange(current.Chunks.Where(chunk => chunk.Kind == "page-image"));
         var manifest = current.Manifest with { Extractor = extraction.Extractor, ExtractionStatus = extraction.Success ? "completed" : "needs-attention", Warnings = extraction.Warnings, ChunkCount = chunks.Count };
         await WriteAsync(Path.Combine(SourcePath(sourceId), "manifest.json"), manifest, cancellationToken);
         await WriteAsync(Path.Combine(SourcePath(sourceId), "chunks.json"), chunks, cancellationToken);
         await IndexSourceAsync(manifest, cancellationToken);
         await WriteAsync(OutlinePath(sourceId), BuildOutline(sourceId, chunks), cancellationToken);
         return new SourceDocument(manifest, chunks);
+    }
+
+    public async Task<SourceDocument> RenderPdfPagesAsync(string sourceId, SourcePageRenderRequest request, CancellationToken cancellationToken = default)
+    {
+        var current = await GetSourceAsync(sourceId, cancellationToken) ?? throw new InvalidOperationException("Source was not found.");
+        if (!string.Equals(current.Manifest.Format, "pdf", StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("Page rendering is available only for PDF sources.");
+        if (request.StartPage < 1 || request.EndPage < request.StartPage || request.EndPage - request.StartPage > 49 || request.Dpi is < 72 or > 400) throw new InvalidOperationException("Select 1–50 valid pages at 72–400 DPI.");
+        var original = Directory.EnumerateFiles(SourcePath(sourceId), "original.pdf").SingleOrDefault() ?? throw new InvalidOperationException("Original PDF is missing.");
+        var pageCount = await GetPdfPageCountAsync(original, cancellationToken);
+        if (request.EndPage > pageCount) throw new InvalidOperationException($"The PDF has {pageCount} pages; select a page range within 1–{pageCount}.");
+        var imageDirectory = Path.Combine(SourcePath(sourceId), "page-images"); Directory.CreateDirectory(imageDirectory);
+        var prefix = Path.Combine(imageDirectory, "page");
+        var start = new ProcessStartInfo("pdftoppm") { RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true };
+        start.ArgumentList.Add("-f"); start.ArgumentList.Add(request.StartPage.ToString()); start.ArgumentList.Add("-l"); start.ArgumentList.Add(request.EndPage.ToString()); start.ArgumentList.Add("-png"); start.ArgumentList.Add("-r"); start.ArgumentList.Add(request.Dpi.ToString()); start.ArgumentList.Add(original); start.ArgumentList.Add(prefix);
+        using var process = Process.Start(start) ?? throw new InvalidOperationException("pdftoppm is unavailable; install the bundled Poppler runtime.");
+        await process.WaitForExitAsync(cancellationToken); if (process.ExitCode != 0) throw new InvalidOperationException(await process.StandardError.ReadToEndAsync(cancellationToken));
+        var chunks = current.Chunks.Where(chunk => chunk.Kind != "page-image" || chunk.PageNumber is null || chunk.PageNumber < request.StartPage || chunk.PageNumber > request.EndPage).ToList();
+        foreach (var page in Enumerable.Range(request.StartPage, request.EndPage - request.StartPage + 1))
+        {
+            var file = $"page-{page:0000}.png"; var path = Path.Combine(imageDirectory, file);
+            if (!File.Exists(path)) continue;
+            chunks.Add(new SourceChunk($"{sourceId}:page-{page:0000}", 100000 + page, "page-image", $"PDF page {page}", string.Empty, 0)
+            { ImagePath = Path.Combine("page-images", file).Replace('\\', '/'), PageNumber = page, TranscriptionReviewState = SourceReviewState.Draft });
+        }
+        var updated = current.Manifest with { ChunkCount = chunks.Count, Warnings = current.Manifest.Warnings.Append("Page-image transcriptions require review before packet export.").Distinct().ToList() };
+        var ordered = chunks.OrderBy(chunk => chunk.Ordinal).ToList();
+        await WriteAsync(Path.Combine(SourcePath(sourceId), "chunks.json"), ordered, cancellationToken);
+        await WriteAsync(Path.Combine(SourcePath(sourceId), "manifest.json"), updated, cancellationToken);
+        await IndexSourceAsync(updated, cancellationToken);
+        await WriteAsync(OutlinePath(sourceId), BuildOutline(sourceId, ordered), cancellationToken);
+        return new SourceDocument(updated, ordered);
+    }
+
+    public async Task<SourceDocument> UpdatePageTranscriptionAsync(string sourceId, string chunkId, SourceTranscriptionUpdate update, CancellationToken cancellationToken = default)
+    {
+        var current = await GetSourceAsync(sourceId, cancellationToken) ?? throw new InvalidOperationException("Source was not found.");
+        var index = current.Chunks.ToList().FindIndex(chunk => string.Equals(chunk.Id, chunkId, StringComparison.OrdinalIgnoreCase));
+        if (index < 0 || current.Chunks[index].Kind != "page-image") throw new InvalidOperationException("Page-image chunk was not found.");
+        if (update.ReviewState is not SourceReviewState.Draft and not SourceReviewState.NeedsReview and not SourceReviewState.Approved) throw new InvalidOperationException("Invalid transcription review state.");
+        if (update.ReviewState == SourceReviewState.Approved && string.IsNullOrWhiteSpace(update.Text)) throw new InvalidOperationException("Approved page-image chunks require a transcription.");
+        var chunks = current.Chunks.ToList(); chunks[index] = chunks[index] with { Text = update.Text.Trim(), TokenCount = Words.Matches(update.Text).Count, TranscriptionReviewState = update.ReviewState };
+        await WriteAsync(Path.Combine(SourcePath(sourceId), "chunks.json"), chunks, cancellationToken);
+        await WriteAsync(OutlinePath(sourceId), BuildOutline(sourceId, chunks), cancellationToken);
+        return new SourceDocument(current.Manifest, chunks);
+    }
+
+    public async Task<(string Path, string ContentType)?> GetPageImageAsync(string sourceId, string chunkId, CancellationToken cancellationToken = default)
+    {
+        var source = await GetSourceAsync(sourceId, cancellationToken); var chunk = source?.Chunks.FirstOrDefault(item => item.Id == chunkId && item.Kind == "page-image");
+        if (chunk?.ImagePath is null) return null; var root = Path.GetFullPath(Path.Combine(SourcePath(sourceId), "page-images")); var path = Path.GetFullPath(Path.Combine(SourcePath(sourceId), chunk.ImagePath));
+        return path.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) && File.Exists(path) ? (path, "image/png") : null;
     }
 
     public Task<SourceOutline?> GetOutlineAsync(string sourceId, CancellationToken cancellationToken = default)
@@ -193,6 +246,7 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         }
         var chunks = documents.SelectMany(document => document.Chunks).Where(chunk => selectedChunkIds.Contains(chunk.Id)).OrderBy(chunk => chunk.Id, StringComparer.OrdinalIgnoreCase).ToList();
         if (chunks.Count != selectedChunkIds.Count) throw new InvalidOperationException("One or more selected source chunks no longer exist.");
+        EnsurePageImageChunksEligible(chunks);
         var sourceIds = chunks.Select(chunk => chunk.Id.Split(":", 2)[0]).Distinct(StringComparer.OrdinalIgnoreCase).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var sources = documents.Where(document => sourceIds.Contains(document.Manifest.Id)).Select(document => document.Manifest).ToList();
         var category = (await new FileCategoryRepository(options).ListAsync(cancellationToken)).FirstOrDefault(item => item.Id.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
@@ -290,6 +344,25 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
                 : (text, "pdf-literal-fallback-v1", true, [$"Used a low-fidelity PDF fallback after pypdf failed: {ex.Message}"], null);
         }
     }
+    private static async Task<int> GetPdfPageCountAsync(string path, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var start = new ProcessStartInfo("pdfinfo") { RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false, CreateNoWindow = true };
+            start.ArgumentList.Add(path);
+            using var process = Process.Start(start) ?? throw new InvalidOperationException("pdfinfo could not start.");
+            var output = await process.StandardOutput.ReadToEndAsync(cancellationToken);
+            var error = await process.StandardError.ReadToEndAsync(cancellationToken);
+            await process.WaitForExitAsync(cancellationToken);
+            var match = Regex.Match(output, @"^Pages:\s*(?<count>\d+)\s*$", RegexOptions.Multiline);
+            if (process.ExitCode == 0 && match.Success && int.TryParse(match.Groups["count"].Value, out var pages) && pages > 0) return pages;
+            throw new InvalidOperationException(string.IsNullOrWhiteSpace(error) ? "pdfinfo did not report a page count." : error.Trim());
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            throw new InvalidOperationException($"Could not determine the PDF page count: {ex.Message}");
+        }
+    }
     private static async Task<(string Text, string Extractor, bool Success, IReadOnlyList<string> Warnings, decimal? Confidence)> ExtractImageAsync(string path, CancellationToken cancellationToken)
     {
         try
@@ -372,17 +445,25 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         _ => AssessmentDifficultyTier.Unspecified
     };
     private static void RequireStableId(string id) { if (!Regex.IsMatch(id ?? string.Empty, "^[a-z0-9][a-z0-9-]*$")) throw new InvalidOperationException("IDs must be lowercase hyphenated values."); }
-    private static void ValidateSourceFree(IReadOnlyList<string> sourceChunkIds, params string[] ids) { foreach (var id in ids) RequireStableId(id); if (sourceChunkIds.Count == 0 || sourceChunkIds.Any(id => !Regex.IsMatch(id, "^src-[a-z0-9-]+:chunk-[0-9]+$"))) throw new InvalidOperationException("Manifests must link source chunk IDs and must not embed source text."); }
+    private static void ValidateSourceFree(IReadOnlyList<string> sourceChunkIds, params string[] ids) { foreach (var id in ids) RequireStableId(id); if (sourceChunkIds.Count == 0 || sourceChunkIds.Any(id => !Regex.IsMatch(id, "^src-[a-z0-9-]+:(?:chunk|page)-[0-9]+$"))) throw new InvalidOperationException("Manifests must link source chunk IDs and must not embed source text."); }
     private async Task ValidateSourceReferencesAsync(IReadOnlyList<string> chunkIds, CancellationToken cancellationToken)
     {
-        var valid = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var valid = new Dictionary<string, SourceChunk>(StringComparer.OrdinalIgnoreCase);
         foreach (var source in await ListSourcesAsync(cancellationToken))
         {
             var document = await GetSourceAsync(source.Id, cancellationToken);
-            if (document is not null) valid.UnionWith(document.Chunks.Select(chunk => chunk.Id));
+            if (document is not null) foreach (var chunk in document.Chunks) valid[chunk.Id] = chunk;
         }
-        var missing = chunkIds.Where(id => !valid.Contains(id)).ToList();
+        var missing = chunkIds.Where(id => !valid.ContainsKey(id)).ToList();
         if (missing.Count > 0) throw new InvalidOperationException($"Manifest references missing private source chunks: {string.Join(", ", missing)}.");
+        EnsurePageImageChunksEligible(chunkIds.Select(id => valid[id]));
+    }
+    private static void EnsurePageImageChunksEligible(IEnumerable<SourceChunk> chunks)
+    {
+        var rejected = chunks.Where(chunk => chunk.Kind == "page-image" && (string.IsNullOrWhiteSpace(chunk.Text) || chunk.TranscriptionReviewState != SourceReviewState.Approved)).ToList();
+        if (rejected.Count == 0) return;
+        var reasons = rejected.Select(chunk => $"{chunk.Id}: {(string.IsNullOrWhiteSpace(chunk.Text) ? "missing transcription" : "transcription is not approved")}");
+        throw new InvalidOperationException($"Selected page-image chunks are not eligible for packet use: {string.Join("; ", reasons)}.");
     }
     private static List<string> ValidateDraft(JsonElement root)
     {

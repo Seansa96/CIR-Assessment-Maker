@@ -1,34 +1,211 @@
 schemaVersion: 1
 id: physics2-ch05-dipole-worked-example
-title: Electric Field of a Dipole
+title: 'Electric Dipole: Axial and Equatorial Fields'
 assessmentType: workedExample
 categoryId: physics-2
 topicId: physics2-electric-charges-fields
+modeDefault: practice
+randomizeQuestions: false
+attemptQuestionCount: null
+questionTimerSeconds: null
+assessmentTimerSeconds: null
+questionSelection: null
+questions: []
 workedExamples:
-- id: we1
-  title: Field on the axis of a dipole
+- id: dipole-axial
+  title: Field on the dipole axis
+  problem: Charges +q and -q are separated by d. At a point x to the right of the +q charge, with x much larger
+    than d, derive the leading axial field magnitude.
   steps:
-  - id: s1
-    prompt: Set up the superposition sum.
-    explanation: 'Solution:
-
-      1) Let the origin be at the center. The positive charge is at $+d/2$ and the negative charge is
-      at $-d/2$.
-
-      2) The field from $+q$ is $E_+ = k \frac{q}{(z - d/2)^2}$ pointing away (positive z).
-
-      3) The field from $-q$ is $E_- = -k \frac{q}{(z + d/2)^2}$ pointing toward (negative z).
-
-      4) $E_{net} = E_+ + E_-$.
-
-
-      Why it works:
-
-      The superposition principle allows us to sum the vector contributions from individual point charges.'
-    title: Set up the superposition sum.
-    instruction: 'Work through this step: Set up the superposition sum.'
-    type: freeResponse
+  - id: dipole-axial-direction
+    title: Choose the field direction
+    instruction: Choose the field direction
+    hint: Draw the charge locations and the direction of each contribution before choosing.
+    type: multipleChoice
+    prompt: Which direction is the far axial electric field to the right of the positive charge?
+    choices:
+    - id: a
+      text: +x, away from the positive end and toward the negative end contribution is weaker.
+    - id: b
+      text: -x, because a dipole field always points toward the negative charge.
+      issueSignals:
+      - id: physics2-sign-direction-error
+        domains:
+        - physics-2
+    - id: c
+      text: Zero, because the two charges have equal magnitude.
+      issueSignals:
+      - id: physics2-method-selection-error
+        domains:
+        - physics-2
+    - id: d
+      text: Perpendicular to the dipole axis.
+      issueSignals:
+      - id: physics2-units-error
+        domains:
+        - physics-2
     answer:
-      gradingMode: selfCheck
-  problem: Two charges $+q$ and $-q$ are separated by a distance $d$. Find the electric field on the axis
-    connecting them, at a distance $z$ from the center ($z > d/2$).
+      choiceId: a
+    explanation: 'Solution: At the far axial point the positive charge is closer, so its +x field is larger than
+      the negative charge''s -x field.
+
+
+      Why it works: Equal source magnitudes do not cancel when their distances differ.
+
+
+      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
+    skills:
+    - physics2-electric-charges-fields
+    media:
+    - type: image
+      src: /media/physics2/ch05-relationship-map.svg
+      alt: Charge-and-field model for Field on the dipole axis.
+      caption: Identify source charges, the observation point, and component directions before calculating.
+  - id: dipole-axial-expression
+    title: Derive the far-field form
+    instruction: Derive the far-field form
+    hint: Use superposition and simplify only after the physical contributions are combined.
+    type: symbolicResponse
+    prompt: Enter the leading far-axial field magnitude in terms of k, p, and x.
+    choices: []
+    answer:
+      expectedLatex: 2*k*p/x^3
+      equivalenceMode: simplify
+      variables:
+      - k
+      - p
+      - x
+      tolerance: '0.000001'
+    explanation: 'Solution: Subtract the two point-charge fields and use x much larger than d; with p=qd the leading
+      term is 2kp/x^3.
+
+
+      Why it works: The dipole''s net charge is zero, so its far field falls as 1/x^3 rather than 1/x^2.'
+    skills:
+    - physics2-electric-charges-fields
+  - id: dipole-axial-number
+    title: Evaluate a dipole field
+    instruction: Evaluate a dipole field
+    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
+    type: numericResponse
+    prompt: For p=6.0e-9 C m at x=0.20 m, enter the axial field magnitude in N/C.
+    choices: []
+    answer:
+      value: 13483.5
+      tolerance: 20
+    explanation: 'Solution: E=2(8.99e9)(6.0e-9)/(0.20)^3=1.35e4 N/C.
+
+
+      Why it works: The far-field expression converts dipole moment and observation distance directly to field.'
+    skills:
+    - physics2-electric-charges-fields
+- id: dipole-equatorial
+  title: Field on the perpendicular bisector
+  problem: The same dipole has p=6.0e-9 C m. Find the far field at a point 0.20 m on its perpendicular bisector.
+  steps:
+  - id: dipole-equatorial-direction
+    title: Use symmetry
+    instruction: Use symmetry
+    hint: Draw the charge locations and the direction of each contribution before choosing.
+    type: multipleChoice
+    prompt: Which components cancel at an equatorial point?
+    choices:
+    - id: a
+      text: The components along the perpendicular-bisector direction cancel; the net field points from +q toward
+        -q.
+    - id: b
+      text: The axial components cancel, so the field is zero.
+      issueSignals:
+      - id: physics2-sign-direction-error
+        domains:
+        - physics-2
+    - id: c
+      text: All components point away from the dipole center.
+      issueSignals:
+      - id: physics2-method-selection-error
+        domains:
+        - physics-2
+    - id: d
+      text: The field points from -q toward +q.
+      issueSignals:
+      - id: physics2-units-error
+        domains:
+        - physics-2
+    answer:
+      choiceId: a
+    explanation: 'Solution: Equal distances make the transverse components cancel, leaving both axial components
+      toward the negative charge.
+
+
+      Why it works: Symmetry cancels equal-and-opposite components but reinforces aligned components.
+
+
+      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
+    skills:
+    - physics2-electric-charges-fields
+    media:
+    - type: image
+      src: /media/physics2/ch05-relationship-map.svg
+      alt: Charge-and-field model for Field on the perpendicular bisector.
+      caption: Identify source charges, the observation point, and component directions before calculating.
+  - id: dipole-equatorial-expression
+    title: Write the far-field magnitude
+    instruction: Write the far-field magnitude
+    hint: Use superposition and simplify only after the physical contributions are combined.
+    type: symbolicResponse
+    prompt: Enter the far equatorial field magnitude in terms of k, p, and r.
+    choices: []
+    answer:
+      expectedLatex: k*p/r^3
+      equivalenceMode: simplify
+      variables:
+      - k
+      - p
+      - r
+      tolerance: '0.000001'
+    explanation: 'Solution: For r much larger than the separation, the equatorial field magnitude is kp/r^3.
+
+
+      Why it works: The first nonzero dipole term again scales as r^-3, with a different geometric factor.'
+    skills:
+    - physics2-electric-charges-fields
+  - id: dipole-equatorial-number
+    title: Evaluate the equatorial field
+    instruction: Evaluate the equatorial field
+    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
+    type: numericResponse
+    prompt: Enter the field magnitude in N/C at r=0.20 m.
+    choices: []
+    answer:
+      value: 6742.5
+      tolerance: 15
+    explanation: 'Solution: E=(8.99e9)(6.0e-9)/(0.20)^3=6.74e3 N/C.
+
+
+      Why it works: The equatorial magnitude is half the axial far-field magnitude at the same distance.'
+    skills:
+    - physics2-electric-charges-fields
+guidedProject: null
+items: []
+glossary: null
+lesson: null
+exploration: null
+directedProject: null
+sandbox: null
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+  - physics-2
+  - physics2-electric-charges-fields
+  - s2c-reviewed
+skills:
+- physics2-ch05-modeling
+- physics2-electric-charges-fields
+authoring:
+  visualRequirement: required
+  visualRationale: An original relationship map supports the model, direction, and units used in this Physics 2
+    learning activity.
+  difficultyTier: unspecified
+  exceptionReason: null
+  physicsModel: null

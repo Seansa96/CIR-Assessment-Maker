@@ -190,6 +190,12 @@ const isDev = import.meta.env.DEV;
               <div class="field"><label for="authoring-chunk-search">Search this source</label><input id="authoring-chunk-search" type="search" placeholder="Search chunk text, locator, or ID" /></div>
               <p id="authoring-chunk-selection" class="muted" aria-live="polite">No chunks selected.</p>
             </div>
+            <div id="authoring-page-rendering" class="authoring-page-rendering" hidden>
+              <div class="field"><label for="authoring-page-start">PDF start page</label><input id="authoring-page-start" type="number" min="1" value="1" /></div>
+              <div class="field"><label for="authoring-page-end">PDF end page</label><input id="authoring-page-end" type="number" min="1" value="1" /></div>
+              <button type="button" id="authoring-render-pages">Render private page images</button>
+              <p class="muted">Each page remains ineligible for packets until its transcription is nonempty and approved.</p>
+            </div>
             <div id="authoring-outline" class="authoring-list empty-state">Build or open an outline to select a chapter.</div>
             <div id="authoring-chunk-list" class="authoring-chunk-list"></div>
           </section>
@@ -540,7 +546,7 @@ const isDev = import.meta.env.DEV;
     )}
 
     <script>
-      import { renderMarkdown } from "../scripts/markdownRenderer";
+      import { renderInlineMarkdown, renderMarkdown } from "../scripts/markdownRenderer";
       import { EditorView, basicSetup } from "codemirror";
       import { createCodeEditor } from "../scripts/codeEditor";
       import { keymap } from "@codemirror/view";
@@ -1712,6 +1718,7 @@ const isDev = import.meta.env.DEV;
       authoringChunkSearch.addEventListener("input", renderAuthoringChunks);
       document.querySelector<HTMLButtonElement>("#authoring-select-visible")!.addEventListener("click", selectVisibleAuthoringChunks);
       document.querySelector<HTMLButtonElement>("#authoring-clear-chunks")!.addEventListener("click", clearAuthoringChunkSelection);
+      document.querySelector<HTMLButtonElement>("#authoring-render-pages")!.addEventListener("click", () => void renderAuthoringPages());
 
       startDevStatusPolling();
       await initialize();
@@ -3977,6 +3984,7 @@ const isDev = import.meta.env.DEV;
           state.authoringSource = await api<any>(`/authoring/sources/${encodeURIComponent(sourceId)}`);
           state.authoringSelectedChunkIds.clear();
           state.authoringOutline = await api<any>(`/authoring/sources/${encodeURIComponent(sourceId)}/outline`).catch(() => null);
+          document.querySelector<HTMLElement>("#authoring-page-rendering")!.hidden = state.authoringSource.manifest.format !== "pdf";
           authoringChunkSearch.value = "";
           authoringSourceDetail.hidden = false;
           syncAuthoringChunkSelection();
@@ -4009,24 +4017,42 @@ const isDev = import.meta.env.DEV;
         }).length;
         document.querySelector<HTMLElement>("#authoring-source-detail-title")!.textContent = source.manifest.title;
         document.querySelector<HTMLElement>("#authoring-source-detail-meta")!.textContent = `${source.manifest.id} · ${source.chunks.length} chunks · showing ${visible.length} of ${totalMatches} matching chunks`;
-        authoringChunkList.innerHTML = visible.length ? visible.map(chunk => `
-          <article class="authoring-chunk"><label class="authoring-chunk-check"><input type="checkbox" data-authoring-chunk-id="${escapeHtml(chunk.id)}" ${state.authoringSelectedChunkIds.has(chunk.id) ? "checked" : ""} /><span>Select</span></label>
+        authoringChunkList.innerHTML = visible.length ? visible.map(chunk => {
+          const isPageImage = chunk.kind === "page-image";
+          const eligible = !isPageImage || (String(chunk.text || "").trim().length > 0 && chunk.transcriptionReviewState === "approved");
+          const imageUrl = `${API_BASE}/authoring/sources/${encodeURIComponent(source.manifest.id)}/chunks/${encodeURIComponent(chunk.id)}/image`;
+          const review = String(chunk.transcriptionReviewState || "draft");
+          return `
+          <article class="authoring-chunk"><label class="authoring-chunk-check"><input type="checkbox" data-authoring-chunk-id="${escapeHtml(chunk.id)}" ${state.authoringSelectedChunkIds.has(chunk.id) ? "checked" : ""} ${eligible ? "" : "disabled"} /><span>Select</span></label>
             <div><strong>${escapeHtml(chunk.locator)} <span class="authoring-chunk-kind">${escapeHtml(chunk.kind)}</span></strong><code>${escapeHtml(chunk.id)}</code>
-            <pre>${escapeHtml(String(chunk.text).slice(0, 1200))}${String(chunk.text).length > 1200 ? "…" : ""}</pre></div>
-          </article>`).join("") : "<p class=\"empty-state\">No source chunks match that search.</p>";
+            ${isPageImage ? `<img class="authoring-page-image" src="${imageUrl}" alt="Private source page ${escapeHtml(String(chunk.pageNumber || ""))}" /><label class="field"><span>Reviewed transcription</span><textarea data-authoring-page-text="${escapeHtml(chunk.id)}" placeholder="Transcribe the relevant equations, labels, and diagram relationships.">${escapeHtml(String(chunk.text || ""))}</textarea></label><div class="button-row"><button type="button" data-authoring-save-page="${escapeHtml(chunk.id)}">Save draft</button><button type="button" data-authoring-approve-page="${escapeHtml(chunk.id)}">Approve transcription</button></div><p class="${eligible ? "success-text" : "warning-text"}">${eligible ? "Eligible for packet selection." : `Not eligible for packet: ${String(chunk.text || "").trim() ? `transcription is ${escapeHtml(review)}.` : "missing transcription."}`}</p>` : `<pre>${escapeHtml(String(chunk.text).slice(0, 1200))}${String(chunk.text).length > 1200 ? "…" : ""}</pre>`}</div>
+          </article>`;
+        }).join("") : "<p class=\"empty-state\">No source chunks match that search.</p>";
         document.querySelectorAll<HTMLInputElement>("[data-authoring-chunk-id]").forEach(input => input.addEventListener("change", () => {
           const id = input.dataset.authoringChunkId!;
           input.checked ? state.authoringSelectedChunkIds.add(id) : state.authoringSelectedChunkIds.delete(id);
           syncAuthoringChunkSelection();
         }));
+        document.querySelectorAll<HTMLButtonElement>("[data-authoring-save-page]").forEach(button => button.addEventListener("click", () => void savePageTranscription(button.dataset.authoringSavePage!, "needsReview", button)));
+        document.querySelectorAll<HTMLButtonElement>("[data-authoring-approve-page]").forEach(button => button.addEventListener("click", () => void savePageTranscription(button.dataset.authoringApprovePage!, "approved", button)));
       }
       function syncAuthoringChunkSelection() {
         const selected = [...state.authoringSelectedChunkIds];
         document.querySelector<HTMLInputElement>("#authoring-chunks")!.value = selected.join(",");
         authoringChunkSelection.textContent = selected.length ? `${selected.length} chunk${selected.length === 1 ? "" : "s"} selected and ready for the packet.` : "No chunks selected.";
       }
-      function selectVisibleAuthoringChunks() { visibleAuthoringChunks().forEach(chunk => state.authoringSelectedChunkIds.add(chunk.id)); syncAuthoringChunkSelection(); renderAuthoringChunks(); }
+      function selectVisibleAuthoringChunks() { visibleAuthoringChunks().filter(chunk => chunk.kind !== "page-image" || (String(chunk.text || "").trim() && chunk.transcriptionReviewState === "approved")).forEach(chunk => state.authoringSelectedChunkIds.add(chunk.id)); syncAuthoringChunkSelection(); renderAuthoringChunks(); }
       function clearAuthoringChunkSelection() { state.authoringSelectedChunkIds.clear(); syncAuthoringChunkSelection(); renderAuthoringChunks(); }
+      async function renderAuthoringPages() {
+        const source = state.authoringSource; if (!source) return;
+        const startPage = Number(document.querySelector<HTMLInputElement>("#authoring-page-start")!.value);
+        const endPage = Number(document.querySelector<HTMLInputElement>("#authoring-page-end")!.value);
+        try { authoringStatus.textContent = "Rendering private page images…"; state.authoringSource = await api<any>(`/authoring/sources/${encodeURIComponent(source.manifest.id)}/page-images`, { method: "POST", body: JSON.stringify({ startPage, endPage, dpi: 200 }) }); authoringStatus.textContent = "Pages rendered. Add and approve each transcription before packet selection."; renderAuthoringChunks(); state.authoringOutline = await api<any>(`/authoring/sources/${encodeURIComponent(source.manifest.id)}/outline`).catch(() => null); renderAuthoringOutline(); } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
+      async function savePageTranscription(chunkId: string, reviewState: string, button: HTMLButtonElement) {
+        const source = state.authoringSource; const textarea = button.closest("article")?.querySelector<HTMLTextAreaElement>("[data-authoring-page-text]"); if (!source || !textarea) return;
+        try { state.authoringSource = await api<any>(`/authoring/sources/${encodeURIComponent(source.manifest.id)}/chunks/${encodeURIComponent(chunkId)}/transcription`, { method: "PUT", body: JSON.stringify({ text: textarea.value, reviewState }) }); authoringStatus.textContent = reviewState === "approved" ? "Page transcription approved." : "Page transcription saved for review."; renderAuthoringChunks(); } catch (error) { authoringStatus.textContent = readableError(error); }
+      }
       async function exportAuthoringPacket() {
         try {
           const packet = await api<any>("/authoring/packets", { method: "POST", body: JSON.stringify({ categoryId: (document.querySelector<HTMLInputElement>("#authoring-category")?.value ?? "").trim(), topicId: (document.querySelector<HTMLInputElement>("#authoring-topic")?.value ?? "").trim(), targetDifficultyTier: (document.querySelector<HTMLSelectElement>("#authoring-target-tier")?.value ?? "unspecified"), objectiveIds: authoringValues("#authoring-objectives"), chunkIds: authoringValues("#authoring-chunks") }) });
@@ -5101,15 +5127,28 @@ const isDev = import.meta.env.DEV;
         }
         const intro = state.currentIndex === 0 ? await renderMarkdown(glossary.introduction) : "";
         const content = await renderMarkdown(section.content ?? "");
+        const sectionTitle = await renderInlineMarkdown(section.title);
+        const sectionNavigation = await Promise.all(glossary.sections.map(async (candidate, index) => {
+          const candidateProgress = state.latestResults!.learningSections.find((item) => item.sectionId === candidate.id);
+          const title = candidateProgress?.unlocked ? await renderInlineMarkdown(candidate.title) : "Locked section";
+          return `<li class="${candidateProgress?.completed ? "complete" : ""} ${index === state.currentIndex ? "current" : ""} ${!candidateProgress?.unlocked ? "locked" : ""}">
+            <button type="button" data-glossary-section-index="${index}" ${candidateProgress?.unlocked ? "" : "disabled"} aria-current="${index === state.currentIndex ? "step" : "false"}">
+              <span>${candidateProgress?.completed ? "&#10003;" : index + 1}</span>
+              ${title}
+            </button>
+          </li>`;
+        }));
         const entries = await Promise.all(section.entries.map(async (entry) => {
+          const term = await renderInlineMarkdown(entry.term);
+          const aliases = await Promise.all((entry.aliases ?? []).map((alias) => renderInlineMarkdown(alias)));
           const definition = await renderMarkdown(entry.definition);
           const notation = entry.notation ? await renderMarkdown(entry.notation) : "";
           const examples = await Promise.all((entry.examples ?? []).map((example) => renderMarkdown(example)));
           return `
             <article class="glossary-entry">
               <header>
-                <h3>${escapeHtml(entry.term)}</h3>
-                ${(entry.aliases ?? []).length ? `<span>${entry.aliases.map(escapeHtml).join(", ")}</span>` : ""}
+                <h3>${term}</h3>
+                ${aliases.length ? `<span>${aliases.join(", ")}</span>` : ""}
               </header>
               <div class="markdown">${definition}</div>
               ${notation ? `<div class="glossary-notation markdown">${notation}</div>` : ""}
@@ -5126,15 +5165,7 @@ const isDev = import.meta.env.DEV;
               <p class="eyebrow">Glossary · Study</p>
               <h2>${escapeHtml(state.assessment.title)}</h2>
               <ol>
-                ${glossary.sections.map((candidate, index) => {
-                  const candidateProgress = state.latestResults!.learningSections.find((item) => item.sectionId === candidate.id);
-                  return `<li class="${candidateProgress?.completed ? "complete" : ""} ${index === state.currentIndex ? "current" : ""} ${!candidateProgress?.unlocked ? "locked" : ""}">
-                    <button type="button" data-glossary-section-index="${index}" ${candidateProgress?.unlocked ? "" : "disabled"} aria-current="${index === state.currentIndex ? "step" : "false"}">
-                      <span>${candidateProgress?.completed ? "&#10003;" : index + 1}</span>
-                      ${escapeHtml(candidateProgress?.unlocked ? candidate.title : "Locked section")}
-                    </button>
-                  </li>`;
-                }).join("")}
+                ${sectionNavigation.join("")}
               </ol>
               <p class="muted">Review every required section before beginning recall.</p>
             </aside>
@@ -5142,7 +5173,7 @@ const isDev = import.meta.env.DEV;
               ${intro ? `<div class="learning-introduction markdown">${intro}</div>` : ""}
               <article class="learning-card glossary-study-card">
                 <div class="question-header"><span>${state.currentIndex + 1} of ${glossary.sections.length}</span><strong>${section.required ? "Required" : "Optional"}</strong></div>
-                <h2>${escapeHtml(section.title)}</h2>
+                <h2>${sectionTitle}</h2>
                 ${content ? `<div class="markdown learning-content">${content}</div>` : ""}
                 <div class="glossary-entry-list">${entries.join("")}</div>
                 <div class="assessment-control-bar">
@@ -5941,6 +5972,7 @@ const isDev = import.meta.env.DEV;
             ? await renderMarkdown(`$${result.expectedLatex}$`)
             : "";
         const explanationHtml = result?.explanation ? await renderMarkdown(result.explanation) : "";
+        const aliasesHtml = await Promise.all((result?.aliases ?? []).map((alias) => renderInlineMarkdown(alias)));
         const responseValue = result?.userResponse ?? "";
         const isRevealed = result?.answerRevealed === true;
         const isRated = result?.rating && result.rating !== "unknown";
@@ -5981,7 +6013,7 @@ const isDev = import.meta.env.DEV;
                 <strong>${escapeHtml(state.assessment.title)}</strong>
               </div>
               <div class="question-prompt markdown">${promptHtml}</div>
-              ${renderRecallResponseInput(item, responseValue, isRevealed)}
+              ${await renderRecallResponseInput(item, responseValue, isRevealed)}
               ${isRevealed ? `
                 <div class="recall-answer-panel">
                   <h3>Answer</h3>
@@ -5990,7 +6022,7 @@ const isDev = import.meta.env.DEV;
                   ${(result?.aliases ?? []).length > 0 ? `
                     <div class="result-detail">
                       <strong>Aliases</strong>
-                      <p>${(result?.aliases ?? []).map(escapeHtml).join(", ")}</p>
+                      <p class="markdown">${aliasesHtml.join(", ")}</p>
                     </div>
                   ` : ""}
                   ${explanationHtml ? `<details open><summary>Explanation</summary><div class="markdown">${explanationHtml}</div></details>` : ""}
@@ -7296,7 +7328,7 @@ const isDev = import.meta.env.DEV;
         `;
       }
 
-      function renderRecallResponseInput(item: RecallItem, value: string, isRevealed: boolean) {
+      async function renderRecallResponseInput(item: RecallItem, value: string, isRevealed: boolean) {
         if (item.type === "flashcard") {
           return `<p class="input-help">Think through the answer first, then reveal it and rate your recall.</p>`;
         }
@@ -7323,8 +7355,9 @@ const isDev = import.meta.env.DEV;
             : item.choices ?? [];
           return `
             <div class="choice-card-list" role="radiogroup" aria-label="Recognition choices">
-              ${choices.map((choice, index) => {
+              ${(await Promise.all(choices.map(async (choice, index) => {
                 const selected = value === choice.text;
+                const choiceText = await renderInlineMarkdown(choice.text);
                 return `<button
                   type="button"
                   class="choice-card ${selected ? "selected" : ""}"
@@ -7334,8 +7367,8 @@ const isDev = import.meta.env.DEV;
                   aria-checked="${selected}"
                   role="radio"
                   ${isRevealed ? "disabled" : ""}
-                ><span class="choice-indicator">${choiceShortcut(index)}</span><span>${escapeHtml(choice.text)}</span></button>`;
-              }).join("")}
+                ><span class="choice-indicator">${choiceShortcut(index)}</span><span class="markdown">${choiceText}</span></button>`;
+              }))).join("")}
             </div>
           `;
         }

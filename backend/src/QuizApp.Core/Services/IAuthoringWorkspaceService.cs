@@ -8,6 +8,9 @@ public interface IAuthoringWorkspaceService
     Task<SourceDocument?> GetSourceAsync(string sourceId, CancellationToken cancellationToken = default);
     Task<SourceDocument> ImportSourceAsync(SourceImportRequest request, CancellationToken cancellationToken = default);
     Task<SourceDocument> RetryExtractionAsync(string sourceId, CancellationToken cancellationToken = default);
+    Task<SourceDocument> RenderPdfPagesAsync(string sourceId, SourcePageRenderRequest request, CancellationToken cancellationToken = default);
+    Task<SourceDocument> UpdatePageTranscriptionAsync(string sourceId, string chunkId, SourceTranscriptionUpdate update, CancellationToken cancellationToken = default);
+    Task<(string Path, string ContentType)?> GetPageImageAsync(string sourceId, string chunkId, CancellationToken cancellationToken = default);
     Task<SourceOutline?> GetOutlineAsync(string sourceId, CancellationToken cancellationToken = default);
     Task<SourceOutline> RebuildOutlineAsync(string sourceId, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<SourceSearchResult>> SearchSourcesAsync(string query, int limit, CancellationToken cancellationToken = default);

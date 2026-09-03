@@ -18,7 +18,15 @@ public sealed record SourceChunk(
     string Locator,
     string Text,
     int TokenCount,
-    decimal? OcrConfidence = null);
+    decimal? OcrConfidence = null)
+{
+    public string? ImagePath { get; init; }
+    public int? PageNumber { get; init; }
+    public SourceReviewState TranscriptionReviewState { get; init; } = SourceReviewState.Approved;
+}
+
+public sealed record SourcePageRenderRequest(int StartPage, int EndPage, int Dpi = 200);
+public sealed record SourceTranscriptionUpdate(string Text, SourceReviewState ReviewState);
 
 public sealed record SourceManifest(
     int SchemaVersion,

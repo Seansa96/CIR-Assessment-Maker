@@ -6,120 +6,65 @@ categoryId: calculus-3
 topicId: calc3-dot-cross-products
 modeDefault: practice
 randomizeQuestions: false
-skills:
-- dot-cross-products
-navigation:
-  learningGoal: learn
-  activityType: guidedWorkedExample
-  tags:
-  - calculus-3
-  - calc3-dot-cross-products
-  - dot-cross-products
-  - worked-example
-authoring:
-  sourcePacketId: packet-calc3-dot-cross-products-v1
-  difficultyTier: easy
-  visualRequirement: required
-  visualRationale: The example depends on a spatial representation.
-  exceptionReason: One tightly-scaffolded worked example is intentionally used for this focused introductory artifact.
+skills: [dot-cross-products]
+navigation: { learningGoal: learn, activityType: guidedWorkedExample, tags: [calculus-3, calc3-dot-cross-products, dot-cross-products, worked-example] }
+authoring: { sourcePacketId: packet-calc3-dot-cross-products-v1, difficultyTier: easy, visualRequirement: required, visualRationale: The normal-vector calculation connects an ordered determinant to plane geometry. }
 workedExamples:
 - id: example-001
-  title: Build the representation
-  problem: 'Find a normal vector to the plane containing $\langle1,0,1\rangle$ and $\langle0,2,1\rangle$.'
+  title: Build and verify a normal vector
+  problem: 'Let $\mathbf u=\langle1,0,1\rangle$ and $\mathbf v=\langle0,2,1\rangle$. Find a normal vector to their plane and verify it.'
   steps:
   - id: s001
-    title: Select the operation
-    instruction: What operation produces a normal?
+    title: Choose the operation
+    instruction: A normal must be perpendicular to both spanning vectors.
+    hint: A dot product is a scalar; choose the operation that returns a perpendicular vector.
     type: multipleChoice
-    prompt: What operation produces a normal?
-    choices:
-    - id: a
-      text: cross product
-    - id: b
-      text: Use an unrelated formula.
-      issueSignals:
-      - id: trigonometric-identity-misapplied
-    - id: c
-      text: Reverse a required sign or role.
-      issueSignals:
-      - id: sign-error
-    - id: d
-      text: Treat the quantity as a scalar when it is not.
-      issueSignals:
-      - id: trigonometric-identity-misapplied
-    answer:
-      choiceId: a
-    issueSignals:
-    - id: trigonometric-identity-misapplied
-    difficultyDimensions:
-    - representationTransfer
-    - auxiliaryTechnique
-    explanation: 'Solution: cross product
-
-      Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.
-
-      Why the other choices fail: Each changes a sign, swaps a role, or applies a different relationship.'
+    prompt: Which operation should produce the normal vector?
+    choices: [{ id: a, text: cross product }, { id: b, text: dot product }, { id: c, text: vector addition }, { id: d, text: scalar multiplication }]
+    answer: { choiceId: a }
+    explanation: 'Solution: Use the cross product. Why it works: $\mathbf u\times\mathbf v$ is perpendicular to both inputs. Why the other choices fail: b is scalar; c stays in the plane; d only rescales an input.'
   - id: s002
-    title: Compute components
-    instruction: 'What is $\langle1,0,1\rangle\times\langle0,2,1\rangle$?'
+    title: Set up the determinant
+    instruction: Put the standard basis vectors in the first row, then the components of $\mathbf u$ and $\mathbf v$.
+    hint: Preserve the order $\mathbf u\times\mathbf v$.
     type: multipleChoice
-    prompt: 'What is $\langle1,0,1\rangle\times\langle0,2,1\rangle$?'
-    choices:
-    - id: a
-      text: '$\langle-2,-1,2\rangle$'
-    - id: b
-      text: Use an unrelated formula.
-      issueSignals:
-      - id: trigonometric-identity-misapplied
-    - id: c
-      text: Reverse a required sign or role.
-      issueSignals:
-      - id: sign-error
-    - id: d
-      text: Treat the quantity as a scalar when it is not.
-      issueSignals:
-      - id: trigonometric-identity-misapplied
-    answer:
-      choiceId: a
-    issueSignals:
-    - id: trigonometric-identity-misapplied
-    difficultyDimensions:
-    - representationTransfer
-    - auxiliaryTechnique
-    explanation: 'Solution: $\langle-2,-1,2\rangle$
-
-      Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.
-
-      Why the other choices fail: Each changes a sign, swaps a role, or applies a different relationship.'
+    prompt: Which determinant represents $\mathbf u\times\mathbf v$?
+    choices: [{ id: a, text: '$\begin{vmatrix}\mathbf i&\mathbf j&\mathbf k\\1&0&1\\0&2&1\end{vmatrix}$' }, { id: b, text: '$\begin{vmatrix}\mathbf i&\mathbf j&\mathbf k\\0&2&1\\1&0&1\end{vmatrix}$' }, { id: c, text: '$\begin{vmatrix}1&0&1\\0&2&1\end{vmatrix}$' }, { id: d, text: '$\begin{vmatrix}\mathbf i&\mathbf j&\mathbf k\\1&0&1\\0&1&2\end{vmatrix}$' }]
+    answer: { choiceId: a }
+    explanation: 'Solution: Choose the determinant with $\mathbf u$ as the second row and $\mathbf v$ as the third. Why it works: This preserves the requested order. Why the other choices fail: b reverses order; c omits the basis row; d changes $\mathbf v$.'
   - id: s003
-    title: Interpret
-    instruction: Why is the result useful?
+    title: Compute the x-component
+    instruction: Use the $\mathbf i$ cofactor $0(1)-1(2)$.
+    hint: The x-component is the determinant of the last two columns.
+    type: numericResponse
+    prompt: What is the x-component of $\mathbf u\times\mathbf v$?
+    choices: []
+    answer: { value: -2, tolerance: 0 }
+    explanation: 'Solution: $0(1)-1(2)=-2$. Why it works: The $\mathbf i$ cofactor uses the y- and z-components.'
+  - id: s004
+    title: Compute the y-component
+    instruction: Include the alternating minus sign on the middle cofactor.
+    hint: Compute $-(1(1)-1(0))$.
+    type: numericResponse
+    prompt: What is the y-component of $\mathbf u\times\mathbf v$?
+    choices: []
+    answer: { value: -1, tolerance: 0 }
+    explanation: 'Solution: $-(1(1)-1(0))=-1$. Why it works: Cofactor expansion alternates signs, so the middle term is negated.'
+  - id: s005
+    title: Compute the z-component
+    instruction: Use the $\mathbf k$ cofactor $1(2)-0(0)$.
+    hint: The z-component has a positive cofactor sign.
+    type: numericResponse
+    prompt: What is the z-component of $\mathbf u\times\mathbf v$?
+    choices: []
+    answer: { value: 2, tolerance: 0 }
+    explanation: 'Solution: $1(2)-0(0)=2$. Why it works: The $\mathbf k$ cofactor uses the x- and y-components.'
+  - id: s006
+    title: Verify the normal
+    instruction: Assemble $\mathbf n=\langle-2,-1,2\rangle$ and test it against both spanning vectors.
+    hint: A normal has dot product zero with each spanning vector.
     type: multipleChoice
-    prompt: Why is the result useful?
-    choices:
-    - id: a
-      text: It is perpendicular to both spanning vectors.
-    - id: b
-      text: Use an unrelated formula.
-      issueSignals:
-      - id: trigonometric-identity-misapplied
-    - id: c
-      text: Reverse a required sign or role.
-      issueSignals:
-      - id: sign-error
-    - id: d
-      text: Treat the quantity as a scalar when it is not.
-      issueSignals:
-      - id: trigonometric-identity-misapplied
-    answer:
-      choiceId: a
-    issueSignals:
-    - id: trigonometric-identity-misapplied
-    difficultyDimensions:
-    - representationTransfer
-    - auxiliaryTechnique
-    explanation: 'Solution: It is perpendicular to both spanning vectors.
-
-      Why it works: This uses the defining relationship for the topic. Review path: Trigonometry → Unit Circle Trigonometry.
-
-      Why the other choices fail: Each changes a sign, swaps a role, or applies a different relationship.'
+    prompt: What are $\mathbf n\cdot\mathbf u$ and $\mathbf n\cdot\mathbf v$?
+    choices: [{ id: a, text: '0 and 0' }, { id: b, text: '1 and 1' }, { id: c, text: '-2 and 2' }, { id: d, text: '2 and -2' }]
+    answer: { choiceId: a }
+    explanation: 'Solution: Both dot products are 0. Why it works: $\langle-2,-1,2\rangle\cdot\langle1,0,1\rangle=0$ and its dot product with $\langle0,2,1\rangle$ is also 0, so it is normal to the plane. Why the other choices fail: b, c, and d would each leave at least one nonzero dot product.'

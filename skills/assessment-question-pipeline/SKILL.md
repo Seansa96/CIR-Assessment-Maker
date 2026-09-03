@@ -37,7 +37,7 @@ description: Create, refine, validate, or review CIR Assessment Maker quiz/test 
    - Differentiate indefinite-integral answers mentally or with a CAS-style check when possible.
    - For symbolic answers, prefer derivative equivalence for antiderivatives.
    - For numeric answers, include a tolerance and ensure the explanation reaches the same value.
-   - For multiple choice/select-all, ensure correct choices exist and distractors are plausible but unambiguous.
+   - For multiple choice/select-all, ensure correct choices exist and distractors are plausible but unambiguous. Each distractor must name a prompt-specific misconception or competing result; do not reuse generic distractor templates or generic “other choices fail” feedback across questions.
 
 5. Validate before finishing:
    - Parse changed YAML/JSON.

@@ -91,7 +91,8 @@ def quiz(topic_data, kind):
         questions.append({"id": f"q{i:03d}", "type": "multipleChoice", "prompt": prompt, "choices": options,
                           "answer": {"choiceId": "a"}, "issueSignals": signal(topic_data["signal"]),
                           "difficultyDimensions": dimensions, "difficultyEvidence": "Requires matching a vector-calculus representation to the governing relation and orientation.",
-                          "explanation": expl(solution, topic_data["remediation"])})
+                          "explanation": expl(solution, topic_data["remediation"], prompt, answer,
+                                              [(option["id"], option["text"]) for option in options[1:]])})
     goal, activity = ("practice", "focusedPractice") if kind == "focused-practice" else ("evaluate", "masteryCheck")
     return {"schemaVersion": 1, "id": f"{topic_data['slug']}-{kind}-s2c", "title": f"{topic_data['title']}: {'Focused Practice' if kind == 'focused-practice' else 'Mastery Check'}", "assessmentType": "quiz", "categoryId": "calculus-3", "topicId": topic_data["id"], "modeDefault": "practice", "randomizeQuestions": True, "skills": [topic_data["slug"]], "navigation": {"learningGoal": goal, "activityType": activity, "tags": ["calculus-3", topic_data["id"], topic_data["slug"], kind]}, "authoring": {"sourcePacketId": f"packet-calc3-{topic_data['slug']}-v1", "difficultyTier": tier, "visualRequirement": "required", "visualRationale": "Questions reinforce the topic's original vector-calculus representation.", "exceptionReason": "Four distinct source-grounded items form this focused bank."}, "questions": questions}
 
