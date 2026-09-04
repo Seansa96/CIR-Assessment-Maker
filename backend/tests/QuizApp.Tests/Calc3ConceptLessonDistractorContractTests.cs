@@ -50,6 +50,45 @@ public sealed class Calc3ConceptLessonDistractorContractTests
         }
     }
 
+    [Theory]
+    [InlineData("vectors-concept-lesson-s2c")]
+    [InlineData("vectors-recall-s2c")]
+    [InlineData("vectors-worked-example-s2c")]
+    [InlineData("vectors-quiz-s2c")]
+    [InlineData("vectors-test-s2c")]
+    [InlineData("dot-cross-products-concept-lesson-s2c")]
+    [InlineData("dot-cross-products-recall-s2c")]
+    [InlineData("dot-cross-products-worked-example-s2c")]
+    [InlineData("dot-cross-products-quiz-s2c")]
+    [InlineData("dot-cross-products-test-s2c")]
+    [InlineData("lines-and-planes-concept-lesson-s2c")]
+    [InlineData("lines-and-planes-recall-s2c")]
+    [InlineData("lines-and-planes-worked-example-s2c")]
+    [InlineData("lines-and-planes-quiz-s2c")]
+    [InlineData("lines-and-planes-test-s2c")]
+    [InlineData("vector-valued-functions-concept-lesson-s2c")]
+    [InlineData("vector-valued-functions-recall-s2c")]
+    [InlineData("vector-valued-functions-worked-example-s2c")]
+    [InlineData("vector-valued-functions-quiz-s2c")]
+    [InlineData("vector-valued-functions-test-s2c")]
+    [InlineData("motion-in-space-concept-lesson-s2c")]
+    [InlineData("motion-in-space-recall-s2c")]
+    [InlineData("motion-in-space-worked-example-s2c")]
+    [InlineData("motion-in-space-quiz-s2c")]
+    [InlineData("motion-in-space-test-s2c")]
+    [Trait("Category", "ContentValidation")]
+    public async Task Revised_vector_topic_assessments_pass_the_strict_authoring_contract(string assessmentId)
+    {
+        var root = FindProjectRoot();
+        var options = new FileStorageOptions { DataRoot = Path.Combine(root, "data") };
+        var category = Assert.Single((await new FileCategoryRepository(options).ListAsync()).Where(item => item.Id == "calculus-3"));
+        var assessment = await new FileAssessmentRepository(options, new AssessmentValidator()).GetByIdAsync(assessmentId);
+
+        Assert.NotNull(assessment);
+        var diagnostics = new AssessmentAuthoringContractAudit().Evaluate(category, assessment!, strict: true);
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.IsBlocking);
+    }
+
     private static string FindProjectRoot()
     {
         var current = new DirectoryInfo(AppContext.BaseDirectory);

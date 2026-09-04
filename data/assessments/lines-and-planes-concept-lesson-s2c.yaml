@@ -16,43 +16,43 @@ guidedProject:
 items: []
 glossary: 
 lesson:
-  introduction: This topic is part of a recommended Calc 3 route, not a gate. You may begin here directly; refresh Calculus 2 → Parametric Curves if the prerequisite representation is unfamiliar.
+  introduction: Lines use a point and a direction; planes use a point and a normal. Keep the geometric role of every vector visible as you translate among vector, parametric, and scalar equations.
   sections:
   - id: s01
-    title: Lines need a point and direction
+    title: A line starts at a point and follows a direction
     required: true
-    content: 'A vector equation starts at a known point and adds any scalar multiple of a direction vector. In Lines and Planes in Space, begin by naming the mathematical object before calculating: a point, vector, curve, surface, field, or region. The notation determines which quantities may vary and what an answer represents. That first classification prevents applying a correct formula to the wrong geometric object.'
+    content: A line through $\mathbf r_0$ parallel to $\mathbf v$ has vector equation $\mathbf r=\mathbf r_0+t\mathbf v$. The parameter $t$ scales the direction vector, so $t=0$ returns the given point.
     media:
     - type: image
       src: /media/calculus-3/lines-planes.svg
-      alt: Original lines and planes in space reference visual.
-      caption: 
+      alt: Coordinate-space diagram of a line through a point with a direction vector and a plane with a normal vector.
+      caption: Lines use direction vectors; planes use normal vectors.
     check:
       id: check-01
       type: multipleChoice
-      prompt: What data defines a line in space?
+      prompt: Which data is sufficient to specify a line in space?
       choices:
       - id: a
-        text: a point and direction vector
+        text: A point on the line and a nonzero direction vector
         media: []
         issueSignals: []
       - id: b
-        text: a point and normal vector (answers 'What data defines a plane?', not 'What data defines a line in space?')
+        text: A point on the line and a normal vector
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-plane-role-confusion
           domains: []
       - id: c
-        text: is perpendicular to the plane (answers 'What does a plane normal vector do?', not 'What data defines a line in space?')
+        text: Two parallel normal vectors with no point
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-data-insufficiency
           domains: []
       - id: d
-        text: 1+2t (answers 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?', not 'What data defines a line in space?')
+        text: Only the line's distance from the origin
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-data-insufficiency
           domains: []
       answer:
         choiceId: a
@@ -68,16 +68,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >-
-        Solution: The correct response is a point and direction vector.
+      explanation: >
+        Solution: Choose a point on the line and a nonzero direction vector.
 
-        Why it works: A vector equation starts at a known point and adds any scalar multiple of a direction vector.
+        Why it works: $\mathbf r=\mathbf r_0+t\mathbf v$ begins at $\mathbf r_0$ and moves in direction $\mathbf v$.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What data defines a plane?', rather than to 'What data defines a line in space?'.
-
-        Choice c gives a response to the related question 'What does a plane normal vector do?', rather than to 'What data defines a line in space?'.
-
-        Choice d gives a response to the related question 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?', rather than to 'What data defines a line in space?'.
+        Why the other choices fail: b assigns a plane's normal-vector role to a line. c gives directions but never locates a particular line. d does not determine either a point or direction.
       media: []
       language: 
       functionName: 
@@ -96,39 +92,39 @@ lesson:
       extensionObjectiveIds: []
       parts: []
       issueSignals:
-      - id: mathematical-translation-error
+      - id: line-plane-role-confusion
         domains: []
   - id: s02
-    title: Planes need a point and normal
+    title: Read a vector equation coordinate by coordinate
     required: true
-    content: A plane equation states that displacement from a known point is perpendicular to its normal. Keep the symbols and their roles visible as you work. A reliable setup records the independent variables, the dependent quantity, and any orientation or bounds. In particular, do not replace a geometric description with a memorized expression until every component of the expression has a meaning.
+    content: Expanding $\mathbf r=\langle x_0,y_0,z_0\rangle+t\langle a,b,c\rangle$ gives $x=x_0+at$, $y=y_0+bt$, and $z=z_0+ct$. Matching coordinates preserves the direction vector's components.
     media: []
     check:
       id: check-02
       type: multipleChoice
-      prompt: What data defines a plane?
+      prompt: For $\mathbf r=\langle1,-2,4\rangle+t\langle3,0,-1\rangle$, what is the $z$-coordinate?
       choices:
       - id: a
-        text: a point and normal vector
+        text: $z=4-t$
         media: []
         issueSignals: []
       - id: b
-        text: is perpendicular to the plane (answers 'What does a plane normal vector do?', not 'What data defines a plane?')
+        text: $z=4+t$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-parameterization-error
           domains: []
       - id: c
-        text: 1+2t (answers 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?', not 'What data defines a plane?')
+        text: $z=-1+4t$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-parameterization-error
           domains: []
       - id: d
-        text: their normals are parallel (answers 'When are two planes parallel?', not 'What data defines a plane?')
+        text: $z=4-3t$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-parameterization-error
           domains: []
       answer:
         choiceId: a
@@ -144,16 +140,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >-
-        Solution: The correct response is a point and normal vector.
+      explanation: >
+        Solution: $z=4+t(-1)=4-t$.
 
-        Why it works: A plane equation states that displacement from a known point is perpendicular to its normal.
+        Why it works: The third coordinate uses the third component of the base point and the third component of the direction vector.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What does a plane normal vector do?', rather than to 'What data defines a plane?'.
-
-        Choice c gives a response to the related question 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?', rather than to 'What data defines a plane?'.
-
-        Choice d gives a response to the related question 'When are two planes parallel?', rather than to 'What data defines a plane?'.
+        Why the other choices fail: b loses the negative direction component. c swaps the base and direction roles. d incorrectly uses the x-direction component.
       media: []
       language: 
       functionName: 
@@ -172,39 +164,39 @@ lesson:
       extensionObjectiveIds: []
       parts: []
       issueSignals:
-      - id: mathematical-translation-error
+      - id: line-parameterization-error
         domains: []
   - id: s03
-    title: Forms serve different tasks
+    title: A plane uses a normal vector
     required: true
-    content: Vector and parametric forms trace lines; scalar forms make plane tests and distances convenient. Draw or mentally trace the representation before simplifying. Ask what remains fixed, what changes, and which direction is positive. This check is especially useful when a sign, a normal vector, a parameter order, or an integration limit can change the numerical value or the meaning of the result.
+    content: A plane through $\mathbf r_0$ with normal $\mathbf n$ consists of points $\mathbf r$ satisfying $\mathbf n\cdot(\mathbf r-\mathbf r_0)=0$. The displacement from the known point must be perpendicular to $\mathbf n$.
     media: []
     check:
       id: check-03
       type: multipleChoice
-      prompt: What does a plane normal vector do?
+      prompt: What does a normal vector to a plane tell you?
       choices:
       - id: a
-        text: is perpendicular to the plane
+        text: It is perpendicular to every direction lying in the plane
         media: []
         issueSignals: []
       - id: b
-        text: 1+2t (answers 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?', not 'What does a plane normal vector do?')
+        text: It lies along every line in the plane
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-plane-role-confusion
           domains: []
       - id: c
-        text: their normals are parallel (answers 'When are two planes parallel?', not 'What does a plane normal vector do?')
+        text: It gives a point on the plane by itself
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: plane-data-insufficiency
           domains: []
       - id: d
-        text: the starting point (answers 'What does $t=0$ give on a vector line?', not 'What does a plane normal vector do?')
+        text: It is always a unit vector
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: normal-scaling-confusion
           domains: []
       answer:
         choiceId: a
@@ -220,16 +212,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >-
-        Solution: The correct response is is perpendicular to the plane.
+      explanation: >
+        Solution: A plane normal is perpendicular to every vector lying in the plane.
 
-        Why it works: Vector and parametric forms trace lines; scalar forms make plane tests and distances convenient.
+        Why it works: The dot product $\mathbf n\cdot(\mathbf r-\mathbf r_0)=0$ expresses that perpendicularity.
 
-        Why the other choices fail: Choice b gives a response to the related question 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?', rather than to 'What does a plane normal vector do?'.
-
-        Choice c gives a response to the related question 'When are two planes parallel?', rather than to 'What does a plane normal vector do?'.
-
-        Choice d gives a response to the related question 'What does $t=0$ give on a vector line?', rather than to 'What does a plane normal vector do?'.
+        Why the other choices fail: b describes an in-plane direction, not a normal. c omits the point needed to locate the plane. d is false because any nonzero scalar multiple is also normal.
       media: []
       language: 
       functionName: 
@@ -248,39 +236,39 @@ lesson:
       extensionObjectiveIds: []
       parts: []
       issueSignals:
-      - id: mathematical-translation-error
+      - id: line-plane-role-confusion
         domains: []
   - id: s04
-    title: Worked micro-example
+    title: Build a scalar plane equation
     required: true
-    content: 'Use the short task Find a vector equation for the line through $(1,2,3)$ parallel to $\langle2,-1,4\rangle$. as a model. First, record the point: What is $\mathbf r_0$? The resulting statement is $\langle1,2,3\rangle$. This identifies the governing relation and gives a checkable intermediate result.'
+    content: For normal $\langle a,b,c\rangle$ through $(x_0,y_0,z_0)$, expand $a(x-x_0)+b(y-y_0)+c(z-z_0)=0$. The coefficients of $x,y,z$ are the normal vector components.
     media: []
     check:
       id: check-04
       type: multipleChoice
-      prompt: For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?
+      prompt: Which equation is the plane through $(1,0,-2)$ with normal $\langle2,-1,3\rangle$?
       choices:
       - id: a
-        text: 1+2t
+        text: $2(x-1)-y+3(z+2)=0$
         media: []
         issueSignals: []
       - id: b
-        text: their normals are parallel (answers 'When are two planes parallel?', not 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?')
+        text: $2(x+1)-y+3(z-2)=0$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: point-normal-sign-error
           domains: []
       - id: c
-        text: the starting point (answers 'What does $t=0$ give on a vector line?', not 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?')
+        text: $x-2y+3z=0$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: normal-component-placement-error
           domains: []
       - id: d
-        text: $\langle1,2,3\rangle$ (answers 'What is $\mathbf r_0$?', not 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?')
+        text: $\langle x,y,z\rangle=\langle1,0,-2\rangle+t\langle2,-1,3\rangle$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-plane-role-confusion
           domains: []
       answer:
         choiceId: a
@@ -296,16 +284,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >-
-        Solution: The correct response is 1+2t.
+      explanation: >
+        Solution: Substitute the point and normal into $a(x-x_0)+b(y-y_0)+c(z-z_0)=0$ to get $2(x-1)-y+3(z+2)=0$.
 
-        Why it works: Vector and parametric forms trace lines; scalar forms make plane tests and distances convenient.
+        Why it works: The normal coefficients multiply the displacement from the specified point.
 
-        Why the other choices fail: Choice b gives a response to the related question 'When are two planes parallel?', rather than to 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?'.
-
-        Choice c gives a response to the related question 'What does $t=0$ give on a vector line?', rather than to 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?'.
-
-        Choice d gives a response to the related question 'What is $\mathbf r_0$?', rather than to 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?'.
+        Why the other choices fail: b reverses both point-subtraction signs. c changes the normal components and omits the given point. d parameterizes a line in the normal direction, not the plane.
       media: []
       language: 
       functionName: 
@@ -324,39 +308,39 @@ lesson:
       extensionObjectiveIds: []
       parts: []
       issueSignals:
-      - id: mathematical-translation-error
+      - id: point-normal-sign-error
         domains: []
   - id: s05
-    title: Continue the method
+    title: Parallel planes have parallel normals
     required: true
-    content: 'Next, record direction: What is $\mathbf v$? Here the target is $\langle2,-1,4\rangle$. Compare this result with the diagram or stated constraints, then continue with assemble the line. The final conclusion, $\mathbf r=\langle1,2,3\rangle+t\langle2,-1,4\rangle$, should answer the original question in the requested form rather than merely display an unlabelled calculation.'
+    content: Planes are parallel exactly when their normal vectors are scalar multiples. Distinct parallel planes need different constants after being written with the same normal coefficients.
     media: []
     check:
       id: check-05
       type: multipleChoice
-      prompt: When are two planes parallel?
+      prompt: Which plane is parallel to $2x-y+3z=5$?
       choices:
       - id: a
-        text: their normals are parallel
+        text: $4x-2y+6z=1$
         media: []
         issueSignals: []
       - id: b
-        text: the starting point (answers 'What does $t=0$ give on a vector line?', not 'When are two planes parallel?')
+        text: $2x+y+3z=1$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: parallel-normal-comparison-error
           domains: []
       - id: c
-        text: $\langle1,2,3\rangle$ (answers 'What is $\mathbf r_0$?', not 'When are two planes parallel?')
+        text: $x-2y+3z=1$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: parallel-normal-comparison-error
           domains: []
       - id: d
-        text: a point and direction vector (answers 'What data defines a line in space?', not 'When are two planes parallel?')
+        text: $2x-y+3z=5$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: coincident-plane-confusion
           domains: []
       answer:
         choiceId: a
@@ -372,16 +356,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >-
-        Solution: The correct response is their normals are parallel.
+      explanation: >
+        Solution: $4x-2y+6z=1$ has normal $\langle4,-2,6\rangle=2\langle2,-1,3\rangle$.
 
-        Why it works: Vector and parametric forms trace lines; scalar forms make plane tests and distances convenient.
+        Why it works: Scalar-multiple normal vectors give parallel planes; the different constant makes this plane distinct.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What does $t=0$ give on a vector line?', rather than to 'When are two planes parallel?'.
-
-        Choice c gives a response to the related question 'What is $\mathbf r_0$?', rather than to 'When are two planes parallel?'.
-
-        Choice d gives a response to the related question 'What data defines a line in space?', rather than to 'When are two planes parallel?'.
+        Why the other choices fail: b and c alter one normal component, so their normals are not parallel. d is the same plane, not a distinct parallel plane.
       media: []
       language: 
       functionName: 
@@ -400,39 +380,39 @@ lesson:
       extensionObjectiveIds: []
       parts: []
       issueSignals:
-      - id: mathematical-translation-error
+      - id: parallel-normal-comparison-error
         domains: []
   - id: s06
-    title: Check the result
+    title: A point-plane distance measures a normal projection
     required: true
-    content: Use a second representation to verify the method. For example, recall that 'What data defines a line in space?' has response 'a point and direction vector', while 'For $\mathbf r=\langle1,2,3\rangle+t\langle2,0,-1\rangle$, what is x?' has response '1+2t'. These quick facts help detect a swapped coordinate, missing scale factor, inappropriate theorem, or result with the wrong scalar/vector type.
+    content: For plane $ax+by+cz=d$, the distance from $(x_0,y_0,z_0)$ is $\frac{|ax_0+by_0+cz_0-d|}{\sqrt{a^2+b^2+c^2}}$. The denominator normalizes the plane normal's length.
     media: []
     check:
       id: check-06
       type: multipleChoice
-      prompt: What does $t=0$ give on a vector line?
+      prompt: What does the denominator $\sqrt{a^2+b^2+c^2}$ do in the point-to-plane distance formula?
       choices:
       - id: a
-        text: the starting point
+        text: It divides by the length of the plane's normal vector
         media: []
         issueSignals: []
       - id: b
-        text: $\langle1,2,3\rangle$ (answers 'What is $\mathbf r_0$?', not 'What does $t=0$ give on a vector line?')
+        text: It finds the distance from the point to the origin
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: point-plane-distance-error
           domains: []
       - id: c
-        text: a point and direction vector (answers 'What data defines a line in space?', not 'What does $t=0$ give on a vector line?')
+        text: It computes the length of an in-plane direction vector
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: point-plane-distance-error
           domains: []
       - id: d
-        text: a point and normal vector (answers 'What data defines a plane?', not 'What does $t=0$ give on a vector line?')
+        text: It makes the signed numerator positive
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: point-plane-distance-error
           domains: []
       answer:
         choiceId: a
@@ -448,16 +428,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >-
-        Solution: The correct response is the starting point.
+      explanation: >
+        Solution: It divides by $|\langle a,b,c\rangle|$, the normal vector's length.
 
-        Why it works: Vector and parametric forms trace lines; scalar forms make plane tests and distances convenient.
+        Why it works: The numerator is a normal-direction displacement scaled by the normal, so division converts it to geometric distance.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What is $\mathbf r_0$?', rather than to 'What does $t=0$ give on a vector line?'.
-
-        Choice c gives a response to the related question 'What data defines a line in space?', rather than to 'What does $t=0$ give on a vector line?'.
-
-        Choice d gives a response to the related question 'What data defines a plane?', rather than to 'What does $t=0$ give on a vector line?'.
+        Why the other choices fail: b uses the wrong reference point. c uses a direction the formula does not contain. d is the role of the absolute value in the numerator.
       media: []
       language: 
       functionName: 
@@ -476,39 +452,39 @@ lesson:
       extensionObjectiveIds: []
       parts: []
       issueSignals:
-      - id: mathematical-translation-error
+      - id: point-plane-distance-error
         domains: []
   - id: s07
-    title: Transfer and preparation
+    title: Choose a form that answers the question
     required: true
-    content: A new problem may change the representation, unknown, constraints, or governing relation while retaining the same core idea. State why Lines and Planes in Space is the right method before computing, then check whether the result respects the stated geometry. If a prerequisite notation is unfamiliar, refresh Calculus 2 → Parametric Curves; this is recommended preparation, not an access restriction.
+    content: Vector and parametric forms make line points and directions transparent. Scalar plane form makes normal coefficients, parallelism, and point-to-plane distance convenient. Translate forms only when it reveals the requested feature.
     media: []
     check:
       id: check-07
       type: multipleChoice
-      prompt: What is $\mathbf r_0$?
+      prompt: Which representation most directly displays the direction of a line through a known point?
       choices:
       - id: a
-        text: $\langle1,2,3\rangle$
+        text: $\mathbf r=\mathbf r_0+t\mathbf v$
         media: []
         issueSignals: []
       - id: b
-        text: a point and direction vector (answers 'What data defines a line in space?', not 'What is $\mathbf r_0$?')
+        text: $ax+by+cz=d$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-plane-role-confusion
           domains: []
       - id: c
-        text: a point and normal vector (answers 'What data defines a plane?', not 'What is $\mathbf r_0$?')
+        text: $\mathbf n\cdot(\mathbf r-\mathbf r_0)=0$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: line-plane-role-confusion
           domains: []
       - id: d
-        text: is perpendicular to the plane (answers 'What does a plane normal vector do?', not 'What is $\mathbf r_0$?')
+        text: $\frac{|ax_0+by_0+cz_0-d|}{\sqrt{a^2+b^2+c^2}}$
         media: []
         issueSignals:
-        - id: mathematical-translation-error
+        - id: representation-selection-error
           domains: []
       answer:
         choiceId: a
@@ -524,16 +500,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >-
-        Solution: The correct response is $\langle1,2,3\rangle$.
+      explanation: >
+        Solution: Use $\mathbf r=\mathbf r_0+t\mathbf v$.
 
-        Why it works: Vector and parametric forms trace lines; scalar forms make plane tests and distances convenient.
+        Why it works: It explicitly separates a known base point $\mathbf r_0$ from the direction vector $\mathbf v$.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What data defines a line in space?', rather than to 'What is $\mathbf r_0$?'.
-
-        Choice c gives a response to the related question 'What data defines a plane?', rather than to 'What is $\mathbf r_0$?'.
-
-        Choice d gives a response to the related question 'What does a plane normal vector do?', rather than to 'What is $\mathbf r_0$?'.
+        Why the other choices fail: b and c are plane equations organized around a normal. d is a distance formula and does not describe a line.
       media: []
       language: 
       functionName: 
@@ -552,7 +524,7 @@ lesson:
       extensionObjectiveIds: []
       parts: []
       issueSignals:
-      - id: mathematical-translation-error
+      - id: representation-selection-error
         domains: []
 exploration: 
 directedProject: 
@@ -565,11 +537,10 @@ navigation:
   - calculus-3
   - lines-and-planes
 skills:
-- evaluate-limits
 - lines-and-planes
 authoring:
   visualRequirement: required
-  visualRationale: Original spatial visual supports the core representation.
+  visualRationale: A single coordinate-space diagram distinguishes the distinct geometric roles of line direction and plane normal vectors.
   difficultyTier: unspecified
   exceptionReason: 
   physicsModel: 

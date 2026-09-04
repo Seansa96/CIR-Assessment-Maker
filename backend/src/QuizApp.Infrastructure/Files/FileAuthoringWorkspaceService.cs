@@ -130,6 +130,10 @@ public sealed class FileAuthoringWorkspaceService : IAuthoringWorkspaceService
         foreach (var page in Enumerable.Range(request.StartPage, request.EndPage - request.StartPage + 1))
         {
             var file = $"page-{page:0000}.png"; var path = Path.Combine(imageDirectory, file);
+            // pdftoppm uses a three-digit page suffix for page ranges below 1000 on
+            // Windows. Normalize its output to the stable four-digit source-chunk path.
+            var rendererFile = Path.Combine(imageDirectory, $"page-{page:000}.png");
+            if (!File.Exists(path) && File.Exists(rendererFile)) File.Move(rendererFile, path);
             if (!File.Exists(path)) continue;
             chunks.Add(new SourceChunk($"{sourceId}:page-{page:0000}", 100000 + page, "page-image", $"PDF page {page}", string.Empty, 0)
             { ImagePath = Path.Combine("page-images", file).Replace('\\', '/'), PageNumber = page, TranscriptionReviewState = SourceReviewState.Draft });

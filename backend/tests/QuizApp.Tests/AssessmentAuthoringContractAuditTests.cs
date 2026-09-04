@@ -138,6 +138,21 @@ public sealed class AssessmentAuthoringContractAuditTests
     }
 
     [Fact]
+    public void Coherent_single_problem_worked_example_can_use_a_documented_exception()
+    {
+        var assessment = TestData.Assessment(AssessmentType.WorkedExample, Array.Empty<QuestionDefinition>()) with
+        {
+            WorkedExamples = [new WorkedExampleDefinition("example-001", "One coherent derivation", "Find a normal vector from two spanning vectors.",
+                [new WorkedExampleStepDefinition("s001", "Compute", "Compute the requested component.", null, TestData.FreeResponseQuestion("s001"))])],
+            Authoring = new AssessmentAuthoringMetadata(VisualRequirement.NotApplicable, "All givens are rendered in the checkpoints.", ExceptionReason: "One six-checkpoint problem is intentionally sequential; splitting it would break the required guided derivation.")
+        };
+
+        var diagnostics = audit.Evaluate(Stem, assessment, strict: true);
+
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Code == "WORKED_EXAMPLE_PROBLEM_COUNT" && diagnostic.IsBlocking);
+    }
+
+    [Fact]
     public void Olympiad_items_require_five_dimensions_and_an_extension_objective()
     {
         var question = TestData.MultipleChoiceQuestion("q001") with

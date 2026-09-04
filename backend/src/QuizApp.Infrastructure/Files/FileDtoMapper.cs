@@ -919,7 +919,7 @@ public static class FileDtoMapper
     private static DifficultyDimension ParseDifficultyDimension(string? value) => Normalize(value) switch
     {
         "simplification" => DifficultyDimension.Simplification,
-        "identitycreation" => DifficultyDimension.IdentityConstruction,
+        "identitycreation" or "identityconstruction" => DifficultyDimension.IdentityConstruction,
         "auxiliarytechnique" => DifficultyDimension.AuxiliaryTechnique,
         "modelorderivation" => DifficultyDimension.ModelOrDerivation,
         "domaincondition" => DifficultyDimension.DomainCondition,

@@ -71,7 +71,8 @@ public sealed class AssessmentAuthoringContractAudit
         if (assessment.AssessmentType is AssessmentType.WorkedExample)
         {
             var count = assessment.WorkedExamples.Count;
-            if (count is < 2 or > 4) Add("WORKED_EXAMPLE_PROBLEM_COUNT", "Worked-example assessments require two to four distinct problems unless split with an approved exception.", true);
+            if (count is < 2 or > 4 && string.IsNullOrWhiteSpace(metadata.ExceptionReason))
+                Add("WORKED_EXAMPLE_PROBLEM_COUNT", "Worked-example assessments require two to four distinct problems unless authoring.exceptionReason documents an approved coherent sequence.", true);
             var preferred = profile is AuthoringProfile.Stem ? new[] { QuestionType.SymbolicResponse, QuestionType.FreeResponse } : new[] { QuestionType.FreeResponse, QuestionType.Code };
             WarnRatio("WORKED_EXAMPLE_MIX", assessment.WorkedExamples.SelectMany(example => example.Steps).Select(step => step.Question.Type), preferred, "Worked-example steps should use the profile's preferred response types at least 70% of the time.", diagnostics);
             foreach (var step in assessment.WorkedExamples.SelectMany(example => example.Steps))
