@@ -1,0 +1,149 @@
+schemaVersion: 1
+id: mathematical-literacy-translating-math-to-code-focused-practice-advanced
+title: "Translating Math to Code: Focused Practice (Advanced)"
+assessmentType: quiz
+categoryId: mathematical-literacy
+topicId: translating-mathematics-into-code
+modeDefault: practice
+randomizeQuestions: true
+skills:
+  - mathematical-literacy
+  - translating-mathematics-into-code
+navigation:
+  learningGoal: practice
+  activityType: focusedPractice
+  tags:
+    - mathematical-literacy
+    - code
+    - translation
+    - advanced
+authoring:
+  sourcePacketId: packet-translating-math-to-code-v2
+  blueprintId: mathematical-literacy-math-to-code-practice-advanced-blueprints
+  difficultyTier: hard
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: "You need to translate the double sum $\\sum_{i=1}^{n} \\sum_{j=i}^{n} A_i B_j$ into code (assuming 0-indexed arrays `A` and `B` of length `n`). Which nested loop structure is correct?"
+    choices:
+      - id: a
+        text: "`for i from 0 to n-1: for j from i to n-1:`"
+      - id: b
+        text: "`for i from 0 to n-1: for j from 0 to n-1:`"
+        issueSignals:
+          - id: structuralRecognition-error
+      - id: c
+        text: "`for i from 1 to n: for j from i to n:`"
+        issueSignals:
+          - id: domainCondition-error
+      - id: d
+        text: "`for i from 0 to n: for j from i to n:`"
+        issueSignals:
+          - id: domainCondition-error
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: domainCondition-error
+    difficultyDimensions:
+      - representationTransfer
+      - domainCondition
+      - variableBinding
+    difficultyEvidence: "Translates nested summation limits into 0-indexed code loops, preserving the variable dependency in the inner loop's start condition."
+    explanation: |
+      Solution: `for i from 0 to n-1: for j from i to n-1:`
+      Why it works: Mathematical indices typically go from 1 to $n$. Code arrays are 0-indexed, so the outer loop goes from 0 to $n-1$. The inner sum starts at $j=i$, meaning the inner loop must start at the *current* value of $i$, maintaining the triangular iteration space.
+      Why the other choices fail: B iterates over a full square grid, ignoring the $j=i$ start condition. C uses 1-based indexing which will cause an out-of-bounds error in most languages. D goes up to $n$ inclusive, causing out-of-bounds errors.
+
+  - id: q002
+    type: multipleChoice
+    prompt: "Translate the piecewise function $f(x) = \\begin{cases} x^2 & x \\le 0 \\\\ x & x > 0 \\end{cases}$ into an if-else structure. What is the most robust translation?"
+    choices:
+      - id: a
+        text: "`if (x <= 0) return x*x; else return x;`"
+      - id: b
+        text: "`if (x < 0) return x*x; else return x;`"
+        issueSignals:
+          - id: domainCondition-error
+      - id: c
+        text: "`if (x == 0) return 0; else return x*x;`"
+        issueSignals:
+          - id: structuralRecognition-error
+      - id: d
+        text: "`if (x > 0) return x*x; else return x;`"
+        issueSignals:
+          - id: representationTransfer-error
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: domainCondition-error
+    difficultyDimensions:
+      - representationTransfer
+      - domainCondition
+    difficultyEvidence: "Translates a mathematical piecewise boundary perfectly into code control flow, respecting inclusive/exclusive bounds."
+    explanation: |
+      Solution: `if (x <= 0) return x*x; else return x;`
+      Why it works: The mathematical definition includes 0 in the first case ($x \\le 0$). The code `x <= 0` perfectly matches this boundary. The `else` naturally catches everything else ($x > 0$).
+      Why the other choices fail: B uses strict inequality (`<`), meaning an input of 0 would fall into the `else` block and return 0 instead of $0^2$ (which is numerically the same here, but structurally wrong for general piecewise translation). C and D completely scramble the logic and conditions.
+
+  - id: q003
+    type: multipleChoice
+    prompt: "You are approximating an integral $\\int_{a}^{b} f(x) dx$ using a left Riemann sum with $N$ rectangles. Let $\\Delta x = (b-a)/N$. Which loop calculates the sample points $x_i$ correctly?"
+    choices:
+      - id: a
+        text: "`for i from 0 to N-1: x_i = a + i * dx`"
+      - id: b
+        text: "`for i from 1 to N: x_i = a + i * dx`"
+        issueSignals:
+          - id: domainCondition-error
+      - id: c
+        text: "`for i from 0 to N: x_i = a + i * dx`"
+        issueSignals:
+          - id: domainCondition-error
+      - id: d
+        text: "`for i from 0 to N-1: x_i = a + dx`"
+        issueSignals:
+          - id: conceptual-misunderstanding
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: domainCondition-error
+    difficultyDimensions:
+      - representationTransfer
+      - domainCondition
+    difficultyEvidence: "Translates a continuous mathematical partition into a discrete loop generation algorithm for a left Riemann sum."
+    explanation: |
+      Solution: `for i from 0 to N-1: x_i = a + i * dx`
+      Why it works: A left Riemann sum uses the left edge of each of the $N$ intervals. The first left edge is exactly $a$ (when $i=0$). The last left edge is one step before $b$ (when $i=N-1$).
+      Why the other choices fail: B calculates a *right* Riemann sum, starting at $a+dx$ and ending exactly at $b$. C calculates $N+1$ points, which is one too many for $N$ rectangles. D fails to increment the sample point, calculating the same location $N$ times.
+
+  - id: q004
+    type: multipleChoice
+    prompt: "In a math paper, a vector $V$ has indices running through the closed interval $[1, N]$. You need to process the second half of this vector in a 0-indexed programming language. Assuming $N$ is even, what is the correct code slice notation (where `end` is exclusive)?"
+    choices:
+      - id: a
+        text: "`V[N/2 : N]`"
+      - id: b
+        text: "`V[N/2 : N-1]`"
+        issueSignals:
+          - id: domainCondition-error
+      - id: c
+        text: "`V[N/2 + 1 : N]`"
+        issueSignals:
+          - id: domainCondition-error
+      - id: d
+        text: "`V[N/2 - 1 : N]`"
+        issueSignals:
+          - id: domainCondition-error
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: domainCondition-error
+    difficultyDimensions:
+      - representationTransfer
+      - domainCondition
+      - errorDiagnosis
+    difficultyEvidence: "Translates a 1-indexed closed mathematical interval into a 0-indexed half-open programmatic slice."
+    explanation: |
+      Solution: `V[N/2 : N]`
+      Why it works: Mathematically, the vector has $N$ elements. In 0-indexed code, the elements are at indices `0` through `N-1`. The first half is `V[0 : N/2]`. The second half starts exactly where the first half left off: index `N/2`. The slice must go up to the exclusive bound `N` to include the final element at `N-1`.
+      Why the other choices fail: B stops at `N-1` exclusive, thus missing the final element. C skips the first element of the second half. D includes the last element of the first half in the second half.

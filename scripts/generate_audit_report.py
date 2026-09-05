@@ -36,7 +36,8 @@ def audit():
                 except:
                     pass
                     
-        # Check if topics exist in areas (simplified check, usually we'd parse categories but topics belong to subcategories or category directly? The schema says area has categoryIds and subcategoryIds, topics belong to subcategories or categories. Wait, in CIR, areas contain categories and subcategories, but topics are just ids inside assessments. Let's just list failing files first.)
+        # A future taxonomy check can compare the assessment's singular topic identifier
+        # against its canonical area. This report currently lists validation failures.
         
         out.write(f"Total files audited: {len(files)}\n")
         out.write(f"Files failing S2C validation: {len(failed_files)}\n\n")

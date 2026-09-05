@@ -2,6 +2,10 @@ import os
 import sys
 import yaml
 import glob
+import json
+import re
+from collections import Counter
+from functools import lru_cache
 
 REPEATED_CONCLUSION = 'Therefore the answer is '
 GENERIC_TEMPLATE_DISTRACTORS = {
@@ -12,6 +16,176 @@ GENERIC_TEMPLATE_DISTRACTORS = {
 GENERIC_DISTRACTOR_FEEDBACK = 'why the other choices fail: each changes a sign, swaps a role, or applies a different relationship.'
 RETIRED_EDITORIAL_CHOICE_PATTERN = "(answers '"
 GENERIC_WHY_IT_WORKS = 'why it works: this uses the defining relationship for the topic.'
+DOUBLE_QUOTED_LATEX = re.compile(r'"[^"\n]*\\[^"\n]*"')
+
+PACKET_PATH = os.path.join('docs', 'assessment-reference', 'packets', 'mathematical-literacy-v2-packets.json')
+BLUEPRINT_DIRECTORY = os.path.join('docs', 'assessment-reference', 'question-blueprints')
+SOURCE_DIRECTORY = os.path.join('data', 'source-library', 'sources')
+MIGRATION_STATUS_PATH = os.path.join('docs', 'assessment-reference', 'content-manifests', 'mathematical-literacy-s2c-migration-status.yaml')
+BLUEPRINT_REQUIRED_FIELDS = {
+    'id', 'assessmentId', 'questionId', 'objectiveId', 'sourceChunks', 'reviewState',
+    'questionType', 'givens', 'unknown', 'representationRequirement',
+    'governingPrinciple', 'methodSteps', 'likelyMisconception',
+    'difficultyEvidence', 'answerVerificationMethod', 'variationAxes',
+    'reasoningSignature',
+}
+GENERIC_GOVERNING_PRINCIPLES = {
+    'preserve scope, direction, and justification',
+    'integrate scope, direction, and justification',
+    'apply the governing relationship',
+    'use the defining relationship for the topic',
+}
+
+def mathematical_literacy_packets():
+    try:
+        with open(PACKET_PATH, 'r', encoding='utf-8') as f:
+            return {packet['id']: packet for packet in json.load(f).get('packets', [])}
+    except (OSError, ValueError, KeyError):
+        return {}
+
+def load_blueprint(blueprint_id):
+    path = os.path.join(BLUEPRINT_DIRECTORY, f'{blueprint_id}.yaml')
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            return yaml.safe_load(f) or {}, path
+    except (OSError, yaml.YAMLError):
+        return None, path
+
+@lru_cache(maxsize=1)
+def active_reasoning_signature_counts():
+    """Return signatures only from blueprints referenced by the active ML inventory."""
+    try:
+        with open(MIGRATION_STATUS_PATH, 'r', encoding='utf-8') as f:
+            status = yaml.safe_load(f) or {}
+        blueprint_ids = {
+            entry.get('blueprintId') for entry in status.get('activeDefinitions', [])
+            if entry.get('blueprintId')
+        }
+    except (OSError, yaml.YAMLError):
+        return Counter()
+    signatures = []
+    for blueprint_id in blueprint_ids:
+        blueprint, _ = load_blueprint(blueprint_id)
+        if blueprint:
+            signatures.extend(
+                record.get('reasoningSignature') for record in blueprint.get('blueprints', [])
+                if record.get('reasoningSignature')
+            )
+    return Counter(signatures)
+
+def source_chunks_for_packet(packet, errors):
+    allowed = set()
+    for source in packet.get('sources', []):
+        source_id = source.get('sourceId')
+        if not source_id:
+            errors.append(f"Packet '{packet.get('id', '<unknown>')}' has a source without sourceId.")
+            continue
+        manifest_path = os.path.join(SOURCE_DIRECTORY, source_id, 'manifest.json')
+        chunks_path = os.path.join(SOURCE_DIRECTORY, source_id, 'chunks.json')
+        try:
+            with open(manifest_path, 'r', encoding='utf-8') as f:
+                manifest = json.load(f)
+            with open(chunks_path, 'r', encoding='utf-8') as f:
+                chunks = {chunk.get('id'): chunk for chunk in json.load(f)}
+        except (OSError, ValueError, TypeError):
+            errors.append(f"Packet '{packet.get('id', '<unknown>')}' cannot resolve source '{source_id}' manifest/chunks.")
+            continue
+        if not manifest.get('id') or manifest.get('chunkCount', 0) <= 0:
+            errors.append(f"Packet '{packet.get('id', '<unknown>')}' references an empty source manifest '{source_id}'.")
+            continue
+        for chunk_id in source.get('chunkIds', []):
+            chunk = chunks.get(chunk_id)
+            if not chunk:
+                errors.append(f"Packet '{packet.get('id', '<unknown>')}' references missing chunk '{chunk_id}'.")
+                continue
+            if not str(chunk.get('text') or '').strip():
+                errors.append(f"Packet '{packet.get('id', '<unknown>')}' references empty chunk '{chunk_id}'.")
+                continue
+            if chunk.get('kind') == 'page-image':
+                image_path = str(chunk.get('imagePath') or '')
+                expected_root = os.path.abspath(os.path.join(SOURCE_DIRECTORY, source_id))
+                resolved_image = os.path.abspath(os.path.join(expected_root, image_path))
+                if (chunk.get('transcriptionReviewState') != 'approved'
+                        or not image_path
+                        or not resolved_image.startswith(expected_root + os.sep)
+                        or not os.path.isfile(resolved_image)):
+                    errors.append(f"Packet '{packet.get('id', '<unknown>')}' references ineligible page-image chunk '{chunk_id}' (approved transcription and safe image are required).")
+                    continue
+            allowed.add(chunk_id)
+    return allowed
+
+def collect_answer_bearing_items(data):
+    items = []
+    for index, question in enumerate(data.get('questions', [])):
+        items.append((question.get('id', f'q-{index + 1}'), question))
+    for example in data.get('workedExamples', []):
+        for index, step in enumerate(example.get('steps', [])):
+            question = step.get('question', step)
+            items.append((question.get('id') or step.get('id', f'step-{index + 1}'), question))
+    for section in (data.get('lesson') or {}).get('sections', []):
+        if section.get('check'):
+            question = section['check']
+            items.append((question.get('id', f"{section.get('id', 'section')}-check"), question))
+    for section in (data.get('glossary') or {}).get('sections', []):
+        for entry in section.get('entries', []):
+            for index, drill in enumerate(entry.get('drills', [])):
+                items.append((drill.get('id', f"{entry.get('id', 'entry')}-drill-{index + 1}"), drill))
+    for index, item in enumerate(data.get('items', [])):
+        items.append((item.get('id', f'item-{index + 1}'), item))
+    return items
+
+def validate_blueprint(blueprint_id, data, packet, allowed_chunks, errors):
+    blueprint, path = load_blueprint(blueprint_id)
+    if blueprint is None:
+        errors.append(f"Mathematical Literacy assessment references missing blueprint '{blueprint_id}'.")
+        return
+    if blueprint.get('categoryId') != 'mathematical-literacy':
+        errors.append(f"Blueprint '{blueprint_id}' has an invalid categoryId.")
+    if blueprint.get('topicId') != data.get('topicId'):
+        errors.append(f"Blueprint '{blueprint_id}' topicId does not match the assessment.")
+    if blueprint.get('packetId') != packet.get('id'):
+        errors.append(f"Blueprint '{blueprint_id}' packetId does not match authoring.sourcePacketId.")
+    records = blueprint.get('blueprints')
+    if not isinstance(records, list):
+        errors.append(f"Blueprint '{blueprint_id}' must contain a blueprints list.")
+        return
+    expected_ids = {item_id for item_id, _ in collect_answer_bearing_items(data)}
+    record_ids = set()
+    signatures = []
+    for index, record in enumerate(records):
+        missing = sorted(field for field in BLUEPRINT_REQUIRED_FIELDS if not record.get(field))
+        if missing:
+            errors.append(f"Blueprint '{blueprint_id}' record {index + 1} is missing: {', '.join(missing)}.")
+            continue
+        if record.get('assessmentId') != data.get('id'):
+            errors.append(f"Blueprint '{blueprint_id}' record '{record.get('id')}' has the wrong assessmentId.")
+        record_ids.add(record.get('questionId'))
+        if record.get('reviewState') != 'approved':
+            errors.append(f"Blueprint '{blueprint_id}' record '{record.get('id')}' is not approved.")
+        if not isinstance(record.get('methodSteps'), list) or len(record['methodSteps']) < 2:
+            errors.append(f"Blueprint '{blueprint_id}' record '{record.get('id')}' needs at least two methodSteps.")
+        if not isinstance(record.get('variationAxes'), list) or len(record['variationAxes']) < 2:
+            errors.append(f"Blueprint '{blueprint_id}' record '{record.get('id')}' needs at least two variationAxes.")
+        if not isinstance(record.get('sourceChunks'), list) or not set(record['sourceChunks']).issubset(allowed_chunks):
+            errors.append(f"Blueprint '{blueprint_id}' record '{record.get('id')}' cites chunks outside its eligible packet.")
+        if normalized_choice_text(record.get('governingPrinciple')) in GENERIC_GOVERNING_PRINCIPLES:
+            errors.append(f"Blueprint '{blueprint_id}' record '{record.get('id')}' uses generic governing-principle boilerplate.")
+        signatures.append(record.get('reasoningSignature'))
+    missing_records = expected_ids - record_ids
+    extra_records = record_ids - expected_ids
+    if missing_records:
+        errors.append(f"Blueprint '{blueprint_id}' is missing item coverage for: {', '.join(sorted(missing_records))}.")
+    if extra_records:
+        errors.append(f"Blueprint '{blueprint_id}' has records for unknown items: {', '.join(sorted(extra_records))}.")
+    duplicates = [signature for signature, count in Counter(signatures).items() if signature and count > 1]
+    if duplicates:
+        errors.append(f"Blueprint '{blueprint_id}' repeats reasoning signatures: {', '.join(sorted(duplicates))}.")
+    active_duplicates = {
+        signature for signature, count in active_reasoning_signature_counts().items()
+        if count > 1 and signature in signatures
+    }
+    if active_duplicates:
+        errors.append(f"Blueprint '{blueprint_id}' has globally repeated reasoning signatures: {', '.join(sorted(active_duplicates))}.")
 
 def normalized_choice_text(text):
     return ' '.join(str(text or '').lower().split())
@@ -63,11 +237,31 @@ def validate_file(filepath):
     errors = []
     try:
         with open(filepath, 'r', encoding='utf-8') as f:
+            raw = f.read()
+            if DOUBLE_QUOTED_LATEX.search(raw):
+                errors.append('Double-quoted YAML scalar contains a LaTeX backslash. Use a block scalar or a single-quoted scalar.')
+            f.seek(0)
             data = yaml.safe_load(f)
             if not data:
                 return errors
                 
             assessment_type = data.get('assessmentType', '')
+            if data.get('categoryId') == 'mathematical-literacy':
+                packets = mathematical_literacy_packets()
+                authoring = data.get('authoring') or {}
+                packet_id = authoring.get('sourcePacketId')
+                blueprint_id = authoring.get('blueprintId')
+                if not packet_id:
+                    errors.append('Mathematical Literacy assessment is missing authoring.sourcePacketId.')
+                elif packet_id not in packets:
+                    errors.append(f"Mathematical Literacy assessment references unknown packet '{packet_id}'.")
+                elif packets[packet_id].get('topicId') != data.get('topicId'):
+                    errors.append(f"Mathematical Literacy assessment packet '{packet_id}' does not match topicId '{data.get('topicId')}'.")
+                if not blueprint_id:
+                    errors.append('Mathematical Literacy assessment is missing authoring.blueprintId.')
+                elif packet_id in packets:
+                    allowed_chunks = source_chunks_for_packet(packets[packet_id], errors)
+                    validate_blueprint(blueprint_id, data, packets[packet_id], allowed_chunks, errors)
             
             multiple_choice_questions = []
 
@@ -137,6 +331,11 @@ def validate_file(filepath):
                         for i, drill in enumerate(drills):
                             drill_id = drill.get('id', f"{entry.get('id', 'entry')}-drill-{i}")
                             validate_question_item(drill, drill_id, assessment_type, errors)
+
+            # Check recall drills. Recall items are answer-bearing even though they are not
+            # quiz questions, so they must carry the same instructional explanation contract.
+            for i, item in enumerate(data.get('items', [])):
+                validate_question_item(item, item.get('id', f'item-{i}'), assessment_type, errors)
 
             if assessment_type == 'workedExample' and data.get('categoryId') == 'physics-2':
                 enforce = data.get('topicId') == 'physics2-electric-charges-fields'

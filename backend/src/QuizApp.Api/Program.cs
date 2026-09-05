@@ -119,24 +119,28 @@ await app.Services.GetRequiredService<LegacyRetentionMigrationService>().Migrate
 await app.Services.GetRequiredService<SqliteRetentionInitializer>().InitializeAsync();
 
 var importer = app.Services.GetRequiredService<SqliteAssessmentCatalogImporter>();
-await importer.ImportAsync();
-
-if (importer.CatalogInitialized)
+var skipCatalogImport = builder.Configuration.GetValue<bool>("AuthoringWorkspace:SkipCatalogImport");
+if (!skipCatalogImport)
 {
-    var options = app.Services.GetRequiredService<SqliteRetentionOptions>();
-    await using var conn = new QuizApp.Infrastructure.Retention.SqliteConnectionFactory(options).CreateConnection();
-    await conn.OpenAsync();
-    await using var cmd = conn.CreateCommand();
-    cmd.CommandText = "SELECT severity, COUNT(*) FROM import_diagnostics WHERE run_id = (SELECT id FROM import_runs ORDER BY started_at DESC LIMIT 1) GROUP BY severity;";
-    await using var reader = await cmd.ExecuteReaderAsync();
-    var counts = new Dictionary<string, int>();
-    while (await reader.ReadAsync()) counts[reader.GetString(0)] = reader.GetInt32(1);
-    
-    var errorCount = counts.GetValueOrDefault("Error", 0);
-    var warningCount = counts.GetValueOrDefault("Warning", 0);
-    if (errorCount > 0 || warningCount > 0)
+    await importer.ImportAsync();
+
+    if (importer.CatalogInitialized)
     {
-        Console.WriteLine($"[CatalogImporter] Startup diagnostic summary: {errorCount} errors, {warningCount} warnings. Check /api/navigation/catalog/diagnostics.");
+        var options = app.Services.GetRequiredService<SqliteRetentionOptions>();
+        await using var conn = new QuizApp.Infrastructure.Retention.SqliteConnectionFactory(options).CreateConnection();
+        await conn.OpenAsync();
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT severity, COUNT(*) FROM import_diagnostics WHERE run_id = (SELECT id FROM import_runs ORDER BY started_at DESC LIMIT 1) GROUP BY severity;";
+        await using var reader = await cmd.ExecuteReaderAsync();
+        var counts = new Dictionary<string, int>();
+        while (await reader.ReadAsync()) counts[reader.GetString(0)] = reader.GetInt32(1);
+
+        var errorCount = counts.GetValueOrDefault("Error", 0);
+        var warningCount = counts.GetValueOrDefault("Warning", 0);
+        if (errorCount > 0 || warningCount > 0)
+        {
+            Console.WriteLine($"[CatalogImporter] Startup diagnostic summary: {errorCount} errors, {warningCount} warnings. Check /api/navigation/catalog/diagnostics.");
+        }
     }
 }
 

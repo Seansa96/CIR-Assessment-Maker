@@ -1,0 +1,148 @@
+schemaVersion: 1
+id: mathematical-literacy-translating-math-to-code-mastery-check
+title: "Translating Math to Code: Mastery Check"
+assessmentType: quiz
+categoryId: mathematical-literacy
+topicId: translating-mathematics-into-code
+modeDefault: practice
+randomizeQuestions: true
+skills:
+  - mathematical-literacy
+  - translating-mathematics-into-code
+navigation:
+  learningGoal: evaluate
+  activityType: masteryCheck
+  tags:
+    - mathematical-literacy
+    - code
+    - translation
+    - mastery
+authoring:
+  sourcePacketId: packet-translating-math-to-code-v2
+  blueprintId: mathematical-literacy-math-to-code-mastery-check-blueprints
+  difficultyTier: hard
+questions:
+  - id: q001
+    type: multipleChoice
+    prompt: "Translate the mathematical product $\\prod_{k=1}^n \\left(1 + \\frac{1}{k}\\right)$ into an imperative code loop. What is the most critical initialization detail?"
+    choices:
+      - id: a
+        text: "The accumulator variable must be initialized to 1, not 0."
+      - id: b
+        text: "The loop must iterate backwards from $n$ to 1."
+        issueSignals:
+          - id: applicationStrategy-error
+      - id: c
+        text: "The accumulator must be initialized to 0."
+        issueSignals:
+          - id: structuralRecognition-error
+      - id: d
+        text: "The inner term must be rounded to an integer."
+        issueSignals:
+          - id: conceptual-misunderstanding
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: structuralRecognition-error
+    difficultyDimensions:
+      - representationTransfer
+      - conceptualUnderstanding
+    difficultyEvidence: "Identifies the multiplicative identity (1) as the required initial state for translating a product operator ($\\prod$)."
+    explanation: |
+      Solution: The accumulator variable must be initialized to 1, not 0.
+      Why it works: A product loop multiplies the running total by the next term (`total = total * term`). If `total` starts at 0, the result will permanently be 0. It must start at the multiplicative identity, which is 1. (Sums start at the additive identity, 0).
+      Why the other choices fail: B is unnecessary; multiplication is commutative so loop direction doesn't matter mathematically. C guarantees a wrong answer of 0. D introduces massive truncation errors, destroying the mathematical formula.
+
+  - id: q002
+    type: multipleChoice
+    prompt: "How is the existential quantifier $\\exists x \\in S, f(x) = 0$ most efficiently translated into a standard imperative programming loop?"
+    choices:
+      - id: a
+        text: "A loop over elements in $S$ that returns `True` immediately if $f(x) == 0$, and returns `False` only after the loop finishes without finding a match."
+      - id: b
+        text: "A loop that counts all occurrences of $f(x) == 0$ and returns `True` if the count is exactly 1."
+        issueSignals:
+          - id: logical-translation-error
+      - id: c
+        text: "A loop that returns `False` immediately if $f(x) \\neq 0$, and `True` if it finishes."
+        issueSignals:
+          - id: logical-translation-error
+      - id: d
+        text: "An infinite while loop that searches for $x$ until it finds one."
+        issueSignals:
+          - id: conceptual-misunderstanding
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: logical-translation-error
+    difficultyDimensions:
+      - representationTransfer
+      - logicalEquivalence
+      - applicationStrategy
+    difficultyEvidence: "Translates an existential logical claim into an efficient short-circuiting code pattern."
+    explanation: |
+      Solution: A loop over elements in $S$ that returns `True` immediately if $f(x) == 0$, and returns `False` only after the loop finishes without finding a match.
+      Why it works: 'There exists' means finding *at least one* example is sufficient. Returning `True` early (short-circuiting) is efficient and mathematically correct. You only know it's false if you exhaust the entire set $S$ without success.
+      Why the other choices fail: B tests for *unique* existence ($\\exists!$), which is a stronger claim than simple existence. C translates the universal quantifier ($\\forall x, f(x) = 0$). D ignores the domain $S$ and risks an infinite loop.
+
+  - id: q003
+    type: multipleChoice
+    prompt: "A mathematical paper defines a sequence recursively: $a_0 = 1, a_n = 2a_{n-1} + 3$. For very large $n$ (e.g., $n = 10^6$), why is a direct translation into a recursive code function a bad idea?"
+    choices:
+      - id: a
+        text: "It will likely cause a stack overflow due to the maximum recursion depth limit of the programming language."
+      - id: b
+        text: "Recursive functions cannot perform addition and multiplication simultaneously."
+        issueSignals:
+          - id: factual-error
+      - id: c
+        text: "The sequence will quickly converge to zero, causing underflow."
+        issueSignals:
+          - id: factual-error
+      - id: d
+        text: "Recursive translations require backwards indexing, which is not supported."
+        issueSignals:
+          - id: conceptual-misunderstanding
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: factual-error
+    difficultyDimensions:
+      - applicationStrategy
+      - conceptualUnderstanding
+    difficultyEvidence: "Recognizes the computational limitation (stack depth) of directly translating mathematical recurrence relations into software recursion."
+    explanation: |
+      Solution: It will likely cause a stack overflow due to the maximum recursion depth limit of the programming language.
+      Why it works: In math, a recurrence relation is just a definition. In code, a recursive function call adds a frame to the call stack. For $n = 10^6$, the stack will exceed its memory limit and crash. It should be translated into an iterative loop instead.
+      Why the other choices fail: B is completely false; code can perform any arithmetic. C is mathematically false; this sequence grows exponentially to infinity, not zero. D is nonsense.
+
+  - id: q004
+    type: multipleChoice
+    prompt: "You are translating a geometry theorem that relies on checking if two calculated distances, $d_1$ and $d_2$, are exactly equal ($d_1 = d_2$). In code, what is the safest way to implement this equality check?"
+    choices:
+      - id: a
+        text: "Use an absolute tolerance check: `abs(d1 - d2) < epsilon`."
+      - id: b
+        text: "Use the standard strict equality operator: `d1 == d2`."
+        issueSignals:
+          - id: applicationStrategy-error
+      - id: c
+        text: "Round both numbers to the nearest integer and check if they are equal."
+        issueSignals:
+          - id: conceptual-misunderstanding
+      - id: d
+        text: "Check if their ratio is exactly 1: `d1 / d2 == 1`."
+        issueSignals:
+          - id: applicationStrategy-error
+    answer:
+      choiceId: a
+    issueSignals:
+      - id: applicationStrategy-error
+    difficultyDimensions:
+      - representationTransfer
+      - applicationStrategy
+    difficultyEvidence: "Identifies floating-point representation limitations when translating pure mathematical equality into practical code."
+    explanation: |
+      Solution: Use an absolute tolerance check: `abs(d1 - d2) < epsilon`.
+      Why it works: Pure mathematics assumes infinite precision. Code uses floating-point numbers which introduce tiny rounding errors during calculations (like square roots for distance). Strict equality (`==`) will often fail even if the math says they should be equal. Tolerance checks absorb these small errors.
+      Why the other choices fail: B risks false negatives due to floating-point rounding errors. C introduces massive truncation errors, making completely different distances look 'equal'. D suffers from the exact same floating-point precision issues as strict equality, plus risks division by zero.

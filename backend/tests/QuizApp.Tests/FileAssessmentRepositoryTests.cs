@@ -941,7 +941,14 @@ public sealed class FileAssessmentRepositoryTests
             .OrderBy(id => id)
             .ToArray();
 
-        Assert.Equal(80, assessmentIds.Length);
+        Assert.Equal(71, assessmentIds.Length);
+        Assert.DoesNotContain("mathematical-literacy-notation-deep-concept-lesson", assessmentIds);
+        Assert.DoesNotContain("mathematical-literacy-notation-recall-advanced", assessmentIds);
+        Assert.DoesNotContain("mathematical-literacy-logic-deep-concept-lesson", assessmentIds);
+        Assert.DoesNotContain("mathematical-literacy-logic-recall-advanced", assessmentIds);
+        Assert.DoesNotContain("mathematical-literacy-proof-forms-and-argument-diagnosis-focused-practice-b", assessmentIds);
+        Assert.DoesNotContain("mathematical-literacy-reading-mathematical-exposition-focused-practice-b", assessmentIds);
+        Assert.DoesNotContain("mathematical-literacy-review-recall-b", assessmentIds);
 
         var repository = new FileAssessmentRepository(
             new FileStorageOptions { DataRoot = dataRoot },
