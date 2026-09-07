@@ -50,7 +50,7 @@ public sealed class AssessmentAuthoringContractAudit
             var effective = assessment.AttemptQuestionCount ?? assessment.Questions.Count;
             if (effective != expected && string.IsNullOrWhiteSpace(metadata.ExceptionReason))
                 Add("NONSTANDARD_ATTEMPT_COUNT", $"{assessment.AssessmentType} attempts must contain {expected} items unless authoring.exceptionReason is approved.", true);
-            EvaluateQuestionMix(profile, metadata.DifficultyTier, assessment, diagnostics);
+            EvaluateQuestionMix(profile, category?.AllowMultipleChoiceHardQuizzes == true, metadata.DifficultyTier, assessment, diagnostics);
             EvaluateQuestionFeedback(assessment, diagnostics, strict);
             if (profile is AuthoringProfile.Stem)
                 EvaluateDifficultyDimensions(metadata.DifficultyTier, assessment, diagnostics, strict);
@@ -153,12 +153,12 @@ public sealed class AssessmentAuthoringContractAudit
             diagnostics.Add(new AuthoringContractDiagnostic("REPEATED_DIFFICULTY_COMBINATION", "More than two items use the same difficulty-dimension combination; vary the assessment's reasoning demands.", false));
     }
 
-    private static void EvaluateQuestionMix(AuthoringProfile profile, AssessmentDifficultyTier tier, AssessmentDefinition assessment, List<AuthoringContractDiagnostic> diagnostics)
+    private static void EvaluateQuestionMix(AuthoringProfile profile, bool allowMultipleChoiceHardQuizzes, AssessmentDifficultyTier tier, AssessmentDefinition assessment, List<AuthoringContractDiagnostic> diagnostics)
     {
         var types = assessment.Questions.Select(question => question.Type);
         if (tier is AssessmentDifficultyTier.Easy && assessment.AssessmentType is AssessmentType.Quiz)
             WarnRatio("EASY_QUIZ_MIX", types, [QuestionType.MultipleChoice], "Easy quizzes should be at least 70% multiple choice.", diagnostics);
-        else if (tier is AssessmentDifficultyTier.Hard && assessment.AssessmentType is AssessmentType.Quiz)
+        else if (tier is AssessmentDifficultyTier.Hard && assessment.AssessmentType is AssessmentType.Quiz && !allowMultipleChoiceHardQuizzes)
             WarnRatio("HARD_QUIZ_MIX", types, profile is AuthoringProfile.Stem ? new[] { QuestionType.SymbolicResponse, QuestionType.FreeResponse } : new[] { QuestionType.Code, QuestionType.FreeResponse }, "Hard quizzes should use the profile's constructive response types at least 70% of the time.", diagnostics);
         else if (assessment.AssessmentType is AssessmentType.Test)
         {

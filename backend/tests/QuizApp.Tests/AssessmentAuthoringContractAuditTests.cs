@@ -8,6 +8,7 @@ public sealed class AssessmentAuthoringContractAuditTests
     private readonly AssessmentAuthoringContractAudit audit = new();
     private static readonly Category Stem = new(1, "physics-1", "Physics", []) { AuthoringProfile = AuthoringProfile.Stem };
     private static readonly Category NonStem = new(1, "python", "Python", []) { AuthoringProfile = AuthoringProfile.NonStem, DirectedProjectEligible = true };
+    private static readonly Category MultipleChoiceHardQuizStem = new(1, "mathematical-literacy", "Mathematical Literacy", []) { AuthoringProfile = AuthoringProfile.Stem, AllowMultipleChoiceHardQuizzes = true };
 
     [Fact]
     public void Stem_easy_quiz_requires_standard_count_and_reports_mix_warning()
@@ -135,6 +136,27 @@ public sealed class AssessmentAuthoringContractAuditTests
 
         Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "INSUFFICIENT_DIFFICULTY_DIMENSIONS" && diagnostic.IsBlocking);
         Assert.Contains(diagnostics, diagnostic => diagnostic.Code == "MISSING_TRANSFER_OBJECTIVE" && diagnostic.IsBlocking);
+    }
+
+    [Fact]
+    public void Category_can_allow_multiple_choice_for_hard_quizzes()
+    {
+        var questions = Enumerable.Range(1, 10).Select(index => EasyQuestion($"q{index:000}") with
+        {
+            DifficultyDimensions = [DifficultyDimension.RepresentationTransfer, DifficultyDimension.ErrorDiagnosis, DifficultyDimension.DomainCondition],
+            DifficultyEvidence = "Interprets the representation, checks its stated domain, and diagnoses a competing reading.",
+            PrerequisiteObjectiveIds = ["ml-notation-02"]
+        }).ToList();
+        var assessment = TestData.Assessment(questions: questions) with
+        {
+            CategoryId = "mathematical-literacy",
+            AttemptQuestionCount = 10,
+            Authoring = new AssessmentAuthoringMetadata(VisualRequirement.NotApplicable, "Interpretation-focused mastery check.", AssessmentDifficultyTier.Hard)
+        };
+
+        var diagnostics = audit.Evaluate(MultipleChoiceHardQuizStem, assessment, strict: true);
+
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Code == "HARD_QUIZ_MIX");
     }
 
     [Fact]

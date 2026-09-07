@@ -147,6 +147,8 @@ public sealed record Category(
 {
     public AuthoringProfile AuthoringProfile { get; init; } = AuthoringProfile.Unknown;
     public bool DirectedProjectEligible { get; init; }
+    /// <summary>Allows a category with interpretation-focused mastery checks to use multiple-choice questions at the hard tier.</summary>
+    public bool AllowMultipleChoiceHardQuizzes { get; init; }
 }
 
 public sealed record SubCategory(string Id, string Title, string? Description = null)

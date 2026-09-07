@@ -16,60 +16,46 @@ guidedProject:
 items: []
 glossary: 
 lesson:
-  introduction: >
-    This lesson develops a repeatable way to solve Coulomb's Law & Superposition problems: identify the physical model, represent directions and signs, calculate, and test the result.
+  introduction: >-
+    How can Coulomb's law for a point charge predict the field of a rod or a disk? Replace the object with small charged pieces, add their vector fields, and take the limit as the pieces become infinitesimal. The integral is the final expression of that construction.
+
+
+    You will build charge elements, resolve their fields, and evaluate rod, ring, and disk integrals. You need definite integrals, simple substitution, and vector components. We assume fixed charges in vacuum, use $k=1/(4\pi\varepsilon_0)$, and evaluate fields away from the idealized charged material. Charge densities are signed; the diagrams illustrate positive charge.
   sections:
   - id: physics2-ch05-coulombs-law-s1
-    title: Name the model and quantities
+    title: Point-charge interaction
     required: true
-    content: >
-      Coulomb's Law & Superposition uses F = k q_1 q_2/r^2. In the name the model and quantities stage, convert charge units, determine attraction or repulsion, then add force vectors component by component.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media:
-    - type: image
-      src: /media/physics2/ch05-relationship-map.svg
-      alt: >
-        Model map for solving Coulomb's Law & Superposition problems.
-      caption: Identify quantities, directions, and a verification check before calculating.
+    content: Start with two signed point charges. The force on $q_2$ due to $q_1$ has magnitude $F=k|q_1q_2|/r^2$ and points along the line joining them. A positive product means repulsion; a negative product means attraction. The scalar magnitude is never a substitute for deciding direction. The signed model is summarized by F = k q_1 q_2/r^2 together with the line-of-centers direction.
+    media: []
     check:
       id: physics2-ch05-coulombs-law-s1-check
       type: multipleChoice
-      prompt: >
-        In the name the model and quantities step for Coulomb's Law & Superposition, what is the most reliable next action?
+      prompt: Two charges $q_1=+2\,\mu\mathrm C$ and $q_2=-3\,\mu\mathrm C$ are separated by $r$. Which direction is the force on $q_2$?
       choices:
       - id: a
-        text: >
-          For name the model and quantities, use F = k q_1 q_2/r^2 after you convert charge units, determine attraction or repulsion, then add force vectors component by component.
+        text: away from $q_1$
+        media: []
+        issueSignals:
+        - id: sign-error
+          domains: []
+      - id: b
+        text: toward $q_1$
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During name the model and quantities, ignore the stated sign, direction, or reference quantity in this Coulomb's Law & Superposition problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-sign-direction-error
-          domains:
-          - physics-2
       - id: c
-        text: >
-          During name the model and quantities, substitute every listed number before deciding which variables F = k q_1 q_2/r^2 relates.
+        text: perpendicular to the line
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-method-selection-error
-          domains:
-          - physics-2
+        - id: vector-component-resolution-error
+          domains: []
       - id: d
-        text: >
-          During name the model and quantities, accept the numerical result without checking whether its units and limiting behavior fit Coulomb's Law & Superposition.
+        text: zero
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-units-error
-          domains:
-          - physics-2
+        - id: scalar-vector-confusion
+          domains: []
       answer:
-        choiceId: a
+        choiceId: b
         choiceIds: []
         expected: 
         gradingMode: 
@@ -82,14 +68,14 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During name the model and quantities for Coulomb's Law & Superposition, first convert charge units, determine attraction or repulsion, then add force vectors component by component. Then apply F = k q_1 q_2/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: Choice B is selected for this prompt about point-charge interaction. Apply the stated signs, coordinates, or scaling to obtain that option.
 
 
-        Why it works: F = k q_1 q_2/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
+        Why it works: Point-charge interaction requires keeping the source and target roles explicit, using the governing electrostatics relation, and checking the resulting vector or units against the condition given.
 
 
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: In this prompt, the competing choices each make a specific error�reversing attraction or repulsion, dropping a component, using the wrong inverse-square factor, or assigning the wrong field/force units�so they do not satisfy the stated setup.
       media: []
       language: 
       functionName: 
@@ -98,64 +84,52 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-coulombs-law
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
-      - errorDiagnosis
+      - representationTransfer
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Coulomb's Law & Superposition model rather than matching symbols alone.
+      difficultyEvidence: 'Point-charge interaction: apply the governing electrostatics relation and verify the prompt-specific direction, scaling, or units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-coulombs-law-s2
-    title: Choose a representation
+    title: Signed vectors, not signed magnitudes
     required: true
-    content: >
-      Coulomb's Law & Superposition uses F = k q_1 q_2/r^2. In the choose a representation stage, convert charge units, determine attraction or repulsion, then add force vectors component by component.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+    content: Write the vector law as $\mathbf F_{12}=kq_1q_2(\mathbf r_2-\mathbf r_1)/|\mathbf r_2-\mathbf r_1|^3$. The signed product controls attraction or repulsion while the displacement supplies direction. Keep source and target labels explicit before substituting.
+    media:
+    - type: image
+      src: /media/physics2/coulomb-model.svg
+      alt: 'Original diagram for Signed vectors, not signed magnitudes: source charges, target point, displacement vectors, and field or force directions.'
+      caption: 
     check:
       id: physics2-ch05-coulombs-law-s2-check
       type: multipleChoice
-      prompt: >
-        In the choose a representation step for Coulomb's Law & Superposition, what is the most reliable next action?
+      prompt: With $q_1<0$, $q_2>0$, and $\mathbf r_2-\mathbf r_1=3\hat{\mathbf x}$, what is the direction of $\mathbf F_{12}$?
       choices:
       - id: a
-        text: >
-          For choose a representation, use F = k q_1 q_2/r^2 after you convert charge units, determine attraction or repulsion, then add force vectors component by component.
+        text: $+\hat{\mathbf x}$
+        media: []
+        issueSignals:
+        - id: mathematical-translation-error
+          domains: []
+      - id: b
+        text: $-\hat{\mathbf x}$
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During choose a representation, ignore the stated sign, direction, or reference quantity in this Coulomb's Law & Superposition problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-sign-direction-error
-          domains:
-          - physics-2
       - id: c
-        text: >
-          During choose a representation, substitute every listed number before deciding which variables F = k q_1 q_2/r^2 relates.
+        text: $+\hat{\mathbf y}$
         media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-method-selection-error
-          domains:
-          - physics-2
+        issueSignals: []
       - id: d
-        text: >
-          During choose a representation, accept the numerical result without checking whether its units and limiting behavior fit Coulomb's Law & Superposition.
+        text: direction cannot be determined
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-units-error
-          domains:
-          - physics-2
+        - id: algebraic-simplification-error
+          domains: []
       answer:
-        choiceId: a
+        choiceId: b
         choiceIds: []
         expected: 
         gradingMode: 
@@ -168,14 +142,14 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During choose a representation for Coulomb's Law & Superposition, first convert charge units, determine attraction or repulsion, then add force vectors component by component. Then apply F = k q_1 q_2/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: Choice B is selected for this prompt about signed vectors, not signed magnitudes. Apply the stated signs, coordinates, or scaling to obtain that option.
 
 
-        Why it works: F = k q_1 q_2/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
+        Why it works: Signed vectors, not signed magnitudes requires keeping the source and target roles explicit, using the governing electrostatics relation, and checking the resulting vector or units against the condition given.
 
 
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: In this prompt, the competing choices each make a specific error�reversing attraction or repulsion, dropping a component, using the wrong inverse-square factor, or assigning the wrong field/force units�so they do not satisfy the stated setup.
       media: []
       language: 
       functionName: 
@@ -184,64 +158,48 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-coulombs-law
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
-      - errorDiagnosis
+      - representationTransfer
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Coulomb's Law & Superposition model rather than matching symbols alone.
+      difficultyEvidence: 'Signed vectors, not signed magnitudes: apply the governing electrostatics relation and verify the prompt-specific direction, scaling, or units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-coulombs-law-s3
-    title: Set up the calculation
+    title: Inverse-square scaling
     required: true
-    content: >
-      Coulomb's Law & Superposition uses F = k q_1 q_2/r^2. In the set up the calculation stage, convert charge units, determine attraction or repulsion, then add force vectors component by component.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
+    content: Holding charges fixed, doubling separation changes force by $(1/2)^2$, so $F$ becomes one-fourth. This is a geometric dilution law, not a linear proportionality. Check the exponent before calculating.
     media: []
     check:
       id: physics2-ch05-coulombs-law-s3-check
       type: multipleChoice
-      prompt: >
-        In the set up the calculation step for Coulomb's Law & Superposition, what is the most reliable next action?
+      prompt: If $r$ changes from $r$ to $3r$ with charges unchanged, how does $|F|$ change?
       choices:
       - id: a
-        text: >
-          For set up the calculation, use F = k q_1 q_2/r^2 after you convert charge units, determine attraction or repulsion, then add force vectors component by component.
+        text: It triples
         media: []
         issueSignals: []
       - id: b
-        text: >
-          During set up the calculation, ignore the stated sign, direction, or reference quantity in this Coulomb's Law & Superposition problem.
+        text: It becomes one-third
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-sign-direction-error
-          domains:
-          - physics-2
+        - id: vector-component-resolution-error
+          domains: []
       - id: c
-        text: >
-          During set up the calculation, substitute every listed number before deciding which variables F = k q_1 q_2/r^2 relates.
+        text: It becomes one-ninth
         media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-method-selection-error
-          domains:
-          - physics-2
+        issueSignals: []
       - id: d
-        text: >
-          During set up the calculation, accept the numerical result without checking whether its units and limiting behavior fit Coulomb's Law & Superposition.
+        text: It becomes nine times larger
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-units-error
-          domains:
-          - physics-2
+        - id: scalar-vector-confusion
+          domains: []
       answer:
-        choiceId: a
+        choiceId: c
         choiceIds: []
         expected: 
         gradingMode: 
@@ -254,14 +212,14 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During set up the calculation for Coulomb's Law & Superposition, first convert charge units, determine attraction or repulsion, then add force vectors component by component. Then apply F = k q_1 q_2/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: Choice C is selected for this prompt about inverse-square scaling. Apply the stated signs, coordinates, or scaling to obtain that option.
 
 
-        Why it works: F = k q_1 q_2/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
+        Why it works: Inverse-square scaling requires keeping the source and target roles explicit, using the governing electrostatics relation, and checking the resulting vector or units against the condition given.
 
 
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: In this prompt, the competing choices each make a specific error�reversing attraction or repulsion, dropping a component, using the wrong inverse-square factor, or assigning the wrong field/force units�so they do not satisfy the stated setup.
       media: []
       language: 
       functionName: 
@@ -270,69 +228,52 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-coulombs-law
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
-      - errorDiagnosis
+      - representationTransfer
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Coulomb's Law & Superposition model rather than matching symbols alone.
+      difficultyEvidence: 'Inverse-square scaling: apply the governing electrostatics relation and verify the prompt-specific direction, scaling, or units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-coulombs-law-s4
-    title: Work a representative case
+    title: Superposition of several charges
     required: true
-    content: >
-      Coulomb's Law & Superposition uses F = k q_1 q_2/r^2. In the work a representative case stage, convert charge units, determine attraction or repulsion, then add force vectors component by component.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-
-
-      Example: for $q_1=+2.0\,\mu\mathrm{C}$, $q_2=-3.0\,\mu\mathrm{C}$, and $r=0.20\,\mathrm{m}$, the magnitude is
-
-      $F=(8.99\times10^9)(2.0\times10^{-6})(3.0\times10^{-6})/(0.20)^2=1.35\,\mathrm{N}$. Opposite signs make the force attractive. For several charges, calculate each force on the target charge and add their $x$ and $y$ components before finding a magnitude.
-    media: []
+    content: 'For several source charges, calculate each vector force at the same target and add components: $\mathbf F=\sum_i\mathbf F_i$. Do not add magnitudes unless all forces are collinear and same direction.'
+    media:
+    - type: image
+      src: /media/physics2/coulomb-model.svg
+      alt: 'Original diagram for Superposition of several charges: source charges, target point, displacement vectors, and field or force directions.'
+      caption: 
     check:
       id: physics2-ch05-coulombs-law-s4-check
       type: multipleChoice
-      prompt: >
-        In the work a representative case step for Coulomb's Law & Superposition, what is the most reliable next action?
+      prompt: Two equal positive charges are symmetrically placed left and right of a target on the y-axis. Their net force points
       choices:
       - id: a
-        text: >
-          For work a representative case, use F = k q_1 q_2/r^2 after you convert charge units, determine attraction or repulsion, then add force vectors component by component.
+        text: left
+        media: []
+        issueSignals:
+        - id: integration-bounds-error
+          domains: []
+      - id: b
+        text: right
+        media: []
+        issueSignals:
+        - id: integration-bounds-error
+          domains: []
+      - id: c
+        text: up or down along the symmetry axis
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During work a representative case, ignore the stated sign, direction, or reference quantity in this Coulomb's Law & Superposition problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During work a representative case, substitute every listed number before deciding which variables F = k q_1 q_2/r^2 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-method-selection-error
-          domains:
-          - physics-2
       - id: d
-        text: >
-          During work a representative case, accept the numerical result without checking whether its units and limiting behavior fit Coulomb's Law & Superposition.
+        text: zero because each force is nonzero
         media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-units-error
-          domains:
-          - physics-2
+        issueSignals: []
       answer:
-        choiceId: a
+        choiceId: c
         choiceIds: []
         expected: 
         gradingMode: 
@@ -345,14 +286,14 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During work a representative case for Coulomb's Law & Superposition, first convert charge units, determine attraction or repulsion, then add force vectors component by component. Then apply F = k q_1 q_2/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: Choice C is selected for this prompt about superposition of several charges. Apply the stated signs, coordinates, or scaling to obtain that option.
 
 
-        Why it works: F = k q_1 q_2/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
+        Why it works: Superposition of several charges requires keeping the source and target roles explicit, using the governing electrostatics relation, and checking the resulting vector or units against the condition given.
 
 
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: In this prompt, the competing choices each make a specific error�reversing attraction or repulsion, dropping a component, using the wrong inverse-square factor, or assigning the wrong field/force units�so they do not satisfy the stated setup.
       media: []
       language: 
       functionName: 
@@ -361,64 +302,52 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-coulombs-law
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
-      - errorDiagnosis
+      - representationTransfer
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Coulomb's Law & Superposition model rather than matching symbols alone.
+      difficultyEvidence: 'Superposition of several charges: apply the governing electrostatics relation and verify the prompt-specific direction, scaling, or units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-coulombs-law-s5
-    title: Use calculus or a rate law
+    title: Coordinate components
     required: true
-    content: >
-      Coulomb's Law & Superposition uses F = k q_1 q_2/r^2. In the use calculus or a rate law stage, convert charge units, determine attraction or repulsion, then add force vectors component by component.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+    content: For a source at $(x_s,y_s)$ and target $(x_t,y_t)$, form $\Delta x=x_t-x_s$, $\Delta y=y_t-y_s$, then divide the displacement vector by $r^3$. This prevents mixing a distance with a component.
+    media:
+    - type: image
+      src: /media/physics2/coulomb-model.svg
+      alt: 'Original diagram for Coordinate components: source charges, target point, displacement vectors, and field or force directions.'
+      caption: 
     check:
       id: physics2-ch05-coulombs-law-s5-check
       type: multipleChoice
-      prompt: >
-        In the use calculus or a rate law step for Coulomb's Law & Superposition, what is the most reliable next action?
+      prompt: A source at $(1,2)$ acts on a target at $(4,6)$. What is the displacement used in the numerator?
       choices:
       - id: a
-        text: >
-          For use calculus or a rate law, use F = k q_1 q_2/r^2 after you convert charge units, determine attraction or repulsion, then add force vectors component by component.
+        text: $(1,2)$
+        media: []
+        issueSignals:
+        - id: vector-component-resolution-error
+          domains: []
+      - id: b
+        text: $(4,6)$
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During use calculus or a rate law, ignore the stated sign, direction, or reference quantity in this Coulomb's Law & Superposition problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-sign-direction-error
-          domains:
-          - physics-2
       - id: c
-        text: >
-          During use calculus or a rate law, substitute every listed number before deciding which variables F = k q_1 q_2/r^2 relates.
+        text: $(3,4)$
         media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-method-selection-error
-          domains:
-          - physics-2
+        issueSignals: []
       - id: d
-        text: >
-          During use calculus or a rate law, accept the numerical result without checking whether its units and limiting behavior fit Coulomb's Law & Superposition.
+        text: $(5,8)$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-units-error
-          domains:
-          - physics-2
+        - id: vector-field-interpretation-error
+          domains: []
       answer:
-        choiceId: a
+        choiceId: c
         choiceIds: []
         expected: 
         gradingMode: 
@@ -431,14 +360,14 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During use calculus or a rate law for Coulomb's Law & Superposition, first convert charge units, determine attraction or repulsion, then add force vectors component by component. Then apply F = k q_1 q_2/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: Choice C is selected for this prompt about coordinate components. Apply the stated signs, coordinates, or scaling to obtain that option.
 
 
-        Why it works: F = k q_1 q_2/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
+        Why it works: Coordinate components requires keeping the source and target roles explicit, using the governing electrostatics relation, and checking the resulting vector or units against the condition given.
 
 
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: In this prompt, the competing choices each make a specific error�reversing attraction or repulsion, dropping a component, using the wrong inverse-square factor, or assigning the wrong field/force units�so they do not satisfy the stated setup.
       media: []
       language: 
       functionName: 
@@ -447,64 +376,48 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-coulombs-law
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
-      - errorDiagnosis
+      - representationTransfer
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Coulomb's Law & Superposition model rather than matching symbols alone.
+      difficultyEvidence: 'Coordinate components: apply the governing electrostatics relation and verify the prompt-specific direction, scaling, or units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-coulombs-law-s6
-    title: Check direction, units, and limits
+    title: Units and Coulomb constant
     required: true
-    content: >
-      Coulomb's Law & Superposition uses F = k q_1 q_2/r^2. In the check direction, units, and limits stage, convert charge units, determine attraction or repulsion, then add force vectors component by component.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
+    content: Since $k$ has units $\mathrm{N\,m^2/C^2}$, $kq_1q_2/r^2$ has units newtons. Convert microcoulombs before numerical work and retain the factor $10^{-6}$ for each charge.
     media: []
     check:
       id: physics2-ch05-coulombs-law-s6-check
       type: multipleChoice
-      prompt: >
-        In the check direction, units, and limits step for Coulomb's Law & Superposition, what is the most reliable next action?
+      prompt: Which unit check is correct for $kq_1q_2/r^2$?
       choices:
       - id: a
-        text: >
-          For check direction, units, and limits, use F = k q_1 q_2/r^2 after you convert charge units, determine attraction or repulsion, then add force vectors component by component.
+        text: C
         media: []
         issueSignals: []
       - id: b
-        text: >
-          During check direction, units, and limits, ignore the stated sign, direction, or reference quantity in this Coulomb's Law & Superposition problem.
+        text: N
         media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-sign-direction-error
-          domains:
-          - physics-2
+        issueSignals: []
       - id: c
-        text: >
-          During check direction, units, and limits, substitute every listed number before deciding which variables F = k q_1 q_2/r^2 relates.
+        text: N/C
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-method-selection-error
-          domains:
-          - physics-2
+        - id: integration-bounds-error
+          domains: []
       - id: d
-        text: >
-          During check direction, units, and limits, accept the numerical result without checking whether its units and limiting behavior fit Coulomb's Law & Superposition.
+        text: N m
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-units-error
-          domains:
-          - physics-2
+        - id: sign-error
+          domains: []
       answer:
-        choiceId: a
+        choiceId: b
         choiceIds: []
         expected: 
         gradingMode: 
@@ -517,14 +430,14 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During check direction, units, and limits for Coulomb's Law & Superposition, first convert charge units, determine attraction or repulsion, then add force vectors component by component. Then apply F = k q_1 q_2/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: Choice B is selected for this prompt about units and coulomb constant. Apply the stated signs, coordinates, or scaling to obtain that option.
 
 
-        Why it works: F = k q_1 q_2/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
+        Why it works: Units and Coulomb constant requires keeping the source and target roles explicit, using the governing electrostatics relation, and checking the resulting vector or units against the condition given.
 
 
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: In this prompt, the competing choices each make a specific error�reversing attraction or repulsion, dropping a component, using the wrong inverse-square factor, or assigning the wrong field/force units�so they do not satisfy the stated setup.
       media: []
       language: 
       functionName: 
@@ -533,64 +446,52 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-coulombs-law
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
-      - errorDiagnosis
+      - representationTransfer
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Coulomb's Law & Superposition model rather than matching symbols alone.
+      difficultyEvidence: 'Units and Coulomb constant: apply the governing electrostatics relation and verify the prompt-specific direction, scaling, or units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-coulombs-law-s7
-    title: Transfer the method to a new situation
+    title: Limits and model validity
     required: true
-    content: >
-      Coulomb's Law & Superposition uses F = k q_1 q_2/r^2. In the transfer the method to a new situation stage, convert charge units, determine attraction or repulsion, then add force vectors component by component.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+    content: As $r	o\infty$, a point-charge force tends to zero like $1/r^2$. As $r	o0$ the ideal model diverges; finite-size structure then matters. A limit check can expose a missing square or wrong sign.
+    media:
+    - type: image
+      src: /media/physics2/coulomb-model.svg
+      alt: 'Original diagram for Limits and model validity: source charges, target point, displacement vectors, and field or force directions.'
+      caption: 
     check:
       id: physics2-ch05-coulombs-law-s7-check
       type: multipleChoice
-      prompt: >
-        In the transfer the method to a new situation step for Coulomb's Law & Superposition, what is the most reliable next action?
+      prompt: Which behavior is consistent with Coulomb’s law for fixed nonzero charges?
       choices:
       - id: a
-        text: >
-          For transfer the method to a new situation, use F = k q_1 q_2/r^2 after you convert charge units, determine attraction or repulsion, then add force vectors component by component.
+        text: Force grows linearly with distance
+        media: []
+        issueSignals:
+        - id: vector-field-interpretation-error
+          domains: []
+      - id: b
+        text: Force approaches zero as distance grows
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During transfer the method to a new situation, ignore the stated sign, direction, or reference quantity in this Coulomb's Law & Superposition problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-sign-direction-error
-          domains:
-          - physics-2
       - id: c
-        text: >
-          During transfer the method to a new situation, substitute every listed number before deciding which variables F = k q_1 q_2/r^2 relates.
+        text: Force is independent of distance
         media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-method-selection-error
-          domains:
-          - physics-2
+        issueSignals: []
       - id: d
-        text: >
-          During transfer the method to a new situation, accept the numerical result without checking whether its units and limiting behavior fit Coulomb's Law & Superposition.
+        text: Force changes sign when only distance changes
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-coulombs-law-units-error
-          domains:
-          - physics-2
+        - id: mathematical-translation-error
+          domains: []
       answer:
-        choiceId: a
+        choiceId: b
         choiceIds: []
         expected: 
         gradingMode: 
@@ -603,14 +504,14 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During transfer the method to a new situation for Coulomb's Law & Superposition, first convert charge units, determine attraction or repulsion, then add force vectors component by component. Then apply F = k q_1 q_2/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: Choice B is selected for this prompt about limits and model validity. Apply the stated signs, coordinates, or scaling to obtain that option.
 
 
-        Why it works: F = k q_1 q_2/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
+        Why it works: Limits and model validity requires keeping the source and target roles explicit, using the governing electrostatics relation, and checking the resulting vector or units against the condition given.
 
 
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: In this prompt, the competing choices each make a specific error�reversing attraction or repulsion, dropping a component, using the wrong inverse-square factor, or assigning the wrong field/force units�so they do not satisfy the stated setup.
       media: []
       language: 
       functionName: 
@@ -619,14 +520,12 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-coulombs-law
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
-      - errorDiagnosis
+      - representationTransfer
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Coulomb's Law & Superposition model rather than matching symbols alone.
+      difficultyEvidence: 'Limits and model validity: apply the governing electrostatics relation and verify the prompt-specific direction, scaling, or units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
@@ -644,12 +543,14 @@ navigation:
   - s2c-reviewed
 skills:
 - apply-newtons-second-law
+- coulombs-law
 - evaluate-limits
-- physics2-ch05-modeling
-- physics2-electric-charges-fields
+- inverse-square-law
+- unit-analysis
+- vector-superposition
 authoring:
   visualRequirement: required
-  visualRationale: An original relationship map supports the model, direction, and units used in this Physics 2 learning activity.
+  visualRationale: Original diagrams show source and observation coordinates, displacement vectors, and component directions.
   difficultyTier: unspecified
   exceptionReason: 
   physicsModel: 

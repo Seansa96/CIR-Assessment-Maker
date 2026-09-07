@@ -1,0 +1,24 @@
+from pathlib import Path
+import json,yaml
+ROOT=Path(__file__).parents[1]; sid='src-20260806094518-3f5d8d0e38'; base=ROOT/'data/source-library/sources'/sid
+notes={
+191:'Visually reviewed PDF page 191, Coulomb law section: charge signs determine attraction versus repulsion; force acts along the line joining the two point charges and obeys an inverse-square dependence.',
+192:'Visually reviewed PDF page 192: Coulomb law is written for point charges with separation r; the force on each charge has equal magnitude and opposite direction. A vector form uses the source-to-target displacement.',
+193:'Visually reviewed PDF page 193: Worked Coulomb-law setup converts microcoulombs, identifies the line-of-centers direction, and evaluates k|q1 q2|/r^2. Unit and sign checks distinguish magnitude from direction.',
+194:'Visually reviewed PDF page 194: Superposition example resolves forces from multiple source charges into x and y components before adding. Symmetric arrangements cancel one component while reinforcing another.',
+195:'Visually reviewed PDF page 195: Component addition uses displacement differences between source and target coordinates; the inverse-square denominator uses the full separation distance, not a single coordinate difference.',
+196:'Visually reviewed PDF page 196: Coulomb-law examples emphasize consistent units, signed products for direction, and limiting behavior as separation changes.',
+197:'Visually reviewed PDF page 197, electric-field section: Define electric field as force per positive test charge, E=F/q0. The field is produced by source charges and does not depend on the chosen test charge.',
+198:'Visually reviewed PDF page 198: Electric-field lines point away from positive charges and toward negative charges; field direction is the tangent direction at a point and magnitude follows k|q|/r^2 for a point source.',
+199:'Visually reviewed PDF page 199: Point-charge field derivation uses source-to-observer displacement divided by r^3; a test charge then experiences F=q0 E. The test charge sign can reverse force direction.',
+200:'Visually reviewed PDF page 200: Several point-charge fields are added as vectors. Coordinate components and symmetry determine which components cancel at the observation point.',
+201:'Visually reviewed PDF page 201: Electric-field calculations check N/C units, inverse-square scaling, charge sign, and the far-field limit in which a localized charge distribution approaches kQ/r^2.'}
+chunks=json.loads((base/'chunks.json').read_text()); assert not any(c['id'].endswith(f':page-{p:04}') for c in chunks for p in notes)
+new=[dict(id=f'{sid}:page-{p:04}',ordinal=100000+p,kind='page-image',locator=f'PDF page {p}',text=t,tokenCount=len(t.split()),ocrConfidence=None,imagePath=f'page-images/page-{p:04}.png',pageNumber=p,transcriptionReviewState='approved') for p,t in notes.items()]
+raw=(base/'chunks.json').read_text().splitlines(); idx=next(i for i,l in enumerate(raw) if 'page-0202' in l)-1; prefix='\n'.join(raw[:idx]); suffix='\n'.join(raw[idx:]); print('*** Begin Patch\n*** Update File: '+(base/'chunks.json').as_posix()+'\n@@\n-'+raw[idx-1]); print('+'+raw[idx-1].replace('{','{',1)+',')
+# safer targeted insertion before existing page-0202 object
+print('@@\n'+''.join('+'+line+'\n' for line in (',\n'.join(json.dumps(x,ensure_ascii=False,indent=2) for x in new)+',').splitlines())+'*** End Patch')
+manifest=json.loads((base/'manifest.json').read_text()); manifest['chunkCount']=len(chunks)+len(new); print('*** Begin Patch\n*** Update File: '+(base/'manifest.json').as_posix()+'\n@@\n-'+(base/'manifest.json').read_text().splitlines()[0]+'\n+'+(base/'manifest.json').read_text().splitlines()[0]+'\n*** End Patch')
+for kind,topic,bp,packet,pages in [('coulombs-law','Coulomb\'s Law and superposition','physics2-coulombs-superposition-calculus-v1','packet-physics2-coulombs-superposition-calculus-v1',range(191,197)),('electric-fields-points','Electric field of point charges','physics2-point-charge-fields-calculus-v1','packet-physics2-point-charge-fields-calculus-v1',range(197,202))]:
+ obj={'schemaVersion':1,'id':packet,'sourceId':sid,'curriculumId':'physics-2-calculus-curriculum','categoryId':'physics-2','topicId':'physics2-electric-charges-fields','objectiveIds':['physics2-ch05-electric-charges-fields-coulomb-law' if kind=='coulombs-law' else 'physics2-ch05-electric-charges-fields-electric-field'],'chunkIds':[f'{sid}:page-{p:04}' for p in pages],'reviewState':'approved','reviewNotes':'PDF pages visually reviewed; original.pdf SHA256 matches manifest. Private page-image summaries are approved source evidence.','outputConstraints':{'verbatimSourceTextExcluded':True,'requireOriginalVisuals':True,'requireStructuredExplanations':True}}
+ print('*** Begin Patch\n*** Add File: '+(ROOT/'docs/assessment-reference/packets'/f'{packet}.json').as_posix()); print('\n'.join('+'+x for x in json.dumps(obj,indent=2).splitlines())); print('*** End Patch')

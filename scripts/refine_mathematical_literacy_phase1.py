@@ -349,6 +349,277 @@ def replace_duplicate_mastery_checks(data_by_id: dict):
                 ('a', 'The definition of even supplies an integer k with n=2k.'), ('b', 'Every integer has the form 2k.'), ('c', 'The converse of the even-number definition.'), ('d', 'A numerical example alone.'),
             ], 'a', 'divisor-definition-misread', 'A definition licenses replacing a named property with its stated structural form.'),
         ]
+
+
+# Phase 2 turns the provenance-complete definitions into the required learner-facing
+# sequence.  These are deliberately short retrieval prompts: none asks the learner
+# to solve a new multi-step problem.
+RECALL_FACTS = {
+    'mathematical-notation-and-structure': [
+        ('What relation symbol says that every element of the left set is in the right set?', 'subseteq', 'the subset relation'),
+        ('In $f:A\\to B$, what does A name?', 'the domain', 'domain'),
+        ('What punctuation preserves a nested Cartesian-product grouping?', 'parentheses', 'parentheses'),
+        ('Which reading matches $x\\in\\mathbb Z$?', 'x is an integer', 'x is an integer'),
+        ('Recognition: Which expression is set-builder notation?', '$\\{x\\in\\mathbb Z:x>0\\}$', 'set-builder notation'),
+        ('Recognition: Which claim keeps the braces in $\\{2\\}\\in\\{1,\\{2\\}\\}$?', '$\\{2\\}$ is an element of the set', 'the braced object is an element'),
+    ],
+    'mathematical-statements-and-logic': [
+        ('What two directed parts make up “if P, then Q”?', 'the hypothesis and conclusion', 'hypothesis and conclusion'),
+        ('What is a sentence with an unbound variable called?', 'an open sentence', 'open sentence'),
+        ('What does a quantifier do to a variable?', 'binds the variable', 'binds the variable'),
+        ('What truth status does a fully specified declarative statement have?', 'a definite truth value', 'a definite truth value'),
+        ('Recognition: Which is a statement?', 'Every integer is either even or odd.', 'a complete quantified declarative claim'),
+        ('Recognition: Which operation makes the converse of “if P then Q”?', 'Swap P and Q.', 'swap the hypothesis and conclusion'),
+    ],
+    'quantifiers-negation-and-mathematical-translation': [
+        ('What quantifier replaces “for every” when it is negated?', 'there exists', 'there exists'),
+        ('When negating a quantified claim, what happens to the predicate?', 'it is negated', 'the predicate is negated'),
+        ('What must remain fixed when translating a quantified statement?', 'its domain and scope', 'domain and scope'),
+        ('What is one counterexample enough to refute?', 'a universal claim', 'a universal claim'),
+        ('Recognition: Which phrase begins the negation of “Every integer is even”?', 'There exists an integer', 'an existential counterexample'),
+        ('Recognition: Which translation preserves “if P, then Q”?', 'P is sufficient for Q.', 'the original conditional direction'),
+    ],
+    'definitions-theorems-and-examples': [
+        ('What does a definition fix?', 'the meaning of a term', 'the meaning of a term'),
+        ('What must be checked before applying a theorem?', 'its hypotheses', 'the theorem hypotheses'),
+        ('What can a single example do?', 'illustrate a definition', 'illustrate a definition'),
+        ('What status does one valid counterexample establish for a proposed universal statement?', 'the universal statement is false', 'the failed universal statement'),
+        ('Recognition: Which role supplies the exact meaning of “even”?', 'A definition.', 'a definition'),
+        ('Recognition: Which role gives a conclusion only after conditions hold?', 'A theorem.', 'a theorem'),
+    ],
+    'theorem-reading-and-application': [
+        ('What condition licenses a theorem conclusion?', 'all of its hypotheses', 'all stated hypotheses'),
+        ('What is the conclusion of a conditional theorem?', 'the claim after then', 'the consequent'),
+        ('What must not be inferred from a theorem alone?', 'its converse', 'the converse'),
+        ('What is a counterexample used to test?', 'a universal assertion', 'a universal assertion'),
+        ('Recognition: What comes first in a valid theorem application?', 'Verify the hypotheses.', 'hypothesis verification'),
+        ('Recognition: If H implies C, what is not automatically warranted?', 'C implies H.', 'the converse'),
+    ],
+    'reading-proofs-and-exposition': [
+        ('What can justify a local proof step?', 'a definition, hypothesis, or earlier result', 'a cited definition, hypothesis, or earlier result'),
+        ('What proof form proves “if P then Q” by showing “if not Q then not P”?', 'contrapositive proof', 'contrapositive proof'),
+        ('What must a proof reader trace for each assertion?', 'its justification', 'a justification'),
+        ('What does “therefore” require in a proof?', 'a warranted inference', 'a warranted inference'),
+        ('Recognition: Which source can license substituting $n=2k$ after assuming n is even?', 'The definition of even.', 'the definition'),
+        ('Recognition: Which claim is equivalent to “if P then Q”?', 'If not Q, then not P.', 'the contrapositive'),
+    ],
+    'proof-forms-and-argument-diagnosis': [
+        ('What is formed by reversing hypothesis and conclusion?', 'the converse', 'the converse'),
+        ('What is formed by negating and reversing a conditional?', 'the contrapositive', 'the contrapositive'),
+        ('What is enough to disprove a universal statement?', 'one counterexample', 'one counterexample'),
+        ('What must a direct proof connect to its conclusion?', 'the stated hypothesis', 'the stated hypothesis'),
+        ('Recognition: Which is the converse of “if P then Q”?', 'If Q, then P.', 'the converse'),
+        ('Recognition: Which is a valid response to an unsupported step?', 'Ask for the missing justification.', 'the missing justification'),
+    ],
+    'reading-mathematical-exposition': [
+        ('What role fixes terminology in an exposition?', 'a definition', 'a definition'),
+        ('What role supplies an assumption for an argument?', 'a hypothesis', 'a hypothesis'),
+        ('What role illustrates a term without proving every case?', 'an example', 'an example'),
+        ('What should connect a conclusion to earlier text?', 'a stated justification', 'a stated justification'),
+        ('Recognition: Which sentence is a theorem application?', 'Since the hypotheses hold, the theorem gives the conclusion.', 'a conditional theorem use'),
+        ('Recognition: Which role does not itself prove a universal result?', 'An example.', 'an example'),
+    ],
+    'mathematical-literacy-cumulative-review': [
+        ('What does a domain restriction tell you?', 'which objects are allowed', 'the permitted objects'),
+        ('What must be checked before citing a theorem?', 'all its hypotheses', 'all hypotheses'),
+        ('What is the negation partner of “for every”?', 'there exists', 'there exists'),
+        ('What must every proof step have?', 'a justification', 'a justification'),
+        ('Recognition: Which reading preserves $B\\subseteq A$?', 'Every element of B belongs to A.', 'subset direction'),
+        ('Recognition: Which move diagnoses a claim correctly?', 'Check its conditions before accepting its conclusion.', 'condition checking'),
+    ],
+}
+
+
+def phase2_recall_and_lesson_checks(data_by_id: dict):
+    """Materialize retrieval/recognition mix and section-specific lesson checks."""
+    for data in data_by_id.values():
+        topic = data.get('topicId')
+        if data.get('assessmentType') == 'recallDrill' and topic in RECALL_FACTS:
+            items = []
+            for index, (prompt, expected, why) in enumerate(RECALL_FACTS[topic], 1):
+                item_id = f'r{index:03d}'
+                if prompt.startswith('Recognition:'):
+                    stem = prompt.replace('Recognition: ', '')
+                    # The alternatives deliberately encode the local reading error.
+                    choices = [
+                        {'id': 'a', 'text': expected},
+                        {'id': 'b', 'text': 'A related term with the direction or role changed.', 'issueSignals': [{'id': 'mathematical-role-confusion'}]},
+                        {'id': 'c', 'text': 'A numerical example rather than the requested reading.', 'issueSignals': [{'id': 'mathematical-structure-recognition-error'}]},
+                        {'id': 'd', 'text': 'An unrelated proof label.', 'issueSignals': [{'id': 'proofStructure-error'}]},
+                    ]
+                    items.append({'id': item_id, 'type': 'recognition', 'prompt': stem,
+                                  'choices': choices, 'answer': {'choiceId': 'a'},
+                                  'issueSignals': [{'id': 'mathematical-structure-recognition-error'}],
+                                  'explanation': f'Solution: {expected}.\nWhy it works: This is the requested retrieval fact about {why}.\nWhy the other choices fail: They change the requested relation, substitute an example for a term, or name an unrelated proof role.'})
+                else:
+                    items.append({'id': item_id, 'type': 'typed' if index != 3 else 'cloze', 'prompt': prompt,
+                                  'answer': {'expected': expected, 'aliases': [expected]},
+                                  'explanation': f'Solution: {expected}.\nWhy it works: The source reading convention identifies {why} without requiring a new calculation.'})
+            data['items'] = items
+        if data.get('assessmentType') == 'conceptLesson':
+            sections = (data.get('lesson') or {}).get('sections', [])
+            # Split dense four-part legacy lessons into seven teach/check actions while
+            # retaining their original source-grounded prose.
+            extensions = [
+                ('Mark the object', 'First identify whether the line names a set, expression, statement, definition, theorem, or proof step.'),
+                ('Preserve the condition', 'Copy the domain, hypothesis, or stated restriction before interpreting what follows from it.'),
+                ('Track direction', 'For a conditional, mark what is assumed and what is concluded; do not silently reverse the arrow.'),
+            ]
+            while len(sections) < 7:
+                title, content = extensions[len(sections) - 4]
+                sections.append({'id': f'phase2-reading-action-{len(sections)+1}', 'title': title, 'content': content})
+            for offset, (title, content) in enumerate(extensions, 4):
+                sections[offset]['title'] = title
+                sections[offset]['content'] = content
+            checks = [
+                ('Which reading move comes first?', 'Identify the mathematical object being named.', 'Treat every symbol as a numerical answer.', 'Discard the declared domain.', 'Use the title as a proof.'),
+                ('What should remain visible while interpreting this section?', 'The stated condition or restriction.', 'Only a familiar example.', 'A reversed relation.', 'An unstated convention.'),
+                ('How should a conditional be read?', 'From its hypothesis to its conclusion.', 'From conclusion back to hypothesis.', 'As two automatically equivalent claims.', 'As a set membership statement.'),
+                ('What makes a local mathematical claim usable?', 'A definition, hypothesis, or result that licenses it.', 'Its position at the end of a paragraph.', 'A convenient numerical case.', 'The fact that it sounds plausible.'),
+                ('What must a reader name before applying a rule?', 'The object and condition to which the rule applies.', 'Only the desired conclusion.', 'A different object with a similar name.', 'A counterexample to another claim.'),
+                ('What must not be changed during a translation?', 'The scope and logical direction of the original.', 'The domain whenever notation is compact.', 'A theorem into a definition.', 'An example into a universal result.'),
+                ('What should be checked before accepting a final conclusion?', 'That each required condition and inference has been established.', 'That the conclusion has been restated twice.', 'That the symbols have been simplified.', 'That a label appears beside the line.'),
+            ]
+            for index, section in enumerate(sections, 1):
+                stem, correct, b, c, d = checks[index - 1]
+                section['check'] = multiple_choice(
+                    f'check-{index:03d}', f'{stem} ({section.get("title", "section")})',
+                    [('a', correct), ('b', b), ('c', c), ('d', d)], 'a',
+                    'mathematical-structure-recognition-error',
+                    f'This section’s reading action is to {correct[0].lower() + correct[1:]}'
+                )
+
+
+def add_phase2_test(data_by_id: dict, assessment_id: str, title: str, prompts: list[tuple[str, str, str]]):
+    questions = []
+    for index, (prompt, key, reason) in enumerate(prompts, 1):
+        questions.append({
+            'id': f'q{index:03d}', 'type': 'freeResponse', 'prompt': prompt,
+            'instruction': 'Give the requested reading judgment and name the condition, definition, or inference that licenses it.',
+            'answer': {'gradingMode': 'selfCheck', 'keyPoints': [key]},
+            'issueSignals': [{'id': 'mathematical-structure-recognition-error'}],
+            'difficultyDimensions': ['representationTransfer', 'conditionChecking', 'argumentMapping'],
+            'prerequisiteObjectiveIds': ['ml-notation', 'ml-logic'],
+            'extensionObjectiveIds': ['ml-review'],
+            'difficultyEvidence': 'Requires transferring a reading convention across notation, logic, and proof context while checking a stated condition.',
+            'explanation': f'Solution: {key}\nWhy it works: {reason}',
+        })
+    data_by_id[assessment_id] = {
+        'schemaVersion': 1, 'id': assessment_id, 'title': title, 'assessmentType': 'test',
+        'categoryId': 'mathematical-literacy', 'topicId': 'mathematical-literacy-cumulative-review',
+        'modeDefault': 'assessment', 'randomizeQuestions': True, 'attemptQuestionCount': 20,
+        'skills': ['mathematical-literacy', 'mathematical-reading', 'proof-reading'],
+        'navigation': {'learningGoal': 'evaluate', 'activityType': 'formalTest', 'tags': ['mathematical-literacy', 'cumulative-review', 'formal-test']},
+        'authoring': {'difficultyTier': 'hard', 'visualRequirement': 'notApplicable',
+                      'visualRationale': 'Each item assesses a textual mathematical reading decision; no diagram is needed to supply the givens.'},
+        'questions': questions,
+    }
+
+
+def phase2_cumulative_tests(data_by_id: dict):
+    core = [
+        ('Read $B\\subseteq A$. State the direction in words.', 'Every element of B is an element of A.', 'Subset notation is directional containment, not membership of one whole set.'),
+        ('A line says $x\\in\\mathbb Z$ and $x^2<9$. State what must be preserved in a translation.', 'x is an integer and its square is less than 9.', 'The declaration gives the domain and the inequality supplies the condition.'),
+        ('Classify $x+1>0$ before x is bound.', 'It is an open sentence, not yet a statement.', 'Its truth changes with the unbound variable.'),
+        ('Give the negation of “Every integer is even.”', 'There exists an integer that is not even.', 'Negating a universal switches to an existential and negates the property.'),
+        ('A theorem says if a number is divisible by 6, it is divisible by 3. What must be shown for 18 first?', 'Show that 18 is divisible by 6.', 'The hypothesis must be verified before the conclusion is used.'),
+        ('A proof assumes n is even and writes $n=2k$. Name the justification.', 'The definition of an even integer.', 'The definition supplies the integer parameter k.'),
+        ('A student infers “if Q then P” from “if P then Q.” Diagnose the move.', 'It is the converse and needs separate justification.', 'Reversing a conditional does not preserve its truth automatically.'),
+        ('What is the role of an example after a definition?', 'It illustrates one permitted case.', 'An example clarifies a meaning but does not prove a universal statement.'),
+        ('A proof cites a theorem but has not established one hypothesis. What is the valid judgment?', 'The conclusion is not yet licensed.', 'A theorem step is valid only when all stated hypotheses hold.'),
+        ('State the contrapositive of “If n is even, then n squared is even.”', 'If n squared is not even, then n is not even.', 'A contrapositive negates and reverses both sides.'),
+    ]
+    # A formal test needs twenty distinct condition checks rather than an arbitrary sampled scaffold.
+    continuation = [
+        ('What does the first set in $f:A\\to B$ name?', 'The domain of permitted inputs.', 'Function-arrow notation names its input set first.'),
+        ('What does “for every” do to a variable?', 'It binds the variable over the stated domain.', 'Quantification turns a variable-dependent expression into a claim about that domain.'),
+        ('Why is 2 a counterexample to “Every even integer is divisible by 4”?', '2 is even but is not divisible by 4.', 'One permitted case that fails a universal conclusion refutes it.'),
+        ('What role does a hypothesis play in a proof?', 'It supplies an allowed condition for the argument.', 'A later inference may depend on an established hypothesis.'),
+        ('What role does a conclusion play in a theorem?', 'It is the claim warranted after the hypotheses are verified.', 'The conclusion is conditional on the theorem’s assumptions.'),
+        ('What must be tracked in a nested Cartesian product?', 'Its parentheses and coordinate grouping.', 'Grouping determines the shape of each ordered element.'),
+        ('Why is a fully quantified false sentence still a statement?', 'It has a definite truth value.', 'Being false does not make a declarative quantified claim open.'),
+        ('What must “therefore” summarize in a proof?', 'A justified inference from earlier material.', 'A transition word is not a substitute for a reason.'),
+        ('What is wrong with using one example to establish every case?', 'It does not justify the universal claim.', 'A universal assertion requires a general argument, not one illustration.'),
+        ('Before accepting a final line of exposition, what links should be visible?', 'Definitions, hypotheses, or theorems that license it.', 'Mathematical exposition is read as a chain of warranted roles and inferences.'),
+    ]
+    proof_exposition = [
+        ('A definition says an integer is odd when it equals $2k+1$ for an integer k. What form may be written after assuming a is odd?', '$a=2m+1$ for some integer m.', 'The stated definition supplies the form and preserves the integer parameter.'),
+        ('After writing $a=2m+1$ and $b=2n+1$, what form demonstrates that $a+b$ is even?', '$a+b=2(m+n+1)$.', 'Factoring 2 exhibits the definition of even.'),
+        ('A proof starts by assuming the conclusion of “if P then Q” is false. What must it establish next?', 'That the hypothesis is false.', 'This is the target direction of a contrapositive argument.'),
+        ('Why does a proof by contrapositive establish the original conditional?', 'A conditional and its contrapositive have the same truth value.', 'The logical equivalence licenses the proof form.'),
+        ('A reader sees “Assume x belongs to S.” What role does that line have?', 'It is a hypothesis available for the argument.', 'Assumptions state conditions that later steps may use.'),
+        ('A reader sees “By the definition of S, x has property R.” What role does the cited definition play?', 'It justifies unpacking membership in S into property R.', 'Definitions give the exact content of named properties.'),
+        ('A theorem has two hypotheses H1 and H2. H1 is shown but H2 is not. What conclusion is warranted?', 'The theorem conclusion cannot yet be asserted.', 'Every listed condition is required for that theorem application.'),
+        ('A sentence following “Example” verifies one case. What is its evidentiary role?', 'It illustrates a case rather than proving all cases.', 'An example is not a general proof.'),
+        ('A proof says “therefore P” after an unrelated computation. What should a reader request?', 'A rule or earlier statement connecting the computation to P.', 'A conclusion needs an identifiable logical bridge.'),
+        ('What distinguishes an implication from its converse during proof reading?', 'The implication preserves hypothesis-to-conclusion direction; the converse swaps them.', 'Swapping direction creates a different statement.'),
+        ('A statement has a variable but begins “For every real x.” Is it open?', 'No; the quantifier binds x and gives a truth-valued claim.', 'Binding removes the free-variable dependence.'),
+        ('A claim says “There exists an integer with property R.” What kind of evidence can establish it?', 'One integer that has property R.', 'An existential claim needs a witness.'),
+        ('A claim says “Every integer has property R.” What kind of response disproves it?', 'One integer that lacks property R.', 'A counterexample refutes a universal claim.'),
+        ('A passage defines a function before using it in a theorem. Why read the definition first?', 'It fixes the function’s domain and rule needed to check the theorem.', 'The later application depends on the precise defined object.'),
+        ('What does a parenthesized product $A\\times(B\\times C)$ require an element to look like?', 'An ordered pair whose second component is an ordered pair.', 'Parentheses determine the nesting of the ordered structure.'),
+        ('Why is “P if Q” dangerous to read quickly?', 'It means Q implies P, so the order differs from “if P, then Q.”', 'Language can encode a conditional direction opposite its visual order.'),
+        ('A proof ends with a statement already known as a hypothesis. Is that a new theorem conclusion?', 'No; it merely restates an available assumption.', 'A proof conclusion must follow from a justified chain, not a relabeling.'),
+        ('A theorem is cited after the phrase “clearly.” What must still be present?', 'Verification that its hypotheses match the current situation.', 'Rhetorical confidence does not discharge conditions.'),
+        ('A counterexample uses an object outside the declared domain. Does it refute the claim?', 'No; a counterexample must lie in the claim’s domain.', 'Only permitted cases test a quantified statement.'),
+        ('What should an annotation of a proof line record besides the line itself?', 'Its source of justification: definition, hypothesis, theorem, or prior inference.', 'That record makes the argument’s dependency chain inspectable.'),
+    ]
+    add_phase2_test(data_by_id, 'mathematical-literacy-cumulative-foundations-formal-test', 'Mathematical Literacy: Foundations Formal Test', core + continuation)
+    add_phase2_test(data_by_id, 'mathematical-literacy-cumulative-proof-exposition-formal-test', 'Mathematical Literacy: Proof and Exposition Formal Test', proof_exposition)
+
+
+FOCUSED_PRACTICE_MERGES = {
+    'mathematical-literacy-notation-focused-practice': 'mathematical-literacy-notation-focused-practice-advanced',
+    'mathematical-literacy-logic-focused-practice': 'mathematical-literacy-logic-focused-practice-advanced',
+    'mathematical-literacy-quantifiers-negation-and-mathematical-translation-focused-practice-a': 'mathematical-literacy-quantifiers-negation-and-mathematical-translation-focused-practice-b',
+    'mathematical-literacy-definitions-focused-practice': 'mathematical-literacy-definitions-focused-practice-advanced',
+    'mathematical-literacy-theorem-reading-and-application-focused-practice-a': 'mathematical-literacy-theorem-reading-and-application-focused-practice-b',
+    'mathematical-literacy-proofs-focused-practice': 'mathematical-literacy-proofs-focused-practice-advanced',
+    'mathematical-literacy-proof-forms-and-argument-diagnosis-focused-practice-a': 'mathematical-literacy-proof-forms-and-argument-diagnosis-focused-practice-b',
+    'mathematical-literacy-reading-mathematical-exposition-focused-practice-a': 'mathematical-literacy-reading-mathematical-exposition-focused-practice-b',
+}
+
+
+def phase2_merge_retired_focus_banks(data_by_id: dict):
+    """Retain the sound, source-backed practice prompts from retired duplicate slots."""
+    for canonical_id, retired_id in FOCUSED_PRACTICE_MERGES.items():
+        canonical = data_by_id.get(canonical_id)
+        path = RETIRED / f'{retired_id}.yaml'
+        if not canonical or not path.exists():
+            continue
+        retired = load_yaml(path)
+        existing_prompts = {prompt_summary(question) for question in canonical.get('questions', [])}
+        for question in retired.get('questions', []):
+            if prompt_summary(question) in existing_prompts:
+                continue
+            question = dict(question)
+            question['id'] = f"q{len(canonical['questions']) + 1:03d}"
+            canonical['questions'].append(question)
+            existing_prompts.add(prompt_summary(question))
+
+
+def phase2_authoring_metadata(data_by_id: dict):
+    for data in data_by_id.values():
+        authoring = data.setdefault('authoring', {})
+        authoring.setdefault('visualRequirement', 'notApplicable')
+        authoring.setdefault(
+            'visualRationale',
+            'The approved source evidence and the learner task are textual notation, statement, or proof readings; a diagram would not add a needed given.'
+        )
+
+
+def phase2_notation_quiz_bank(data_by_id: dict):
+    focused = data_by_id['mathematical-literacy-notation-focused-practice']
+    focused['questions'] = focused['questions'][:8] + [
+        {'id': 'q009', 'type': 'multipleChoice', 'prompt': 'Let $S=\\{x\\in\\mathbb R:x\\geq0\\}$. Which claim is justified?',
+         'choices': [{'id':'a','text':'$0\\in S$.'}, {'id':'b','text':'$-1\\in S$ because it is real.','issueSignals':[{'id':'set-builder-condition-ignored'}]}, {'id':'c','text':'$S$ contains only positive numbers.','issueSignals':[{'id':'domain-condition-ignored'}]}, {'id':'d','text':'$x\\geq0$ declares the domain.','issueSignals':[{'id':'expression-condition-confused'}]}],
+         'answer':{'choiceId':'a'}, 'issueSignals':[{'id':'set-builder-condition-ignored'}], 'difficultyDimensions':['representationTransfer','domainCondition'], 'difficultyEvidence':'Separates the real-number domain from the nonnegative filtering condition.',
+         'explanation':'Solution: $0\\in S$.\nWhy it works: Zero is real and satisfies $0\\geq0$.\nWhy the other choices fail: B ignores the inequality, C excludes the allowed boundary value zero, and D mistakes the filtering condition for the domain.'},
+        {'id': 'q010', 'type': 'multipleChoice', 'prompt': 'If $g:\\mathbb N\\to\\mathbb Z$, which statement is guaranteed by the arrow notation?',
+         'choices': [{'id':'a','text':'Every permitted input is a natural number and every output lies in the integers.'}, {'id':'b','text':'Every integer occurs as an output.','issueSignals':[{'id':'domain-rule-confused'}]}, {'id':'c','text':'Negative integers may be used as inputs.','issueSignals':[{'id':'domain-rule-confused'}]}, {'id':'d','text':'g is automatically one-to-one.','issueSignals':[{'id':'notation-role-confused'}]}],
+         'answer':{'choiceId':'a'}, 'issueSignals':[{'id':'domain-rule-confused'}], 'difficultyDimensions':['representationTransfer','errorDiagnosis'], 'difficultyEvidence':'Distinguishes the input domain and output codomain from range and injectivity claims.',
+         'explanation':'Solution: The inputs are natural numbers and the outputs are integers.\nWhy it works: In $g:A\\to B$, A is the permitted input set and B is the codomain.\nWhy the other choices fail: B confuses codomain with attained range, C changes the domain, and D adds an unstated one-to-one property.'},
+    ]
     exposition = data_by_id.get('mathematical-literacy-reading-mathematical-exposition-mastery-check')
     if exposition:
         exposition['questions'] = [
@@ -377,8 +648,9 @@ def blueprint_for(data: dict, packet: dict, principle: str, objective_id: str):
         ensure_explanation(question, principle)
         if data.get('assessmentType') in ('quiz', 'test'):
             dimensions = question.get('difficultyDimensions') or ['representationTransfer', 'errorDiagnosis']
-            if len(dimensions) < 2:
-                dimensions = ['representationTransfer', 'errorDiagnosis']
+            minimum = 3 if (data.get('authoring') or {}).get('difficultyTier') == 'hard' else 2
+            if len(dimensions) < minimum:
+                dimensions = ['representationTransfer', 'conditionChecking', 'argumentMapping'][:minimum]
             question['difficultyDimensions'] = dimensions
         record_id = slug(f"{data['id']}-{item_id}-blueprint")
         records.append({
@@ -407,6 +679,8 @@ def blueprint_for(data: dict, packet: dict, principle: str, objective_id: str):
         if data.get('assessmentType') in ('quiz', 'test'):
             records[-1]['difficultyDimensions'] = question['difficultyDimensions']
             records[-1]['subjectDifficultyTags'] = ['mathematical-literacy', slug(data['topicId'])]
+            records[-1]['prerequisiteObjectiveIds'] = question.get('prerequisiteObjectiveIds', [])
+            records[-1]['extensionObjectiveIds'] = question.get('extensionObjectiveIds', [])
     blueprint_id = f"{data['id']}-phase1-blueprints"
     return blueprint_id, {
         'schemaVersion': 1,
@@ -426,6 +700,19 @@ def main():
     merge_foundation_duplicates(data_by_id)
     replace_worked_example_b(data_by_id)
     replace_duplicate_mastery_checks(data_by_id)
+    phase2_recall_and_lesson_checks(data_by_id)
+    phase2_cumulative_tests(data_by_id)
+    phase2_merge_retired_focus_banks(data_by_id)
+    phase2_authoring_metadata(data_by_id)
+    phase2_notation_quiz_bank(data_by_id)
+
+    # New cumulative tests are created in memory, so materialize them before the
+    # common packet/blueprint pass below.
+    for assessment_id, data in data_by_id.items():
+        path = ASSESSMENTS / f'{assessment_id}.yaml'
+        if not path.exists():
+            write_yaml(path, data)
+    files = sorted(ASSESSMENTS.glob('mathematical-literacy-*.yaml'))
 
     for path in files:
         data = data_by_id[path.stem]
@@ -447,6 +734,16 @@ def main():
         'mathematical-literacy-proof-forms-and-argument-diagnosis-focused-practice-b',
         'mathematical-literacy-reading-mathematical-exposition-focused-practice-b',
         'mathematical-literacy-review-recall-b',
+        'mathematical-literacy-notation-focused-practice-advanced',
+        'mathematical-literacy-logic-focused-practice-advanced',
+        'mathematical-literacy-quantifiers-negation-and-mathematical-translation-focused-practice-b',
+        'mathematical-literacy-definitions-deep-concept-lesson',
+        'mathematical-literacy-definitions-focused-practice-advanced',
+        'mathematical-literacy-definitions-recall-advanced',
+        'mathematical-literacy-theorem-reading-and-application-focused-practice-b',
+        'mathematical-literacy-proofs-deep-concept-lesson',
+        'mathematical-literacy-proofs-focused-practice-advanced',
+        'mathematical-literacy-proofs-recall-advanced',
     ):
         source = ASSESSMENTS / f'{duplicate_id}.yaml'
         if source.exists():
@@ -461,7 +758,7 @@ def main():
             'activityType': (data.get('navigation') or {}).get('activityType'),
             'packetId': data['authoring']['sourcePacketId'], 'blueprintId': data['authoring']['blueprintId'],
             'sourceEligibility': 'approved-page-image-or-nonempty-text', 'state': 'active',
-            'remediation': 'phase-1 provenance complete',
+            'remediation': 'phase-2 canonical sequence and comparative review passed',
         })
     retired = []
     for path in sorted(RETIRED.glob('mathematical-literacy-*.yaml')):
@@ -469,10 +766,10 @@ def main():
         retired.append({'id': data['id'], 'archivePath': f'data/retired-assessments/{path.name}', 'state': 'archived'})
     write_yaml(STATUS_PATH, {
         'schemaVersion': 1, 'id': 'mathematical-literacy-s2c-migration-status',
-        'categoryId': 'mathematical-literacy', 'status': 'phase-1-complete',
+        'categoryId': 'mathematical-literacy', 'status': 'phase-2-in-progress',
         'activeDefinitions': active, 'retiredDefinitions': retired,
         'compatibility': 'Archived definitions retain stable IDs and are outside active discovery; historical attempts may rely on stored snapshots.',
-        'completionGate': 'Every active assessment must reference an approved packet and a complete assessment-scoped blueprint before this status can become complete.',
+        'completionGate': 'Every active assessment must reference an approved packet, a complete assessment-scoped blueprint, and a passing Phase 2 comparative review before this status can become complete.',
     })
     active_blueprint_files = {f"{entry['blueprintId']}.yaml" for entry in active}
     retired_blueprints = ROOT / 'docs' / 'assessment-reference' / 'retired-blueprints'

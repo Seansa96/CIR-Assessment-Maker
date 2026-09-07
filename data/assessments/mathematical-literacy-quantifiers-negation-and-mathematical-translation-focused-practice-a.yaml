@@ -20,6 +20,9 @@ authoring:
   sourcePacketId: packet-quantifiers-negation-and-mathematical-translation-v2
   blueprintId: mathematical-literacy-quantifiers-negation-and-mathematical-translation-focused-practice-a-phase1-blueprints
   difficultyTier: easy
+  visualRequirement: notApplicable
+  visualRationale: The approved source evidence and the learner task are textual notation, statement, or proof readings;
+    a diagram would not add a needed given.
 questions:
 - id: q001
   type: multipleChoice
@@ -142,3 +145,186 @@ questions:
     Solution: There is a single key that opens every door.
     Why it works: 'There is a single key that opens every door' ($\\exists k \\forall d$) means one universal master key exists. 'Every door has a key' ($\\forall d \\exists k$) allows each door to have a different, unique key. The first claim is much stronger.
     Why the other choices fail: B is the weaker claim, allowing multiple different keys. C and D fail to recognize that the first statement strictly implies the second, but not vice-versa.
+- id: q005
+  type: multipleChoice
+  prompt: What is the correct negation of the statement 'Every integer is a rational number'?
+  choices:
+  - id: a
+    text: There exists an integer that is not a rational number.
+  - id: b
+    text: No integers are rational numbers.
+    issueSignals:
+    - id: logical-negation-error
+  - id: c
+    text: Every integer is an irrational number.
+    issueSignals:
+    - id: logical-negation-error
+  - id: d
+    text: There exists a rational number that is not an integer.
+    issueSignals:
+    - id: mathematical-translation-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: logical-negation-error
+  difficultyDimensions:
+  - representationTransfer
+  - logicalNegation
+  difficultyEvidence: Negates a universal affirmative statement into an existential negative statement.
+  explanation: |-
+    Solution: There exists an integer that is not a rational number.
+    Why it works: The negation of 'For all $x$, $P(x)$' is 'There exists an $x$ such that not $P(x)$'. To disprove a universal claim, you must assert the existence of a counterexample.
+    Why the other choices fail: B and C over-negate by making universal claims about the failure of the property. D swaps the roles of the sets.
+- id: q006
+  type: multipleChoice
+  prompt: How would you translate 'Every real number has a real cube root' into formal logic?
+  choices:
+  - id: a
+    text: '$\forall x \in \mathbb{R}, \exists y \in \mathbb{R}, y^3 = x$'
+  - id: b
+    text: '$\exists y \in \mathbb{R}, \forall x \in \mathbb{R}, y^3 = x$'
+    issueSignals:
+    - id: quantifier-scope-error
+  - id: c
+    text: '$\forall x \in \mathbb{R}, \forall y \in \mathbb{R}, y^3 = x$'
+    issueSignals:
+    - id: quantifier-scope-error
+  - id: d
+    text: '$\exists x \in \mathbb{R}, \exists y \in \mathbb{R}, y^3 = x$'
+    issueSignals:
+    - id: logical-translation-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: quantifier-scope-error
+  difficultyDimensions:
+  - representationTransfer
+  - quantifierScope
+  difficultyEvidence: 'Correctly orders nested quantifiers ($\forall$ followed by $\exists$) to express a dependency.'
+  explanation: |-
+    Solution: $\\forall x \\in \\mathbb{R}, \\exists y \\in \\mathbb{R}, y^3 = x$
+    Why it works: 'Every real number' is the universal quantifier $\\forall x$. 'Has a cube root' means there exists some $y$ such that $y^3=x$, using the existential quantifier $\\exists y$. The $y$ depends on the $x$, so $\\exists y$ must follow $\\forall x$.
+    Why the other choices fail: B asserts there is one single universal cube root for all numbers. C asserts that every number is the cube root of every other number. D only asserts that at least one number has a cube root.
+- id: q007
+  type: multipleChoice
+  prompt: What is the correct negation of 'There exists a continuous function that is nowhere differentiable'?
+  choices:
+  - id: a
+    text: Every continuous function is differentiable at least somewhere.
+  - id: b
+    text: No continuous function is differentiable anywhere.
+    issueSignals:
+    - id: logical-negation-error
+  - id: c
+    text: Every continuous function is everywhere differentiable.
+    issueSignals:
+    - id: logical-negation-error
+  - id: d
+    text: There exists a continuous function that is everywhere differentiable.
+    issueSignals:
+    - id: logical-negation-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: logical-negation-error
+  difficultyDimensions:
+  - representationTransfer
+  - logicalNegation
+  difficultyEvidence: Applies De Morgan's laws to negate a complex existential statement involving an implicit universal
+    claim ('nowhere').
+  explanation: |-
+    Solution: Every continuous function is differentiable at least somewhere.
+    Why it works: The original statement is $\\exists f \\ (C(f) \\land \\forall x \\ \\neg D(f, x))$. Negating this gives $\\forall f \\ (C(f) \\implies \\exists x \\ D(f, x))$, which translates to 'every continuous function is differentiable at some point'.
+    Why the other choices fail: B is logically equivalent to the original claim, not its negation. C over-negates 'nowhere' to 'everywhere' instead of 'somewhere'. D changes the quantifier incorrectly.
+- id: q008
+  type: multipleChoice
+  prompt: 'Consider the statements $P$: ''For every patient, there is a nurse assigned to them'' and $Q$: ''There
+    is a nurse assigned to every patient''. What is the relationship between them?'
+  choices:
+  - id: a
+    text: $Q$ implies $P$, but $P$ does not imply $Q$.
+  - id: b
+    text: $P$ implies $Q$, but $Q$ does not imply $P$.
+    issueSignals:
+    - id: quantifier-scope-error
+  - id: c
+    text: $P$ and $Q$ are logically equivalent.
+    issueSignals:
+    - id: quantifier-scope-error
+  - id: d
+    text: They contradict each other.
+    issueSignals:
+    - id: quantifier-scope-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: quantifier-scope-error
+  difficultyDimensions:
+  - representationTransfer
+  - quantifierScope
+  difficultyEvidence: 'Analyzes the direction of implication between $\exists y \forall x$ and $\forall x \exists
+    y$ claims.'
+  explanation: |-
+    Solution: $Q$ implies $P$, but $P$ does not imply $Q$.
+    Why it works: $Q$ claims there is one 'super-nurse' assigned to everyone ($\\exists n \\forall p$). If this is true, then $P$ ($\\forall p \\exists n$) is trivially true because you can just point to the super-nurse for each patient. However, $P$ allows each patient to have a different nurse, which would make $Q$ false.
+    Why the other choices fail: B gets the implication backward. C fails to recognize the semantic difference between the quantifier orderings. D is false since they can both be true simultaneously.
+- id: q009
+  type: multipleChoice
+  prompt: What is the negation of “There exists an integer that is both even and prime”?
+  choices:
+  - id: a
+    text: No integer is both even and prime.
+  - id: b
+    text: Every integer is even and prime.
+    issueSignals:
+    - id: existential-negation-overstated
+  - id: c
+    text: There exists an integer that is neither even nor prime.
+    issueSignals:
+    - id: predicate-negation-misplaced
+  - id: d
+    text: Every integer is either not even or not prime.
+    issueSignals:
+    - id: demorgan-connector-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: existential-negation-overstated
+  difficultyDimensions:
+  - representationTransfer
+  - errorDiagnosis
+  difficultyEvidence: Negates an existential claim while retaining its conjunction as the property whose occurrence is denied.
+  explanation: |-
+    Solution: No integer is both even and prime.
+    Why it works: Negating “there exists an integer with property P” gives “no integer has property P.”
+    Why the other choices fail: B asserts the opposite extreme, C asserts an unrelated witness, and D changes the conjunction inside the property.
+- id: q010
+  type: multipleChoice
+  prompt: When is a conditional P implies Q false?
+  choices:
+  - id: a
+    text: P is true and Q is false.
+  - id: b
+    text: P is false and Q is true.
+    issueSignals:
+    - id: conditional-truth-table-error
+  - id: c
+    text: P and Q are both true.
+    issueSignals:
+    - id: conditional-truth-table-error
+  - id: d
+    text: P and Q are both false.
+    issueSignals:
+    - id: conditional-truth-table-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: conditional-truth-table-error
+  difficultyDimensions:
+  - definitionApplication
+  - errorDiagnosis
+  difficultyEvidence: Identifies the sole truth-table case that violates the promised conclusion after the hypothesis holds.
+  explanation: |-
+    Solution: A conditional fails only when P holds but Q does not.
+    Why it works: That case supplies the hypothesis while denying the conclusion it was meant to guarantee.
+    Why the other choices fail: In B and D the hypothesis is absent, and in C the conclusion is satisfied.

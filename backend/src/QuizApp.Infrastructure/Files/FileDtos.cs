@@ -8,6 +8,7 @@ public sealed class CategoryFileDto
     public string? Description { get; set; }
     public string? AuthoringProfile { get; set; }
     public bool? DirectedProjectEligible { get; set; }
+    public bool? AllowMultipleChoiceHardQuizzes { get; set; }
     public List<SubCategoryFileDto>? Subcategories { get; set; }
 }
 

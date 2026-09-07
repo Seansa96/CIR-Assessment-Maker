@@ -1,0 +1,4 @@
+import yaml
+from pathlib import Path
+src=Path('docs/assessment-reference/question-blueprints/chem-acids-foundations-v1.yaml'); a=yaml.safe_load(src.read_text(encoding='utf8')); a['id']='chem-acids-concept-lesson-v1'; a['topicId']='chem-acids'; a['blueprints']=[dict(x,**{'assessmentId':'chem-acids-concept-lesson','id':x['id'].replace('chem-acids','chem-acids-concept-lesson')}) for x in a['blueprints']]; Path('docs/assessment-reference/question-blueprints/chem-acids-concept-lesson-v1.yaml').write_text(yaml.safe_dump(a,sort_keys=False,allow_unicode=True,width=120),encoding='utf8')
+p=Path('data/assessments/chem-acids-concept-lesson.yaml'); s=p.read_text(encoding='utf8').replace('blueprintId: chemistry-acids-foundations-v1','blueprintId: chem-acids-concept-lesson-v1'); p.write_text(s,encoding='utf8')

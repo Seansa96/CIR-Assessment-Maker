@@ -20,6 +20,9 @@ authoring:
   sourcePacketId: packet-theorem-reading-and-application-v2
   blueprintId: mathematical-literacy-theorem-reading-and-application-focused-practice-a-phase1-blueprints
   difficultyTier: easy
+  visualRequirement: notApplicable
+  visualRationale: The approved source evidence and the learner task are textual notation, statement, or proof readings;
+    a diagram would not add a needed given.
 questions:
 - id: q001
   type: multipleChoice
@@ -146,3 +149,189 @@ questions:
     Solution: You can introduce a new variable (like $x_0$) to represent this guaranteed solution and use it in subsequent steps.
     Why it works: This is called existential instantiation. Once a theorem guarantees a mathematical object exists, you are allowed to name it and manipulate it based on its guaranteed properties, even without knowing its exact formula.
     Why the other choices fail: B is incorrect because existence theorems are often non-constructive. C is an arbitrary and invalid assumption. D defeats the entire purpose of an existence theorem.
+- id: q005
+  type: multipleChoice
+  prompt: 'A theorem states: ''A matrix is invertible if and only if its determinant is non-zero''. How can you
+    apply this theorem?'
+  choices:
+  - id: a
+    text: You can use a non-zero determinant to prove invertibility, AND you can use invertibility to prove the
+      determinant is non-zero.
+  - id: b
+    text: You can only use a non-zero determinant to prove invertibility.
+    issueSignals:
+    - id: mathematical-structure-recognition-error
+  - id: c
+    text: You can only use invertibility to prove the determinant is non-zero.
+    issueSignals:
+    - id: mathematical-structure-recognition-error
+  - id: d
+    text: You must prove both facts independently before applying the theorem.
+    issueSignals:
+    - id: mathematical-role-confusion
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: mathematical-structure-recognition-error
+  difficultyDimensions:
+  - structuralRecognition
+  - logicalEquivalence
+  difficultyEvidence: Recognizes that a biconditional theorem provides two separate, usable implications.
+  explanation: |-
+    Solution: You can use a non-zero determinant to prove invertibility, AND you can use invertibility to prove the determinant is non-zero.
+    Why it works: The phrase 'if and only if' ($\\iff$) means the implication goes both ways. You can use either condition as the hypothesis to guarantee the other as the conclusion.
+    Why the other choices fail: B and C treat the theorem as a one-way implication, ignoring half of its power. D misunderstands the purpose of theorems, which is to derive one unknown fact from a known one.
+- id: q006
+  type: multipleChoice
+  prompt: 'A theorem begins: ''Let $X$ be a compact metric space. If $f: X \to \mathbb{R}$ is continuous, then...''.
+    Which of the following is a strict requirement to use this theorem?'
+  choices:
+  - id: a
+    text: The space $X$ must be both a metric space and compact.
+  - id: b
+    text: The function $f$ must be compact.
+    issueSignals:
+    - id: mathematical-structure-recognition-error
+  - id: c
+    text: The space $X$ must be continuous.
+    issueSignals:
+    - id: mathematical-structure-recognition-error
+  - id: d
+    text: The output of the function must be a metric space.
+    issueSignals:
+    - id: mathematical-structure-recognition-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: mathematical-structure-recognition-error
+  difficultyDimensions:
+  - domainCondition
+  - errorDiagnosis
+  difficultyEvidence: Parses the domain declaration constraints ('Let...') that precede the formal 'If... then...'
+    structure.
+  explanation: |-
+    Solution: The space $X$ must be both a metric space and compact.
+    Why it works: The 'Let' statement establishes the universe of discourse and the foundational properties of the objects involved. These act as prerequisite hypotheses that must be satisfied before the 'If' clause is even considered.
+    Why the other choices fail: B incorrectly applies the property 'compact' to the function instead of the space. C incorrectly applies 'continuous' to the space instead of the function. D misinterprets the codomain $\\mathbb{R}$ as the metric space requirement.
+- id: q007
+  type: multipleChoice
+  prompt: 'A theorem requires two conditions: ''If a sequence is bounded AND monotonic, then it converges.'' Your
+    sequence is bounded, but you don''t know if it is monotonic. Can you conclude it converges?'
+  choices:
+  - id: a
+    text: No, because the theorem requires both conditions to be met.
+  - id: b
+    text: Yes, because satisfying one of the conditions is enough.
+    issueSignals:
+    - id: logical-evaluation-error
+  - id: c
+    text: Yes, because bounded sequences are always monotonic.
+    issueSignals:
+    - id: factual-error
+  - id: d
+    text: No, because the theorem proves it diverges.
+    issueSignals:
+    - id: inverse-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: logical-evaluation-error
+  difficultyDimensions:
+  - truthTableApplication
+  - errorDiagnosis
+  difficultyEvidence: Evaluates the strictness of a conjunctive hypothesis (AND) in a theorem.
+  explanation: |-
+    Solution: No, because the theorem requires both conditions to be met.
+    Why it works: A hypothesis connected by 'AND' ($\\land$) means every conjunct must be verified. If even one is missing or unproven, the theorem's trigger is not activated.
+    Why the other choices fail: B confuses 'AND' with 'OR'. C asserts a false mathematical fact. D commits the inverse error; failing the hypothesis doesn't guarantee the conclusion is false, it just means the theorem is silent.
+- id: q008
+  type: multipleChoice
+  prompt: If a theorem says 'If $P$ or $Q$, then $R$', and you know $P$ is true, what do you need to know about
+    $Q$ to conclude $R$?
+  choices:
+  - id: a
+    text: You don't need to know anything about $Q$.
+  - id: b
+    text: You must prove $Q$ is also true.
+    issueSignals:
+    - id: logical-evaluation-error
+  - id: c
+    text: You must prove $Q$ is false.
+    issueSignals:
+    - id: logical-evaluation-error
+  - id: d
+    text: You must prove $Q$ implies $P$.
+    issueSignals:
+    - id: logical-evaluation-error
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: logical-evaluation-error
+  difficultyDimensions:
+  - truthTableApplication
+  - errorDiagnosis
+  difficultyEvidence: Evaluates the flexibility of a disjunctive hypothesis (OR) in a theorem.
+  explanation: |-
+    Solution: You don't need to know anything about $Q$.
+    Why it works: A hypothesis connected by 'OR' ($\\lor$) is an inclusive disjunction. As long as at least one condition ($P$) is true, the entire hypothesis ($P \\lor Q$) is true, which is sufficient to trigger the conclusion $R$.
+    Why the other choices fail: B treats the 'OR' as an 'AND'. C treats the 'OR' as an exclusive OR ($\\oplus$) which is almost never used in theorem hypotheses. D is irrelevant to evaluating the truth of a disjunction.
+- id: q009
+  type: multipleChoice
+  prompt: A theorem says “If P, then Q.” What must be established before Q may be concluded from this theorem?
+  choices:
+  - id: a
+    text: P is true in the situation being considered.
+  - id: b
+    text: Q has already been assumed.
+    issueSignals:
+    - id: conclusion-used-as-hypothesis
+  - id: c
+    text: The converse if Q then P is true.
+    issueSignals:
+    - id: converse-required-for-application
+  - id: d
+    text: P and Q use the same variable.
+    issueSignals:
+    - id: notation-for-hypothesis-substituted
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: conclusion-used-as-hypothesis
+  difficultyDimensions:
+  - conditionChecking
+  - representationTransfer
+  difficultyEvidence: Identifies the application condition of a conditional theorem instead of its conclusion or converse.
+  explanation: |-
+    Solution: Verify P before applying the theorem.
+    Why it works: The theorem licenses Q only in cases where its stated hypothesis P holds.
+    Why the other choices fail: B assumes the target, C adds a separate theorem, and D is merely typographical.
+- id: q010
+  type: multipleChoice
+  prompt: A statement “P if and only if Q” appears in a theorem. What pair of conditional directions does it contain?
+  choices:
+  - id: a
+    text: If P then Q, and if Q then P.
+  - id: b
+    text: If P then Q only.
+    issueSignals:
+    - id: biconditional-half-omitted
+  - id: c
+    text: If not P then not Q only.
+    issueSignals:
+    - id: biconditional-contrapositive-confused
+  - id: d
+    text: P and Q cannot both be true.
+    issueSignals:
+    - id: biconditional-exclusive-or-confused
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: biconditional-half-omitted
+  difficultyDimensions:
+  - representationTransfer
+  - structuralRecognition
+  difficultyEvidence: Expands a biconditional into its two required conditional directions.
+  explanation: |-
+    Solution: A biconditional asserts both P implies Q and Q implies P.
+    Why it works: “If and only if” means each condition is necessary and sufficient for the other.
+    Why the other choices fail: B gives one direction, C substitutes a contrapositive fragment, and D mistakes equivalence for exclusivity.

@@ -1,0 +1,22 @@
+import yaml
+from pathlib import Path
+p=Path('data/assessments/chem-acids-concept-lesson.yaml')
+a=yaml.safe_load(p.read_text(encoding='utf8'))
+a['authoring']['sourcePacketId']='packet-chemistry-acids-foundations-v1'; a['authoring']['blueprintId']='chemistry-acids-foundations-v1'
+a['lesson']['introduction']='Build the foundational acid-base vocabulary used to classify aqueous substances and predict proton-transfer partners.'
+rows=[
+('Aqueous identification','An Arrhenius acid increases aqueous hydronium, while an Arrhenius base increases hydroxide. Start by identifying the species whose concentration changes in water.','Which observation identifies an Arrhenius acid?','The solution gains H3O+ when the solute dissolves','a'),
+('Proton donation and acceptance','In the Bronsted-Lowry model, an acid donates H+ and a base accepts H+. Track the proton, not just the oxygen or hydrogen count.','In NH3 + H2O ⇌ NH4+ + OH−, which species is the proton donor?','H2O','a'),
+('Conjugate partners','Removing one proton from an acid gives its conjugate base; adding one proton to a base gives its conjugate acid. Partners differ by exactly one H+.','What is the conjugate base of H2CO3?','HCO3−','a'),
+('Strong and weak behavior','A strong acid or base is treated as completely dissociated in water; a weak one establishes a partial-ionization equilibrium. Strength is not the same as solution concentration.','Which statement describes a weak acid in water?','It ionizes partially and remains in equilibrium with its conjugate base','a'),
+('Electrolyte consequences','Dissociation creates mobile ions, so strong electrolytes conduct more completely at comparable concentration. Count ions and charge to check a representation.','Why does aqueous HCl conduct as a strong electrolyte?','It produces nearly complete populations of mobile H3O+ and Cl− ions','a'),
+('Concentration versus strength','Concentration is how much solute is present per volume; strength is the equilibrium tendency to ionize. A dilute strong acid can have less hydronium than a concentrated weak acid.','Which comparison is logically valid?','A 0.001 M strong acid can be less acidic than a 1.0 M weak acid only if their ionization produces the stated hydronium values','a'),
+('Model verification and transfer','Verify an acid-base classification by checking the model scope, proton bookkeeping, charge balance, and the complete-versus-partial dissociation assumption.','A reaction occurs without water and transfers H+ from HCl to NH3. Which labels are consistent?','HCl is the Bronsted acid and NH3 is its Bronsted base','a')]
+secs=[]
+for i,(title,content,prompt,correct,cid) in enumerate(rows,1):
+ choices=[{'id':'a','text':correct,'issueSignals':[]},{'id':'b','text':'It changes oxidation state without any proton transfer','issueSignals':[{'id':'acid-base-model-confusion','domains':['chemistry']}]},{'id':'c','text':'It must be concentrated regardless of ionization behavior','issueSignals':[{'id':'strong-weak-acid-base-confusion','domains':['chemistry']}]},{'id':'d','text':'It is defined only by the number of oxygen atoms present','issueSignals':[{'id':'acid-base-model-confusion','domains':['chemistry']}]}]
+ secs.append({'id':f'sec-{i}','title':title,'required':True,'content':content,'media':[{'type':'image','src':'/media/chemistry/chem-acids-model.svg','alt':'Acid-base model diagram.'}],'check':{'id':f'chk-{i}','type':'multipleChoice','prompt':prompt,'choices':choices,'answer':{'choiceId':cid},'explanation':'Solution: Choice A.\n\nWhy it works: Apply the stated acid-base model, track the proton or aqueous ion, and distinguish complete from partial ionization.\n\nWhy the other choices fail: Choice B changes oxidation-state language for a proton problem; choice C confuses concentration with strength; choice D relies on an irrelevant structural shortcut.','difficultyDimensions':['modelOrDerivation','errorDiagnosis'],'difficultyEvidence':'Classifies a specified acid-base situation while checking proton bookkeeping and ionization assumptions.','prerequisiteObjectiveIds':['acid-base-models'],'extensionObjectiveIds':['acid-base-transfer']}})
+a['lesson']['sections']=secs
+p.write_text(yaml.safe_dump(a,sort_keys=False,allow_unicode=True,width=120),encoding='utf8')
+# repair recall leading key
+p=Path('data/assessments/chem-acids-recall.yaml'); s=p.read_text(encoding='utf8'); s=s.replace('+schemaVersion: 1','schemaVersion: 1',1); p.write_text(s,encoding='utf8')

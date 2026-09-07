@@ -18,7 +18,10 @@ navigation:
 authoring:
   sourcePacketId: packet-reading-mathematical-exposition-v2
   blueprintId: mathematical-literacy-reading-mathematical-exposition-mastery-check-phase1-blueprints
-  difficultyTier: easy
+  difficultyTier: hard
+  visualRequirement: notApplicable
+  visualRationale: The approved source evidence and the learner task are textual notation, statement, or proof readings;
+    a diagram would not add a needed given.
 questions:
 - id: q001
   type: multipleChoice
@@ -49,10 +52,13 @@ questions:
   - proofJustification
   difficultyEvidence: Requires preserving the stated logical direction and evaluating a concrete mathematical-reading
     claim.
-  explanation: |-
-    Solution: Fixing the exact meaning of “even.”
+  explanation: 'Solution: Fixing the exact meaning of “even.”
+
     Why it works: A definition fixes terminology; it does not by itself assert that every object has the property.
-    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.
+
+    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
 - id: q002
   type: multipleChoice
   prompt: A theorem has hypotheses H and conclusion C. Which reading is justified before citing the theorem?
@@ -81,10 +87,14 @@ questions:
   - proofJustification
   difficultyEvidence: Requires preserving the stated logical direction and evaluating a concrete mathematical-reading
     claim.
-  explanation: |-
-    Solution: Verify H in the current situation, then infer C.
-    Why it works: Theorem application is conditional: its stated hypotheses must be established before its conclusion is used.
-    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.
+  explanation: 'Solution: Verify H in the current situation, then infer C.
+
+    Why it works: Theorem application is conditional: its stated hypotheses must be established before its conclusion
+    is used.
+
+    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
 - id: q003
   type: multipleChoice
   prompt: What is the role of a single example following a definition?
@@ -113,10 +123,13 @@ questions:
   - proofJustification
   difficultyEvidence: Requires preserving the stated logical direction and evaluating a concrete mathematical-reading
     claim.
-  explanation: |-
-    Solution: It illustrates how the definition applies to one permitted case.
+  explanation: 'Solution: It illustrates how the definition applies to one permitted case.
+
     Why it works: An example clarifies a definition locally but cannot establish a universal conclusion by itself.
-    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.
+
+    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
 - id: q004
   type: multipleChoice
   prompt: A proof cites a theorem but has not checked one of its hypotheses. What should a reader conclude?
@@ -145,7 +158,211 @@ questions:
   - proofJustification
   difficultyEvidence: Requires preserving the stated logical direction and evaluating a concrete mathematical-reading
     claim.
-  explanation: |-
-    Solution: The conclusion is not yet licensed; the missing hypothesis must be checked.
+  explanation: 'Solution: The conclusion is not yet licensed; the missing hypothesis must be checked.
+
     Why it works: A cited theorem supplies a valid step only when all of its conditions hold in the current argument.
-    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.
+
+    Why the other choices fail: Each alternative changes the claim’s direction, role, or required evidence.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
+- id: q005
+  type: multipleChoice
+  prompt: A proof gives bounds for an auxiliary expression and then claims a result by the squeeze theorem. What
+    must a reader verify?
+  choices:
+  - id: a
+    text: The stated bounds satisfy the theorem's conditions for the expression in question.
+  - id: b
+    text: The theorem's name appears somewhere.
+    issueSignals:
+    - id: citation-name-sufficiency
+  - id: c
+    text: The auxiliary expression has a short name.
+    issueSignals:
+    - id: notation-as-justification
+  - id: d
+    text: The conclusion is written in display math.
+    issueSignals:
+    - id: formatting-as-proof
+  answer:
+    choiceId: a
+  difficultyDimensions:
+  - conditionChecking
+  - argumentMapping
+  - justificationEvaluation
+  difficultyEvidence: Evaluates whether a cited theorem is licensed by the proof's displayed bounds.
+  explanation: 'Solution: The stated bounds satisfy the theorem''s conditions for the expression in question.
+
+    Why it works: A theorem application is warranted only when its relevant inputs have been established.
+
+    Why the other choices fail: A name, notation choice, or formatting cannot replace theorem conditions.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
+- id: q006
+  type: multipleChoice
+  prompt: A theorem statement uses a term defined in the preceding paragraph. Which revision best repairs a proof
+    that uses the term ambiguously?
+  choices:
+  - id: a
+    text: Apply the preceding definition precisely and state how the proof's object meets it.
+  - id: b
+    text: Delete the theorem's conditions.
+    issueSignals:
+    - id: hypothesis-erasure
+  - id: c
+    text: Repeat the theorem without interpreting the term.
+    issueSignals:
+    - id: theorem-restatement-only
+  - id: d
+    text: Replace the proof with a closing sentence.
+    issueSignals:
+    - id: conclusion-as-proof
+  answer:
+    choiceId: a
+  difficultyDimensions:
+  - definitionUse
+  - precisionReading
+  - argumentMapping
+  difficultyEvidence: Transfers a definition from exposition into the proof's required interpretation.
+  explanation: 'Solution: Apply the preceding definition precisely and state how the proof''s object meets it.
+
+    Why it works: The definition gives the exact meaning needed to justify use of the term.
+
+    Why the other choices fail: They remove, repeat, or announce rather than justify.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
+- id: q007
+  type: multipleChoice
+  prompt: A calculation is correct but does not show how it advances the stated theorem. What is the strongest editorial
+    repair?
+  choices:
+  - id: a
+    text: Add the inference that connects the calculation to a hypothesis
+    bound: null
+    or conclusion of the theorem.: null
+  - id: b
+    text: Add more calculations with no stated role.
+    issueSignals:
+    - id: complexity-for-relevance
+  - id: c
+    text: Move the conclusion before the calculation.
+    issueSignals:
+    - id: conclusion-before-warrant
+  - id: d
+    text: Rename every variable.
+    issueSignals:
+    - id: renaming-as-justification
+  answer:
+    choiceId: a
+  difficultyDimensions:
+  - argumentMapping
+  - explanationCompleteness
+  - relevanceFiltering
+  difficultyEvidence: Repairs a missing logical connection rather than an algebraic error.
+  explanation: 'Solution: Add the inference that connects the calculation to a hypothesis, bound, or conclusion
+    of the theorem.
+
+    Why it works: Exposition must make each correct step''s role in the proof visible.
+
+    Why the other choices fail: They add activity or reorder text without supplying a warrant.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
+- id: q008
+  type: multipleChoice
+  prompt: Which dependency chain is valid in a source-style mathematical exposition?
+  choices:
+  - id: a
+    text: Definition fixes a term; hypotheses are checked; a theorem is applied; its conclusion is stated.
+  - id: b
+    text: Conclusion is declared; hypotheses are ignored; a definition is added.
+    issueSignals:
+    - id: reverse-dependency-chain
+  - id: c
+    text: A theorem is defined; evidence is omitted; the conclusion follows.
+    issueSignals:
+    - id: theorem-definition-confusion
+  - id: d
+    text: An auxiliary quantity is named; all claims are accepted.
+    issueSignals:
+    - id: auxiliary-object-overreach
+  answer:
+    choiceId: a
+  difficultyDimensions:
+  - sequencing
+  - conditionChecking
+  - argumentMapping
+  difficultyEvidence: Reconstructs the dependencies among definition, hypothesis check, theorem application, and
+    conclusion.
+  explanation: 'Solution: Definition fixes a term; hypotheses are checked; a theorem is applied; its conclusion
+    is stated.
+
+    Why it works: Each element supplies the information required by the next.
+
+    Why the other choices fail: They reverse dependencies or treat labels as evidence.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
+- id: q009
+  type: multipleChoice
+  prompt: Why is a closing phrase such as “this proves the theorem” appropriate only after a particular check?
+  choices:
+  - id: a
+    text: The proof has derived the theorem's announced conclusion from its stated conditions.
+  - id: b
+    text: The paragraph is long enough.
+    issueSignals:
+    - id: length-as-proof
+  - id: c
+    text: A definition appeared earlier.
+    issueSignals:
+    - id: definition-as-completion
+  - id: d
+    text: The author prefers that phrase.
+    issueSignals:
+    - id: style-as-validity
+  answer:
+    choiceId: a
+  difficultyDimensions:
+  - conventionRecognition
+  - conditionChecking
+  - argumentMapping
+  difficultyEvidence: Interprets a proof-closing convention by checking the completed hypothesis-to-conclusion chain.
+  explanation: 'Solution: The proof has derived the theorem''s announced conclusion from its stated conditions.
+
+    Why it works: The closing phrase summarizes a completed argument rather than creating one.
+
+    Why the other choices fail: Length, definitions, and preference are not logical completion.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02
+- id: q010
+  type: multipleChoice
+  prompt: A proof reader finds that an author has applied the squeeze theorem before establishing either bounding
+    inequality. What is the correct diagnosis?
+  choices:
+  - id: a
+    text: The application is premature because its supporting conditions have not been shown.
+  - id: b
+    text: The theorem automatically creates the missing inequalities.
+    issueSignals:
+    - id: theorem-creates-evidence
+  - id: c
+    text: The proof is valid if an auxiliary quantity was introduced.
+    issueSignals:
+    - id: auxiliary-object-overreach
+  - id: d
+    text: Bounds matter only after the conclusion.
+    issueSignals:
+    - id: condition-order-error
+  answer:
+    choiceId: a
+  difficultyDimensions:
+  - errorDiagnosis
+  - sequencing
+  - conditionChecking
+  difficultyEvidence: Detects a theorem invocation that occurs before the proof supplies its required bounds.
+  explanation: 'Solution: The application is premature because its supporting conditions have not been shown.
+
+    Why it works: Bounds must be established before they can license the squeeze theorem.
+
+    Why the other choices fail: They give the theorem or auxiliary notation unwarranted logical force.'
+  prerequisiteObjectiveIds:
+  - ml-proof-reading-02

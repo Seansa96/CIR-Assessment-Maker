@@ -16,60 +16,64 @@ guidedProject:
 items: []
 glossary: 
 lesson:
-  introduction: >
-    This lesson develops a repeatable way to solve Continuous Charge Distributions problems: identify the physical model, represent directions and signs, calculate, and test the result.
+  introduction: >-
+    How can Coulomb's law for a point charge predict the field of a rod or a disk? Replace the object with small charged pieces, add their vector fields, and take the limit as the pieces become infinitesimal. The integral is the final expression of that construction.
+
+
+    You will build charge elements, resolve their fields, and evaluate rod, ring, and disk integrals. You need definite integrals, simple substitution, and vector components. We assume fixed charges in vacuum, use $k=1/(4\pi\varepsilon_0)$, and evaluate fields away from the idealized charged material. Charge densities are signed; the diagrams illustrate positive charge.
   sections:
   - id: physics2-ch05-continuous-charge-s1
-    title: Name the model and quantities
+    title: From a sum of charges to a field integral
     required: true
-    content: >
-      Continuous Charge Distributions uses dE = k dq/r^2. In the name the model and quantities stage, write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+    content: >-
+      Hold the observation point $\mathbf r$ fixed. A small source charge $\Delta q_i$ sits at $\mathbf r'_i$. The displacement **from the source to the observer** is $\mathbf R_i=\mathbf r-\mathbf r'_i$, with length $R_i=|\mathbf R_i|$ and unit vector $\widehat{\mathbf R}_i=\mathbf R_i/R_i$.
 
 
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media:
-    - type: image
-      src: /media/physics2/ch05-relationship-map.svg
-      alt: >
-        Model map for solving Continuous Charge Distributions problems.
-      caption: Identify quantities, directions, and a verification check before calculating.
+      Coulomb's law and superposition give
+
+
+      $$\mathbf E(\mathbf r)\approx k\sum_i\frac{\Delta q_i}{R_i^2}\widehat{\mathbf R}_i.$$
+
+
+      Refine the partition while keeping the charge density fixed. The vector sum becomes
+
+
+      $$\mathbf E(\mathbf r)=k\int_{\text{source}}\frac{\widehat{\mathbf R}}{R^2}\,dq
+
+      =k\int_{\text{source}}\frac{\mathbf r-\mathbf r'}{|\mathbf r-\mathbf r'|^3}\,dq.$$
+
+
+      The source coordinate varies during integration; the observation coordinate does not. For a source at $(x,0)$ and observer at $(0,a)$, $\mathbf R=(-x,a)$ and $R=\sqrt{x^2+a^2}$. Reversing this displacement reverses the predicted field. Using signed $dq$ automatically reverses a negative charge's contribution toward the source.
+    media: []
     check:
       id: physics2-ch05-continuous-charge-s1-check
       type: multipleChoice
-      prompt: >
-        In the name the model and quantities step for Continuous Charge Distributions, what is the most reliable next action?
+      prompt: A positive charge element is at $(x,0)$ and the fixed observer is at $(0,a)$, with $a>0$. Which vector must appear in the numerator of $d\mathbf E=k\,dq\,\mathbf R/R^3$?
       choices:
       - id: a
-        text: >
-          For name the model and quantities, use dE = k dq/r^2 after you write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+        text: $x\widehat{\mathbf x}-a\widehat{\mathbf y}$
+        media: []
+        issueSignals:
+        - id: sign-error
+          domains: []
+      - id: b
+        text: $-x\widehat{\mathbf x}+a\widehat{\mathbf y}$
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During name the model and quantities, ignore the stated sign, direction, or reference quantity in this Continuous Charge Distributions problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-sign-direction-error
-          domains:
-          - physics-2
       - id: c
-        text: >
-          During name the model and quantities, substitute every listed number before deciding which variables dE = k dq/r^2 relates.
+        text: $a\widehat{\mathbf y}$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-method-selection-error
-          domains:
-          - physics-2
+        - id: vector-component-resolution-error
+          domains: []
       - id: d
-        text: >
-          During name the model and quantities, accept the numerical result without checking whether its units and limiting behavior fit Continuous Charge Distributions.
+        text: $\sqrt{x^2+a^2}$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-units-error
-          domains:
-          - physics-2
+        - id: scalar-vector-confusion
+          domains: []
       answer:
-        choiceId: a
+        choiceId: b
         choiceIds: []
         expected: 
         gradingMode: 
@@ -82,14 +86,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During name the model and quantities for Continuous Charge Distributions, first write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component. Then apply dE = k dq/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: B. Subtract the source position from the observer position: $(0,a)-(x,0)=(-x,a)$.
 
+        Why it works: A positive source produces a field along the source-to-observer displacement. The length in the denominator is $\sqrt{x^2+a^2}$.
 
-        Why it works: dE = k dq/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: A points toward the positive source. C drops the horizontal contribution of this individual element before any cancellation is proved. D is a distance, not a vector direction.
       media: []
       language: 
       functionName: 
@@ -98,64 +100,80 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-continuous-charge
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
       - errorDiagnosis
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Continuous Charge Distributions model rather than matching symbols alone.
+      difficultyEvidence: 'Source-to-observer displacement in vector Coulomb superposition: Distinguish displacement vector from its scalar length.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-continuous-charge-s2
-    title: Choose a representation
+    title: Construct dq from geometry and density
     required: true
-    content: >
-      Continuous Charge Distributions uses dE = k dq/r^2. In the choose a representation stage, write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+    content: >-
+      Density converts a geometric element into charge:
 
 
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
+      | Distribution | Charge element | Density units |
+
+      | --- | --- | --- |
+
+      | Line | $dq=\lambda\,dl$ | $\mathrm{C/m}$ |
+
+      | Surface | $dq=\sigma\,dA$ | $\mathrm{C/m^2}$ |
+
+      | Volume | $dq=\rho\,dV$ | $\mathrm{C/m^3}$ |
+
+
+      Choose the element that matches the shape: $dl=dx$ on a straight rod, $dl=R\,d\phi$ on a ring, and $dA=2\pi s\,ds$ for a thin annulus of radius $s$. The annulus already includes its entire circumference: do not multiply by $2\pi$ again.
+
+
+      Check the charge before calculating the field: $Q=\int dq$. For a rod on $0\le x\le L$ with $\lambda(x)=\lambda_0x/L$,
+
+
+      $$dq=\lambda_0\frac{x}{L}\,dx,\qquad
+
+      Q=\frac{\lambda_0}{L}\int_0^L x\,dx
+
+      =\frac{\lambda_0}{L}\left[\frac{x^2}{2}\right]_0^L
+
+      =\frac{\lambda_0L}{2}.$$
+
+
+      This agrees with average density $\lambda_0/2$ times length. Using $\lambda_0L$ incorrectly treats the maximum density as constant. Likewise, $Q$ alone does not determine the nearby field: the integral must retain the spatial distribution.
     media: []
     check:
       id: physics2-ch05-continuous-charge-s2-check
       type: multipleChoice
-      prompt: >
-        In the choose a representation step for Continuous Charge Distributions, what is the most reliable next action?
+      prompt: A rod on $0\le x\le L$ has $\lambda(x)=\lambda_0x/L$, with $L>0$. Which pair correctly gives its charge element and total charge?
       choices:
       - id: a
-        text: >
-          For choose a representation, use dE = k dq/r^2 after you write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+        text: $dq=\lambda_0\,dx,\quad Q=\lambda_0L$
+        media: []
+        issueSignals:
+        - id: mathematical-translation-error
+          domains: []
+      - id: b
+        text: $dq=(\lambda_0x/L)\,dx,\quad Q=\lambda_0L$
+        media: []
+        issueSignals:
+        - id: integration-error
+          domains: []
+      - id: c
+        text: $dq=(\lambda_0x/L)\,dx,\quad Q=\lambda_0L/2$
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During choose a representation, ignore the stated sign, direction, or reference quantity in this Continuous Charge Distributions problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During choose a representation, substitute every listed number before deciding which variables dE = k dq/r^2 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-method-selection-error
-          domains:
-          - physics-2
       - id: d
-        text: >
-          During choose a representation, accept the numerical result without checking whether its units and limiting behavior fit Continuous Charge Distributions.
+        text: $dq=(\lambda_0x/L)\,dx,\quad Q=\lambda_0L^2/2$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-units-error
-          domains:
-          - physics-2
+        - id: algebraic-simplification-error
+          domains: []
       answer:
-        choiceId: a
+        choiceId: c
         choiceIds: []
         expected: 
         gradingMode: 
@@ -168,14 +186,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During choose a representation for Continuous Charge Distributions, first write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component. Then apply dE = k dq/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: C. Integrate $Q=(\lambda_0/L)\int_0^L x\,dx=(\lambda_0/L)(L^2/2)=\lambda_0L/2$.
 
+        Why it works: Each source slice carries its local density times $dx$. The result has charge units because $[\lambda_0 L]=\mathrm C$.
 
-        Why it works: dE = k dq/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: A replaces the varying density by its endpoint value. B retains the correct element but loses the factor $1/2$ on integration. D fails to cancel the $L$ in the density and has units of charge times length.
       media: []
       language: 
       functionName: 
@@ -184,62 +200,65 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-continuous-charge
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
       - errorDiagnosis
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Continuous Charge Distributions model rather than matching symbols alone.
+      difficultyEvidence: 'Local density times line element and definite charge integration: Cancel L and verify charge units.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-continuous-charge-s3
-    title: Set up the calculation
+    title: Resolve components before invoking symmetry
     required: true
-    content: >
-      Continuous Charge Distributions uses dE = k dq/r^2. In the set up the calculation stage, write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+    content: >-
+      The scalar magnitude rule behind each contribution is dE = k dq/r^2; the field calculation must then restore the direction with a unit vector. For a rod along the x-axis observed at $(0,a)$, substitute $dq=\lambda(x)dx$ and $\mathbf R=(-x,a)$ into the vector law:
 
 
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+      $$d\mathbf E=k\lambda(x)\frac{-x\widehat{\mathbf x}+a\widehat{\mathbf y}}{(x^2+a^2)^{3/2}}\,dx.$$
+
+
+      Hence $dE_x=-k\lambda(x)x\,dx/(x^2+a^2)^{3/2}$ and $dE_y=k\lambda(x)a\,dx/(x^2+a^2)^{3/2}$. The extra denominator power comes from projection: $dE_y=(k\,dq/R^2)(a/R)$.
+
+
+      For a uniform rod centered on the origin, sources at $+x$ and $-x$ carry equal charge and have equal distance to the observer. Their horizontal contributions are opposite; their vertical contributions have the same sign. Equivalently, the $E_x$ integrand is odd and the $E_y$ integrand is even on $[-L,L]$.
+
+
+      Symmetry belongs to the **charge distribution and observation point together**. A symmetric outline alone is insufficient when $\lambda(x)\ne\lambda(-x)$. Also, cancellation of a component of the total field does not make that component zero for each source element.
+    media:
+    - type: image
+      src: /media/physics2/continuous-charge-rod.svg
+      alt: Rod on the x-axis from minus L to L, with observer P at (0,a), charge elements at plus and minus x, and source-to-observer displacement arrows.
+      caption: 
     check:
       id: physics2-ch05-continuous-charge-s3-check
       type: multipleChoice
-      prompt: >
-        In the set up the calculation step for Continuous Charge Distributions, what is the most reliable next action?
+      prompt: Equal positive elements at $(x,0)$ and $(-x,0)$ produce fields at $(0,a)$, where $x,a>0$. What happens when their fields are added?
       choices:
       - id: a
-        text: >
-          For set up the calculation, use dE = k dq/r^2 after you write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+        text: Horizontal components cancel; vertical components add.
         media: []
         issueSignals: []
       - id: b
-        text: >
-          During set up the calculation, ignore the stated sign, direction, or reference quantity in this Continuous Charge Distributions problem.
+        text: Vertical components cancel; horizontal components add.
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-sign-direction-error
-          domains:
-          - physics-2
+        - id: vector-component-resolution-error
+          domains: []
       - id: c
-        text: >
-          During set up the calculation, substitute every listed number before deciding which variables dE = k dq/r^2 relates.
+        text: Both components cancel because the elements are opposite each other.
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-method-selection-error
-          domains:
-          - physics-2
+        - id: vector-field-interpretation-error
+          domains: []
       - id: d
-        text: >
-          During set up the calculation, accept the numerical result without checking whether its units and limiting behavior fit Continuous Charge Distributions.
+        text: The net vertical field is twice the magnitude of either individual field.
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-units-error
-          domains:
-          - physics-2
+        - id: scalar-vector-confusion
+          domains: []
       answer:
         choiceId: a
         choiceIds: []
@@ -254,14 +273,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During set up the calculation for Continuous Charge Distributions, first write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component. Then apply dE = k dq/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: A. The two displacements are $(-x,a)$ and $(x,a)$, so only their horizontal components have opposite signs.
 
+        Why it works: Equal charges at equal distances give a common multiplier $k\,dq/(x^2+a^2)^{3/2}$; adding the displacement vectors gives $(0,2a)$.
 
-        Why it works: dE = k dq/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: B exchanges the cancelling and reinforcing components. C overlooks the shared positive vertical component. D adds magnitudes without the projection factor $a/\sqrt{x^2+a^2}<1$.
       media: []
       language: 
       functionName: 
@@ -270,67 +287,79 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-continuous-charge
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
       - errorDiagnosis
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Continuous Charge Distributions model rather than matching symbols alone.
+      difficultyEvidence: 'Equal-charge component pairing at a fixed observation point: Sum vectors, cancelling horizontal components only.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-continuous-charge-s4
-    title: Work a representative case
+    title: Evaluate the finite-rod integral
     required: true
-    content: >
-      Continuous Charge Distributions uses dE = k dq/r^2. In the work a representative case stage, write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+    content: >-
+      Let a uniform rod have signed density $\lambda$ on $-L\le x\le L$; its total length is **$2L$** and $Q=2\lambda L$. Observe at $(0,a)$, where $a>0$. The previous symmetry argument gives $E_x=0$ and
 
 
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
+      $$E_y=k\lambda a\int_{-L}^{L}\frac{dx}{(x^2+a^2)^{3/2}}.$$
 
 
-      Example: for a uniformly charged rod with $\lambda=2.0\,\mu\mathrm{C/m}$ from $x=0$ to $0.40\,\mathrm{m}$, find the field at a point $a=0.20\,\mathrm{m}$ beyond its left end. Write $dq=\lambda\,dx$ and $dE=k\lambda\,dx/(a+x)^2$; all elements point left. Thus $E=k\lambda\int_0^{0.40}dx/(a+x)^2=k\lambda(1/a-1/(a+0.40))=6.0\times10^4\,\mathrm{N/C}$ left. The $1/r^2$ kernel and the direction must be included before integrating.
-    media: []
+      To evaluate the integral, take $x=a\tan\theta$. Then $dx=a\sec^2\theta\,d\theta$ and $(x^2+a^2)^{3/2}=a^3\sec^3\theta$, so
+
+
+      $$\int\frac{dx}{(x^2+a^2)^{3/2}}
+
+      =\frac1{a^2}\int\cos\theta\,d\theta
+
+      =\frac{x}{a^2\sqrt{x^2+a^2}}+C.$$
+
+
+      Differentiating the final expression returns $(x^2+a^2)^{-3/2}$. Now evaluate both endpoints:
+
+
+      $$E_y=\frac{k\lambda}{a}\left[\frac{x}{\sqrt{x^2+a^2}}\right]_{-L}^{L}
+
+      =\frac{2k\lambda L}{a\sqrt{a^2+L^2}},\qquad \mathbf E=E_y\widehat{\mathbf y}.$$
+
+
+      Positive $\lambda$ gives an upward field; negative $\lambda$ reverses it. Integrating over $[-L,L]$ has already included both halves. You may instead double the integral from $0$ to $L$, but must not double the full-rod integral again.
+    media:
+    - type: image
+      src: /media/physics2/continuous-charge-rod.svg
+      alt: Rod on the x-axis from minus L to L, with observer P at (0,a), charge elements at plus and minus x, and source-to-observer displacement arrows.
+      caption: 
     check:
       id: physics2-ch05-continuous-charge-s4-check
       type: multipleChoice
-      prompt: >
-        In the work a representative case step for Continuous Charge Distributions, what is the most reliable next action?
+      prompt: For a uniform rod on $[-L,L]$, the vertical field at $(0,a)$ is $k\lambda a\int_{-L}^{L}(x^2+a^2)^{-3/2}dx$, with $a,L>0$. Which endpoint evaluation is correct?
       choices:
       - id: a
-        text: >
-          For work a representative case, use dE = k dq/r^2 after you write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+        text: $E_y=k\lambda L/[a\sqrt{a^2+L^2}]$
+        media: []
+        issueSignals:
+        - id: integration-bounds-error
+          domains: []
+      - id: b
+        text: $E_y=4k\lambda L/[a\sqrt{a^2+L^2}]$
+        media: []
+        issueSignals:
+        - id: integration-bounds-error
+          domains: []
+      - id: c
+        text: $E_y=2k\lambda L/(a^2+L^2)$
+        media: []
+        issueSignals:
+        - id: integration-error
+          domains: []
+      - id: d
+        text: $E_y=2k\lambda L/[a\sqrt{a^2+L^2}]$
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During work a representative case, ignore the stated sign, direction, or reference quantity in this Continuous Charge Distributions problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During work a representative case, substitute every listed number before deciding which variables dE = k dq/r^2 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During work a representative case, accept the numerical result without checking whether its units and limiting behavior fit Continuous Charge Distributions.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-units-error
-          domains:
-          - physics-2
       answer:
-        choiceId: a
+        choiceId: d
         choiceIds: []
         expected: 
         gradingMode: 
@@ -343,14 +372,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During work a representative case for Continuous Charge Distributions, first write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component. Then apply dE = k dq/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: D. The antiderivative after multiplying by $k\lambda a$ is $(k\lambda/a)x/\sqrt{x^2+a^2}$. Its values at $L$ and $-L$ are opposite, so their difference is $2k\lambda L/[a\sqrt{a^2+L^2}]$.
 
+        Why it works: The definite integral subtracts the negative lower-end value and accounts for the whole rod exactly once.
 
-        Why it works: dE = k dq/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: A keeps only one half. B doubles the full-rod result again. C treats every element as if it had an endpoint distance and loses the actual integrated dependence on $a$.
       media: []
       language: 
       functionName: 
@@ -359,64 +386,68 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-continuous-charge
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
       - errorDiagnosis
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Continuous Charge Distributions model rather than matching symbols alone.
+      difficultyEvidence: 'Endpoint subtraction after the rod antiderivative: Multiply by k lambda a without an extra doubling.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-continuous-charge-s5
-    title: Use calculus or a rate law
+    title: Integrate around a uniformly charged ring
     required: true
-    content: >
-      Continuous Charge Distributions uses dE = k dq/r^2. In the use calculus or a rate law stage, write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+    content: >-
+      Put a ring of radius $R$ in the xy-plane and observe at $(0,0,z)$. Parameterize its source points by $\phi$, so $dl=R\,d\phi$, $dq=\lambda R\,d\phi$, and $0\le\phi\le2\pi$. For a uniform ring $Q=2\pi R\lambda$.
 
 
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+      Every element has the same separation distance $D=\sqrt{R^2+z^2}$ from the observer. Opposite elements cancel the transverse components. The signed axial projection of their unit displacements is $z/D$, so
+
+
+      $$E_z=k\int_0^{2\pi}\frac{\lambda R\,d\phi}{R^2+z^2}\frac{z}{\sqrt{R^2+z^2}}
+
+      =\frac{k\lambda Rz}{(R^2+z^2)^{3/2}}[\phi]_0^{2\pi}
+
+      =\frac{kQz}{(R^2+z^2)^{3/2}}.$$
+
+
+      During this integral $R$, $z$, $D$, and $\lambda$ are constant; only the angle changes. The vector is $E_z\widehat{\mathbf z}$. It vanishes at the ring center, reverses below the plane, and reverses again if $Q$ changes sign. The distance $D$ is not the ring radius $R$, and a constant distance does not eliminate the need to project the field.
+    media:
+    - type: image
+      src: /media/physics2/continuous-charge-ring.svg
+      alt: Ring in the xy-plane of radius R with observer P at height z, an arc charge element, separation D, and axial field direction.
+      caption: 
     check:
       id: physics2-ch05-continuous-charge-s5-check
       type: multipleChoice
-      prompt: >
-        In the use calculus or a rate law step for Continuous Charge Distributions, what is the most reliable next action?
+      prompt: A uniform ring has positive charge $Q$ and radius $R$. At axial position $z=R>0$, which field follows from resolving and integrating its charge elements?
       choices:
       - id: a
-        text: >
-          For use calculus or a rate law, use dE = k dq/r^2 after you write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+        text: $\mathbf E=[kQ/(2R^2)]\widehat{\mathbf z}$
+        media: []
+        issueSignals:
+        - id: vector-component-resolution-error
+          domains: []
+      - id: b
+        text: $\mathbf E=[kQ/(2\sqrt2 R^2)]\widehat{\mathbf z}$
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During use calculus or a rate law, ignore the stated sign, direction, or reference quantity in this Continuous Charge Distributions problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-sign-direction-error
-          domains:
-          - physics-2
       - id: c
-        text: >
-          During use calculus or a rate law, substitute every listed number before deciding which variables dE = k dq/r^2 relates.
+        text: $\mathbf E=[kQ/R^2]\widehat{\mathbf z}$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-method-selection-error
-          domains:
-          - physics-2
+        - id: mathematical-translation-error
+          domains: []
       - id: d
-        text: >
-          During use calculus or a rate law, accept the numerical result without checking whether its units and limiting behavior fit Continuous Charge Distributions.
+        text: $\mathbf E=0$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-units-error
-          domains:
-          - physics-2
+        - id: vector-field-interpretation-error
+          domains: []
       answer:
-        choiceId: a
+        choiceId: b
         choiceIds: []
         expected: 
         gradingMode: 
@@ -429,14 +460,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During use calculus or a rate law for Continuous Charge Distributions, first write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component. Then apply dE = k dq/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: B. Substitute $z=R$ into $E_z=kQz/(R^2+z^2)^{3/2}$ to obtain $kQ/(2\sqrt2 R^2)$.
 
+        Why it works: The squared source distance is $2R^2$ and the projection factor is $1/\sqrt2$; multiplying both factors gives the keyed result.
 
-        Why it works: dE = k dq/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: A uses the right distance but omits axial projection. C replaces the ring by a central point charge even though the observer is not far away. D applies the center's zero-field condition at $z=R$.
       media: []
       language: 
       functionName: 
@@ -445,62 +474,79 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-continuous-charge
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
       - errorDiagnosis
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Continuous Charge Distributions model rather than matching symbols alone.
+      difficultyEvidence: 'Constant ring-axis distance with axial projection: Multiply kQ/D^2 by the projection.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-continuous-charge-s6
-    title: Check direction, units, and limits
+    title: Build a disk integral from annuli
     required: true
-    content: >
-      Continuous Charge Distributions uses dE = k dq/r^2. In the check direction, units, and limits stage, write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+    content: >-
+      A uniformly charged disk has radius $R$ and signed surface density $\sigma$. At axial position $z>0$, divide the disk into rings of **variable** radius $s$ and width $ds$. Each annulus has $dq=\sigma\,2\pi s\,ds$. Use the ring result for that annulus:
 
 
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+      $$dE_z=\frac{kz\,dq}{(z^2+s^2)^{3/2}},\qquad
+
+      E_z=2\pi k\sigma z\int_0^R\frac{s\,ds}{(z^2+s^2)^{3/2}}.$$
+
+
+      Let $u=z^2+s^2$, so $du=2s\,ds$. The new bounds are $z^2$ and $z^2+R^2$:
+
+
+      $$\int_0^R\frac{s\,ds}{(z^2+s^2)^{3/2}}
+
+      =\frac12\int_{z^2}^{z^2+R^2}u^{-3/2}\,du
+
+      =[-u^{-1/2}]_{z^2}^{z^2+R^2}
+
+      =\frac1z-\frac1{\sqrt{z^2+R^2}}.$$
+
+
+      Here $\sqrt{z^2}=z$ because we specified $z>0$. Thus
+
+
+      $$\mathbf E=2\pi k\sigma\left(1-\frac{z}{\sqrt{z^2+R^2}}\right)\widehat{\mathbf z}.$$
+
+
+      The ring distance changes as $s$ changes, so it must remain inside the integral. A common error is to substitute the outer radius $R$ for every ring radius. Also, $2\pi s\,ds$ is an area, whereas $2\pi s$ alone is a circumference. Below the disk use reflection symmetry; do not insert a negative $z$ into this positive-side expression. At the ideal sheet itself the field has a jump, so the one-sided limit is distinct from a value on the sheet.
+    media:
+    - type: image
+      src: /media/physics2/continuous-charge-disk.svg
+      alt: Disk of radius R with a highlighted annulus of radius s and thickness ds; observer P is height z above the center.
+      caption: 
     check:
       id: physics2-ch05-continuous-charge-s6-check
       type: multipleChoice
-      prompt: >
-        In the check direction, units, and limits step for Continuous Charge Distributions, what is the most reliable next action?
+      prompt: For a uniform disk of radius $R$ observed at $z>0$, apply $u=z^2+s^2$ to $E_z=2\pi k\sigma z\int_0^R s(z^2+s^2)^{-3/2}ds$. Which transformed integral is correct?
       choices:
       - id: a
-        text: >
-          For check direction, units, and limits, use dE = k dq/r^2 after you write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+        text: $\pi k\sigma z\int_{z^2}^{z^2+R^2}u^{-3/2}\,du$
         media: []
         issueSignals: []
       - id: b
-        text: >
-          During check direction, units, and limits, ignore the stated sign, direction, or reference quantity in this Continuous Charge Distributions problem.
+        text: $2\pi k\sigma z\int_{z^2}^{z^2+R^2}u^{-3/2}\,du$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-sign-direction-error
-          domains:
-          - physics-2
+        - id: integration-error
+          domains: []
       - id: c
-        text: >
-          During check direction, units, and limits, substitute every listed number before deciding which variables dE = k dq/r^2 relates.
+        text: $\pi k\sigma z\int_0^R u^{-3/2}\,du$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-method-selection-error
-          domains:
-          - physics-2
+        - id: integration-bounds-error
+          domains: []
       - id: d
-        text: >
-          During check direction, units, and limits, accept the numerical result without checking whether its units and limiting behavior fit Continuous Charge Distributions.
+        text: $\pi k\sigma z\int_{z^2+R^2}^{z^2}u^{-3/2}\,du$
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-units-error
-          domains:
-          - physics-2
+        - id: sign-error
+          domains: []
       answer:
         choiceId: a
         choiceIds: []
@@ -515,14 +561,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During check direction, units, and limits for Continuous Charge Distributions, first write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component. Then apply dE = k dq/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: A. Since $du=2s\,ds$, replace $s\,ds$ by $du/2$. Map $s=0$ to $u=z^2$ and $s=R$ to $u=z^2+R^2$.
 
+        Why it works: The Jacobian factor halves the prefactor and the transformed bounds describe exactly the original annuli.
 
-        Why it works: dE = k dq/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: B omits the factor $1/2$. C keeps bounds for $s$ while integrating with respect to $u$. D reverses the bounds without compensating with a minus sign, reversing the field for positive charge.
       media: []
       language: 
       functionName: 
@@ -531,64 +575,79 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-continuous-charge
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
       - errorDiagnosis
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Continuous Charge Distributions model rather than matching symbols alone.
+      difficultyEvidence: 'Annular area and substitution with transformed limits: Keep the orientation of increasing bounds.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
       issueSignals: []
   - id: physics2-ch05-continuous-charge-s7
-    title: Transfer the method to a new situation
+    title: Test the result and transfer the setup
     required: true
-    content: >
-      Continuous Charge Distributions uses dE = k dq/r^2. In the transfer the method to a new situation stage, write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+    content: >-
+      A result needs checks beyond its algebra. For the rod, $k\lambda L/[a\sqrt{a^2+L^2}]$ has units $\mathrm{N/C}$. The ring has the same units as $kQ/R^2$; the disk prefactor $k\sigma$ also has units $\mathrm{N/C}$.
 
 
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
+      **Far away:** for $a\gg L$, the rod gives $E_y\approx2k\lambda L/a^2=kQ/a^2$. For $z\gg R$, the ring gives $E_z\approx kQ/z^2$. For the disk, let $u=R^2/z^2\ll1$ and use $(1+u)^{-1/2}\approx1-u/2$:
+
+
+      $$E_z\approx2\pi k\sigma\frac{R^2}{2z^2}=\frac{k(\pi R^2\sigma)}{z^2}.$$
+
+
+      The disk's leading terms cancel: retaining only $1-1$ would falsely predict zero. Each finite source approaches a point-charge field at large positive distance.
+
+
+      **Large source at fixed density:** at fixed $a$ and $\lambda$, let $L\to\infty$ in the rod result to obtain $E_y=2k\lambda/a$. At fixed $z>0$ and $\sigma$, let $R\to\infty$ in the disk result to obtain $E_z=2\pi k\sigma=\sigma/(2\varepsilon_0)$. These limits increase the total charge; holding total charge fixed would be a different limit.
+
+
+      **Transfer:** now let the rod on $[-L,L]$ have $\lambda(x)=\lambda_0(1+\beta x/L)$, with $\lambda_0>0$ and $0<\beta<1$. The rod outline is still symmetric, but the right side carries more charge. Keep both components:
+
+
+      $$E_x=-k\lambda_0\int_{-L}^{L}\frac{x(1+\beta x/L)}{(x^2+a^2)^{3/2}}\,dx
+
+      =-\frac{k\lambda_0\beta}{L}\int_{-L}^{L}\frac{x^2}{(x^2+a^2)^{3/2}}\,dx<0,$$
+
+
+      $$E_y=k\lambda_0 a\int_{-L}^{L}\frac{1+\beta x/L}{(x^2+a^2)^{3/2}}\,dx
+
+      =k\lambda_0 a\int_{-L}^{L}\frac{dx}{(x^2+a^2)^{3/2}}.$$
+
+
+      In the first integral the odd term vanishes and the even term survives; in the second the density correction is odd and vanishes. This shows precisely why a change in density requires a new symmetry argument.
     media: []
     check:
       id: physics2-ch05-continuous-charge-s7-check
       type: multipleChoice
-      prompt: >
-        In the transfer the method to a new situation step for Continuous Charge Distributions, what is the most reliable next action?
+      prompt: A rod on $[-L,L]$ has $\lambda(x)=\lambda_0(1+\beta x/L)$, where $\lambda_0>0$ and $0<\beta<1$. At $(0,a)$ with $a>0$, how does its field compare with a uniform rod of density $\lambda_0$ on the same interval?
       choices:
       - id: a
-        text: >
-          For transfer the method to a new situation, use dE = k dq/r^2 after you write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component.
+        text: $E_x=0$ and $E_y$ is unchanged because the rod outline is symmetric.
+        media: []
+        issueSignals:
+        - id: vector-field-interpretation-error
+          domains: []
+      - id: b
+        text: $E_x>0$ and $E_y$ is unchanged because more positive charge lies on the right.
+        media: []
+        issueSignals:
+        - id: sign-error
+          domains: []
+      - id: c
+        text: $E_x<0$ and $E_y$ is unchanged.
         media: []
         issueSignals: []
-      - id: b
-        text: >
-          During transfer the method to a new situation, ignore the stated sign, direction, or reference quantity in this Continuous Charge Distributions problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During transfer the method to a new situation, substitute every listed number before deciding which variables dE = k dq/r^2 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-method-selection-error
-          domains:
-          - physics-2
       - id: d
-        text: >
-          During transfer the method to a new situation, accept the numerical result without checking whether its units and limiting behavior fit Continuous Charge Distributions.
+        text: $E_x<0$ and $E_y$ increases by a factor $1+\beta$.
         media: []
         issueSignals:
-        - id: physics2-physics2-ch05-continuous-charge-units-error
-          domains:
-          - physics-2
+        - id: mathematical-translation-error
+          domains: []
       answer:
-        choiceId: a
+        choiceId: c
         choiceIds: []
         expected: 
         gradingMode: 
@@ -601,14 +660,12 @@ lesson:
         keyPoints: []
         circuitAnswer: 
         graphingAnswer: 
-      explanation: >
-        Solution: During transfer the method to a new situation for Continuous Charge Distributions, first write dq from a charge density, use symmetry to remove cancelling components, and integrate the remaining component. Then apply dE = k dq/r^2 with one consistent coordinate system and solve for the requested quantity.
+      explanation: >-
+        Solution: C. In $E_x$, the correction is $-k\lambda_0\beta x^2/[L(x^2+a^2)^{3/2}]$, whose integral is negative. In $E_y$, the correction is proportional to the odd function $x/(x^2+a^2)^{3/2}$ and integrates to zero.
 
+        Why it works: Pairing equal geometric positions cancels only terms with the required parity. The extra positive charge on the right pushes the field toward the left at this observer.
 
-        Why it works: dE = k dq/r^2 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
+        Why the other choices fail: A assumes symmetric charge from shape alone. B reverses the direction of the extra right-side contribution. D replaces the varying correction with its maximum value instead of integrating its odd vertical contribution.
       media: []
       language: 
       functionName: 
@@ -617,14 +674,12 @@ lesson:
       tests: 
       circuitQuestion: 
       graphingQuestion: 
-      skills:
-      - physics2-ch05-continuous-charge
+      skills: []
       difficultyDimensions:
       - modelOrDerivation
       - errorDiagnosis
       subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Continuous Charge Distributions model rather than matching symbols alone.
+      difficultyEvidence: 'Parity of density-weighted components under broken reflection symmetry: Identify the surviving negative horizontal correction and zero vertical correction.'
       prerequisiteObjectiveIds: []
       extensionObjectiveIds: []
       parts: []
@@ -636,18 +691,21 @@ navigation:
   learningGoal: learn
   activityType: conceptLesson
   tags:
+  - charge-density
   - computational
+  - definite-integrals
+  - electrostatics
   - physics-2
-  - physics2-electric-charges-fields
-  - s2c-reviewed
 skills:
-- apply-newtons-second-law
+- charge-density
+- continuous-charge-superposition
+- definite-integration
 - evaluate-limits
-- physics2-ch05-modeling
-- physics2-electric-charges-fields
+- symmetry
+- vector-components
 authoring:
   visualRequirement: required
-  visualRationale: An original relationship map supports the model, direction, and units used in this Physics 2 learning activity.
+  visualRationale: Rod, ring, and disk diagrams identify the integration elements, observation points, separation distances, and component directions used in the derivations.
   difficultyTier: unspecified
   exceptionReason: 
   physicsModel: 

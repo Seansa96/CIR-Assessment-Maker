@@ -22,7 +22,8 @@ public static class FileDtoMapper
             dto.Description)
         {
             AuthoringProfile = ParseAuthoringProfile(dto.AuthoringProfile),
-            DirectedProjectEligible = dto.DirectedProjectEligible ?? false
+            DirectedProjectEligible = dto.DirectedProjectEligible ?? false,
+            AllowMultipleChoiceHardQuizzes = dto.AllowMultipleChoiceHardQuizzes ?? false
         };
     }
 
