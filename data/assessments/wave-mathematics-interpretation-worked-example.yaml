@@ -1,0 +1,222 @@
+schemaVersion: 1
+id: wave-mathematics-interpretation-worked-example
+title: 'Worked Examples: Interpreting Wave Functions and Parameters'
+description: >-
+  Original guided problems for classifying wave functions, reading sinusoidal parameters, checking units,
+  and relating wavelength, period, frequency, direction, and speed.
+assessmentType: workedExample
+categoryId: physics-1
+topicId: physics-wave-mechanics
+modeDefault: practice
+randomizeQuestions: false
+skills:
+  - physics-wave-mathematics
+  - wave-parameter-extraction
+  - dimensional-analysis
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - physics-1
+    - physics-wave-mechanics
+    - guided-solving
+authoring:
+  sourceId: src-20260720001005-93652b69c4
+  sourcePacketId: packet-physics-wave-mathematics-v1
+  blueprintId: physics-wave-interpretation-worked-examples-v1
+  visualRequirement: required
+  visualRationale: Original wave schematic supports spatial phase, temporal phase, and propagation direction.
+workedExamples:
+  - id: we-wave-interpret-01
+    title: Classify a localized pulse by its shape
+    problem: >-
+      Decide whether $y(x)=\frac{0.18x}{5x^2+2}$ is a localized pulse with both positive and negative values.
+      Justify the classification from its limiting behavior and sign, rather than from its appearance alone.
+    steps:
+      - id: we-wave-interpret-01-step-01
+        title: Identify the function type
+        instruction: Determine whether the expression depends on time and whether it is localized in space.
+        prompt: What features make this a spatial pulse candidate?
+        type: freeResponse
+        media:
+          - type: image
+            src: /media/physics/owa/wave-pulse-classification.svg
+            alt: Original sign-changing localized pulse with decaying tails.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - It depends on x only, so it is a snapshot profile.
+            - The denominator grows quadratically while the numerator grows linearly, so the value tends to zero as |x| grows.
+        explanation: >-
+          Solution: It is a spatial profile because it depends only on $x$, and it is localized because
+          $y(x)\to0$ as $|x|\to\infty$. Why it works: localization is determined by the tails of the
+          function, not by whether the profile is sinusoidal.
+      - id: we-wave-interpret-01-step-02
+        title: Check the denominator
+        instruction: Analyze the sign of $5x^2+2$ for every real $x$.
+        prompt: Can the denominator change sign or become zero?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $5x^2+2\ge2$, so it is always positive and never zero.
+        explanation: >-
+          Solution: Since $x^2\ge0$, $5x^2+2\ge2>0$. Why it works: the denominator contributes no
+          sign changes and introduces no vertical singularity, so the numerator controls the sign.
+      - id: we-wave-interpret-01-step-03
+        title: Locate the sign change
+        instruction: Set the numerator equal to zero and test one point on each side.
+        prompt: Where does the profile change sign?
+        type: symbolicResponse
+        answer:
+          expectedLatex: 'x=0'
+          equivalenceMode: algebraic
+          variables: [x]
+        explanation: >-
+          Solution: The numerator is $0.18x$, so it vanishes at $x=0$; because the denominator is positive,
+          $y<0$ for $x<0$ and $y>0$ for $x>0$. Why it works: a positive constant times $x$ changes sign
+          exactly at the origin when the denominator stays positive.
+      - id: we-wave-interpret-01-step-04
+        title: State the classification
+        instruction: Combine the tail behavior and sign analysis.
+        prompt: Is this a localized pulse with both positive and negative values?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - Yes; it is localized, negative on the left, positive on the right, and zero at the origin.
+        explanation: >-
+          Solution: Yes. The profile decays to zero in both tails and has opposite signs on either side of
+          $x=0$. Why it works: the classification uses two independent tests—localization and sign structure.
+  - id: we-wave-interpret-02
+    title: Extract parameters from a harmonic wave
+    problem: >-
+      For $y(x,t)=0.24\cos(6\pi x-18\pi t+\pi/3)$ in SI units, determine the amplitude, wavelength,
+      frequency, period, direction, and propagation speed.
+    steps:
+      - id: we-wave-interpret-02-step-01
+        title: Match the standard form
+        instruction: Match the expression to $A\cos(kx-\omega t+\phi)$.
+        prompt: What are $A$, $k$, $\omega$, and $\phi$?
+        type: freeResponse
+        media:
+          - type: image
+            src: /media/physics/owa/wave-parameter-map.svg
+            alt: Original sinusoid labeling amplitude, wavelength, and phase coefficients.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $A=0.24\,\mathrm m$, $k=6\pi\,\mathrm{rad/m}$, $\omega=18\pi\,\mathrm{rad/s}$, and $\phi=\pi/3$.
+        explanation: >-
+          Solution: Read each coefficient in the standard phase form: $A=0.24$, $k=6\pi$, $\omega=18\pi$,
+          and $\phi=\pi/3$. Why it works: the coefficient of $x$ is the spatial phase rate and the coefficient
+          of $t$ is the temporal phase rate.
+      - id: we-wave-interpret-02-step-02
+        title: Convert the spatial coefficient
+        instruction: Use $k=2\pi/\lambda$ to find wavelength.
+        prompt: What is $\lambda$?
+        type: numericResponse
+        answer:
+          value: 0.333333
+          tolerance: 0.001
+        explanation: >-
+          Solution: $\lambda=2\pi/k=2\pi/(6\pi)=1/3\,\mathrm m$. Why it works: one wavelength advances
+          the spatial phase by $2\pi$.
+      - id: we-wave-interpret-02-step-03
+        title: Convert the temporal coefficient
+        instruction: Use $\omega=2\pi f=2\pi/T$.
+        prompt: What are $f$ and $T$?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $f=9\,\mathrm{Hz}$ and $T=1/9\,\mathrm s$.
+        explanation: >-
+          Solution: $f=\omega/(2\pi)=18\pi/(2\pi)=9\,\mathrm{Hz}$ and $T=1/f=1/9\,\mathrm s$.
+          Why it works: angular frequency counts radians per second, while frequency counts cycles per second.
+      - id: we-wave-interpret-02-step-04
+        title: Determine direction and speed
+        instruction: Use the sign of the temporal phase term and $v=\omega/k$.
+        prompt: Which way does the wave travel, and what is its speed?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - Positive x direction; $v=3\,\mathrm{m/s}$.
+        explanation: >-
+          Solution: The phase is $kx-\omega t+\phi$, so the wave travels toward positive $x$.
+          $v=\omega/k=18\pi/(6\pi)=3\,\mathrm{m/s}$. Why it works: holding phase constant gives
+          $dx/dt=\omega/k>0$.
+      - id: we-wave-interpret-02-step-05
+        title: Check dimensions
+        instruction: Check that the phase is dimensionless and that the speed has units of m/s.
+        prompt: Why are the units internally consistent?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $(\mathrm{rad/m})x$ and $(\mathrm{rad/s})t$ are radians; $\omega/k$ is m/s.
+        explanation: >-
+          Solution: Each phase term is dimensionless because radians are the phase unit, and
+          $(\mathrm{rad/s})/(\mathrm{rad/m})=\mathrm{m/s}$. Why it works: dimensional analysis catches
+          swapped coefficients and invalid wave arguments.
+  - id: we-wave-interpret-03
+    title: Use period, wavelength, and sign together
+    problem: >-
+      A wave travels at $12\,\mathrm{m/s}$. Its period changes from $0.20\,\mathrm s$ to $0.35\,\mathrm s$ while
+      the medium keeps the same wave speed. Analyze the wavelength change and then interpret
+      $y=0.08\sin(5x+20t)$.
+    steps:
+      - id: we-wave-interpret-03-step-01
+        title: Choose the relation
+        instruction: Relate speed, wavelength, and period without introducing frequency first.
+        prompt: Which equation connects these quantities?
+        type: symbolicResponse
+        media:
+          - type: image
+            src: /media/physics/owa/wave-parameter-map.svg
+            alt: Original wave parameter map connecting wavelength, period, frequency, and speed.
+        answer:
+          expectedLatex: 'v=\lambda/T'
+          equivalenceMode: algebraic
+          variables: [v, lambda, T]
+        explanation: >-
+          Solution: Use $v=\lambda/T$, equivalently $v=f\lambda$. Why it works: one wavelength passes a
+          fixed point during one period.
+      - id: we-wave-interpret-03-step-02
+        title: Compare the wavelengths
+        instruction: Compute both wavelengths from the unchanged speed.
+        prompt: What are the old and new wavelengths?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $\lambda_1=2.4\,\mathrm m$ and $\lambda_2=4.2\,\mathrm m$.
+        explanation: >-
+          Solution: $\lambda_1=vT_1=12(0.20)=2.4\,\mathrm m$ and $\lambda_2=vT_2=12(0.35)=4.2\,\mathrm m$.
+          Why it works: with fixed $v$, wavelength is directly proportional to period.
+      - id: we-wave-interpret-03-step-03
+        title: Interpret the sign
+        instruction: Hold the phase of $5x+20t$ constant.
+        prompt: Which direction does $y=0.08\sin(5x+20t)$ travel?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - Negative x direction.
+        explanation: >-
+          Solution: $5x+20t=C$ gives $dx/dt=-20/5=-4\,\mathrm{m/s}$, so the wave travels toward negative
+          $x$. Why it works: the sign is determined by the motion of a constant-phase point, not by the
+          sign of the sine value.
+      - id: we-wave-interpret-03-step-04
+        title: Report the speed and amplitude
+        instruction: Read the coefficient of the phase and the coefficient outside the sine.
+        prompt: What are the speed magnitude and amplitude of this sinusoid?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - Speed magnitude $4\,\mathrm{m/s}$ and amplitude $0.08\,\mathrm m$.
+        explanation: >-
+          Solution: $v=\omega/k=20/5=4\,\mathrm{m/s}$ and $A=0.08\,\mathrm m$.
+          Why it works: amplitude is the displacement scale, while $\omega/k$ is the phase speed.

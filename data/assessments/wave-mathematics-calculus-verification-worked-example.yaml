@@ -1,0 +1,223 @@
+schemaVersion: 1
+id: wave-mathematics-calculus-verification-worked-example
+title: 'Worked Examples: Wave Calculus and Linear-Equation Verification'
+description: >-
+  Original guided problems for differentiating wave functions, checking dimensions and direction,
+  verifying the linear wave equation, and explaining its broader solution family.
+assessmentType: workedExample
+categoryId: physics-1
+topicId: physics-wave-mechanics
+modeDefault: practice
+randomizeQuestions: false
+skills:
+  - partial-derivatives
+  - linear-wave-equation
+  - chain-rule
+  - wave-superposition
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags:
+    - physics-1
+    - physics-wave-mechanics
+    - guided-solving
+authoring:
+  sourceId: src-20260720001005-93652b69c4
+  sourcePacketId: packet-physics-wave-mathematics-v1
+  blueprintId: physics-wave-calculus-worked-examples-v1
+  visualRequirement: required
+  visualRationale: Original wave schematic supports phase, derivative, and propagation checks.
+workedExamples:
+  - id: we-wave-calculus-01
+    title: Differentiate a power-law displacement in time
+    problem: >-
+      For $y(x,t)=\frac{B}{2}x^4t^4$, where $x$ is held fixed during a time derivative, find
+      $\partial y/\partial t$ and explain why the result is not a spatial propagation speed.
+    steps:
+      - id: we-wave-calculus-01-step-01
+        title: Identify the held variable
+        instruction: Decide which variable is treated as constant in $\partial y/\partial t$.
+        prompt: What is held fixed, and what factor can be pulled outside the derivative?
+        type: freeResponse
+        media:
+          - type: image
+            src: /media/physics/owa/wave-derivative-quadrature.svg
+            alt: Original diagram distinguishing displacement from its time derivative.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $x$ and $B$ are constant; $(B/2)x^4$ is the constant factor.
+        explanation: >-
+          Solution: For a partial derivative in $t$, hold $x$ fixed and factor out $(B/2)x^4$.
+          Why it works: a partial derivative changes only the named variable.
+      - id: we-wave-calculus-01-step-02
+        title: Apply the power rule
+        instruction: Differentiate $t^4$ with respect to $t$.
+        prompt: What is $d(t^4)/dt$?
+        type: symbolicResponse
+        answer:
+          expectedLatex: '4t^3'
+          equivalenceMode: algebraic
+          variables: [t]
+        explanation: >-
+          Solution: $d(t^4)/dt=4t^3$. Why it works: the power rule multiplies by the exponent and lowers
+          the exponent by one.
+      - id: we-wave-calculus-01-step-03
+        title: Assemble the derivative
+        instruction: Multiply the constant factor by the derivative of $t^4$ and simplify.
+        prompt: Find $\partial y/\partial t$.
+        type: symbolicResponse
+        answer:
+          expectedLatex: '2Bx^4t^3'
+          equivalenceMode: algebraic
+          variables: [B, x, t]
+        explanation: >-
+          Solution: $\partial y/\partial t=(B/2)x^4(4t^3)=2Bx^4t^3$.
+          Why it works: the factor $4$ cancels the original $1/2$ after the power rule is applied.
+      - id: we-wave-calculus-01-step-04
+        title: Interpret the derivative
+        instruction: Distinguish the time rate of displacement from the travel of a phase pattern.
+        prompt: What physical quantity does this derivative represent?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - It is the local transverse particle velocity $v_y=\partial y/\partial t$, not the wave propagation speed.
+        explanation: >-
+          Solution: $\partial y/\partial t$ is the local rate at which the medium's displacement changes.
+          Why it works: propagation speed describes motion of a constant phase, whereas this derivative
+          describes motion at a fixed location.
+  - id: we-wave-calculus-02
+    title: Differentiate a sinusoidal wave and interpret the phase shift
+    problem: >-
+      Let $y(x,t)=0.15\cos(4x-10t+\pi/5)$ in SI units. Find the transverse velocity and acceleration,
+      then identify their maximum magnitudes.
+    steps:
+      - id: we-wave-calculus-02-step-01
+        title: Name the phase and inner derivative
+        instruction: Set $\Phi=4x-10t+\pi/5$ and differentiate it with respect to $t$.
+        prompt: What are $\Phi$ and $\partial\Phi/\partial t$?
+        type: freeResponse
+        media:
+          - type: image
+            src: /media/physics/owa/wave-derivative-quadrature.svg
+            alt: Original displacement and transverse-velocity curves showing derivative phase shift.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $\Phi=4x-10t+\pi/5$ and $\partial\Phi/\partial t=-10$.
+        explanation: >-
+          Solution: The phase is $\Phi=4x-10t+\pi/5$ and its time derivative is $-10$ at fixed $x$.
+          Why it works: the chain rule requires the derivative of the inner phase.
+      - id: we-wave-calculus-02-step-02
+        title: Find transverse velocity
+        instruction: Use the chain rule on $A\cos\Phi$.
+        prompt: Find $v_y=\partial y/\partial t$.
+        type: symbolicResponse
+        answer:
+          expectedLatex: '1.5\sin(4x-10t+\pi/5)'
+          equivalenceMode: algebraic
+          variables: [x, t]
+        explanation: >-
+          Solution: $v_y=-0.15\sin(\Phi)(-10)=1.5\sin(\Phi)$.
+          Why it works: differentiating cosine produces $-\sin$, and the inner derivative contributes a
+          second negative sign.
+      - id: we-wave-calculus-02-step-03
+        title: Find transverse acceleration
+        instruction: Differentiate the velocity once more with respect to time.
+        prompt: Find $a_y=\partial^2y/\partial t^2$.
+        type: symbolicResponse
+        answer:
+          expectedLatex: '-15\cos(4x-10t+\pi/5)'
+          equivalenceMode: algebraic
+          variables: [x, t]
+        explanation: >-
+          Solution: $a_y=1.5\cos(\Phi)(-10)=-15\cos(\Phi)$.
+          Why it works: the second derivative restores cosine and contributes the factor $(-10)^2$ with
+          the restoring negative sign.
+      - id: we-wave-calculus-02-step-04
+        title: Check maximum magnitudes and units
+        instruction: Use the amplitude and angular frequency to check the coefficients.
+        prompt: What are the maximum magnitudes of $v_y$ and $a_y$?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $|v_y|_{\max}=A\omega=1.5\,\mathrm{m/s}$ and $|a_y|_{\max}=A\omega^2=15\,\mathrm{m/s^2}$.
+        explanation: >-
+          Solution: With $A=0.15\,\mathrm m$ and $\omega=10\,\mathrm{rad/s}$, the maxima are $A\omega=1.5$
+          and $A\omega^2=15$. Why it works: sine and cosine have maximum magnitude one, so the outside
+          coefficients determine the units and maxima.
+  - id: we-wave-calculus-03
+    title: Verify the linear wave equation and its solution family
+    problem: >-
+      Analyze $y=f(x-3t)$ and compare it with a proposed expression $A\cos(x-t)$ when $x$ and $t$ have ordinary
+      physical units. Verify the PDE, direction, dimensional requirement, and superposition principle.
+    steps:
+      - id: we-wave-calculus-03-step-01
+        title: Differentiate the general traveling form
+        instruction: Let $u=x-3t$, so $y=f(u)$. Compute the first and second derivatives needed for the PDE.
+        prompt: What are $y_{xx}$ and $y_{tt}$?
+        type: freeResponse
+        media:
+          - type: image
+            src: /media/physics/owa/wave-pde-verification.svg
+            alt: Original translating profile diagram with second-derivative wave-equation relation.
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - $y_{xx}=f''(u)$ and $y_{tt}=9f''(u)$.
+        explanation: >-
+          Solution: $y_x=f'(u)$, $y_{xx}=f''(u)$, $y_t=-3f'(u)$, and $y_{tt}=9f''(u)$.
+          Why it works: each time derivative contributes a factor of $-3$, so two time derivatives
+          contribute $9$.
+      - id: we-wave-calculus-03-step-02
+        title: Verify the PDE and speed
+        instruction: Substitute the derivatives into $y_{xx}=v^{-2}y_{tt}$.
+        prompt: What speed makes the equation hold?
+        type: numericResponse
+        answer:
+          value: 3
+          tolerance: 0.001
+        explanation: >-
+          Solution: $y_{xx}=f''(u)$ and $y_{tt}=9f''(u)$, so $y_{xx}=(1/9)y_{tt}$ and $v=3\,\mathrm{m/s}$.
+          Why it works: the coefficient inside $x-vt$ is the positive propagation speed toward $+x$.
+      - id: we-wave-calculus-03-step-03
+        title: Check a sinusoidal argument dimensionally
+        instruction: Examine $A\cos(x-t)$ when $x$ is in meters and $t$ is in seconds.
+        prompt: What must be supplied for this to be a valid physical wave expression?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - The argument must be dimensionless; it needs coefficients such as $kx-\omega t$ with units rad/m and rad/s.
+        explanation: >-
+          Solution: As written, $x-t$ combines meters and seconds and is not a valid dimensionless phase.
+          It becomes valid only when dimensional coefficients convert each term to radians.
+          Why it works: trigonometric functions accept a pure phase, not a sum of unlike physical units.
+      - id: we-wave-calculus-03-step-04
+        title: Reject the sinusoid-only misconception
+        instruction: Compare the verified $f(x-3t)$ form with sine and cosine examples.
+        prompt: Are sine and cosine the only solutions of the linear wave equation?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - No; any sufficiently differentiable $f(x-vt)$ or $f(x+vt)$ is a traveling-wave solution.
+        explanation: >-
+          Solution: No. The chain-rule calculation works for any twice-differentiable profile $f$, including
+          localized pulses that are not sinusoidal. Why it works: the PDE constrains derivative relationships,
+          not the profile to one trigonometric shape.
+      - id: we-wave-calculus-03-step-05
+        title: Apply linear superposition
+        instruction: Let $y_1$ and $y_2$ each satisfy the same linear wave equation.
+        prompt: Why does $y_1+y_2$ also satisfy it?
+        type: freeResponse
+        answer:
+          gradingMode: selfCheck
+          keyPoints:
+            - Linearity lets derivatives distribute over the sum, so the PDE residual of $y_1+y_2$ is the sum of two zero residuals.
+        explanation: >-
+          Solution: $(y_1+y_2)_{xx}=y_{1,xx}+y_{2,xx}$ and $(y_1+y_2)_{tt}=y_{1,tt}+y_{2,tt}$, so the same
+          PDE holds term by term. Why it works: this is precisely the superposition property of a linear
+          differential equation.
