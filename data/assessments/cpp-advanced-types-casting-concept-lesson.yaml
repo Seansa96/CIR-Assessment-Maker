@@ -1,0 +1,838 @@
+schemaVersion: 1
+id: cpp-advanced-types-casting-concept-lesson
+title: 'C++ Advanced Types, Casting, and Vectors'
+assessmentType: conceptLesson
+categoryId: c++
+topicId: c++-types-and-variables
+modeDefault: practice
+randomizeQuestions: false
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags:
+  - c++
+  - c++-types-and-variables
+  - cpp
+  - types
+  - casting
+  - vector
+  - struct
+  - enum
+skills:
+- Apply Types, Variables, and I/O in C++
+- cpp-advanced-types-casting
+- c++-types-and-variables
+authoring:
+  visualRequirement: notApplicable
+  visualRationale: >-
+    All concepts are demonstrated through code traces. No spatial or
+    physical diagram is needed.
+  difficultyTier: unspecified
+  exceptionReason:
+  physicsModel:
+lesson:
+  introduction: >
+    The primitive types covered in the first lesson — `int`, `double`, `bool`, `char` — are
+    the atoms of C++ programs. This lesson introduces the molecules: `unsigned` integers
+    for non-negative quantities, `struct` for grouping related fields, `enum class` for
+    named states, and `std::vector<T>` for typed sequences. It then explains how C++
+    converts between types both silently and explicitly, and why controlling those
+    conversions with `static_cast` produces correct, readable code.
+  sections:
+
+  - id: s-atc-01
+    title: Unsigned and Sized Integer Types
+    required: true
+    content: |
+      C++ provides several integer types that differ in size (number of bits) and whether they
+      can store negative values. The most commonly needed variants are:
+
+      | Type | Typical size | Value range |
+      |---|---|---|
+      | `int` | 32 bits | −2,147,483,648 to 2,147,483,647 |
+      | `long long` | 64 bits | ±9.2 × 10¹⁸ |
+      | `unsigned int` | 32 bits | 0 to 4,294,967,295 |
+      | `size_t` | 32 or 64 bits | 0 to platform max |
+
+      **`unsigned int`** drops the sign bit, doubling the positive range but eliminating the
+      ability to store negative values. Critically, when an `unsigned` variable reaches 0 and you
+      subtract 1, it does not become −1 — it *wraps around* to the maximum value (4,294,967,295
+      for 32-bit). This is a common source of hard-to-find bugs:
+
+      ```cpp
+      unsigned int x = 0;
+      x--;  // x is now 4,294,967,295, not -1
+      ```
+
+      **`long long`** is your go-to when values can exceed about two billion. Never use `int`
+      for file sizes, database IDs, or population counts where overflow is possible.
+
+      **`size_t`** is the unsigned integer type that `sizeof()`, `.size()`, and `.capacity()`
+      return. Always use `size_t` — or `auto` — when storing sizes returned by the standard
+      library to avoid signed/unsigned comparison warnings:
+
+      ```cpp
+      std::string s = "Hello";
+      size_t len = s.size();  // correct: no signed/unsigned mismatch
+      ```
+
+      **Rule of thumb**: use `int` for general signed arithmetic, `long long` when the value
+      can exceed ~2 billion, and `size_t` only when storing standard-library sizes. Avoid
+      `unsigned` for general arithmetic because the wrap-around behavior is rarely what you want.
+    media: []
+    check:
+      id: s-atc-01-check
+      type: multipleChoice
+      prompt: >-
+        A program must store the number of bytes in a file that could be up to 10 GB in size
+        (about 10,000,000,000 bytes). Which type is most appropriate?
+      choices:
+      - id: a
+        text: '`long long`'
+        media: []
+        issueSignals: []
+      - id: b
+        text: '`int`'
+        media: []
+        issueSignals:
+        - id: int-overflow-blind
+          domains: []
+      - id: c
+        text: '`unsigned int`'
+        media: []
+        issueSignals:
+        - id: unsigned-range-overestimated
+          domains: []
+      - id: d
+        text: '`bool`'
+        media: []
+        issueSignals:
+        - id: irrelevant-type-choice
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected:
+        gradingMode:
+        expectedLatex:
+        equivalenceMode:
+        variables: []
+        value:
+        tolerance:
+        media: []
+        keyPoints: []
+        circuitAnswer:
+        graphingAnswer:
+      explanation: |
+        Solution:
+        10 GB is approximately 10,000,000,000 bytes. An `int` holds at most about
+        2,147,483,647 — far too small. An `unsigned int` holds at most about 4,294,967,295,
+        which is also smaller than 10 GB. `long long` holds up to about 9.2 × 10¹⁸, which
+        comfortably fits file sizes in any foreseeable scenario.
+
+        Why it works:
+        `long long` is a 64-bit signed integer, giving it a range large enough for any
+        practical file size, byte count, or large integer calculation.
+
+        Why the other choices fail:
+        - `int` overflows at ~2.1 billion; a 10 GB file exceeds this by more than 4×.
+        - `unsigned int` extends only to ~4.3 billion, still less than 10 billion.
+        - `bool` stores only `true`/`false` and has no numeric range for byte counts.
+      media: []
+      language:
+      functionName:
+      executionMode: unspecified
+      starterCode:
+      tests:
+      circuitQuestion:
+      graphingQuestion:
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence:
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+
+  - id: s-atc-02
+    title: Grouping Related Data with struct
+    required: true
+    content: |
+      When several variables always travel together and describe one entity, a `struct` bundles
+      them into a single named type. You define the fields once and use the struct name everywhere:
+
+      ```cpp
+      struct Student {
+          std::string name;
+          int         age;
+          double      gpa;
+      };
+
+      Student alice{"Alice", 20, 3.8};
+      std::cout << alice.name << " has GPA " << alice.gpa << endl;
+      ```
+
+      Members are accessed with the dot operator `.`. You can also declare a `struct` with empty
+      braces to zero-initialize all numeric fields:
+
+      ```cpp
+      Student blank{};  // name="", age=0, gpa=0.0
+      ```
+
+      **Structs are value types**: assigning one struct to another copies all its fields
+      independently. There is no shared memory between the original and the copy:
+
+      ```cpp
+      Student a = alice;
+      a.gpa = 4.0;
+      // alice.gpa is still 3.8 — a and alice are separate copies
+      ```
+
+      This copy-by-value behavior makes structs predictable: changing one variable never
+      silently changes another. Use a `struct` whenever several variables logically belong
+      together as a single entity — a coordinate, a record, a configuration block.
+    media: []
+    check:
+      id: s-atc-02-check
+      type: multipleChoice
+      prompt: >-
+        After executing:
+        ```cpp
+        Student s{"Bob", 19, 3.2};
+        Student t = s;
+        t.gpa = 4.0;
+        ```
+        What is the value of `s.gpa`?
+      choices:
+      - id: a
+        text: '`3.2` — unchanged'
+        media: []
+        issueSignals: []
+      - id: b
+        text: '`4.0` — both `s` and `t` refer to the same object'
+        media: []
+        issueSignals:
+        - id: struct-copy-confusion
+          domains: []
+      - id: c
+        text: '`0.0` — gpa is reset on assignment'
+        media: []
+        issueSignals:
+        - id: assignment-zero-confusion
+          domains: []
+      - id: d
+        text: A compile error because you cannot copy a `struct`
+        media: []
+        issueSignals:
+        - id: struct-copy-not-allowed-confusion
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected:
+        gradingMode:
+        expectedLatex:
+        equivalenceMode:
+        variables: []
+        value:
+        tolerance:
+        media: []
+        keyPoints: []
+        circuitAnswer:
+        graphingAnswer:
+      explanation: |
+        Solution:
+        `Student t = s;` creates an independent copy of `s`. Modifying `t.gpa` affects only `t`.
+        `s.gpa` remains `3.2`.
+
+        Why it works:
+        C++ structs are value types. The assignment operator copies every field byte-for-byte
+        into the new variable. From that point, `s` and `t` are two completely independent objects
+        occupying different memory locations.
+
+        Why the other choices fail:
+        - `4.0` reflects a reference-semantics mental model (like a pointer or Java object). C++
+          struct assignment is copy, not reference.
+        - `0.0` incorrectly assumes that struct assignment resets fields instead of copying them.
+        - A compile error: C++ automatically provides a copy-assignment operator for structs;
+          no special code is required.
+      media: []
+      language:
+      functionName:
+      executionMode: unspecified
+      starterCode:
+      tests:
+      circuitQuestion:
+      graphingQuestion:
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence:
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+
+  - id: s-atc-03
+    title: Scoped Enumerations with enum class
+    required: true
+    content: |
+      When a variable can only take one of a fixed set of named values — a direction, a day,
+      a status code — use `enum class`. It gives each possible value a meaningful name and
+      prevents the two common bugs of plain `enum`:
+
+      **Problem 1 — name pollution**: plain `enum` dumps its enumerators into the surrounding
+      scope, causing collisions if two enums have the same name (e.g., both have a `None` value).
+      `enum class` requires qualification: `Color::Red`, `Direction::North`.
+
+      **Problem 2 — implicit integer conversion**: a plain `enum` silently converts to `int`,
+      so you can accidentally pass a `Direction` where an `int` is expected. `enum class`
+      forbids this:
+
+      ```cpp
+      enum class Direction { North, South, East, West };
+
+      Direction d = Direction::North;
+      // int n = d;                    // Error: no implicit conversion
+      int n = static_cast<int>(d);    // OK: explicit intent
+      ```
+
+      A `switch` on an `enum class` is idiomatic and lets the compiler warn when you forget
+      a case:
+
+      ```cpp
+      switch (d) {
+          case Direction::North: std::cout << "Going north" << endl; break;
+          case Direction::South: std::cout << "Going south" << endl; break;
+          case Direction::East:  std::cout << "Going east"  << endl; break;
+          case Direction::West:  std::cout << "Going west"  << endl; break;
+      }
+      ```
+    media: []
+    check:
+      id: s-atc-03-check
+      type: selectAll
+      prompt: Which statements are true about `enum class` in C++?
+      choices:
+      - id: a
+        text: Enumerators must be qualified with the enum name (e.g., `Direction::North`).
+        media: []
+        issueSignals: []
+      - id: b
+        text: An `enum class` value implicitly converts to `int` without a cast.
+        media: []
+        issueSignals:
+        - id: enum-class-implicit-int-confusion
+          domains: []
+      - id: c
+        text: '`enum class` prevents its enumerator names from polluting the enclosing scope.'
+        media: []
+        issueSignals: []
+      - id: d
+        text: '`enum class` values can be used in a `switch` statement.'
+        media: []
+        issueSignals: []
+      answer:
+        choiceId:
+        choiceIds:
+        - a
+        - c
+        - d
+        expected:
+        gradingMode:
+        expectedLatex:
+        equivalenceMode:
+        variables: []
+        value:
+        tolerance:
+        media: []
+        keyPoints: []
+        circuitAnswer:
+        graphingAnswer:
+      explanation: |
+        Solution:
+        Statements a, c, and d are true. Statement b is false.
+
+        Why it works:
+        `enum class` was introduced precisely to fix the two flaws of plain `enum`:
+        unqualified name access and implicit integer conversion. Requiring the enum name as a
+        prefix (a, c) and prohibiting silent `int` conversion makes the intent of any comparison
+        or assignment explicit. `switch` on an `enum class` (d) is fully supported and idiomatic.
+
+        Why the other choices fail:
+        - Statement b is false: `enum class` deliberately disables implicit conversion to `int`.
+          You must use `static_cast<int>` if you need the underlying numeric value. This prevents
+          a large class of bugs where an integer is accidentally used where an enum is expected.
+      media: []
+      language:
+      functionName:
+      executionMode: unspecified
+      starterCode:
+      tests:
+      circuitQuestion:
+      graphingQuestion:
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence:
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+
+  - id: s-atc-04
+    title: 'std::vector<T>: A Typed, Resizable Sequence'
+    required: true
+    content: |
+      `std::vector<T>` is the go-to container for storing a sequence of values when you do not
+      know the size at compile time. The type parameter `T` specifies what the vector holds;
+      the compiler enforces that only values of that type can be stored:
+
+      ```cpp
+      #include <vector>
+
+      std::vector<double> scores;   // empty vector of doubles
+      scores.push_back(88.5);       // append 88.5
+      scores.push_back(91.0);       // append 91.0
+      scores.push_back(74.3);       // append 74.3
+
+      std::cout << "Count: " << scores.size() << endl; // 3
+      std::cout << "First: " << scores[0]    << endl;  // 88.5
+      ```
+
+      **Key operations:**
+
+      | Operation | Meaning |
+      |---|---|
+      | `v.push_back(x)` | Append `x` to the end |
+      | `v.size()` | Number of elements (returns `size_t`) |
+      | `v[i]` | Access element at index `i` (no bounds check) |
+      | `v.at(i)` | Access element at index `i` (throws if out of range) |
+      | `v.empty()` | `true` if `v` has no elements |
+      | `v.clear()` | Remove all elements |
+
+      **Range-based for loop** is the idiomatic way to visit every element:
+
+      ```cpp
+      double sum = 0.0;
+      for (double score : scores) {
+          sum += score;
+      }
+      ```
+
+      Prefer `std::vector` over raw arrays for almost all sequential storage: it manages its
+      own memory, resizes automatically, and integrates with every standard library algorithm.
+    media: []
+    check:
+      id: s-atc-04-check
+      type: multipleChoice
+      prompt: >-
+        After:
+        ```cpp
+        std::vector<int> v = {10, 20, 30};
+        v.push_back(40);
+        ```
+        What does `v.size()` return?
+      choices:
+      - id: a
+        text: '`4` elements'
+        media: []
+        issueSignals: []
+      - id: b
+        text: '`3` elements'
+        media: []
+        issueSignals:
+        - id: push-back-ignored-confusion
+          domains: []
+      - id: c
+        text: '`40` — the last element'
+        media: []
+        issueSignals:
+        - id: value-not-size-confusion
+          domains: []
+      - id: d
+        text: '`1` — only the appended element'
+        media: []
+        issueSignals:
+        - id: only-last-element-confusion
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected:
+        gradingMode:
+        expectedLatex:
+        equivalenceMode:
+        variables: []
+        value:
+        tolerance:
+        media: []
+        keyPoints: []
+        circuitAnswer:
+        graphingAnswer:
+      explanation: |
+        Solution:
+        The vector is initialized with 3 elements (`{10, 20, 30}`), then `push_back(40)` appends
+        a fourth. `v.size()` returns the count of elements currently stored, which is `4`.
+
+        Why it works:
+        `push_back` increases the size by 1. `v.size()` always reflects the current number of
+        stored elements, regardless of how they were added.
+
+        Why the other choices fail:
+        - `3` ignores the `push_back` call, treating the vector as if it were still at its
+          initial size.
+        - `40` confuses the value of the last element with the count of elements.
+        - `1` would only be correct if `push_back` replaced all existing elements, which it does
+          not — it appends.
+      media: []
+      language:
+      functionName:
+      executionMode: unspecified
+      starterCode:
+      tests:
+      circuitQuestion:
+      graphingQuestion:
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence:
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+
+  - id: s-atc-05
+    title: Implicit Narrowing Conversion
+    required: true
+    content: |
+      C++ allows many numeric types to convert to each other automatically. When the
+      destination type is smaller or less precise, the conversion *narrows* and silently
+      discards information:
+
+      ```cpp
+      double d = 9.99;
+      int i = d;        // i == 9; the fractional part is truncated, not rounded
+      ```
+
+      The truncation is silent: no error, no warning by default. This is a frequent source of
+      bugs. **Braced initialization `{}`** is a safer alternative because it makes the compiler
+      reject narrowing at compile time:
+
+      ```cpp
+      int i{9.99};   // Error: narrowing conversion — caught before the program runs
+      ```
+
+      **Integer division** is a related trap. When both operands of `/` are `int`, the result
+      is an `int` — the quotient is truncated regardless of the variable that receives it:
+
+      ```cpp
+      int result = 9 / 2;          // result == 4, not 4.5
+      double d   = 9 / 2;          // d == 4.0, not 4.5 — division is already done in int!
+      double ok  = 9.0 / 2;        // ok == 4.5 — one double operand forces double division
+      ```
+
+      The **narrowing trap in `std::vector` initializers** is another compiler-caught case:
+
+      ```cpp
+      std::vector<int> v{1, 2.5};  // Error: 2.5 would narrow to int
+      ```
+
+      Recognizing these situations early prevents hard-to-debug runtime errors.
+    media: []
+    check:
+      id: s-atc-05-check
+      type: multipleChoice
+      prompt: What is the value stored in `result` after `int result = 9 / 2;`?
+      choices:
+      - id: a
+        text: '`4`'
+        media: []
+        issueSignals: []
+      - id: b
+        text: '`4.5`'
+        media: []
+        issueSignals:
+        - id: floating-point-division-assumed
+          domains: []
+      - id: c
+        text: '`5`'
+        media: []
+        issueSignals:
+        - id: integer-rounding-confusion
+          domains: []
+      - id: d
+        text: '`9`'
+        media: []
+        issueSignals:
+        - id: division-ignored-confusion
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected:
+        gradingMode:
+        expectedLatex:
+        equivalenceMode:
+        variables: []
+        value:
+        tolerance:
+        media: []
+        keyPoints: []
+        circuitAnswer:
+        graphingAnswer:
+      explanation: |
+        Solution:
+        Both `9` and `2` are `int` literals, so `/` performs integer division: the mathematical
+        result is 4.5, but the fractional part is discarded. `result` receives `4`.
+
+        Why it works:
+        In C++, the type of an arithmetic expression is determined by the types of its operands,
+        not by the type of the variable receiving the result. Because both operands are `int`,
+        the division produces an `int` — the truncation happens before the assignment.
+
+        Why the other choices fail:
+        - `4.5` assumes at least one operand was a floating-point type, but both are `int`.
+        - `5` confuses truncation with rounding. C++ truncates toward zero; 4.5 becomes 4,
+          not 5.
+        - `9` suggests the division was not performed, which is incorrect.
+      media: []
+      language:
+      functionName:
+      executionMode: unspecified
+      starterCode:
+      tests:
+      circuitQuestion:
+      graphingQuestion:
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence:
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+
+  - id: s-atc-06
+    title: Explicit Type Casting with static_cast
+    required: true
+    content: |
+      `static_cast<TargetType>(expression)` is the C++ way to convert between types
+      intentionally. It communicates your intent to both the compiler and future readers,
+      and it fails at compile time when the conversion is not valid:
+
+      ```cpp
+      double x = 7.89;
+      int   n  = static_cast<int>(x);   // n == 7; truncates, but explicitly
+      ```
+
+      **Fixing integer division — position matters critically:**
+
+      ```cpp
+      int total = 45, count = 10;
+
+      // WRONG — truncation happens before the cast:
+      double wrong = static_cast<double>(total / count);  // 4.0
+
+      // CORRECT — cast before dividing, so division is done in double:
+      double correct = static_cast<double>(total) / count;  // 4.5
+      ```
+
+      The cast must be applied to an *operand*, not to the *result*, because C++ evaluates
+      the sub-expression `total / count` first (as integer division), then casts. Once the
+      fractional part is lost, the cast cannot recover it.
+
+      **Prefer `static_cast` over C-style casts `(int)x`:**
+
+      | Property | `static_cast<int>(x)` | C-style `(int)x` |
+      |---|---|---|
+      | Compiler checks validity | Yes | No |
+      | Visible in code review | Obvious | Easy to miss |
+      | Can accidentally remove `const` | No | Yes |
+
+      Use `static_cast` every time you deliberately convert a numeric type. The extra typing
+      is worth it: it prevents hidden errors and makes the intent of the conversion impossible
+      to miss in a code review.
+    media: []
+    check:
+      id: s-atc-06-check
+      type: multipleChoice
+      prompt: >-
+        What value does `result` hold after:
+        ```cpp
+        int a = 7, b = 3;
+        double result = static_cast<double>(a / b);
+        ```
+      choices:
+      - id: a
+        text: '`2.0`'
+        media: []
+        issueSignals: []
+      - id: b
+        text: '`2.333...`'
+        media: []
+        issueSignals:
+        - id: cast-position-error
+          domains: []
+      - id: c
+        text: '`3.0`'
+        media: []
+        issueSignals:
+        - id: integer-rounding-confusion
+          domains: []
+      - id: d
+        text: '`7.0`'
+        media: []
+        issueSignals:
+        - id: numerator-only-confusion
+          domains: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected:
+        gradingMode:
+        expectedLatex:
+        equivalenceMode:
+        variables: []
+        value:
+        tolerance:
+        media: []
+        keyPoints: []
+        circuitAnswer:
+        graphingAnswer:
+      explanation: |
+        Solution:
+        The sub-expression `a / b` is evaluated first. Both `a` and `b` are `int`, so integer
+        division gives `7 / 3 = 2`. Then `static_cast<double>(2)` converts that integer `2`
+        to `2.0`. The result is `2.0`, not `2.333...`.
+
+        Why it works:
+        C++ evaluates inner expressions before outer ones. The cast applies to the already-computed
+        integer quotient, not to the operands. To get `2.333...`, the cast must be applied to one
+        operand before the division: `static_cast<double>(a) / b`.
+
+        Why the other choices fail:
+        - `2.333...` is the mathematically correct answer but requires casting an *operand* before
+          dividing. Here the cast is applied to the result of integer division — too late to
+          recover the fractional part.
+        - `3.0` reflects rounding rather than truncation; C++ truncates toward zero.
+        - `7.0` confuses the numerator with the result of the division.
+      media: []
+      language:
+      functionName:
+      executionMode: unspecified
+      starterCode:
+      tests:
+      circuitQuestion:
+      graphingQuestion:
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence:
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []
+
+  - id: s-atc-07
+    title: Choosing the Right Type
+    required: true
+    content: |
+      With so many types available, a quick decision guide helps you pick the right one every
+      time:
+
+      | Situation | Recommended type |
+      |---|---|
+      | General integer arithmetic | `int` |
+      | Integer that may exceed ~2 billion | `long long` |
+      | Non-negative count or size from the standard library | `size_t` |
+      | Decimal / fractional value | `double` |
+      | Single character | `char` |
+      | True/false flag | `bool` |
+      | Fixed set of named states or categories | `enum class` |
+      | Group of related named fields forming one entity | `struct` |
+      | Resizable typed sequence | `std::vector<T>` |
+
+      Two final habits that prevent a large class of bugs:
+
+      **Always initialize**: use braced initialization `int x{};` rather than `int x;`. An
+      uninitialized local variable has an indeterminate (garbage) value; reading it is undefined
+      behavior.
+
+      **Always use `static_cast`** when converting between numeric types intentionally. Prefer
+      it over C-style casts `(int)x`, which bypass compiler checks and can silently discard
+      `const`. When you see `static_cast`, you immediately know the programmer intended the
+      conversion; when you see `(int)`, you cannot tell whether it was intentional or accidental.
+    media: []
+    check:
+      id: s-atc-07-check
+      type: selectAll
+      prompt: >-
+        Which of the following are good reasons to prefer `static_cast<int>(x)` over
+        the C-style cast `(int)x`?
+      choices:
+      - id: a
+        text: '`static_cast` produces a compile error when the conversion is not valid for the types involved.'
+        media: []
+        issueSignals: []
+      - id: b
+        text: '`static_cast` executes faster than a C-style cast at runtime.'
+        media: []
+        issueSignals:
+        - id: static-cast-runtime-speed-myth
+          domains: []
+      - id: c
+        text: '`static_cast` makes the programmer''s intent explicit and easy to find in a code review.'
+        media: []
+        issueSignals: []
+      - id: d
+        text: '`static_cast` cannot accidentally remove `const` or `volatile` qualifiers.'
+        media: []
+        issueSignals: []
+      answer:
+        choiceId:
+        choiceIds:
+        - a
+        - c
+        - d
+        expected:
+        gradingMode:
+        expectedLatex:
+        equivalenceMode:
+        variables: []
+        value:
+        tolerance:
+        media: []
+        keyPoints: []
+        circuitAnswer:
+        graphingAnswer:
+      explanation: |
+        Solution:
+        Statements a, c, and d are correct reasons to prefer `static_cast`. Statement b is false.
+
+        Why it works:
+        `static_cast` is a compile-time construct. The compiler checks that the conversion makes
+        sense for the types involved (a), the keyword is obvious in code review (c), and it
+        cannot accidentally strip `const` or `volatile` qualifiers the way a C-style cast can (d).
+
+        Why the other choices fail:
+        - Statement b is false: `static_cast` and C-style casts both resolve at compile time
+          and generate identical machine instructions. There is no runtime performance difference.
+          Choosing `static_cast` is a safety and readability decision, not a performance one.
+      media: []
+      language:
+      functionName:
+      executionMode: unspecified
+      starterCode:
+      tests:
+      circuitQuestion:
+      graphingQuestion:
+      skills: []
+      difficultyDimensions: []
+      subjectDifficultyTags: []
+      difficultyEvidence:
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals: []

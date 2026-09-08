@@ -1,0 +1,291 @@
+schemaVersion: 1
+id: cpp-grade-calculator-directed-project
+title: 'Grade Average Calculator'
+assessmentType: directedProject
+categoryId: c++
+topicId: c++-types-and-variables
+navigation:
+  learningGoal: practice
+  activityType: directedProject
+  tags:
+  - c++
+  - c++-types-and-variables
+  - cpp
+  - vector
+  - static_cast
+  - type-casting
+  - directedproject
+  - practice
+skills:
+- Apply Types, Variables, and I/O in C++
+- cpp-advanced-types-casting
+- c++-types-and-variables
+- cpp-grade-calculator
+questionCount: 0
+guidedProject: null
+directedProject:
+  summary: >-
+    Build a command-line grade calculator. You will collect numeric grades from
+    the user into a std::vector<double>, compute the average using static_cast
+    to avoid the integer-division trap, assign a letter grade, and handle the
+    edge case of an empty list. This project ties together vectors, type casting,
+    and basic I/O from the Advanced Types lesson.
+  estimatedTimeMinutes: 20
+  resources: []
+  phases:
+
+  - id: phase-setup
+    title: Project Setup and Data Collection
+    steps:
+
+    - id: step-declare-vector
+      title: Read Grades into a Vector
+      instruction: |
+        Create a new file named `GradeCalculator.cpp`.
+
+        Write a program that asks the user to enter grades one at a time and collects
+        them into a `std::vector<double>`. The user signals that they are done by
+        entering `-1`. Any value of `-1` or less should stop the loop without being
+        added to the vector.
+
+        ```cpp
+        #include <iostream>
+        #include <vector>
+        using namespace std;
+
+        int main() {
+            vector<double> grades;
+            double input{};
+
+            cout << "Enter grades one at a time. Enter -1 when done." << endl;
+
+            while (cin >> input && input >= 0) {
+                grades.push_back(input);
+            }
+
+            cout << "Grades entered: " << grades.size() << endl;
+
+            return 0;
+        }
+        ```
+
+        Build and run. Enter a few grades (e.g., 85, 92, 74, 60) and then -1.
+        Confirm that the count printed matches the number of grades you entered,
+        not counting the -1 sentinel.
+      notesPrompt: >-
+        How many elements did grades.size() report after entering 4 grades?
+        What type does .size() return, and why might that matter when doing arithmetic?
+      checklist:
+      - id: chk-vector-declared
+        text: '`vector<double> grades` declared and initialized empty'
+      - id: chk-loop-reads
+        text: Loop reads values into `input` using `cin >> input`
+      - id: chk-sentinel-stops
+        text: Entering -1 stops the loop without adding -1 to the vector
+      - id: chk-push-back
+        text: Each valid grade is appended with `grades.push_back(input)`
+      - id: chk-size-printed
+        text: Program prints the correct count of grades entered
+      resources: []
+
+  - id: phase-calculate
+    title: Computing the Average with Casting
+    steps:
+
+    - id: step-sum-and-cast
+      title: Sum the Grades and Compute the Average
+      instruction: |
+        After the input loop, add code to compute the sum of all grades using a
+        range-based `for` loop, then compute the average.
+
+        **Try the wrong version first** so you can see the problem:
+
+        ```cpp
+        double sum = 0.0;
+        for (double g : grades) {
+            sum += g;
+        }
+
+        // WRONG — may produce a subtly incorrect result:
+        double wrong_avg = sum / grades.size();
+        cout << "Wrong average: " << wrong_avg << endl;
+        ```
+
+        Build and run with a known input. For example, if you enter 90, 80, and 70,
+        the correct average is 80.0. On most platforms this particular case will still
+        print 80.0, but the division between a `double` and a `size_t` is technically
+        an unsigned division and can produce unexpected results in edge cases.
+
+        Now replace it with the correct, explicit version that makes your intent clear:
+
+        ```cpp
+        double correct_avg = sum / static_cast<double>(grades.size());
+        cout << "Average: " << correct_avg << endl;
+        ```
+
+        To really see why this matters, also try the classic `int / int` mistake separately:
+
+        ```cpp
+        int total = 45;
+        int count = 10;
+        cout << "int division:    " << total / count << endl;           // prints 4
+        cout << "double division: " << static_cast<double>(total) / count << endl; // prints 4.5
+        cout << "cast-the-result: " << static_cast<double>(total / count) << endl; // still 4.0!
+        ```
+
+        Notice that casting the *result* of integer division does not recover the lost fraction —
+        the truncation already happened. The cast must be on an *operand* before the division occurs.
+      notesPrompt: >-
+        What did int division of 45/10 print? What did casting one operand before dividing print?
+        What did casting the result after integer division print? Explain in your own words why
+        the position of static_cast matters.
+      checklist:
+      - id: chk-range-for-sum
+        text: Range-based `for` loop correctly accumulates the sum into a `double` variable
+      - id: chk-cast-operand
+        text: '`static_cast<double>(grades.size())` used as the divisor — cast applied to an operand, not the result'
+      - id: chk-int-experiment
+        text: Ran the `int / int` experiment and observed that casting the result still gives 4.0
+      resources: []
+
+    - id: step-format-output
+      title: Format the Average to One Decimal Place
+      instruction: |
+        Add `#include <iomanip>` at the top of your file. Then use `fixed` and
+        `setprecision` to print the average with exactly one decimal place, which is
+        the standard format for a grade report:
+
+        ```cpp
+        #include <iomanip>
+        // ...inside main, after computing correct_avg:
+        cout << fixed << setprecision(1);
+        cout << "Average: " << correct_avg << endl;
+        ```
+
+        `fixed` tells `cout` to use fixed-point notation (not scientific notation).
+        `setprecision(1)` sets one digit after the decimal point. Both manipulators
+        stay active for all subsequent `cout` statements in the same run.
+
+        Build and run with grades 88, 92, 75. Verify the output shows `Average: 85.0`.
+      notesPrompt: >-
+        What does setprecision control? What would happen if you used setprecision(2) instead?
+      checklist:
+      - id: chk-iomanip-include
+        text: '`#include <iomanip>` added at the top'
+      - id: chk-fixed-setprecision
+        text: '`fixed` and `setprecision(1)` applied before printing the average'
+      - id: chk-one-decimal
+        text: Output shows exactly one digit after the decimal point
+      resources: []
+
+  - id: phase-letter-grade
+    title: Letter Grade and Edge Case Handling
+    steps:
+
+    - id: step-letter-grade
+      title: Assign a Letter Grade
+      instruction: |
+        Declare a `char` variable for the letter grade, then use `if`/`else if`
+        to assign it based on the computed average. Use these standard thresholds:
+
+        | Average (≥) | Letter |
+        |---|---|
+        | 90.0 | A |
+        | 80.0 | B |
+        | 70.0 | C |
+        | 60.0 | D |
+        | Below 60 | F |
+
+        ```cpp
+        char letter{};
+
+        if (correct_avg >= 90.0) {
+            letter = 'A';
+        } else if (correct_avg >= 80.0) {
+            letter = 'B';
+        } else if (correct_avg >= 70.0) {
+            letter = 'C';
+        } else if (correct_avg >= 60.0) {
+            letter = 'D';
+        } else {
+            letter = 'F';
+        }
+
+        cout << "Letter grade: " << letter << endl;
+        ```
+
+        Notice that the thresholds use `double` literals (`90.0`, `80.0`, etc.).
+        This is important: if `correct_avg` is exactly `80.0` and you compared it
+        to the `int` `80`, the comparison would still work due to implicit conversion,
+        but using matching types makes the code unambiguous and avoids accidental
+        integer comparisons in more complex expressions.
+
+        Print a final summary:
+
+        ```
+        Grades entered: 4
+        Average: 85.0
+        Letter grade: B
+        ```
+      notesPrompt: >-
+        Why are the thresholds written as 90.0 rather than 90? Does it matter here?
+        When would using an int comparison on a double average cause a wrong result?
+      checklist:
+      - id: chk-char-declared
+        text: '`char letter{}` declared and initialized'
+      - id: chk-if-else-thresholds
+        text: Correct thresholds (90/80/70/60) used with `>=` comparisons
+      - id: chk-summary-output
+        text: Final output shows count, average, and letter grade
+      resources: []
+
+    - id: step-edge-case
+      title: Handle an Empty Grade List
+      instruction: |
+        What happens if the user enters -1 immediately, before entering any grades?
+        The vector will be empty and `grades.size()` will return `0`. Dividing by zero
+        — even in floating-point — produces `inf` or `nan`, not a useful result.
+
+        Wrap your entire calculation in an empty check **before** you attempt to divide:
+
+        ```cpp
+        if (grades.empty()) {
+            cout << "No grades were entered." << endl;
+        } else {
+            double sum = 0.0;
+            for (double g : grades) {
+                sum += g;
+            }
+            double correct_avg = sum / static_cast<double>(grades.size());
+
+            char letter{};
+            if      (correct_avg >= 90.0) letter = 'A';
+            else if (correct_avg >= 80.0) letter = 'B';
+            else if (correct_avg >= 70.0) letter = 'C';
+            else if (correct_avg >= 60.0) letter = 'D';
+            else                          letter = 'F';
+
+            cout << fixed << setprecision(1);
+            cout << "Grades entered: " << grades.size()  << endl;
+            cout << "Average:        " << correct_avg    << endl;
+            cout << "Letter grade:   " << letter         << endl;
+        }
+        ```
+
+        Build and run twice:
+        1. Enter a few grades, then -1. Confirm the summary prints correctly.
+        2. Enter -1 immediately (zero grades). Confirm "No grades were entered." prints
+           instead of a crash or `nan`.
+      notesPrompt: >-
+        What did the program print when you entered -1 immediately? What would have
+        happened without the empty() guard — try removing it and observe the output.
+      checklist:
+      - id: chk-empty-guard
+        text: '`grades.empty()` checked before computing sum or average'
+      - id: chk-no-div-zero
+        text: Program prints a safe message instead of dividing by zero when no grades are entered
+      - id: chk-full-run
+        text: Program produces correct output for a normal run with at least 3 grades
+      - id: chk-empty-run
+        text: Program produces the safe message for a run where -1 is entered immediately
+      resources: []

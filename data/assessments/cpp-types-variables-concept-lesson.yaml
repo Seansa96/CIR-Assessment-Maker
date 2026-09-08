@@ -19,41 +19,74 @@ lesson:
   introduction: >
     C++ is a strongly-typed language, meaning every variable has a specific type that determines its size and the operations it supports. This lesson covers primitive types, `const`, `auto`, and basic console I/O using `<iostream>`.
   sections:
+  - id: memory-representation
+    title: Memory, sizeof(), and Representation
+    required: true
+    content: >
+      Variables aren't abstract concepts in C++; they correspond directly to memory. The type of a variable tells the CPU how many bytes of memory to reserve and how to interpret the 1s and 0s stored there.
+
+      You can check exactly how many bytes a type uses with the `sizeof()` operator:
+      
+      ```cpp
+      std::cout << "An int takes " << sizeof(int) << " bytes" << '\n';
+      // Typically prints 4 bytes (32 bits)
+      ```
+      
+      For example, `char` is typically 1 byte and is interpreted as an ASCII character, while `int` is typically 4 bytes and is interpreted as a numeric value.
+    check:
+      id: memory-representation-check
+      type: multipleChoice
+      prompt: What does a variable's type tell the compiler?
+      choices:
+      - id: a
+        text: How many bytes of memory to allocate and how to interpret them.
+        issueSignals: []
+      - id: b
+        text: What the variable's name is.
+        issueSignals: [type-name-confusion]
+      - id: c
+        text: Which header file needs to be included.
+        issueSignals: [header-confusion]
+      - id: d
+        text: Where the variable is printed on the screen.
+        issueSignals: [io-semantics-confusion]
+      answer:
+        choiceId: a
+      explanation: >
+        Solution:
+
+        A type defines the memory footprint (size) and the semantic meaning (representation) of the bits stored in that memory.
+
+
+        Why it works:
+
+        C++ is a systems language. When you declare `int x`, the compiler literally sets aside a specific number of bytes (usually 4) to store integer values.
+
+
+        Why the other choices fail:
+
+        The name is independent of the type. The header file depends on library features, not primitive types. Output location depends on formatting code, not the variable's type itself.
   - id: primitive-types
     title: Primitive Types
     required: true
     content: >
       C++ offers several primitive types for numbers, characters, and booleans:
 
-
       - `int`: Standard integer (usually 32 bits).
-
       - `long long`: Larger integer (usually 64 bits).
-
       - `float`: Single-precision floating-point number.
-
       - `double`: Double-precision floating-point number (preferred for most decimals).
-
       - `bool`: Boolean value (`true` or `false`).
-
       - `char`: Single ASCII character (e.g., `'A'`).
-
 
       Variables are declared with their type followed by their name:
 
-
       ```cpp
-
       int age = 25;
-
       double price = 19.99;
-
       bool isStudent = false;
-
       char grade = 'A';
-
       ```
-    media: []
     check:
       id: primitive-types-check
       type: multipleChoice
@@ -61,95 +94,92 @@ lesson:
       choices:
       - id: a
         text: '`double`'
-        media: []
         issueSignals: []
       - id: b
         text: '`int`'
-        media: []
-        issueSignals: []
+        issueSignals: [type-selection-integer-confusion]
       - id: c
         text: '`bool`'
-        media: []
-        issueSignals: []
+        issueSignals: [type-selection-bool-confusion]
       - id: d
         text: '`char`'
-        media: []
-        issueSignals: []
+        issueSignals: [type-selection-char-confusion]
       answer:
         choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
       explanation: >
         Solution:
 
-        `double` is used for floating-point (decimal) numbers. `int` truncates the decimal part.
+        `double` is the standard type used for floating-point (decimal) numbers in C++.
 
 
         Why it works:
 
-        The selected response applies the governing idea from this section to the exact situation in the prompt.
+        A weight like 68.5 requires a fractional component. The `double` type is designed exactly for this purpose.
 
 
         Why the other choices fail:
 
-        Each remaining option conflicts with the definition, relationship, or process established in this section.
+        An `int` truncates the decimal part (it would just store 68). A `bool` only holds true/false. A `char` only holds a single text character like 'X'.
+  - id: double-vs-float
+    title: float vs double Precision
+    required: true
+    content: >
+      C++ has two primary floating-point types: `float` (single precision) and `double` (double precision).
 
-        '
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills: []
-      difficultyDimensions: []
-      subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+      A `float` typically provides about 7 significant decimal digits of precision, while a `double` provides about 15. Because modern computers handle `double` just as fast as `float`, **you should default to using `double`** for decimal numbers to avoid rounding errors.
+
+      To create a literal `float`, you must append an `f` (e.g., `3.14f`). If you write `3.14`, the compiler treats it as a `double`.
+    check:
+      id: double-vs-float-check
+      type: multipleChoice
+      prompt: Why is `double` generally preferred over `float` for everyday calculations?
+      choices:
+      - id: a
+        text: It offers roughly twice the precision (significant digits), reducing rounding errors.
+        issueSignals: []
+      - id: b
+        text: It uses less memory than a `float`.
+        issueSignals: [precision-memory-misconception]
+      - id: c
+        text: It can store letters and words, while `float` cannot.
+        issueSignals: [type-purpose-confusion]
+      - id: d
+        text: It automatically prints numbers faster to the console.
+        issueSignals: [io-semantics-confusion]
+      answer:
+        choiceId: a
+      explanation: >
+        Solution:
+
+        `double` provides ~15 significant digits compared to `float`'s ~7, making it far more robust against compounding rounding errors in math.
+
+
+        Why it works:
+
+        As the name implies, "double precision" uses 64 bits instead of 32 bits to store the number, allowing for vastly higher accuracy.
+
+
+        Why the other choices fail:
+
+        `double` actually uses *more* memory (8 bytes vs 4 bytes). Neither type can store text (that's `std::string`). Printing speed is completely unrelated to the numeric precision of the type.
   - id: const-and-auto
     title: Const and Auto
     required: true
     content: >
       Use the `const` keyword when a variable's value should never change after initialization:
 
-
       ```cpp
-
       const double PI = 3.14159;
-
       // PI = 3.14; // Error: cannot assign to a const variable
-
       ```
-
 
       The `auto` keyword tells the compiler to deduce the variable's type from its initializer. This is useful when the type is obvious or very long to type out:
 
-
       ```cpp
-
       auto count = 10;       // Deduced as int
-
       auto price = 9.99;     // Deduced as double
-
       const auto MAX = 100;  // Deduced as const int
-
       ```
-    media: []
     check:
       id: const-and-auto-check
       type: selectAll
@@ -157,19 +187,15 @@ lesson:
       choices:
       - id: a
         text: A `const` variable must be initialized when it is declared.
-        media: []
         issueSignals: []
       - id: b
         text: The type of an `auto` variable is determined at compile time.
-        media: []
         issueSignals: []
       - id: c
         text: An `auto` variable can change its type later in the program.
-        media: []
-        issueSignals: []
+        issueSignals: [dynamic-typing-misconception]
       - id: d
         text: A `const` variable's value cannot be modified after initialization.
-        media: []
         issueSignals: []
       answer:
         choiceId: 
@@ -177,49 +203,172 @@ lesson:
         - a
         - b
         - d
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
       explanation: >
         Solution:
 
-        `auto` infers the type once at compile time. C++ is statically typed, so the type of an `auto` variable never changes.
+        `const` makes a variable immutable and requires immediate initialization. `auto` deduces the type statically at compile time.
 
 
         Why it works:
 
-        The selected response applies the governing idea from this section to the exact situation in the prompt.
+        Because C++ is statically typed, `auto` simply asks the compiler to fill in the type for you based on the right side of the equals sign. Once chosen, that type is permanent.
 
-        '
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills: []
-      difficultyDimensions: []
-      subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+
+        Why the other choices fail:
+
+        C++ does not have dynamic typing. An `auto` variable cannot change from an `int` to a `std::string` later in the program; its type is locked in at compile time.
+  - id: arithmetic-operators
+    title: Arithmetic Operators and Precedence
+    required: true
+    content: >
+      C++ supports standard arithmetic: `+` (add), `-` (subtract), `*` (multiply), `/` (divide), and `%` (modulo/remainder).
+
+      **Operator Precedence**: Multiplication, division, and modulo happen *before* addition and subtraction. Use parentheses `()` to force a specific order of operations.
+
+      **Compound Assignment**: You can update a variable in place using operators like `+=` and `*=`:
+      ```cpp
+      int score = 10;
+      score += 5; // Exactly the same as: score = score + 5;
+      ```
+    check:
+      id: arithmetic-operators-check
+      type: multipleChoice
+      prompt: What is the final value of `x` after `int x = 5 + 2 * 3;`?
+      choices:
+      - id: a
+        text: '11'
+        issueSignals: []
+      - id: b
+        text: '21'
+        issueSignals: [precedence-confusion]
+      - id: c
+        text: '30'
+        issueSignals: [precedence-confusion]
+      - id: d
+        text: '10'
+        issueSignals: [math-error]
+      answer:
+        choiceId: a
+      explanation: >
+        Solution:
+
+        Multiplication happens first: `2 * 3` is `6`. Then `5 + 6` is `11`.
+
+
+        Why it works:
+
+        C++ follows standard mathematical order of operations (PEMDAS/BODMAS). `*`, `/`, and `%` have higher precedence than `+` and `-`.
+
+
+        Why the other choices fail:
+
+        If addition happened first, `5 + 2` would be `7`, and `7 * 3` would be `21` — but multiplication takes precedence.
+  - id: integer-overflow
+    title: Integer Overflow and Undefined Behavior
+    required: true
+    content: >
+      Because an `int` has a fixed memory size (usually 32 bits), it has a maximum limit (roughly 2.14 billion). If you add 1 to the maximum positive `int`, the value cannot fit.
+
+      In C++, **signed integer overflow is Undefined Behavior (UB)**. This means the C++ standard does not guarantee what will happen: the program might crash, it might wrap around to a negative number, or the compiler might optimize your code assuming overflow never happens, causing bizarre bugs.
+
+      If you anticipate huge numbers, use `long long` (64 bits).
+    check:
+      id: integer-overflow-check
+      type: multipleChoice
+      prompt: What happens when a signed `int` calculation exceeds its maximum possible value?
+      choices:
+      - id: a
+        text: It results in Undefined Behavior (UB), meaning the compiler's reaction is unpredictable.
+        issueSignals: []
+      - id: b
+        text: The program safely pauses and asks the user for a larger variable.
+        issueSignals: [runtime-safety-misconception]
+      - id: c
+        text: The C++ language automatically converts the `int` to a `long long`.
+        issueSignals: [dynamic-promotion-misconception]
+      - id: d
+        text: It safely caps out at the maximum limit without overflowing.
+        issueSignals: [saturation-math-misconception]
+      answer:
+        choiceId: a
+      explanation: >
+        Solution:
+
+        Signed integer overflow is Undefined Behavior; you cannot rely on it doing anything safe or predictable.
+
+
+        Why it works:
+
+        C++ prioritizes performance above all else. Adding checks to every math operation to prevent overflow would slow the program down, so the language leaves it up to the programmer to ensure overflow doesn't happen.
+
+
+        Why the other choices fail:
+
+        C++ does not pause programs automatically, nor does it dynamically resize variables (types are static), nor does it use saturation math (capping at the max limit). It simply behaves unpredictably.
+  - id: boolean-expressions
+    title: Boolean Expressions
+    required: true
+    content: >
+      A `bool` holds `true` or `false`. You can combine boolean expressions using logical operators:
+      - `&&` (Logical AND): True only if *both* sides are true.
+      - `||` (Logical OR): True if *at least one* side is true.
+      - `!` (Logical NOT): Inverts the value (true becomes false).
+
+      C++ uses **short-circuit evaluation**. If the left side of an `&&` is false, C++ knows the whole expression must be false and *completely skips* evaluating the right side.
+    check:
+      id: boolean-expressions-check
+      type: multipleChoice
+      prompt: In the expression `if (x > 0 && y / x > 2)`, what happens if `x` is 0?
+      choices:
+      - id: a
+        text: The left side is false, so C++ skips the right side, preventing a divide-by-zero crash.
+        issueSignals: []
+      - id: b
+        text: The program crashes immediately because `y / 0` is calculated simultaneously.
+        issueSignals: [short-circuit-misconception]
+      - id: c
+        text: The expression evaluates to true.
+        issueSignals: [logic-evaluation-error]
+      - id: d
+        text: The compiler refuses to build the program.
+        issueSignals: [runtime-vs-compile-confusion]
+      answer:
+        choiceId: a
+      explanation: >
+        Solution:
+
+        Because of short-circuit evaluation, the false `x > 0` condition stops evaluation immediately, saving the program from executing the dangerous `y / x` division.
+
+
+        Why it works:
+
+        Logical AND (`&&`) requires both sides to be true. If the first side is false, the result is guaranteed to be false, so C++ optimizes by not running the second half at all.
+
+
+        Why the other choices fail:
+
+        The program will not crash because the division is never executed. It evaluates to false, not true. The compiler cannot predict the value of `x` at compile time, so it builds successfully.
   - id: basic-input-output
     title: Basic Console I/O
     required: true
-    content: "C++ uses the `<iostream>` library for console input and output. The standard output stream is `std::cout`, and the standard input stream is `std::cin`.\n\nUse the insertion operator `<<` to send data to `cout`, and the extraction operator `>>` to read data from `cin`.\n\n```cpp\n#include <iostream>\n#include <string>\n\nusing namespace std;\n\nint main() {\n    int age;\n    cout << \"Enter your age: \";\n    cin >> age;\n    \n    cout << \"You are \" << age << \" years old.\" << endl;\n    return 0;\n}\n```\n\n`endl` inserts a newline and flushes the stream. You can also use `\\n` inside strings for a newline.\n"
-    media: []
+    content: >
+      C++ uses the `<iostream>` library for console input and output. The standard output stream is `std::cout`, and the standard input stream is `std::cin`.
+
+      Use the insertion operator `<<` to send data to `cout`, and the extraction operator `>>` to read data from `cin`.
+
+      ```cpp
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          int age;
+          cout << "Enter your age: ";
+          cin >> age;
+          
+          cout << "You are " << age << " years old." << '\n';
+          return 0;
+      }
+      ```
     check:
       id: basic-input-output-check
       type: multipleChoice
@@ -227,71 +376,54 @@ lesson:
       choices:
       - id: a
         text: '`cin >> score;`'
-        media: []
         issueSignals: []
       - id: b
         text: '`cin << score;`'
-        media: []
-        issueSignals: []
+        issueSignals: [operator-direction-confusion]
       - id: c
         text: '`cout >> score;`'
-        media: []
-        issueSignals: []
+        issueSignals: [stream-object-confusion]
       - id: d
         text: '`cout << score;`'
-        media: []
-        issueSignals: []
+        issueSignals: [io-direction-confusion]
       answer:
         choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
       explanation: >
         Solution:
 
-        `cin >>` extracts input from the standard input stream into the variable.
+        `cin >>` extracts input from the standard input stream into the specified variable.
 
 
         Why it works:
 
-        The selected response applies the governing idea from this section to the exact situation in the prompt.
+        Think of the arrows pointing where the data flows. `cin >> score` means data flows *from* the console input *into* the `score` variable.
 
 
         Why the other choices fail:
 
-        Each remaining option conflicts with the definition, relationship, or process established in this section.
-
-        '
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills: []
-      difficultyDimensions: []
-      subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        `cin <<` points the wrong way. `cout` is for output, not input. `cout << score` prints the current value of the score to the screen, rather than reading a new one.
   - id: strings
     title: Strings
     required: true
-    content: "The `std::string` type represents a sequence of characters. It is part of the `<string>` library.\n\n```cpp\n#include <string>\n#include <iostream>\nusing namespace std;\n\nint main() {\n    string firstName = \"Alice\";\n    string lastName = \"Smith\";\n    string fullName = firstName + \" \" + lastName;\n    \n    cout << fullName << \"\\n\";\n    return 0;\n}\n```\n\nNotice that `+` concatenates strings. When reading a string with `cin >>`, it only reads up to the first whitespace. To read a whole line, use `getline(cin, myString)`.\n"
-    media: []
+    content: >
+      The `std::string` type represents a sequence of characters. It is part of the `<string>` library.
+
+      ```cpp
+      #include <string>
+      #include <iostream>
+      using namespace std;
+
+      int main() {
+          string firstName = "Alice";
+          string lastName = "Smith";
+          string fullName = firstName + " " + lastName;
+          
+          cout << fullName << '\n';
+          return 0;
+      }
+      ```
+
+      Notice that `+` concatenates strings. When reading a string with `cin >>`, it only reads up to the first whitespace (space, tab, or newline). To read a whole line with spaces, use `getline(cin, myString)`.
     check:
       id: strings-check
       type: multipleChoice
@@ -299,86 +431,45 @@ lesson:
       choices:
       - id: a
         text: '"John"'
-        media: []
         issueSignals: []
       - id: b
         text: '"John Doe"'
-        media: []
-        issueSignals: []
+        issueSignals: [cin-whitespace-misconception]
       - id: c
         text: '"Doe"'
-        media: []
-        issueSignals: []
+        issueSignals: [cin-extraction-confusion]
       - id: d
         text: An error occurs
-        media: []
-        issueSignals: []
+        issueSignals: [syntax-confusion]
       answer:
         choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
       explanation: >
         Solution:
 
-        `cin >>` stops reading at the first whitespace. To read `"John Doe"`, use `getline(cin, name);`.
+        `cin >>` stops reading at the first whitespace. It will store "John" and leave " Doe" waiting in the input buffer.
 
 
         Why it works:
 
-        The selected response applies the governing idea from this section to the exact situation in the prompt.
+        The extraction operator `>>` is designed to read individual words or tokens. It considers any whitespace as the boundary between tokens.
 
 
         Why the other choices fail:
 
-        Each remaining option conflicts with the definition, relationship, or process established in this section.
-
-        '
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills: []
-      difficultyDimensions: []
-      subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        To read the whole line including the space, you would need `getline(cin, name);`. It does not store the second word, nor does it cause an error.
   - id: value-initialization
     title: Initialize Values Deliberately
     required: true
     content: >
-      Prefer an initializer when you declare a variable. Braces make an initial value visible and safely value-initialize simple numeric variables:
-
+      Prefer an initializer when you declare a variable. Braces `{}` make an initial value visible and safely value-initialize simple numeric variables to zero if empty:
 
       ```cpp
-
       int attempts{};       // starts at 0
-
       double total{0.0};
-
       std::string name{};   // starts empty
-
       ```
 
-
       Initialization is different from later assignment. The first establishes a valid starting state; the second replaces an existing value.
-    media: []
     check:
       id: value-initialization-check
       type: multipleChoice
@@ -386,231 +477,125 @@ lesson:
       choices:
       - id: a
         text: '`int count{};`'
-        media: []
         issueSignals: []
       - id: b
         text: '`int count;`'
-        media: []
-        issueSignals: []
+        issueSignals: [uninitialized-variable-misconception]
       - id: c
         text: '`count int = 0;`'
-        media: []
-        issueSignals: []
+        issueSignals: [syntax-confusion]
       - id: d
         text: '`int = count;`'
-        media: []
-        issueSignals: []
+        issueSignals: [syntax-confusion]
       answer:
         choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
       explanation: >
         Solution:
 
-        Empty braces value-initialize an `int` to zero; an uninitialized local `int` has no deliberately chosen starting value.
+        Empty braces `{}` value-initialize an `int` to zero safely.
 
 
         Why it works:
 
-        The selected response applies the governing idea from this section to the exact situation in the prompt.
+        Modern C++ encourages uniform initialization with braces. If you leave them empty, you get the default value (0 for numbers).
 
 
         Why the other choices fail:
 
-        Each remaining option conflicts with the definition, relationship, or process established in this section.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills: []
-      difficultyDimensions: []
-      subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        `int count;` leaves a local variable uninitialized (meaning it could hold a garbage value). The other two options are syntax errors because the type must come first, followed by the variable name.
   - id: formatted-extraction-failure
     title: Check Formatted Input Before Using It
     required: true
     content: >
-      `std::cin >> number` attempts formatted extraction. Its result can be used as a condition: success leaves the stream usable, while an incompatible token sets a failure state. Do not calculate with `number` until the extraction is known to have succeeded.
-
+      `std::cin >> number` attempts to extract a number. If the user types "hello", the extraction fails. Its result can be used as a condition: success leaves the stream usable, while an incompatible token sets a failure state. Do not calculate with `number` until the extraction is known to have succeeded.
 
       ```cpp
-
       double number{};
-
       if (std::cin >> number) {
           std::cout << number << '\n';
       } else {
-          std::cout << "Input was not a number\n";
+          std::cout << "Input was not a number" << '\n';
       }
-
       ```
-    media: []
     check:
       id: formatted-extraction-failure-check
       type: multipleChoice
       prompt: What should a program do before using a value read with `std::cin >> number`?
       choices:
       - id: a
-        text: Check whether the extraction succeeded
-        media: []
+        text: Check whether the extraction succeeded (e.g., using an `if` statement).
         issueSignals: []
       - id: b
-        text: Assume invalid text becomes zero
-        media: []
-        issueSignals: []
+        text: Assume invalid text automatically becomes zero.
+        issueSignals: [input-failure-misconception]
       - id: c
-        text: Convert every input to `char`
-        media: []
-        issueSignals: []
+        text: Convert every input to `char` first.
+        issueSignals: [type-conversion-confusion]
       - id: d
-        text: Remove the variable type
-        media: []
-        issueSignals: []
+        text: Nothing, `cin` guarantees the input is always valid.
+        issueSignals: [input-safety-misconception]
       answer:
         choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
       explanation: >
         Solution:
 
-        Formatted extraction can fail; checking the stream guards the later computation from stale or invalid input.
+        Formatted extraction can fail if the user types letters instead of numbers; checking the stream guards the later computation from stale or invalid input.
 
 
         Why it works:
 
-        The selected response applies the governing idea from this section to the exact situation in the prompt.
+        The `>>` operator returns the stream itself, which can be evaluated as a boolean (`true` if successful, `false` if it failed).
 
 
         Why the other choices fail:
 
-        Each remaining option conflicts with the definition, relationship, or process established in this section.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills: []
-      difficultyDimensions: []
-      subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        C++ does not automatically convert bad input to zero; it puts the stream into an error state. You don't need to convert to `char`. `cin` absolutely does not guarantee valid input.
   - id: stream-recovery
     title: Recover Before Retrying
     required: true
     content: >
       A failed stream remains failed until its error state is cleared, and the bad characters remain waiting in the input buffer. For an interactive retry, clear the state and discard the rest of the bad line before reading again:
 
-
       ```cpp
-
       std::cin.clear();
-
+      // Ignore the rest of the line (requires <limits>)
       std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
       ```
 
-
-      `clear` fixes the state; `ignore` consumes the offending input. Neither operation replaces the other.
-    media: []
+      `clear` fixes the internal error state flag; `ignore` actually consumes and throws away the offending input text. Neither operation replaces the other.
     check:
       id: stream-recovery-check
       type: multipleChoice
       prompt: Why are both `clear()` and `ignore(...)` needed after invalid numeric input?
       choices:
       - id: a
-        text: One resets stream state and the other removes the bad characters
-        media: []
+        text: One resets the stream state flag and the other removes the bad characters.
         issueSignals: []
       - id: b
-        text: Both print the error message
-        media: []
-        issueSignals: []
+        text: Both print an error message to the user.
+        issueSignals: [io-semantics-confusion]
       - id: c
-        text: They convert text to a double
-        media: []
-        issueSignals: []
+        text: They work together to convert the bad text into a valid double.
+        issueSignals: [input-recovery-misconception]
       - id: d
-        text: They make a variable const
-        media: []
-        issueSignals: []
+        text: They are required to make a variable const.
+        issueSignals: [syntax-confusion]
       answer:
         choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
       explanation: >
         Solution:
 
-        Retrying after only `clear()` sees the same bad token again; retrying after only `ignore()` leaves the failure state set.
+        Retrying after only `clear()` will instantly fail again because it sees the same bad text. Retrying after only `ignore()` fails because the stream is still locked in an error state.
 
 
         Why it works:
 
-        The selected response applies the governing idea from this section to the exact situation in the prompt.
+        `clear()` tells C++ "I acknowledge the error, let me try reading again." `ignore()` removes the garbage from the buffer so you have fresh data for the next read attempt.
 
 
         Why the other choices fail:
 
-        Each remaining option conflicts with the definition, relationship, or process established in this section.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills: []
-      difficultyDimensions: []
-      subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        Neither function prints anything to the screen. They cannot magically convert letters into numbers. They have nothing to do with the `const` keyword.
 exploration: 
 directedProject: 
 sandbox: 
@@ -632,13 +617,10 @@ navigation:
   - types
   - variables
 skills:
-- Apply Types, Variables, and I/O in C++
 - c-plus-plus
 - c++-types-and-variables
-- calculate-buoyancy
 - cpp
 - cpp-types-variables
-- evaluate-limits
 authoring:
   visualRequirement: notApplicable
   visualRationale: The lesson's code traces directly show initialization, extraction, and recovery; no separate interface or spatial visual is needed.
