@@ -17,6 +17,7 @@ GENERIC_DISTRACTOR_FEEDBACK = 'why the other choices fail: each changes a sign, 
 RETIRED_EDITORIAL_CHOICE_PATTERN = "(answers '"
 GENERIC_WHY_IT_WORKS = 'why it works: this uses the defining relationship for the topic.'
 DOUBLE_QUOTED_LATEX = re.compile(r'"[^"\n]*\\[^"\n]*"')
+DISPLAY_MATH_BLOCK = re.compile(r'\$\$([\s\S]*?)\$\$')
 
 PACKET_PATH = os.path.join('docs', 'assessment-reference', 'packets', 'mathematical-literacy-v2-packets.json')
 BLUEPRINT_DIRECTORY = os.path.join('docs', 'assessment-reference', 'question-blueprints')
@@ -240,6 +241,8 @@ def validate_file(filepath):
             raw = f.read()
             if DOUBLE_QUOTED_LATEX.search(raw):
                 errors.append('Double-quoted YAML scalar contains a LaTeX backslash. Use a block scalar or a single-quoted scalar.')
+            if any(re.search(r'\r?\n\s*\r?\n', match.group(1)) for match in DISPLAY_MATH_BLOCK.finditer(raw)):
+                errors.append('Display-math block contains a blank line between $$ delimiters; keep the equation contiguous so Markdown math parsers do not terminate it early.')
             f.seek(0)
             data = yaml.safe_load(f)
             if not data:

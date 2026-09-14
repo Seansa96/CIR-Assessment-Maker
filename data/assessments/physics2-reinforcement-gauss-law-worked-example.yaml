@@ -1,0 +1,98 @@
+schemaVersion: 1
+id: physics2-reinforcement-gauss-law-worked-example
+title: "Gauss's Law: Cylinders and Spheres"
+assessmentType: workedExample
+categoryId: physics-2
+topicId: physics2-gauss-law
+modeDefault: practice
+randomizeQuestions: false
+questions: []
+workedExamples:
+- id: reinforcement-gauss-we1
+  title: Infinite line charge
+  problem: An infinite line has charge density $\lambda$. Find the field at radius $r$ using a cylinder of length $L$.
+  steps:
+  - id: reinforcement-gauss-we1-s1
+    title: Set up flux
+    instruction: Choose the coaxial Gaussian cylinder and identify the contributing surface.
+    hint: The field is radial; end-cap normals are parallel to the line.
+    type: multipleChoice
+    prompt: Which flux expression is correct?
+    choices:
+    - { id: a, text: '$\Phi_E=E(2\pi rL)$' }
+    - { id: b, text: '$\Phi_E=E(4\pi r^2)$', issueSignals: [{ id: physics2-gauss-area-mismatch, domains: [physics-2] }] }
+    - { id: c, text: '$\Phi_E=E(2\pi r)$', issueSignals: [{ id: physics2-gauss-length-omission, domains: [physics-2] }] }
+    - { id: d, text: '$\Phi_E=0$ because the cylinder is closed', issueSignals: [{ id: physics2-gauss-closed-zero-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: Only the curved surface contributes, with area $2\pi rL$, so flux is $E(2\pi rL)$. Why it works: Field is normal and constant on the curved surface. Why the other choices fail: b uses sphere area, c omits length, and d confuses a closed surface with zero net flux.'
+  - id: reinforcement-gauss-we1-s2
+    title: Solve the field
+    instruction: Insert $Q_{enc}=\lambda L$ and isolate $E$.
+    hint: Cancel $L$ after writing the full equation.
+    type: multipleChoice
+    prompt: Which result follows?
+    choices:
+    - { id: a, text: '$E=\lambda/(2\pi\varepsilon_0r)$ radially outward for $\lambda>0$' }
+    - { id: b, text: '$E=\lambda/(4\pi\varepsilon_0r^2)$ outward', issueSignals: [{ id: physics2-gauss-spherical-scaling-error, domains: [physics-2] }] }
+    - { id: c, text: '$E=\lambda/(2\pi\varepsilon_0L)$', issueSignals: [{ id: physics2-gauss-length-result-error, domains: [physics-2] }] }
+    - { id: d, text: '$E=\lambda/(2\pi\varepsilon_0r)$ inward for $\lambda>0$', issueSignals: [{ id: physics2-gauss-sign-direction-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: $E(2\pi rL)=\lambda L/\varepsilon_0$ gives $E=\lambda/(2\pi\varepsilon_0r)$. Why it works: Cylindrical area produces inverse-$r$ scaling and positive line charge points outward. Why the other choices fail: b is spherical scaling, c fails to cancel $L$, and d reverses the sign.'
+  - id: reinforcement-gauss-we1-s3
+    title: Check cylindrical scaling
+    instruction: Test the field when Gaussian-cylinder radius doubles.
+    hint: $E\propto1/r$ for a line charge.
+    type: multipleChoice
+    prompt: What happens to $E$ when $r$ doubles?
+    choices: [{ id: a, text: 'It is halved' }, { id: b, text: 'It is quartered', issueSignals: [{ id: physics2-gauss-cylinder-scaling, domains: [physics-2] }] }, { id: c, text: 'It doubles', issueSignals: [{ id: physics2-gauss-cylinder-inverse, domains: [physics-2] }] }, { id: d, text: 'It is unchanged', issueSignals: [{ id: physics2-gauss-cylinder-constant, domains: [physics-2] }] }]
+    answer: { choiceId: a }
+    explanation: 'Solution: Doubling $r$ halves $E$ because $E$ is inverse in $r$. Why it works: Cylindrical area grows linearly with radius. Why the other choices fail: They use inverse-square, reverse the ratio, or ignore area growth.'
+- id: reinforcement-gauss-we2
+  title: Uniformly charged spherical shell
+  problem: A thin spherical shell of radius $R$ carries charge $Q$. Compare fields at $r<R$ and $r>R$.
+  steps:
+  - id: reinforcement-gauss-we2-s1
+    title: Interior Gaussian surface
+    instruction: Count enclosed charge for a sphere with $r<R$.
+    hint: The shell is outside this surface.
+    type: multipleChoice
+    prompt: What is the interior field?
+    choices:
+    - { id: a, text: '$E=0$ because $Q_{enc}=0$' }
+    - { id: b, text: '$E=Q/(4\pi\varepsilon_0r^2)$', issueSignals: [{ id: physics2-shell-interior-charge-error, domains: [physics-2] }] }
+    - { id: c, text: '$E=Q/(4\pi\varepsilon_0R^2)$', issueSignals: [{ id: physics2-shell-boundary-error, domains: [physics-2] }] }
+    - { id: d, text: '$E=Qr/(4\pi\varepsilon_0R^3)$', issueSignals: [{ id: physics2-shell-invented-scaling, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: The inner sphere encloses no shell charge, so $E(4\pi r^2)=0$ and $E=0$. Why it works: Gauss''s law counts only charge inside. Why the other choices fail: They apply outside or boundary results inside the shell.'
+  - id: reinforcement-gauss-we2-s2
+    title: Exterior Gaussian surface
+    instruction: Use $Q_{enc}=Q$ for a sphere with $r>R$.
+    hint: The entire shell lies inside the outer Gaussian surface.
+    type: multipleChoice
+    prompt: Which outside expression is correct?
+    choices:
+    - { id: a, text: '$E=Q/(4\pi\varepsilon_0r^2)$ radially outward for $Q>0$' }
+    - { id: b, text: '$E=Q/(4\pi\varepsilon_0R^2)$ at every outside radius', issueSignals: [{ id: physics2-shell-radius-fixed-error, domains: [physics-2] }] }
+    - { id: c, text: '$E=0$ because the charge is on a surface', issueSignals: [{ id: physics2-shell-surface-charge-error, domains: [physics-2] }] }
+    - { id: d, text: '$E=Q/(2\pi\varepsilon_0r^2)$', issueSignals: [{ id: physics2-shell-area-factor-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: 'Solution: $E(4\pi r^2)=Q/\varepsilon_0$ gives the point-charge expression outside. Why it works: Spherical symmetry makes the shell''s exterior field equal to a centered point charge. Why the other choices fail: b freezes radius at the shell, c ignores surface charge, and d miscounts spherical area.'
+  - id: reinforcement-gauss-we2-s3
+    title: Check the exterior limit
+    instruction: Compare the shell with a centered point charge outside it.
+    hint: Spherical symmetry leaves only total enclosed charge.
+    type: multipleChoice
+    prompt: Which statement verifies the exterior field?
+    choices: [{ id: a, text: 'It matches a point charge $Q$ at the center' }, { id: b, text: 'It depends on shell radius instead of $r$', issueSignals: [{ id: physics2-gauss-shell-radius, domains: [physics-2] }] }, { id: c, text: 'It vanishes outside', issueSignals: [{ id: physics2-gauss-shell-exterior-zero, domains: [physics-2] }] }, { id: d, text: 'It grows with $r$', issueSignals: [{ id: physics2-gauss-shell-growth, domains: [physics-2] }] }]
+    answer: { choiceId: a }
+    explanation: 'Solution: Outside, the shell acts like a centered point charge. Why it works: Gauss law uses total enclosed charge with spherical symmetry. Why the other choices fail: They confuse interior behavior, shell radius, or area growth.'
+guidedProject: null
+items: []
+glossary: null
+lesson: null
+navigation:
+  learningGoal: practice
+  activityType: guidedWorkedExample
+  tags: [physics-2, physics2-gauss-law, reinforcement, s2c-reviewed]
+skills: [physics2-gauss-law, physics2-symmetry]
+authoring: { visualRequirement: recommended, visualRationale: Coaxial and spherical Gaussian-surface sketches support the model choices., difficultyTier: medium, sourcePacketId: packet-physics-review-reinforcement-v1, blueprintId: physics-review-reinforcement-blueprints-v1 }

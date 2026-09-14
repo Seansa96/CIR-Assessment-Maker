@@ -6,206 +6,123 @@ categoryId: physics-2
 topicId: physics2-electric-charges-fields
 modeDefault: practice
 randomizeQuestions: false
-attemptQuestionCount: null
-questionTimerSeconds: null
-assessmentTimerSeconds: null
-questionSelection: null
 questions: []
 workedExamples:
 - id: ring-axis
   title: Derive the on-axis field
-  problem: Derive the field at a point z on the symmetry axis of a ring of radius R carrying total charge Q uniformly.
+  problem: A thin ring of radius $R$ carries total charge $Q>0$ uniformly. Find the field at height $z>0$ on its axis.
   steps:
   - id: ring-axis-symmetry
-    title: Apply ring symmetry
-    instruction: Apply ring symmetry
-    hint: Draw the charge locations and the direction of each contribution before choosing.
+    title: Resolve the components
+    instruction: Use a paired charge element and its opposite partner.
+    hint: Compare components perpendicular and parallel to the axis.
     type: multipleChoice
-    prompt: What happens to components perpendicular to the symmetry axis?
+    prompt: Which statement correctly describes the pairwise sum of field contributions at the axial point?
     choices:
-    - id: a
-      text: They cancel pairwise, leaving only the axial component.
-    - id: b
-      text: They add to make the field radial.
-      issueSignals:
-      - id: physics2-sign-direction-error
-        domains:
-        - physics-2
-    - id: c
-      text: They make the field zero everywhere on the axis.
-      issueSignals:
-      - id: physics2-method-selection-error
-        domains:
-        - physics-2
-    - id: d
-      text: They must be integrated before symmetry can be used.
-      issueSignals:
-      - id: physics2-units-error
-        domains:
-        - physics-2
-    answer:
-      choiceId: a
-    explanation: 'Solution: Every charge element has an opposite partner with cancelling transverse component; their
-      axial components agree.
-
-
-      Why it works: Rotational symmetry identifies the field direction before the integral is evaluated.
-
-
-      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
-    skills:
-    - physics2-electric-charges-fields
-    media:
-    - type: image
-      src: /media/physics2/ch05-relationship-map.svg
-      alt: Charge-and-field model for Derive the on-axis field.
-      caption: Identify source charges, the observation point, and component directions before calculating.
+    - { id: a, text: Transverse components cancel; axial components add in $+\hat z$ }
+    - { id: b, text: Axial components cancel; transverse components add radially, issueSignals: [{ id: physics2-ring-component-swap, domains: [physics-2] }] }
+    - { id: c, text: Both components cancel because the ring has rotational symmetry, issueSignals: [{ id: physics2-ring-zero-field-error, domains: [physics-2] }] }
+    - { id: d, text: The field is tangent to the ring at the observation point, issueSignals: [{ id: physics2-ring-direction-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: Opposite elements have equal transverse components in opposite directions and equal positive axial components.
+      Why it works: Rotational symmetry leaves only the axis direction, and $Q>0$ points the field away from the ring.
+      Why the other choices fail: They interchange components, cancel the surviving contribution, or choose a tangent direction.
   - id: ring-axis-expression
-    title: Write the field expression
-    instruction: Write the field expression
-    hint: Use superposition and simplify only after the physical contributions are combined.
-    type: symbolicResponse
-    prompt: Enter the axial field magnitude in terms of k, Q, z, and R.
-    choices: []
-    answer:
-      expectedLatex: k*Q*z/(z^2+R^2)^(3/2)
-      equivalenceMode: simplify
-      variables:
-      - k
-      - Q
-      - z
-      - R
-      tolerance: '0.000001'
-    explanation: 'Solution: Each element is the same distance sqrt(z^2+R^2) away, so integrating dq gives E=kQz/(z^2+R^2)^(3/2).
-
-
-      Why it works: The common distance and symmetry reduce a charge-distribution integral to the total Q.'
-    skills:
-    - physics2-electric-charges-fields
+    title: Build the integral
+    instruction: Project one charge element onto the axis before integrating.
+    hint: Every element is at distance $\sqrt{R^2+z^2}$.
+    type: multipleChoice
+    prompt: Which expression is the correct axial field after integrating over the ring?
+    choices:
+    - { id: a, text: '$kQ/(R^2+z^2)$', issueSignals: [{ id: physics2-ring-projection-error, domains: [physics-2] }] }
+    - { id: b, text: '$kQz/(R^2+z^2)^{3/2}$' }
+    - { id: c, text: '$kQz/(R^2+z^2)$', issueSignals: [{ id: physics2-ring-power-error, domains: [physics-2] }] }
+    - { id: d, text: '$kQR/(R^2+z^2)^{3/2}$', issueSignals: [{ id: physics2-ring-axis-variable-error, domains: [physics-2] }] }
+    answer: { choiceId: b }
+    explanation: >
+      Solution: $dE_z=kz\,dq/(R^2+z^2)^{3/2}$; integrating gives $E_z=kQz/(R^2+z^2)^{3/2}$.
+      Why it works: The factor $z$ is the axial projection and the denominator retains the full source distance.
+      Why the other choices fail: They omit the projection, use the wrong power, or replace the axial coordinate with the radius.
   - id: ring-axis-number
-    title: Calculate a ring field
-    instruction: Calculate a ring field
-    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
-    type: numericResponse
-    prompt: For Q=5.0e-9 C, R=0.10 m, and z=0.20 m, enter E in N/C.
-    choices: []
-    answer:
-      value: 804.1
-      tolerance: 2
-    explanation: 'Solution: E=(8.99e9)(5.0e-9)(0.20)/(0.20^2+0.10^2)^(3/2)=8.04e2 N/C.
-
-
-      Why it works: The numerator projects each element''s field onto the axis while the denominator retains the
-      full distance.'
-    skills:
-    - physics2-electric-charges-fields
+    title: Evaluate and check
+    instruction: Substitute SI values and compare with the far-field limit.
+    hint: Use $k=8.99\times10^9$ and keep the direction $+\hat z$.
+    type: multipleChoice
+    prompt: For $Q=5.0\,\mathrm{nC}$, $R=0.10\,\mathrm m$, and $z=0.20\,\mathrm m$, which value is closest to $E_z$?
+    choices:
+    - { id: a, text: '$8.04\times10^2\,\mathrm{N/C}$ in $+\hat z$' }
+    - { id: b, text: '$1.12\times10^1\,\mathrm{N/C}$ in $+\hat z$', issueSignals: [{ id: physics2-ring-distance-limit-error, domains: [physics-2] }] }
+    - { id: c, text: '$4.02\times10^2\,\mathrm{N/C}$ in $+\hat z$', issueSignals: [{ id: physics2-ring-projection-error, domains: [physics-2] }] }
+    - { id: d, text: '$8.04\times10^2\,\mathrm{N/C}$ in $-\hat z$', issueSignals: [{ id: physics2-ring-sign-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: $E_z=(8.99\times10^9)(5.0\times10^{-9})(0.20)/(0.05)^{3/2}=8.04\times10^2\,\mathrm{N/C}$.
+      Why it works: The positive ring charge produces an upward axial field; the value is larger than the far-field estimate because $z$ is only two radii.
+      Why the other choices fail: b is the distant point-charge estimate, c loses a factor of two, and d reverses the sign.
 - id: ring-far-field
   title: Check the far-field limit
-  problem: Derive the far-field behavior from the on-axis expression for a charged ring when z is much larger than
-    R.
+  problem: Use the same ring and examine the limit $z\gg R$.
   steps:
   - id: ring-far-field-model
-    title: Choose the approximation
-    instruction: Choose the approximation
-    hint: Draw the charge locations and the direction of each contribution before choosing.
+    title: Choose the limiting model
+    instruction: Compare the source size with the observation distance.
+    hint: A localized distribution with nonzero net charge has a monopole term.
     type: multipleChoice
-    prompt: When z is much larger than R, which model should the ring approach?
+    prompt: What should the ring field approach when $z\gg R$?
     choices:
-    - id: a
-      text: A point charge Q at the ring center.
-    - id: b
-      text: An infinite line charge.
-      issueSignals:
-      - id: physics2-sign-direction-error
-        domains:
-        - physics-2
-    - id: c
-      text: A dipole with moment QR.
-      issueSignals:
-      - id: physics2-method-selection-error
-        domains:
-        - physics-2
-    - id: d
-      text: A zero field because the ring is symmetric.
-      issueSignals:
-      - id: physics2-units-error
-        domains:
-        - physics-2
-    answer:
-      choiceId: a
-    explanation: 'Solution: Far away, the observer cannot resolve the ring''s radius, while the total charge remains
-      Q.
-
-
-      Why it works: A localized distribution with nonzero net charge has a point-charge far field.
-
-
-      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
-    skills:
-    - physics2-electric-charges-fields
-    media:
-    - type: image
-      src: /media/physics2/ch05-relationship-map.svg
-      alt: Charge-and-field model for Check the far-field limit.
-      caption: Identify source charges, the observation point, and component directions before calculating.
+    - { id: a, text: The point-charge field of charge $Q$ at the center }
+    - { id: b, text: The field of an infinite line charge, issueSignals: [{ id: physics2-ring-limit-model-error, domains: [physics-2] }] }
+    - { id: c, text: A dipole field proportional to $1/z^3$, issueSignals: [{ id: physics2-ring-net-charge-error, domains: [physics-2] }] }
+    - { id: d, text: Zero because the ring is symmetric, issueSignals: [{ id: physics2-ring-zero-field-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: At large distance the nonzero net charge dominates, so the ring behaves like a point charge $Q$.
+      Why it works: The monopole term falls as $1/z^2$ and precedes higher multipoles.
+      Why the other choices fail: They use the wrong source model or confuse transverse cancellation with zero total field.
   - id: ring-far-field-expression
-    title: Simplify the limit
-    instruction: Simplify the limit
-    hint: Use superposition and simplify only after the physical contributions are combined.
-    type: symbolicResponse
-    prompt: Enter the leading far-field expression in terms of k, Q, and z.
-    choices: []
-    answer:
-      expectedLatex: k*Q/z^2
-      equivalenceMode: simplify
-      variables:
-      - k
-      - Q
-      - z
-      tolerance: '0.000001'
-    explanation: 'Solution: For z much larger than R, (z^2+R^2)^(3/2) approaches z^3, leaving kQ/z^2.
-
-
-      Why it works: The exact distribution result passes a physical limit check by recovering Coulomb''s law.'
-    skills:
-    - physics2-electric-charges-fields
+    title: Simplify the expression
+    instruction: Factor out the dominant power of $z$.
+    hint: $(z^2+R^2)^{3/2}\to z^3$ for $z\gg R$.
+    type: multipleChoice
+    prompt: Which leading expression follows from the exact ring field?
+    choices:
+    - { id: a, text: '$kQ/z^2$' }
+    - { id: b, text: '$kQ/z^3$', issueSignals: [{ id: physics2-ring-power-error, domains: [physics-2] }] }
+    - { id: c, text: '$kQR/z^3$', issueSignals: [{ id: physics2-ring-limit-variable-error, domains: [physics-2] }] }
+    - { id: d, text: '$kQ/R^2$', issueSignals: [{ id: physics2-ring-limit-variable-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: Replace $(z^2+R^2)^{3/2}$ by $z^3$ and cancel the numerator's $z$: $E_z\sim kQ/z^2$.
+      Why it works: It recovers Coulomb scaling for the ring's net charge.
+      Why the other choices fail: They retain an extra power, an irrelevant radius, or the wrong limiting variable.
   - id: ring-far-field-comparison
-    title: Compare exact and approximate fields
-    instruction: Compare exact and approximate fields
-    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
-    type: numericResponse
-    prompt: For the previous ring at z=2.0 m, enter the point-charge approximation in N/C.
-    choices: []
-    answer:
-      value: 11.2375
-      tolerance: 0.03
-    explanation: 'Solution: kQ/z^2=(8.99e9)(5.0e-9)/(2.0)^2=11.24 N/C.
-
-
-      Why it works: At twenty ring radii away, the point-charge approximation is appropriate.'
-    skills:
-    - physics2-electric-charges-fields
+    title: Compare exact and approximate values
+    instruction: Evaluate the point-charge estimate at $z=2.0\,\mathrm m$.
+    hint: Use $kQ/z^2$.
+    type: multipleChoice
+    prompt: For $Q=5.0\,\mathrm{nC}$ and $z=2.0\,\mathrm m$, which point-charge estimate is closest?
+    choices:
+    - { id: a, text: '$11.2\,\mathrm{N/C}$ in $+\hat z$' }
+    - { id: b, text: '$2.25\,\mathrm{N/C}$ in $+\hat z$', issueSignals: [{ id: physics2-ring-distance-power-error, domains: [physics-2] }] }
+    - { id: c, text: '$44.9\,\mathrm{N/C}$ in $+\hat z$', issueSignals: [{ id: physics2-ring-distance-power-error, domains: [physics-2] }] }
+    - { id: d, text: '$11.2\,\mathrm{N/C}$ in $-\hat z$', issueSignals: [{ id: physics2-ring-sign-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: $E\approx kQ/z^2=(8.99\times10^9)(5.0\times10^{-9})/4=11.2\,\mathrm{N/C}$.
+      Why it works: At twenty ring radii, the point-charge limit is accurate and the direction is away from positive charge.
+      Why the other choices fail: b and c use incorrect distance powers, while d reverses the direction.
 guidedProject: null
 items: []
 glossary: null
 lesson: null
-exploration: null
-directedProject: null
-sandbox: null
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
-  tags:
-  - physics-2
-  - physics2-electric-charges-fields
-  - s2c-reviewed
-skills:
-- physics2-ch05-modeling
-- physics2-electric-charges-fields
+  tags: [physics-2, physics2-electric-charges-fields, s2c-reviewed]
+skills: [physics2-ch05-modeling, physics2-electric-charges-fields]
 authoring:
   visualRequirement: required
-  visualRationale: An original relationship map supports the model, direction, and units used in this Physics 2
-    learning activity.
-  difficultyTier: unspecified
+  visualRationale: Ring-axis geometry and component cancellation need a diagram.
+  difficultyTier: medium
   exceptionReason: null
-  physicsModel: null

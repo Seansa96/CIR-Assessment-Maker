@@ -21,6 +21,9 @@ lesson:
 
 
     You will build charge elements, resolve their fields, and evaluate rod, ring, and disk integrals. You need definite integrals, simple substitution, and vector components. We assume fixed charges in vacuum, use $k=1/(4\pi\varepsilon_0)$, and evaluate fields away from the idealized charged material. Charge densities are signed; the diagrams illustrate positive charge.
+
+
+    **The big picture:** A continuous object is still just a collection of charges. The integral is a careful way to keep track of where those charges are and how far each one is from the observation point. First understand the picture; then let the algebra add up the pieces.
   sections:
   - id: physics2-ch05-continuous-charge-s1
     title: From a sum of charges to a field integral
@@ -38,12 +41,13 @@ lesson:
       Refine the partition while keeping the charge density fixed. The vector sum becomes
 
 
-      $$\mathbf E(\mathbf r)=k\int_{\text{source}}\frac{\widehat{\mathbf R}}{R^2}\,dq
-
-      =k\int_{\text{source}}\frac{\mathbf r-\mathbf r'}{|\mathbf r-\mathbf r'|^3}\,dq.$$
+      $$\mathbf E(\mathbf r)=k\int_{\text{source}}\frac{\widehat{\mathbf R}}{R^2}\,dq =k\int_{\text{source}}\frac{\mathbf r-\mathbf r'}{|\mathbf r-\mathbf r'|^3}\,dq.$$
 
 
       The source coordinate varies during integration; the observation coordinate does not. For a source at $(x,0)$ and observer at $(0,a)$, $\mathbf R=(-x,a)$ and $R=\sqrt{x^2+a^2}$. Reversing this displacement reverses the predicted field. Using signed $dq$ automatically reverses a negative charge's contribution toward the source.
+
+
+      **In plain language:** Imagine replacing the source with many tiny charged beads. Each bead sends a small arrow toward the observer (or away from it if the bead is negative). The integral is the limit of adding all of those arrows. The most important bookkeeping rule is that the arrow starts at the source and ends at the observer.
     media: []
     check:
       id: physics2-ch05-continuous-charge-s1-check
@@ -134,16 +138,13 @@ lesson:
       Check the charge before calculating the field: $Q=\int dq$. For a rod on $0\le x\le L$ with $\lambda(x)=\lambda_0x/L$,
 
 
-      $$dq=\lambda_0\frac{x}{L}\,dx,\qquad
-
-      Q=\frac{\lambda_0}{L}\int_0^L x\,dx
-
-      =\frac{\lambda_0}{L}\left[\frac{x^2}{2}\right]_0^L
-
-      =\frac{\lambda_0L}{2}.$$
+      $$dq=\lambda_0\frac{x}{L}\,dx,\qquad Q=\frac{\lambda_0}{L}\int_0^L x\,dx =\frac{\lambda_0}{L}\left[\frac{x^2}{2}\right]_0^L =\frac{\lambda_0L}{2}.$$
 
 
       This agrees with average density $\lambda_0/2$ times length. Using $\lambda_0L$ incorrectly treats the maximum density as constant. Likewise, $Q$ alone does not determine the nearby field: the integral must retain the spatial distribution.
+
+
+      **In plain language:** $\lambda$ tells us how much charge belongs to each little piece of length. If the rod gets denser toward one end, the pieces near that end count more. Before finding a field, it is useful to ask a simpler question: “How much charge did I actually put on the object?”
     media: []
     check:
       id: physics2-ch05-continuous-charge-s2-check
@@ -227,6 +228,9 @@ lesson:
 
 
       Symmetry belongs to the **charge distribution and observation point together**. A symmetric outline alone is insufficient when $\lambda(x)\ne\lambda(-x)$. Also, cancellation of a component of the total field does not make that component zero for each source element.
+
+
+      **In plain language:** Pair the charge on the left with the matching charge on the right. Their sideways pushes cancel, while their upward pushes reinforce. This shortcut works only when both the charge pattern and the observer have the required symmetry.
     media:
     - type: image
       src: /media/physics2/continuous-charge-rod.svg
@@ -310,22 +314,19 @@ lesson:
       To evaluate the integral, take $x=a\tan\theta$. Then $dx=a\sec^2\theta\,d\theta$ and $(x^2+a^2)^{3/2}=a^3\sec^3\theta$, so
 
 
-      $$\int\frac{dx}{(x^2+a^2)^{3/2}}
-
-      =\frac1{a^2}\int\cos\theta\,d\theta
-
-      =\frac{x}{a^2\sqrt{x^2+a^2}}+C.$$
+      $$\int\frac{dx}{(x^2+a^2)^{3/2}} =\frac1{a^2}\int\cos\theta\,d\theta =\frac{x}{a^2\sqrt{x^2+a^2}}+C.$$
 
 
       Differentiating the final expression returns $(x^2+a^2)^{-3/2}$. Now evaluate both endpoints:
 
 
-      $$E_y=\frac{k\lambda}{a}\left[\frac{x}{\sqrt{x^2+a^2}}\right]_{-L}^{L}
-
-      =\frac{2k\lambda L}{a\sqrt{a^2+L^2}},\qquad \mathbf E=E_y\widehat{\mathbf y}.$$
+      $$E_y=\frac{k\lambda}{a}\left[\frac{x}{\sqrt{x^2+a^2}}\right]_{-L}^{L} =\frac{2k\lambda L}{a\sqrt{a^2+L^2}},\qquad \mathbf E=E_y\widehat{\mathbf y}.$$
 
 
       Positive $\lambda$ gives an upward field; negative $\lambda$ reverses it. Integrating over $[-L,L]$ has already included both halves. You may instead double the integral from $0$ to $L$, but must not double the full-rod integral again.
+
+
+      **In plain language:** The calculus produces the contribution from every point on the rod, and the endpoint subtraction automatically includes both halves. The final answer has a simple physical check: positive charge pushes upward at this observation point, and a farther observer should feel a weaker field.
     media:
     - type: image
       src: /media/physics2/continuous-charge-rod.svg
@@ -406,14 +407,13 @@ lesson:
       Every element has the same separation distance $D=\sqrt{R^2+z^2}$ from the observer. Opposite elements cancel the transverse components. The signed axial projection of their unit displacements is $z/D$, so
 
 
-      $$E_z=k\int_0^{2\pi}\frac{\lambda R\,d\phi}{R^2+z^2}\frac{z}{\sqrt{R^2+z^2}}
-
-      =\frac{k\lambda Rz}{(R^2+z^2)^{3/2}}[\phi]_0^{2\pi}
-
-      =\frac{kQz}{(R^2+z^2)^{3/2}}.$$
+      $$E_z=k\int_0^{2\pi}\frac{\lambda R\,d\phi}{R^2+z^2}\frac{z}{\sqrt{R^2+z^2}} =\frac{k\lambda Rz}{(R^2+z^2)^{3/2}}[\phi]_0^{2\pi} =\frac{kQz}{(R^2+z^2)^{3/2}}.$$
 
 
       During this integral $R$, $z$, $D$, and $\lambda$ are constant; only the angle changes. The vector is $E_z\widehat{\mathbf z}$. It vanishes at the ring center, reverses below the plane, and reverses again if $Q$ changes sign. The distance $D$ is not the ring radius $R$, and a constant distance does not eliminate the need to project the field.
+
+
+      **In plain language:** Every bit of the ring is equally far from a point on its axis. That makes the ring easier than a rod: the sideways parts cancel in pairs, leaving only an upward or downward push. The field is zero at the center because there is no preferred direction there.
     media:
     - type: image
       src: /media/physics2/continuous-charge-ring.svg
@@ -491,21 +491,13 @@ lesson:
       A uniformly charged disk has radius $R$ and signed surface density $\sigma$. At axial position $z>0$, divide the disk into rings of **variable** radius $s$ and width $ds$. Each annulus has $dq=\sigma\,2\pi s\,ds$. Use the ring result for that annulus:
 
 
-      $$dE_z=\frac{kz\,dq}{(z^2+s^2)^{3/2}},\qquad
-
-      E_z=2\pi k\sigma z\int_0^R\frac{s\,ds}{(z^2+s^2)^{3/2}}.$$
+      $$dE_z=\frac{kz\,dq}{(z^2+s^2)^{3/2}},\qquad E_z=2\pi k\sigma z\int_0^R\frac{s\,ds}{(z^2+s^2)^{3/2}}.$$
 
 
       Let $u=z^2+s^2$, so $du=2s\,ds$. The new bounds are $z^2$ and $z^2+R^2$:
 
 
-      $$\int_0^R\frac{s\,ds}{(z^2+s^2)^{3/2}}
-
-      =\frac12\int_{z^2}^{z^2+R^2}u^{-3/2}\,du
-
-      =[-u^{-1/2}]_{z^2}^{z^2+R^2}
-
-      =\frac1z-\frac1{\sqrt{z^2+R^2}}.$$
+      $$\int_0^R\frac{s\,ds}{(z^2+s^2)^{3/2}} =\frac12\int_{z^2}^{z^2+R^2}u^{-3/2}\,du =[-u^{-1/2}]_{z^2}^{z^2+R^2} =\frac1z-\frac1{\sqrt{z^2+R^2}}.$$
 
 
       Here $\sqrt{z^2}=z$ because we specified $z>0$. Thus
@@ -515,6 +507,9 @@ lesson:
 
 
       The ring distance changes as $s$ changes, so it must remain inside the integral. A common error is to substitute the outer radius $R$ for every ring radius. Also, $2\pi s\,ds$ is an area, whereas $2\pi s$ alone is a circumference. Below the disk use reflection symmetry; do not insert a negative $z$ into this positive-side expression. At the ideal sheet itself the field has a jump, so the one-sided limit is distinct from a value on the sheet.
+
+
+      **In plain language:** Build the disk out of thin circular rings. The inner rings are small; the outer rings contain more charge because they have more circumference. Add the field from each ring. The radius in the formula must therefore change from ring to ring—it cannot be replaced by the disk's outer radius until after the integration is finished.
     media:
     - type: image
       src: /media/physics2/continuous-charge-disk.svg
@@ -607,17 +602,16 @@ lesson:
       **Transfer:** now let the rod on $[-L,L]$ have $\lambda(x)=\lambda_0(1+\beta x/L)$, with $\lambda_0>0$ and $0<\beta<1$. The rod outline is still symmetric, but the right side carries more charge. Keep both components:
 
 
-      $$E_x=-k\lambda_0\int_{-L}^{L}\frac{x(1+\beta x/L)}{(x^2+a^2)^{3/2}}\,dx
-
-      =-\frac{k\lambda_0\beta}{L}\int_{-L}^{L}\frac{x^2}{(x^2+a^2)^{3/2}}\,dx<0,$$
+      $$E_x=-k\lambda_0\int_{-L}^{L}\frac{x(1+\beta x/L)}{(x^2+a^2)^{3/2}}\,dx =-\frac{k\lambda_0\beta}{L}\int_{-L}^{L}\frac{x^2}{(x^2+a^2)^{3/2}}\,dx<0,$$
 
 
-      $$E_y=k\lambda_0 a\int_{-L}^{L}\frac{1+\beta x/L}{(x^2+a^2)^{3/2}}\,dx
-
-      =k\lambda_0 a\int_{-L}^{L}\frac{dx}{(x^2+a^2)^{3/2}}.$$
+      $$E_y=k\lambda_0 a\int_{-L}^{L}\frac{1+\beta x/L}{(x^2+a^2)^{3/2}}\,dx =k\lambda_0 a\int_{-L}^{L}\frac{dx}{(x^2+a^2)^{3/2}}.$$
 
 
       In the first integral the odd term vanishes and the even term survives; in the second the density correction is odd and vanishes. This shows precisely why a change in density requires a new symmetry argument.
+
+
+      **In plain language:** A good answer should survive a few reality checks. Far away, a finite rod, ring, or disk looks like one point charge. A very large charged sheet behaves differently because its total charge keeps growing. If the charge is heavier on one side, the sideways field should point away from that extra charge; the shape alone cannot tell us that.
     media: []
     check:
       id: physics2-ch05-continuous-charge-s7-check
@@ -693,10 +687,12 @@ navigation:
   tags:
   - charge-density
   - computational
+  - conceptual
   - definite-integrals
   - electrostatics
   - physics-2
 skills:
+- apply-newtons-second-law
 - charge-density
 - continuous-charge-superposition
 - definite-integration

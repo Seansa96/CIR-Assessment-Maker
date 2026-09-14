@@ -6,644 +6,125 @@ categoryId: physics-2
 topicId: physics2-gauss-law
 modeDefault: practice
 randomizeQuestions: false
-attemptQuestionCount: 
-questionTimerSeconds: 
-assessmentTimerSeconds: 
-questionSelection: 
 questions: []
 workedExamples: []
-guidedProject: 
+guidedProject: null
 items: []
-glossary: 
+glossary: null
 lesson:
   introduction: >
-    This lesson develops a repeatable way to solve Gauss's Law problems: identify the physical model, represent directions and signs, calculate, and test the result.
+    Gauss's law relates total electric flux through a closed surface to the charge enclosed by that surface. It is always true,
+    but it gives a simple field calculation only when symmetry makes the field magnitude and direction tractable.
   sections:
   - id: physics2-ch06-gauss-law-s1
-    title: Name the model and quantities
+    title: State the law and its scope
     required: true
-    content: >
-      Gauss's Law uses integral(E dot dA) = Q_enclosed/epsilon_0. In the name the model and quantities stage, choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media:
-    - type: image
-      src: /media/physics2/ch05-relationship-map.svg
-      alt: >
-        Model map for solving Gauss's Law problems.
-      caption: Identify quantities, directions, and a verification check before calculating.
+    content: The law is $\oint_S\mathbf E\cdot d\mathbf A=Q_{enc}/\epsilon_0$. The surface is closed and $Q_{enc}$ means algebraic charge inside it.
     check:
       id: physics2-ch06-gauss-law-s1-check
       type: multipleChoice
-      prompt: >
-        In the name the model and quantities step for Gauss's Law, what is the most reliable next action?
+      prompt: Which statement correctly distinguishes Gauss's law from a field shortcut?
       choices:
-      - id: a
-        text: >
-          For name the model and quantities, use integral(E dot dA) = Q_enclosed/epsilon_0 after you choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-        media: []
-        issueSignals: []
-      - id: b
-        text: >
-          During name the model and quantities, ignore the stated sign, direction, or reference quantity in this Gauss's Law problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During name the model and quantities, substitute every listed number before deciding which variables integral(E dot dA) = Q_enclosed/epsilon_0 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During name the model and quantities, accept the numerical result without checking whether its units and limiting behavior fit Gauss's Law.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-units-error
-          domains:
-          - physics-2
-      answer:
-        choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
+      - { id: a, text: It applies only to spheres and directly gives a constant field on any surface, issueSignals: [{ id: physics2-gauss-symmetry-overreach, domains: [physics-2] }] }
+      - { id: b, text: It applies to any closed surface, but symmetry is needed to solve easily for $E$'s local value }
+      - { id: c, text: It applies to open surfaces if the field is uniform, issueSignals: [{ id: physics2-gauss-open-surface-error, domains: [physics-2] }] }
+      - { id: d, text: It says flux depends on all charge outside the surface, issueSignals: [{ id: physics2-gauss-enclosed-charge-error, domains: [physics-2] }] }
+      answer: { choiceId: b }
       explanation: >
-        Solution: During name the model and quantities for Gauss's Law, first choose a Gaussian surface only after identifying enough symmetry to make the field constant. Then apply integral(E dot dA) = Q_enclosed/epsilon_0 with one consistent coordinate system and solve for the requested quantity.
-
-
-        Why it works: integral(E dot dA) = Q_enclosed/epsilon_0 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills:
-      - physics2-ch06-gauss-law
-      difficultyDimensions:
-      - modelOrDerivation
-      - errorDiagnosis
-      subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Gauss's Law model rather than matching symbols alone.
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        Solution: Gauss's law is a closed-surface flux law for any geometry; a symmetric Gaussian surface makes the integral usable for $E$.
+        Why it works: The law and the computational shortcut are different claims.
+        Why the other choices fail: They restrict the law, use an open surface, or count external charge in $Q_{enc}$.
+    difficultyDimensions: [modelOrDerivation, constraints]
+    difficultyEvidence: Tests the applicability condition rather than formula recall.
   - id: physics2-ch06-gauss-law-s2
-    title: Choose a representation
+    title: Choose a Gaussian surface
     required: true
     content: >
-      Gauss's Law uses integral(E dot dA) = Q_enclosed/epsilon_0. In the choose a representation stage, choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+      Match the surface to the source symmetry: a cylinder for an infinite line, a sphere for a point or spherical source,
+      and a pillbox for an infinite plane.
     check:
       id: physics2-ch06-gauss-law-s2-check
       type: multipleChoice
-      prompt: >
-        In the choose a representation step for Gauss's Law, what is the most reliable next action?
+      prompt: What Gaussian surface best matches an infinite line charge when finding the field a distance $r$ away?
       choices:
-      - id: a
-        text: >
-          For choose a representation, use integral(E dot dA) = Q_enclosed/epsilon_0 after you choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-        media: []
-        issueSignals: []
-      - id: b
-        text: >
-          During choose a representation, ignore the stated sign, direction, or reference quantity in this Gauss's Law problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During choose a representation, substitute every listed number before deciding which variables integral(E dot dA) = Q_enclosed/epsilon_0 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During choose a representation, accept the numerical result without checking whether its units and limiting behavior fit Gauss's Law.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-units-error
-          domains:
-          - physics-2
-      answer:
-        choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
+      - { id: a, text: A coaxial cylinder of radius $r$ and length $L$ }
+      - { id: b, text: A sphere centered on one point of the line, issueSignals: [{ id: physics2-gauss-symmetry-mismatch, domains: [physics-2] }] }
+      - { id: c, text: A flat disk whose normal is along the line, issueSignals: [{ id: physics2-gauss-symmetry-mismatch, domains: [physics-2] }] }
+      - { id: d, text: An arbitrary cube enclosing part of the line, issueSignals: [{ id: physics2-gauss-symmetry-mismatch, domains: [physics-2] }] }
+      answer: { choiceId: a }
       explanation: >
-        Solution: During choose a representation for Gauss's Law, first choose a Gaussian surface only after identifying enough symmetry to make the field constant. Then apply integral(E dot dA) = Q_enclosed/epsilon_0 with one consistent coordinate system and solve for the requested quantity.
-
-
-        Why it works: integral(E dot dA) = Q_enclosed/epsilon_0 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills:
-      - physics2-ch06-gauss-law
-      difficultyDimensions:
-      - modelOrDerivation
-      - errorDiagnosis
-      subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Gauss's Law model rather than matching symbols alone.
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        Solution: Use a coaxial cylinder: the radial field is constant on its curved surface and tangent to the end caps.
+        Why it works: The cylinder turns the flux integral into $E(2\pi rL)$.
+        Why the other choices fail: Their surfaces do not make $E$ constant with a single known direction on the contributing area.
+    difficultyDimensions: [representation, symmetry]
+    difficultyEvidence: Requires mapping source symmetry to surface geometry.
   - id: physics2-ch06-gauss-law-s3
-    title: Set up the calculation
+    title: Count enclosed charge
     required: true
-    content: >
-      Gauss's Law uses integral(E dot dA) = Q_enclosed/epsilon_0. In the set up the calculation stage, choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+    content: Only charge inside the closed Gaussian surface contributes to $Q_{enc}$. External charges can alter local field but contribute zero net flux through the surface.
     check:
       id: physics2-ch06-gauss-law-s3-check
       type: multipleChoice
-      prompt: >
-        In the set up the calculation step for Gauss's Law, what is the most reliable next action?
+      prompt: A spherical Gaussian surface encloses $+2q$ and an external charge $-5q$ lies outside. What is $Q_{enc}$?
       choices:
-      - id: a
-        text: >
-          For set up the calculation, use integral(E dot dA) = Q_enclosed/epsilon_0 after you choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-        media: []
-        issueSignals: []
-      - id: b
-        text: >
-          During set up the calculation, ignore the stated sign, direction, or reference quantity in this Gauss's Law problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During set up the calculation, substitute every listed number before deciding which variables integral(E dot dA) = Q_enclosed/epsilon_0 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During set up the calculation, accept the numerical result without checking whether its units and limiting behavior fit Gauss's Law.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-units-error
-          domains:
-          - physics-2
-      answer:
-        choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
+      - { id: a, text: '$-3q$', issueSignals: [{ id: physics2-gauss-external-charge-error, domains: [physics-2] }] }
+      - { id: b, text: '$+2q$' }
+      - { id: c, text: '$+7q$', issueSignals: [{ id: physics2-gauss-external-charge-error, domains: [physics-2] }] }
+      - { id: d, text: '$0$ because the outside charge cancels it', issueSignals: [{ id: physics2-gauss-enclosed-charge-error, domains: [physics-2] }] }
+      answer: { choiceId: b }
       explanation: >
-        Solution: During set up the calculation for Gauss's Law, first choose a Gaussian surface only after identifying enough symmetry to make the field constant. Then apply integral(E dot dA) = Q_enclosed/epsilon_0 with one consistent coordinate system and solve for the requested quantity.
-
-
-        Why it works: integral(E dot dA) = Q_enclosed/epsilon_0 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills:
-      - physics2-ch06-gauss-law
-      difficultyDimensions:
-      - modelOrDerivation
-      - errorDiagnosis
-      subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Gauss's Law model rather than matching symbols alone.
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        Solution: $Q_{enc}$ includes only charges inside the surface, so it is $+2q$.
+        Why it works: External charges produce field lines entering and leaving in equal net amount.
+        Why the other choices fail: They include or cancel an external charge in the enclosed-charge total.
+    difficultyDimensions: [representation, errorDiagnosis]
+    difficultyEvidence: Separates local field effects from net enclosed flux.
   - id: physics2-ch06-gauss-law-s4
-    title: Work a representative case
+    title: Solve the cylindrical case
     required: true
-    content: >
-      Gauss's Law uses integral(E dot dA) = Q_enclosed/epsilon_0. In the work a representative case stage, choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+    content: For line density $\lambda$, a coaxial cylinder gives $E(2\pi rL)=\lambda L/\epsilon_0$, hence $E=\lambda/(2\pi\epsilon_0r)$.
     check:
       id: physics2-ch06-gauss-law-s4-check
       type: multipleChoice
-      prompt: >
-        In the work a representative case step for Gauss's Law, what is the most reliable next action?
+      prompt: An infinite line has $\lambda>0$. Which field magnitude and direction follow from the cylindrical Gaussian surface?
       choices:
-      - id: a
-        text: >
-          For work a representative case, use integral(E dot dA) = Q_enclosed/epsilon_0 after you choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-        media: []
-        issueSignals: []
-      - id: b
-        text: >
-          During work a representative case, ignore the stated sign, direction, or reference quantity in this Gauss's Law problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During work a representative case, substitute every listed number before deciding which variables integral(E dot dA) = Q_enclosed/epsilon_0 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During work a representative case, accept the numerical result without checking whether its units and limiting behavior fit Gauss's Law.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-units-error
-          domains:
-          - physics-2
-      answer:
-        choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
+      - { id: a, text: '$E=\lambda/(2\pi\epsilon_0r)$, radially outward' }
+      - { id: b, text: '$E=\lambda/(4\pi\epsilon_0r^2)$, radially outward', issueSignals: [{ id: physics2-gauss-spherical-scaling-error, domains: [physics-2] }] }
+      - { id: c, text: '$E=\lambda/(2\pi\epsilon_0r)$, radially inward', issueSignals: [{ id: physics2-gauss-sign-direction-error, domains: [physics-2] }] }
+      - { id: d, text: '$E=\lambda/(\epsilon_0L)$, along the line', issueSignals: [{ id: physics2-gauss-flux-area-error, domains: [physics-2] }] }
+      answer: { choiceId: a }
       explanation: >
-        Solution: During work a representative case for Gauss's Law, first choose a Gaussian surface only after identifying enough symmetry to make the field constant. Then apply integral(E dot dA) = Q_enclosed/epsilon_0 with one consistent coordinate system and solve for the requested quantity.
-
-
-        Why it works: integral(E dot dA) = Q_enclosed/epsilon_0 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills:
-      - physics2-ch06-gauss-law
-      difficultyDimensions:
-      - modelOrDerivation
-      - errorDiagnosis
-      subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Gauss's Law model rather than matching symbols alone.
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
+        Solution: The curved area is $2\pi rL$ and $Q_{enc}=\lambda L$, so $E=\lambda/(2\pi\epsilon_0r)$; positive charge gives outward field.
+        Why it works: Cylindrical area grows as $r$, producing inverse-$r$ scaling.
+        Why the other choices fail: b uses spherical area, c reverses the direction, and d omits the curved area.
+    difficultyDimensions: [calculation, symmetry, limitingCase]
+    difficultyEvidence: Combines geometry, algebra, sign, and radial scaling.
   - id: physics2-ch06-gauss-law-s5
-    title: Use calculus or a rate law
+    title: Check the shortcut
     required: true
-    content: >
-      Gauss's Law uses integral(E dot dA) = Q_enclosed/epsilon_0. In the use calculus or a rate law stage, choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
+    content: Gauss's law is not automatically the best computational method. If the source lacks enough symmetry, the integral may not isolate a single constant $E$.
     check:
       id: physics2-ch06-gauss-law-s5-check
       type: multipleChoice
-      prompt: >
-        In the use calculus or a rate law step for Gauss's Law, what is the most reliable next action?
+      prompt: Why is a spherical Gaussian surface generally not enough to find the field of two unequal point charges together?
       choices:
-      - id: a
-        text: >
-          For use calculus or a rate law, use integral(E dot dA) = Q_enclosed/epsilon_0 after you choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-        media: []
-        issueSignals: []
-      - id: b
-        text: >
-          During use calculus or a rate law, ignore the stated sign, direction, or reference quantity in this Gauss's Law problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During use calculus or a rate law, substitute every listed number before deciding which variables integral(E dot dA) = Q_enclosed/epsilon_0 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During use calculus or a rate law, accept the numerical result without checking whether its units and limiting behavior fit Gauss's Law.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-units-error
-          domains:
-          - physics-2
-      answer:
-        choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
+      - { id: a, text: The law fails for more than one charge, issueSignals: [{ id: physics2-gauss-law-scope-error, domains: [physics-2] }] }
+      - { id: b, text: The total flux is still known, but $E$ varies over the sphere so it cannot be factored out of the integral }
+      - { id: c, text: There is no closed surface around two charges, issueSignals: [{ id: physics2-gauss-surface-error, domains: [physics-2] }] }
+      - { id: d, text: External charge always changes net flux, issueSignals: [{ id: physics2-gauss-external-charge-error, domains: [physics-2] }] }
+      answer: { choiceId: b }
       explanation: >
-        Solution: During use calculus or a rate law for Gauss's Law, first choose a Gaussian surface only after identifying enough symmetry to make the field constant. Then apply integral(E dot dA) = Q_enclosed/epsilon_0 with one consistent coordinate system and solve for the requested quantity.
-
-
-        Why it works: integral(E dot dA) = Q_enclosed/epsilon_0 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills:
-      - physics2-ch06-gauss-law
-      difficultyDimensions:
-      - modelOrDerivation
-      - errorDiagnosis
-      subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Gauss's Law model rather than matching symbols alone.
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
-  - id: physics2-ch06-gauss-law-s6
-    title: Check direction, units, and limits
-    required: true
-    content: >
-      Gauss's Law uses integral(E dot dA) = Q_enclosed/epsilon_0. In the check direction, units, and limits stage, choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
-    check:
-      id: physics2-ch06-gauss-law-s6-check
-      type: multipleChoice
-      prompt: >
-        In the check direction, units, and limits step for Gauss's Law, what is the most reliable next action?
-      choices:
-      - id: a
-        text: >
-          For check direction, units, and limits, use integral(E dot dA) = Q_enclosed/epsilon_0 after you choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-        media: []
-        issueSignals: []
-      - id: b
-        text: >
-          During check direction, units, and limits, ignore the stated sign, direction, or reference quantity in this Gauss's Law problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During check direction, units, and limits, substitute every listed number before deciding which variables integral(E dot dA) = Q_enclosed/epsilon_0 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During check direction, units, and limits, accept the numerical result without checking whether its units and limiting behavior fit Gauss's Law.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-units-error
-          domains:
-          - physics-2
-      answer:
-        choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
-      explanation: >
-        Solution: During check direction, units, and limits for Gauss's Law, first choose a Gaussian surface only after identifying enough symmetry to make the field constant. Then apply integral(E dot dA) = Q_enclosed/epsilon_0 with one consistent coordinate system and solve for the requested quantity.
-
-
-        Why it works: integral(E dot dA) = Q_enclosed/epsilon_0 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills:
-      - physics2-ch06-gauss-law
-      difficultyDimensions:
-      - modelOrDerivation
-      - errorDiagnosis
-      subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Gauss's Law model rather than matching symbols alone.
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
-  - id: physics2-ch06-gauss-law-s7
-    title: Transfer the method to a new situation
-    required: true
-    content: >
-      Gauss's Law uses integral(E dot dA) = Q_enclosed/epsilon_0. In the transfer the method to a new situation stage, choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-
-
-      Write the target quantity symbolically before inserting values. Keep vector directions or thermodynamic signs visible until the final line, then compare the result with a simple limiting case.
-    media: []
-    check:
-      id: physics2-ch06-gauss-law-s7-check
-      type: multipleChoice
-      prompt: >
-        In the transfer the method to a new situation step for Gauss's Law, what is the most reliable next action?
-      choices:
-      - id: a
-        text: >
-          For transfer the method to a new situation, use integral(E dot dA) = Q_enclosed/epsilon_0 after you choose a Gaussian surface only after identifying enough symmetry to make the field constant.
-        media: []
-        issueSignals: []
-      - id: b
-        text: >
-          During transfer the method to a new situation, ignore the stated sign, direction, or reference quantity in this Gauss's Law problem.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-sign-direction-error
-          domains:
-          - physics-2
-      - id: c
-        text: >
-          During transfer the method to a new situation, substitute every listed number before deciding which variables integral(E dot dA) = Q_enclosed/epsilon_0 relates.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-method-selection-error
-          domains:
-          - physics-2
-      - id: d
-        text: >
-          During transfer the method to a new situation, accept the numerical result without checking whether its units and limiting behavior fit Gauss's Law.
-        media: []
-        issueSignals:
-        - id: physics2-physics2-ch06-gauss-law-units-error
-          domains:
-          - physics-2
-      answer:
-        choiceId: a
-        choiceIds: []
-        expected: 
-        gradingMode: 
-        expectedLatex: 
-        equivalenceMode: 
-        variables: []
-        value: 
-        tolerance: 
-        media: []
-        keyPoints: []
-        circuitAnswer: 
-        graphingAnswer: 
-      explanation: >
-        Solution: During transfer the method to a new situation for Gauss's Law, first choose a Gaussian surface only after identifying enough symmetry to make the field constant. Then apply integral(E dot dA) = Q_enclosed/epsilon_0 with one consistent coordinate system and solve for the requested quantity.
-
-
-        Why it works: integral(E dot dA) = Q_enclosed/epsilon_0 connects the named physical quantities only after their signs, directions, and constraints are defined.
-
-
-        Why the other choices fail: Ignoring a reference changes the physical meaning, premature substitution can select the wrong model, and skipping a units or limit check leaves an error undetected.
-      media: []
-      language: 
-      functionName: 
-      executionMode: unspecified
-      starterCode: 
-      tests: 
-      circuitQuestion: 
-      graphingQuestion: 
-      skills:
-      - physics2-ch06-gauss-law
-      difficultyDimensions:
-      - modelOrDerivation
-      - errorDiagnosis
-      subjectDifficultyTags: []
-      difficultyEvidence: >
-        Requires selecting and checking the Gauss's Law model rather than matching symbols alone.
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
-      parts: []
-      issueSignals: []
-exploration: 
-directedProject: 
-sandbox: 
+        Solution: The law still gives total flux, but unequal charges destroy spherical symmetry, so $E$ is not constant on the sphere.
+        Why it works: Factoring $E$ from the integral requires constant magnitude and a known angle over the contributing surface.
+        Why the other choices fail: The law allows multiple charges, closed surfaces exist, and external charge has zero net flux contribution.
+    difficultyDimensions: [modelOrDerivation, constraints]
+    difficultyEvidence: Identifies the precise failure of a tempting but invalid shortcut.
 navigation:
   learningGoal: learn
   activityType: conceptLesson
-  tags:
-  - computational
-  - physics-2
-  - physics2-gauss-law
-  - s2c-reviewed
-skills:
-- evaluate-limits
-- physics2-ch06-modeling
-- physics2-gauss-law
+  tags: [physics-2, physics2-gauss-law, s2c-reviewed]
+skills: [physics2-gauss-law, physics2-ch06-gauss-law]
 authoring:
   visualRequirement: required
-  visualRationale: An original relationship map supports the model, direction, and units used in this Physics 2 learning activity.
-  difficultyTier: unspecified
-  exceptionReason: 
-  physicsModel: 
+  visualRationale: Gaussian-surface diagrams make enclosed charge and symmetry visible.
+  difficultyTier: easy
+  exceptionReason: null

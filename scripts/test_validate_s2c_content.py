@@ -102,6 +102,28 @@ class MathematicalLiteracyS2CGateTests(unittest.TestCase):
         self.assertTrue(any('missing item coverage' in error for error in errors))
         self.assertTrue(any('repeats reasoning signatures' in error for error in errors))
 
+    def test_display_math_rejects_blank_lines_inside_delimiters(self):
+        path = self.root / 'assessment.yaml'
+        path.write_text('''
+schemaVersion: 1
+id: math-check
+title: Math check
+assessmentType: conceptLesson
+categoryId: physics-2
+topicId: physics2-electric-charges-fields
+lesson:
+  sections:
+    - id: s1
+      content: |-
+        $$
+        E=mc^2
+
+        F=ma
+        $$
+''', encoding='utf-8')
+        errors = validator.validate_file(str(path))
+        self.assertTrue(any('blank line between $$ delimiters' in error for error in errors))
+
 
 if __name__ == '__main__':
     unittest.main()

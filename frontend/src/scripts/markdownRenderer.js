@@ -43,11 +43,18 @@ const markdownProcessor = unified()
   .use(rehypeWrapTables)
   .use(rehypeStringify);
 
+function normalizeDisplayMath(value) {
+  return value.replace(/\$\$([\s\S]*?)\$\$/g, (_match, body) => {
+    const compactBody = body.replace(/\r?\n\s*\r?\n/g, "\n");
+    return `$$${compactBody}$$`;
+  });
+}
+
 export async function renderMarkdown(value) {
-  const normalized = (value ?? "").replace(
+  const normalized = normalizeDisplayMath((value ?? "").replace(
     /^((?:Solution|Why it works|Why the other choices fail):[^\r\n]*?)\s*\$\$([^\r\n]*?)\$\$\s*$/gm,
     (_match, lead, math) => `${lead}\n\n$$${math}$$`
-  );
+  ));
   const processed = await markdownProcessor.process(normalized);
   return String(processed);
 }

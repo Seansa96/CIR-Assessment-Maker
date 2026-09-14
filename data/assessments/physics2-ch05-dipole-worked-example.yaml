@@ -6,206 +6,123 @@ categoryId: physics-2
 topicId: physics2-electric-charges-fields
 modeDefault: practice
 randomizeQuestions: false
-attemptQuestionCount: null
-questionTimerSeconds: null
-assessmentTimerSeconds: null
-questionSelection: null
 questions: []
 workedExamples:
 - id: dipole-axial
   title: Field on the dipole axis
-  problem: Charges +q and -q are separated by d. At a point x to the right of the +q charge, with x much larger
-    than d, derive the leading axial field magnitude.
+  problem: Charges $+q$ and $-q$ form a dipole with moment $p=qd$. Find the far field at an axial point on the $+p$ side.
   steps:
   - id: dipole-axial-direction
-    title: Choose the field direction
-    instruction: Choose the field direction
-    hint: Draw the charge locations and the direction of each contribution before choosing.
+    title: Compare the two contributions
+    instruction: Draw both field vectors at the observation point.
+    hint: The nearer charge has the larger field magnitude.
     type: multipleChoice
-    prompt: Which direction is the far axial electric field to the right of the positive charge?
+    prompt: What is the direction of the far axial field on the $+p$ side?
     choices:
-    - id: a
-      text: +x, away from the positive end and toward the negative end contribution is weaker.
-    - id: b
-      text: -x, because a dipole field always points toward the negative charge.
-      issueSignals:
-      - id: physics2-sign-direction-error
-        domains:
-        - physics-2
-    - id: c
-      text: Zero, because the two charges have equal magnitude.
-      issueSignals:
-      - id: physics2-method-selection-error
-        domains:
-        - physics-2
-    - id: d
-      text: Perpendicular to the dipole axis.
-      issueSignals:
-      - id: physics2-units-error
-        domains:
-        - physics-2
-    answer:
-      choiceId: a
-    explanation: 'Solution: At the far axial point the positive charge is closer, so its +x field is larger than
-      the negative charge''s -x field.
-
-
-      Why it works: Equal source magnitudes do not cancel when their distances differ.
-
-
-      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
-    skills:
-    - physics2-electric-charges-fields
-    media:
-    - type: image
-      src: /media/physics2/ch05-relationship-map.svg
-      alt: Charge-and-field model for Field on the dipole axis.
-      caption: Identify source charges, the observation point, and component directions before calculating.
+    - { id: a, text: Along $+p$, because the nearer positive end wins over the opposite contribution }
+    - { id: b, text: Along $-p$, because the negative charge always determines the far field, issueSignals: [{ id: physics2-dipole-direction-error, domains: [physics-2] }] }
+    - { id: c, text: Zero, because the source charges have equal magnitude, issueSignals: [{ id: physics2-dipole-cancellation-error, domains: [physics-2] }] }
+    - { id: d, text: Perpendicular to the dipole axis, issueSignals: [{ id: physics2-dipole-geometry-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: On the $+p$ side, the positive charge's outward field is $+p$-directed and is slightly stronger than the negative charge's opposing field.
+      Why it works: Equal charges do not cancel when their distances differ.
+      Why the other choices fail: They confuse equal source magnitudes with equal field contributions or choose the wrong geometry.
   - id: dipole-axial-expression
-    title: Derive the far-field form
-    instruction: Derive the far-field form
-    hint: Use superposition and simplify only after the physical contributions are combined.
-    type: symbolicResponse
-    prompt: Enter the leading far-axial field magnitude in terms of k, p, and x.
-    choices: []
-    answer:
-      expectedLatex: 2*k*p/x^3
-      equivalenceMode: simplify
-      variables:
-      - k
-      - p
-      - x
-      tolerance: '0.000001'
-    explanation: 'Solution: Subtract the two point-charge fields and use x much larger than d; with p=qd the leading
-      term is 2kp/x^3.
-
-
-      Why it works: The dipole''s net charge is zero, so its far field falls as 1/x^3 rather than 1/x^2.'
-    skills:
-    - physics2-electric-charges-fields
+    title: Retain the leading term
+    instruction: Subtract the two axial Coulomb fields and expand for $x\gg d$.
+    hint: The $1/x^2$ terms cancel; the first surviving term contains $p$.
+    type: multipleChoice
+    prompt: Which far-axial magnitude is correct?
+    choices:
+    - { id: a, text: '$kp/x^2$', issueSignals: [{ id: physics2-dipole-monopole-error, domains: [physics-2] }] }
+    - { id: b, text: '$2kp/x^3$' }
+    - { id: c, text: '$kp/(2x^3)$', issueSignals: [{ id: physics2-dipole-factor-error, domains: [physics-2] }] }
+    - { id: d, text: '$2kpx^{-2}$', issueSignals: [{ id: physics2-dipole-power-error, domains: [physics-2] }] }
+    answer: { choiceId: b }
+    explanation: >
+      Solution: Expanding the difference of the two fields gives the first nonzero term $E_{ax}=2kp/x^3$.
+      Why it works: A dipole has zero net charge, so the monopole $1/x^2$ term cancels.
+      Why the other choices fail: They retain monopole scaling or use the wrong geometric factor.
   - id: dipole-axial-number
-    title: Evaluate a dipole field
-    instruction: Evaluate a dipole field
-    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
-    type: numericResponse
-    prompt: For p=6.0e-9 C m at x=0.20 m, enter the axial field magnitude in N/C.
-    choices: []
-    answer:
-      value: 13483.5
-      tolerance: 20
-    explanation: 'Solution: E=2(8.99e9)(6.0e-9)/(0.20)^3=1.35e4 N/C.
-
-
-      Why it works: The far-field expression converts dipole moment and observation distance directly to field.'
-    skills:
-    - physics2-electric-charges-fields
+    title: Evaluate the axial field
+    instruction: Substitute $p=6.0\,\mathrm{nC\,m}$ and $x=0.20\,\mathrm m$.
+    hint: Use $k=8.99\times10^9$.
+    type: multipleChoice
+    prompt: Which value is closest to the far axial field magnitude?
+    choices:
+    - { id: a, text: '$1.35\times10^4\,\mathrm{N/C}$' }
+    - { id: b, text: '$6.74\times10^3\,\mathrm{N/C}$', issueSignals: [{ id: physics2-dipole-axial-factor-error, domains: [physics-2] }] }
+    - { id: c, text: '$1.35\times10^3\,\mathrm{N/C}$', issueSignals: [{ id: physics2-dipole-distance-power-error, domains: [physics-2] }] }
+    - { id: d, text: '$1.35\times10^4\,\mathrm{N/C}$ opposite to $p$', issueSignals: [{ id: physics2-dipole-sign-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: $E=2kp/x^3=2(8.99\times10^9)(6.0\times10^{-9})/(0.20)^3=1.35\times10^4\,\mathrm{N/C}$.
+      Why it works: The axial factor is two and the direction is along $p$ on the positive side.
+      Why the other choices fail: b is the equatorial magnitude, c loses a factor of ten, and d reverses the direction.
 - id: dipole-equatorial
   title: Field on the perpendicular bisector
-  problem: The same dipole has p=6.0e-9 C m. Find the far field at a point 0.20 m on its perpendicular bisector.
+  problem: Use the same dipole with $p=6.0\,\mathrm{nC\,m}$ and find the far field at radius $r=0.20\,\mathrm m$ on its perpendicular bisector.
   steps:
   - id: dipole-equatorial-direction
-    title: Use symmetry
-    instruction: Use symmetry
-    hint: Draw the charge locations and the direction of each contribution before choosing.
+    title: Use perpendicular-bisector symmetry
+    instruction: Pair the fields from $+q$ and $-q$.
+    hint: The observation point is equally distant from both charges.
     type: multipleChoice
-    prompt: Which components cancel at an equatorial point?
+    prompt: Which component pattern is correct at the equatorial point?
     choices:
-    - id: a
-      text: The components along the perpendicular-bisector direction cancel; the net field points from +q toward
-        -q.
-    - id: b
-      text: The axial components cancel, so the field is zero.
-      issueSignals:
-      - id: physics2-sign-direction-error
-        domains:
-        - physics-2
-    - id: c
-      text: All components point away from the dipole center.
-      issueSignals:
-      - id: physics2-method-selection-error
-        domains:
-        - physics-2
-    - id: d
-      text: The field points from -q toward +q.
-      issueSignals:
-      - id: physics2-units-error
-        domains:
-        - physics-2
-    answer:
-      choiceId: a
-    explanation: 'Solution: Equal distances make the transverse components cancel, leaving both axial components
-      toward the negative charge.
-
-
-      Why it works: Symmetry cancels equal-and-opposite components but reinforces aligned components.
-
-
-      Why the other choices fail: They use the wrong direction, quantity, or superposition rule.'
-    skills:
-    - physics2-electric-charges-fields
-    media:
-    - type: image
-      src: /media/physics2/ch05-relationship-map.svg
-      alt: Charge-and-field model for Field on the perpendicular bisector.
-      caption: Identify source charges, the observation point, and component directions before calculating.
+    - { id: a, text: Components perpendicular to the dipole axis cancel; axial components add toward $-q$ }
+    - { id: b, text: Axial components cancel, leaving zero field, issueSignals: [{ id: physics2-dipole-cancellation-error, domains: [physics-2] }] }
+    - { id: c, text: Both fields point away from the center, issueSignals: [{ id: physics2-dipole-vector-addition-error, domains: [physics-2] }] }
+    - { id: d, text: The field points from $-q$ toward $+q$, issueSignals: [{ id: physics2-dipole-direction-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: Equal distances cancel the components perpendicular to the dipole axis; the two axial components point toward $-q$ and add.
+      Why it works: Symmetry cancels equal opposite components but preserves the aligned components.
+      Why the other choices fail: They cancel the wrong components, add vectors by magnitude, or reverse the dipole direction.
   - id: dipole-equatorial-expression
-    title: Write the far-field magnitude
-    instruction: Write the far-field magnitude
-    hint: Use superposition and simplify only after the physical contributions are combined.
-    type: symbolicResponse
-    prompt: Enter the far equatorial field magnitude in terms of k, p, and r.
-    choices: []
-    answer:
-      expectedLatex: k*p/r^3
-      equivalenceMode: simplify
-      variables:
-      - k
-      - p
-      - r
-      tolerance: '0.000001'
-    explanation: 'Solution: For r much larger than the separation, the equatorial field magnitude is kp/r^3.
-
-
-      Why it works: The first nonzero dipole term again scales as r^-3, with a different geometric factor.'
-    skills:
-    - physics2-electric-charges-fields
+    title: Apply the geometric factor
+    instruction: Use the far-field dipole result on the perpendicular bisector.
+    hint: Compare with the axial result at the same distance.
+    type: multipleChoice
+    prompt: Which far-equatorial magnitude is correct?
+    choices:
+    - { id: a, text: '$kp/r^3$' }
+    - { id: b, text: '$2kp/r^3$', issueSignals: [{ id: physics2-dipole-geometry-factor-error, domains: [physics-2] }] }
+    - { id: c, text: '$kp/r^2$', issueSignals: [{ id: physics2-dipole-monopole-error, domains: [physics-2] }] }
+    - { id: d, text: '$kpr^3$', issueSignals: [{ id: physics2-dipole-power-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: The equatorial dipole magnitude is $kp/r^3$, half the axial magnitude at the same distance.
+      Why it works: The same dipole cancellation leaves a $1/r^3$ term but the geometry changes the factor from two to one.
+      Why the other choices fail: b uses the axial factor, c uses monopole scaling, and d has the distance power inverted.
   - id: dipole-equatorial-number
     title: Evaluate the equatorial field
-    instruction: Evaluate the equatorial field
-    hint: Keep SI units until the final answer and include the sign or direction in your reasoning.
-    type: numericResponse
-    prompt: Enter the field magnitude in N/C at r=0.20 m.
-    choices: []
-    answer:
-      value: 6742.5
-      tolerance: 15
-    explanation: 'Solution: E=(8.99e9)(6.0e-9)/(0.20)^3=6.74e3 N/C.
-
-
-      Why it works: The equatorial magnitude is half the axial far-field magnitude at the same distance.'
-    skills:
-    - physics2-electric-charges-fields
+    instruction: Substitute the given moment and radius.
+    hint: Use $E=kp/r^3$.
+    type: multipleChoice
+    prompt: Which value is closest to the equatorial field magnitude?
+    choices:
+    - { id: a, text: '$6.74\times10^3\,\mathrm{N/C}$' }
+    - { id: b, text: '$1.35\times10^4\,\mathrm{N/C}$', issueSignals: [{ id: physics2-dipole-axial-factor-error, domains: [physics-2] }] }
+    - { id: c, text: '$3.37\times10^3\,\mathrm{N/C}$', issueSignals: [{ id: physics2-dipole-distance-power-error, domains: [physics-2] }] }
+    - { id: d, text: '$6.74\times10^3\,\mathrm{N/C}$ toward $+q$', issueSignals: [{ id: physics2-dipole-sign-error, domains: [physics-2] }] }
+    answer: { choiceId: a }
+    explanation: >
+      Solution: $E=kp/r^3=(8.99\times10^9)(6.0\times10^{-9})/(0.20)^3=6.74\times10^3\,\mathrm{N/C}$ toward $-q$.
+      Why it works: The equatorial magnitude is half the axial result at equal distance.
+      Why the other choices fail: b doubles the correct result, c uses the wrong distance power, and d reverses the direction.
 guidedProject: null
 items: []
 glossary: null
 lesson: null
-exploration: null
-directedProject: null
-sandbox: null
 navigation:
   learningGoal: learn
   activityType: guidedWorkedExample
-  tags:
-  - physics-2
-  - physics2-electric-charges-fields
-  - s2c-reviewed
-skills:
-- physics2-ch05-modeling
-- physics2-electric-charges-fields
+  tags: [physics-2, physics2-electric-charges-fields, s2c-reviewed]
+skills: [physics2-ch05-modeling, physics2-electric-charges-fields]
 authoring:
   visualRequirement: required
-  visualRationale: An original relationship map supports the model, direction, and units used in this Physics 2
-    learning activity.
-  difficultyTier: unspecified
+  visualRationale: Axial and equatorial dipole diagrams are necessary for vector cancellation.
+  difficultyTier: medium
   exceptionReason: null
-  physicsModel: null

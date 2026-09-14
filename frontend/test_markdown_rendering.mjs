@@ -22,4 +22,16 @@ assert.match(rendered, /aria-label="Scrollable table"/);
 assert.match(rendered, /mathvariant="normal">H</);
 assert.match(rendered, /<del>Deprecated<\/del>/);
 
+const multilineDisplay = await renderMarkdown(`Before:
+
+$$
+\\mathbf E=k\\int_{\\text{source}}\\frac{\\widehat{\\mathbf R}}{R^2}\,dq
+
+=k\\int_{\\text{source}}\\frac{\\mathbf r-\\mathbf r'}{|\\mathbf r-\\mathbf r'|^3},dq.
+$$
+
+After.`);
+assert.equal((multilineDisplay.match(/class="math math-display"/g) ?? []).length, 1);
+assert.doesNotMatch(multilineDisplay, />\\s*=k\\int/);
+
 console.log("Markdown rendering checks passed.");

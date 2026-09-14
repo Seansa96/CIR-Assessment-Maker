@@ -1,0 +1,109 @@
+schemaVersion: 1
+id: physics2-reinforcement-gauss-law-concept-lesson
+title: "Gauss's Law: Choosing Symmetry and Surface"
+assessmentType: conceptLesson
+categoryId: physics-2
+topicId: physics2-gauss-law
+modeDefault: practice
+randomizeQuestions: false
+questions: []
+workedExamples: []
+guidedProject: null
+items: []
+glossary: null
+lesson:
+  introduction: >-
+    Gauss's law is always valid for a closed surface, but a useful field calculation requires a surface on which symmetry makes
+    the field magnitude and angle manageable.
+  sections:
+  - id: physics2-reinforcement-gauss-s1
+    title: Count only enclosed charge
+    required: true
+    content: $\oint \mathbf E\cdot d\mathbf A=Q_{enc}/\varepsilon_0$ uses the algebraic charge inside the closed surface. External charge can bend field lines but contributes zero net flux.
+    check:
+      id: physics2-reinforcement-gauss-s1-check
+      type: multipleChoice
+      prompt: A Gaussian sphere encloses $+3q$ while $-q$ is outside. What charge belongs on the right side of Gauss's law?
+      choices:
+      - { id: a, text: '$+2q$', issueSignals: [{ id: physics2-external-charge-counted, domains: [physics-2] }] }
+      - { id: b, text: '$+3q$' }
+      - { id: c, text: '$-q$', issueSignals: [{ id: physics2-enclosed-charge-reversed, domains: [physics-2] }] }
+      - { id: d, text: '$0$ because the surface is imaginary', issueSignals: [{ id: physics2-gaussian-surface-reality-error, domains: [physics-2] }] }
+      answer: { choiceId: b }
+      explanation: >-
+        Solution: $Q_{enc}$ contains only the $+3q$ inside the surface. The external charge is not included.
+        Why it works: External field lines enter and leave the closed surface with zero net flux contribution.
+        Why the other choices fail: a includes outside charge, c selects only outside charge, and d misunderstands a valid mathematical surface.
+    difficultyDimensions: [constraints, errorDiagnosis]
+    difficultyEvidence: Distinguishes enclosed charge from the total charge in the environment.
+  - id: physics2-reinforcement-gauss-s2
+    title: Match surface to symmetry
+    required: true
+    content: Use a sphere for spherical symmetry, a coaxial cylinder for an infinite line, and a pillbox for an infinite plane.
+    check:
+      id: physics2-reinforcement-gauss-s2-check
+      type: multipleChoice
+      prompt: Which Gaussian surface best matches an infinite line charge?
+      choices:
+      - { id: a, text: 'A coaxial cylinder whose curved radius is the observation distance' }
+      - { id: b, text: 'A sphere centered on one point of the line', issueSignals: [{ id: physics2-gauss-symmetry-mismatch, domains: [physics-2] }] }
+      - { id: c, text: 'A disk parallel to the line', issueSignals: [{ id: physics2-gauss-surface-orientation-error, domains: [physics-2] }] }
+      - { id: d, text: 'An arbitrary cube enclosing part of the line', issueSignals: [{ id: physics2-gauss-constant-field-error, domains: [physics-2] }] }
+      answer: { choiceId: a }
+      explanation: >-
+        Solution: A coaxial cylinder has constant radial distance on its curved surface, making $E$ constant there.
+        Why it works: The source symmetry and Gaussian geometry share the same radial coordinate.
+        Why the other choices fail: Their surfaces do not keep the field magnitude constant over the contributing area.
+    difficultyDimensions: [representation, symmetry]
+    difficultyEvidence: Selects a Gaussian surface from source geometry.
+  - id: physics2-reinforcement-gauss-s3
+    title: Know when the shortcut fails
+    required: true
+    content: Gauss's law may determine total flux without isolating a local $E$. Factoring $E$ outside the integral requires constant magnitude and a known angle over the relevant surface.
+    check:
+      id: physics2-reinforcement-gauss-s3-check
+      type: multipleChoice
+      prompt: Why does a sphere usually fail to give a simple field formula for two unequal point charges together?
+      choices:
+      - { id: a, text: 'The law is invalid when more than one charge is present', issueSignals: [{ id: physics2-gauss-scope-error, domains: [physics-2] }] }
+      - { id: b, text: 'The field varies across the sphere, so $E$ cannot be factored out' }
+      - { id: c, text: 'No closed surface can enclose two charges', issueSignals: [{ id: physics2-gauss-surface-error, domains: [physics-2] }] }
+      - { id: d, text: 'The sphere encloses no net charge by definition', issueSignals: [{ id: physics2-gauss-charge-error, domains: [physics-2] }] }
+      answer: { choiceId: b }
+      explanation: >-
+        Solution: Gauss's law still gives total flux, but unequal charges destroy spherical symmetry, so $E$ varies over the sphere.
+        Why it works: A constant field magnitude is required before writing $\Phi=E(4\pi r^2)$.
+        Why the other choices fail: The law allows many charges, closed surfaces can enclose them, and enclosed charge is not automatically zero.
+    difficultyDimensions: [constraints, modelOrDerivation]
+    difficultyEvidence: Identifies the exact condition needed for a computational shortcut.
+  - id: physics2-reinforcement-gauss-s4
+    title: Check the radial scaling
+    required: true
+    content: 'The source geometry determines area growth: cylinders give $E\propto1/r$ for a line, while spheres give $E\propto1/r^2$ for a point or spherical source.'
+    check:
+      id: physics2-reinforcement-gauss-s4-check
+      type: multipleChoice
+      prompt: If the distance from an infinite line doubles, how does the radial field magnitude change?
+      choices:
+      - { id: a, text: 'It becomes one-half as large' }
+      - { id: b, text: 'It becomes one-quarter as large', issueSignals: [{ id: physics2-gauss-spherical-scaling-error, domains: [physics-2] }] }
+      - { id: c, text: 'It doubles', issueSignals: [{ id: physics2-gauss-area-scaling-reversal, domains: [physics-2] }] }
+      - { id: d, text: 'It is unchanged', issueSignals: [{ id: physics2-gauss-distance-error, domains: [physics-2] }] }
+      answer: { choiceId: a }
+      explanation: >-
+        Solution: A coaxial cylinder has area proportional to $r$, so fixed line charge gives $E\propto1/r$ and doubling distance halves $E$.
+        Why it works: The area growth matches cylindrical rather than spherical spreading.
+        Why the other choices fail: b uses inverse-square scaling, c reverses the trend, and d ignores spreading.
+    difficultyDimensions: [scaling, symmetry]
+    difficultyEvidence: Uses Gaussian-area growth to predict a limiting change.
+navigation:
+  learningGoal: learn
+  activityType: conceptLesson
+  tags: [physics-2, physics2-gauss-law, reinforcement, s2c-reviewed]
+skills: [physics2-gauss-law, physics2-symmetry]
+authoring:
+  visualRequirement: recommended
+  visualRationale: Cylinder, sphere, and pillbox sketches make the surface choices concrete.
+  difficultyTier: easy
+  sourcePacketId: packet-physics-review-reinforcement-v1
+  blueprintId: physics-review-reinforcement-blueprints-v1

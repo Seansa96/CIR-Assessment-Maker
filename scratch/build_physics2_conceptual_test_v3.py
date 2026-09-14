@@ -1,0 +1,16 @@
+from pathlib import Path
+import runpy
+src=Path(r'C:\Users\SeanS\Downloads\cir_app\scratch\build_conceptual_focus_test_v2.py')
+text=src.read_text(encoding='utf-8')
+text=text.replace("Physics 2 Conceptual Focus Test - Version 2", "Physics 2 Comprehensive Conceptual Test")
+text=text.replace("Physics 2 | Version 2", "Physics 2 | Comprehensive Conceptual Test")
+text=text.replace("Version 2", "Comprehensive Conceptual Test")
+text=text.replace("Physics 2 Conceptual Focus Test - Comprehensive Conceptual Test", "Physics 2 Comprehensive Conceptual Test")
+text=text.replace("Physics 2 Conceptual Focus Test - Comprehensive Conceptual Test Detailed Answer Key", "Physics 2 Comprehensive Conceptual Test Detailed Answer Key")
+tmp=Path(r'C:\Users\SeanS\Downloads\cir_app\scratch\_generated_conceptual_test.py')
+text=text.replace("TEST=os.path.join(OUT,'Physics 2 Conceptual Focus Test - Comprehensive Conceptual Test.pdf')", "TEST=os.path.join(OUT,'Physics 2 Comprehensive Conceptual Test.pdf')")
+text=text.replace("KEY=os.path.join(OUT,'Physics 2 Comprehensive Conceptual Test Detailed Answer Key.pdf')", "KEY=os.path.join(OUT,'Physics 2 Comprehensive Conceptual Test - Detailed Answer Key.pdf')")
+text=text.replace("KEY=os.path.join(OUT,'Physics 2 Conceptual Focus Test - Comprehensive Conceptual Test Detailed Answer Key.pdf')", "KEY=os.path.join(OUT,'Physics 2 Comprehensive Conceptual Test - Detailed Answer Key.pdf')")
+tmp.write_text(text,encoding='utf-8')
+runpy.run_path(str(tmp))
+print('Generated from the conceptual-focus template, aligned to docs/reference/physics2_review_knowledge_base.yaml')
