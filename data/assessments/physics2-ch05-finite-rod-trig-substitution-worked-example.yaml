@@ -1,0 +1,391 @@
+schemaVersion: 1
+id: physics2-ch05-finite-rod-trig-substitution-worked-example
+title: 'Finite Charged Rod: Trigonometric Substitution in an Electric-Field Derivation'
+assessmentType: workedExample
+categoryId: physics-2
+topicId: physics2-electric-charges-fields
+modeDefault: practice
+randomizeQuestions: false
+questions: []
+workedExamples:
+- id: finite-rod-symbolic-derivation
+  title: Symbolically derive the field of a finite charged rod
+  problem: |
+    A thin rod lies along the $x$-axis from $x=-L$ to $x=L$ and has uniform signed line charge density $\lambda$. Find the electric field at the point $P=(0,a)$, where $a>0$. Use $k=1/(4\pi\varepsilon_0)$. Derive the result symbolically, including the trigonometric substitution needed to evaluate the finite-rod integral.
+  steps:
+  - id: finite-rod-symbolic-s1
+    title: Choose the surviving component
+    instruction: |
+      Identify the source coordinate $x$, observer height $a$, rod half-length $L$, density $\lambda$, and field components $E_x$ and $E_y$. Use reflection symmetry about the $y$-axis to decide which component cancels and which component survives. State the direction for $\lambda>0$.
+    hint: Pair equal source elements at $+x$ and $-x$ before integrating. Their horizontal components oppose; their vertical components reinforce.
+    type: multipleChoice
+    prompt: Which symmetry conclusion is correct for the field at $P=(0,a)$?
+    choices:
+    - id: a
+      text: '$E_x=0$ and $E_y$ survives; for $\lambda>0$, the field points in $+y$'
+    - id: b
+      text: '$E_y=0$ and $E_x$ survives because the rod lies on the x-axis'
+      issueSignals: [{ id: physics2-finite-rod-component-swap, domains: [physics-2] }]
+    - id: c
+      text: '$E_x=E_y=0$ because the rod is symmetric about the y-axis'
+      issueSignals: [{ id: physics2-finite-rod-total-cancellation, domains: [physics-2] }]
+    - id: d
+      text: '$E_x=0$ and $E_y$ survives; for $\lambda>0$, the field points in $-y$'
+      issueSignals: [{ id: physics2-finite-rod-sign-direction, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: The source element at $(x,0)$ has displacement to $P$ equal to $(-x,a)$, while the element at $(-x,0)$ has displacement $(x,a)$. Their horizontal contributions cancel pairwise, so $E_x=0$. Their vertical contributions both point upward for $\lambda>0$, so only $E_y$ remains and the field points in $+y$.
+
+      Why it works: Symmetry cancels components with opposite signs, not every field contribution. The charge distribution and observation point are both symmetric about the $y$-axis. Why the other choices fail: b cancels the wrong component; c treats opposite horizontal components as if the vertical components were also opposite; d reverses the field direction for positive charge.
+    media:
+    - type: image
+      src: /media/physics2/continuous-charge-rod.svg
+      alt: Original diagram of a finite charged rod, midpoint observer, source elements, and source-to-observer field vectors.
+      caption: Pair symmetric source elements before writing the one-component integral.
+  - id: finite-rod-symbolic-s2
+    title: Construct the differential field
+    instruction: |
+      Name the charge element $dq$, source-to-observer distance $R$, vertical projection factor, and differential field $dE_y$. Use $dq=\lambda\,dx$, $R=\sqrt{x^2+a^2}$, and $dE_y=(k\,dq/R^2)(a/R)$ to write the integrand in terms of $x$ and $a$.
+    hint: The projection contributes one factor of $a/R$, so the denominator becomes $R^3$ rather than $R^2$.
+    type: multipleChoice
+    prompt: Which differential vertical field is correct for a positive source element at $(x,0)$?
+    choices:
+    - id: a
+      text: '$dE_y=\dfrac{k\lambda a\,dx}{(x^2+a^2)^{3/2}}$'
+    - id: b
+      text: '$dE_y=\dfrac{k\lambda\,dx}{x^2+a^2}$'
+      issueSignals: [{ id: physics2-finite-rod-missing-projection, domains: [physics-2] }]
+    - id: c
+      text: '$dE_y=\dfrac{k\lambda x\,dx}{(x^2+a^2)^{3/2}}$'
+      issueSignals: [{ id: physics2-finite-rod-wrong-projection-coordinate, domains: [physics-2] }]
+    - id: d
+      text: '$dE_y=\dfrac{k\lambda a\,dx}{x^2+a^2}$'
+      issueSignals: [{ id: physics2-finite-rod-distance-power, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: The charge on a slice is $dq=\lambda\,dx$. Its distance from $P$ is $R=\sqrt{x^2+a^2}$. The scalar field magnitude is $k\,dq/R^2$, and the vertical projection is $a/R$. Therefore,
+
+      $$
+      dE_y=\frac{k\,dq}{R^2}\frac{a}{R}=\frac{k\lambda a\,dx}{(x^2+a^2)^{3/2}}.
+      $$
+
+      Why it works: The extra factor $a/R$ converts the radial field into its vertical component. Why the other choices fail: b and d omit that projection and use only $R^2$; c uses the horizontal coordinate $x$ instead of the vertical projection $a$.
+  - id: finite-rod-symbolic-s3
+    title: Set up the definite integral
+    instruction: |
+      Identify the integration variable $x$, full rod bounds $-L$ and $L$, and constants $k$, $\lambda$, and $a$. Integrate the differential field over the entire rod exactly once, keeping the surviving direction $\hat y$ separate from the scalar magnitude.
+    hint: Because the rod is already described by $-L\le x\le L$, do not double the result after using these full bounds.
+    type: multipleChoice
+    prompt: Which expression correctly represents the total electric field before evaluating the integral?
+    choices:
+    - id: a
+      text: '$\mathbf E=k\lambda a\,\hat y\int_{-L}^{L}\dfrac{dx}{(x^2+a^2)^{3/2}}$'
+    - id: b
+      text: '$\mathbf E=2k\lambda a\,\hat y\int_{-L}^{L}\dfrac{dx}{(x^2+a^2)^{3/2}}$'
+      issueSignals: [{ id: physics2-finite-rod-double-full-interval, domains: [physics-2] }]
+    - id: c
+      text: '$\mathbf E=k\lambda a\,\hat y\int_{0}^{L}\dfrac{dx}{(x^2+a^2)^{3/2}}$'
+      issueSignals: [{ id: physics2-finite-rod-half-interval, domains: [physics-2] }]
+    - id: d
+      text: '$\mathbf E=k\lambda\,\hat y\int_{-L}^{L}\dfrac{a\,dx}{x^2+a^2}$'
+      issueSignals: [{ id: physics2-finite-rod-integrand-power, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Integrate $dE_y$ from the left endpoint to the right endpoint:
+
+      $$
+      \mathbf E=k\lambda a\,\hat y\int_{-L}^{L}\frac{dx}{(x^2+a^2)^{3/2}}.
+      $$
+
+      Why it works: The full interval includes both halves of the rod exactly once, while symmetry has already removed the horizontal component. Why the other choices fail: b doubles an interval that is already complete; c includes only half the rod without the compensating factor of two; d changes the integrand from the projected $R^{-3}$ form to an incorrect $R^{-2}$ form.
+  - id: finite-rod-symbolic-s4
+    title: Apply trigonometric substitution
+    instruction: |
+      For the remaining integral $I=\int (x^2+a^2)^{-3/2}\,dx$, name the substitution variable $\theta$ and use $x=a\tan\theta$. Calculate $dx=a\sec^2\theta\,d\theta$, rewrite $x^2+a^2$ with $1+\tan^2\theta=\sec^2\theta$, and transform the bounds $x=\pm L$ into $\theta=\pm\arctan(L/a)$.
+    hint: Keep $a>0$ and simplify the radical power before cancelling secant factors.
+    type: multipleChoice
+    prompt: Which transformed definite integral is correct after $x=a\tan\theta$?
+    choices:
+    - id: a
+      text: '$I=\dfrac{1}{a^2}\int_{-\arctan(L/a)}^{\arctan(L/a)}\cos\theta\,d\theta$'
+    - id: b
+      text: '$I=\dfrac{1}{a}\int_{-\arctan(L/a)}^{\arctan(L/a)}\sec\theta\,d\theta$'
+      issueSignals: [{ id: physics2-finite-rod-trig-power-cancellation, domains: [physics-2] }]
+    - id: c
+      text: '$I=a^2\int_{-L}^{L}\cos\theta\,d\theta$'
+      issueSignals: [{ id: physics2-finite-rod-trig-bounds-not-transformed, domains: [physics-2] }]
+    - id: d
+      text: '$I=\dfrac{1}{a^2}\int_{-\arctan(L/a)}^{\arctan(L/a)}\sec\theta\,d\theta$'
+      issueSignals: [{ id: physics2-finite-rod-trig-identity-error, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: With $x=a\tan\theta$, $dx=a\sec^2\theta\,d\theta$ and
+
+      $$
+      (x^2+a^2)^{3/2}=(a^2\sec^2\theta)^{3/2}=a^3\sec^3\theta.
+      $$
+
+      Hence
+
+      $$
+      \frac{dx}{(x^2+a^2)^{3/2}}=\frac{a\sec^2\theta}{a^3\sec^3\theta}\,d\theta=\frac{1}{a^2}\cos\theta\,d\theta.
+      $$
+
+      The bounds become $\theta=\pm\arctan(L/a)$, so the keyed transformed integral follows. Why it works: The substitution turns the radical into a power of secant that cancels with the Jacobian $dx$. Why the other choices fail: b leaves the wrong secant power; c keeps the old bounds and reverses the scale factor; d uses $\sec\theta$ instead of the remaining $\cos\theta$.
+  - id: finite-rod-symbolic-s5
+    title: Integrate and return to x
+    instruction: |
+      Integrate the transformed quantity using $\int\cos\theta\,d\theta=\sin\theta$. Then use the right triangle from $x=a\tan\theta$ to replace $\sin\theta$ by $x/\sqrt{x^2+a^2}$, preserving the prefactor $1/a^2$. Name the resulting antiderivative.
+    hint: The triangle has opposite side $x$, adjacent side $a$, and hypotenuse $\sqrt{x^2+a^2}$.
+    type: multipleChoice
+    prompt: Which antiderivative of $(x^2+a^2)^{-3/2}$ is correct?
+    choices:
+    - id: a
+      text: '$\dfrac{x}{a^2\sqrt{x^2+a^2}}+C$'
+    - id: b
+      text: '$\dfrac{x}{a\sqrt{x^2+a^2}}+C$'
+      issueSignals: [{ id: physics2-finite-rod-missing-a-factor, domains: [physics-2] }]
+    - id: c
+      text: '$\dfrac{\sqrt{x^2+a^2}}{a^2}+C$'
+      issueSignals: [{ id: physics2-finite-rod-radical-antiderivative, domains: [physics-2] }]
+    - id: d
+      text: '$\dfrac{x}{\sqrt{x^2+a^2}}+C$'
+      issueSignals: [{ id: physics2-finite-rod-missing-prefactor, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: The transformed antiderivative is $(1/a^2)\sin\theta$. From $\tan\theta=x/a$, the right triangle gives $\sin\theta=x/\sqrt{x^2+a^2}$. Therefore,
+
+      $$
+      \int\frac{dx}{(x^2+a^2)^{3/2}}=\frac{x}{a^2\sqrt{x^2+a^2}}+C.
+      $$
+
+      Why it works: Back-substitution restores the original variable while retaining the factor created by $dx$ and the radical. Differentiation returns $(x^2+a^2)^{-3/2}$. Why the other choices fail: b and d lose powers of $a$; c differentiates to a different expression involving $x$ in the numerator.
+  - id: finite-rod-symbolic-s6
+    title: Evaluate endpoints and check the result
+    instruction: |
+      Use the antiderivative at $x=L$ and $x=-L$, multiply by the prefactor $k\lambda a$, and name the final vector field. Then check the sign for $\lambda>0$ and the far-field limit $a\gg L$, using total charge $Q=2\lambda L$.
+    hint: The endpoint terms are equal in magnitude and opposite in sign. In the far-field limit, the rod should resemble a point charge with charge $Q$.
+    type: multipleChoice
+    prompt: Which final symbolic field and check are correct?
+    choices:
+    - id: a
+      text: '$\mathbf E=\dfrac{2k\lambda L}{a\sqrt{a^2+L^2}}\,\hat y$; for $a\gg L$, it approaches $kQ/a^2\,\hat y$'
+    - id: b
+      text: '$\mathbf E=\dfrac{k\lambda L}{a\sqrt{a^2+L^2}}\,\hat y$; for $a\gg L$, it approaches $kQ/a^2\,\hat y$'
+      issueSignals: [{ id: physics2-finite-rod-missing-endpoint-factor, domains: [physics-2] }]
+    - id: c
+      text: '$\mathbf E=\dfrac{2k\lambda L}{a^2+L^2}\,\hat y$; for $a\gg L$, it approaches $kQ/a\,\hat y$'
+      issueSignals: [{ id: physics2-finite-rod-endpoint-denominator, domains: [physics-2] }]
+    - id: d
+      text: '$\mathbf E=\dfrac{2k\lambda L}{a\sqrt{a^2+L^2}}\,(-\hat y)$ for $\lambda>0$'
+      issueSignals: [{ id: physics2-finite-rod-final-sign, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Evaluate the primitive at both endpoints:
+
+      $$
+      E_y=k\lambda a\left[\frac{x}{a^2\sqrt{x^2+a^2}}\right]_{-L}^{L}=\frac{k\lambda}{a}\left[\frac{x}{\sqrt{x^2+a^2}}\right]_{-L}^{L}=\frac{2k\lambda L}{a\sqrt{a^2+L^2}}.
+      $$
+
+      Thus $\mathbf E=2k\lambda L/[a\sqrt{a^2+L^2}]\,\hat y$. For $a\gg L$, $\sqrt{a^2+L^2}\approx a$, so $E_y\approx2k\lambda L/a^2=kQ/a^2$, as required for total charge $Q=2\lambda L$. Why it works: Endpoint subtraction includes both halves exactly once, and the far-field limit recovers Coulomb scaling. Why the other choices fail: b keeps only one endpoint contribution; c loses the square-root geometry and has the wrong far-field power; d reverses the direction for positive density.
+- id: finite-rod-numeric
+  title: Solve a finite charged rod scenario numerically
+  problem: |
+    Use the derived finite-rod field for a rod with $\lambda=3.00\,\mathrm{nC/m}$, half-length $L=0.400\,\mathrm m$, and observation height $a=0.300\,\mathrm m$. Use $k=8.99\times10^9\,\mathrm{N\,m^2/C^2}$.
+  steps:
+  - id: finite-rod-numeric-s1
+    title: Substitute the numerical data
+    instruction: |
+      For the numerical problem, identify $\lambda=3.00\,\mathrm{nC/m}$, $L=0.400\,\mathrm m$, $a=0.300\,\mathrm m$, and $k=8.99\times10^9\,\mathrm{N\,m^2/C^2}$. Convert $\lambda$ to C/m and substitute these quantities into $E_y=2k\lambda L/[a\sqrt{a^2+L^2}]$ without evaluating the final quotient yet.
+    hint: $3.00\,\mathrm{nC/m}=3.00\times10^{-9}\,\mathrm{C/m}$. The symbol $L$ is the rod's half-length.
+    type: multipleChoice
+    prompt: Which setup correctly substitutes the numerical data into the derived field formula?
+    choices:
+    - id: a
+      text: '$E_y=\dfrac{2(8.99\times10^9)(3.00\times10^{-9})(0.400)}{(0.300)\sqrt{(0.300)^2+(0.400)^2}}$'
+    - id: b
+      text: '$E_y=\dfrac{(8.99\times10^9)(3.00)(0.800)}{(0.300)\sqrt{(0.300)^2+(0.400)^2}}$'
+      issueSignals: [{ id: physics2-finite-rod-numeric-prefix-length, domains: [physics-2] }]
+    - id: c
+      text: '$E_y=\dfrac{2(8.99\times10^9)(3.00\times10^{-9})(0.800)}{(0.300)(0.300+0.400)}$'
+      issueSignals: [{ id: physics2-finite-rod-numeric-full-length-radical, domains: [physics-2] }]
+    - id: d
+      text: '$E_y=\dfrac{2(8.99\times10^9)(3.00\times10^{-6})(0.400)}{(0.300)\sqrt{(0.300)^2+(0.400)^2}}$'
+      issueSignals: [{ id: physics2-finite-rod-numeric-prefix-error, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Convert the density first: $3.00\,\mathrm{nC/m}=3.00\times10^{-9}\,\mathrm{C/m}$. Then use the half-length $L=0.400\,\mathrm m$ in the derived expression:
+
+      $$
+      E_y=\frac{2(8.99\times10^9)(3.00\times10^{-9})(0.400)}{(0.300)\sqrt{(0.300)^2+(0.400)^2}}.
+      $$
+
+      Why it works: The symbolic result already accounts for both halves through its factor of 2, so the numerical $L$ is the half-length. Why the other choices fail: b uses the wrong prefix and duplicates the factor; c uses the full length and replaces the Pythagorean radical with a sum; d treats nano as micro.
+  - id: finite-rod-numeric-s2
+    title: Evaluate the endpoint geometry
+    instruction: |
+      Name the two geometric lengths $a=0.300\,\mathrm m$ and $L=0.400\,\mathrm m$. Calculate the endpoint distance $\sqrt{a^2+L^2}$ using the Pythagorean theorem before multiplying it by $a$ in the denominator.
+    hint: Square the two perpendicular lengths, add them, and take the positive root.
+    type: multipleChoice
+    prompt: What is the value of $\sqrt{a^2+L^2}$ for this geometry?
+    choices:
+    - id: a
+      text: '$0.500\,\mathrm m$'
+    - id: b
+      text: '$0.700\,\mathrm m$'
+      issueSignals: [{ id: physics2-finite-rod-distance-addition, domains: [physics-2] }]
+    - id: c
+      text: '$0.250\,\mathrm m$'
+      issueSignals: [{ id: physics2-finite-rod-distance-squared-not-root, domains: [physics-2] }]
+    - id: d
+      text: '$0.100\,\mathrm m$'
+      issueSignals: [{ id: physics2-finite-rod-distance-difference, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: $a$ and $L$ are perpendicular legs, so
+
+      $$
+      \sqrt{a^2+L^2}=\sqrt{(0.300)^2+(0.400)^2}=\sqrt{0.0900+0.160}=\sqrt{0.250}=0.500\,\mathrm m.
+      $$
+
+      Why it works: The rod endpoint, observer height, and midpoint form a $3$-$4$-$5$ right triangle scaled by $0.100\,\mathrm m$. Why the other choices fail: b adds the legs directly; c stops at the squared sum; d subtracts the lengths instead of using the distance formula.
+  - id: finite-rod-numeric-s3
+    title: Calculate the geometric denominator
+    instruction: |
+      Use the observer height $a$ and endpoint distance $\sqrt{a^2+L^2}$ from Step 2. Multiply them to calculate the denominator factor $a\sqrt{a^2+L^2}$, keeping its units as $\mathrm m^2$.
+    hint: Multiply $0.300\,\mathrm m$ by $0.500\,\mathrm m$.
+    type: multipleChoice
+    prompt: What denominator factor should be used in the closed-form field expression?
+    choices:
+    - id: a
+      text: '$a\sqrt{a^2+L^2}=0.150\,\mathrm{m^2}$'
+    - id: b
+      text: '$a\sqrt{a^2+L^2}=0.250\,\mathrm{m^2}$'
+      issueSignals: [{ id: physics2-finite-rod-denominator-squared-sum, domains: [physics-2] }]
+    - id: c
+      text: '$a\sqrt{a^2+L^2}=0.800\,\mathrm m$'
+      issueSignals: [{ id: physics2-finite-rod-denominator-unit-product, domains: [physics-2] }]
+    - id: d
+      text: '$a\sqrt{a^2+L^2}=1.667\,\mathrm{m^{-2}}$'
+      issueSignals: [{ id: physics2-finite-rod-denominator-inversion, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: The denominator factor is a product, not the squared-distance sum:
+
+      $$
+      a\sqrt{a^2+L^2}=(0.300\,\mathrm m)(0.500\,\mathrm m)=0.150\,\mathrm{m^2}.
+      $$
+
+      Why it works: The closed form contains one factor of $a$ and one endpoint-distance factor. Their units multiply to square meters. Why the other choices fail: b uses $a^2+L^2$ instead of its square root times $a$; c adds lengths and loses a factor of length; d inverts the correct product.
+  - id: finite-rod-numeric-s4
+    title: Calculate the field numerator
+    instruction: |
+      Identify the numerator factors $2$, $k=8.99\times10^9$, $\lambda=3.00\times10^{-9}\,\mathrm{C/m}$, and $L=0.400\,\mathrm m$. Multiply them to obtain $2k\lambda L$ before dividing by the denominator.
+    hint: The powers of ten in $k$ and $\lambda$ cancel, leaving a coefficient calculation.
+    type: multipleChoice
+    prompt: What is the numerical value of the numerator $2k\lambda L$?
+    choices:
+    - id: a
+      text: '$21.576$'
+    - id: b
+      text: '$10.788$'
+      issueSignals: [{ id: physics2-finite-rod-numerator-missing-two, domains: [physics-2] }]
+    - id: c
+      text: '$215.76$'
+      issueSignals: [{ id: physics2-finite-rod-numerator-decimal-shift, domains: [physics-2] }]
+    - id: d
+      text: '$0.021576$'
+      issueSignals: [{ id: physics2-finite-rod-numerator-prefix-power, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution:
+
+      $$
+      2k\lambda L=2(8.99\times10^9)(3.00\times10^{-9})(0.400)=21.576.
+      $$
+
+      The units are compatible with division by the denominator's $\mathrm{m^2}$ to produce $\mathrm{N/C}$. Why it works: $10^9\cdot10^{-9}=1$, so only the coefficients and the factor $0.400$ remain. Why the other choices fail: b omits the factor 2; c shifts the decimal by one place; d incorrectly retains an extra factor of $10^{-3}$ after the nano-prefix conversion.
+  - id: finite-rod-numeric-s5
+    title: Divide to obtain the field magnitude
+    instruction: |
+      Divide the numerator $2k\lambda L=21.576$ by the geometric denominator $a\sqrt{a^2+L^2}=0.150\,\mathrm{m^2}$. Name the resulting field magnitude and attach the units $\mathrm{N/C}$.
+    hint: Compute $21.576/0.150$ and round consistently with the three-significant-figure inputs.
+    type: multipleChoice
+    prompt: Which electric-field magnitude results from the numerical calculation?
+    choices:
+    - id: a
+      text: '$143.84\,\mathrm{N/C}$'
+    - id: b
+      text: '$14.384\,\mathrm{N/C}$'
+      issueSignals: [{ id: physics2-finite-rod-final-decimal, domains: [physics-2] }]
+    - id: c
+      text: '$215.76\,\mathrm{N/C}$'
+      issueSignals: [{ id: physics2-finite-rod-final-denominator-omission, domains: [physics-2] }]
+    - id: d
+      text: '$0.00695\,\mathrm{N/C}$'
+      issueSignals: [{ id: physics2-finite-rod-final-inversion, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution:
+
+      $$
+      E_y=\frac{2k\lambda L}{a\sqrt{a^2+L^2}}=\frac{21.576}{0.150}=143.84\,\mathrm{N/C}.
+      $$
+
+      To three significant figures, $E_y=144\,\mathrm{N/C}$. Why it works: The numerator and denominator are combined exactly as the symbolic derivation requires, and the units reduce to electric-field units. Why the other choices fail: b shifts the decimal; c fails to divide by the denominator; d computes the reciprocal quotient.
+  - id: finite-rod-numeric-s6
+    title: State direction and perform a sanity check
+    instruction: |
+      Use the positive density $\lambda>0$ to state the vector direction of the field, then compare the result with the point-charge estimate using $Q=2\lambda L=2.40\,\mathrm{nC}$ and $kQ/a^2$. Explain why the finite-rod result need not equal that estimate at this moderate distance.
+    hint: The finite rod is not point-like when $a$ is comparable to $L$. Positive charge produces an upward field at the midpoint observer.
+    type: multipleChoice
+    prompt: Which final interpretation is correct?
+    choices:
+    - id: a
+      text: '$\mathbf E\approx144\,\mathrm{N/C}\,\hat y$; the point-charge estimate is about $240\,\mathrm{N/C}$ and is larger because $a$ is not much greater than $L$'
+    - id: b
+      text: '$\mathbf E\approx144\,\mathrm{N/C}\,(-\hat y)$; positive charge pulls the field downward'
+      issueSignals: [{ id: physics2-finite-rod-numeric-direction, domains: [physics-2] }]
+    - id: c
+      text: '$\mathbf E\approx240\,\mathrm{N/C}\,\hat y$; every finite rod equals its point-charge model at any distance'
+      issueSignals: [{ id: physics2-finite-rod-point-charge-overuse, domains: [physics-2] }]
+    - id: d
+      text: '$\mathbf E\approx144\,\mathrm{N/C}\,\hat x$; the horizontal components add because the rod is finite'
+      issueSignals: [{ id: physics2-finite-rod-numeric-axis, domains: [physics-2] }]
+    answer: { choiceId: a }
+    explanation: |
+      Solution: Since $\lambda>0$ and the observer is above the rod midpoint, the surviving field points upward:
+
+      $$
+      \mathbf E\approx144\,\mathrm{N/C}\,\hat y.
+      $$
+
+      The total charge is $Q=2\lambda L=2(3.00\,\mathrm{nC/m})(0.400\,\mathrm m)=2.40\,\mathrm{nC}$. Treating it as a point charge at the center gives $kQ/a^2\approx240\,\mathrm{N/C}$, which is larger here because the rod has appreciable extent compared with $a$. Why it works: The direction follows the component symmetry, while the comparison checks that the finite-source result approaches the point-charge model only when the observation distance is large. Why the other choices fail: b reverses the positive-charge field; c applies the far-field approximation too early; d ignores cancellation of horizontal components.
+    media:
+    - type: image
+      src: /media/physics2/continuous-charge-rod.svg
+      alt: Original finite charged rod diagram showing the upward net field at a point above its midpoint.
+      caption: The final direction is upward for positive line density.
+guidedProject: null
+items: []
+glossary: null
+lesson: null
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [physics-2, physics2-electric-charges-fields, continuous-charge, trigonometric-substitution, s2c-reviewed]
+skills: [physics2-continuous-charge, physics2-electric-field-integrals, trigonometric-substitution, physics2-symmetry]
+authoring:
+  visualRequirement: required
+  visualRationale: The rod geometry and source-element vectors support symmetry, projection, and endpoint reasoning.
+  difficultyTier: unspecified
+  exceptionReason: 'Approved coherent two-problem sequence: the first problem derives the finite-rod field symbolically, and the second transfers that derived expression to a numerical scenario.'
+  physicsModel:
+    modelId: forceModel
+    modelRole: synthesis
+    requiredRepresentations: [coordinateAxes, forceComponents, motionConstraint]
+  sourcePacketId: packet-physics2-continuous-charge-calculus-v1
+  blueprintId: physics2-finite-rod-trig-substitution-worked-example-v1
+  
+  
+

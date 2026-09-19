@@ -1,0 +1,231 @@
+schemaVersion: 1
+id: physics2-ch05-infinite-line-charge-field-symbolic-numeric-worked-example
+title: 'Infinite Line Charge: A Symmetry and Trigonometric-Substitution Derivation'
+assessmentType: workedExample
+categoryId: physics-2
+topicId: physics2-electric-charges-fields
+modeDefault: practice
+randomizeQuestions: false
+sourcePacketId: packet-physics2-infinite-line-charge-field-symbolic-numeric-v1
+blueprintId: physics2-infinite-line-charge-field-symbolic-numeric-v1
+navigation:
+  learningGoal: learn
+  activityType: guidedWorkedExample
+  tags: [physics-2, physics2-electric-charges-fields, infinite-line-charge, symmetry, trig-substitution]
+skills: [physics2-infinite-line-charge-field, vector-components, trigonometric-substitution, improper-integrals]
+authoring:
+  visualRequirement: required
+  visualRationale: The line-charge diagram and substitution map make symmetry, geometry, and the dense algebra visible.
+  exceptionReason: User-provided scan used as the source-grounded exception; the text layer required visual transcription review.
+  difficultyTier: hard
+questions: []
+media:
+  - {type: image, src: /media/physics2/infinite-line-charge-geometry.svg, alt: Infinite line charge with paired source elements and observation distance x, caption: The paired elements have opposite y-components and matching x-components.}
+  - {type: image, src: /media/physics2/infinite-line-charge-trig-substitution.svg, alt: Trigonometric substitution map for the infinite-line integral, caption: The substitution turns the radical into a power of secant and maps infinite y limits to finite angle limits.}
+workedExamples:
+- id: symbolic-infinite-line-derivation
+  title: Problem 1 - derive the infinite-line field symbolically
+  problem: |
+    An infinitely long line carries uniform linear charge density lambda. Point P is a perpendicular distance x from the line. Derive the field at P from the element field dE, explaining the physical meaning of every variable. You will see why symmetry removes one component, why a tempting u-substitution does not match the integrand, and how the trigonometric substitution y=x tan(alpha) completes the derivation.
+  steps:
+  - id: symbolic-symmetry
+    title: Step 1 - identify the geometry and surviving direction
+    instruction: 'Quantities in this step: line coordinate y, perpendicular distance x, element distance r, angle alpha, field element dE, and its components dEx and dEy. Use the geometry visual to decide what pairing symmetry does before writing an integral.'
+    hint: Pair a source element at +y with one at -y. Their distances and field magnitudes match, but their vertical directions oppose.
+    type: multipleChoice
+    prompt: What field contribution remains after integrating over the entire symmetric line?
+    choices:
+    - {id: a, text: 'Only the x-component remains; the y-components cancel pairwise, so E=Ex.', issueSignals: []}
+    - {id: b, text: 'Only the y-component remains because the line is vertical.', issueSignals: [{id: keeps-parallel-component-instead-of-perpendicular, domains: [physics-2]}]}
+    - {id: c, text: 'Both components remain and must be added as scalar magnitudes.', issueSignals: [{id: ignores-vector-symmetry, domains: [physics-2]}]}
+    - {id: d, text: 'Both components cancel, so the field at P is zero.', issueSignals: [{id: cancels-surviving-perpendicular-components, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    media:
+    - {type: image, src: /media/physics2/infinite-line-charge-geometry.svg, alt: Symmetric infinite line-charge geometry, caption: Reflecting the source element across y=0 reverses only the vertical component.}
+    explanation: |
+      Solution: The surviving field is horizontal, perpendicular to the line, so E=Ex=integral dEx. A pair at +y and -y has equal dE magnitude; its dEy contributions cancel and its dEx contributions add.
+      Why it works: Reflection symmetry leaves no preferred upward or downward direction, but it does leave the perpendicular direction from the line toward or away from P.
+      Why the other choices fail: b keeps the component that symmetry cancels; c ignores vector directions; d incorrectly cancels the two matching perpendicular components.
+  - id: symbolic-integrand
+    title: Step 2 - build the projected differential field
+    instruction: 'Quantities and physical roles: $\lambda$ is charge per unit length, so $dq=\lambda\,dy$; $k$ is Coulomb''s constant; $r=\sqrt{x^2+y^2}$ is the source-to-P distance; $\alpha$ is measured from +x; and $dE_x=\cos(\alpha)dE$. Combine $dE=k\,dq/r^2$ with these definitions.'
+    hint: 'Replace $dq$ with $\lambda\,dy$ and use $\cos(\alpha)=x/r$. The projection supplies one $x$ and the distance law supplies $r^2$.'
+    type: multipleChoice
+    prompt: Which expression correctly represents the x-directed differential contribution?
+    choices:
+    - {id: a, text: '$dE_x=k\lambda x\,dy/(x^2+y^2)^{3/2}$', issueSignals: []}
+    - {id: b, text: '$dE_x=k\lambda\,dy/(x^2+y^2)$', issueSignals: [{id: omits-cosine-projection, domains: [physics-2]}]}
+    - {id: c, text: '$dE_x=k\lambda y\,dy/(x^2+y^2)^{3/2}$', issueSignals: [{id: uses-y-instead-of-x-projection, domains: [physics-2]}]}
+    - {id: d, text: '$dE_x=k\lambda x\,dy/\sqrt{x^2+y^2}$', issueSignals: [{id: loses-inverse-square-factor, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: $dE_x=\cos(\alpha)dE=(x/r)(k\,dq/r^2)=(x/r)(k\lambda\,dy/r^2)=k\lambda x\,dy/r^3$. Since $r^2=x^2+y^2$, this is $k\lambda x\,dy/(x^2+y^2)^{3/2}$.
+      Why it works: $\lambda$ converts a length element into charge, $x/r$ projects onto the surviving axis, and Coulomb's law contributes the inverse-square factor.
+      Why the other choices fail: b drops the projection; c projects with the wrong leg; d keeps only one power of r in the denominator.
+  - id: symbolic-integral
+    title: Step 3 - simplify the improper integral
+    instruction: 'Quantities: k, lambda, x are constants with respect to y; y runs from negative infinity to positive infinity; and the denominator contains (x^2+y^2)^(3/2). Factor constants outside and write the field as one improper integral.'
+    hint: The numerator x stays outside the integral. Combine r times r^2 into r^3, then replace r with sqrt(x^2+y^2).
+    type: multipleChoice
+    prompt: Which simplified integral is correct?
+    choices:
+    - {id: a, text: '$E=k\lambda x\int_{-\infty}^{+\infty}dy/(x^2+y^2)^{3/2}$', issueSignals: []}
+    - {id: b, text: '$E=k\lambda\int_{-\infty}^{+\infty}x\,dy/(x^2+y^2)$', issueSignals: [{id: wrong-denominator-power, domains: [physics-2]}]}
+    - {id: c, text: '$E=k\lambda x\int_0^{+\infty}dy/(x^2+y^2)^{3/2}$', issueSignals: [{id: drops-negative-half-without-factor-two, domains: [physics-2]}]}
+    - {id: d, text: '$E=k\lambda y\int_{-\infty}^{+\infty}dx/(x^2+y^2)^{3/2}$', issueSignals: [{id: integrates-wrong-variable, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: $E=k\lambda x\int_{-\infty}^{+\infty}dy/(x^2+y^2)^{3/2}$.
+      Why it works: x, k, and lambda do not vary along the line, so only y remains as the integration variable. The full line requires both infinite halves.
+      Why the other choices fail: b has the wrong power; c omits half the line without compensating by symmetry; d integrates with respect to x even though the source coordinate is y.
+  - id: symbolic-method-choice
+    title: Step 4 - diagnose the substitution method
+    instruction: 'Quantities: the radical expression x^2+y^2, the attempted variable u=x^2+y^2, and its differential du=2y dy. Compare the differential actually present, dy, with the differential produced by the substitution.'
+    hint: A substitution is useful when the integrand contains the factor needed to replace its differential. Here there is no factor of y multiplying dy.
+    type: multipleChoice
+    prompt: Why is the shown u-substitution not the useful next move, and what substitution is chosen instead?
+    choices:
+    - {id: a, text: 'du=2y dy does not match the integrand because y is absent; choose y=x tan(alpha) to simplify x^2+y^2.', issueSignals: []}
+    - {id: b, text: 'u-substitution works immediately; choose u=y/x because it removes all powers of x.', issueSignals: [{id: accepts-mismatched-differential, domains: [physics-2]}]}
+    - {id: c, text: 'u-substitution fails because x is zero; choose y=x sin(alpha) for every x.', issueSignals: [{id: invents-zero-distance-condition, domains: [physics-2]}]}
+    - {id: d, text: 'Both substitutions fail because the integral is divergent.', issueSignals: [{id: misclassifies-convergent-improper-integral, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: u=x^2+y^2 gives du=2y dy, but the integrand has dy without a y factor. The selected substitution is y=x tan(alpha), because 1+tan^2(alpha)=sec^2(alpha) converts the radical into a trig power.
+      Why it works: The method is selected by matching algebraic structure, not by trying a substitution at random.
+      Why the other choices fail: b still does not explain the differential match; c invents a condition not in the problem; d is false because the integrand decays as 1/|y|^3 for large |y|.
+  - id: symbolic-trig
+    title: Step 5 - transform the integrand and the limits
+    instruction: 'Quantities: y=x tan(alpha), dy=x sec^2(alpha)d alpha, x^2+y^2=x^2 sec^2(alpha), and the original y-limits. Substitute every occurrence of y and dy, then map y approaching plus or minus infinity to alpha.'
+    hint: For x>0, tan(alpha) approaches plus or minus infinity as alpha approaches plus or minus pi/2. After simplifying, the secant powers should leave one cosine.
+    type: multipleChoice
+    prompt: Which transformed integral is correct?
+    choices:
+    - {id: a, text: 'E=(k lambda/x) integral from -pi/2 to +pi/2 of cos(alpha) d alpha', issueSignals: []}
+    - {id: b, text: 'E=(k lambda x) integral from -pi/2 to +pi/2 of sec(alpha) d alpha', issueSignals: [{id: mishandles-x-power-and-trig-cancellation, domains: [physics-2]}]}
+    - {id: c, text: 'E=(k lambda/x) integral from 0 to pi of sin(alpha) d alpha', issueSignals: [{id: changes-angle-map-without-geometry, domains: [physics-2]}]}
+    - {id: d, text: 'E=(k lambda/x^2) integral from -infinity to +infinity of cos(alpha) d alpha', issueSignals: [{id: leaves-old-limits-and-wrong-x-power, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    media:
+    - {type: image, src: /media/physics2/infinite-line-charge-trig-substitution.svg, alt: Trigonometric substitution and transformed limits, caption: The radical becomes a secant power, and the infinite coordinate range becomes a finite angle range.}
+    explanation: |
+      Solution: With y=x tan(alpha), the denominator contributes x^3 sec^3(alpha), while dy contributes x sec^2(alpha)d alpha. Thus E=(k lambda/x) integral from -pi/2 to +pi/2 of cos(alpha)d alpha.
+      Why it works: The powers combine as sec^2/sec^3=1/sec=cos, and the tangent limits convert the improper integral into finite angular limits.
+      Why the other choices fail: b reverses the x and trig powers; c uses a different angle convention without deriving it; d keeps the old limits and an incorrect x power.
+  - id: symbolic-final
+    title: Step 6 - evaluate and interpret the final law
+    instruction: 'Quantities: the transformed integral, symmetry about alpha=0, k, lambda, x, and the sign of lambda. Evaluate the cosine antiderivative, use even symmetry if helpful, then state units, direction, and distance scaling.'
+    hint: The integral from -pi/2 to +pi/2 of cos(alpha)d alpha equals 2. Therefore the field magnitude should scale as lambda/x, not lambda/x^2.
+    type: multipleChoice
+    prompt: Which final result and physical interpretation are correct?
+    choices:
+    - {id: a, text: 'E=2k lambda/x=lambda/(2 pi epsilon_0 x); it points away from a positive line and toward a negative line.', issueSignals: []}
+    - {id: b, text: 'E=k lambda/x^2; it points away from either sign of line charge.', issueSignals: [{id: uses-point-charge-scaling-and-ignores-charge-sign, domains: [physics-2]}]}
+    - {id: c, text: 'E=2k lambda x; it points parallel to the line for positive lambda.', issueSignals: [{id: loses-inverse-distance-and-direction, domains: [physics-2]}]}
+    - {id: d, text: 'E=0 because the integral is symmetric about alpha=0.', issueSignals: [{id: treats-even-integrand-as-odd, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: E=(k lambda/x)[sin(alpha)] from -pi/2 to +pi/2=(k lambda/x)(1-(-1))=2k lambda/x=lambda/(2 pi epsilon_0 x).
+      Why it works: Cosine is even, so the two halves add. The inverse-distance scaling reflects an infinite source, and the sign of lambda sets whether the perpendicular field points away or toward the line.
+      Why the other choices fail: b imports point-charge inverse-square scaling and loses the sign rule; c has the wrong x dependence and direction; d mistakes an even integrand for an odd one.
+- id: numeric-infinite-line-application
+  title: Problem 2 - apply and test the derived law numerically
+  problem: |
+    Use lambda=+5.00 nC/m, x=0.200 m, k=8.99e9 N m^2/C^2, and epsilon_0=8.85e-12 C^2/(N m^2). Reconstruct the numerical result from the derivation, including the dimensionless angular integral, the field direction, and a scaling check.
+  steps:
+  - id: numeric-setup
+    title: Step 1 - translate the numerical quantities
+    instruction: 'Quantities: lambda=+5.00 nC/m is charge per length, x=0.200 m is perpendicular distance, and k is Coulomb''s constant. Convert lambda to C/m and identify the direction for positive lambda.'
+    hint: 5.00 nC/m=5.00e-9 C/m. A positive line sends the field radially away from the line.
+    type: multipleChoice
+    prompt: Which numerical setup is correct?
+    choices:
+    - {id: a, text: 'lambda=5.00e-9 C/m, x=0.200 m, and the field points away from the line.', issueSignals: []}
+    - {id: b, text: 'lambda=5.00e-9 C, x=0.200 m, and the field points toward the line.', issueSignals: [{id: treats-linear-density-as-total-charge-and-reverses-sign, domains: [physics-2]}]}
+    - {id: c, text: 'lambda=5.00e-6 C/m, x=0.200 m, and the field points away from the line.', issueSignals: [{id: misreads-nano-prefix, domains: [physics-2]}]}
+    - {id: d, text: 'lambda=5.00e-9 C/m, x=0.0400 m, and the field is parallel to the line.', issueSignals: [{id: squares-distance-and-uses-wrong-direction, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: lambda=5.00e-9 C/m and x=0.200 m. Because lambda is positive, the field points away from the line.
+      Why it works: Linear density has units C/m, and nano means 10^-9. The sign determines direction.
+      Why the other choices fail: b drops the per-meter unit and reverses direction; c misreads nano; d squares x and chooses a direction along the line.
+  - id: numeric-substitution
+    title: Step 2 - substitute into the derived field law
+    instruction: 'Quantities: k=8.99e9, lambda=5.00e-9 C/m, x=0.200 m, and the factor 2 from the two symmetric halves. Evaluate E=2k lambda/x before rounding.'
+    hint: First multiply k by lambda; then multiply by 2; finally divide by 0.200.
+    type: multipleChoice
+    prompt: What field magnitude results from the derived formula?
+    choices:
+    - {id: a, text: 'E=4.495e2 N/C', issueSignals: []}
+    - {id: b, text: 'E=2.248e2 N/C', issueSignals: [{id: loses-factor-two, domains: [physics-2]}]}
+    - {id: c, text: 'E=8.990e2 N/C', issueSignals: [{id: divides-by-half-distance-error, domains: [physics-2]}]}
+    - {id: d, text: 'E=4.495e1 N/C', issueSignals: [{id: distance-scale-error, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: E=2(8.99e9)(5.00e-9)/(0.200)=449.5 N/C, or 4.495e2 N/C.
+      Why it works: The factor 2 comes from the equal contributions of the two halves of the infinite line.
+      Why the other choices fail: b omits that factor; c effectively divides by 0.100 m; d introduces an extra factor of 0.1 in the distance scaling.
+  - id: numeric-trig-limits
+    title: Step 3 - verify the transformed limits
+    instruction: 'Quantities: y=x tan(alpha), x>0, and the original source range y from negative infinity to positive infinity. Determine the corresponding alpha limits.'
+    hint: Solve the limiting behavior of tan(alpha), not the numerical value of x. The finite endpoints are where tangent diverges.
+    type: multipleChoice
+    prompt: Which angle limits correctly replace the infinite y limits?
+    choices:
+    - {id: a, text: 'alpha from -pi/2 to +pi/2', issueSignals: []}
+    - {id: b, text: 'alpha from 0 to pi/2', issueSignals: [{id: drops-negative-half-of-line, domains: [physics-2]}]}
+    - {id: c, text: 'alpha from -pi to +pi', issueSignals: [{id: uses-full-period-instead-of-principal-range, domains: [physics-2]}]}
+    - {id: d, text: 'alpha remains from -infinity to +infinity', issueSignals: [{id: fails-to-transform-bounds, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: As y approaches negative infinity, alpha approaches -pi/2; as y approaches positive infinity, alpha approaches +pi/2.
+      Why it works: y/x=tan(alpha), and tangent diverges at the two vertical-angle endpoints.
+      Why the other choices fail: b keeps only one side; c spans redundant branches; d leaves the old variable's limits unchanged.
+  - id: numeric-integral
+    title: Step 4 - evaluate the dimensionless cosine integral
+    instruction: 'Quantities: the definite integral of cos(alpha) from -pi/2 to +pi/2, its antiderivative sin(alpha), and the even symmetry of cosine. Evaluate the dimensionless part separately from k lambda/x.'
+    hint: Substitute both endpoints into sin(alpha), or double the integral from 0 to pi/2.
+    type: multipleChoice
+    prompt: What is the value of the transformed angular integral?
+    choices:
+    - {id: a, text: '2', issueSignals: []}
+    - {id: b, text: '0', issueSignals: [{id: treats-cosine-as-odd, domains: [physics-2]}]}
+    - {id: c, text: 'pi', issueSignals: [{id: substitutes-angle-width-for-integral-value, domains: [physics-2]}]}
+    - {id: d, text: '1', issueSignals: [{id: evaluates-only-positive-endpoint, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: Integral cos(alpha) d alpha from -pi/2 to +pi/2 equals sin(+pi/2)-sin(-pi/2)=1-(-1)=2.
+      Why it works: Cosine is even, so the negative and positive halves add rather than cancel.
+      Why the other choices fail: b applies odd-function symmetry incorrectly; c uses the interval width; d evaluates only one endpoint contribution.
+  - id: numeric-final
+    title: Step 5 - report the vector field and units
+    instruction: 'Quantities: the magnitude from Step 2, the positive sign of lambda, the perpendicular unit direction, and units. Combine the magnitude with direction and compare with lambda/(2 pi epsilon_0 x).'
+    hint: Write the answer as 449.5 N/C away from the line, or as a vector if the outward unit vector is named.
+    type: multipleChoice
+    prompt: Which final numerical field statement is correct?
+    choices:
+    - {id: a, text: 'E=449.5 N/C, directed radially away from the positive line charge.', issueSignals: []}
+    - {id: b, text: 'E=449.5 N/C, directed radially toward the positive line charge.', issueSignals: [{id: reverses-positive-line-direction, domains: [physics-2]}]}
+    - {id: c, text: 'E=224.8 N/C, directed away from the line.', issueSignals: [{id: loses-symmetry-factor, domains: [physics-2]}]}
+    - {id: d, text: 'E=449.5 N/C, directed parallel to the line.', issueSignals: [{id: uses-canceled-direction, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: E=449.5 N/C away from the line. In vector form, E=(449.5 N/C) r-hat, where r-hat points outward from the line.
+      Why it works: The positive density sets an outward perpendicular direction, and the field unit is N/C.
+      Why the other choices fail: b reverses the sign; c omits one symmetric half; d uses the component that canceled.
+  - id: numeric-scaling
+    title: Step 6 - use scaling as a final physics check
+    instruction: 'Quantities: E=2k lambda/x, fixed lambda, and a new distance x''=0.400 m. Predict the new field without recomputing the full derivation, then explain the physical scaling.'
+    hint: Doubling x doubles the denominator. An infinite line produces inverse-distance scaling, so the field should be half as large.
+    type: multipleChoice
+    prompt: If the observation distance doubles to 0.400 m while lambda stays fixed, what should happen?
+    choices:
+    - {id: a, text: 'E becomes 224.75 N/C, still directed away from the positive line.', issueSignals: []}
+    - {id: b, text: 'E becomes 112.38 N/C because the field follows inverse-square scaling.', issueSignals: [{id: applies-point-charge-inverse-square-law, domains: [physics-2]}]}
+    - {id: c, text: 'E becomes 899.0 N/C because the field grows with distance.', issueSignals: [{id: reverses-distance-proportionality, domains: [physics-2]}]}
+    - {id: d, text: 'E remains 449.5 N/C because the line is infinite.', issueSignals: [{id: treats-infinite-source-as-distance-independent, domains: [physics-2]}]}
+    answer: {choiceId: a}
+    explanation: |
+      Solution: E'=2k lambda/(0.400)=224.75 N/C, half the original value, with the same outward direction.
+      Why it works: The infinite line gives E proportional to 1/x, so doubling the perpendicular distance halves the field.
+      Why the other choices fail: b applies point-charge 1/x^2 scaling; c reverses the proportionality; d confuses infinite extent with distance independence.
