@@ -28,53 +28,105 @@ workedExamples:
   steps:
   - id: step-1
     title: Identify the object
-    type: freeResponse
+    type: multipleChoice
     prompt: 'What kind of object does the expression $E=\{2n:n\in\mathbb{Z}\}$ define?'
-    instruction: Name the outer object before interpreting its entries.
+    choices:
+    - id: a
+      text: A set containing integers
+      issueSignals: []
+    - id: b
+      text: An equation to solve for $n$
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: c
+      text: A function returning even numbers
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: d
+      text: A single even number
+      issueSignals:
+      - id: mathematical-structure-recognition-error
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - E is a set.
+      choiceId: a
     explanation: |-
-      Solution: $E$ is a set.
+      Solution: $E$ is a set containing integers.
       Why it works: Braces in this context collect elements; the expression after the equals sign is not a single number or function rule.
+      Why the other choices fail: It is not an equation to solve, a function, or a single number because the curly braces specifically denote a set.
   - id: step-2
     title: Separate expression from rule
-    type: freeResponse
+    type: multipleChoice
     prompt: What expression supplies an element, and what condition restricts its parameter?
-    instruction: State both parts of the set-builder notation.
+    choices:
+    - id: a
+      text: 'Expression: $2n$; Condition: $n\in\mathbb{Z}$'
+      issueSignals: []
+    - id: b
+      text: 'Expression: $n\in\mathbb{Z}$; Condition: $2n$'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: c
+      text: 'Expression: $2n:n$; Condition: $\in\mathbb{Z}$'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: d
+      text: 'Expression: $\{2n\}$; Condition: $n\in\mathbb{Z}$'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - The expression is 2n.
-      - The condition is that n is an integer.
+      choiceId: a
     explanation: |-
       Solution: The collected expression is $2n$, with the condition $n\in\mathbb{Z}$.
       Why it works: Before the colon is the expression whose outputs are collected; after the colon is the rule governing allowable parameter values.
+      Why the other choices fail: The colon separates the form of the elements from the condition on the variables. Reversing them or grouping the colon incorrectly misreads the notation.
   - id: step-3
     title: Verify a member
-    type: freeResponse
-    prompt: 'Show that $-14\in E$ by naming a valid value of $n$.'
-    instruction: Give the parameter and the resulting equality.
+    type: multipleChoice
+    prompt: 'How can you show that $-14\in E$?'
+    choices:
+    - id: a
+      text: 'By finding an integer $n=-7$ such that $2(-7)=-14$'
+      issueSignals: []
+    - id: b
+      text: 'By checking if $-14$ is a positive integer'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: c
+      text: 'By setting $2n=14$ and finding $n=7$'
+      issueSignals:
+      - id: sign-error
+    - id: d
+      text: 'By observing that $-14$ is a multiple of $7$'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - Choose n=-7.
-      - -14=2(-7).
-      - -7 is an integer.
+      choiceId: a
     explanation: |-
-      Solution: Choose $n=-7$; then $-14=2(-7)$ and $-7\in\mathbb{Z}$.
+      Solution: By finding an integer $n=-7$ such that $2(-7)=-14$.
       Why it works: Membership is established by exhibiting an allowed parameter that makes the collected expression equal the candidate.
+      Why the other choices fail: Checking for a positive integer or a multiple of 7 does not directly verify the set's defining condition. Finding $n=7$ yields $14$, not $-14$.
   - id: step-4
     title: Reject a nonmember
-    type: freeResponse
+    type: multipleChoice
     prompt: 'Why does $9\notin E$?'
-    instruction: Relate your answer to the integer condition on n.
+    choices:
+    - id: a
+      text: '$9=2n$ requires $n=\frac{9}{2}$, which is not an integer'
+      issueSignals: []
+    - id: b
+      text: '$9$ is not an even integer, so $n$ would have to be negative'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: c
+      text: '$9$ cannot be written as $2n$ for any real number $n$'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: d
+      text: '$9\in\mathbb{Z}$, but it is not in the domain'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - 9 would require n=9/2.
-      - 9/2 is not an integer.
+      choiceId: a
     explanation: |-
-      Solution: $9=2n$ would require $n=\frac92$, which is not an integer.
+      Solution: $9=2n$ would require $n=\frac{9}{2}$, which is not an integer.
       Why it works: The expression alone is insufficient; its parameter must also satisfy $n\in\mathbb{Z}$.
+      Why the other choices fail: $9$ can be written as $2n$ for $n=\frac{9}{2}$, but this violates the integer condition. The issue is not the domain itself, but the output generated by the integers.

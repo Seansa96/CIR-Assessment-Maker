@@ -58,6 +58,7 @@ public sealed class AttemptService
                 AssessmentType.RecallDrill => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
                 AssessmentType.Glossary => scoringService.GetRecallItems(assessment).Select(item => item.Id).ToList(),
                 AssessmentType.ConceptLesson => assessment.Lesson!.Sections.Select(section => section.Id).ToList(),
+                AssessmentType.TargetedReading => assessment.TargetedReading!.Passages.Select(passage => passage.Id).ToList(),
                 AssessmentType.InteractiveExploration => assessment.Exploration!.Sections.Select(section => section.Id).ToList(),
                 AssessmentType.DirectedProject => assessment.DirectedProject!.Phases.SelectMany(phase => phase.Steps).Select(step => step.Id).ToList(),
                 _ => scoringService.GetAttemptQuestions(assessment).Select(question => question.Id).ToList()
@@ -140,10 +141,10 @@ public sealed class AttemptService
             }
         }
 
-        if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration)
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration or AssessmentType.TargetedReading)
         {
             var section = GetLearningSections(assessment)
-                .FirstOrDefault(candidate => string.Equals(candidate.Check?.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase))
+                .FirstOrDefault(candidate => candidate.Checks?.Any(c => string.Equals(c.Id, submittedAnswer.QuestionId, StringComparison.OrdinalIgnoreCase)) == true)
                 ?? throw new InvalidOperationException($"Learning check '{submittedAnswer.QuestionId}' does not exist on this assessment.");
             EnsureLearningSectionUnlocked(assessment, attempt, section.Id);
         }
@@ -276,11 +277,11 @@ public sealed class AttemptService
         {
             throw new InvalidOperationException("Change at least one exploration control before continuing.");
         }
-        if (section.Check is not null && !attempt.Answers.Any(answer =>
-            string.Equals(answer.QuestionId, section.Check.Id, StringComparison.OrdinalIgnoreCase)
-            && IsResolved(answer)))
+        if (section.Checks is not null && section.Checks.Count > 0 && section.Checks.Any(check => !attempt.Answers.Any(answer =>
+            string.Equals(answer.QuestionId, check.Id, StringComparison.OrdinalIgnoreCase)
+            && IsResolved(answer))))
         {
-            throw new InvalidOperationException("Complete the section check correctly before continuing.");
+            throw new InvalidOperationException("Answer all learning checks correctly before continuing.");
         }
 
         var completedSection = new LearningSectionAttempt(
@@ -593,7 +594,7 @@ public sealed class AttemptService
             }
         }
 
-        if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration)
+        if (assessment.AssessmentType is AssessmentType.ConceptLesson or AssessmentType.InteractiveExploration or AssessmentType.TargetedReading)
         {
             var requiredSections = GetLearningSections(assessment).Where(section => section.Required).ToList();
             if (!requiredSections.All(section => attempt.LearningSections.Any(progress =>
@@ -694,6 +695,7 @@ public sealed class AttemptService
             or AssessmentType.RecallDrill
             or AssessmentType.Glossary
             or AssessmentType.ConceptLesson
+            or AssessmentType.TargetedReading
             or AssessmentType.InteractiveExploration
             or AssessmentType.DirectedProject
             or AssessmentType.Sandbox;
@@ -702,10 +704,11 @@ public sealed class AttemptService
     private static void EnsureLearningAssessment(AssessmentDefinition assessment)
     {
         if (assessment.AssessmentType is not AssessmentType.ConceptLesson
+            and not AssessmentType.TargetedReading
             and not AssessmentType.InteractiveExploration
             and not AssessmentType.Glossary)
         {
-            throw new InvalidOperationException("Only concept lessons, interactive explorations, and glossaries use learning section state.");
+            throw new InvalidOperationException("Only concept lessons, targeted readings, interactive explorations, and glossaries use learning section state.");
         }
     }
 
@@ -722,10 +725,13 @@ public sealed class AttemptService
         return assessment.AssessmentType switch
         {
             AssessmentType.ConceptLesson => assessment.Lesson!.Sections
-                .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, section.Check))
+                .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, section.Check is not null ? new[] { section.Check } : null))
                 .ToList(),
             AssessmentType.InteractiveExploration => assessment.Exploration!.Sections
-                .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, section.Check))
+                .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, section.Check is not null ? new[] { section.Check } : null))
+                .ToList(),
+            AssessmentType.TargetedReading => assessment.TargetedReading!.Passages
+                .Select(passage => new LearningSectionInfo(passage.Id, passage.Title, passage.Required, passage.FocusQuestions))
                 .ToList(),
             AssessmentType.Glossary => assessment.Glossary!.Sections
                 .Select(section => new LearningSectionInfo(section.Id, section.Title, section.Required, null))
@@ -754,9 +760,14 @@ public sealed class AttemptService
 
     private static void EnsureLearningSectionUnlocked(AssessmentDefinition assessment, Attempt attempt, string sectionId)
     {
-        // Concept lessons are reference material: learners may freely jump to any section.
+        // Concept lessons and targeted readings are reference material: learners may freely jump to any section.
         // Interactive explorations and glossaries retain their ordered progression.
         if (assessment.AssessmentType is AssessmentType.ConceptLesson)
+        {
+            return;
+        }
+
+        if (assessment.AssessmentType is AssessmentType.TargetedReading && assessment.TargetedReading?.Sequential != true)
         {
             return;
         }
@@ -788,7 +799,7 @@ public sealed class AttemptService
             .ToList();
     }
 
-    private sealed record LearningSectionInfo(string Id, string Title, bool Required, QuestionDefinition? Check);
+    private sealed record LearningSectionInfo(string Id, string Title, bool Required, IReadOnlyList<QuestionDefinition>? Checks);
 
     private async Task<Attempt> GetAttemptAsync(string attemptId, CancellationToken cancellationToken)
     {

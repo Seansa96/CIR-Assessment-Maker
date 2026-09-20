@@ -12,7 +12,8 @@ public enum AssessmentType
     ConceptLesson,
     InteractiveExploration,
     DirectedProject,
-    Sandbox
+    Sandbox,
+    TargetedReading
 }
 
 public enum MetadataStatus
@@ -224,8 +225,10 @@ public sealed record AssessmentDefinition(
     public InteractiveExplorationDefinition? Exploration { get; init; }
     public DirectedProjectDefinition? DirectedProject { get; init; }
     public SandboxDefinition? Sandbox { get; init; }
+    public TargetedReadingDefinition? TargetedReading { get; init; }
     public NavigationMetadata? Navigation { get; init; }
     public IReadOnlyList<string> Skills { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<IssueSignal> IssueSignals { get; init; } = Array.Empty<IssueSignal>();
     public AssessmentAuthoringMetadata? Authoring { get; init; }
     public MetadataStatus MetadataStatus { get; init; } = MetadataStatus.None;
 }
@@ -262,6 +265,23 @@ public sealed record SandboxFileDefinition(
 public sealed record ConceptLessonDefinition(
     string Introduction,
     IReadOnlyList<LearningSectionDefinition> Sections);
+
+// ─── Targeted Reading ───────────────────────────────────────────────────────
+
+/// <summary>Top-level container for a Targeted Reading assessment.</summary>
+public sealed record TargetedReadingDefinition(
+    string Introduction,
+    bool Sequential,
+    IReadOnlyList<TargetedReadingPassageDefinition> Passages);
+
+/// <summary>A single reading passage with inline media and focus questions answered after reading.</summary>
+public sealed record TargetedReadingPassageDefinition(
+    string Id,
+    string Title,
+    bool Required,
+    string Content,
+    IReadOnlyList<MediaAsset> Media,
+    IReadOnlyList<QuestionDefinition> FocusQuestions);
 
 public sealed record GlossaryDefinition(
     string Introduction,
