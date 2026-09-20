@@ -58,8 +58,10 @@ public sealed class AssessmentFileDto
     public InteractiveExplorationFileDto? Exploration { get; set; }
     public DirectedProjectFileDto? DirectedProject { get; set; }
     public SandboxFileDto? Sandbox { get; set; }
+    public TargetedReadingFileDto? TargetedReading { get; set; }
     public NavigationFileDto? Navigation { get; set; }
     public List<string>? Skills { get; set; }
+    public List<IssueSignalFileDto>? IssueSignals { get; set; }
     public AssessmentAuthoringFileDto? Authoring { get; set; }
 }
 
@@ -481,6 +483,25 @@ public sealed class IssueSignalFileDto
 {
     public string? Id { get; set; }
     public List<string>? Domains { get; set; }
+}
+
+// ─── Targeted Reading DTOs ──────────────────────────────────────────────────
+
+public sealed class TargetedReadingFileDto
+{
+    public string? Introduction { get; set; }
+    public bool? Sequential { get; set; }
+    public List<TargetedReadingPassageFileDto>? Passages { get; set; }
+}
+
+public sealed class TargetedReadingPassageFileDto
+{
+    public string? Id { get; set; }
+    public string? Title { get; set; }
+    public bool? Required { get; set; }
+    public string? Content { get; set; }
+    public List<MediaFileDto>? Media { get; set; }
+    public List<QuestionFileDto>? FocusQuestions { get; set; }
 }
 
 public sealed class AnswerFileDto

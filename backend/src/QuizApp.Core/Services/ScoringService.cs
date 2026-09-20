@@ -585,6 +585,14 @@ public sealed class ScoringService
                 .ToList();
         }
 
+        if (assessment.AssessmentType is AssessmentType.TargetedReading)
+        {
+            return assessment.TargetedReading!.Passages
+                .SelectMany(passage => passage.FocusQuestions)
+                .Select(question => new AssessmentItem(question, null, null))
+                .ToList();
+        }
+
         if (assessment.AssessmentType is not AssessmentType.WorkedExample)
         {
             return assessment.Questions.Select(question => new AssessmentItem(question, null, null)).ToList();
