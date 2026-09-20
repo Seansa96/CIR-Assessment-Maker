@@ -16,43 +16,43 @@ guidedProject:
 items: []
 glossary: 
 lesson:
-  introduction: This topic is part of a recommended Calc 3 route, not a gate. You may begin here directly; refresh Calculus 1 → Classical Theorems of Differential Calculus if the prerequisite representation is unfamiliar.
+  introduction: 'A partial derivative answers a direct question: if one input changes and the others stay fixed, how quickly does the output change? Ordinary derivative rules do the calculation; the surface picture gives the meaning.'
   sections:
   - id: s01
-    title: Hold the other input fixed
+    title: Hold one input fixed
     required: true
-    content: '$f_x$ differentiates in x while treating y as a constant; $f_y$ reverses the roles. In Partial Derivatives, begin by naming the mathematical object before calculating: a point, vector, curve, surface, field, or region. The notation determines which quantities may vary and what an answer represents. That first classification prevents applying a correct formula to the wrong geometric object.'
+    content: 'The left panel shows an ordinary derivative: for the one-input curve y=f(x), f′(a) is the tangent slope at x=a. The right panel shows a two-input surface z=f(x,y). Fix y=b and the surface becomes the one-input slice g(x)=f(x,b); its tangent slope is g′(a)=fₓ(a,b). Fix x=a instead and the other slice has slope fᵧ(a,b). A partial derivative is therefore an ordinary derivative applied to one coordinate slice, while the surface has more than one independent direction to examine.'
     media:
     - type: image
       src: /media/calculus-3/partial-derivatives.svg
-      alt: Original partial derivatives reference visual.
-      caption: 
+      alt: 'Side-by-side graph: an ordinary one-input curve with tangent slope f prime at a; and a two-input surface with x- and y-coordinate slices through one point, whose tangent slopes are f sub x and f sub y.'
+      caption: The ordinary derivative measures slope along its curve. A surface has multiple coordinate slices, and each partial is the ordinary slope along one selected slice.
     check:
       id: check-01
       type: multipleChoice
-      prompt: What is held constant in $f_x$?
+      prompt: Which slice gives fₓ(a,b)?
       choices:
       - id: a
-        text: y
+        text: y=b while x changes
         media: []
         issueSignals: []
       - id: b
-        text: 2xy (answers 'Find $f_x$ for $x^2y$.', not 'What is held constant in $f_x$?')
+        text: x=a while y changes
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: c
-        text: x^2 (answers 'Find $f_y$ for $x^2y$.', not 'What is held constant in $f_x$?')
+        text: both inputs change
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: d
-        text: differentiate fx with respect to y (answers 'What does $f_{xy}$ mean?', not 'What is held constant in $f_x$?')
+        text: the horizontal contour
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       answer:
         choiceId: a
@@ -69,15 +69,19 @@ lesson:
         circuitAnswer: 
         graphingAnswer: 
       explanation: >-
-        Solution: The correct response is y.
+        Solution: The x-slice is the vertical trace y=b, so its curve changes x only.
 
-        Why it works: $f_x$ differentiates in x while treating y as a constant; $f_y$ reverses the roles.
 
-        Why the other choices fail: Choice b gives a response to the related question 'Find $f_x$ for $x^2y$.', rather than to 'What is held constant in $f_x$?'.
+        Why it works: On the left panel, ordinary f′(a) is a slope on one curve. On the right, fₓ(a,b) is the derivative of g(x)=f(x,b) at a.
 
-        Choice c gives a response to the related question 'Find $f_y$ for $x^2y$.', rather than to 'What is held constant in $f_x$?'.
 
-        Choice d gives a response to the related question 'What does $f_{xy}$ mean?', rather than to 'What is held constant in $f_x$?'.
+        Why the other choices fail:
+
+        Choice b: b changes y instead.
+
+        Choice c: c changes two coordinates.
+
+        Choice d: d is a level curve, not the vertical x-slice.
       media: []
       language: 
       functionName: 
@@ -91,44 +95,46 @@ lesson:
       - representationTransfer
       - auxiliaryTechnique
       subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
+      difficultyEvidence: Checks the specific hold one input fixed distinction using a stated function, variable, slice, or derivative order.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
       parts: []
       issueSignals:
-      - id: product-rule-misapplied
+      - id: held-variable-confusion
         domains: []
   - id: s02
-    title: Partials are rates
+    title: Translate notation into an action
     required: true
-    content: Each first partial gives a slice slope of the surface. Keep the symbols and their roles visible as you work. A reliable setup records the independent variables, the dependent quantity, and any orientation or bounds. In particular, do not replace a geometric description with a memorized expression until every component of the expression has a meaning.
+    content: 'The operator ∂/∂x means change x, freeze every other independent variable, and use ordinary derivative rules. A frozen variable stays in the algebra as a coefficient: ∂(x²y)/∂x=2xy because y remains.'
     media: []
     check:
       id: check-02
       type: multipleChoice
-      prompt: Find $f_x$ for $x^2y$.
+      prompt: Compute ∂(5xy²)/∂x.
       choices:
       - id: a
-        text: 2xy
+        text: 5y²
         media: []
         issueSignals: []
       - id: b
-        text: x^2 (answers 'Find $f_y$ for $x^2y$.', not 'Find $f_x$ for $x^2y$.')
+        text: 10xy
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: c
-        text: differentiate fx with respect to y (answers 'What does $f_{xy}$ mean?', not 'Find $f_x$ for $x^2y$.')
+        text: 5xy
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: d
-        text: a rate of change (answers 'What kind of quantity is $f_x$?', not 'Find $f_x$ for $x^2y$.')
+        text: 0
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       answer:
         choiceId: a
@@ -145,15 +151,19 @@ lesson:
         circuitAnswer: 
         graphingAnswer: 
       explanation: >-
-        Solution: The correct response is 2xy.
+        Solution: Holding y fixed makes 5y² the coefficient of x, so the derivative is 5y².
 
-        Why it works: Each first partial gives a slice slope of the surface.
 
-        Why the other choices fail: Choice b gives a response to the related question 'Find $f_y$ for $x^2y$.', rather than to 'Find $f_x$ for $x^2y$.'.
+        Why it works: The x derivative of Cx is C when C is fixed.
 
-        Choice c gives a response to the related question 'What does $f_{xy}$ mean?', rather than to 'Find $f_x$ for $x^2y$.'.
 
-        Choice d gives a response to the related question 'What kind of quantity is $f_x$?', rather than to 'Find $f_x$ for $x^2y$.'.
+        Why the other choices fail:
+
+        Choice b: b differentiates y as though it changed.
+
+        Choice c: c leaves x in the result.
+
+        Choice d: d incorrectly treats the entire expression as constant.
       media: []
       language: 
       functionName: 
@@ -167,44 +177,46 @@ lesson:
       - representationTransfer
       - auxiliaryTechnique
       subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
+      difficultyEvidence: Checks the specific translate notation into an action distinction using a stated function, variable, slice, or derivative order.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
       parts: []
       issueSignals:
-      - id: product-rule-misapplied
+      - id: held-variable-confusion
         domains: []
   - id: s03
-    title: Higher partials measure change
+    title: Apply familiar derivative rules
     required: true
-    content: Second partials differentiate a first partial and support later local classification. Draw or mentally trace the representation before simplifying. Ask what remains fixed, what changes, and which direction is positive. This check is especially useful when a sign, a normal vector, a parameter order, or an integration limit can change the numerical value or the meaning of the result.
+    content: For f=x²−3xy+2y²−4x+5y−12, fₓ=2x−3y−4. The y-only terms contribute zero. Reversing the operation gives fᵧ=−3x+4y+5.
     media: []
     check:
       id: check-03
       type: multipleChoice
-      prompt: Find $f_y$ for $x^2y$.
+      prompt: For that f, what is fᵧ?
       choices:
       - id: a
-        text: x^2
+        text: −3x+4y+5
         media: []
         issueSignals: []
       - id: b
-        text: differentiate fx with respect to y (answers 'What does $f_{xy}$ mean?', not 'Find $f_y$ for $x^2y$.')
+        text: 2x−3y−4
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: c
-        text: a rate of change (answers 'What kind of quantity is $f_x$?', not 'Find $f_y$ for $x^2y$.')
+        text: −3x+4y−5
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: d
-        text: two (answers 'How many first partial derivatives does f(x,y) have?', not 'Find $f_y$ for $x^2y$.')
+        text: 2x+4y+5
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       answer:
         choiceId: a
@@ -221,15 +233,19 @@ lesson:
         circuitAnswer: 
         graphingAnswer: 
       explanation: >-
-        Solution: The correct response is x^2.
+        Solution: Differentiate each term in y: x² contributes 0, −3xy contributes −3x, 2y² contributes 4y, and 5y contributes 5.
 
-        Why it works: Second partials differentiate a first partial and support later local classification.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What does $f_{xy}$ mean?', rather than to 'Find $f_y$ for $x^2y$.'.
+        Why it works: The requested y partial changes y while x stays fixed.
 
-        Choice c gives a response to the related question 'What kind of quantity is $f_x$?', rather than to 'Find $f_y$ for $x^2y$.'.
 
-        Choice d gives a response to the related question 'How many first partial derivatives does f(x,y) have?', rather than to 'Find $f_y$ for $x^2y$.'.
+        Why the other choices fail:
+
+        Choice b: b is the x partial.
+
+        Choice c: c reverses the derivative of 5y.
+
+        Choice d: d differentiates x² instead of holding it constant.
       media: []
       language: 
       functionName: 
@@ -243,44 +259,46 @@ lesson:
       - representationTransfer
       - auxiliaryTechnique
       subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
+      difficultyEvidence: Checks the specific apply familiar derivative rules distinction using a stated function, variable, slice, or derivative order.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
       parts: []
       issueSignals:
-      - id: product-rule-misapplied
+      - id: held-variable-confusion
         domains: []
   - id: s04
-    title: Worked micro-example
+    title: The limit creates an instantaneous rate
     required: true
-    content: 'Use the short task For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$. as a model. First, differentiate in x: What is $f_x$? The resulting statement is $2xy$. This identifies the governing relation and gives a checkable intermediate result.'
+    content: For fₓ(a,b), compare f(a+h,b) with f(a,b), divide the output change by h, then let h→0. The second coordinate remains b. This is an ordinary derivative along one vertical slice; the y definition swaps the roles.
     media: []
     check:
       id: check-04
       type: multipleChoice
-      prompt: What does $f_{xy}$ mean?
+      prompt: In the quotient for fₓ(a,b), what changes?
       choices:
       - id: a
-        text: differentiate fx with respect to y
+        text: x changes by h; y remains b
         media: []
         issueSignals: []
       - id: b
-        text: a rate of change (answers 'What kind of quantity is $f_x$?', not 'What does $f_{xy}$ mean?')
+        text: y changes by h; x remains a
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: c
-        text: two (answers 'How many first partial derivatives does f(x,y) have?', not 'What does $f_{xy}$ mean?')
+        text: both change by h
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: d
-        text: $2xy$ (answers 'What is $f_x$?', not 'What does $f_{xy}$ mean?')
+        text: neither changes
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       answer:
         choiceId: a
@@ -297,15 +315,19 @@ lesson:
         circuitAnswer: 
         graphingAnswer: 
       explanation: >-
-        Solution: The correct response is differentiate fx with respect to y.
+        Solution: The quotient compares (a+h,b) with (a,b); only x changes.
 
-        Why it works: Second partials differentiate a first partial and support later local classification.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What kind of quantity is $f_x$?', rather than to 'What does $f_{xy}$ mean?'.
+        Why it works: This is the ordinary one-variable difference quotient applied to the fixed-y slice.
 
-        Choice c gives a response to the related question 'How many first partial derivatives does f(x,y) have?', rather than to 'What does $f_{xy}$ mean?'.
 
-        Choice d gives a response to the related question 'What is $f_x$?', rather than to 'What does $f_{xy}$ mean?'.
+        Why the other choices fail:
+
+        Choice b: b changes the wrong coordinate.
+
+        Choice c: c changes both inputs.
+
+        Choice d: d creates no changing-input quotient.
       media: []
       language: 
       functionName: 
@@ -319,44 +341,46 @@ lesson:
       - representationTransfer
       - auxiliaryTechnique
       subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
+      difficultyEvidence: Checks the specific the limit creates an instantaneous rate distinction using a stated function, variable, slice, or derivative order.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
       parts: []
       issueSignals:
-      - id: product-rule-misapplied
+      - id: held-variable-confusion
         domains: []
   - id: s05
-    title: Continue the method
+    title: Interpret units and sign
     required: true
-    content: 'Next, differentiate in y: What is $f_y$? Here the target is $x^2+6y$. Compare this result with the diagram or stated constraints, then continue with interpret the difference. The final conclusion, Which variable is held constant., should answer the original question in the requested form rather than merely display an unlabelled calculation.'
+    content: A partial is output change per change in the named input. If f is temperature in °C and x is measured in meters, fₓ has units °C/m. A negative value means the output decreases as x increases locally with the other input fixed. It is a scalar slope, not the height or a vector.
     media: []
     check:
       id: check-05
       type: multipleChoice
-      prompt: What kind of quantity is $f_x$?
+      prompt: If f is height in meters and x is distance in meters, what are the units of fₓ?
       choices:
       - id: a
-        text: a rate of change
+        text: m/m
         media: []
         issueSignals: []
       - id: b
-        text: two (answers 'How many first partial derivatives does f(x,y) have?', not 'What kind of quantity is $f_x$?')
+        text: m²
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: c
-        text: $2xy$ (answers 'What is $f_x$?', not 'What kind of quantity is $f_x$?')
+        text: m
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: d
-        text: y (answers 'What is held constant in $f_x$?', not 'What kind of quantity is $f_x$?')
+        text: a vector
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       answer:
         choiceId: a
@@ -373,15 +397,19 @@ lesson:
         circuitAnswer: 
         graphingAnswer: 
       explanation: >-
-        Solution: The correct response is a rate of change.
+        Solution: The derivative units are meters of height divided by meters of horizontal displacement, or m/m.
 
-        Why it works: Second partials differentiate a first partial and support later local classification.
 
-        Why the other choices fail: Choice b gives a response to the related question 'How many first partial derivatives does f(x,y) have?', rather than to 'What kind of quantity is $f_x$?'.
+        Why it works: A partial derivative is an output rate with respect to the named input.
 
-        Choice c gives a response to the related question 'What is $f_x$?', rather than to 'What kind of quantity is $f_x$?'.
 
-        Choice d gives a response to the related question 'What is held constant in $f_x$?', rather than to 'What kind of quantity is $f_x$?'.
+        Why the other choices fail:
+
+        Choice b: b multiplies units instead of dividing.
+
+        Choice c: c omits the input-distance denominator.
+
+        Choice d: d mistakes a scalar slope for a vector.
       media: []
       language: 
       functionName: 
@@ -395,44 +423,46 @@ lesson:
       - representationTransfer
       - auxiliaryTechnique
       subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
+      difficultyEvidence: Checks the specific interpret units and sign distinction using a stated function, variable, slice, or derivative order.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
       parts: []
       issueSignals:
-      - id: product-rule-misapplied
+      - id: held-variable-confusion
         domains: []
   - id: s06
-    title: Check the result
+    title: Use the chain rule inside a partial
     required: true
-    content: Use a second representation to verify the method. For example, recall that 'What is held constant in $f_x$?' has response 'y', while 'What does $f_{xy}$ mean?' has response 'differentiate fx with respect to y'. These quick facts help detect a swapped coordinate, missing scale factor, inappropriate theorem, or result with the wrong scalar/vector type.
+    content: For g=sin(x²y−2x+4), differentiate the sine and multiply by the inside derivative in the requested variable. In gᵧ, x is fixed, so the inside derivative is x² and gᵧ=x²cos(x²y−2x+4). In gₓ it is 2xy−2.
     media: []
     check:
       id: check-06
       type: multipleChoice
-      prompt: How many first partial derivatives does f(x,y) have?
+      prompt: Which inside derivative multiplies cosine in gₓ?
       choices:
       - id: a
-        text: two
+        text: 2xy−2
         media: []
         issueSignals: []
       - id: b
-        text: $2xy$ (answers 'What is $f_x$?', not 'How many first partial derivatives does f(x,y) have?')
+        text: x²
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: chain-rule-missed
           domains: []
       - id: c
-        text: y (answers 'What is held constant in $f_x$?', not 'How many first partial derivatives does f(x,y) have?')
+        text: sin(x²y−2x+4)
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: chain-rule-missed
           domains: []
       - id: d
-        text: 2xy (answers 'Find $f_x$ for $x^2y$.', not 'How many first partial derivatives does f(x,y) have?')
+        text: 2y−2
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: chain-rule-missed
           domains: []
       answer:
         choiceId: a
@@ -449,15 +479,19 @@ lesson:
         circuitAnswer: 
         graphingAnswer: 
       explanation: >-
-        Solution: The correct response is two.
+        Solution: The inner x derivative is ∂(x²y−2x+4)/∂x=2xy−2, so it multiplies the cosine.
 
-        Why it works: Second partials differentiate a first partial and support later local classification.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What is $f_x$?', rather than to 'How many first partial derivatives does f(x,y) have?'.
+        Why it works: The chain rule multiplies the outer derivative by the derivative of the inside in the requested variable.
 
-        Choice c gives a response to the related question 'What is held constant in $f_x$?', rather than to 'How many first partial derivatives does f(x,y) have?'.
 
-        Choice d gives a response to the related question 'Find $f_x$ for $x^2y$.', rather than to 'How many first partial derivatives does f(x,y) have?'.
+        Why the other choices fail:
+
+        Choice b: b is the inner y derivative.
+
+        Choice c: c is the original outer sine.
+
+        Choice d: d omits the factor x from differentiating x²y.
       media: []
       language: 
       functionName: 
@@ -471,44 +505,46 @@ lesson:
       - representationTransfer
       - auxiliaryTechnique
       subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
+      difficultyEvidence: Checks the specific use the chain rule inside a partial distinction using a stated function, variable, slice, or derivative order.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
       parts: []
       issueSignals:
-      - id: product-rule-misapplied
+      - id: chain-rule-missed
         domains: []
   - id: s07
-    title: Transfer and preparation
+    title: Track higher-order notation
     required: true
-    content: A new problem may change the representation, unknown, constraints, or governing relation while retaining the same core idea. State why Partial Derivatives is the right method before computing, then check whether the result respects the stated geometry. If a prerequisite notation is unfamiliar, refresh Calculus 1 → Classical Theorems of Differential Calculus; this is recommended preparation, not an access restriction.
+    content: A first partial is itself a function, so differentiate it again. fₓᵧ means take fₓ and then differentiate that result in y. Clairaut guarantees the mixed orders match when the mixed second partials are continuous near the point; the condition matters.
     media: []
     check:
       id: check-07
       type: multipleChoice
-      prompt: What is $f_x$?
+      prompt: What operation produces fₓᵧ?
       choices:
       - id: a
-        text: $2xy$
+        text: Differentiate in x, then differentiate the result in y
         media: []
         issueSignals: []
       - id: b
-        text: y (answers 'What is held constant in $f_x$?', not 'What is $f_x$?')
+        text: Differentiate in y twice
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: c
-        text: 2xy (answers 'Find $f_x$ for $x^2y$.', not 'What is $f_x$?')
+        text: Multiply fₓ by fᵧ
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       - id: d
-        text: x^2 (answers 'Find $f_y$ for $x^2y$.', not 'What is $f_x$?')
+        text: Evaluate f
         media: []
         issueSignals:
-        - id: product-rule-misapplied
+        - id: held-variable-confusion
           domains: []
       answer:
         choiceId: a
@@ -525,15 +561,19 @@ lesson:
         circuitAnswer: 
         graphingAnswer: 
       explanation: >-
-        Solution: The correct response is $2xy$.
+        Solution: First form fₓ, then differentiate that function with respect to y to obtain fₓᵧ.
 
-        Why it works: Second partials differentiate a first partial and support later local classification.
 
-        Why the other choices fail: Choice b gives a response to the related question 'What is held constant in $f_x$?', rather than to 'What is $f_x$?'.
+        Why it works: A mixed subscript records two successive ordinary derivatives, in order.
 
-        Choice c gives a response to the related question 'Find $f_x$ for $x^2y$.', rather than to 'What is $f_x$?'.
 
-        Choice d gives a response to the related question 'Find $f_y$ for $x^2y$.', rather than to 'What is $f_x$?'.
+        Why the other choices fail:
+
+        Choice b: b is fᵧᵧ.
+
+        Choice c: c multiplies derivatives instead of differentiating.
+
+        Choice d: d evaluates f but does not take a derivative.
       media: []
       language: 
       functionName: 
@@ -547,16 +587,95 @@ lesson:
       - representationTransfer
       - auxiliaryTechnique
       subjectDifficultyTags: []
-      difficultyEvidence: 
-      prerequisiteObjectiveIds: []
-      extensionObjectiveIds: []
+      difficultyEvidence: Checks the specific track higher-order notation distinction using a stated function, variable, slice, or derivative order.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
       parts: []
       issueSignals:
-      - id: product-rule-misapplied
+      - id: held-variable-confusion
+        domains: []
+  - id: s08
+    title: How a partial differs from an ordinary derivative
+    required: true
+    content: 'For a one-variable function, f′(a) is the tangent slope of its graph at x=a. For a surface f(x,y), there is no single slope unless you also name a direction. Choose the x direction by freezing y=b; then g(x)=f(x,b) is an ordinary one-variable function and g′(a)=fₓ(a,b). Choose the y direction by freezing x=a; its slope is fᵧ(a,b). A partial is not a new kind of one-variable differentiation rule: it is the familiar derivative applied after selecting a coordinate slice. The surface can rise in one slice and fall in another at the same point.'
+    media: []
+    check:
+      id: check-08
+      type: multipleChoice
+      prompt: For z=f(x,y), what is the geometric meaning of fₓ(a,b)?
+      choices:
+      - id: a
+        text: The ordinary derivative at x=a of the slice g(x)=f(x,b)
+        media: []
+        issueSignals: []
+      - id: b
+        text: The slope of every path through the surface point
+        media: []
+        issueSignals: []
+      - id: c
+        text: The height f(a,b)
+        media: []
+        issueSignals: []
+      - id: d
+        text: A derivative that changes x and y at the same time
+        media: []
+        issueSignals: []
+      answer:
+        choiceId: a
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: Fix y=b and define g(x)=f(x,b); then g′(a)=fₓ(a,b).
+
+
+        Why it works: The limit for g′(a) is [f(a+h,b)−f(a,b)]/h, exactly the x partial difference quotient. An ordinary derivative takes the slope of a curve; a partial selects one curve from the surface first.
+
+
+        Why the other choices fail:
+
+        Choice b: A general path may change x and y together and has a direction-dependent rate.
+
+        Choice c: f(a,b) is the surface height, not a tangent slope.
+
+        Choice d: A partial holds y fixed; changing both inputs describes a different rate.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
+      difficultyDimensions:
+      - representationTransfer
+      - modelOrDerivation
+      subjectDifficultyTags: []
+      difficultyEvidence: Maps a two-input surface to its fixed-y one-variable slice and distinguishes slope from height and unrestricted direction.
+      prerequisiteObjectiveIds:
+      - calc3-ready-prior-skills
+      extensionObjectiveIds:
+      - calc3-partial-rates
+      parts: []
+      issueSignals:
+      - id: held-variable-confusion
         domains: []
 exploration: 
 directedProject: 
 sandbox: 
+targetedReading: 
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -567,9 +686,10 @@ navigation:
 skills:
 - evaluate-limits
 - partial-derivatives
+issueSignals: 
 authoring:
   visualRequirement: required
-  visualRationale: Original spatial visual supports the core representation.
+  visualRationale: An original side-by-side curve-and-surface graphic shows that an ordinary derivative is the tangent slope of a one-input graph, while a partial is the tangent slope of a chosen coordinate slice through a multi-input surface.
   difficultyTier: unspecified
   exceptionReason: 
   physicsModel: 

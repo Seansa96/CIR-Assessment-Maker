@@ -6,8 +6,549 @@ categoryId: calculus-3
 topicId: calc3-partial-derivatives
 modeDefault: practice
 randomizeQuestions: true
+attemptQuestionCount: null
+questionTimerSeconds: null
+assessmentTimerSeconds: null
+questionSelection: null
+questions:
+- id: q001
+  type: multipleChoice
+  prompt: For $F(x,y)=x^2e^{xy}$, evaluate $F_y(1,0).
+  choices:
+  - id: a
+    text: $0$ (misses the y-dependent exponent)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: b
+    text: $2$ (reports the x partial instead)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: c
+    text: $e$ (uses exponent 1 rather than 0)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: d
+    text: '1'
+  answer:
+    choiceId: d
+  issueSignals:
+  - id: chain-rule-missed
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Composite partial at a point requires the student to track the requested variable or derivative
+    order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-readiness
+  extensionObjectiveIds:
+  - calc3-higher-partials
+  explanation: 'Solution: $F_y=x^3e^{xy}$, hence $F_y(1,0)=1$.
+
+
+    Why it works: Differentiating the exponent xy in y contributes x; then substitute the point.
+
+
+    Why the other choices fail:
+
+
+    Choice a: The exponential changes with y because its exponent contains xy.
+
+    Choice b: This is the value of the x partial at the point.
+
+    Choice c: At the point $xy=0$, so the exponential equals 1.'
+- id: q002
+  type: multipleChoice
+  prompt: For $G(x,y)=e^{xy}$, find $G_{xy}(1,0).
+  choices:
+  - id: a
+    text: $0$ (drops the derivative of the leading y)
+    issueSignals:
+    - id: mixed-partial-order
+  - id: b
+    text: $e$ (evaluates the exponent as 1)
+    issueSignals:
+    - id: mixed-partial-order
+  - id: c
+    text: '1'
+  - id: d
+    text: $xy e^{xy}$
+    issueSignals:
+    - id: mixed-partial-order
+  answer:
+    choiceId: c
+  issueSignals:
+  - id: mixed-partial-order
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Composite mixed partial requires the student to track the requested variable or derivative
+    order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: $G_x=ye^{xy}$ and $G_{xy}=(1+xy)e^{xy}$, so the value is 1.
+
+
+    Why it works: The second operation differentiates both the leading y and the exponential.
+
+
+    Why the other choices fail:
+
+
+    Choice a: Differentiating the leading y in $G_x$ contributes a nonzero term.
+
+    Choice b: At the point $xy=0$, the exponential equals 1.
+
+    Choice d: This keeps only the chain-rule contribution and omits the derivative of the leading y.'
+- id: q003
+  type: multipleChoice
+  prompt: For $H(x,y)=e^{xy}$, what is $H_{xx}(1,1)?
+  choices:
+  - id: a
+    text: $2e$
+    issueSignals:
+    - id: mixed-partial-order
+  - id: b
+    text: $e$
+  - id: c
+    text: $1$ (drops the exponential factor)
+    issueSignals:
+    - id: mixed-partial-order
+  - id: d
+    text: $ye^{xy}$
+    issueSignals:
+    - id: mixed-partial-order
+  answer:
+    choiceId: b
+  issueSignals:
+  - id: mixed-partial-order
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Pure second composite partial requires the student to track the requested variable or derivative
+    order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: $H_x=ye^{xy}$ and $H_{xx}=y^2e^{xy}$; at $(1,1)$ this is e.
+
+
+    Why it works: Each x derivative of the exponent contributes y, which remains fixed.
+
+
+    Why the other choices fail:
+
+
+    Choice a: Repeated differentiation gives a factor $y^2$, not a sum of two terms.
+
+    Choice c: This omits the exponential value at the point.
+
+    Choice d: This is only the first x partial.'
+- id: q004
+  type: multipleChoice
+  prompt: For $J(x,y)=x^2\sin(xy)$, what is $J_{yx}(1,1)?
+  choices:
+  - id: a
+    text: $3\cos1-\sin1$
+  - id: b
+    text: $2\cos1-\sin1$
+    issueSignals:
+    - id: mixed-partial-order
+  - id: c
+    text: $3\cos1+\sin1$
+    issueSignals:
+    - id: mixed-partial-order
+  - id: d
+    text: $3\cos1$
+    issueSignals:
+    - id: mixed-partial-order
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: mixed-partial-order
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Order-sensitive product and chain requires the student to track the requested variable or
+    derivative order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: $J_y=x^3\cos(xy)$, so $J_{yx}=3x^2\cos(xy)-x^3y\sin(xy)$; evaluate at $(1,1)$.
+
+
+    Why it works: The requested order is y first and then x; the second derivative acts on both factors.
+
+
+    Why the other choices fail:
+
+
+    Choice b: Differentiating $x^3$ in x gives $3x^2$, not $2x^2$.
+
+    Choice c: The chain derivative of cosine introduces a negative sign.
+
+    Choice d: This omits differentiating the cosine factor.'
+- id: q005
+  type: multipleChoice
+  prompt: For $L(x,y)=\ln(x^2+y^2)$, which statement is correct at $(0,1)?
+  choices:
+  - id: a
+    text: Clairaut fails because the origin is outside the domain
+    issueSignals:
+    - id: mixed-partial-order
+  - id: b
+    text: Equality holds only because $L_x=L_y$ at the point
+    issueSignals:
+    - id: mixed-partial-order
+  - id: c
+    text: The mixed partials are undefined there
+    issueSignals:
+    - id: mixed-partial-order
+  - id: d
+    text: The mixed partials are equal there and both are 0.
+  answer:
+    choiceId: d
+  issueSignals:
+  - id: mixed-partial-order
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Domain-aware theorem application requires the student to track the requested variable or
+    derivative order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: The function is smooth near $(0,1)$ and $L_{xy}=-4xy/(x^2+y^2)^2=0$ at x=0; Clairaut
+    gives the same value for $L_{yx}$.
+
+
+    Why it works: The theorem is local, so an excluded point elsewhere does not block a neighborhood around $(0,1)$.
+
+
+    Why the other choices fail:
+
+
+    Choice a: A neighborhood of $(0,1)$ can avoid the excluded origin.
+
+    Choice b: First partial values need not match for Clairaut to apply.
+
+    Choice c: The logarithm is smooth where $x^2+y^2>0$.'
+- id: q006
+  type: multipleChoice
+  prompt: Define $F=xy(x^2-y^2)/(x^2+y^2)$ off the origin and $F(0,0)=0$. Which pair holds at the origin?
+  choices:
+  - id: a
+    text: Both equal zero because $F(0,0)=0
+    issueSignals:
+    - id: mixed-partial-order
+  - id: b
+    text: $F_{xy}=1$ and $F_{yx}=-1$
+    issueSignals:
+    - id: mixed-partial-order
+  - id: c
+    text: $F_{xy}=-1$ and $F_{yx}=1$
+  - id: d
+    text: Neither mixed partial exists
+    issueSignals:
+    - id: mixed-partial-order
+  answer:
+    choiceId: c
+  issueSignals:
+  - id: mixed-partial-order
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Piecewise counterexample requires the student to track the requested variable or derivative
+    order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: The axis limits give $F_x(0,y)=-y$ and $F_y(x,0)=x$, hence $F_{xy}(0,0)=-1$ and $F_{yx}(0,0)=1$.
+
+
+    Why it works: The iterated derivatives exist but are unequal; continuity assumptions cannot be skipped.
+
+
+    Why the other choices fail:
+
+
+    Choice a: A function value does not determine its derivatives.
+
+    Choice b: This reverses which first partial is differentiated second.
+
+    Choice d: Both iterated partials follow from the coordinate-axis limits.'
+- id: q007
+  type: multipleChoice
+  prompt: In $f_{xy}(a,b)$, what is the order of operations?
+  choices:
+  - id: a
+    text: Differentiate in y, then in x
+    issueSignals:
+    - id: mixed-partial-order
+  - id: b
+    text: Differentiate f in x, then differentiate the result in y.
+  - id: c
+    text: Multiply $f_x$ and $f_y$
+    issueSignals:
+    - id: mixed-partial-order
+  - id: d
+    text: Evaluate the height at $(a,b)$
+    issueSignals:
+    - id: mixed-partial-order
+  answer:
+    choiceId: b
+  issueSignals:
+  - id: mixed-partial-order
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Operator-order interpretation requires the student to track the requested variable or derivative
+    order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: First compute $f_x$; then differentiate that expression in y.
+
+
+    Why it works: The notation records successive partial derivative operators.
+
+
+    Why the other choices fail:
+
+
+    Choice a: That order is written $f_{yx}$.
+
+    Choice c: Subscripts denote successive operators, not multiplication.
+
+    Choice d: The height is $f(a,b)$, not a derivative.'
+- id: q008
+  type: multipleChoice
+  prompt: For $S(x,y)=\sin(x^2y)$, evaluate $S_{xy}(1,0).
+  choices:
+  - id: a
+    text: '2'
+  - id: b
+    text: $0$ (omits the leading-y product term)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: c
+    text: $1$ (drops the coefficient 2)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: d
+    text: $-2$ (keeps a term that vanishes at y=0)
+    issueSignals:
+    - id: chain-rule-missed
+  answer:
+    choiceId: a
+  issueSignals:
+  - id: chain-rule-missed
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Nested chain rule requires the student to track the requested variable or derivative order
+    and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: $S_x=2xy\cos(x^2y)$ and $S_{xy}=2x\cos(x^2y)-2x^3y\sin(x^2y)$; at $(1,0)$ this is 2.
+
+
+    Why it works: The product-rule term survives while the chain term vanishes at y=0.
+
+
+    Why the other choices fail:
+
+
+    Choice b: Differentiating the leading y factor produces a nonzero value.
+
+    Choice c: This omits the coefficient 2 from differentiating $x^2$.
+
+    Choice d: The surviving term is positive; the negative chain term contains y and vanishes.'
+- id: q009
+  type: multipleChoice
+  prompt: For $Q(x,y)=e^{xy}\cos y$, what is $Q_{xy}(1,0)?
+  choices:
+  - id: a
+    text: $0$ (the y derivative of the leading factor is omitted)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: b
+    text: $2$ (inserts an extra factor)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: c
+    text: $e$ (the exponent is incorrectly evaluated as 1)
+    issueSignals:
+    - id: chain-rule-missed
+  - id: d
+    text: '1'
+  answer:
+    choiceId: d
+  issueSignals:
+  - id: chain-rule-missed
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Product and chain mixed partial requires the student to track the requested variable or
+    derivative order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-partial-rates
+  extensionObjectiveIds:
+  - calc3-partial-rates
+  explanation: 'Solution: $Q_x=ye^{xy}\cos y$; differentiating in y and evaluating gives 1.
+
+
+    Why it works: The derivative of the leading y is the surviving term at y=0.
+
+
+    Why the other choices fail:
+
+
+    Choice a: Differentiating the leading y in $Q_x$ gives a surviving term.
+
+    Choice b: Neither inner derivative contributes a factor of 2 at this point.
+
+    Choice c: The exponent xy is zero, so $e^{xy}=1$.'
+- id: q010
+  type: multipleChoice
+  prompt: A path is $x(t)=1+t$, $y(t)=2-3t$ and $R=x^2y+\sin y$. What is $dR/dt$ at $t=0$?
+  choices:
+  - id: a
+    text: '4'
+    issueSignals:
+    - id: held-variable-confusion
+  - id: b
+    text: $1+\cos2$
+    issueSignals:
+    - id: held-variable-confusion
+  - id: c
+    text: $1-3\cos2$
+  - id: d
+    text: $4+3(1+\cos2)$
+    issueSignals:
+    - id: held-variable-confusion
+  answer:
+    choiceId: c
+  issueSignals:
+  - id: held-variable-confusion
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Parametric path chain rule requires the student to track the requested variable or derivative
+    order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-readiness
+  extensionObjectiveIds:
+  - calc3-higher-partials
+  explanation: 'Solution: At $(1,2)$, $R_x=4$, $R_y=1+\cos2$, $x\prime=1$, $y\prime=-3$; the rate is $4-3(1+\cos2)=1-3\cos2$.
+
+
+    Why it works: A path changing both inputs combines both partial rates with the coordinate velocities.
+
+
+    Why the other choices fail:
+
+
+    Choice a: This includes only the x contribution.
+
+    Choice b: This is the y partial, not the path rate.
+
+    Choice d: The y velocity is -3, not +3.'
+- id: q011
+  type: multipleChoice
+  prompt: What separates a coordinate partial from a general rate along a path on a surface?
+  choices:
+  - id: a
+    text: A partial equals the surface height
+    issueSignals:
+    - id: held-variable-confusion
+  - id: b
+    text: The partial changes one coordinate while freezing the other; a path rate combines partials with both
+      input velocities.
+  - id: c
+    text: A partial is the slope along every path
+    issueSignals:
+    - id: held-variable-confusion
+  - id: d
+    text: Path rates do not use partial derivatives
+    issueSignals:
+    - id: held-variable-confusion
+  answer:
+    choiceId: b
+  issueSignals:
+  - id: held-variable-confusion
+  difficultyDimensions:
+  - representationTransfer
+  - modelOrDerivation
+  - methodSelection
+  subjectDifficultyTags:
+  - partialDerivative
+  difficultyEvidence: Geometric transfer between slice and path requires the student to track the requested variable
+    or derivative order and verify the resulting value.
+  prerequisiteObjectiveIds:
+  - calc3-readiness
+  extensionObjectiveIds:
+  - calc3-higher-partials
+  explanation: 'Solution: A coordinate partial is one selected slice slope; a general path uses the multivariable
+    chain rule.
+
+
+    Why it works: The path derivative can include motion in more than one input direction.
+
+
+    Why the other choices fail:
+
+
+    Choice a: Height is the function value, not a rate.
+
+    Choice c: Different paths can have different rates.
+
+    Choice d: The multivariable chain rule uses the partial rates.'
+workedExamples: []
+guidedProject: null
+items: []
+glossary: null
 skills:
 - partial-derivatives
+- higher-partials
 navigation:
   learningGoal: evaluate
   activityType: masteryCheck
@@ -15,307 +556,11 @@ navigation:
   - calculus-3
   - calc3-partial-derivatives
   - partial-derivatives
-  - mastery-check
+  - masteryCheck
 authoring:
-  sourcePacketId: packet-calc3-partial-derivatives-v1
+  sourcePacketId: packet-calc3-partial-derivatives-v2
   difficultyTier: hard
   visualRequirement: required
-  visualRationale: Questions reinforce spatial representations.
-  exceptionReason: The mastery bank uses six distinct cumulative and transfer items.
-questions:
-- id: q001
-  type: multipleChoice
-  prompt: For the task 'For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.', what is the first reliable move?
-  choices:
-  - id: a
-    text: $2xy$
-  - id: b
-    text: 'Skip directly to a final answer (answers ''For the task ''Use $x=u+v$, $y=u-v$ to find $|\partial(x,y)/\partial(u,v)|$.'',
-      what is the first reliable move?'', not ''For the task ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what is the
-      first reliable move?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: c
-    text: 'Use an unrelated theorem (answers ''For the task ''Use $x=u+v$, $y=u-v$ to find $|\partial(x,y)/\partial(u,v)|$.'',
-      what is the first reliable move?'', not ''For the task ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what is the
-      first reliable move?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: d
-    text: 'Reverse the givens (answers ''For the task ''Use $x=u+v$, $y=u-v$ to find $|\partial(x,y)/\partial(u,v)|$.'', what
-      is the first reliable move?'', not ''For the task ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what is the first
-      reliable move?'')'
-    issueSignals:
-    - id: sign-error
-  answer:
-    choiceId: a
-  issueSignals:
-  - id: product-rule-misapplied
-  difficultyDimensions:
-  - representationTransfer
-  - modelOrDerivation
-  - methodSelection
-  difficultyEvidence: Connects a vector-calculus representation, its governing relation, and the required interpretation.
-  explanation: 'Solution: Differentiate in x is the first step because it identifies the governing representation.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Calculus 1 → Classical Theorems of Differential
-    Calculus.
-
-    Why the other choices fail: Choice b, ''Skip directly to a final answer'', does not give ''$2xy$'' for ''For the task
-    ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what is the first reliable move?''. It substitutes a different result,
-    representation, or condition for the one the prompt specifies.
-
-    Choice c, ''Use an unrelated theorem'', does not give ''$2xy$'' for ''For the task ''For $f(x,y)=x^2y+3y^2$, find $f_x$
-    and $f_y$.'', what is the first reliable move?''. It substitutes a different result, representation, or condition for
-    the one the prompt specifies.
-
-    Choice d, ''Reverse the givens'', does not give ''$2xy$'' for ''For the task ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and
-    $f_y$.'', what is the first reliable move?''. It substitutes a different result, representation, or condition for the
-    one the prompt specifies.'
-- id: q002
-  type: multipleChoice
-  prompt: After obtaining '$2xy$' while solving 'For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.', what should be checked next?
-  choices:
-  - id: a
-    text: $x^2+6y$
-  - id: b
-    text: 'Discard the intermediate result (answers ''After obtaining ''$\begin{pmatrix}1&1\\1&-1\end{pmatrix}$'' while solving
-      ''Use $x=u+v$, $y=u-v$ to find $|\partial(x,y)/\partial(u,v)|$.'', what should be checked next?'', not ''After obtaining
-      ''$2xy$'' while solving ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what should be checked next?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: c
-    text: 'Change the problem''s constraints (answers ''After obtaining ''$\begin{pmatrix}1&1\\1&-1\end{pmatrix}$'' while
-      solving ''Use $x=u+v$, $y=u-v$ to find $|\partial(x,y)/\partial(u,v)|$.'', what should be checked next?'', not ''After
-      obtaining ''$2xy$'' while solving ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what should be checked next?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: d
-    text: 'Assume every direction is positive (answers ''After obtaining ''$\begin{pmatrix}1&1\\1&-1\end{pmatrix}$'' while
-      solving ''Use $x=u+v$, $y=u-v$ to find $|\partial(x,y)/\partial(u,v)|$.'', what should be checked next?'', not ''After
-      obtaining ''$2xy$'' while solving ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what should be checked next?'')'
-    issueSignals:
-    - id: sign-error
-  answer:
-    choiceId: a
-  issueSignals:
-  - id: product-rule-misapplied
-  difficultyDimensions:
-  - representationTransfer
-  - modelOrDerivation
-  - methodSelection
-  difficultyEvidence: Connects a vector-calculus representation, its governing relation, and the required interpretation.
-  explanation: 'Solution: The next step is differentiate in y, which yields $x^2+6y$
-
-    Why it works: This uses the defining relationship for the topic. Review path: Calculus 1 → Classical Theorems of Differential
-    Calculus.
-
-    Why the other choices fail: Choice b, ''Discard the intermediate result'', does not give ''$x^2+6y$'' for ''After obtaining
-    ''$2xy$'' while solving ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what should be checked next?''. It substitutes
-    a different result, representation, or condition for the one the prompt specifies.
-
-    Choice c, ''Change the problem''s constraints'', does not give ''$x^2+6y$'' for ''After obtaining ''$2xy$'' while solving
-    ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what should be checked next?''. It substitutes a different result,
-    representation, or condition for the one the prompt specifies.
-
-    Choice d, ''Assume every direction is positive'', does not give ''$x^2+6y$'' for ''After obtaining ''$2xy$'' while solving
-    ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'', what should be checked next?''. It substitutes a different result,
-    representation, or condition for the one the prompt specifies.'
-- id: q003
-  type: multipleChoice
-  prompt: Which conclusion completes the worked method for 'For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.'?
-  choices:
-  - id: a
-    text: Which variable is held constant.
-  - id: b
-    text: 'Only the initial notation (answers ''Which conclusion completes the worked method for ''Use $x=u+v$, $y=u-v$ to
-      find $|\partial(x,y)/\partial(u,v)|$.''?'', not ''Which conclusion completes the worked method for ''For $f(x,y)=x^2y+3y^2$,
-      find $f_x$ and $f_y$.''?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: c
-    text: 'A different topic''s formula (answers ''Which conclusion completes the worked method for ''Use $x=u+v$, $y=u-v$
-      to find $|\partial(x,y)/\partial(u,v)|$.''?'', not ''Which conclusion completes the worked method for ''For $f(x,y)=x^2y+3y^2$,
-      find $f_x$ and $f_y$.''?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: d
-    text: 'An orientation reversal without cause (answers ''Which conclusion completes the worked method for ''Use $x=u+v$,
-      $y=u-v$ to find $|\partial(x,y)/\partial(u,v)|$.''?'', not ''Which conclusion completes the worked method for ''For
-      $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.''?'')'
-    issueSignals:
-    - id: sign-error
-  answer:
-    choiceId: a
-  issueSignals:
-  - id: product-rule-misapplied
-  difficultyDimensions:
-  - representationTransfer
-  - modelOrDerivation
-  - methodSelection
-  difficultyEvidence: Connects a vector-calculus representation, its governing relation, and the required interpretation.
-  explanation: 'Solution: The final step is interpret the difference, giving Which variable is held constant.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Calculus 1 → Classical Theorems of Differential
-    Calculus.
-
-    Why the other choices fail: Choice b, ''Only the initial notation'', does not give ''Which variable is held constant.''
-    for ''Which conclusion completes the worked method for ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.''?''. It substitutes
-    a different result, representation, or condition for the one the prompt specifies.
-
-    Choice c, ''A different topic''s formula'', does not give ''Which variable is held constant.'' for ''Which conclusion
-    completes the worked method for ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.''?''. It substitutes a different result,
-    representation, or condition for the one the prompt specifies.
-
-    Choice d, ''An orientation reversal without cause'', does not give ''Which variable is held constant.'' for ''Which conclusion
-    completes the worked method for ''For $f(x,y)=x^2y+3y^2$, find $f_x$ and $f_y$.''?''. It substitutes a different result,
-    representation, or condition for the one the prompt specifies.'
-- id: q004
-  type: multipleChoice
-  prompt: 'A student answers ''y'' to: What is held constant in $f_x$? Which evaluation is correct?'
-  choices:
-  - id: a
-    text: The response is correct when the stated representation is used.
-  - id: b
-    text: 'The response must be negated. (answers ''A student answers ''local area scaling'' to: What does the Jacobian determinant
-      measure? Which evaluation is correct?'', not ''A student answers ''y'' to: What is held constant in $f_x$? Which evaluation
-      is correct?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: c
-    text: 'The response should be a curve instead. (answers ''A student answers ''local area scaling'' to: What does the Jacobian
-      determinant measure? Which evaluation is correct?'', not ''A student answers ''y'' to: What is held constant in $f_x$?
-      Which evaluation is correct?'')'
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: d
-    text: 'The response is unrelated to the topic. (answers ''A student answers ''local area scaling'' to: What does the Jacobian
-      determinant measure? Which evaluation is correct?'', not ''A student answers ''y'' to: What is held constant in $f_x$?
-      Which evaluation is correct?'')'
-    issueSignals:
-    - id: sign-error
-  answer:
-    choiceId: a
-  issueSignals:
-  - id: product-rule-misapplied
-  difficultyDimensions:
-  - representationTransfer
-  - modelOrDerivation
-  - methodSelection
-  difficultyEvidence: Connects a vector-calculus representation, its governing relation, and the required interpretation.
-  explanation: 'Solution: The recall fact follows from the topic''s defining relation and stated variables.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Calculus 1 → Classical Theorems of Differential
-    Calculus.
-
-    Why the other choices fail: Choice b, ''The response must be negated.'', does not give ''The response is correct when
-    the stated representation is used.'' for ''A student answers ''y'' to: What is held constant in $f_x$? Which evaluation
-    is correct?''. It substitutes a different result, representation, or condition for the one the prompt specifies.
-
-    Choice c, ''The response should be a curve instead.'', does not give ''The response is correct when the stated representation
-    is used.'' for ''A student answers ''y'' to: What is held constant in $f_x$? Which evaluation is correct?''. It substitutes
-    a different result, representation, or condition for the one the prompt specifies.
-
-    Choice d, ''The response is unrelated to the topic.'', does not give ''The response is correct when the stated representation
-    is used.'' for ''A student answers ''y'' to: What is held constant in $f_x$? Which evaluation is correct?''. It substitutes
-    a different result, representation, or condition for the one the prompt specifies.'
-- id: q005
-  type: multipleChoice
-  prompt: Which feature should determine whether Partial Derivatives is the right method for a new problem?
-  choices:
-  - id: a
-    text: The problem's representation, constraints, and requested quantity
-  - id: b
-    text: Whether the numbers look familiar (answers 'Which feature should determine whether Change of Variables in Multiple
-      Integrals is the right method for a new problem?', not 'Which feature should determine whether Partial Derivatives is
-      the right method for a new problem?')
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: c
-    text: Whether every diagram is drawn to scale (answers 'Which feature should determine whether Change of Variables in
-      Multiple Integrals is the right method for a new problem?', not 'Which feature should determine whether Partial Derivatives
-      is the right method for a new problem?')
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: d
-    text: Whether a different topic has more symbols (answers 'Which feature should determine whether Change of Variables
-      in Multiple Integrals is the right method for a new problem?', not 'Which feature should determine whether Partial Derivatives
-      is the right method for a new problem?')
-    issueSignals:
-    - id: sign-error
-  answer:
-    choiceId: a
-  issueSignals:
-  - id: product-rule-misapplied
-  difficultyDimensions:
-  - representationTransfer
-  - modelOrDerivation
-  - methodSelection
-  difficultyEvidence: Connects a vector-calculus representation, its governing relation, and the required interpretation.
-  explanation: 'Solution: Method selection should follow the mathematical structure, not superficial wording.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Calculus 1 → Classical Theorems of Differential
-    Calculus.
-
-    Why the other choices fail: Choice b, ''Whether the numbers look familiar'', does not give ''The problem''s representation,
-    constraints, and requested quantity'' for ''Which feature should determine whether Partial Derivatives is the right method
-    for a new problem?''. It substitutes a different result, representation, or condition for the one the prompt specifies.
-
-    Choice c, ''Whether every diagram is drawn to scale'', does not give ''The problem''s representation, constraints, and
-    requested quantity'' for ''Which feature should determine whether Partial Derivatives is the right method for a new problem?''.
-    It substitutes a different result, representation, or condition for the one the prompt specifies.
-
-    Choice d, ''Whether a different topic has more symbols'', does not give ''The problem''s representation, constraints,
-    and requested quantity'' for ''Which feature should determine whether Partial Derivatives is the right method for a new
-    problem?''. It substitutes a different result, representation, or condition for the one the prompt specifies.'
-- id: q006
-  type: multipleChoice
-  prompt: Before transferring Partial Derivatives to an unfamiliar application, what is the best verification step?
-  choices:
-  - id: a
-    text: Check the result against the geometry, direction, units, and stated constraints
-  - id: b
-    text: Remove all conditions from the problem (answers 'Before transferring Change of Variables in Multiple Integrals to
-      an unfamiliar application, what is the best verification step?', not 'Before transferring Partial Derivatives to an
-      unfamiliar application, what is the best verification step?')
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: c
-    text: Treat every output as a scalar (answers 'Before transferring Change of Variables in Multiple Integrals to an unfamiliar
-      application, what is the best verification step?', not 'Before transferring Partial Derivatives to an unfamiliar application,
-      what is the best verification step?')
-    issueSignals:
-    - id: product-rule-misapplied
-  - id: d
-    text: Change the parameter or orientation without a reason (answers 'Before transferring Change of Variables in Multiple
-      Integrals to an unfamiliar application, what is the best verification step?', not 'Before transferring Partial Derivatives
-      to an unfamiliar application, what is the best verification step?')
-    issueSignals:
-    - id: sign-error
-  answer:
-    choiceId: a
-  issueSignals:
-  - id: product-rule-misapplied
-  difficultyDimensions:
-  - representationTransfer
-  - modelOrDerivation
-  - methodSelection
-  difficultyEvidence: Connects a vector-calculus representation, its governing relation, and the required interpretation.
-  explanation: 'Solution: A transfer result is credible only when its representation and interpretation agree with the givens.
-
-    Why it works: This uses the defining relationship for the topic. Review path: Calculus 1 → Classical Theorems of Differential
-    Calculus.
-
-    Why the other choices fail: Choice b, ''Remove all conditions from the problem'', does not give ''Check the result against
-    the geometry, direction, units, and stated constraints'' for ''Before transferring Partial Derivatives to an unfamiliar
-    application, what is the best verification step?''. It substitutes a different result, representation, or condition for
-    the one the prompt specifies.
-
-    Choice c, ''Treat every output as a scalar'', does not give ''Check the result against the geometry, direction, units,
-    and stated constraints'' for ''Before transferring Partial Derivatives to an unfamiliar application, what is the best
-    verification step?''. It substitutes a different result, representation, or condition for the one the prompt specifies.
-
-    Choice d, ''Change the parameter or orientation without a reason'', does not give ''Check the result against the geometry,
-    direction, units, and stated constraints'' for ''Before transferring Partial Derivatives to an unfamiliar application,
-    what is the best verification step?''. It substitutes a different result, representation, or condition for the one the
-    prompt specifies.'
+  visualRationale: The bank connects coordinate-slice geometry to derivative notation and second-order symbolic
+    work.
+  exceptionReason: null

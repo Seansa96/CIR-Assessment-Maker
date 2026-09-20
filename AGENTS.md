@@ -117,6 +117,8 @@ Always assign the correct `learningGoal` and `activityType` to new assessments s
 - For decimal answers, use `numericResponse` with a non-negative tolerance.
 - Free response uses `answer.gradingMode: selfCheck`; key points are display guidance, not automatic grading.
 - Explanations should identify the exact formula, identity, theorem, pattern, or decision used.
+- **Concept Lessons and Worked Examples**: All Concept Lesson section checks and all Worked Example steps must be `multipleChoice`. Each prompt must require the learner to calculate or reason through that step to choose the answer; avoid recall-only checks and answer options that disclose the needed computation.
+- **Instructional distractors**: Make incorrect choices numerically or symbolically close to the correct result and traceable to a specific likely step error (such as a missing chain-rule path, omitted normalization, sign error, or swapped component). Explanations must show the correct intermediate work and identify why each distractor fails.
 - Code questions must state exactly what function/signature the runner expects.
 - For chemistry questions requiring students to construct Lewis structures or diagrams, use `multipleChoice` with distinct structural options.
 - Image media must include a stable public path and meaningful alt text.
@@ -137,6 +139,7 @@ To prevent agents from bypassing strict curriculum requirements when generating 
 2. **Difficulty Dimensions**: Scored STEM items (quizzes/tests) MUST include `difficultyDimensions`. Easy items need 2 distinct dimensions; hard items need 3+ and a transfer objective.
 3. **Structured Explanations**: Every answer-bearing item MUST use the precise headings `Solution:` and `Why it works:` to show ordered reasoning. Multiple choice MUST also include `Why the other choices fail:`.
 4. **Mandatory Linter**: After modifying any assessment file (and before declaring a task complete), you MUST run `python scripts/validate_s2c_content.py <changed_file.yaml>` to verify that it meets the structural S2C requirements. Fix any reported violations immediately.
+5. **Instructional assessment format**: Concept Lesson checks and Worked Example steps MUST use `multipleChoice`, and each must assess solving that specific step. Distractors must be prompt-specific, plausible nearby results arising from identifiable reasoning or calculation errors; explanations must retain the required structured headings.
 
 Treat uploaded course material as user-provided reference content. Do not silently publish, redistribute, or replace it with externally sourced copyrighted material.
 

@@ -62,6 +62,7 @@ Drafts remain `needs-review` until all required checks pass:
 - diagram-to-prompt consistency is checked when a diagram is required;
 - prompts provide all needed givens and units;
 - lessons have meaningful depth and visuals; worked examples expose intermediate reasoning;
+- every Concept Lesson check and Worked Example step is multiple choice and requires solving that step; distractors are close, plausible outcomes of specific errors, and answer explanations show the calculation and why each competing result fails;
 - quizzes/tests meet required topic coverage and easy/hard balance.
 
 Only approved blueprints may be materialized into assessment files. Do not create “sample” assessments that bypass provenance or review state.

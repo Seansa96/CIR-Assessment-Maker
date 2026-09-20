@@ -1,6 +1,8 @@
 using QuizApp.Core.Domain;
 using QuizApp.Core.Services;
 using QuizApp.Infrastructure.Files;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace QuizApp.Tests;
 
@@ -37,7 +39,9 @@ public sealed class Calc3ConceptLessonDistractorContractTests
             Assert.DoesNotContain(audit.Evaluate(category, assessment!, strict: true), diagnostic => diagnostic.IsBlocking);
 
             var checks = assessment.Lesson!.Sections.Select(section => section.Check!).ToList();
-            Assert.Equal(7, checks.Count);
+            var expectedCheckCount = assessment!.Id is "multivariable-chain-rule-concept-lesson-s2c" or "directional-derivatives-gradients-concept-lesson-s2c" ? 8 : 7;
+            Assert.Equal(expectedCheckCount, checks.Count);
+            Assert.All(checks, check => Assert.Equal(QuestionType.MultipleChoice, check.Type));
             Assert.DoesNotContain(checks.SelectMany(check => check.Choices), choice => GenericDistractors.Contains(choice.Text));
             Assert.DoesNotContain(checks, check => check.Explanation!.Contains("Why the other choices fail: Each changes a sign, swaps a role, or applies a different relationship.", StringComparison.Ordinal));
 
@@ -48,6 +52,47 @@ public sealed class Calc3ConceptLessonDistractorContractTests
                 .ToList();
             Assert.Empty(repeatedIncorrectChoices);
         }
+    }
+
+    [Theory]
+    [InlineData("multivariable-chain-rule-worked-example-s2c", 3)]
+    [InlineData("directional-derivatives-gradients-worked-example-s2c", 3)]
+    [Trait("Category", "ContentValidation")]
+    public async Task Expanded_calc3_worked_examples_are_multiple_choice_at_every_step(string assessmentId, int expectedExamples)
+    {
+        var root = FindProjectRoot();
+        var options = new FileStorageOptions { DataRoot = Path.Combine(root, "data") };
+        var yaml = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).IgnoreUnmatchedProperties().Build();
+        var assessmentFile = Path.Combine(root, "data", "assessments", assessmentId + ".yaml");
+        try { _ = yaml.Deserialize<AssessmentFileDto>(await File.ReadAllTextAsync(assessmentFile)); }
+        catch (Exception exception) { Assert.Fail($"Could not deserialize {assessmentFile}: {exception}"); }
+        var assessment = await new FileAssessmentRepository(options, new AssessmentValidator()).GetByIdAsync(assessmentId);
+
+        Assert.NotNull(assessment);
+        Assert.Equal(expectedExamples, assessment!.WorkedExamples!.Count);
+        Assert.All(assessment.WorkedExamples.SelectMany(example => example.Steps), step =>
+            Assert.Equal(QuestionType.MultipleChoice, step.Question.Type));
+        var category = Assert.Single((await new FileCategoryRepository(options).ListAsync()).Where(item => item.Id == "calculus-3"));
+        Assert.DoesNotContain(new AssessmentAuthoringContractAudit().Evaluate(category, assessment, strict: true), diagnostic => diagnostic.IsBlocking);
+    }
+
+    [Theory]
+    [InlineData("multivariable-chain-rule-concept-lesson-s2c")]
+    [InlineData("directional-derivatives-gradients-concept-lesson-s2c")]
+    [Trait("Category", "ContentValidation")]
+    public async Task Expanded_calc3_lessons_deserialize_and_pass_the_strict_contract(string assessmentId)
+    {
+        var root = FindProjectRoot();
+        var options = new FileStorageOptions { DataRoot = Path.Combine(root, "data") };
+        var yaml = new DeserializerBuilder().WithNamingConvention(CamelCaseNamingConvention.Instance).IgnoreUnmatchedProperties().Build();
+        var path = Path.Combine(root, "data", "assessments", assessmentId + ".yaml");
+        var dto = yaml.Deserialize<AssessmentFileDto>(await File.ReadAllTextAsync(path));
+        var assessment = dto.ToDomain();
+        var category = Assert.Single((await new FileCategoryRepository(options).ListAsync()).Where(item => item.Id == "calculus-3"));
+
+        Assert.Equal(8, assessment.Lesson!.Sections.Count);
+        Assert.All(assessment.Lesson.Sections, section => Assert.Equal(QuestionType.MultipleChoice, section.Check!.Type));
+        Assert.DoesNotContain(new AssessmentAuthoringContractAudit().Evaluate(category, assessment, strict: true), diagnostic => diagnostic.IsBlocking);
     }
 
     [Theory]

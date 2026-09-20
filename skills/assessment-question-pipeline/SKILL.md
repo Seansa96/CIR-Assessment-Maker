@@ -31,6 +31,8 @@ description: Create, refine, validate, or review CIR Assessment Maker quiz/test 
    - Stable IDs: `q001`, `q002`, etc.; no duplicates.
    - Use Markdown math delimiters for rendered text: `$...$` and `$$...$$`, not `\(...\)` or `\[...\]`.
    - For `symbolicResponse`, use `answer.expectedLatex`, `equivalenceMode`, `tolerance`, and `variables`.
+   - Concept Lesson checks and Worked Example steps must be exclusively `multipleChoice`. Each check or step should require the learner to compute or reason through that step, not merely recall a formula or recognize terminology.
+   - For instructional multiple choice, make distractors close to the correct result and derive each from a specific plausible step error. Explanations should show the intermediate work and explain each distractor's specific failure.
    - Use `Solution:` and `Why it works:` in every answer-bearing explanation. Multiple choice also needs `Why the other choices fail:`; Olympiad items also need `Prerequisites:` and `Further study:` with targeted preparation. Show algebra, substitutions, intermediate results, units, conditions, and traps whenever relevant.
 
 4. Verify every answer:
