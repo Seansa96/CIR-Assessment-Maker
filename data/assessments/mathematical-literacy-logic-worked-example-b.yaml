@@ -28,37 +28,79 @@ workedExamples:
   steps:
   - id: step-1
     title: Locate the free variable
-    type: freeResponse
+    type: multipleChoice
     prompt: Which expression leaves x unbound?
-    instruction: State the specific mathematical reason used at this checkpoint.
+    choices:
+    - id: a
+      text: '$x+1>0$'
+      issueSignals: []
+    - id: b
+      text: 'For every integer $x$, $x+1>0$'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: c
+      text: '$x=0$'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: d
+      text: 'Both leave $x$ unbound'
+      issueSignals:
+      - id: mathematical-structure-recognition-error
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - $x+1>0$ leaves x unbound.
+      choiceId: a
     explanation: |-
       Solution: $x+1>0$ leaves x unbound.
       Why it works: Without a stated value or quantifier, its truth changes with x.
+      Why the other choices fail: The second expression uses the quantifier "For every integer $x$" which binds the variable. "Both" is therefore incorrect.
   - id: step-2
     title: Check the quantified claim
-    type: freeResponse
+    type: multipleChoice
     prompt: Does the quantified sentence have a truth value?
-    instruction: State the specific mathematical reason used at this checkpoint.
+    choices:
+    - id: a
+      text: Yes; the quantified sentence has a definite truth value, even though it is false.
+      issueSignals: []
+    - id: b
+      text: No, because we don't know what $x$ is.
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: c
+      text: Yes, and it is true for all integers.
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: d
+      text: No, it is still an open sentence.
+      issueSignals:
+      - id: mathematical-structure-recognition-error
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - Yes; the quantified sentence has a definite truth value, even though it is false.
+      choiceId: a
     explanation: |-
       Solution: Yes; the quantified sentence has a definite truth value, even though it is false.
       Why it works: A fully quantified sentence is a statement because its domain and claim are fixed.
+      Why the other choices fail: We don't need a specific $x$ because the statement makes a claim about *every* integer, which gives it a fixed truth value. It is false because $x=-1$ (among others) is a counterexample.
   - id: step-3
     title: Give the classification
-    type: freeResponse
+    type: multipleChoice
     prompt: Classify the two expressions.
-    instruction: State the specific mathematical reason used at this checkpoint.
+    choices:
+    - id: a
+      text: The first is an open sentence; the second is a false statement.
+      issueSignals: []
+    - id: b
+      text: The first is a statement; the second is an open sentence.
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: c
+      text: Both are open sentences.
+      issueSignals:
+      - id: mathematical-structure-recognition-error
+    - id: d
+      text: Both are false statements.
+      issueSignals:
+      - id: mathematical-structure-recognition-error
     answer:
-      gradingMode: selfCheck
-      keyPoints:
-      - The first is an open sentence; the second is a false statement.
+      choiceId: a
     explanation: |-
       Solution: The first is an open sentence; the second is a false statement.
       Why it works: Truth status and open-variable status are different reading questions.
+      Why the other choices fail: The first expression lacks a quantifier and cannot be evaluated as true or false, making it an open sentence. The second is quantified, making it a statement.

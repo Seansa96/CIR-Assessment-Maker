@@ -44,6 +44,8 @@ public sealed class IssueSignalCatalog
 
     private static IEnumerable<(string Location, IssueSignal Signal)> EnumerateSignals(AssessmentDefinition assessment)
     {
+        // Assessment-level signals (e.g., TargetedReading topic coverage signals)
+        foreach (var signal in assessment.IssueSignals) yield return (assessment.Id, signal);
         foreach (var question in assessment.Questions)
             foreach (var result in EnumerateQuestionSignals(question.Id, question)) yield return result;
         foreach (var item in assessment.Items)
@@ -51,6 +53,10 @@ public sealed class IssueSignalCatalog
         foreach (var example in assessment.WorkedExamples)
             foreach (var step in example.Steps)
                 foreach (var result in EnumerateQuestionSignals(step.Id, step.Question)) yield return result;
+        if (assessment.TargetedReading is not null)
+            foreach (var passage in assessment.TargetedReading.Passages)
+                foreach (var question in passage.FocusQuestions)
+                    foreach (var result in EnumerateQuestionSignals(question.Id, question)) yield return result;
     }
 
     private static IEnumerable<(string Location, IssueSignal Signal)> EnumerateQuestionSignals(string questionId, QuestionDefinition question)

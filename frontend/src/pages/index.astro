@@ -563,7 +563,7 @@ const isDev = import.meta.env.DEV;
       import { renderScoresOverTimeChart, renderCategoryMasteryChart, renderTopIssueSignalsChart, renderQuestionTypeChart } from "../scripts/analyticsCharts";
 
       type AssessmentMode = "practice" | "scored";
-      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "glossary" | "conceptLesson" | "interactiveExploration" | "directedProject" | "sandbox";
+      type AssessmentType = "quiz" | "test" | "workedExample" | "guidedProject" | "recallDrill" | "glossary" | "conceptLesson" | "targetedReading" | "interactiveExploration" | "directedProject" | "sandbox";
       type QuestionType = "multipleChoice" | "selectAll" | "freeResponse" | "numericResponse" | "code" | "symbolicResponse" | "circuit" | "multipart" | "graphingResponse";
 
       interface CircuitQuestionDefinition {
@@ -1029,6 +1029,21 @@ const isDev = import.meta.env.DEV;
         sections: LearningSection[];
       }
 
+      interface TargetedReadingPassage {
+        id: string;
+        title: string;
+        required: boolean;
+        content: string;
+        media: MediaAsset[];
+        focusQuestions: Question[];
+      }
+
+      interface TargetedReading {
+        introduction: string;
+        sequential: boolean;
+        passages: TargetedReadingPassage[];
+      }
+
       interface ExplorationOption {
         value: string;
         label: string;
@@ -1128,6 +1143,7 @@ const isDev = import.meta.env.DEV;
         items?: RecallItem[];
         glossary?: Glossary | null;
         lesson?: ConceptLesson | null;
+        targetedReading?: TargetedReading | null;
         exploration?: InteractiveExploration | null;
         directedProject?: DirectedProject | null;
         sandbox?: SandboxDefinition | null;
@@ -2551,11 +2567,11 @@ const isDev = import.meta.env.DEV;
         return `<details class="code-runner-diagnostics"><summary>Developer diagnostics</summary><pre>${escapeHtml(lines.join("\n"))}</pre></details>`;
       }
 
-      async function submitCurrentAnswer() {
+      async function submitCurrentAnswer(overrideQuestion?: Question) {
         if (!state.attempt || !state.assessment) return;
-        const question = getCurrentQuestion();
+        const question = overrideQuestion ?? getCurrentQuestion();
         const payload = readAnswer(question);
-        const submitButton = document.querySelector<HTMLButtonElement>("#submit-answer");
+        const submitButton = document.querySelector<HTMLButtonElement>(overrideQuestion ? `#submit-answer-${overrideQuestion.id}` : "#submit-answer");
 
         if (state.assessment.assessmentType === "workedExample"
           && question.type === "freeResponse"
@@ -5214,6 +5230,9 @@ const isDev = import.meta.env.DEV;
         if (state.assessment?.assessmentType === "conceptLesson") {
           return state.assessment.lesson?.sections ?? [];
         }
+        if (state.assessment?.assessmentType === "targetedReading") {
+          return state.assessment.targetedReading?.passages ?? [];
+        }
         return state.assessment?.exploration?.sections ?? [];
       }
 
@@ -5237,27 +5256,48 @@ const isDev = import.meta.env.DEV;
         }
 
         const isExploration = state.assessment.assessmentType === "interactiveExploration";
-        const conceptSection = !isExploration ? section as LearningSection : null;
+        const isTargetedReading = state.assessment.assessmentType === "targetedReading";
+        const conceptSection = !isExploration && !isTargetedReading ? section as LearningSection : null;
         const explorationSection = isExploration ? section as ExplorationSection : null;
+        const readingPassage = isTargetedReading ? section as TargetedReadingPassage : null;
         const introduction = isExploration
           ? state.assessment.exploration?.introduction ?? ""
+          : isTargetedReading
+          ? state.assessment.targetedReading?.introduction ?? ""
           : state.assessment.lesson?.introduction ?? "";
         const sectionBody = await renderMarkdown(
-          conceptSection?.content ?? explorationSection?.instruction ?? "");
+          conceptSection?.content ?? explorationSection?.instruction ?? readingPassage?.content ?? "");
         const introductionHtml = state.currentIndex === 0 ? await renderMarkdown(introduction) : "";
-        const check = section.check;
-        const checkResult = result.check;
-        const checkPrompt = check ? await renderMarkdown(check.prompt) : "";
-        const explanation = checkResult?.explanation ? await renderMarkdown(checkResult.explanation) : "";
-        const selfCheckHtml = await renderFreeResponseSelfCheck(checkResult, true);
-        const checkFeedback = checkResult?.isCorrect === null || checkResult?.isCorrect === undefined
-          ? ""
-          : `<div class="feedback ${checkResult.isCorrect ? "correct" : "incorrect"}">
-              ${checkResult.isCorrect ? "Check complete" : "Not quite yet"}
-              ${explanation ? `<details open><summary>Explanation</summary><div class="markdown">${explanation}</div></details>` : ""}
-            </div>`;
-        const canComplete = (!check || checkResult?.isCorrect === true)
-          && (!isExploration || result.interactionChanged);
+        const checks = isTargetedReading ? (readingPassage?.focusQuestions ?? []) : (section.check ? [section.check] : []);
+        const checksHtml = await Promise.all(checks.map(async (check) => {
+          const checkResult = state.latestResults?.questions.find((candidate) => candidate.questionId === check.id) ?? result!.check;
+          const checkPrompt = await renderMarkdown(check.prompt);
+          const explanation = checkResult?.explanation ? await renderMarkdown(checkResult.explanation) : "";
+          const selfCheckHtml = await renderFreeResponseSelfCheck(checkResult, true);
+          const checkFeedback = checkResult?.isCorrect === null || checkResult?.isCorrect === undefined
+            ? ""
+            : `<div class="feedback ${checkResult.isCorrect ? "correct" : "incorrect"}">
+                ${checkResult.isCorrect ? "Check complete" : "Not quite yet"}
+                ${explanation ? `<details open><summary>Explanation</summary><div class="markdown">${explanation}</div></details>` : ""}
+              </div>`;
+          return `
+            <div class="learning-check-container">
+              <form class="answer-form learning-check-form" data-check-id="${escapeHtml(check.id)}">
+                <div class="question-prompt markdown">${checkPrompt}</div>
+                ${renderMedia(check.media ?? [])}
+                ${await renderAnswerInput(check, checkResult?.submittedAnswer ?? null)}
+                <button class="primary chunky submit-answer-btn" id="submit-answer-${escapeHtml(check.id)}" type="submit">Check Understanding</button>
+              </form>
+              ${selfCheckHtml}
+              ${checkFeedback}
+            </div>
+          `;
+        }));
+
+        const canComplete = checks.every((check) => {
+          const checkResult = state.latestResults?.questions.find((candidate) => candidate.questionId === check.id) ?? result!.check;
+          return checkResult?.isCorrect === true;
+        }) && (!isExploration || result.interactionChanged);
         const activeSectionIndex = firstUnansweredIndex(state.latestResults, state.attempt);
         const isReviewingCompletedSection = result.completed && state.currentIndex !== activeSectionIndex;
         const continueLabel = isReviewingCompletedSection
@@ -5289,18 +5329,9 @@ const isDev = import.meta.env.DEV;
                 <div class="question-header"><span>${state.currentIndex + 1} of ${sections.length}</span><strong>${section.required ? "Required" : "Optional"}</strong></div>
                 <h2>${escapeHtml(section.title)}</h2>
                 <div class="markdown learning-content">${sectionBody}</div>
-                ${conceptSection ? renderMedia(conceptSection.media ?? []) : ""}
+                ${conceptSection || readingPassage ? renderMedia((conceptSection ?? readingPassage)!.media ?? []) : ""}
                 ${explorationSection ? renderExplorationControls(explorationSection, result.controlValues) : ""}
-                ${check ? `
-                  <form id="learning-check-form" class="answer-form">
-                    <div class="question-prompt markdown">${checkPrompt}</div>
-                    ${renderMedia(check.media ?? [])}
-                    ${await renderAnswerInput(check, checkResult?.submittedAnswer ?? null)}
-                    <button class="primary chunky" id="submit-answer" type="submit">Check Understanding</button>
-                  </form>
-                  ${selfCheckHtml}
-                  ${checkFeedback}
-                ` : ""}
+                ${checksHtml.join("")}
                 ${isExploration && !result.interactionChanged ? `<p class="input-help">Change at least one control to complete this section.</p>` : ""}
                 <div class="assessment-control-bar">
                   <div class="button-row">
@@ -5318,9 +5349,13 @@ const isDev = import.meta.env.DEV;
           </div>
         `;
 
-        document.querySelector<HTMLFormElement>("#learning-check-form")?.addEventListener("submit", (event) => {
-          event.preventDefault();
-          void submitCurrentAnswer();
+        document.querySelectorAll<HTMLFormElement>(".learning-check-form").forEach((form) => {
+          form.addEventListener("submit", (event) => {
+            event.preventDefault();
+            const checkId = form.dataset.checkId;
+            const check = checks.find((c) => c.id === checkId);
+            if (check) void submitCurrentAnswer(check);
+          });
         });
         document.querySelector<HTMLButtonElement>("#previous-learning-section")?.addEventListener("click", async () => {
           await flushLearningSectionState();
@@ -5346,14 +5381,15 @@ const isDev = import.meta.env.DEV;
         document.querySelector<HTMLButtonElement>("#pause-attempt")?.addEventListener("click", pauseAttempt);
         document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
         setupDevAssessmentTools();
-        if (check) {
+        checks.forEach(check => {
           setupChoiceCards(check);
           setupCodeEditor(check);
           setupSymbolicResponseField(check);
           setupSelfCheckButtons();
+          const checkResult = state.latestResults?.questions.find((candidate) => candidate.questionId === check.id) ?? result!.check;
           setupCircuitEditor(check, checkResult?.submittedAnswer ?? null, "");
           setupGraphingEditor(check, checkResult?.submittedAnswer ?? null, "");
-        }
+        });
         if (explorationSection) setupExplorationControls(explorationSection, result);
       }
 
@@ -7844,6 +7880,7 @@ const isDev = import.meta.env.DEV;
           recallDrill: "Recall Drill",
           glossary: "Glossary",
           conceptLesson: "Concept Lesson",
+          targetedReading: "Targeted Reading",
           interactiveExploration: "Interactive Exploration"
         }[type] ?? "Assessment";
       }

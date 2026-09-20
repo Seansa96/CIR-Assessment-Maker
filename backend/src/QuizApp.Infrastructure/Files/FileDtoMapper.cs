@@ -101,11 +101,13 @@ public static class FileDtoMapper
                         f.ReadOnly ?? false))
                     .ToList()
             },
+            TargetedReading = dto.TargetedReading is null ? null : ToDomain(dto.TargetedReading),
             Navigation = dto.Navigation is null ? null : new NavigationMetadata(
                 dto.Navigation.LearningGoal,
                 dto.Navigation.ActivityType,
                 dto.Navigation.Tags ?? new List<string>()),
-            Skills = dto.Skills ?? new List<string>()
+            Skills = dto.Skills ?? new List<string>(),
+            IssueSignals = ToDomain(dto.IssueSignals)
             ,Authoring = dto.Authoring is null ? null : new AssessmentAuthoringMetadata(
                 ParseVisualRequirement(dto.Authoring.VisualRequirement),
                 dto.Authoring.VisualRationale,
@@ -162,13 +164,15 @@ public static class FileDtoMapper
                     ReadOnly = f.ReadOnly
                 }).ToList()
             },
+            TargetedReading = assessment.TargetedReading is null ? null : ToDto(assessment.TargetedReading),
             Navigation = assessment.Navigation is null ? null : new NavigationFileDto
             {
                 LearningGoal = assessment.Navigation.LearningGoal,
                 ActivityType = assessment.Navigation.ActivityType,
                 Tags = assessment.Navigation.Tags.ToList()
             },
-            Skills = assessment.Skills.ToList()
+            Skills = assessment.Skills.ToList(),
+            IssueSignals = assessment.IssueSignals.Count > 0 ? ToDto(assessment.IssueSignals) : null
             ,Authoring = assessment.Authoring is null ? null : new AssessmentAuthoringFileDto
             {
                 VisualRequirement = ToWireValue(assessment.Authoring.VisualRequirement),
@@ -299,6 +303,40 @@ public static class FileDtoMapper
                 Content = section.Content,
                 Media = section.Media.Select(ToDto).ToList(),
                 Check = section.Check is null ? null : ToDto(section.Check)
+            }).ToList()
+        };
+    }
+
+    private static TargetedReadingDefinition ToDomain(TargetedReadingFileDto dto)
+    {
+        return new TargetedReadingDefinition(
+            dto.Introduction ?? string.Empty,
+            dto.Sequential ?? false,
+            (dto.Passages ?? new List<TargetedReadingPassageFileDto>())
+                .Select(passage => new TargetedReadingPassageDefinition(
+                    passage.Id ?? string.Empty,
+                    passage.Title ?? string.Empty,
+                    passage.Required ?? true,
+                    passage.Content ?? string.Empty,
+                    (passage.Media ?? new List<MediaFileDto>()).Select(ToDomain).ToList(),
+                    (passage.FocusQuestions ?? new List<QuestionFileDto>()).Select(ToDomain).ToList()))
+                .ToList());
+    }
+
+    private static TargetedReadingFileDto ToDto(TargetedReadingDefinition reading)
+    {
+        return new TargetedReadingFileDto
+        {
+            Introduction = reading.Introduction,
+            Sequential = reading.Sequential,
+            Passages = reading.Passages.Select(passage => new TargetedReadingPassageFileDto
+            {
+                Id = passage.Id,
+                Title = passage.Title,
+                Required = passage.Required,
+                Content = passage.Content,
+                Media = passage.Media.Select(ToDto).ToList(),
+                FocusQuestions = passage.FocusQuestions.Select(ToDto).ToList()
             }).ToList()
         };
     }
@@ -859,6 +897,7 @@ public static class FileDtoMapper
             "interactiveexploration" => AssessmentType.InteractiveExploration,
             "directedproject" => AssessmentType.DirectedProject,
             "sandbox" => AssessmentType.Sandbox,
+            "targetedreading" => AssessmentType.TargetedReading,
             _ => AssessmentType.Unknown
         };
     }
@@ -1105,6 +1144,7 @@ public static class FileDtoMapper
             AssessmentType.InteractiveExploration => "interactiveExploration",
             AssessmentType.DirectedProject => "directedProject",
             AssessmentType.Sandbox => "sandbox",
+            AssessmentType.TargetedReading => "targetedReading",
             _ => "quiz"
         };
     }

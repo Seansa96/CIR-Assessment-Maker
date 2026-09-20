@@ -23,7 +23,7 @@ public sealed class AssessmentValidator
 
         if (assessment.AssessmentType is AssessmentType.Unknown)
         {
-            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, glossary, conceptLesson, interactiveExploration, directedProject, or sandbox."));
+            issues.Add(new ValidationIssue("INVALID_ASSESSMENT_TYPE", "Assessment type must be quiz, test, workedExample, guidedProject, recallDrill, glossary, conceptLesson, targetedReading, interactiveExploration, directedProject, or sandbox."));
         }
 
         if (assessment.QuestionTimerSeconds is < 0)
@@ -83,6 +83,12 @@ public sealed class AssessmentValidator
         if (assessment.AssessmentType is AssessmentType.Sandbox)
         {
             ValidateSandbox(assessment, issues);
+            return new AssessmentValidationResult(issues);
+        }
+
+        if (assessment.AssessmentType is AssessmentType.TargetedReading)
+        {
+            ValidateTargetedReading(assessment, issues);
             return new AssessmentValidationResult(issues);
         }
 
@@ -216,6 +222,81 @@ public sealed class AssessmentValidator
             "lesson",
             assessment.AssessmentType,
             issues);
+    }
+
+    private static void ValidateTargetedReading(AssessmentDefinition assessment, List<ValidationIssue> issues)
+    {
+        var reading = assessment.TargetedReading;
+        if (reading is null)
+        {
+            issues.Add(new ValidationIssue("MISSING_TARGETED_READING", "Targeted reading assessments must include targetedReading."));
+            return;
+        }
+
+        if (assessment.ModeDefault is AssessmentMode.Scored)
+        {
+            issues.Add(new ValidationIssue("INVALID_TARGETED_READING_MODE", "Targeted reading assessments must use practice mode."));
+        }
+
+        // Visual requirement is core to the format
+        if (assessment.Authoring is null ||
+            assessment.Authoring.VisualRequirement is VisualRequirement.Unspecified ||
+            (assessment.Authoring.VisualRequirement is VisualRequirement.NotApplicable &&
+             string.IsNullOrWhiteSpace(assessment.Authoring.ExceptionReason)))
+        {
+            issues.Add(new ValidationIssue("MISSING_TARGETED_READING_VISUAL",
+                "Targeted reading assessments must declare authoring.visualRequirement: required (or notApplicable with an exceptionReason)."));
+        }
+
+        RequireText(reading.Introduction, "MISSING_TARGETED_READING_INTRODUCTION", "Targeted reading assessments must include an introduction.", issues);
+
+        if (reading.Passages.Count < 1)
+        {
+            issues.Add(new ValidationIssue("MISSING_TARGETED_READING_PASSAGES", "Targeted reading assessments must include at least one passage."));
+            return;
+        }
+
+        var passageIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var questionIds = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        int totalFocusQuestions = 0;
+
+        foreach (var passage in reading.Passages)
+        {
+            RequireText(passage.Id, "MISSING_PASSAGE_ID", "Targeted reading passages must include an id.", issues);
+            RequireText(passage.Title, "MISSING_PASSAGE_TITLE", "Targeted reading passages must include a title.", issues, passage.Id);
+            RequireText(passage.Content, "MISSING_PASSAGE_CONTENT", "Targeted reading passages must include content.", issues, passage.Id);
+
+            if (!string.IsNullOrWhiteSpace(passage.Id) && !passageIds.Add(passage.Id))
+            {
+                issues.Add(new ValidationIssue("DUPLICATE_PASSAGE_ID", $"Targeted reading passage id '{passage.Id}' is duplicated.", passage.Id));
+            }
+
+            ValidateMedia(passage.Media, issues, passage.Id);
+
+            foreach (var question in passage.FocusQuestions)
+            {
+                totalFocusQuestions++;
+                if (!string.IsNullOrWhiteSpace(question.Id) && !questionIds.Add(question.Id))
+                {
+                    issues.Add(new ValidationIssue("DUPLICATE_FOCUS_QUESTION_ID", $"Focus question id '{question.Id}' is duplicated.", passage.Id));
+                }
+
+                if (question.Type is not QuestionType.MultipleChoice and not QuestionType.SelectAll)
+                {
+                    issues.Add(new ValidationIssue("INVALID_FOCUS_QUESTION_TYPE",
+                        $"Focus question '{question.Id}' must be multipleChoice or selectAll. Targeted reading only supports these types.",
+                        passage.Id));
+                }
+
+                ValidateQuestion(question, assessment.AssessmentType, issues);
+            }
+        }
+
+        if (totalFocusQuestions < 2)
+        {
+            issues.Add(new ValidationIssue("INSUFFICIENT_FOCUS_QUESTIONS",
+                "Targeted reading assessments must include at least 2 focus questions in total across all passages."));
+        }
     }
 
     private static void ValidateGlossary(AssessmentDefinition assessment, List<ValidationIssue> issues)

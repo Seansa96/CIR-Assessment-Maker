@@ -16,6 +16,7 @@ public static class AssessmentItemCounter
         AssessmentType.ConceptLesson => assessment.Lesson?.Sections.Count ?? 0,
         AssessmentType.InteractiveExploration => assessment.Exploration?.Sections.Count ?? 0,
         AssessmentType.DirectedProject => assessment.DirectedProject?.Phases.Sum(phase => phase.Steps.Count) ?? 0,
+        AssessmentType.TargetedReading => assessment.TargetedReading?.Passages.Sum(p => p.FocusQuestions.Count) ?? 0,
         _ => assessment.Questions.Count
     };
 
