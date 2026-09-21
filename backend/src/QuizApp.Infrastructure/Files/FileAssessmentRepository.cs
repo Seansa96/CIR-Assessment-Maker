@@ -40,6 +40,13 @@ public sealed class FileAssessmentRepository : IAssessmentRepository
         return assessments.FirstOrDefault(assessment => string.Equals(assessment.Id, assessmentId, StringComparison.OrdinalIgnoreCase));
     }
 
+    public async Task<AssessmentDefinition?> GetBySourcePathAsync(string sourcePath, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(sourcePath) || !File.Exists(sourcePath)) return null;
+        var assessment = await LoadFileAsync(sourcePath, cancellationToken);
+        return assessment;
+    }
+
     public async Task SaveAsync(AssessmentDefinition assessment, CancellationToken cancellationToken = default)
     {
         var validation = validator.Validate(assessment);

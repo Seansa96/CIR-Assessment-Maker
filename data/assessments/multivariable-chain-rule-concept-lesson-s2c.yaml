@@ -6,24 +6,30 @@ categoryId: calculus-3
 topicId: calc3-multivariable-chain-rule
 modeDefault: practice
 randomizeQuestions: false
-attemptQuestionCount: null
-questionTimerSeconds: null
-assessmentTimerSeconds: null
-questionSelection: null
+attemptQuestionCount: 
+questionTimerSeconds: 
+assessmentTimerSeconds: 
+questionSelection: 
 questions: []
 workedExamples: []
-guidedProject: null
+guidedProject: 
 items: []
-glossary: null
+glossary: 
 lesson:
-  introduction: Follow the dependency paths from changing inputs to the output. These checks require calculating
-    each partial or path contribution; recommended prerequisites do not restrict access.
+  introduction: >
+    Before this lesson, you should be comfortable finding ordinary derivatives with the power and product rules, and using the single-variable chain rule. In $y=f(x(t))$, the inner quantity $x$ changes with $t$, so the output rate is $\frac{dy}{dt}=f'(x)\frac{dx}{dt}$. The multivariable version answers the same question when an output depends on several changing inputs: identify every route by which the independent variable can affect the output, find the rate along each route, and add those contributions. We do this because a changing input affects the output according to both how sensitive the output is to that input and how quickly that input is changing.
   sections:
   - id: s01
-    title: Trace each changing input
+    title: Start with the single-variable chain rule
     required: true
-    content: When z=f(x,y) and x,y depend on t, every changing input contributes. For f=x^2+xy at (1,2), with x'=3
-      and y'=-1, compute f_x=2x+y=4 and f_y=x=1, then combine the two rates.
+    content: >
+      The single-variable rule multiplies an outer derivative by the rate of its inner input. With two changing inputs, do that once for each input and add the results:
+
+
+      $\frac{dz}{dt}=f_x\frac{dx}{dt}+f_y\frac{dy}{dt}.$
+
+
+      Here $f_x$ and $f_y$ measure how sensitive $z$ is to each input at the current point, while $x'=\frac{dx}{dt}$ and $y'=\frac{dy}{dt}$ tell how fast those inputs move as $t$ changes. These rates come from the input functions, not from the current input values. For example, if $x(t)=1+3t$ and $y(t)=2-t$, then at $t=0$ the inputs are $x=1$ and $y=2$, while their rates are $x'=3$ and $y'=-1$. The values locate the point where we evaluate sensitivity; the derivatives tell how the point is moving. For $f=x^2+xy$ at $(x,y)=(1,2)$, first find $f_x=2x+y=4$ and $f_y=x=1$. Then multiply each sensitivity by its matching input rate and add. The two products can reinforce or oppose one another because an input rate may be negative.
     media:
     - type: image
       src: /media/calculus-3/multivariable-chain-rule.svg
@@ -32,353 +38,631 @@ lesson:
     check:
       id: check-01
       type: multipleChoice
-      prompt: For these values, what is dz/dt?
+      prompt: For these values, what is $\frac{dz}{dt}$?
       choices:
       - id: a
-        text: '11'
+        text: $11$
+        media: []
         issueSignals: []
       - id: b
-        text: '13'
+        text: $13$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
-        text: '10'
+        text: $10$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
-        text: '-1'
+        text: $-1$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: 11
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: $11$
 
 
-        Why it works: The chain rule gives f_x x''+f_y y''=4(3)+1(-1)=11.
+        Why it works: The chain rule gives $f_x x'+f_y y'=4(3)+1(-1)=11$.
 
 
         Why the other choices fail:
 
-        Choice b: This treats y'' as 1 instead of -1.
+        Choice b: This treats $y'$ as $1$ instead of $-1$.
 
-        Choice c: This evaluates f_y as 2 instead of x=1, giving 4(3)+2(-1).
+        Choice c: This evaluates $f_y$ as $2$ instead of $x=1$, giving $4(3)+2(-1)$.
 
-        Choice d: This swaps the x and y rates: 4(-1)+1(3).'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This swaps the $x$ and $y$ rates: $4(-1)+1(3)$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
   - id: s02
-    title: Read the dependency tree
+    title: Trace and calculate each path
     required: true
-    content: A tree has one branch for each route by which a changing variable reaches the output. Let z=x^2+y^3,
-      x=t^2, y=t+1. At t=1, the two path products are 2x(2t) and 3y^2(1).
+    content: >
+      A dependency tree is a bookkeeping tool: draw an arrow from $t$ to each quantity that depends directly on it, then an arrow from each intermediate quantity to the output. Each complete route contributes one product of derivatives. For $z=x^2+y^3$, with $x=t^2$ and $y=t+1$, the routes are $t\to x\to z$ and $t\to y\to z$. Their contributions are $z_xx'=2x(2t)$ and $z_yy'=3y^2(1)$. At the requested value $t=1$, evaluate the intermediate inputs first: $x=1$ and $y=2$. Substitution gives the rate from each route at the same instant. Adding both is necessary because changing $t$ changes both $x$ and $y$.
     media: []
     check:
       id: check-02
       type: multipleChoice
-      prompt: What is dz/dt at t=1?
+      prompt: What is $\frac{dz}{dt}$ at $t=1$?
       choices:
       - id: a
-        text: '16'
+        text: 16
+        media: []
         issueSignals: []
       - id: b
-        text: '12'
+        text: 12
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
-        text: '20'
+        text: 20
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
-        text: '26'
+        text: 26
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: 16
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: $16$
 
 
-        Why it works: At t=1, x=1, y=2, so 2x(2t)+3y^2(1)=4+12=16.
+        Why it works: At $t=1$, $x=1$ and $y=2$, so $2x(2t)+3y^2(1)=4+12=16$.
 
 
         Why the other choices fail:
 
-        Choice b: This omits the x path contribution 2x(2t)=4.
+        Choice b: This omits the $x$-path contribution $2x(2t)=4$.
 
-        Choice c: This uses x''=4 instead of x''=2.
+        Choice c: This uses $x'=4$ instead of $x'=2$.
 
-        Choice d: This swaps the input rates, using 2(1)+12(2).'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This swaps the input rates, using $2(1)+12(2)$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
   - id: s03
-    title: Differentiate with respect to either independent variable
+    title: Choose which independent variable changes
     required: true
-    content: If w=x^2+y, x=s+t, and y=st, then w_s=2x x_s+y_s=2x+t. The other partial w_t follows its own path products;
-      do not substitute one independent variable's rates for the other's.
+    content: >
+      Sometimes the intermediate inputs depend on two independent variables, such as $s$ and $t$. To find $w_s$, vary $s$ while holding $t$ fixed; to find $w_t$, vary $t$ while holding $s$ fixed. Apply the chain rule only along the paths that change with the chosen variable. For $w=x^2+y$, $x=s+t$, and $y=st$, the $s$-paths give
+
+
+      $w_s=w_xx_s+w_yy_s=2x(1)+1(t)=2x+t.$
+
+
+      At $(s,t)=(1,2)$, first evaluate $x=s+t=3$, then substitute it. Holding the other independent variable fixed matters: $x_s=1$ and $y_s=t$, while the corresponding $t$-rates are different.
     media: []
     check:
       id: check-03
       type: multipleChoice
-      prompt: At (s,t)=(1,2), what is w_s?
+      prompt: At $(s,t)=(1,2)$, what is $w_s$?
       choices:
       - id: a
-        text: '8'
+        text: 8
+        media: []
         issueSignals: []
       - id: b
-        text: '6'
+        text: 6
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
-        text: '14'
+        text: 14
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
-        text: '-4'
+        text: -4
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: 8
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: $8$
 
 
-        Why it works: At (1,2), x=3, so w_s=2(3)(1)+2=8.
+        Why it works: At $(s,t)=(1,2)$, $x=3$, so $w_s=2(3)(1)+2=8$.
 
 
         Why the other choices fail:
 
-        Choice b: This omits y_s=2.
+        Choice b: This omits $y_s=2$.
 
-        Choice c: This uses x_s=2 instead of 1, giving 2(3)(2)+2.
+        Choice c: This uses $x_s=2$ instead of $1$, giving $2(3)(2)+2$.
 
-        Choice d: This reverses the sign of the x-path contribution, giving -6+2.'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This reverses the sign of the $x$-path contribution, giving $-6+2$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
   - id: s04
-    title: Sum all paths in a three-variable tree
+    title: Extend the path sum to three inputs
     required: true
-    content: For w=f(x,y,z), with x,y,z depending on t, dw/dt=f_x x'+f_y y'+f_z z'. The number of terms comes from
-      the distinct input paths, not from the number of symbols in the final expression.
+    content: >
+      With three inputs that all depend on $t$, make one contribution for each input:
+
+
+      $\frac{dw}{dt}=f_xx'+f_yy'+f_zz'.$
+
+
+      This is a sum of matched pairs: output sensitivity to $x$ times the rate of $x$, and likewise for $y$ and $z$. Keep the signs from both factors, then add. For the check, the contributions are $2(4)=8$, $(-1)(2)=-2$, and $3(-1)=-3$. This procedure scales to any number of inputs: include every changing input exactly once, and do not add a path for a variable that is constant.
     media: []
     check:
       id: check-04
       type: multipleChoice
-      prompt: If (f_x,f_y,f_z)=(2,-1,3) and (x',y',z')=(4,2,-1), what is dw/dt?
+      prompt: If $(f_x,f_y,f_z)=(2,-1,3)$ and $(x',y',z')=(4,2,-1)$, what is $\frac{dw}{dt}$?
       choices:
       - id: a
-        text: '3'
+        text: 3
+        media: []
         issueSignals: []
       - id: b
-        text: '7'
+        text: 7
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
-        text: '9'
+        text: 9
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
-        text: '5'
+        text: 5
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: 3
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: $3$
 
 
-        Why it works: The three path products sum to 2(4)+(-1)(2)+3(-1)=3.
+        Why it works: The three path products sum to $2(4)+(-1)(2)+3(-1)=3$.
 
 
         Why the other choices fail:
 
         Choice b: This changes the negative y-path term into a positive contribution.
 
-        Choice c: This reverses the sign of the z-path term: 8-2+3.
+        Choice c: This reverses the sign of the $z$-path term: $8-2+3$.
 
-        Choice d: This omits the y path, leaving 8-3.'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This omits the $y$-path, leaving $8-3$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
   - id: s05
-    title: Differentiate an implicit relation
+    title: Treat an implicit equation as a dependency
     required: true
-    content: An equation F(x,y)=constant defines a dependency even when y is not isolated. Differentiate each term
-      with respect to x and use the chain rule whenever a term contains y(x). For x^2+xy+y^2=7, the y-dependent
-      terms contribute y+xy' and 2yy'.
+    content: >
+      A relation such as $x^2+xy+y^2=7$ can describe a curve even when solving explicitly for $y$ would be awkward. Locally, regard $y$ as a function $y(x)$ and differentiate both sides with respect to $x$. Use ordinary rules on explicit $x$ factors, and the chain rule on every occurrence of $y(x)$. For example, the product rule gives $\frac{d}{dx}(xy)=y+xy'$, and the chain rule gives $\frac{d}{dx}(y^2)=2yy'$. Also differentiate the explicit $x^2$ term and the constant right side. Then assemble these term-by-term derivatives into one equation equal to zero. The derivative equation records how $y$ must change as $x$ moves along the relation.
     media: []
     check:
       id: check-05
       type: multipleChoice
-      prompt: After differentiating x^2+xy+y^2=7, which equation results?
+      prompt: After differentiating $x^2+xy+y^2=7$, which equation results?
       choices:
       - id: a
-        text: 2x+y+xy'+2yy'=0
+        text: $2x+y+xy'+2yy'=0$
+        media: []
         issueSignals: []
       - id: b
-        text: 2x+xy'+2yy'=0
+        text: $2x+xy'+2yy'=0$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
-        text: 2x+y+xy'+2y=0
+        text: $2x+y+xy'+2y=0$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
-        text: 2x+y+xy'+yy'=0
+        text: $2x+y+xy'+yy'=0$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: 2x+y+xy''+2yy''=0
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: $2x+y+xy'+2yy'=0$
 
 
-        Why it works: Differentiate xy by the product rule and y^2 by the chain rule; the constant right side has
-        derivative zero.
+        Why it works: Differentiate $xy$ by the product rule and $y^2$ by the chain rule; the constant right side has derivative zero.
 
 
         Why the other choices fail:
 
-        Choice b: This omits the y term produced by differentiating the x factor in xy.
+        Choice b: This omits the $y$ term produced by differentiating the $x$ factor in $xy$.
 
-        Choice c: This treats y'' as 1 when differentiating y^2.
+        Choice c: This treats $y'$ as $1$ when differentiating $y^2$.
 
-        Choice d: This misses the factor 2 from differentiating y^2.'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This misses the factor $2$ from differentiating $y^2$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
   - id: s06
-    title: Solve the implicit derivative
+    title: Isolate the rate you need
     required: true
-    content: After differentiating, collect every y' term on one side. For the relation above, (x+2y)y'=-(2x+y),
-      provided x+2y is nonzero.
+    content: >
+      After differentiating, collect all terms containing $y'$ on one side and factor out $y'$. For this relation, the coefficient of $y'$ is $x+2y$, and the remaining terms move to the other side with their signs reversed. Divide by $x+2y$ only when it is nonzero:
+
+
+      $y'=-\frac{2x+y}{x+2y}.$
+
+
+      To use the formula at a point, substitute both coordinates into the numerator and denominator, then simplify the quotient. Isolating $y'$ converts the differentiated relation into the rate of vertical change per unit horizontal change.
     media: []
     check:
       id: check-06
       type: multipleChoice
-      prompt: At (1,2), what is dy/dx?
+      prompt: At $(x,y)=(1,2)$, what is $\frac{dy}{dx}$?
       choices:
       - id: a
-        text: -4/5
+        text: $-\frac45$
+        media: []
         issueSignals: []
       - id: b
-        text: 4/5
+        text: $\frac45$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
-        text: -5/4
+        text: $-\frac54$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
-        text: -1/5
+        text: $-\frac15$
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: -4/5
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: $-\frac45$
 
 
-        Why it works: Substitution gives 5y''=-4, hence y''=-4/5.
+        Why it works: Substitution gives $5y'=-4$, hence $y'=-\frac45$.
 
 
         Why the other choices fail:
 
-        Choice b: This loses the negative sign when moving 2x+y across the equality.
+        Choice b: This loses the negative sign when moving $2x+y$ across the equality.
 
         Choice c: This inverts the coefficient ratio.
 
-        Choice d: This substitutes 2x+y=1 instead of 4.'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This substitutes $2x+y=1$ instead of $4$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
   - id: s07
-    title: Keep the evaluation point visible
+    title: Evaluate sensitivities at the current inputs
     required: true
-    content: Partial derivatives in a chain rule are evaluated at the current intermediate inputs. When x,y,z depend
-      on t, first find their values at the requested t, then evaluate the partial derivatives there before multiplying
-      by the rates.
+    content: >
+      The partial derivatives are not usually constant: they depend on the intermediate input values. First use the requested point to evaluate each partial, then pair it with the rate of that same input. For $f(x,y,z)=xy+z$, the sensitivities are $f_x=y$, $f_y=x$, and $f_z=1$. At $(2,3,4)$, the gradient components are therefore $(3,2,1)$. Pair these in order with the stated rates $(1,-2,5)$ and add the products. Evaluating at the point first prevents substituting the wrong coordinate or matching a partial with another input's rate.
     media: []
     check:
       id: check-07
       type: multipleChoice
-      prompt: For f=xy+z at (2,3,4) and rates (1,-2,5), what is df/dt?
+      prompt: For $f=xy+z$ at $(x,y,z)=(2,3,4)$ and rates $(x',y',z')=(1,-2,5)$, what is $\frac{df}{dt}$?
       choices:
       - id: a
-        text: '4'
+        text: 4
+        media: []
         issueSignals: []
       - id: b
-        text: '-2'
+        text: -2
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
-        text: '2'
+        text: 2
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
-        text: '1'
+        text: 1
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: 4
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: $4$
 
 
-        Why it works: The chain rule gives 3(1)+2(-2)+1(5)=4.
+        Why it works: The chain rule gives $3(1)+2(-2)+1(5)=4$.
 
 
         Why the other choices fail:
 
-        Choice b: This swaps f_x and f_y before multiplying by the stated input rates.
+        Choice b: This swaps $f_x$ and $f_y$ before multiplying by the stated input rates.
 
-        Choice c: This uses f_y=3 instead of x=2, giving 3-6+5.
+        Choice c: This uses $f_y=3$ instead of $x=2$, giving $3-6+5$.
 
-        Choice d: This swaps the x and y rates, giving 3(-2)+2(1)+5.'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This swaps the $x$ and $y$ rates, giving $3(-2)+2(1)+5$.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
   - id: s08
-    title: Check the quantity and units
+    title: Check the rate and its units
     required: true
-    content: The chain rule's output is a scalar rate with respect to the stated independent variable. Its units
-      are output units per unit of t. A final check catches swapped rates, missing paths, and a derivative reported
-      in the wrong variable.
+    content: >
+      The result is the rate of change of the output with respect to the chosen independent variable. Use dimensions as a check: if an output $Z$ has units $[Z]$, an input $X$ has units $[X]$, and the independent variable $t$ has units $[t]$, then $Z_X$ has units $[Z]/[X]$ while $X'$ has units $[X]/[t]$. Their product has units $[Z]/[t]$. Every path contribution must have the same output-per-time units before the terms can be added. Apply this cancellation to the units in the question; a mismatch often signals that a rate was swapped, a factor was omitted, or the derivative was taken with respect to the wrong variable.
     media: []
     check:
       id: check-08
       type: multipleChoice
-      prompt: If temperature T is in °C, x,y are measured in meters, and x(t),y(t) vary with t in seconds, what
-        are the units of dT/dt?
+      prompt: If temperature $T$ is in °C, $x,y$ are measured in meters, and $x(t),y(t)$ vary with $t$ in seconds, what are the units of $\frac{dT}{dt}$?
       choices:
       - id: a
         text: °C/s
+        media: []
         issueSignals: []
       - id: b
         text: °C·m/s
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: c
         text: m/s
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       - id: d
         text: s/°C
+        media: []
         issueSignals:
         - id: chain-rule-missed
+          domains: []
       answer:
         choiceId: a
-      explanation: 'Solution: °C/s
+        choiceIds: []
+        expected: 
+        gradingMode: 
+        expectedLatex: 
+        equivalenceMode: 
+        variables: []
+        value: 
+        tolerance: 
+        media: []
+        keyPoints: []
+        circuitAnswer: 
+        graphingAnswer: 
+      explanation: >-
+        Solution: °C/s
 
 
         Why it works: Each partial has units °C/m and each input rate has units m/s, leaving °C/s after summation.
@@ -386,20 +670,35 @@ lesson:
 
         Why the other choices fail:
 
-        Choice b: This multiplies by distance instead of using the chain rule''s unit cancellations.
+        Choice b: This multiplies by distance instead of using the chain rule's unit cancellations.
 
         Choice c: This reports an input speed, not the output rate.
 
-        Choice d: This reverses the derivative''s units.'
-      issueSignals:
-      - id: chain-rule-missed
+        Choice d: This reverses the derivative's units.
+      media: []
+      language: 
+      functionName: 
+      executionMode: unspecified
+      starterCode: 
+      tests: 
+      circuitQuestion: 
+      graphingQuestion: 
+      skills: []
       difficultyDimensions:
       - representationTransfer
       - auxiliaryTechnique
-exploration: null
-directedProject: null
-sandbox: null
-targetedReading: null
+      subjectDifficultyTags: []
+      difficultyEvidence: 
+      prerequisiteObjectiveIds: []
+      extensionObjectiveIds: []
+      parts: []
+      issueSignals:
+      - id: chain-rule-missed
+        domains: []
+exploration: 
+directedProject: 
+sandbox: 
+targetedReading: 
 navigation:
   learningGoal: learn
   activityType: conceptLesson
@@ -409,11 +708,13 @@ navigation:
   - computational
   - multivariable-chain-rule
 skills:
+- apply-newtons-second-law
 - evaluate-limits
 - multivariable-chain-rule
-issueSignals: null
+issueSignals: 
 authoring:
-  sourcePacketId: packet-calc3-multivariable-chain-rule-v2
-  blueprintId: multivariable-chain-rule-concept-lesson-s2c-blueprints-s2c
   visualRequirement: required
   visualRationale: The visual supports the dependency graph or directional geometry taught in this lesson.
+  difficultyTier: unspecified
+  exceptionReason: 
+  physicsModel: 

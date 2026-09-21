@@ -106,6 +106,48 @@ public sealed class AssessmentAuthoringContractAuditTests
     }
 
     [Fact]
+    public void Concept_lesson_checks_use_how_to_solve_without_separate_solution_headings()
+    {
+        var check = EasyQuestion("check-001") with
+        {
+            Explanation = "How to Solve: The prompt gives the orbital angular-momentum number l=2. The allowed magnetic values run from -l through +l, so -2 is allowed."
+        };
+        var assessment = TestData.Assessment(AssessmentType.ConceptLesson, Array.Empty<QuestionDefinition>()) with
+        {
+            Lesson = new ConceptLessonDefinition("Quantum numbers", [
+                new LearningSectionDefinition("s1", "Magnetic values", true, "How ml depends on l.", Array.Empty<MediaAsset>(), check)
+            ]),
+            Authoring = new AssessmentAuthoringMetadata(VisualRequirement.NotApplicable, "Concept check.")
+        };
+
+        var diagnostics = audit.Evaluate(Stem, assessment, strict: true);
+
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Code is "MISSING_EXPLANATION_SOLUTION" or "MISSING_EXPLANATION_REASONING" or "MISSING_DISTRACTOR_FEEDBACK");
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Code == "MISSING_HOW_TO_SOLVE");
+    }
+
+    [Fact]
+    public void Worked_example_steps_require_how_to_solve()
+    {
+        var stepQuestion = TestData.MultipleChoiceQuestion("s001") with
+        {
+            Explanation = "How to Solve: Continue from the given expression by applying the stated operation to both terms."
+        };
+        var assessment = TestData.Assessment(AssessmentType.WorkedExample, Array.Empty<QuestionDefinition>()) with
+        {
+            WorkedExamples = [new WorkedExampleDefinition("we001", "Continue a calculation", "Use the given expression.", [
+                new WorkedExampleStepDefinition("s001", "Apply the operation", "Continue the calculation.", null, stepQuestion)
+            ])],
+            Authoring = new AssessmentAuthoringMetadata(VisualRequirement.NotApplicable, "Worked calculation.")
+        };
+
+        var diagnostics = audit.Evaluate(Stem, assessment, strict: true);
+
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Code is "MISSING_EXPLANATION_SOLUTION" or "MISSING_EXPLANATION_REASONING" or "MISSING_DISTRACTOR_FEEDBACK");
+        Assert.DoesNotContain(diagnostics, diagnostic => diagnostic.Code == "MISSING_HOW_TO_SOLVE");
+    }
+
+    [Fact]
     public void Directed_project_is_allowed_for_non_stem_profile()
     {
         var assessment = TestData.Assessment(AssessmentType.DirectedProject, Array.Empty<QuestionDefinition>()) with

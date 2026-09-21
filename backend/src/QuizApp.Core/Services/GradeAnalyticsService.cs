@@ -112,7 +112,7 @@ public sealed class GradeAnalyticsService
         var lookup = new Dictionary<string, AssessmentDefinition>(StringComparer.OrdinalIgnoreCase);
         foreach (var assessmentId in assessmentIds.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            var assessment = await assessmentRepository.GetByIdAsync(assessmentId, cancellationToken);
+            var assessment = await assessmentRepository.GetForHistoricalAnalyticsAsync(assessmentId, cancellationToken);
             if (assessment is not null)
             {
                 lookup[assessment.Id] = assessment;

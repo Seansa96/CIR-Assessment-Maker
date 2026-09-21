@@ -38,13 +38,19 @@ Concept lessons, worked examples, glossaries, and recall drills collectively pre
 
 ## Answers, feedback, and explanations
 
-Every answer-bearing item—concept checks, worked-example steps, glossary drills, recall drills, quizzes, and tests—must include learner-visible, ordered reasoning from the givens to the conclusion. Use these Markdown labels in each explanation:
+Every answer-bearing item must include learner-visible reasoning tied to the prompt. Concept Lesson checks and Worked Example steps follow their own format:
+
+- `How to Solve:` continues the calculation or reasoning required by that step. For a conceptual or recognition step without procedural work, identify the prompt detail, definition, notation, or representation that supports the answer. Do not add separate `Solution:`, `Why it works:`, or `Why the other choices fail:` headings just to satisfy a template.
+
+For quizzes, tests, and other answer-bearing items, use these Markdown labels:
 
 - `Solution:` states the result and shows each material procedural step in order. Mathematical or computational solutions include the relevant algebra, substitutions, intermediate results, techniques, and units when applicable.
 - `Why it works:` names and applies the governing definition, theorem, principle, pattern, or technique. Conceptual and recognition items define the relevant term, expression, notation, or diagram cue and show the logical chain that identifies the result.
 - `Common trap:` is required whenever a domain condition, boundary case, assumption, unit issue, or likely misconception materially affects correctness.
 
-Multiple-choice explanations also include `Why the other choices fail:`. Briefly identify why each plausible distractor is incorrect; do not repeat the whole derivation for every choice.
+Multiple-choice explanations outside Concept Lessons and Worked Examples also include `Why the other choices fail:`. Briefly identify why each plausible distractor is incorrect; do not repeat the whole derivation for every choice.
+
+Recall Drill items and Glossary drills use a concise, general explanation of why the answer is correct. They do not require `Solution:`, `Why it works:`, or `Why the other choices fail:` labels.
 
 Olympiad explanations also include `Prerequisites:` and `Further study:`. They give a complete modeling and solution path, justify non-obvious steps, name the necessary prerequisite concepts or theorems, and recommend targeted concepts or readings for the outside knowledge required. Generic advice such as “research more” is insufficient.
 

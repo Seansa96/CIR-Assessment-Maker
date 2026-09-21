@@ -54,6 +54,19 @@ public sealed class AssessmentContentAuditTests
         }
     }
 
+    [Theory]
+    [InlineData("chem-electron-configs-lesson.yaml")]
+    [InlineData("chem-electron-configs-quiz.yaml")]
+    [InlineData("chem-electron-configs-worked-example.yaml")]
+    [InlineData("chemistry-electron-configuration-periodic-patterns-concept-lesson.yaml")]
+    [Trait("Category", "ContentValidation")]
+    public async Task Electron_configuration_topic_assessments_deserialize_and_validate(string fileName)
+    {
+        var errors = await audit.ValidateAssessmentFilesAsync([fileName]);
+
+        Assert.Empty(errors);
+    }
+
     [Fact]
     [Trait("Category", "ContentValidation")]
     public async Task All_authored_assessment_ids_are_unique()

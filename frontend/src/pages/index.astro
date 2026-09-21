@@ -2335,13 +2335,40 @@ const isDev = import.meta.env.DEV;
         id: string
       ) {
         const selection = state.navigationSelection;
-        if (stage === "subject") Object.assign(selection, { subjectId: id, areaId: "", topicId: "", goalId: "", activityType: "", assessmentId: "" });
+        if (stage === "subject") {
+          if (selection.subjectId === id) Object.assign(selection, { subjectId: "", areaId: "", topicId: "", goalId: "", activityType: "", assessmentId: "" });
+          else Object.assign(selection, { subjectId: id, areaId: "", topicId: "", goalId: "", activityType: "", assessmentId: "" });
+        }
         if (stage === "area") Object.assign(selection, { areaId: id, topicId: "", goalId: "", activityType: "", assessmentId: "" });
         if (stage === "topic") Object.assign(selection, { topicId: id, goalId: "", activityType: "", assessmentId: "" });
         if (stage === "goal") Object.assign(selection, { goalId: id, activityType: "", assessmentId: "" });
         if (stage === "activity") Object.assign(selection, { activityType: id, assessmentId: "" });
         if (stage === "assessment") selection.assessmentId = id;
         renderNavigation();
+      }
+
+      function selectNavigationAssessment(assessmentId: string) {
+        const assessment = state.navigationCatalog?.assessments.find((item) => item.id === assessmentId);
+        if (!assessment) {
+          Object.assign(state.navigationSelection, {
+            subjectId: "", areaId: "", topicId: "", goalId: "", activityType: "", assessmentId: ""
+          });
+          return;
+        }
+
+        Object.assign(state.navigationSelection, {
+          subjectId: assessment.subjectId,
+          areaId: assessment.areaId,
+          topicId: assessment.topicId,
+          goalId: assessment.learningGoal,
+          activityType: assessment.activityType,
+          assessmentId: assessment.id
+        });
+
+        const resultsContainer = document.getElementById("search-results-container");
+        const navStages = document.getElementById("nav-stages");
+        if (resultsContainer) resultsContainer.hidden = true;
+        if (navStages) navStages.style.display = "";
       }
 
       function renderNavigationBreadcrumb() {
@@ -2489,11 +2516,13 @@ const isDev = import.meta.env.DEV;
         
         setBusy(startButton, "Loading");
         try {
+          selectNavigationAssessment(assessmentId);
           state.assessment = await api<Assessment>(`/assessments/${encodeURIComponent(assessmentId)}`);
           state.attempt = await api<Attempt>("/attempts", {
             method: "POST",
             body: JSON.stringify({ assessmentId, mode, courseRunId })
           });
+          renderNavigation();
           state.currentIndex = 0;
           state.latestResults = null;
           state.guidedProjectSession = null;
@@ -3279,8 +3308,28 @@ const isDev = import.meta.env.DEV;
         setupGradeLogInteractions();
       }
 
-      function renderMasteryBadge(tier: MasteryTier): string {
-        switch (tier) {
+      function normalizeMasteryTier(tier: MasteryTier | string | number | null | undefined): MasteryTier {
+        if (typeof tier === "number") {
+          return Object.values(MasteryTier).includes(tier as MasteryTier) ? tier as MasteryTier : MasteryTier.Unknown;
+        }
+
+        if (typeof tier === "string") {
+          const normalized = tier.toLowerCase();
+          const tiers: Record<string, MasteryTier> = {
+            unknown: MasteryTier.Unknown,
+            novice: MasteryTier.Novice,
+            developing: MasteryTier.Developing,
+            proficient: MasteryTier.Proficient,
+            mastered: MasteryTier.Mastered
+          };
+          return tiers[normalized] ?? MasteryTier.Unknown;
+        }
+
+        return MasteryTier.Unknown;
+      }
+
+      function renderMasteryBadge(tier: MasteryTier | string | number | null | undefined): string {
+        switch (normalizeMasteryTier(tier)) {
           case MasteryTier.Mastered: return '<span class="mastery-badge mastered">Mastered</span>';
           case MasteryTier.Proficient: return '<span class="mastery-badge proficient">Proficient</span>';
           case MasteryTier.Developing: return '<span class="mastery-badge developing">Developing</span>';
@@ -5382,7 +5431,9 @@ const isDev = import.meta.env.DEV;
         document.querySelector<HTMLButtonElement>("#abandon-attempt")?.addEventListener("click", abandonAttempt);
         setupDevAssessmentTools();
         checks.forEach(check => {
-          setupChoiceCards(check);
+          const checkForm = Array.from(document.querySelectorAll<HTMLFormElement>(".learning-check-form"))
+            .find((form) => form.dataset.checkId === check.id);
+          setupChoiceCards(check, checkForm);
           setupCodeEditor(check);
           setupSymbolicResponseField(check);
           setupSelfCheckButtons();
@@ -7612,10 +7663,10 @@ const isDev = import.meta.env.DEV;
         return latex;
       }
 
-      function setupChoiceCards(question: Question) {
+      function setupChoiceCards(question: Question, answerForm?: HTMLFormElement | null) {
         if (question.type !== "multipleChoice" && question.type !== "selectAll") return;
 
-        const form = getActiveAnswerForm();
+        const form = answerForm ?? getActiveAnswerForm();
         if (!form) return;
         const cards = Array.from(form.querySelectorAll<HTMLButtonElement>(".choice-card"));
 
@@ -7633,6 +7684,7 @@ const isDev = import.meta.env.DEV;
 
       function getActiveAnswerForm() {
         return document.querySelector<HTMLFormElement>("#learning-check-form")
+          ?? document.querySelector<HTMLFormElement>(".learning-check-form")
           ?? document.querySelector<HTMLFormElement>("#answer-form");
       }
 

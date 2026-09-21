@@ -345,13 +345,16 @@ public sealed class SqliteAssessmentCatalogImporter
         var fileInfo = new FileInfo(path);
         var sourceLastWriteUtc = ToManifestTimestamp(fileInfo);
         var sourceLength = fileInfo.Length;
+        var content = await File.ReadAllTextAsync(path, cancellationToken);
+        var hash = ComputeHash(content);
         var existing = await GetExistingFileAsync(connection, path, cancellationToken);
         var existingId = existing?.Id;
 
         if (existing is not null
             && existing.IsActive
             && existing.SourceLastWriteUtc == sourceLastWriteUtc
-            && existing.SourceLength == sourceLength)
+            && existing.SourceLength == sourceLength
+            && existing.ContentHash == hash)
         {
             if (!forceFullReimport)
             {
@@ -374,9 +377,6 @@ public sealed class SqliteAssessmentCatalogImporter
                 return CatalogImportOutcome.Reindexed;
             }
         }
-
-        var content = await File.ReadAllTextAsync(path, cancellationToken);
-        var hash = ComputeHash(content);
 
         if (!forceFullReimport && existing is not null && existing.ContentHash == hash)
         {

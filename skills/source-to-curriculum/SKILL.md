@@ -58,11 +58,12 @@ Drafts remain `needs-review` until all required checks pass:
 - every item links to a blueprint and source chunks;
 - every scored STEM item satisfies its tier's distinct difficulty-dimension and transfer-objective requirement;
 - all answers are independently verified;
-- every answer-bearing item uses `Solution:` and `Why it works:` to show ordered reasoning; multiple choice also uses `Why the other choices fail:`; Olympiad items also use `Prerequisites:` and `Further study:` with targeted preparation;
+- Concept Lesson checks and Worked Example steps use `How to Solve:` to continue the step's calculation or reasoning. If a step is conceptual or recognition-based, explain which prompt detail, definition, notation, or representation justifies the answer. Do not require separate `Solution:`, `Why it works:`, or `Why the other choices fail:` headings for these two assessment types;
+- quiz, test, and other answer-bearing items use `Solution:` and `Why it works:` to show ordered reasoning; multiple choice also explains why each plausible distractor fails; Recall Drill items and Glossary drills use a general explanation of why the answer is correct without requiring those labels or separate distractor feedback; Olympiad items also use `Prerequisites:` and `Further study:` with targeted preparation;
 - diagram-to-prompt consistency is checked when a diagram is required;
 - prompts provide all needed givens and units;
 - lessons have meaningful depth and visuals; worked examples expose intermediate reasoning;
-- every Concept Lesson check and Worked Example step is multiple choice and requires solving that step; distractors are close, plausible outcomes of specific errors, and answer explanations show the calculation and why each competing result fails;
+- every Concept Lesson check and Worked Example step is multiple choice and requires solving that step; distractors are close, plausible outcomes of specific errors, and `How to Solve:` continues the calculation/reasoning or gives a prompt-grounded conceptual justification;
 - quizzes/tests meet required topic coverage and easy/hard balance.
 
 Only approved blueprints may be materialized into assessment files. Do not create “sample” assessments that bypass provenance or review state.

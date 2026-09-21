@@ -206,12 +206,18 @@ def validate_question_item(q, q_id, assessment_type, errors):
     if not explanation:
         errors.append(f"{q_id}: Missing explanation.")
     else:
-        if 'Solution:' not in explanation:
-            errors.append(f"{q_id}: Explanation missing 'Solution:'.")
-        if 'Why it works:' not in explanation:
-            errors.append(f"{q_id}: Explanation missing 'Why it works:'.")
-        if q_type == 'multipleChoice' and 'Why the other choices fail:' not in explanation:
-            errors.append(f"{q_id}: multipleChoice explanation missing 'Why the other choices fail:'.")
+        step_explanation = assessment_type in ['conceptLesson', 'workedExample']
+        general_explanation = assessment_type in ['recallDrill', 'glossary']
+        if step_explanation:
+            if 'How to Solve:' not in explanation:
+                errors.append(f"{q_id}: Concept Lesson/Worked Example explanation missing 'How to Solve:'.")
+        elif not general_explanation:
+            if 'Solution:' not in explanation:
+                errors.append(f"{q_id}: Explanation missing 'Solution:'.")
+            if 'Why it works:' not in explanation:
+                errors.append(f"{q_id}: Explanation missing 'Why it works:'.")
+            if q_type == 'multipleChoice' and 'Why the other choices fail:' not in explanation:
+                errors.append(f"{q_id}: multipleChoice explanation missing 'Why the other choices fail:'.")
         if q_type == 'multipleChoice' and GENERIC_DISTRACTOR_FEEDBACK in normalized_choice_text(explanation):
             errors.append(f"{q_id}: Generic distractor feedback. Explain why each competing choice fails for this prompt.")
         if GENERIC_WHY_IT_WORKS in normalized_choice_text(explanation):
@@ -286,6 +292,8 @@ def validate_file(filepath):
                 for i, step in enumerate(steps):
                     step_id = step.get('id', f'step-{i}')
                     question = step.get('question', step)
+                    if question.get('type') != 'multipleChoice':
+                        errors.append(f"{step_id}: Worked Example steps must use multipleChoice.")
                     collect_question(question, step_id)
             
             # Check concept lesson checks
@@ -304,6 +312,8 @@ def validate_file(filepath):
                     if repeated(section.get('content', '') for section in sections):
                         errors.append('Concept lesson repeats section prose. Each section must teach a distinct step.')
                     checks = [section.get('check') for section in sections if section.get('check')]
+                    if any(check.get('type') != 'multipleChoice' for check in checks):
+                        errors.append('Concept Lesson checks must use multipleChoice.')
                     if repeated(check.get('prompt', '') for check in checks):
                         errors.append('Concept lesson repeats learning-check prompts. Use section-specific questions.')
                     if repeated(check.get('explanation', '') for check in checks):

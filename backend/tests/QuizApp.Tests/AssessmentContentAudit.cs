@@ -86,6 +86,25 @@ public sealed class AssessmentContentAudit
         return errors;
     }
 
+    public async Task<List<string>> ValidateAssessmentFilesAsync(IEnumerable<string> fileNames, CancellationToken cancellationToken = default)
+    {
+        var errors = new List<string>();
+        foreach (var fileName in fileNames)
+        {
+            try
+            {
+                var result = await assessmentRepo.ValidateFileAsync(fileName, cancellationToken);
+                if (!result.IsValid)
+                    errors.AddRange(result.Issues.Select(issue => $"{fileName} [{issue.Code}]: {issue.Message}"));
+            }
+            catch (Exception ex)
+            {
+                errors.Add($"{fileName} [PARSE_ERROR]: {ex.Message}");
+            }
+        }
+        return errors;
+    }
+
     public async Task<List<string>> CheckForDuplicateIdsAsync(CancellationToken cancellationToken = default)
     {
         var errors = new List<string>();

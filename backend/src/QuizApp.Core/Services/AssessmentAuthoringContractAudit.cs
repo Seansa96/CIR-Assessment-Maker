@@ -63,7 +63,7 @@ public sealed class AssessmentAuthoringContractAudit
             if (sections.Any(section => section.Check is null)) Add("MISSING_LESSON_CHECK", "Every concept-lesson section requires an active check.", true);
             WarnRatio("CONCEPT_CHECK_MIX", sections.Where(section => section.Check is not null).Select(section => section.Check!.Type), [QuestionType.MultipleChoice], "Concept lessons should use at least 70% multiple-choice checks.", diagnostics);
             foreach (var section in sections.Where(section => section.Check is not null))
-                EvaluateExplanation($"Concept section '{section.Id}'", section.Check!.Explanation, section.Check.Type == QuestionType.MultipleChoice, false, diagnostics, strict);
+                EvaluateExplanation($"Concept section '{section.Id}'", section.Check!.Explanation, section.Check.Type == QuestionType.MultipleChoice, false, diagnostics, strict, stepExplanation: true);
             EvaluateConceptLessonSpecificity(sections, diagnostics, strict);
             EvaluateMultipleChoiceDistractors(assessment, diagnostics, strict);
         }
@@ -76,7 +76,7 @@ public sealed class AssessmentAuthoringContractAudit
             var preferred = profile is AuthoringProfile.Stem ? new[] { QuestionType.SymbolicResponse, QuestionType.FreeResponse } : new[] { QuestionType.FreeResponse, QuestionType.Code };
             WarnRatio("WORKED_EXAMPLE_MIX", assessment.WorkedExamples.SelectMany(example => example.Steps).Select(step => step.Question.Type), preferred, "Worked-example steps should use the profile's preferred response types at least 70% of the time.", diagnostics);
             foreach (var step in assessment.WorkedExamples.SelectMany(example => example.Steps))
-                EvaluateExplanation($"Worked-example step '{step.Id}'", step.Question.Explanation, step.Question.Type == QuestionType.MultipleChoice, false, diagnostics, strict);
+                EvaluateExplanation($"Worked-example step '{step.Id}'", step.Question.Explanation, step.Question.Type == QuestionType.MultipleChoice, false, diagnostics, strict, stepExplanation: true);
             EvaluatePhysicsTwoWorkedExampleQuality(assessment, diagnostics, strict);
         }
 
@@ -84,11 +84,11 @@ public sealed class AssessmentAuthoringContractAudit
         {
             WarnRecallRatio(assessment, diagnostics);
             foreach (var item in assessment.Items)
-                EvaluateExplanation($"Recall item '{item.Id}'", item.Explanation, item.Choices.Count > 1, false, diagnostics, strict);
+                EvaluateExplanation($"Recall item '{item.Id}'", item.Explanation, item.Choices.Count > 1, false, diagnostics, strict, generalExplanation: true);
         }
         if (assessment.AssessmentType is AssessmentType.Glossary)
             foreach (var drill in assessment.Glossary?.Sections.SelectMany(section => section.Entries).SelectMany(entry => entry.Drills) ?? [])
-                EvaluateExplanation($"Glossary drill '{drill.Id}'", drill.Explanation, drill.Choices.Count > 1, false, diagnostics, strict);
+                EvaluateExplanation($"Glossary drill '{drill.Id}'", drill.Explanation, drill.Choices.Count > 1, false, diagnostics, strict, generalExplanation: true);
         return diagnostics;
     }
 
@@ -257,19 +257,26 @@ public sealed class AssessmentAuthoringContractAudit
     private static bool IsGenericDistractorFeedback(string explanation) =>
         explanation.Contains("Why the other choices fail: Each changes a sign, swaps a role, or applies a different relationship.", StringComparison.OrdinalIgnoreCase);
 
-    private static void EvaluateExplanation(string item, string? raw, bool multipleChoice, bool olympiad, List<AuthoringContractDiagnostic> diagnostics, bool strict)
+    private static void EvaluateExplanation(string item, string? raw, bool multipleChoice, bool olympiad, List<AuthoringContractDiagnostic> diagnostics, bool strict, bool stepExplanation = false, bool generalExplanation = false)
     {
         void Add(string code, string message, bool blocking = true) => diagnostics.Add(new(code, $"{item} {message}", blocking && strict));
         if (string.IsNullOrWhiteSpace(raw)) { Add("MISSING_EXPLANATION", "must include an explanation of the answer and solution approach."); return; }
         var explanation = raw.Trim();
         if (IsPlaceholderExplanation(explanation)) Add("PLACEHOLDER_EXPLANATION", "has placeholder explanation text.");
-        if (!HasLabel(explanation, "Solution")) Add("MISSING_EXPLANATION_SOLUTION", "must include `Solution:` with ordered reasoning from givens to conclusion.");
-        if (!HasLabel(explanation, "Why it works")) Add("MISSING_EXPLANATION_REASONING", "must include `Why it works:` naming and applying the governing rule, definition, or technique.");
-        if (multipleChoice && !HasLabel(explanation, "Why the other choices fail")) Add("MISSING_DISTRACTOR_FEEDBACK", "must include `Why the other choices fail:` for its distractors.");
+        if (stepExplanation)
+        {
+            if (!HasLabel(explanation, "How to Solve")) Add("MISSING_HOW_TO_SOLVE", "must include `How to Solve:` showing the work for this step or a prompt-grounded conceptual justification.");
+        }
+        else if (!generalExplanation)
+        {
+            if (!HasLabel(explanation, "Solution")) Add("MISSING_EXPLANATION_SOLUTION", "must include `Solution:` with ordered reasoning from givens to conclusion.");
+            if (!HasLabel(explanation, "Why it works")) Add("MISSING_EXPLANATION_REASONING", "must include `Why it works:` naming and applying the governing rule, definition, or technique.");
+            if (multipleChoice && !HasLabel(explanation, "Why the other choices fail")) Add("MISSING_DISTRACTOR_FEEDBACK", "must include `Why the other choices fail:` for its distractors.");
+        }
         if (multipleChoice && IsGenericDistractorFeedback(explanation)) Add("GENERIC_DISTRACTOR_FEEDBACK", "uses generic distractor feedback. Explain why each competing choice fails for this prompt.");
         if (olympiad && !HasLabel(explanation, "Prerequisites")) Add("MISSING_OLYMPIAD_PREREQUISITES", "must include `Prerequisites:` naming required concepts or theorems.");
         if (olympiad && !HasLabel(explanation, "Further study")) Add("MISSING_OLYMPIAD_FURTHER_STUDY", "must include `Further study:` with targeted preparation resources or concepts.");
-        if (explanation.Length < 160) diagnostics.Add(new("THIN_EXPLANATION", $"{item} has a brief explanation; review whether it fully shows the solution path, conditions, and relevant trap.", false));
+        if (explanation.Length < 160) diagnostics.Add(new("THIN_EXPLANATION", $"{item} has a brief explanation; review whether it fully shows the solution path or prompt-grounded justification, conditions, and relevant trap.", false));
     }
 
     private static bool HasLabel(string explanation, string label) => explanation.Contains($"{label}:", StringComparison.OrdinalIgnoreCase) || explanation.Contains($"**{label}:**", StringComparison.OrdinalIgnoreCase);

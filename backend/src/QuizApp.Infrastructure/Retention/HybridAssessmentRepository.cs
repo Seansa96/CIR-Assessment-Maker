@@ -86,23 +86,61 @@ public sealed class HybridAssessmentRepository : IAssessmentRepository
 
     public async Task<AssessmentDefinition?> GetByIdAsync(string assessmentId, CancellationToken cancellationToken = default)
     {
-        if (!UseSqlite)
-            return await fileRepo.GetByIdAsync(assessmentId, cancellationToken);
-
+        if (!UseSqlite) return await fileRepo.GetByIdAsync(assessmentId, cancellationToken);
         try
         {
-            await using var connection = Factory.CreateConnection();
-            await connection.OpenAsync(cancellationToken);
-            await using var cmd = connection.CreateCommand();
-            cmd.CommandText = "SELECT definition_json FROM assessments WHERE id = @id AND is_active = 1 LIMIT 1;";
-            cmd.Parameters.AddWithValue("@id", assessmentId);
-            var result = await cmd.ExecuteScalarAsync(cancellationToken);
-            return result is string json ? DeserializeDefinition(json) : null;
+            var catalogAssessment = await GetCatalogDefinitionAsync(assessmentId, includeInactive: false, cancellationToken);
+            return catalogAssessment ?? await fileRepo.GetByIdAsync(assessmentId, cancellationToken);
         }
         catch
         {
             return await fileRepo.GetByIdAsync(assessmentId, cancellationToken);
         }
+    }
+
+    public async Task<AssessmentDefinition?> GetForHistoricalAnalyticsAsync(string assessmentId, CancellationToken cancellationToken = default)
+    {
+        if (!UseSqlite) return await fileRepo.GetByIdAsync(assessmentId, cancellationToken);
+        try
+        {
+            var catalogAssessment = await GetCatalogDefinitionAsync(assessmentId, includeInactive: true, cancellationToken);
+            return catalogAssessment ?? await fileRepo.GetByIdAsync(assessmentId, cancellationToken);
+        }
+        catch
+        {
+            return await fileRepo.GetByIdAsync(assessmentId, cancellationToken);
+        }
+    }
+
+    private async Task<AssessmentDefinition?> GetCatalogDefinitionAsync(string assessmentId, bool includeInactive, CancellationToken cancellationToken)
+    {
+        await using var connection = Factory.CreateConnection();
+        await connection.OpenAsync(cancellationToken);
+        await using var cmd = connection.CreateCommand();
+        cmd.CommandText = includeInactive
+            ? "SELECT definition_json, source_path FROM assessments WHERE id = @id LIMIT 1;"
+            : "SELECT definition_json, source_path FROM assessments WHERE id = @id AND is_active = 1 LIMIT 1;";
+        cmd.Parameters.AddWithValue("@id", assessmentId);
+        await using var reader = await cmd.ExecuteReaderAsync(cancellationToken);
+        if (!await reader.ReadAsync(cancellationToken)) return null;
+
+        var storedJson = reader.GetString(0);
+        var sourcePath = reader.IsDBNull(1) ? null : reader.GetString(1);
+        if (!string.IsNullOrWhiteSpace(sourcePath) && File.Exists(sourcePath))
+        {
+            try
+            {
+                var fileAssessment = await fileRepo.GetBySourcePathAsync(sourcePath, cancellationToken);
+                if (fileAssessment is not null && string.Equals(fileAssessment.Id, assessmentId, StringComparison.OrdinalIgnoreCase))
+                    return fileAssessment;
+            }
+            catch
+            {
+                // Use the last valid catalog snapshot while the source file is unreadable.
+            }
+        }
+
+        return DeserializeDefinition(storedJson);
     }
 
     public async Task SaveAsync(AssessmentDefinition assessment, CancellationToken cancellationToken = default)

@@ -1,0 +1,6 @@
+# Calc 3 Contour Map Source Review
+
+- Source: `src-20260719182540-a40fdcd443`, SHA-256 `a40fdcd443c32abd33a4ba6b990352958bbf79862062e59e26fb13a414a4e896`, PDF, `pypdf-v1`, 3,527 extracted chunks, extraction status completed. The Calc 3 curriculum source assignment now records the same count as the source manifest.
+- Selected nonempty text chunks: `chunk-2434` (contour-value estimation and level-curve families), `chunk-2436` (contour maps and surface representations), and `chunk-2437` (close contour spacing and steepness). The source extraction contains no human-approved page-image transcriptions for this import, and the source manifest remains in draft review state with warnings about page-image review.
+- Source evidence is used only for the general mathematical framing. The authored examples, maps, labels, scenarios, and wording are original; no extracted diagrams or exercises are reused. The new SVG maps are generated specifically for these assessment prompts.
+- S2C packet: `packet-calc3-level-curves-contour-maps-v1`. All 52 lesson checks, worked-example steps, and scored questions have linked blueprints. The item-to-map readings, source links, parser checks, unique scored diagrams, and answer calculations passed review; the four blueprint files are approved.

@@ -6,6 +6,8 @@ public interface IAssessmentRepository
 {
     Task<IReadOnlyList<AssessmentSummary>> ListByCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
     Task<AssessmentDefinition?> GetByIdAsync(string assessmentId, CancellationToken cancellationToken = default);
+    Task<AssessmentDefinition?> GetForHistoricalAnalyticsAsync(string assessmentId, CancellationToken cancellationToken = default) =>
+        GetByIdAsync(assessmentId, cancellationToken);
     Task SaveAsync(AssessmentDefinition assessment, CancellationToken cancellationToken = default);
     Task<AssessmentValidationResult> ValidateFileAsync(string fileName, CancellationToken cancellationToken = default);
 }

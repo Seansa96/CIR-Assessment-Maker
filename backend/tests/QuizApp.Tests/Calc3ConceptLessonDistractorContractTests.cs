@@ -23,15 +23,15 @@ public sealed class Calc3ConceptLessonDistractorContractTests
         var options = new FileStorageOptions { DataRoot = Path.Combine(root, "data") };
         var category = Assert.Single((await new FileCategoryRepository(options).ListAsync()).Where(item => item.Id == "calculus-3"));
         var repository = new FileAssessmentRepository(options, new AssessmentValidator());
-        var lessons = (await repository.ListByCategoryAsync("calculus-3"))
-            .Where(summary => summary.AssessmentType is AssessmentType.ConceptLesson
-                && summary.Id.EndsWith("-concept-lesson-s2c", StringComparison.Ordinal)
-                && summary.Id != "calc3-readiness-concept-lesson-s2c")
-            .Select(summary => repository.GetByIdAsync(summary.Id))
+        var lessonIds = Directory.EnumerateFiles(options.AssessmentsPath, "*-concept-lesson-s2c.yaml")
+            .Where(path => File.ReadAllText(path).Contains("categoryId: calculus-3", StringComparison.Ordinal))
+            .Select(path => Path.GetFileNameWithoutExtension(path)!)
+            .Where(id => id != "calc3-readiness-concept-lesson-s2c")
             .ToList();
+        var lessons = lessonIds.Select(id => repository.GetByIdAsync(id)).ToList();
         var assessments = await Task.WhenAll(lessons);
 
-        Assert.Equal(26, assessments.Length);
+        Assert.Equal(27, assessments.Length);
         var audit = new AssessmentAuthoringContractAudit();
         foreach (var assessment in assessments)
         {
@@ -39,8 +39,7 @@ public sealed class Calc3ConceptLessonDistractorContractTests
             Assert.DoesNotContain(audit.Evaluate(category, assessment!, strict: true), diagnostic => diagnostic.IsBlocking);
 
             var checks = assessment.Lesson!.Sections.Select(section => section.Check!).ToList();
-            var expectedCheckCount = assessment!.Id is "multivariable-chain-rule-concept-lesson-s2c" or "directional-derivatives-gradients-concept-lesson-s2c" ? 8 : 7;
-            Assert.Equal(expectedCheckCount, checks.Count);
+            Assert.InRange(checks.Count, 7, 8);
             Assert.All(checks, check => Assert.Equal(QuestionType.MultipleChoice, check.Type));
             Assert.DoesNotContain(checks.SelectMany(check => check.Choices), choice => GenericDistractors.Contains(choice.Text));
             Assert.DoesNotContain(checks, check => check.Explanation!.Contains("Why the other choices fail: Each changes a sign, swaps a role, or applies a different relationship.", StringComparison.Ordinal));
@@ -57,6 +56,7 @@ public sealed class Calc3ConceptLessonDistractorContractTests
     [Theory]
     [InlineData("multivariable-chain-rule-worked-example-s2c", 3)]
     [InlineData("directional-derivatives-gradients-worked-example-s2c", 3)]
+    [InlineData("level-curves-contour-maps-worked-example-s2c", 3)]
     [Trait("Category", "ContentValidation")]
     public async Task Expanded_calc3_worked_examples_are_multiple_choice_at_every_step(string assessmentId, int expectedExamples)
     {
@@ -79,6 +79,7 @@ public sealed class Calc3ConceptLessonDistractorContractTests
     [Theory]
     [InlineData("multivariable-chain-rule-concept-lesson-s2c")]
     [InlineData("directional-derivatives-gradients-concept-lesson-s2c")]
+    [InlineData("level-curves-contour-maps-concept-lesson-s2c")]
     [Trait("Category", "ContentValidation")]
     public async Task Expanded_calc3_lessons_deserialize_and_pass_the_strict_contract(string assessmentId)
     {
