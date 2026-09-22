@@ -1,0 +1,10 @@
+from pathlib import Path
+p=Path('data/assessments/physics2-ch05-electric-field-superposition-symbolic-numeric-worked-example.yaml')
+s=p.read_text(encoding='utf-8')
+s=s.replace('r3=\\\\sqrt{(a+c)^2+b^2}', r'$r_3=\\sqrt{(a+c)^2+b^2}$')
+s=s.replace('VP=kq1/(a+c)+kq2/\\\\sqrt{(a+c)^2+b^2}+kq3/\\\\sqrt{c^2+b^2}', r'$V_P=\\frac{kq_1}{a+c}+\\frac{kq_2}{\\sqrt{(a+c)^2+b^2}}+\\frac{kq_3}{\\sqrt{c^2+b^2}}$')
+s=s.replace('VP=kq1/(a+c)+kq2/\\\\sqrt{(a+c)^2+b^2}+kq3/\\\\sqrt{c^2+b^2}', r'$V_P=\\frac{kq_1}{a+c}+\\frac{kq_2}{\\sqrt{(a+c)^2+b^2}}+\\frac{kq_3}{\\sqrt{c^2+b^2}}$')
+s=s.replace('|EP|=sqrt(213.4^2+185.2^2)=282.6 N/C', r'$|E_P|=\\sqrt{213.4^2+185.2^2}=282.6\\,\\mathrm{N/C}$')
+s=s.replace('$\\theta_P$=atan(EPy/EPx)', r'$\\theta_P=\\arctan(E_{P,y}/E_{P,x})$')
+s=s.replace('\\\\','\\')
+p.write_text(s,encoding='utf-8')
